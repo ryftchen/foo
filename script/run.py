@@ -80,6 +80,7 @@ class Task:
     report_path = "./report"
     log_file = f"{report_path}/foo_run.log"
     report_file = f"{report_path}/foo_run.report"
+    suspicious_output = [" \033[0;31;40m\033[1m\033[49m[ERR]\033[0m ", " \033[0;33;40m\033[1m\033[49m[WRN]\033[0m "]
 
     def __init__(self):
         self.passed_steps = 0
@@ -394,7 +395,7 @@ class Task:
             stdout = stdout.replace("\t", "    ")
             print(stdout)
             self.passed_steps += 1
-            if "[ERR]" in stdout or "[WRN]" in stdout:
+            if any(sub in stdout for sub in self.suspicious_output):
                 self.passed_steps -= 1
                 Output.refresh_status(
                     Output.color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"

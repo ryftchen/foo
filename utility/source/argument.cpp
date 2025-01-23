@@ -23,13 +23,13 @@ const char* version() noexcept
 
 Register& Register::help(const std::string_view content)
 {
-    helpContent = content;
+    helpCont = content;
     return *this;
 }
 
 Register& Register::metavar(const std::string_view content)
 {
-    metavarContent = content;
+    metavarCont = content;
     return *this;
 }
 
@@ -109,12 +109,9 @@ void Register::validate() const
             throwRequiredArgNoValueProvidedException();
         }
     }
-    else
+    else if (!argsNumRange.isContain(values.size()) && !defaultVal.has_value())
     {
-        if (!argsNumRange.isContain(values.size()) && !defaultVal.has_value())
-        {
-            throwArgsNumRangeValidationException();
-        }
+        throwArgsNumRangeValidationException();
     }
 }
 
@@ -134,7 +131,7 @@ std::string Register::getInlineUsage() const
         out << '[';
     }
     out << longestName;
-    const std::string metavar = !metavarContent.empty() ? metavarContent : "VAR";
+    const std::string metavar = !metavarCont.empty() ? metavarCont : "VAR";
     if (argsNumRange.getMax() > 0)
     {
         out << ' ' << metavar;
@@ -157,18 +154,13 @@ std::size_t Register::getArgumentsLength() const
         names.cbegin(), names.cend(), 0, [](const auto sum, const auto& str) { return sum + str.length(); });
     if (checkIfPositional(names.at(0), prefixChars))
     {
-        if (!metavarContent.empty())
-        {
-            return metavarContent.length();
-        }
-
-        return namesSize + (names.size() - 1);
+        return !metavarCont.empty() ? metavarCont.length() : (namesSize + (names.size() - 1));
     }
 
     std::size_t size = namesSize + 2 * (names.size() - 1);
-    if (!metavarContent.empty() && (ArgsNumRange{1, 1} == argsNumRange))
+    if (!metavarCont.empty() && (ArgsNumRange{1, 1} == argsNumRange))
     {
-        size += metavarContent.length() + 1;
+        size += metavarCont.length() + 1;
     }
 
     return size;
@@ -177,27 +169,20 @@ std::size_t Register::getArgumentsLength() const
 void Register::throwArgsNumRangeValidationException() const
 {
     std::ostringstream out{};
-    if (!usedName.empty())
+    out << (!usedName.empty() ? usedName : names.at(0)) << ": " << argsNumRange.getMin();
+    if (!argsNumRange.isExact())
     {
-        out << usedName << ": ";
-    }
-    else
-    {
-        out << names.at(0) << ": ";
-    }
-    if (argsNumRange.isExact())
-    {
-        out << argsNumRange.getMin();
-    }
-    else if (argsNumRange.isRightBounded())
-    {
-        out << argsNumRange.getMin() << " to " << argsNumRange.getMax();
-    }
-    else
-    {
-        out << argsNumRange.getMin() << " or more";
+        if (argsNumRange.isRightBounded())
+        {
+            out << " to " << argsNumRange.getMax();
+        }
+        else
+        {
+            out << " or more";
+        }
     }
     out << " argument(s) expected. " << values.size() << " provided.";
+
     throw std::runtime_error{out.str()};
 }
 
@@ -208,17 +193,12 @@ void Register::throwRequiredArgNotUsedException() const
 
 void Register::throwRequiredArgNoValueProvidedException() const
 {
-    throw std::runtime_error{std::string{usedName} + ": no value provided."};
+    throw std::runtime_error{usedName + ": no value provided."};
 }
 
 int Register::lookAhead(const std::string_view name)
 {
-    if (name.empty())
-    {
-        return eof;
-    }
-
-    return static_cast<int>(static_cast<unsigned char>(name.front()));
+    return name.empty() ? eof : static_cast<int>(static_cast<unsigned char>(name.front()));
 }
 
 bool Register::checkIfOptional(const std::string_view name, const std::string_view prefix)
@@ -237,11 +217,7 @@ bool Register::checkIfPositional(const std::string_view name, const std::string_
     {
         std::string_view remain(name);
         remain.remove_prefix(1);
-        if (remain.empty())
-        {
-            return true;
-        }
-        return false;
+        return remain.empty();
     }
 
     return true;
@@ -256,21 +232,14 @@ std::ostream& operator<<(std::ostream& os, const Register& reg)
     std::ostringstream out{};
     if (reg.checkIfPositional(reg.names.at(0), reg.prefixChars))
     {
-        if (!reg.metavarContent.empty())
-        {
-            out << reg.metavarContent;
-        }
-        else
-        {
-            out << join(reg.names.cbegin(), reg.names.cend(), " ");
-        }
+        out << (!reg.metavarCont.empty() ? reg.metavarCont : join(reg.names.cbegin(), reg.names.cend(), " "));
     }
     else
     {
         out << join(reg.names.cbegin(), reg.names.cend(), ", ");
-        if (!reg.metavarContent.empty() && (Register::ArgsNumRange{1, 1} == reg.argsNumRange))
+        if (!reg.metavarCont.empty() && (Register::ArgsNumRange{1, 1} == reg.argsNumRange))
         {
-            out << ' ' << reg.metavarContent;
+            out << ' ' << reg.metavarCont;
         }
     }
 
@@ -280,9 +249,9 @@ std::ostream& operator<<(std::ostream& os, const Register& reg)
 
     std::size_t pos = 0, prev = 0;
     bool firstLine = true;
-    const std::string_view helpView = reg.helpContent;
+    const std::string_view helpView = reg.helpCont;
     const char* tabSpace = "    ";
-    while (std::string::npos != (pos = reg.helpContent.find('\n', prev)))
+    while (std::string::npos != (pos = reg.helpCont.find('\n', prev)))
     {
         const auto line = helpView.substr(prev, pos - prev + 1);
         if (firstLine)
@@ -297,13 +266,14 @@ std::ostream& operator<<(std::ostream& os, const Register& reg)
         }
         prev += pos - prev + 1;
     }
+
     if (firstLine)
     {
-        os << tabSpace << reg.helpContent;
+        os << tabSpace << reg.helpCont;
     }
     else
     {
-        const auto remain = helpView.substr(prev, reg.helpContent.length() - prev);
+        const auto remain = helpView.substr(prev, reg.helpCont.length() - prev);
         if (!remain.empty())
         {
             os.width(streamWidth);
@@ -311,7 +281,7 @@ std::ostream& operator<<(std::ostream& os, const Register& reg)
         }
     }
 
-    if (!reg.helpContent.empty())
+    if (!reg.helpCont.empty())
     {
         os << ' ';
     }
@@ -377,31 +347,6 @@ Argument::operator bool() const
     return isParsed && (isArgUsed || isSubParserUsed);
 }
 
-Argument& Argument::addDescription(const std::string_view text)
-{
-    descrText = text;
-    return *this;
-}
-
-void Argument::parseArgs(const std::vector<std::string>& arguments)
-{
-    parseArgsInternal(arguments);
-    for (const auto& argument : std::views::values(argumentMap))
-    {
-        argument->validate();
-    }
-}
-
-void Argument::parseArgs(const int argc, const char* const argv[])
-{
-    parseArgs({argv, argv + argc});
-}
-
-bool Argument::isUsed(const std::string_view argName) const
-{
-    return (*this)[argName].isUsed;
-}
-
 Register& Argument::operator[](const std::string_view argName) const
 {
     auto iterator = argumentMap.find(argName);
@@ -409,6 +354,7 @@ Register& Argument::operator[](const std::string_view argName) const
     {
         return *(iterator->second);
     }
+
     if (!isValidPrefixChar(argName.at(0)))
     {
         std::string name(argName);
@@ -429,7 +375,33 @@ Register& Argument::operator[](const std::string_view argName) const
             return *(iterator->second);
         }
     }
+
     throw std::runtime_error{"No such argument: " + std::string{argName} + '.'};
+}
+
+Argument& Argument::addDescription(const std::string_view text)
+{
+    descrText = text;
+    return *this;
+}
+
+void Argument::parseArgs(const std::vector<std::string>& arguments)
+{
+    parseArgsInternal(arguments);
+    for (const auto& argument : std::views::values(argumentMap))
+    {
+        argument->validate();
+    }
+}
+
+void Argument::parseArgs(const int argc, const char* const argv[])
+{
+    parseArgs(std::vector<std::string>{argv, argv + argc});
+}
+
+bool Argument::isUsed(const std::string_view argName) const
+{
+    return (*this)[argName].isUsed;
 }
 
 std::string Argument::title() const
@@ -461,14 +433,7 @@ std::string Argument::usage() const
     }
     for (const auto& argument : positionalArgs)
     {
-        if (!argument.metavarContent.empty())
-        {
-            out << ' ' << argument.metavarContent;
-        }
-        else
-        {
-            out << ' ' << argument.names.at(0);
-        }
+        out << ' ' << (!argument.metavarCont.empty() ? argument.metavarCont : argument.names.at(0));
     }
 
     if (!subParserMap.empty())
@@ -476,14 +441,11 @@ std::string Argument::usage() const
         out << " {";
         for (std::size_t i = 0; const auto& command : std::views::keys(subParserMap))
         {
-            if (0 == i)
+            if (0 != i)
             {
-                out << command;
+                out << ',';
             }
-            else
-            {
-                out << ',' << command;
-            }
+            out << command;
             ++i;
         }
         out << '}';
@@ -533,12 +495,10 @@ std::vector<std::string> Argument::preprocessArguments(const std::vector<std::st
             return false;
         };
 
-        const auto assignCharPos = arg.find_first_of(assignChars);
-        if ((argumentMap.cend() == argumentMap.find(arg)) && startWithPrefixChars(arg)
-            && (std::string::npos != assignCharPos))
+        if (const auto assignCharPos = arg.find_first_of(assignChars); (argumentMap.cend() == argumentMap.find(arg))
+            && startWithPrefixChars(arg) && (std::string::npos != assignCharPos))
         {
-            const auto optName = arg.substr(0, assignCharPos);
-            if (argumentMap.cend() != argumentMap.find(optName))
+            if (const auto optName = arg.substr(0, assignCharPos); argumentMap.cend() != argumentMap.find(optName))
             {
                 arguments.emplace_back(optName);
                 arguments.emplace_back(arg.substr(assignCharPos + 1));
@@ -563,14 +523,13 @@ void Argument::parseArgsInternal(const std::vector<std::string>& rawArguments)
     auto positionalArgIter = positionalArgs.begin();
     for (auto iterator = std::next(arguments.begin()); end != iterator;)
     {
-        const auto& currentArgument = *iterator;
-        if (Register::checkIfPositional(currentArgument, prefixChars))
+        const auto& currentArg = *iterator;
+        if (Register::checkIfPositional(currentArg, prefixChars))
         {
             if (positionalArgs.cend() == positionalArgIter)
             {
-                const std::string_view maybeCommand = currentArgument;
-                const auto subParserIter = subParserMap.find(maybeCommand);
-                if (subParserMap.cend() != subParserIter)
+                const std::string_view maybeCommand = currentArg;
+                if (const auto subParserIter = subParserMap.find(maybeCommand); subParserMap.cend() != subParserIter)
                 {
                     const auto unprocessedArguments = std::vector<std::string>(iterator, end);
                     isParsed = true;
@@ -580,39 +539,38 @@ void Argument::parseArgsInternal(const std::vector<std::string>& rawArguments)
 
                 throw std::runtime_error{"Maximum number of positional arguments exceeded."};
             }
+
             const auto argument = positionalArgIter++;
             iterator = argument->consume(iterator, end);
             continue;
         }
 
-        const auto argMapIter = argumentMap.find(currentArgument);
-        if (argumentMap.cend() != argMapIter)
+        if (const auto argMapIter = argumentMap.find(currentArg); argumentMap.cend() != argMapIter)
         {
             const auto argument = argMapIter->second;
             iterator = argument->consume(std::next(iterator), end, argMapIter->first);
         }
-        else if (const auto& compoundArg = currentArgument; (compoundArg.length() > 1)
+        else if (const auto& compoundArg = currentArg; (compoundArg.length() > 1)
                  && isValidPrefixChar(compoundArg.at(0)) && !isValidPrefixChar(compoundArg.at(1)))
         {
             ++iterator;
             for (std::size_t i = 1; i < compoundArg.length(); ++i)
             {
                 const auto hypotheticalArg = std::string{'-', compoundArg.at(i)};
-                const auto argMapIter2 = argumentMap.find(hypotheticalArg);
-                if (argumentMap.cend() != argMapIter2)
+                if (const auto argMapIter2 = argumentMap.find(hypotheticalArg); argumentMap.cend() != argMapIter2)
                 {
                     auto argument = argMapIter2->second;
                     iterator = argument->consume(iterator, end, argMapIter2->first);
                 }
                 else
                 {
-                    throw std::runtime_error{"Unknown argument: " + currentArgument + '.'};
+                    throw std::runtime_error{"Unknown argument: " + currentArg + '.'};
                 }
             }
         }
         else
         {
-            throw std::runtime_error{"Unknown argument: " + currentArgument + '.'};
+            throw std::runtime_error{"Unknown argument: " + currentArg + '.'};
         }
     }
     isParsed = true;

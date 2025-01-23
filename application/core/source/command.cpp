@@ -950,6 +950,7 @@ template <typename T>
 void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& client)
 {
     using console::Console;
+    using RetCode = Console::RetCode;
     static constexpr auto resetter = []<HelperType Helper>() constexpr
     {
         triggerHelper<Helper>(ExtEvent::reload);
@@ -957,8 +958,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
     };
     const auto sender = [&client](const Console::Args& inputs)
     {
-        using enum Console::RetCode;
-        auto retCode = success;
+        auto retCode = RetCode::success;
         try
         {
             client->toSend(utility::common::base64Encode(std::accumulate(
@@ -970,7 +970,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
         }
         catch (const std::exception& err)
         {
-            retCode = error;
+            retCode = RetCode::error;
             LOG_WRN << err.what();
             utility::time::millisecondLevelSleep(latency);
         }
@@ -982,8 +982,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
         "refresh the outputs",
         [](const Console::Args& /*inputs*/)
         {
-            using enum Console::RetCode;
-            auto retCode = success;
+            auto retCode = RetCode::success;
             try
             {
                 resetter.template operator()<log::Log>();
@@ -992,7 +991,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
             }
             catch (const std::exception& err)
             {
-                retCode = error;
+                retCode = RetCode::error;
                 LOG_WRN << err.what();
             }
             utility::time::millisecondLevelSleep(latency);
@@ -1003,8 +1002,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
         "reconnect to the servers",
         [&client](const Console::Args& /*inputs*/)
         {
-            using enum Console::RetCode;
-            auto retCode = success;
+            auto retCode = RetCode::success;
             try
             {
                 client->toSend(utility::common::base64Encode(view::exitSymbol));
@@ -1019,7 +1017,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
             }
             catch (const std::exception& err)
             {
-                retCode = error;
+                retCode = RetCode::error;
                 LOG_WRN << err.what();
             }
             utility::time::millisecondLevelSleep(latency);

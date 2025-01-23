@@ -219,11 +219,13 @@ std::string getFullConfigPath(const std::string_view filename)
 utility::json::JSON getDefaultConfiguration()
 {
     namespace json = utility::json;
+
+    using log::Log;
     auto loggerProperties = json::object();
     loggerProperties.at(field::filePath) = "log/foo.log";
-    loggerProperties.at(field::priorityLevel) = static_cast<int>(log::Log::OutputLevel::debug);
-    loggerProperties.at(field::targetType) = static_cast<int>(log::Log::OutputType::all);
-    loggerProperties.at(field::writeMode) = static_cast<int>(log::Log::OutputMode::append);
+    loggerProperties.at(field::priorityLevel) = static_cast<int>(Log::OutputLevel::debug);
+    loggerProperties.at(field::targetType) = static_cast<int>(Log::OutputType::all);
+    loggerProperties.at(field::writeMode) = static_cast<int>(Log::OutputMode::append);
     auto loggerRequired = json::array();
     loggerRequired.append(
         field::filePath.data(), field::priorityLevel.data(), field::targetType.data(), field::writeMode.data());

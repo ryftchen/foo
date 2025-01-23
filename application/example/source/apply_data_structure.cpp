@@ -35,6 +35,10 @@
 
 namespace application::app_ds
 {
+//! @brief Alias for the type information.
+//! @tparam T - type of target object
+template <typename T>
+using TypeInfo = utility::reflection::TypeInfo<T>;
 //! @brief Alias for Category.
 using Category = ApplyDataStructure::Category;
 
@@ -50,8 +54,7 @@ ApplyDataStructure& manager()
 //! @return task name curried
 static const auto& getTaskNameCurried()
 {
-    static const auto curried =
-        utility::currying::curry(action::presetTaskName, utility::reflection::TypeInfo<ApplyDataStructure>::name);
+    static const auto curried = utility::currying::curry(action::presetTaskName, TypeInfo<ApplyDataStructure>::name);
     return curried;
 }
 
@@ -63,9 +66,9 @@ consteval std::string_view toString(const Category cat)
     switch (cat)
     {
         case Category::linear:
-            return utility::reflection::TypeInfo<LinearInstance>::name;
+            return TypeInfo<LinearInstance>::name;
         case Category::tree:
-            return utility::reflection::TypeInfo<TreeInstance>::name;
+            return TypeInfo<TreeInstance>::name;
         default:
             break;
     }
@@ -79,8 +82,7 @@ consteval std::string_view toString(const Category cat)
 template <Category Cat>
 constexpr auto& getCategoryOpts()
 {
-    return std::invoke(
-        utility::reflection::TypeInfo<ApplyDataStructure>::fields.find(REFLECTION_STR(toString(Cat))).value, manager());
+    return std::invoke(TypeInfo<ApplyDataStructure>::fields.find(REFLECTION_STR(toString(Cat))).value, manager());
 }
 
 //! @brief Get the alias of the category in data structure choices.
@@ -89,8 +91,8 @@ constexpr auto& getCategoryOpts()
 template <Category Cat>
 consteval std::string_view getCategoryAlias()
 {
-    constexpr auto attr = utility::reflection::TypeInfo<ApplyDataStructure>::fields.find(REFLECTION_STR(toString(Cat)))
-                              .attrs.find(REFLECTION_STR("alias"));
+    constexpr auto attr =
+        TypeInfo<ApplyDataStructure>::fields.find(REFLECTION_STR(toString(Cat))).attrs.find(REFLECTION_STR("alias"));
     static_assert(attr.hasValue);
     return attr.value;
 }
@@ -102,10 +104,9 @@ consteval std::string_view getCategoryAlias()
 template <typename T>
 consteval std::size_t abbrVal(const T instance)
 {
-    using TypeInfo = utility::reflection::TypeInfo<T>;
-    static_assert(Bottom<T>::value == TypeInfo::fields.size);
+    static_assert(Bottom<T>::value == TypeInfo<T>::fields.size);
     std::size_t value = 0;
-    TypeInfo::fields.forEach(
+    TypeInfo<T>::fields.forEach(
         [instance, &value](const auto field)
         {
             if (field.name == toString(instance))

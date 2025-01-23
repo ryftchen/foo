@@ -323,11 +323,11 @@ private:
     //! @brief All argument names.
     std::vector<std::string> names{};
     //! @brief Used argument name.
-    std::string_view usedName{};
+    std::string usedName{};
     //! @brief Help message content.
-    std::string helpContent{};
+    std::string helpCont{};
     //! @brief Metavar message content.
-    std::string metavarContent{};
+    std::string metavarCont{};
     //! @brief Default value.
     std::any defaultVal{};
     //! @brief Default value content to be represented.
@@ -352,7 +352,7 @@ private:
     //! @brief End of file in arguments.
     static constexpr int eof{std::char_traits<char>::eof()};
     //! @brief Prefix characters.
-    std::string_view prefixChars{};
+    std::string prefixChars{};
 
     //! @brief Indicate the range for the number of arguments.
     class ArgsNumRange
@@ -583,6 +583,10 @@ Iterator Register::consume(Iterator start, Iterator end, const std::string_view 
 
         struct ActionApply
         {
+            const Iterator first{};
+            const Iterator last{};
+            Register& self;
+
             void operator()(const ValuedAction& func) const
             {
                 std::transform(first, last, std::back_inserter(self.values), func);
@@ -590,18 +594,11 @@ Iterator Register::consume(Iterator start, Iterator end, const std::string_view 
             void operator()(const VoidAction& func) const
             {
                 std::for_each(first, last, func);
-                if (!self.defaultVal.has_value())
+                if (!self.defaultVal.has_value() && !self.optionalAsValue)
                 {
-                    if (!self.optionalAsValue)
-                    {
-                        self.values.resize(static_cast<std::size_t>(std::distance(first, last)));
-                    }
+                    self.values.resize(static_cast<std::size_t>(std::distance(first, last)));
                 }
             }
-
-            Iterator first{};
-            Iterator last{};
-            Register& self;
         };
         std::visit(ActionApply{start, end, *this}, actions);
 
@@ -611,7 +608,8 @@ Iterator Register::consume(Iterator start, Iterator end, const std::string_view 
     {
         return start;
     }
-    throw std::runtime_error{"Too few arguments for '" + std::string{usedName} + "'."};
+
+    throw std::runtime_error{"Too few arguments for '" + usedName + "'."};
 }
 
 template <typename T>
@@ -639,6 +637,7 @@ T Register::get() const
             return anyCastContainer<T>(values);
         }
     }
+
     throw std::runtime_error{"No value specified for '" + names.back() + "'."};
 }
 
@@ -703,6 +702,10 @@ public:
 
     //! @brief The operator (bool) overloading of Argument class.
     explicit operator bool() const;
+    //! @brief The operator ([]) overloading of Register class.
+    //! @param argName - target argument name
+    //! @return reference of the Register object
+    Register& operator[](const std::string_view argName) const;
 
     //! @brief Add a single argument.
     //! @tparam ArgsType - type of arguments
@@ -751,10 +754,6 @@ public:
     //! @param subParser - target sub-parser
     //! @return be used or not used
     [[nodiscard]] inline auto isSubCommandUsed(const Argument& subParser) const;
-    //! @brief The operator ([]) overloading of Register class.
-    //! @param argName - target argument name
-    //! @return reference of the Register object
-    Register& operator[](const std::string_view argName) const;
     //! @brief Get the title name.
     //! @return title name
     std::string title() const;
@@ -832,8 +831,8 @@ protected:
 template <typename... ArgsType>
 Register& Argument::addArgument(ArgsType... fewArgs)
 {
-    using ArrayOfSv = std::array<std::string_view, sizeof...(ArgsType)>;
-    const auto argument = optionalArgs.emplace(optionalArgs.cend(), prefixChars, ArrayOfSv{fewArgs...});
+    const auto argument = optionalArgs.emplace(
+        optionalArgs.cend(), prefixChars, std::array<std::string_view, sizeof...(ArgsType)>{fewArgs...});
     if (!argument->isOptional)
     {
         positionalArgs.splice(positionalArgs.cend(), optionalArgs, argument);
@@ -850,15 +849,12 @@ T& Argument::at(const std::string_view name)
     {
         return (*this)[name];
     }
-    else
+    else if (const auto subParserIter = subParserMap.find(name); subParserMap.cend() != subParserIter)
     {
-        const auto subParserIter = subParserMap.find(name);
-        if (subParserMap.cend() != subParserIter)
-        {
-            return subParserIter->second->get();
-        }
-        throw std::runtime_error{"No such sub-parser: " + std::string{name} + '.'};
+        return subParserIter->second->get();
     }
+
+    throw std::runtime_error{"No such sub-parser: " + std::string{name} + '.'};
 }
 
 template <typename T>
