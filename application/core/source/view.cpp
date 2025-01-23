@@ -1181,21 +1181,22 @@ bool View::awaitNotification2Retry()
 //! @return reference of the output stream object
 std::ostream& operator<<(std::ostream& os, const View::State state)
 {
+    using enum View::State;
     switch (state)
     {
-        case View::State::init:
+        case init:
             os << "INIT";
             break;
-        case View::State::idle:
+        case idle:
             os << "IDLE";
             break;
-        case View::State::work:
+        case work:
             os << "WORK";
             break;
-        case View::State::done:
+        case done:
             os << "DONE";
             break;
-        case View::State::hold:
+        case hold:
             os << "HOLD";
             break;
         default:

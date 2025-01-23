@@ -467,21 +467,22 @@ bool Log::awaitNotification2Retry()
 //! @return reference of the output stream object
 std::ostream& operator<<(std::ostream& os, const Log::State state)
 {
+    using enum Log::State;
     switch (state)
     {
-        case Log::State::init:
+        case init:
             os << "INIT";
             break;
-        case Log::State::idle:
+        case idle:
             os << "IDLE";
             break;
-        case Log::State::work:
+        case work:
             os << "WORK";
             break;
-        case Log::State::done:
+        case done:
             os << "DONE";
             break;
-        case Log::State::hold:
+        case hold:
             os << "HOLD";
             break;
         default:

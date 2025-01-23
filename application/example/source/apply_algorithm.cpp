@@ -35,6 +35,10 @@
 
 namespace application::app_algo
 {
+//! @brief Alias for the type information.
+//! @tparam T - type of target object
+template <typename T>
+using TypeInfo = utility::reflection::TypeInfo<T>;
 //! @brief Alias for Category.
 using Category = ApplyAlgorithm::Category;
 
@@ -50,8 +54,7 @@ ApplyAlgorithm& manager()
 //! @return task name curried
 static const auto& getTaskNameCurried()
 {
-    static const auto curried =
-        utility::currying::curry(action::presetTaskName, utility::reflection::TypeInfo<ApplyAlgorithm>::name);
+    static const auto curried = utility::currying::curry(action::presetTaskName, TypeInfo<ApplyAlgorithm>::name);
     return curried;
 }
 
@@ -63,15 +66,15 @@ consteval std::string_view toString(const Category cat)
     switch (cat)
     {
         case Category::match:
-            return utility::reflection::TypeInfo<MatchMethod>::name;
+            return TypeInfo<MatchMethod>::name;
         case Category::notation:
-            return utility::reflection::TypeInfo<NotationMethod>::name;
+            return TypeInfo<NotationMethod>::name;
         case Category::optimal:
-            return utility::reflection::TypeInfo<OptimalMethod>::name;
+            return TypeInfo<OptimalMethod>::name;
         case Category::search:
-            return utility::reflection::TypeInfo<SearchMethod>::name;
+            return TypeInfo<SearchMethod>::name;
         case Category::sort:
-            return utility::reflection::TypeInfo<SortMethod>::name;
+            return TypeInfo<SortMethod>::name;
         default:
             break;
     }
@@ -85,8 +88,7 @@ consteval std::string_view toString(const Category cat)
 template <Category Cat>
 constexpr auto& getCategoryOpts()
 {
-    return std::invoke(
-        utility::reflection::TypeInfo<ApplyAlgorithm>::fields.find(REFLECTION_STR(toString(Cat))).value, manager());
+    return std::invoke(TypeInfo<ApplyAlgorithm>::fields.find(REFLECTION_STR(toString(Cat))).value, manager());
 }
 
 //! @brief Get the alias of the category in algorithm choices.
@@ -95,8 +97,8 @@ constexpr auto& getCategoryOpts()
 template <Category Cat>
 consteval std::string_view getCategoryAlias()
 {
-    constexpr auto attr = utility::reflection::TypeInfo<ApplyAlgorithm>::fields.find(REFLECTION_STR(toString(Cat)))
-                              .attrs.find(REFLECTION_STR("alias"));
+    constexpr auto attr =
+        TypeInfo<ApplyAlgorithm>::fields.find(REFLECTION_STR(toString(Cat))).attrs.find(REFLECTION_STR("alias"));
     static_assert(attr.hasValue);
     return attr.value;
 }
@@ -108,10 +110,9 @@ consteval std::string_view getCategoryAlias()
 template <typename T>
 consteval std::size_t abbrVal(const T method)
 {
-    using TypeInfo = utility::reflection::TypeInfo<T>;
-    static_assert(Bottom<T>::value == TypeInfo::fields.size);
+    static_assert(Bottom<T>::value == TypeInfo<T>::fields.size);
     std::size_t value = 0;
-    TypeInfo::fields.forEach(
+    TypeInfo<T>::fields.forEach(
         [method, &value](const auto field)
         {
             if (field.name == toString(method))
