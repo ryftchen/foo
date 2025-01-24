@@ -793,8 +793,8 @@ public:
             align = std::max(static_cast<std::uint32_t>(std::to_string(*(array + i)).length()), align);
         }
 
-        constexpr std::string_view spliceFmt = {
-            std::is_integral_v<T> ? "%*d " : (std::is_floating_point_v<T> ? "%*.5f " : " ")};
+        constexpr std::string_view spliceFmt =
+            std::is_integral_v<T> ? "%*d " : (std::is_floating_point_v<T> ? "%*.5f " : " ");
         int totalLen = 0;
         std::uint32_t completeSize = 0;
         for (std::uint32_t i = 0; i < length; ++i)
@@ -1031,8 +1031,8 @@ public:
             align = std::max(static_cast<std::uint32_t>(std::to_string(*(array + i)).length()), align);
         }
 
-        constexpr std::string_view spliceFmt = {
-            std::is_integral_v<T> ? "%*d " : (std::is_floating_point_v<T> ? "%*.5f " : " ")};
+        constexpr std::string_view spliceFmt =
+            std::is_integral_v<T> ? "%*d " : (std::is_floating_point_v<T> ? "%*.5f " : " ");
         int totalLen = 0;
         std::uint32_t completeSize = 0;
         for (std::uint32_t i = 0; i < length; ++i)
