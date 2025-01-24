@@ -315,7 +315,7 @@ void Sort<T>::buildMaxHeap(T* const sorting, const std::uint32_t begin, const st
 template <typename T>
 std::vector<T> Sort<T>::counting(const T* const array, const std::uint32_t length)
 {
-    if (!std::is_integral_v<T>)
+    if constexpr (!std::is_integral_v<T>)
     {
         throw std::logic_error{"The array type is not integral."};
     }
@@ -382,7 +382,7 @@ std::vector<T> Sort<T>::bucket(const T* const array, const std::uint32_t length)
 template <typename T>
 std::vector<T> Sort<T>::radix(const T* const array, const std::uint32_t length)
 {
-    if (!std::is_integral_v<T>)
+    if constexpr (!std::is_integral_v<T>)
     {
         throw std::logic_error{"The array type is not integral."};
     }

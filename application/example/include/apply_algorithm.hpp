@@ -793,22 +793,14 @@ public:
             align = std::max(static_cast<std::uint32_t>(std::to_string(*(array + i)).length()), align);
         }
 
-        const char* spliceFmt = nullptr;
-        if constexpr (std::is_integral_v<T>)
-        {
-            spliceFmt = "%*d ";
-        }
-        else if constexpr (std::is_floating_point_v<T>)
-        {
-            spliceFmt = "%*.5f ";
-        }
-
+        constexpr std::string_view spliceFmt = {
+            std::is_integral_v<T> ? "%*d " : (std::is_floating_point_v<T> ? "%*.5f " : " ")};
         int totalLen = 0;
         std::uint32_t completeSize = 0;
         for (std::uint32_t i = 0; i < length; ++i)
         {
-            totalLen =
-                std::snprintf(buffer + completeSize, bufferSize - completeSize, spliceFmt, align + 1, *(array + i));
+            totalLen = std::snprintf(
+                buffer + completeSize, bufferSize - completeSize, spliceFmt.data(), align + 1, *(array + i));
             if ((totalLen < 0) || (totalLen >= static_cast<int>(bufferSize - completeSize)))
             {
                 break;
@@ -1039,22 +1031,14 @@ public:
             align = std::max(static_cast<std::uint32_t>(std::to_string(*(array + i)).length()), align);
         }
 
-        const char* spliceFmt = nullptr;
-        if constexpr (std::is_integral_v<T>)
-        {
-            spliceFmt = "%*d ";
-        }
-        else if constexpr (std::is_floating_point_v<T>)
-        {
-            spliceFmt = "%*.5f ";
-        }
-
+        constexpr std::string_view spliceFmt = {
+            std::is_integral_v<T> ? "%*d " : (std::is_floating_point_v<T> ? "%*.5f " : " ")};
         int totalLen = 0;
         std::uint32_t completeSize = 0;
         for (std::uint32_t i = 0; i < length; ++i)
         {
-            totalLen =
-                std::snprintf(buffer + completeSize, bufferSize - completeSize, spliceFmt, align + 1, *(array + i));
+            totalLen = std::snprintf(
+                buffer + completeSize, bufferSize - completeSize, spliceFmt.data(), align + 1, *(array + i));
             if ((totalLen < 0) || (totalLen >= static_cast<int>(bufferSize - completeSize)))
             {
                 break;
