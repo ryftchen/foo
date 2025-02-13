@@ -17,10 +17,10 @@ STDOUT = sys.stdout
 
 
 class Documentation:
-    github_url = "https://github.com/ryftchen/foo.git"
-    artifact_url = "https://api.github.com/repos/ryftchen/foo/actions/artifacts?per_page=5"
-    artifact_file = "foo_artifact"
-    website_dir = "/var/www/foo_doc"
+    repo_url = "https://github.com/ryftchen/foo.git"
+    api_url = "https://api.github.com/repos/ryftchen/foo/actions/artifacts?per_page=5"
+    artifact_name = "foo_artifact"
+    target_dir = "/var/www/foo_doc"
     netrc_file = os.path.expanduser("~/.netrc")
     log_file = "/tmp/foo_pull_artifact.log"
 
@@ -60,8 +60,8 @@ class Documentation:
 
     def pull_artifact(self):
         print(f"\n[ {datetime.now()} ] ################# PULL ARTIFACT #################")
-        if not os.path.exists(self.website_dir):
-            interrupt(f"Please create a {self.website_dir} folder for storing pages.")
+        if not os.path.exists(self.target_dir):
+            interrupt(f"Please create a {self.target_dir} folder for storing pages.")
         if not os.path.exists(self.netrc_file):
             interrupt(f"Please create a {self.netrc_file} file for authentication.")
         self.download_artifact()
@@ -73,7 +73,7 @@ class Documentation:
         print(f"[ {datetime.now()} ] +++++++++++++++ DOWNLOAD ARTIFACT +++++++++++++++")
         local_commit_id, _, _ = execute(f"git -C {self.project_path} rev-parse HEAD")
         remote_commit_id, _, _ = execute(
-            f"git -C {self.project_path} ls-remote {self.github_url} refs/heads/master | cut -f 1"
+            f"git -C {self.project_path} ls-remote {self.repo_url} refs/heads/master | cut -f 1"
         )
         if not remote_commit_id:
             interrupt("Could not get the latest commit id.")
@@ -81,19 +81,19 @@ class Documentation:
             execute(f"git -C {self.project_path} pull origin master")
         elif (
             not self.forced_pull
-            and os.path.exists(f"{self.website_dir}/doxygen")
-            and os.path.exists(f"{self.website_dir}/browser")
+            and os.path.exists(f"{self.target_dir}/doxygen")
+            and os.path.exists(f"{self.target_dir}/browser")
         ):
             interrupt("No commit change.")
 
         try:
-            response = requests.get(self.artifact_url, timeout=60)
+            response = requests.get(self.api_url, timeout=60)
             response.raise_for_status()
 
             download_url = ""
             json_info = json.loads(response.text)
             for index in range(json_info["total_count"]):
-                if json_info["artifacts"][index]["name"] == self.artifact_file:
+                if json_info["artifacts"][index]["name"] == self.artifact_name:
                     download_url = json_info["artifacts"][index]["archive_download_url"]
                     break
 
@@ -109,26 +109,26 @@ class Documentation:
                 }
             response = requests.get(location_url, timeout=60, proxies=proxy)
             response.raise_for_status()
-            with open(f"{self.website_dir}/{self.artifact_file}.zip", "wb") as output_file:
+            with open(f"{self.target_dir}/{self.artifact_name}.zip", "wb") as output_file:
                 output_file.write(response.content)
         except requests.exceptions.HTTPError as error:
-            execute(f"rm -rf {self.website_dir}/{self.artifact_file}.zip")
+            execute(f"rm -rf {self.target_dir}/{self.artifact_name}.zip")
             execute(f"git -C {self.project_path} reset --hard {local_commit_id}")
             interrupt(error)
 
-        validation, _, _ = execute(f"zip -T {self.website_dir}/{self.artifact_file}.zip")
+        validation, _, _ = execute(f"zip -T {self.target_dir}/{self.artifact_name}.zip")
         if "zip error" in validation:
-            execute(f"rm -rf {self.website_dir}/{self.artifact_file}.zip")
+            execute(f"rm -rf {self.target_dir}/{self.artifact_name}.zip")
             execute(f"git -C {self.project_path} reset --hard {local_commit_id}")
-            interrupt(f"The {self.artifact_file}.zip file in the {self.website_dir} folder is corrupted.")
+            interrupt(f"The {self.artifact_name}.zip file in the {self.target_dir} folder is corrupted.")
 
     def update_document(self):
         print(f"[ {datetime.now()} ] ++++++++++++++++ UPDATE DOCUMENT ++++++++++++++++")
-        execute(f"rm -rf {self.website_dir}/doxygen {self.website_dir}/browser")
-        execute(f"unzip {self.website_dir}/{self.artifact_file}.zip -d {self.website_dir}")
-        execute(f"tar -jxvf {self.website_dir}/foo_doxygen_*.tar.bz2 -C {self.website_dir} >/dev/null")
-        execute(f"tar -jxvf {self.website_dir}/foo_browser_*.tar.bz2 -C {self.website_dir} >/dev/null")
-        execute(f"rm -rf {self.website_dir}/*.zip {self.website_dir}/*.tar.bz2")
+        execute(f"rm -rf {self.target_dir}/doxygen {self.target_dir}/browser")
+        execute(f"unzip {self.target_dir}/{self.artifact_name}.zip -d {self.target_dir}")
+        execute(f"tar -jxvf {self.target_dir}/foo_doxygen_*.tar.bz2 -C {self.target_dir} >/dev/null")
+        execute(f"tar -jxvf {self.target_dir}/foo_browser_*.tar.bz2 -C {self.target_dir} >/dev/null")
+        execute(f"rm -rf {self.target_dir}/*.zip {self.target_dir}/*.tar.bz2")
 
 
 def execute(cmd):
