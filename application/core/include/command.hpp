@@ -331,7 +331,7 @@ private:
     static void enableWait4Client();
     //! @brief Awaken inside the client in console mode.
     static void disableWait4Client();
-    //! @brief Latency (ms) for console.
+    //! @brief Console latency in the millisecond range.
     static void interactionLatency();
     //! @brief Validate dependencies version.
     void validateDependenciesVersion() const;
