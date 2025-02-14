@@ -331,14 +331,13 @@ private:
     static void enableWait4Client();
     //! @brief Awaken inside the client in console mode.
     static void disableWait4Client();
+    //! @brief Latency (ms) for console.
+    static void interactionLatency();
     //! @brief Validate dependencies version.
     void validateDependenciesVersion() const;
     //! @brief Get ASCII banner text.
     //! @return ASCII banner text content
     static std::string getIconBanner();
-
-    //! @brief Latency (ms) for console.
-    static constexpr std::uint16_t latency{10};
 };
 
 template <typename T>
