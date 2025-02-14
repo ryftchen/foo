@@ -20,7 +20,7 @@
 namespace application
 {
 //! @brief Status of the signal.
-volatile std::sig_atomic_t signalStatus = 0; // NOLINT(misc-definitions-in-headers)
+static volatile std::sig_atomic_t signalStatus = 0;
 
 //! @brief Get the executable name.
 //! @return executable name
@@ -99,7 +99,7 @@ static void signalHandler(int sig)
 }
 
 //! @brief The constructor function before starting the main function. Switch to the target path.
-[[using gnu: constructor, noinline]] static void initial()
+[[using gnu: constructor, noinline]] static void inInitial()
 {
     std::signal(SIGABRT, signalHandler);
     std::signal(SIGSEGV, signalHandler);
@@ -126,7 +126,7 @@ static void signalHandler(int sig)
 }
 
 //! @brief The destructor function before finishing the main function. Check the signal status.
-[[using gnu: destructor, noinline]] static void final()
+[[using gnu: destructor, noinline]] static void inFinal()
 {
     if (signalStatus)
     {

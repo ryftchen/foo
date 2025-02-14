@@ -724,7 +724,7 @@ void Command::dispatch()
 
         for ([[maybe_unused]] const auto& [categoryName, categoryAttr] : extraChoices
                  | std::views::filter([this](const auto& subCLIPair)
-                                      { return taskDispatcher.extraChecklist[subCLIPair.first].present(); })
+                                      { return taskDispatcher.extraChecklist.at(subCLIPair.first).present(); })
                  | std::views::values | std::views::join)
         {
             const auto& candidates = categoryAttr.choices;
@@ -951,12 +951,12 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
 {
     using console::Console;
     using RetCode = Console::RetCode;
-    static constexpr auto resetter = []<HelperType Helper>() constexpr
+    static constexpr auto helperResetter = []<HelperType Helper>() constexpr
     {
         triggerHelper<Helper>(ExtEvent::reload);
         triggerHelper<Helper>(ExtEvent::startup);
     };
-    const auto sender = [&client](const Console::Args& inputs)
+    const auto asyncSender = [&client](const Console::Args& inputs)
     {
         auto retCode = RetCode::success;
         try
@@ -985,7 +985,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
             auto retCode = RetCode::success;
             try
             {
-                resetter.template operator()<log::Log>();
+                helperResetter.template operator()<log::Log>();
 
                 LOG_INF << "Refreshed the outputs.";
             }
@@ -1009,7 +1009,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
                 client->waitIfAlive();
                 utility::time::millisecondLevelSleep(latency);
                 client.reset();
-                resetter.template operator()<view::View>();
+                helperResetter.template operator()<view::View>();
 
                 client = std::make_shared<T>();
                 launchClient(client);
@@ -1025,7 +1025,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
         });
     for (const auto& [name, attr] : view::info::viewerSupportedOptions())
     {
-        session.registerOption(name, attr.prompt, sender);
+        session.registerOption(name, attr.prompt, asyncSender);
     }
 }
 
