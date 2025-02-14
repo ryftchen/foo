@@ -821,7 +821,7 @@ void Command::executeInConsole() const
 
     udpClient->toSend(utility::common::base64Encode(view::exitSymbol));
     udpClient->waitIfAlive();
-    utility::time::millisecondLevelSleep(latency);
+    interactionLatency();
 }
 
 void Command::showHelpMessage() const
@@ -930,13 +930,13 @@ try
             LOG_WRN << err.what();
         }
         session->setGreeting(greeting);
-        utility::time::millisecondLevelSleep(latency);
+        interactionLatency();
     }
     while (RetCode::quit != retCode);
 
     tcpClient->toSend(utility::common::base64Encode(view::exitSymbol));
     tcpClient->waitIfAlive();
-    utility::time::millisecondLevelSleep(latency);
+    interactionLatency();
 #ifndef NDEBUG
     LOG_DBG << "Exit console mode.";
 #endif // NDEBUG
@@ -972,7 +972,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
         {
             retCode = RetCode::error;
             LOG_WRN << err.what();
-            utility::time::millisecondLevelSleep(latency);
+            interactionLatency();
         }
         return retCode;
     };
@@ -994,7 +994,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
                 retCode = RetCode::error;
                 LOG_WRN << err.what();
             }
-            utility::time::millisecondLevelSleep(latency);
+            interactionLatency();
             return retCode;
         });
     session.registerOption(
@@ -1007,7 +1007,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
             {
                 client->toSend(utility::common::base64Encode(view::exitSymbol));
                 client->waitIfAlive();
-                utility::time::millisecondLevelSleep(latency);
+                interactionLatency();
                 client.reset();
                 helperResetter.template operator()<view::View>();
 
@@ -1020,7 +1020,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
                 retCode = RetCode::error;
                 LOG_WRN << err.what();
             }
-            utility::time::millisecondLevelSleep(latency);
+            interactionLatency();
             return retCode;
         });
     for (const auto& [name, attr] : view::info::viewerSupportedOptions())
@@ -1042,6 +1042,12 @@ void Command::enableWait4Client()
 void Command::disableWait4Client()
 {
     view::View::Access().disableWait();
+}
+
+void Command::interactionLatency()
+{
+    constexpr std::uint16_t latency = 10;
+    utility::time::millisecondLevelSleep(latency);
 }
 
 void Command::validateDependenciesVersion() const
