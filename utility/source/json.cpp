@@ -23,6 +23,7 @@ const char* version() noexcept
 //! @brief Parse the next data in JSON.
 //! @param fmt - formatted string
 //! @param offset - data offset
+//! @return JSON data
 static JSON parseNext(const std::string_view fmt, std::size_t& offset);
 
 //! @brief Escape for JSON.
@@ -84,6 +85,7 @@ static void consumeWhitespace(const std::string_view fmt, std::size_t& offset)
 //! @brief Parse object in JSON.
 //! @param fmt - formatted string
 //! @param offset - data offset
+//! @return JSON object
 static JSON parseObject(const std::string_view fmt, std::size_t& offset)
 {
     JSON object = JSON::make(JSON::Type::object);
@@ -130,6 +132,7 @@ static JSON parseObject(const std::string_view fmt, std::size_t& offset)
 //! @brief Parse array in JSON.
 //! @param fmt - formatted string
 //! @param offset - data offset
+//! @return JSON array
 static JSON parseArray(const std::string_view fmt, std::size_t& offset)
 {
     JSON array = JSON::make(JSON::Type::array);
@@ -169,6 +172,7 @@ static JSON parseArray(const std::string_view fmt, std::size_t& offset)
 //! @brief Parse string in JSON.
 //! @param fmt - formatted string
 //! @param offset - data offset
+//! @return JSON string
 static JSON parseString(const std::string_view fmt, std::size_t& offset)
 {
     std::string val{};
@@ -281,6 +285,7 @@ static std::string extractExponent(const std::string_view fmt, std::size_t& offs
 //! @brief Parse number in JSON.
 //! @param fmt - formatted string
 //! @param offset - data offset
+//! @return JSON number
 static JSON parseNumber(const std::string_view fmt, std::size_t& offset)
 {
     std::string val{};
@@ -338,6 +343,7 @@ static JSON parseNumber(const std::string_view fmt, std::size_t& offset)
 //! @brief Parse boolean in JSON.
 //! @param fmt - formatted string
 //! @param offset - data offset
+//! @return JSON boolean
 static JSON parseBoolean(const std::string_view fmt, std::size_t& offset)
 {
     JSON boolean{};
@@ -364,6 +370,7 @@ static JSON parseBoolean(const std::string_view fmt, std::size_t& offset)
 //! @brief Parse null in JSON.
 //! @param fmt - formatted string
 //! @param offset - data offset
+//! @return JSON null
 static JSON parseNull(const std::string_view fmt, std::size_t& offset)
 {
     constexpr std::string_view nullStr = "null";
@@ -498,23 +505,19 @@ const JSON& JSON::at(std::size_t index) const
 
 int JSON::length() const
 {
-    if (Type::array == type)
-    {
-        return static_cast<int>(std::get<Array>(data.value).size());
-    }
-
-    return -1;
+    return (Type::array == type) ? static_cast<int>(std::get<Array>(data.value).size()) : -1;
 }
 
 int JSON::size() const
 {
-    if (Type::object == type)
+    switch (type)
     {
-        return static_cast<int>(std::get<Object>(data.value).size());
-    }
-    else if (Type::array == type)
-    {
-        return static_cast<int>(std::get<Array>(data.value).size());
+        case Type::object:
+            return static_cast<int>(std::get<Object>(data.value).size());
+        case Type::array:
+            return static_cast<int>(std::get<Array>(data.value).size());
+        default:
+            break;
     }
 
     return -1;
@@ -522,12 +525,7 @@ int JSON::size() const
 
 bool JSON::hasKey(const std::string_view key) const
 {
-    if (Type::object == type)
-    {
-        return std::get<Object>(data.value).cend() != std::get<Object>(data.value).find(key.data());
-    }
-
-    return false;
+    return (Type::object == type) ? std::get<Object>(data.value).contains(key.data()) : false;
 }
 
 JSON::Type JSON::getType() const

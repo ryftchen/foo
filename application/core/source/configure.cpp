@@ -354,7 +354,7 @@ bool loadConfiguration(const std::string_view filename)
 inline namespace
 {
 //! @brief The semaphore that controls the maximum access limit.
-static std::counting_semaphore<maxAccessLimit> configSem(maxAccessLimit);
+std::counting_semaphore<maxAccessLimit> configSem(maxAccessLimit);
 } // namespace
 
 //! @brief Retrieve data repository.

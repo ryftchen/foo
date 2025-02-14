@@ -29,37 +29,37 @@
 #define LOG_DBG application::log::Log::Holder<application::log::Log::OutputLevel::debug>().stream()
 //! @brief Log with debug level (formatted).
 #define LOG_DBG_F(fmt, ...)                                                                                 \
-    if (application::configure::detail::activateHelper()) [[likely]]                                        \
+    if (application::configure::detail::activateHelper())                                                   \
         application::log::Log::getInstance().flush(                                                         \
             application::log::Log::OutputLevel::debug, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__); \
-    else [[unlikely]]                                                                                       \
+    else                                                                                                    \
         application::log::Log::nativeOutput(fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with info level.
 #define LOG_INF application::log::Log::Holder<application::log::Log::OutputLevel::info>().stream()
 //! @brief Log with info level (formatted).
 #define LOG_INF_F(fmt, ...)                                                                                \
-    if (application::configure::detail::activateHelper()) [[likely]]                                       \
+    if (application::configure::detail::activateHelper())                                                  \
         application::log::Log::getInstance().flush(                                                        \
             application::log::Log::OutputLevel::info, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__); \
-    else [[unlikely]]                                                                                      \
+    else                                                                                                   \
         application::log::Log::nativeOutput(fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with warning level.
 #define LOG_WRN application::log::Log::Holder<application::log::Log::OutputLevel::warning>().stream()
 //! @brief Log with warning level (formatted).
 #define LOG_WRN_F(fmt, ...)                                                                                   \
-    if (application::configure::detail::activateHelper()) [[likely]]                                          \
+    if (application::configure::detail::activateHelper())                                                     \
         application::log::Log::getInstance().flush(                                                           \
             application::log::Log::OutputLevel::warning, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__); \
-    else [[unlikely]]                                                                                         \
+    else                                                                                                      \
         application::log::Log::nativeOutput(fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with error level.
 #define LOG_ERR application::log::Log::Holder<application::log::Log::OutputLevel::error>().stream()
 //! @brief Log with error level (formatted).
 #define LOG_ERR_F(fmt, ...)                                                                                 \
-    if (application::configure::detail::activateHelper()) [[likely]]                                        \
+    if (application::configure::detail::activateHelper())                                                   \
         application::log::Log::getInstance().flush(                                                         \
             application::log::Log::OutputLevel::error, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__); \
-    else [[unlikely]]                                                                                       \
+    else                                                                                                    \
         application::log::Log::nativeOutput(fmt __VA_OPT__(, ) __VA_ARGS__)
 
 //! @brief The application module.
@@ -95,54 +95,54 @@ constexpr std::string_view codeFileRegex = R"(\[[^ ]+\.(c|h|cc|hh|cpp|hpp|tpp|cx
 //! @brief Directory of the source code.
 constexpr std::string_view sourceDirectory = R"(/foo/)";
 //! @brief Debug level prefix with color. Include ANSI escape codes.
-constinit const auto debugLevelPrefixWithColor = utility::common::concatString<
+constexpr auto debugLevelPrefixWithColor = utility::common::concatString<
     utility::common::colorBlue,
     utility::common::colorBold,
     utility::common::colorForBackground,
     debugLevelPrefix,
     utility::common::colorOff>;
 //! @brief Info level prefix with color. Include ANSI escape codes.
-constinit const auto infoLevelPrefixWithColor = utility::common::concatString<
+constexpr auto infoLevelPrefixWithColor = utility::common::concatString<
     utility::common::colorGreen,
     utility::common::colorBold,
     utility::common::colorForBackground,
     infoLevelPrefix,
     utility::common::colorOff>;
 //! @brief Warning level prefix with color. Include ANSI escape codes.
-constinit const auto warningLevelPrefixWithColor = utility::common::concatString<
+constexpr auto warningLevelPrefixWithColor = utility::common::concatString<
     utility::common::colorYellow,
     utility::common::colorBold,
     utility::common::colorForBackground,
     warningLevelPrefix,
     utility::common::colorOff>;
 //! @brief Error level prefix with color. Include ANSI escape codes.
-constinit const auto errorLevelPrefixWithColor = utility::common::concatString<
+constexpr auto errorLevelPrefixWithColor = utility::common::concatString<
     utility::common::colorRed,
     utility::common::colorBold,
     utility::common::colorForBackground,
     errorLevelPrefix,
     utility::common::colorOff>;
 //! @brief Trace level prefix with color. Include ANSI escape codes.
-constinit const auto traceLevelPrefixWithColor = utility::common::concatString<
+constexpr auto traceLevelPrefixWithColor = utility::common::concatString<
     utility::common::colorInverse,
     utility::common::colorBold,
     utility::common::colorForBackground,
     traceLevelPrefix,
     utility::common::colorOff>;
 //! @brief Base color of the date time. Include ANSI escape codes.
-constinit const auto dateTimeBaseColor = utility::common::concatString<
+constexpr auto dateTimeBaseColor = utility::common::concatString<
     utility::common::colorForForeground,
     utility::common::colorBold,
     utility::common::colorDim,
     utility::common::colorForBackground>;
 //! @brief Base color of the code file. Include ANSI escape codes.
-constinit const auto codeFileBaseColor = utility::common::concatString<
+constexpr auto codeFileBaseColor = utility::common::concatString<
     utility::common::colorForForeground,
     utility::common::colorBold,
     utility::common::colorUnderline,
     utility::common::colorForBackground>;
 //! @brief Base color of the history cache. Include ANSI escape codes.
-constinit const auto historyCacheBaseColor = utility::common::
+constexpr auto historyCacheBaseColor = utility::common::
     concatString<utility::common::colorInverse, utility::common::colorItalic, utility::common::colorForBackground>;
 
 //! @brief Logger.
@@ -289,13 +289,13 @@ public:
         //! @brief Flush the output stream.
         inline void flush()
         {
-            if (configure::detail::activateHelper()) [[likely]]
+            if (configure::detail::activateHelper())
             {
                 getInstance().flush(Lv, location.file_name(), location.line(), output.str());
             }
-            else [[unlikely]]
+            else
             {
-                Log::nativeOutput(output.str());
+                nativeOutput(output.str());
             }
         }
     };

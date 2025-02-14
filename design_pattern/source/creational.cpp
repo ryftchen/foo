@@ -237,12 +237,7 @@ void Client::remove()
 
 std::unique_ptr<Prototype> Client::make(const int index)
 {
-    if (index >= nTypes)
-    {
-        return nullptr;
-    }
-
-    return types[index]->clone();
+    return (index >= nTypes) ? nullptr : types[index]->clone();
 }
 
 //! @brief Output stream for the prototype pattern. Need to be cleared manually.
