@@ -158,9 +158,9 @@ private:
     template <typename SubCLI, typename Cat>
     static inline consteval std::string_view getAlias();
     //! @brief Extract all choices in the sub-cli category.
-    //! @tparam Cat - type of sub-cli category
+    //! @tparam T - type of sub-cli category
     //! @return all choices
-    template <typename Cat>
+    template <typename T>
     static std::vector<std::string> extractChoices();
     //! @brief Mapping table of all extra choices. Fill as needed.
     ExtraChoiceMap extraChoices{};

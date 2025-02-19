@@ -496,7 +496,7 @@ std::ostream& operator<<(std::ostream& os, const Log::State state)
 //! @brief Change line string to log style.
 //! @param line - target line to be changed
 //! @return changed line
-const std::string& changeToLogStyle(std::string& line)
+std::string& changeToLogStyle(std::string& line)
 {
     const auto& style = logStyle();
     if (std::regex_search(line, style.debugLevel))
@@ -520,17 +520,18 @@ const std::string& changeToLogStyle(std::string& line)
         line = std::regex_replace(line, style.traceLevel, traceLevelPrefixWithColor.data());
     }
 
-    namespace common = utility::common;
     if (std::regex_search(line, style.dateTime))
     {
         const auto searchIter = std::sregex_iterator(line.begin(), line.end(), style.dateTime);
-        const auto dateTimeWithColor = dateTimeBaseColor.data() + (*searchIter).str() + common::colorOff.data();
+        const auto dateTimeWithColor =
+            dateTimeBaseColor.data() + (*searchIter).str() + utility::common::colorOff.data();
         line = std::regex_replace(line, style.dateTime, dateTimeWithColor);
     }
     if (std::regex_search(line, style.codeFile))
     {
         const auto searchIter = std::sregex_iterator(line.begin(), line.end(), style.codeFile);
-        const auto codeFileWithColor = codeFileBaseColor.data() + (*searchIter).str() + common::colorOff.data();
+        const auto codeFileWithColor =
+            codeFileBaseColor.data() + (*searchIter).str() + utility::common::colorOff.data();
         line = std::regex_replace(line, style.codeFile, codeFileWithColor);
     }
 
