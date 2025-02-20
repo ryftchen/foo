@@ -84,7 +84,6 @@ int main(int argc, char* argv[])
     const ::pid_t ppidBeforeFork = ::getpid(), pid = ::fork();
     if (pid < 0)
     {
-        std::cerr << application::getExecutableName() << ": Failed to create a child process." << std::endl;
         return EXIT_FAILURE;
     }
     else if (0 == pid)
