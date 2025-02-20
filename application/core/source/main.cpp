@@ -90,11 +90,7 @@ int main(int argc, char* argv[])
     else if (0 == pid)
     {
         ::prctl(PR_SET_PDEATHSIG, SIGTERM);
-        if (::getppid() != ppidBeforeFork)
-        {
-            return EXIT_FAILURE;
-        }
-        return application::run(argc, argv);
+        return (::getppid() == ppidBeforeFork) ? application::run(argc, argv) : EXIT_FAILURE;
     }
 
     std::signal(SIGALRM, application::setAlarmInterrupted);
