@@ -36,7 +36,7 @@ utility::json::JSON Configure::parseConfigFile(const std::string_view configFile
         throw std::runtime_error{"Configuration file " + std::string{configFile} + " is missing."};
     }
 
-    using JSON = utility::json::JSON;
+    using utility::json::JSON;
     const auto configRows = utility::io::getFileContents(configFile, true);
     std::ostringstream transfer{};
     std::copy(configRows.cbegin(), configRows.cend(), std::ostream_iterator<std::string>(transfer, ""));
@@ -78,9 +78,9 @@ void Configure::checkObjectInHelperList<log::Log>(const utility::json::JSON& hel
     }
     for (const auto& [key, item] : loggerProperties.objectRange())
     {
-        using utility::common::operator""_bkdrHash, utility::common::EnumCheck;
         switch (utility::common::bkdrHash(key.c_str()))
         {
+            using utility::common::operator""_bkdrHash, utility::common::EnumCheck;
             case operator""_bkdrHash(field::filePath.data(), 0):
                 isVerified &= item.isStringType();
                 break;
@@ -150,9 +150,9 @@ void Configure::checkObjectInHelperList<view::View>(const utility::json::JSON& h
     }
     for (const auto& [key, item] : viewerProperties.objectRange())
     {
-        using utility::common::operator""_bkdrHash;
         switch (utility::common::bkdrHash(key.c_str()))
         {
+            using utility::common::operator""_bkdrHash;
             case operator""_bkdrHash(field::tcpHost.data(), 0):
                 isVerified &= item.isStringType();
                 break;
@@ -219,25 +219,23 @@ std::string getFullConfigPath(const std::string_view filename)
 //! @return default configuration
 utility::json::JSON getDefaultConfiguration()
 {
-    namespace json = utility::json;
-
     using log::Log;
-    auto loggerProperties = json::object();
+    auto loggerProperties = utility::json::object();
     loggerProperties.at(field::filePath) = "log/foo.log";
     loggerProperties.at(field::priorityLevel) = static_cast<int>(Log::OutputLevel::debug);
     loggerProperties.at(field::targetType) = static_cast<int>(Log::OutputType::all);
     loggerProperties.at(field::writeMode) = static_cast<int>(Log::OutputMode::append);
-    auto loggerRequired = json::array();
+    auto loggerRequired = utility::json::array();
     loggerRequired.append(
         field::filePath.data(), field::priorityLevel.data(), field::targetType.data(), field::writeMode.data());
     assert(loggerProperties.size() == loggerRequired.length());
 
-    auto viewerProperties = json::object();
+    auto viewerProperties = utility::json::object();
     viewerProperties.at(field::tcpHost) = "localhost";
     viewerProperties.at(field::tcpPort) = 61501;
     viewerProperties.at(field::udpHost) = "localhost";
     viewerProperties.at(field::udpPort) = 61502;
-    auto viewerRequired = json::array();
+    auto viewerRequired = utility::json::array();
     viewerRequired.append(field::tcpHost.data(), field::tcpPort.data(), field::udpHost.data(), field::udpPort.data());
     assert(viewerProperties.size() == viewerRequired.length());
 
@@ -248,12 +246,12 @@ utility::json::JSON getDefaultConfiguration()
         field::activateHelper.data(), true,
         field::helperList.data(), {
             field::logger.data(), {
-                field::properties.data(), loggerProperties,
-                field::required.data(), loggerRequired
+                field::properties.data(), std::move(loggerProperties),
+                field::required.data(), std::move(loggerRequired)
             },
             field::viewer.data(), {
-                field::properties.data(), viewerProperties,
-                field::required.data(), viewerRequired
+                field::properties.data(), std::move(viewerProperties),
+                field::required.data(), std::move(viewerRequired)
             }
         },
         field::helperTimeout.data(), 1000
@@ -301,9 +299,9 @@ static bool handleConfigurationException(const std::string_view filePath)
     utility::io::waitForUserInput(
         [&](const std::string_view input)
         {
-            using utility::common::operator""_bkdrHash;
             switch (utility::common::bkdrHash(input.data()))
             {
+                using utility::common::operator""_bkdrHash;
                 case "y"_bkdrHash:
                     forcedConfigurationUpdateByDefault(filePath);
                     [[fallthrough]];

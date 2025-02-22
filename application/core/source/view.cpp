@@ -420,7 +420,7 @@ bool View::Access::onParsing(char* buffer, const int length) const
     }
     if (std::strlen(value.configInfo) != 0)
     {
-        using JSON = utility::json::JSON;
+        using utility::json::JSON;
         std::cout << JSON::load(value.configInfo) << std::endl;
     }
 
@@ -843,7 +843,6 @@ void View::segmentedOutput(const std::string_view buffer)
     std::uint64_t counter = 0;
     const auto handling = [&](const std::string_view input)
     {
-        using utility::common::operator""_bkdrHash;
         std::cout << clearEscape << std::flush;
         if (input.empty())
         {
@@ -855,6 +854,7 @@ void View::segmentedOutput(const std::string_view buffer)
             moreRows = false;
             switch (utility::common::bkdrHash(input.data()))
             {
+                using utility::common::operator""_bkdrHash;
                 case "c"_bkdrHash:
                     withoutPaging = true;
                     break;

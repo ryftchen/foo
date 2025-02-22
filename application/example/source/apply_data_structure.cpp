@@ -262,7 +262,6 @@ void runChoices<LinearInstance>(const std::vector<std::string>& candidates)
     assert(bits.size() == candidates.size());
 
     APP_DS_PRINT_TASK_BEGIN_TITLE(category);
-    using linear::LinearStructure;
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto functor = [threads](const std::string_view threadName, void (*targetInstance)())
@@ -277,6 +276,7 @@ void runChoices<LinearInstance>(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
+            using linear::LinearStructure;
             case abbrVal(LinearInstance::linkedList):
                 functor(name(target), &LinearStructure::linkedListInstance);
                 break;
@@ -379,7 +379,6 @@ void runChoices<TreeInstance>(const std::vector<std::string>& candidates)
     assert(bits.size() == candidates.size());
 
     APP_DS_PRINT_TASK_BEGIN_TITLE(category);
-    using tree::TreeStructure;
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto functor = [threads](const std::string_view threadName, void (*targetInstance)())
@@ -394,6 +393,7 @@ void runChoices<TreeInstance>(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
+            using tree::TreeStructure;
             case abbrVal(TreeInstance::binarySearch):
                 functor(name(target), &TreeStructure::bsInstance);
                 break;

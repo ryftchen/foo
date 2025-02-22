@@ -412,7 +412,6 @@ void runChoices<BehavioralInstance>(const std::vector<std::string>& candidates)
     assert(bits.size() == candidates.size());
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(category);
-    using behavioral::BehavioralPattern;
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto functor = [threads](const std::string_view threadName, void (*targetInstance)())
@@ -427,6 +426,7 @@ void runChoices<BehavioralInstance>(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
+            using behavioral::BehavioralPattern;
             case abbrVal(BehavioralInstance::chainOfResponsibility):
                 functor(name(target), &BehavioralPattern::chainOfResponsibilityInstance);
                 break;
@@ -581,7 +581,6 @@ void runChoices<CreationalInstance>(const std::vector<std::string>& candidates)
     assert(bits.size() == candidates.size());
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(category);
-    using creational::CreationalPattern;
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto functor = [threads](const std::string_view threadName, void (*targetInstance)())
@@ -596,6 +595,7 @@ void runChoices<CreationalInstance>(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
+            using creational::CreationalPattern;
             case abbrVal(CreationalInstance::abstractFactory):
                 functor(name(target), &CreationalPattern::abstractFactoryInstance);
                 break;
@@ -760,7 +760,6 @@ void runChoices<StructuralInstance>(const std::vector<std::string>& candidates)
     assert(bits.size() == candidates.size());
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(category);
-    using structural::StructuralPattern;
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto functor = [threads](const std::string_view threadName, void (*targetInstance)())
@@ -775,6 +774,7 @@ void runChoices<StructuralInstance>(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
+            using structural::StructuralPattern;
             case abbrVal(StructuralInstance::adapter):
                 functor(name(target), &StructuralPattern::adapterInstance);
                 break;
