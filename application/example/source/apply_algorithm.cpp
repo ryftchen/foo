@@ -424,7 +424,7 @@ void runChoices<MatchMethod>(const std::vector<std::string>& candidates)
     assert(bits.size() == candidates.size());
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
-    using match::MatchSolution, match::InputBuilder, match::input::patternString;
+    using match::InputBuilder, match::input::patternString;
     static_assert(InputBuilder::maxDigit > patternString.length());
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
@@ -452,6 +452,7 @@ void runChoices<MatchMethod>(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
+            using match::MatchSolution;
             case abbrVal(MatchMethod::rabinKarp):
                 functor(name(target), &MatchSolution::rkMethod);
                 break;
@@ -546,7 +547,7 @@ void runChoices<NotationMethod>(const std::vector<std::string>& candidates)
     assert(bits.size() == candidates.size());
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
-    using notation::NotationSolution, notation::InputBuilder, notation::input::infixString;
+    using notation::InputBuilder, notation::input::infixString;
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(infixString);
@@ -562,6 +563,7 @@ void runChoices<NotationMethod>(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
+            using notation::NotationSolution;
             case abbrVal(NotationMethod::prefix):
                 functor(name(target), &NotationSolution::prefixMethod);
                 break;
@@ -716,12 +718,12 @@ void runChoices<OptimalMethod>(const std::vector<std::string>& candidates)
         auto indices =
             std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
 
-        using optimal::OptimalSolution;
         for (const auto index : indices)
         {
             const auto& target = candidates.at(index);
             switch (utility::common::bkdrHash(target.c_str()))
             {
+                using optimal::OptimalSolution;
                 case abbrVal(OptimalMethod::gradient):
                     functor(name(target), &OptimalSolution::gradientDescentMethod);
                     break;
@@ -872,8 +874,7 @@ void runChoices<SearchMethod>(const std::vector<std::string>& candidates)
     assert(bits.size() == candidates.size());
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
-    using search::SearchSolution, search::InputBuilder, search::input::arrayLength, search::input::arrayRangeMin,
-        search::input::arrayRangeMax;
+    using search::InputBuilder, search::input::arrayLength, search::input::arrayRangeMin, search::input::arrayRangeMax;
     static_assert((arrayRangeMin < arrayRangeMax) && (arrayLength > 0));
 
     auto& pooling = action::resourcePool();
@@ -895,6 +896,7 @@ void runChoices<SearchMethod>(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
+            using search::SearchSolution;
             case abbrVal(SearchMethod::binary):
                 functor(name(target), &SearchSolution::binaryMethod);
                 break;
@@ -1132,8 +1134,7 @@ void runChoices<SortMethod>(const std::vector<std::string>& candidates)
     assert(bits.size() == candidates.size());
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
-    using sort::SortSolution, sort::InputBuilder, sort::input::arrayLength, sort::input::arrayRangeMin,
-        sort::input::arrayRangeMax;
+    using sort::InputBuilder, sort::input::arrayLength, sort::input::arrayRangeMin, sort::input::arrayRangeMax;
     static_assert((arrayRangeMin < arrayRangeMax) && (arrayLength > 0));
 
     auto& pooling = action::resourcePool();
@@ -1152,6 +1153,7 @@ void runChoices<SortMethod>(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
+            using sort::SortSolution;
             case abbrVal(SortMethod::bubble):
                 functor(name(target), &SortSolution::bubbleMethod);
                 break;

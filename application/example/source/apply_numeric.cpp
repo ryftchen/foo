@@ -328,8 +328,7 @@ void runChoices<ArithmeticMethod>(const std::vector<std::string>& candidates)
     assert(bits.size() == candidates.size());
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
-    using arithmetic::ArithmeticSolution, arithmetic::InputBuilder, arithmetic::input::integerA,
-        arithmetic::input::integerB;
+    using arithmetic::InputBuilder, arithmetic::input::integerA, arithmetic::input::integerB;
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
@@ -346,6 +345,7 @@ void runChoices<ArithmeticMethod>(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
+            using arithmetic::ArithmeticSolution;
             case abbrVal(ArithmeticMethod::addition):
                 functor(name(target), &ArithmeticSolution::additionMethod);
                 break;
@@ -449,7 +449,7 @@ void runChoices<DivisorMethod>(const std::vector<std::string>& candidates)
     assert(bits.size() == candidates.size());
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
-    using divisor::DivisorSolution, divisor::InputBuilder, divisor::input::integerA, divisor::input::integerB;
+    using divisor::InputBuilder, divisor::input::integerA, divisor::input::integerB;
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
@@ -465,6 +465,7 @@ void runChoices<DivisorMethod>(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
+            using divisor::DivisorSolution;
             case abbrVal(DivisorMethod::euclidean):
                 functor(name(target), &DivisorSolution::euclideanMethod);
                 break;
@@ -621,12 +622,12 @@ void runChoices<IntegralMethod>(const std::vector<std::string>& candidates)
         auto indices =
             std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
 
-        using integral::IntegralSolution;
         for (const auto index : indices)
         {
             const auto& target = candidates.at(index);
             switch (utility::common::bkdrHash(target.c_str()))
             {
+                using integral::IntegralSolution;
                 case abbrVal(IntegralMethod::trapezoidal):
                     functor(name(target), &IntegralSolution::trapezoidalMethod);
                     break;
@@ -751,7 +752,7 @@ void runChoices<PrimeMethod>(const std::vector<std::string>& candidates)
     assert(bits.size() == candidates.size());
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
-    using prime::PrimeSolution, prime::InputBuilder, prime::input::maxPositiveInteger;
+    using prime::InputBuilder, prime::input::maxPositiveInteger;
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(maxPositiveInteger);
@@ -767,6 +768,7 @@ void runChoices<PrimeMethod>(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
+            using prime::PrimeSolution;
             case abbrVal(PrimeMethod::eratosthenes):
                 functor(name(target), &PrimeSolution::eratosthenesMethod);
                 break;

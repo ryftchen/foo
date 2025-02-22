@@ -949,15 +949,14 @@ catch (const std::exception& err)
 template <typename T>
 void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& client)
 {
-    using console::Console;
-    using RetCode = Console::RetCode;
     static constexpr auto helperResetter = []<HelperType Helper>() constexpr
     {
         triggerHelper<Helper>(ExtEvent::reload);
         triggerHelper<Helper>(ExtEvent::startup);
     };
-    const auto asyncSender = [&client](const Console::Args& inputs)
+    const auto asyncSender = [&client](const console::Console::Args& inputs)
     {
+        using RetCode = console::Console::RetCode;
         auto retCode = RetCode::success;
         try
         {
@@ -980,8 +979,9 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
     session.registerOption(
         "refresh",
         "refresh the outputs",
-        [](const Console::Args& /*inputs*/)
+        [](const console::Console::Args& /*inputs*/)
         {
+            using RetCode = console::Console::RetCode;
             auto retCode = RetCode::success;
             try
             {
@@ -1000,8 +1000,9 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
     session.registerOption(
         "reconnect",
         "reconnect to the servers",
-        [&client](const Console::Args& /*inputs*/)
+        [&client](const console::Console::Args& /*inputs*/)
         {
+            using RetCode = console::Console::RetCode;
             auto retCode = RetCode::success;
             try
             {
