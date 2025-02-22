@@ -88,7 +88,7 @@ static void consumeWhitespace(const std::string_view fmt, std::size_t& offset)
 //! @return JSON object
 static JSON parseObject(const std::string_view fmt, std::size_t& offset)
 {
-    JSON object = JSON::make(JSON::Type::object);
+    auto object = JSON::make(JSON::Type::object);
     ++offset;
     consumeWhitespace(fmt, offset);
     if ('}' == fmt.at(offset))
@@ -99,14 +99,14 @@ static JSON parseObject(const std::string_view fmt, std::size_t& offset)
 
     for (;;)
     {
-        const JSON key = parseNext(fmt, offset);
+        const auto key = parseNext(fmt, offset);
         consumeWhitespace(fmt, offset);
         if (':' != fmt.at(offset))
         {
             throw std::runtime_error{"JSON object: Expected ':', found '" + std::string{fmt.at(offset)} + "'."};
         }
         consumeWhitespace(fmt, ++offset);
-        const JSON val = parseNext(fmt, offset);
+        const auto val = parseNext(fmt, offset);
         object[key.toString()] = val;
 
         consumeWhitespace(fmt, offset);
@@ -135,7 +135,7 @@ static JSON parseObject(const std::string_view fmt, std::size_t& offset)
 //! @return JSON array
 static JSON parseArray(const std::string_view fmt, std::size_t& offset)
 {
-    JSON array = JSON::make(JSON::Type::array);
+    auto array = JSON::make(JSON::Type::array);
     ++offset;
     consumeWhitespace(fmt, offset);
     if (']' == fmt.at(offset))
@@ -144,12 +144,10 @@ static JSON parseArray(const std::string_view fmt, std::size_t& offset)
         return array;
     }
 
-    std::size_t index = 0;
-    for (;;)
+    for (std::size_t index = 0;;)
     {
         array[index++] = parseNext(fmt, offset);
         consumeWhitespace(fmt, offset);
-
         if (',' == fmt.at(offset))
         {
             ++offset;
@@ -322,9 +320,8 @@ static JSON parseNumber(const std::string_view fmt, std::size_t& offset)
     }
     --offset;
 
-    constexpr std::uint8_t base = 10;
     JSON number{};
-    if (isFloating)
+    if (constexpr std::uint8_t base = 10; isFloating)
     {
         number = std::stod(val) * std::pow(base, exp);
     }
@@ -346,8 +343,8 @@ static JSON parseNumber(const std::string_view fmt, std::size_t& offset)
 //! @return JSON boolean
 static JSON parseBoolean(const std::string_view fmt, std::size_t& offset)
 {
-    JSON boolean{};
     constexpr std::string_view trueStr = "true", falseStr = "false";
+    JSON boolean{};
     if (fmt.substr(offset, trueStr.length()) == trueStr)
     {
         boolean = true;
@@ -456,7 +453,7 @@ JSON JSON::make(const JSON::Type type)
 JSON JSON::load(const std::string_view fmt)
 {
     std::size_t offset = 0;
-    JSON object = parseNext(fmt, offset);
+    auto object = parseNext(fmt, offset);
     if ((offset + 1) <= fmt.length())
     {
         throw std::runtime_error{"JSON syntax error, expected 'EOF' (" + std::string{fmt} + ")."};

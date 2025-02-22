@@ -420,7 +420,8 @@ bool View::Access::onParsing(char* buffer, const int length) const
     }
     if (std::strlen(value.configInfo) != 0)
     {
-        std::cout << utility::json::JSON::load(value.configInfo) << std::endl;
+        using JSON = utility::json::JSON;
+        std::cout << JSON::load(value.configInfo) << std::endl;
     }
 
     return value.stopTag;
