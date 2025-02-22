@@ -15,7 +15,7 @@ valgrind cloc pre-commit doxygen doxygen-awesome-css graphviz docker.io docker-c
 && sudo npm install --no-save --global --no-package-lock cspell@7.3.9 \
 && sudo npm cache clean --force \
 && cd /root \
-&& curl -L https://github.com/github/codeql-action/releases/download/codeql-bundle-v2.20.4/codeql-bundle-linux64.tar.gz | tee codeql-bundle-linux64.tar.gz >/dev/null \
+&& curl -L https://github.com/github/codeql-action/releases/download/codeql-bundle-v2.20.5/codeql-bundle-linux64.tar.gz | tee codeql-bundle-linux64.tar.gz >/dev/null \
 && sudo tar -zxvf codeql-bundle-linux64.tar.gz -C /usr/local/share >/dev/null \
 && sudo rm -rf /usr/local/share/codeql/{csharp,csv,go,html,java,javascript,properties,ruby,swift,xml,yaml} \
 && sudo rm -rf /usr/local/share/codeql/qlpacks/codeql/{csharp-*,go-*,java-*,javascript-*,ruby-*,swift-*} \
