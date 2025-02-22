@@ -392,7 +392,7 @@ class Task:
                 Output.color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
             )
         else:
-            stdout = stdout.replace("\t", "    ")
+            stdout = stdout.expandtabs()
             print(stdout)
             self.passed_steps += 1
             if any(sub in stdout for sub in self.suspicious_output):
@@ -567,7 +567,7 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
             )
 
         if "errors" in stdout:
-            stdout = stdout.replace("\t", "    ")
+            stdout = stdout.expandtabs()
             print(f"\n[CHECK MEMORY]\n{stdout}")
             case_path = f"{self.report_path}/dca/chk_mem/memory/case_{str(self.complete_steps + 1)}"
             if inst_num == 1:
