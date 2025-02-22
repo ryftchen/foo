@@ -28,12 +28,11 @@ try
     {
         return EXIT_FAILURE;
     }
-
-    using command::Command;
-    std::future<bool> running = std::async(
+    auto running = std::async(
         std::launch::async,
         [=]()
         {
+            using command::Command;
             ::pthread_setname_np(::pthread_self(), Command::name.c_str());
             return Command::getInstance().execute(argc, argv);
         });
