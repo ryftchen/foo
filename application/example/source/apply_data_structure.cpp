@@ -114,7 +114,7 @@ consteval std::size_t abbrVal(const T instance)
                 static_assert(1 == field.attrs.size);
                 const auto attr = field.attrs.find(REFLECTION_STR("choice"));
                 static_assert(attr.hasValue);
-                value = utility::common::operator""_bkdrHash(attr.value, 0);
+                value = utility::common::operator""_bkdrHash(attr.value);
             }
         });
 

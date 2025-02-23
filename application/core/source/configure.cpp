@@ -81,10 +81,10 @@ void Configure::checkObjectInHelperList<log::Log>(const utility::json::JSON& hel
         switch (utility::common::bkdrHash(key.c_str()))
         {
             using utility::common::operator""_bkdrHash, utility::common::EnumCheck;
-            case operator""_bkdrHash(field::filePath.data(), 0):
+            case operator""_bkdrHash(field::filePath.data()):
                 isVerified &= item.isStringType();
                 break;
-            case operator""_bkdrHash(field::priorityLevel.data(), 0):
+            case operator""_bkdrHash(field::priorityLevel.data()):
                 using OutputLevel = log::Log::OutputLevel;
                 isVerified &= item.isIntegralType()
                     && EnumCheck<OutputLevel,
@@ -93,13 +93,13 @@ void Configure::checkObjectInHelperList<log::Log>(const utility::json::JSON& hel
                                  OutputLevel::warning,
                                  OutputLevel::error>::isValue(item.toIntegral());
                 break;
-            case operator""_bkdrHash(field::targetType.data(), 0):
+            case operator""_bkdrHash(field::targetType.data()):
                 using OutputType = log::Log::OutputType;
                 isVerified &= item.isIntegralType()
                     && EnumCheck<OutputType, OutputType::file, OutputType::terminal, OutputType::all>::isValue(
                                   item.toIntegral());
                 break;
-            case operator""_bkdrHash(field::writeMode.data(), 0):
+            case operator""_bkdrHash(field::writeMode.data()):
                 using OutputMode = log::Log::OutputMode;
                 isVerified &= item.isIntegralType()
                     && EnumCheck<OutputMode, OutputMode::append, OutputMode::overwrite>::isValue(item.toIntegral());
@@ -153,17 +153,17 @@ void Configure::checkObjectInHelperList<view::View>(const utility::json::JSON& h
         switch (utility::common::bkdrHash(key.c_str()))
         {
             using utility::common::operator""_bkdrHash;
-            case operator""_bkdrHash(field::tcpHost.data(), 0):
+            case operator""_bkdrHash(field::tcpHost.data()):
                 isVerified &= item.isStringType();
                 break;
-            case operator""_bkdrHash(field::tcpPort.data(), 0):
+            case operator""_bkdrHash(field::tcpPort.data()):
                 isVerified &= item.isIntegralType()
                     && ((item.toIntegral() >= view::minPortNumber) && (item.toIntegral() <= view::maxPortNumber));
                 break;
-            case operator""_bkdrHash(field::udpHost.data(), 0):
+            case operator""_bkdrHash(field::udpHost.data()):
                 isVerified &= item.isStringType();
                 break;
-            case operator""_bkdrHash(field::udpPort.data(), 0):
+            case operator""_bkdrHash(field::udpPort.data()):
                 isVerified &= item.isIntegralType()
                     && ((item.toIntegral() >= view::minPortNumber) && (item.toIntegral() <= view::maxPortNumber));
                 break;

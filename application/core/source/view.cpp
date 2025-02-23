@@ -572,8 +572,9 @@ int View::buildTLVPacket4Execute(const std::vector<std::string>& args, char* buf
     }
 
     int len = 0;
-    const int shmId = fillSharedMemory(utility::io::executeCommand("/bin/bash -c " + cmd, 5000));
-    if (tlv::encodeTLV(buf, len, tlv::TLVValue{.bashShmId = shmId}) < 0)
+    constexpr std::uint16_t execTimeout = 5000;
+    if (const int shmId = fillSharedMemory(utility::io::executeCommand("/bin/bash -c " + cmd, execTimeout));
+        tlv::encodeTLV(buf, len, tlv::TLVValue{.bashShmId = shmId}) < 0)
     {
         throw std::runtime_error{"Failed to build packet for the execute option."};
     }
@@ -590,8 +591,8 @@ int View::buildTLVPacket4Journal(const std::vector<std::string>& args, char* buf
     }
 
     int len = 0;
-    const int shmId = fillSharedMemory(getLogContents());
-    if (tlv::encodeTLV(buf, len, tlv::TLVValue{.logShmId = shmId}) < 0)
+    if (const int shmId = fillSharedMemory(getLogContents());
+        tlv::encodeTLV(buf, len, tlv::TLVValue{.logShmId = shmId}) < 0)
     {
         throw std::runtime_error{"Failed to build packet for the journal option."};
     }
@@ -616,8 +617,8 @@ int View::buildTLVPacket4Monitor(const std::vector<std::string>& args, char* buf
     }
 
     int len = 0;
-    const int shmId = fillSharedMemory(getStatusReports(!args.empty() ? std::stoul(args.front()) : 1));
-    if (tlv::encodeTLV(buf, len, tlv::TLVValue{.statusShmId = shmId}) < 0)
+    if (const int shmId = fillSharedMemory(getStatusReports(!args.empty() ? std::stoul(args.front()) : 1));
+        tlv::encodeTLV(buf, len, tlv::TLVValue{.statusShmId = shmId}) < 0)
     {
         throw std::runtime_error{"Failed to build packet for the monitor option."};
     }
@@ -649,17 +650,17 @@ int View::buildTLVPacket4Profile(const std::vector<std::string>& args, char* buf
 // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
 void View::encryptMessage(char* buffer, const int length)
 {
-    constexpr std::array<unsigned char, 16>
-        key = {0x37, 0x47, 0x10, 0x33, 0x6F, 0x18, 0xC8, 0x9A, 0x4B, 0xC1, 0x2B, 0x97, 0x92, 0x19, 0x25, 0x6D},
-        iv = {0x9F, 0x7B, 0x0E, 0x68, 0x2D, 0x2F, 0x4E, 0x7F, 0x1A, 0xFA, 0x61, 0xD3, 0xC6, 0x18, 0xF4, 0xC1};
     ::EVP_CIPHER_CTX* const ctx = ::EVP_CIPHER_CTX_new();
     do
     {
-        int outLen = 0, tempLen = 0;
+        constexpr std::array<unsigned char, 16>
+            key = {0x37, 0x47, 0x10, 0x33, 0x6F, 0x18, 0xC8, 0x9A, 0x4B, 0xC1, 0x2B, 0x97, 0x92, 0x19, 0x25, 0x6D},
+            iv = {0x9F, 0x7B, 0x0E, 0x68, 0x2D, 0x2F, 0x4E, 0x7F, 0x1A, 0xFA, 0x61, 0xD3, 0xC6, 0x18, 0xF4, 0xC1};
         if (!::EVP_EncryptInit_ex(ctx, ::EVP_aes_128_cfb128(), nullptr, key.data(), iv.data()))
         {
             break;
         }
+        int outLen = 0;
         if (!::EVP_EncryptUpdate(
                 ctx,
                 reinterpret_cast<unsigned char*>(buffer),
@@ -669,6 +670,7 @@ void View::encryptMessage(char* buffer, const int length)
         {
             break;
         }
+        int tempLen = 0;
         if (!::EVP_EncryptFinal_ex(ctx, reinterpret_cast<unsigned char*>(buffer) + outLen, &tempLen))
         {
             break;
@@ -680,17 +682,17 @@ void View::encryptMessage(char* buffer, const int length)
 
 void View::decryptMessage(char* buffer, const int length)
 {
-    constexpr std::array<unsigned char, 16>
-        key = {0x37, 0x47, 0x10, 0x33, 0x6F, 0x18, 0xC8, 0x9A, 0x4B, 0xC1, 0x2B, 0x97, 0x92, 0x19, 0x25, 0x6D},
-        iv = {0x9F, 0x7B, 0x0E, 0x68, 0x2D, 0x2F, 0x4E, 0x7F, 0x1A, 0xFA, 0x61, 0xD3, 0xC6, 0x18, 0xF4, 0xC1};
     ::EVP_CIPHER_CTX* const ctx = ::EVP_CIPHER_CTX_new();
     do
     {
-        int outLen = 0, tempLen = 0;
+        constexpr std::array<unsigned char, 16>
+            key = {0x37, 0x47, 0x10, 0x33, 0x6F, 0x18, 0xC8, 0x9A, 0x4B, 0xC1, 0x2B, 0x97, 0x92, 0x19, 0x25, 0x6D},
+            iv = {0x9F, 0x7B, 0x0E, 0x68, 0x2D, 0x2F, 0x4E, 0x7F, 0x1A, 0xFA, 0x61, 0xD3, 0xC6, 0x18, 0xF4, 0xC1};
         if (!::EVP_DecryptInit_ex(ctx, ::EVP_aes_128_cfb128(), nullptr, key.data(), iv.data()))
         {
             break;
         }
+        int outLen = 0;
         if (!::EVP_DecryptUpdate(
                 ctx,
                 reinterpret_cast<unsigned char*>(buffer),
@@ -700,6 +702,7 @@ void View::decryptMessage(char* buffer, const int length)
         {
             break;
         }
+        int tempLen = 0;
         if (!::EVP_DecryptFinal_ex(ctx, reinterpret_cast<unsigned char*>(buffer) + outLen, &tempLen))
         {
             break;
@@ -834,13 +837,13 @@ void View::segmentedOutput(const std::string_view buffer)
     constexpr std::string_view hint = "--- Type <CR> for more, c to continue, n to show next page, q to quit ---: ",
                                clearEscape = "\x1b[1A\x1b[2K\r";
     std::istringstream transfer(buffer.data());
-    const std::uint64_t lineNum =
+    const std::size_t lineNum =
         std::count(std::istreambuf_iterator<char>(transfer), std::istreambuf_iterator<char>{}, '\n');
     transfer.seekg(std::ios::beg);
 
     bool moreRows = false, forcedCancel = false, withoutPaging = (lineNum <= terminalRows);
     std::string line{};
-    std::uint64_t counter = 0;
+    std::size_t counter = 0;
     const auto handling = [&](const std::string_view input)
     {
         std::cout << clearEscape << std::flush;
@@ -892,7 +895,7 @@ void View::segmentedOutput(const std::string_view buffer)
 std::string View::getLogContents()
 {
     utility::common::ReadWriteGuard guard(log::info::loggerFileLock(), LockMode::read);
-    constexpr std::uint64_t maxRows = 24 * 100;
+    constexpr std::uint16_t maxRows = 24 * 100;
     auto contents = utility::io::getFileContents(log::info::loggerFilePath(), false, true, maxRows);
     std::for_each(contents.begin(), contents.end(), [](auto& line) { return log::changeToLogStyle(line); });
     std::ostringstream transfer{};
@@ -917,15 +920,15 @@ std::string View::getStatusReports(const std::uint16_t frame)
     {
         const int tid = std::stoi(queryResult.substr(prev, pos - prev + 1));
         char cmd[totalLen] = {'\0'};
-        const int usedLen = std::snprintf(
-            cmd,
-            totalLen,
-            "if [ -f /proc/%d/task/%d/status ] ; then head -n 10 /proc/%d/task/%d/status ",
-            pid,
-            tid,
-            pid,
-            tid);
-        if (showStack)
+        if (const int usedLen = std::snprintf(
+                cmd,
+                totalLen,
+                "if [ -f /proc/%d/task/%d/status ] ; then head -n 10 /proc/%d/task/%d/status ",
+                pid,
+                tid,
+                pid,
+                tid);
+            showStack)
         {
             if (currTid != tid)
             {
