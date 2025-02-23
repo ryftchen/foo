@@ -331,7 +331,7 @@ std::ostream& FileWriter::stream()
 //! @param command - target command line to be executed
 //! @param timeout - timeout period (ms)
 //! @return command line output
-std::string executeCommand(const std::string_view command, const std::uint32_t timeout)
+std::string executeCommand(const std::string_view command, const std::size_t timeout)
 {
     std::FILE* const pipe = ::popen(command.data(), "r");
     if (nullptr == pipe)
@@ -341,14 +341,13 @@ std::string executeCommand(const std::string_view command, const std::uint32_t t
 
     std::string output{};
     std::vector<char> buffer(4096);
-    const auto startTime = std::chrono::steady_clock::now();
-    for (;;)
+    for (const auto startTime = std::chrono::steady_clock::now();;)
     {
         if (timeout > 0)
         {
             const auto elapsedTime =
                 std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - startTime);
-            if (elapsedTime.count() > timeout)
+            if (static_cast<std::size_t>(elapsedTime.count()) > timeout)
             {
                 ::pclose(pipe);
                 throw std::runtime_error{"Execute command timeout."};
@@ -441,7 +440,7 @@ void waitForUserInput(const std::function<bool(const std::string_view)>& operati
 //! @param totalRows - number of rows
 //! @return file contents
 std::list<std::string> getFileContents(
-    const std::string_view filename, const bool toLock, const bool toReverse, const std::uint64_t totalRows)
+    const std::string_view filename, const bool toLock, const bool toReverse, const std::size_t totalRows)
 {
     FileReader fileReader(filename);
     fileReader.open();
@@ -463,12 +462,12 @@ std::list<std::string> getFileContents(
     }
     else
     {
-        const std::uint64_t numOfLines = std::count(
-                                std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>{}, '\n'),
-                            startLine = (numOfLines > totalRows) ? (numOfLines - totalRows + 1) : 1;
+        const std::size_t numOfLines =
+                              std::count(std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>{}, '\n'),
+                          startLine = (numOfLines > totalRows) ? (numOfLines - totalRows + 1) : 1;
         input.clear();
         input.seekg(0, std::ios::beg);
-        for (std::uint64_t i = 0; i < (startLine - 1); ++i)
+        for (std::size_t i = 0; i < (startLine - 1); ++i)
         {
             input.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }

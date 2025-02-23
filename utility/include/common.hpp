@@ -67,7 +67,14 @@ inline constexpr std::size_t bkdrHashInCompiling(const char* const str, const st
 //! @brief The operator ("") overloading with BKDR hash function.
 //! @param str - input data
 //! @return hash value
-inline constexpr std::size_t operator""_bkdrHash(const char* const str, const std::size_t /*len*/) noexcept
+inline constexpr std::size_t operator""_bkdrHash(const char* str, const std::size_t /*len*/) noexcept
+{
+    return bkdrHashInCompiling(str);
+}
+//! @brief The operator ("") overloading with BKDR hash function.
+//! @param str - input data
+//! @return hash value
+inline constexpr std::size_t operator""_bkdrHash(const char* str) noexcept
 {
     return bkdrHashInCompiling(str);
 }

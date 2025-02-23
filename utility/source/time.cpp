@@ -45,16 +45,15 @@ double Time::calculateInterval() const
 //! @param termination - termination condition
 //! @param timeout - timeout period (ms)
 //! @return the value is 0 if the termination condition is met, otherwise -1 on timeout
-int blockingTimer(const std::function<bool()>& termination, const std::uint32_t timeout)
+int blockingTimer(const std::function<bool()>& termination, const std::size_t timeout)
 {
-    const auto startTime = std::chrono::steady_clock::now();
-    for (;;)
+    for (const auto startTime = std::chrono::steady_clock::now();;)
     {
         if (timeout > 0)
         {
             const auto elapsedTime =
                 std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - startTime);
-            if (elapsedTime.count() > timeout)
+            if (static_cast<std::size_t>(elapsedTime.count()) > timeout)
             {
                 return -1;
             }

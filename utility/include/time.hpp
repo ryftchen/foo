@@ -40,12 +40,12 @@ private:
 
 //! @brief Perform millisecond-level sleep.
 //! @param duration - sleep duration
-inline void millisecondLevelSleep(const std::uint32_t duration)
+inline void millisecondLevelSleep(const std::size_t duration)
 {
     std::this_thread::sleep_for(std::chrono::operator""ms(duration));
 }
 
-extern int blockingTimer(const std::function<bool()>& termination, const std::uint32_t timeout = 0);
+extern int blockingTimer(const std::function<bool()>& termination, const std::size_t timeout = 0);
 extern std::string getCurrentSystemTime();
 } // namespace time
 } // namespace utility
