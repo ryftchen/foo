@@ -52,18 +52,19 @@ ApplyDesignPattern& manager()
 
 //! @brief Get the task name curried.
 //! @return task name curried
-static const auto& getTaskNameCurried()
+static const auto& taskNameCurried()
 {
     static const auto curried = utility::currying::curry(action::presetTaskName, TypeInfo<ApplyDesignPattern>::name);
     return curried;
 }
 
 //! @brief Convert category enumeration to string.
-//! @param cat - the specific value of Category enum
+//! @tparam Cat - the specific value of Category enum
 //! @return category name
-consteval std::string_view toString(const Category cat)
+template <Category Cat>
+consteval std::string_view toString()
 {
-    switch (cat)
+    switch (Cat)
     {
         case Category::behavioral:
             return TypeInfo<BehavioralInstance>::name;
@@ -84,7 +85,7 @@ consteval std::string_view toString(const Category cat)
 template <Category Cat>
 constexpr auto& getCategoryOpts()
 {
-    return std::invoke(TypeInfo<ApplyDesignPattern>::fields.find(REFLECTION_STR(toString(Cat))).value, manager());
+    return std::invoke(TypeInfo<ApplyDesignPattern>::fields.find(REFLECTION_STR(toString<Cat>())).value, manager());
 }
 
 //! @brief Get the alias of the category in design pattern choices.
@@ -94,7 +95,7 @@ template <Category Cat>
 consteval std::string_view getCategoryAlias()
 {
     constexpr auto attr =
-        TypeInfo<ApplyDesignPattern>::fields.find(REFLECTION_STR(toString(Cat))).attrs.find(REFLECTION_STR("alias"));
+        TypeInfo<ApplyDesignPattern>::fields.find(REFLECTION_STR(toString<Cat>())).attrs.find(REFLECTION_STR("alias"));
     static_assert(attr.hasValue);
     return attr.value;
 }
@@ -218,10 +219,10 @@ constexpr std::string_view toString(const StructuralInstance instance)
 
 namespace behavioral
 {
-//! @brief Display the contents of the behavioral result.
+//! @brief Show the contents of the behavioral result.
 //! @param instance - the specific value of BehavioralInstance enum
 //! @param result - behavioral result
-static void displayResult(const BehavioralInstance instance, const std::string_view result)
+static void showResult(const BehavioralInstance instance, const std::string_view result)
 {
     COMMON_PRINT("\n==> %-21s Instance <==\n%s", getTitle(instance).c_str(), result.data());
 }
@@ -230,7 +231,7 @@ void BehavioralPattern::chainOfResponsibilityInstance()
 try
 {
     const auto output = Behavioral().chainOfResponsibility().str();
-    displayResult(BehavioralInstance::chainOfResponsibility, output);
+    showResult(BehavioralInstance::chainOfResponsibility, output);
 }
 catch (const std::exception& err)
 {
@@ -241,7 +242,7 @@ void BehavioralPattern::commandInstance()
 try
 {
     const auto output = Behavioral().command().str();
-    displayResult(BehavioralInstance::command, output);
+    showResult(BehavioralInstance::command, output);
 }
 catch (const std::exception& err)
 {
@@ -252,7 +253,7 @@ void BehavioralPattern::interpreterInstance()
 try
 {
     const auto output = Behavioral().interpreter().str();
-    displayResult(BehavioralInstance::interpreter, output);
+    showResult(BehavioralInstance::interpreter, output);
 }
 catch (const std::exception& err)
 {
@@ -263,7 +264,7 @@ void BehavioralPattern::iteratorInstance()
 try
 {
     const auto output = Behavioral().iterator().str();
-    displayResult(BehavioralInstance::iterator, output);
+    showResult(BehavioralInstance::iterator, output);
 }
 catch (const std::exception& err)
 {
@@ -274,7 +275,7 @@ void BehavioralPattern::mediatorInstance()
 try
 {
     const auto output = Behavioral().mediator().str();
-    displayResult(BehavioralInstance::mediator, output);
+    showResult(BehavioralInstance::mediator, output);
 }
 catch (const std::exception& err)
 {
@@ -285,7 +286,7 @@ void BehavioralPattern::mementoInstance()
 try
 {
     const auto output = Behavioral().memento().str();
-    displayResult(BehavioralInstance::memento, output);
+    showResult(BehavioralInstance::memento, output);
 }
 catch (const std::exception& err)
 {
@@ -296,7 +297,7 @@ void BehavioralPattern::observerInstance()
 try
 {
     const auto output = Behavioral().observer().str();
-    displayResult(BehavioralInstance::observer, output);
+    showResult(BehavioralInstance::observer, output);
 }
 catch (const std::exception& err)
 {
@@ -307,7 +308,7 @@ void BehavioralPattern::stateInstance()
 try
 {
     const auto output = Behavioral().state().str();
-    displayResult(BehavioralInstance::state, output);
+    showResult(BehavioralInstance::state, output);
 }
 catch (const std::exception& err)
 {
@@ -318,7 +319,7 @@ void BehavioralPattern::strategyInstance()
 try
 {
     const auto output = Behavioral().strategy().str();
-    displayResult(BehavioralInstance::strategy, output);
+    showResult(BehavioralInstance::strategy, output);
 }
 catch (const std::exception& err)
 {
@@ -329,7 +330,7 @@ void BehavioralPattern::templateMethodInstance()
 try
 {
     const auto output = Behavioral().templateMethod().str();
-    displayResult(BehavioralInstance::templateMethod, output);
+    showResult(BehavioralInstance::templateMethod, output);
 }
 catch (const std::exception& err)
 {
@@ -340,7 +341,7 @@ void BehavioralPattern::visitorInstance()
 try
 {
     const auto output = Behavioral().visitor().str();
-    displayResult(BehavioralInstance::visitor, output);
+    showResult(BehavioralInstance::visitor, output);
 }
 catch (const std::exception& err)
 {
@@ -394,7 +395,7 @@ void updateChoice<BehavioralInstance>(const std::string_view target)
         default:
             bits.reset();
             throw std::logic_error{
-                "Unexpected " + std::string{toString(category)} + " instance: " + target.data() + '.'};
+                "Unexpected " + std::string{toString<category>()} + " instance: " + target.data() + '.'};
     }
 }
 
@@ -414,13 +415,13 @@ void runChoices<BehavioralInstance>(const std::vector<std::string>& candidates)
     APP_DP_PRINT_TASK_BEGIN_TITLE(category);
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
-    const auto functor = [threads](const std::string_view threadName, void (*targetInstance)())
+    const auto addTask = [threads](const std::string_view threadName, void (*targetInstance)())
     { threads->enqueue(threadName, targetInstance); };
-    const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
+    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+
+    std::cout << "\nInstances of the " << toString<category>() << " pattern:" << std::endl;
     auto indices =
         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
-
-    std::cout << "\nInstances of the " << toString(category) << " pattern:" << std::endl;
     for (const auto index : indices)
     {
         const auto& target = candidates.at(index);
@@ -428,40 +429,40 @@ void runChoices<BehavioralInstance>(const std::vector<std::string>& candidates)
         {
             using behavioral::BehavioralPattern;
             case abbrVal(BehavioralInstance::chainOfResponsibility):
-                functor(name(target), &BehavioralPattern::chainOfResponsibilityInstance);
+                addTask(taskNamer(target), &BehavioralPattern::chainOfResponsibilityInstance);
                 break;
             case abbrVal(BehavioralInstance::command):
-                functor(name(target), &BehavioralPattern::commandInstance);
+                addTask(taskNamer(target), &BehavioralPattern::commandInstance);
                 break;
             case abbrVal(BehavioralInstance::interpreter):
-                functor(name(target), &BehavioralPattern::interpreterInstance);
+                addTask(taskNamer(target), &BehavioralPattern::interpreterInstance);
                 break;
             case abbrVal(BehavioralInstance::iterator):
-                functor(name(target), &BehavioralPattern::iteratorInstance);
+                addTask(taskNamer(target), &BehavioralPattern::iteratorInstance);
                 break;
             case abbrVal(BehavioralInstance::mediator):
-                functor(name(target), &BehavioralPattern::mediatorInstance);
+                addTask(taskNamer(target), &BehavioralPattern::mediatorInstance);
                 break;
             case abbrVal(BehavioralInstance::memento):
-                functor(name(target), &BehavioralPattern::mementoInstance);
+                addTask(taskNamer(target), &BehavioralPattern::mementoInstance);
                 break;
             case abbrVal(BehavioralInstance::observer):
-                functor(name(target), &BehavioralPattern::observerInstance);
+                addTask(taskNamer(target), &BehavioralPattern::observerInstance);
                 break;
             case abbrVal(BehavioralInstance::state):
-                functor(name(target), &BehavioralPattern::stateInstance);
+                addTask(taskNamer(target), &BehavioralPattern::stateInstance);
                 break;
             case abbrVal(BehavioralInstance::strategy):
-                functor(name(target), &BehavioralPattern::strategyInstance);
+                addTask(taskNamer(target), &BehavioralPattern::strategyInstance);
                 break;
             case abbrVal(BehavioralInstance::templateMethod):
-                functor(name(target), &BehavioralPattern::templateMethodInstance);
+                addTask(taskNamer(target), &BehavioralPattern::templateMethodInstance);
                 break;
             case abbrVal(BehavioralInstance::visitor):
-                functor(name(target), &BehavioralPattern::visitorInstance);
+                addTask(taskNamer(target), &BehavioralPattern::visitorInstance);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " instance: " + target + '.'};
         }
     }
 
@@ -471,10 +472,10 @@ void runChoices<BehavioralInstance>(const std::vector<std::string>& candidates)
 
 namespace creational
 {
-//! @brief Display the contents of the creational result.
+//! @brief Show the contents of the creational result.
 //! @param instance - the specific value of CreationalInstance enum
 //! @param result - creational result
-static void displayResult(const CreationalInstance instance, const std::string_view result)
+static void showResult(const CreationalInstance instance, const std::string_view result)
 {
     COMMON_PRINT("\n==> %-15s Instance <==\n%s", getTitle(instance).c_str(), result.data());
 }
@@ -483,7 +484,7 @@ void CreationalPattern::abstractFactoryInstance()
 try
 {
     const auto output = Creational().abstractFactory().str();
-    displayResult(CreationalInstance::abstractFactory, output);
+    showResult(CreationalInstance::abstractFactory, output);
 }
 catch (const std::exception& err)
 {
@@ -494,7 +495,7 @@ void CreationalPattern::builderInstance()
 try
 {
     const auto output = Creational().builder().str();
-    displayResult(CreationalInstance::builder, output);
+    showResult(CreationalInstance::builder, output);
 }
 catch (const std::exception& err)
 {
@@ -505,7 +506,7 @@ void CreationalPattern::factoryMethodInstance()
 try
 {
     const auto output = Creational().factoryMethod().str();
-    displayResult(CreationalInstance::factoryMethod, output);
+    showResult(CreationalInstance::factoryMethod, output);
 }
 catch (const std::exception& err)
 {
@@ -516,7 +517,7 @@ void CreationalPattern::prototypeInstance()
 try
 {
     const auto output = Creational().prototype().str();
-    displayResult(CreationalInstance::prototype, output);
+    showResult(CreationalInstance::prototype, output);
 }
 catch (const std::exception& err)
 {
@@ -527,7 +528,7 @@ void CreationalPattern::singletonInstance()
 try
 {
     const auto output = Creational().singleton().str();
-    displayResult(CreationalInstance::singleton, output);
+    showResult(CreationalInstance::singleton, output);
 }
 catch (const std::exception& err)
 {
@@ -563,7 +564,7 @@ void updateChoice<CreationalInstance>(const std::string_view target)
         default:
             bits.reset();
             throw std::logic_error{
-                "Unexpected " + std::string{toString(category)} + " instance: " + target.data() + '.'};
+                "Unexpected " + std::string{toString<category>()} + " instance: " + target.data() + '.'};
     }
 }
 
@@ -583,13 +584,13 @@ void runChoices<CreationalInstance>(const std::vector<std::string>& candidates)
     APP_DP_PRINT_TASK_BEGIN_TITLE(category);
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
-    const auto functor = [threads](const std::string_view threadName, void (*targetInstance)())
+    const auto addTask = [threads](const std::string_view threadName, void (*targetInstance)())
     { threads->enqueue(threadName, targetInstance); };
-    const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
+    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+
+    std::cout << "\nInstances of the " << toString<category>() << " pattern:" << std::endl;
     auto indices =
         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
-
-    std::cout << "\nInstances of the " << toString(category) << " pattern:" << std::endl;
     for (const auto index : indices)
     {
         const auto& target = candidates.at(index);
@@ -597,22 +598,22 @@ void runChoices<CreationalInstance>(const std::vector<std::string>& candidates)
         {
             using creational::CreationalPattern;
             case abbrVal(CreationalInstance::abstractFactory):
-                functor(name(target), &CreationalPattern::abstractFactoryInstance);
+                addTask(taskNamer(target), &CreationalPattern::abstractFactoryInstance);
                 break;
             case abbrVal(CreationalInstance::builder):
-                functor(name(target), &CreationalPattern::builderInstance);
+                addTask(taskNamer(target), &CreationalPattern::builderInstance);
                 break;
             case abbrVal(CreationalInstance::factoryMethod):
-                functor(name(target), &CreationalPattern::factoryMethodInstance);
+                addTask(taskNamer(target), &CreationalPattern::factoryMethodInstance);
                 break;
             case abbrVal(CreationalInstance::prototype):
-                functor(name(target), &CreationalPattern::prototypeInstance);
+                addTask(taskNamer(target), &CreationalPattern::prototypeInstance);
                 break;
             case abbrVal(CreationalInstance::singleton):
-                functor(name(target), &CreationalPattern::singletonInstance);
+                addTask(taskNamer(target), &CreationalPattern::singletonInstance);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " instance: " + target + '.'};
         }
     }
 
@@ -622,10 +623,10 @@ void runChoices<CreationalInstance>(const std::vector<std::string>& candidates)
 
 namespace structural
 {
-//! @brief Display the contents of the structural result.
+//! @brief Show the contents of the structural result.
 //! @param instance - the specific value of StructuralInstance enum
 //! @param result - structural result
-static void displayResult(const StructuralInstance instance, const std::string_view result)
+static void showResult(const StructuralInstance instance, const std::string_view result)
 {
     COMMON_PRINT("\n==> %-9s Instance <==\n%s", getTitle(instance).c_str(), result.data());
 }
@@ -634,7 +635,7 @@ void StructuralPattern::adapterInstance()
 try
 {
     const auto output = Structural().adapter().str();
-    displayResult(StructuralInstance::adapter, output);
+    showResult(StructuralInstance::adapter, output);
 }
 catch (const std::exception& err)
 {
@@ -645,7 +646,7 @@ void StructuralPattern::bridgeInstance()
 try
 {
     const auto output = Structural().bridge().str();
-    displayResult(StructuralInstance::bridge, output);
+    showResult(StructuralInstance::bridge, output);
 }
 catch (const std::exception& err)
 {
@@ -656,7 +657,7 @@ void StructuralPattern::compositeInstance()
 try
 {
     const auto output = Structural().composite().str();
-    displayResult(StructuralInstance::composite, output);
+    showResult(StructuralInstance::composite, output);
 }
 catch (const std::exception& err)
 {
@@ -667,7 +668,7 @@ void StructuralPattern::decoratorInstance()
 try
 {
     const auto output = Structural().decorator().str();
-    displayResult(StructuralInstance::decorator, output);
+    showResult(StructuralInstance::decorator, output);
 }
 catch (const std::exception& err)
 {
@@ -678,7 +679,7 @@ void StructuralPattern::facadeInstance()
 try
 {
     const auto output = Structural().facade().str();
-    displayResult(StructuralInstance::facade, output);
+    showResult(StructuralInstance::facade, output);
 }
 catch (const std::exception& err)
 {
@@ -689,7 +690,7 @@ void StructuralPattern::flyweightInstance()
 try
 {
     const auto output = Structural().flyweight().str();
-    displayResult(StructuralInstance::flyweight, output);
+    showResult(StructuralInstance::flyweight, output);
 }
 catch (const std::exception& err)
 {
@@ -700,7 +701,7 @@ void StructuralPattern::proxyInstance()
 try
 {
     const auto output = Structural().proxy().str();
-    displayResult(StructuralInstance::proxy, output);
+    showResult(StructuralInstance::proxy, output);
 }
 catch (const std::exception& err)
 {
@@ -742,7 +743,7 @@ void updateChoice<StructuralInstance>(const std::string_view target)
         default:
             bits.reset();
             throw std::logic_error{
-                "Unexpected " + std::string{toString(category)} + " instance: " + target.data() + '.'};
+                "Unexpected " + std::string{toString<category>()} + " instance: " + target.data() + '.'};
     }
 }
 
@@ -762,13 +763,13 @@ void runChoices<StructuralInstance>(const std::vector<std::string>& candidates)
     APP_DP_PRINT_TASK_BEGIN_TITLE(category);
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
-    const auto functor = [threads](const std::string_view threadName, void (*targetInstance)())
+    const auto addTask = [threads](const std::string_view threadName, void (*targetInstance)())
     { threads->enqueue(threadName, targetInstance); };
-    const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
+    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+
+    std::cout << "\nInstances of the " << toString<category>() << " pattern:" << std::endl;
     auto indices =
         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
-
-    std::cout << "\nInstances of the " << toString(category) << " pattern:" << std::endl;
     for (const auto index : indices)
     {
         const auto& target = candidates.at(index);
@@ -776,28 +777,28 @@ void runChoices<StructuralInstance>(const std::vector<std::string>& candidates)
         {
             using structural::StructuralPattern;
             case abbrVal(StructuralInstance::adapter):
-                functor(name(target), &StructuralPattern::adapterInstance);
+                addTask(taskNamer(target), &StructuralPattern::adapterInstance);
                 break;
             case abbrVal(StructuralInstance::bridge):
-                functor(name(target), &StructuralPattern::bridgeInstance);
+                addTask(taskNamer(target), &StructuralPattern::bridgeInstance);
                 break;
             case abbrVal(StructuralInstance::composite):
-                functor(name(target), &StructuralPattern::compositeInstance);
+                addTask(taskNamer(target), &StructuralPattern::compositeInstance);
                 break;
             case abbrVal(StructuralInstance::decorator):
-                functor(name(target), &StructuralPattern::decoratorInstance);
+                addTask(taskNamer(target), &StructuralPattern::decoratorInstance);
                 break;
             case abbrVal(StructuralInstance::facade):
-                functor(name(target), &StructuralPattern::facadeInstance);
+                addTask(taskNamer(target), &StructuralPattern::facadeInstance);
                 break;
             case abbrVal(StructuralInstance::flyweight):
-                functor(name(target), &StructuralPattern::flyweightInstance);
+                addTask(taskNamer(target), &StructuralPattern::flyweightInstance);
                 break;
             case abbrVal(StructuralInstance::proxy):
-                functor(name(target), &StructuralPattern::proxyInstance);
+                addTask(taskNamer(target), &StructuralPattern::proxyInstance);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " instance: " + target + '.'};
         }
     }
 

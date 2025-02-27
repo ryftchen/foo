@@ -52,18 +52,19 @@ ApplyAlgorithm& manager()
 
 //! @brief Get the task name curried.
 //! @return task name curried
-static const auto& getTaskNameCurried()
+static const auto& taskNameCurried()
 {
     static const auto curried = utility::currying::curry(action::presetTaskName, TypeInfo<ApplyAlgorithm>::name);
     return curried;
 }
 
 //! @brief Convert category enumeration to string.
-//! @param cat - the specific value of Category enum
+//! @tparam Cat - the specific value of Category enum
 //! @return category name
-consteval std::string_view toString(const Category cat)
+template <Category Cat>
+consteval std::string_view toString()
 {
-    switch (cat)
+    switch (Cat)
     {
         case Category::match:
             return TypeInfo<MatchMethod>::name;
@@ -88,7 +89,7 @@ consteval std::string_view toString(const Category cat)
 template <Category Cat>
 constexpr auto& getCategoryOpts()
 {
-    return std::invoke(TypeInfo<ApplyAlgorithm>::fields.find(REFLECTION_STR(toString(Cat))).value, manager());
+    return std::invoke(TypeInfo<ApplyAlgorithm>::fields.find(REFLECTION_STR(toString<Cat>())).value, manager());
 }
 
 //! @brief Get the alias of the category in algorithm choices.
@@ -98,7 +99,7 @@ template <Category Cat>
 consteval std::string_view getCategoryAlias()
 {
     constexpr auto attr =
-        TypeInfo<ApplyAlgorithm>::fields.find(REFLECTION_STR(toString(Cat))).attrs.find(REFLECTION_STR("alias"));
+        TypeInfo<ApplyAlgorithm>::fields.find(REFLECTION_STR(toString<Cat>())).attrs.find(REFLECTION_STR("alias"));
     static_assert(attr.hasValue);
     return attr.value;
 }
@@ -261,12 +262,12 @@ constexpr std::string_view toString(const SortMethod method)
 
 namespace match
 {
-//! @brief Display the contents of the match result.
+//! @brief Show the contents of the match result.
 //! @param method - the specific value of MatchMethod enum
 //! @param result - match result
 //! @param pattern - single pattern
 //! @param interval - time interval
-static void displayResult(
+static void showResult(
     const MatchMethod method, const std::int64_t result, const unsigned char* const pattern, const double interval)
 {
     if (-1 != result)
@@ -299,7 +300,7 @@ try
     timer.setBeginTime();
     const auto shift = algorithm::match::Match().rk(text, pattern, textLen, patternLen);
     timer.setEndTime();
-    displayResult(MatchMethod::rabinKarp, shift, pattern, timer.calculateInterval());
+    showResult(MatchMethod::rabinKarp, shift, pattern, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -317,7 +318,7 @@ try
     timer.setBeginTime();
     const auto shift = algorithm::match::Match().kmp(text, pattern, textLen, patternLen);
     timer.setEndTime();
-    displayResult(MatchMethod::knuthMorrisPratt, shift, pattern, timer.calculateInterval());
+    showResult(MatchMethod::knuthMorrisPratt, shift, pattern, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -335,7 +336,7 @@ try
     timer.setBeginTime();
     const auto shift = algorithm::match::Match().bm(text, pattern, textLen, patternLen);
     timer.setEndTime();
-    displayResult(MatchMethod::boyerMoore, shift, pattern, timer.calculateInterval());
+    showResult(MatchMethod::boyerMoore, shift, pattern, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -353,7 +354,7 @@ try
     timer.setBeginTime();
     const auto shift = algorithm::match::Match().horspool(text, pattern, textLen, patternLen);
     timer.setEndTime();
-    displayResult(MatchMethod::horspool, shift, pattern, timer.calculateInterval());
+    showResult(MatchMethod::horspool, shift, pattern, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -371,7 +372,7 @@ try
     timer.setBeginTime();
     const auto shift = algorithm::match::Match().sunday(text, pattern, textLen, patternLen);
     timer.setEndTime();
-    displayResult(MatchMethod::sunday, shift, pattern, timer.calculateInterval());
+    showResult(MatchMethod::sunday, shift, pattern, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -406,7 +407,8 @@ void updateChoice<MatchMethod>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.'};
+            throw std::logic_error{
+                "Unexpected " + std::string{toString<category>()} + " method: " + target.data() + '.'};
     }
 }
 
@@ -429,7 +431,7 @@ void runChoices<MatchMethod>(const std::vector<std::string>& candidates)
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(patternString);
-    const auto functor =
+    const auto addTask =
         [threads, &inputs](
             const std::string_view threadName,
             void (*targetMethod)(
@@ -443,10 +445,10 @@ void runChoices<MatchMethod>(const std::vector<std::string>& candidates)
             inputs->getTextLength(),
             inputs->getPatternLength());
     };
-    const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
+    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+
     auto indices =
         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
-
     for (const auto index : indices)
     {
         const auto& target = candidates.at(index);
@@ -454,22 +456,22 @@ void runChoices<MatchMethod>(const std::vector<std::string>& candidates)
         {
             using match::MatchSolution;
             case abbrVal(MatchMethod::rabinKarp):
-                functor(name(target), &MatchSolution::rkMethod);
+                addTask(taskNamer(target), &MatchSolution::rkMethod);
                 break;
             case abbrVal(MatchMethod::knuthMorrisPratt):
-                functor(name(target), &MatchSolution::kmpMethod);
+                addTask(taskNamer(target), &MatchSolution::kmpMethod);
                 break;
             case abbrVal(MatchMethod::boyerMoore):
-                functor(name(target), &MatchSolution::bmMethod);
+                addTask(taskNamer(target), &MatchSolution::bmMethod);
                 break;
             case abbrVal(MatchMethod::horspool):
-                functor(name(target), &MatchSolution::horspoolMethod);
+                addTask(taskNamer(target), &MatchSolution::horspoolMethod);
                 break;
             case abbrVal(MatchMethod::sunday):
-                functor(name(target), &MatchSolution::sundayMethod);
+                addTask(taskNamer(target), &MatchSolution::sundayMethod);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};
         }
     }
 
@@ -479,11 +481,11 @@ void runChoices<MatchMethod>(const std::vector<std::string>& candidates)
 
 namespace notation
 {
-//! @brief Display the contents of the notation result.
+//! @brief Show the contents of the notation result.
 //! @param method - the specific value of NotationMethod enum
 //! @param result - notation result
 //! @param descr - notation description
-static void displayResult(const NotationMethod method, const std::string_view result, const char* const descr)
+static void showResult(const NotationMethod method, const std::string_view result, const char* const descr)
 {
     COMMON_PRINT("\n==> %-7s Method <==\n%s: %s\n", getTitle(method).c_str(), descr, result.data());
 }
@@ -492,7 +494,7 @@ void NotationSolution::prefixMethod(const std::string_view infix)
 try
 {
     const auto expr = algorithm::notation::Notation().prefix(infix);
-    displayResult(NotationMethod::prefix, expr, "polish notation");
+    showResult(NotationMethod::prefix, expr, "polish notation");
 }
 catch (const std::exception& err)
 {
@@ -503,7 +505,7 @@ void NotationSolution::postfixMethod(const std::string_view infix)
 try
 {
     const auto expr = algorithm::notation::Notation().postfix(infix);
-    displayResult(NotationMethod::postfix, expr, "reverse polish notation");
+    showResult(NotationMethod::postfix, expr, "reverse polish notation");
 }
 catch (const std::exception& err)
 {
@@ -529,7 +531,8 @@ void updateChoice<NotationMethod>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.'};
+            throw std::logic_error{
+                "Unexpected " + std::string{toString<category>()} + " method: " + target.data() + '.'};
     }
 }
 
@@ -551,13 +554,13 @@ void runChoices<NotationMethod>(const std::vector<std::string>& candidates)
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(infixString);
-    const auto functor =
+    const auto addTask =
         [threads, &inputs](const std::string_view threadName, void (*targetMethod)(const std::string_view))
     { threads->enqueue(threadName, targetMethod, inputs->getInfixNotation()); };
-    const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
+    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+
     auto indices =
         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
-
     for (const auto index : indices)
     {
         const auto& target = candidates.at(index);
@@ -565,13 +568,13 @@ void runChoices<NotationMethod>(const std::vector<std::string>& candidates)
         {
             using notation::NotationSolution;
             case abbrVal(NotationMethod::prefix):
-                functor(name(target), &NotationSolution::prefixMethod);
+                addTask(taskNamer(target), &NotationSolution::prefixMethod);
                 break;
             case abbrVal(NotationMethod::postfix):
-                functor(name(target), &NotationSolution::postfixMethod);
+                addTask(taskNamer(target), &NotationSolution::postfixMethod);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};
         }
     }
 
@@ -581,11 +584,11 @@ void runChoices<NotationMethod>(const std::vector<std::string>& candidates)
 
 namespace optimal
 {
-//! @brief Display the contents of the optimal result.
+//! @brief Show the contents of the optimal result.
 //! @param method - the specific value of OptimalMethod enum
 //! @param result - optimal result
 //! @param interval - time interval
-static void displayResult(
+static void showResult(
     const OptimalMethod method, const std::optional<std::tuple<double, double>>& result, const double interval)
 {
     if (result.has_value())
@@ -613,7 +616,7 @@ try
     timer.setBeginTime();
     const auto tuple = algorithm::optimal::Gradient(func)(left, right, algorithm::optimal::epsilon);
     timer.setEndTime();
-    displayResult(OptimalMethod::gradient, tuple, timer.calculateInterval());
+    showResult(OptimalMethod::gradient, tuple, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -627,7 +630,7 @@ try
     timer.setBeginTime();
     const auto tuple = algorithm::optimal::Annealing(func)(left, right, algorithm::optimal::epsilon);
     timer.setEndTime();
-    displayResult(OptimalMethod::annealing, tuple, timer.calculateInterval());
+    showResult(OptimalMethod::annealing, tuple, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -641,7 +644,7 @@ try
     timer.setBeginTime();
     const auto tuple = algorithm::optimal::Particle(func)(left, right, algorithm::optimal::epsilon);
     timer.setEndTime();
-    displayResult(OptimalMethod::particle, tuple, timer.calculateInterval());
+    showResult(OptimalMethod::particle, tuple, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -655,7 +658,7 @@ try
     timer.setBeginTime();
     const auto tuple = algorithm::optimal::Genetic(func)(left, right, algorithm::optimal::epsilon);
     timer.setEndTime();
-    displayResult(OptimalMethod::genetic, tuple, timer.calculateInterval());
+    showResult(OptimalMethod::genetic, tuple, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -687,7 +690,8 @@ void updateChoice<OptimalMethod>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.'};
+            throw std::logic_error{
+                "Unexpected " + std::string{toString<category>()} + " method: " + target.data() + '.'};
     }
 }
 
@@ -710,14 +714,14 @@ void runChoices<OptimalMethod>(const std::vector<std::string>& candidates)
     {
         auto& pooling = action::resourcePool();
         auto* const threads = pooling.newElement(bits.count());
-        const auto functor = [threads, &function, &range](
+        const auto addTask = [threads, &function, &range](
                                  const std::string_view threadName,
                                  void (*targetMethod)(const optimal::Function&, const double, const double))
         { threads->enqueue(threadName, targetMethod, std::ref(function), range.range1, range.range2); };
-        const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
+        const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+
         auto indices =
             std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
-
         for (const auto index : indices)
         {
             const auto& target = candidates.at(index);
@@ -725,19 +729,19 @@ void runChoices<OptimalMethod>(const std::vector<std::string>& candidates)
             {
                 using optimal::OptimalSolution;
                 case abbrVal(OptimalMethod::gradient):
-                    functor(name(target), &OptimalSolution::gradientDescentMethod);
+                    addTask(taskNamer(target), &OptimalSolution::gradientDescentMethod);
                     break;
                 case abbrVal(OptimalMethod::annealing):
-                    functor(name(target), &OptimalSolution::simulatedAnnealingMethod);
+                    addTask(taskNamer(target), &OptimalSolution::simulatedAnnealingMethod);
                     break;
                 case abbrVal(OptimalMethod::particle):
-                    functor(name(target), &OptimalSolution::particleSwarmMethod);
+                    addTask(taskNamer(target), &OptimalSolution::particleSwarmMethod);
                     break;
                 case abbrVal(OptimalMethod::genetic):
-                    functor(name(target), &OptimalSolution::geneticMethod);
+                    addTask(taskNamer(target), &OptimalSolution::geneticMethod);
                     break;
                 default:
-                    throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
+                    throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};
             }
         }
         pooling.deleteElement(threads);
@@ -766,12 +770,12 @@ void runChoices<OptimalMethod>(const std::vector<std::string>& candidates)
 
 namespace search
 {
-//! @brief Display the contents of the search result.
+//! @brief Show the contents of the search result.
 //! @param method - the specific value of SearchMethod enum
 //! @param result - search result
 //! @param key - search key
 //! @param interval - time interval
-static void displayResult(const SearchMethod method, const std::int64_t result, const float key, const double interval)
+static void showResult(const SearchMethod method, const std::int64_t result, const float key, const double interval)
 {
     if (-1 != result)
     {
@@ -799,7 +803,7 @@ try
     timer.setBeginTime();
     const auto index = algorithm::search::Search<float>().binary(array, length, key);
     timer.setEndTime();
-    displayResult(SearchMethod::binary, index, key, timer.calculateInterval());
+    showResult(SearchMethod::binary, index, key, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -813,7 +817,7 @@ try
     timer.setBeginTime();
     const auto index = algorithm::search::Search<float>().interpolation(array, length, key);
     timer.setEndTime();
-    displayResult(SearchMethod::interpolation, index, key, timer.calculateInterval());
+    showResult(SearchMethod::interpolation, index, key, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -827,7 +831,7 @@ try
     timer.setBeginTime();
     const auto index = algorithm::search::Search<float>().fibonacci(array, length, key);
     timer.setEndTime();
-    displayResult(SearchMethod::fibonacci, index, key, timer.calculateInterval());
+    showResult(SearchMethod::fibonacci, index, key, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -856,7 +860,8 @@ void updateChoice<SearchMethod>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.'};
+            throw std::logic_error{
+                "Unexpected " + std::string{toString<category>()} + " method: " + target.data() + '.'};
     }
 }
 
@@ -880,17 +885,17 @@ void runChoices<SearchMethod>(const std::vector<std::string>& candidates)
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder<float>>(arrayLength, arrayRangeMin, arrayRangeMax);
-    const auto functor = [threads, &inputs](
+    const auto addTask = [threads, &inputs](
                              const std::string_view threadName,
                              void (*targetMethod)(const float* const, const std::uint32_t, const float))
     {
         threads->enqueue(
             threadName, targetMethod, inputs->getOrderedArray().get(), inputs->getLength(), inputs->getSearchKey());
     };
-    const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
+    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+
     auto indices =
         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
-
     for (const auto index : indices)
     {
         const auto& target = candidates.at(index);
@@ -898,16 +903,16 @@ void runChoices<SearchMethod>(const std::vector<std::string>& candidates)
         {
             using search::SearchSolution;
             case abbrVal(SearchMethod::binary):
-                functor(name(target), &SearchSolution::binaryMethod);
+                addTask(taskNamer(target), &SearchSolution::binaryMethod);
                 break;
             case abbrVal(SearchMethod::interpolation):
-                functor(name(target), &SearchSolution::interpolationMethod);
+                addTask(taskNamer(target), &SearchSolution::interpolationMethod);
                 break;
             case abbrVal(SearchMethod::fibonacci):
-                functor(name(target), &SearchSolution::fibonacciMethod);
+                addTask(taskNamer(target), &SearchSolution::fibonacciMethod);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};
         }
     }
 
@@ -917,11 +922,11 @@ void runChoices<SearchMethod>(const std::vector<std::string>& candidates)
 
 namespace sort
 {
-//! @brief Display the contents of the sort result.
+//! @brief Show the contents of the sort result.
 //! @param method - the specific value of SortMethod enum
 //! @param result - sort result
 //! @param interval - time interval
-static void displayResult(const SortMethod method, const std::vector<std::int32_t>& result, const double interval)
+static void showResult(const SortMethod method, const std::vector<std::int32_t>& result, const double interval)
 {
     const std::uint32_t arrayBufferSize = result.size() * maxAlignOfPrint;
     std::vector<char> arrayBuffer(arrayBufferSize + 1);
@@ -940,7 +945,7 @@ try
     timer.setBeginTime();
     const auto coll = algorithm::sort::Sort<std::int32_t>().bubble(array, length);
     timer.setEndTime();
-    displayResult(SortMethod::bubble, coll, timer.calculateInterval());
+    showResult(SortMethod::bubble, coll, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -954,7 +959,7 @@ try
     timer.setBeginTime();
     const auto coll = algorithm::sort::Sort<std::int32_t>().selection(array, length);
     timer.setEndTime();
-    displayResult(SortMethod::selection, coll, timer.calculateInterval());
+    showResult(SortMethod::selection, coll, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -968,7 +973,7 @@ try
     timer.setBeginTime();
     const auto coll = algorithm::sort::Sort<std::int32_t>().insertion(array, length);
     timer.setEndTime();
-    displayResult(SortMethod::insertion, coll, timer.calculateInterval());
+    showResult(SortMethod::insertion, coll, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -982,7 +987,7 @@ try
     timer.setBeginTime();
     const auto coll = algorithm::sort::Sort<std::int32_t>().shell(array, length);
     timer.setEndTime();
-    displayResult(SortMethod::shell, coll, timer.calculateInterval());
+    showResult(SortMethod::shell, coll, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -996,7 +1001,7 @@ try
     timer.setBeginTime();
     const auto coll = algorithm::sort::Sort<std::int32_t>().merge(array, length);
     timer.setEndTime();
-    displayResult(SortMethod::merge, coll, timer.calculateInterval());
+    showResult(SortMethod::merge, coll, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -1010,7 +1015,7 @@ try
     timer.setBeginTime();
     const auto coll = algorithm::sort::Sort<std::int32_t>().quick(array, length);
     timer.setEndTime();
-    displayResult(SortMethod::quick, coll, timer.calculateInterval());
+    showResult(SortMethod::quick, coll, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -1024,7 +1029,7 @@ try
     timer.setBeginTime();
     const auto coll = algorithm::sort::Sort<std::int32_t>().heap(array, length);
     timer.setEndTime();
-    displayResult(SortMethod::heap, coll, timer.calculateInterval());
+    showResult(SortMethod::heap, coll, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -1038,7 +1043,7 @@ try
     timer.setBeginTime();
     const auto coll = algorithm::sort::Sort<std::int32_t>().counting(array, length);
     timer.setEndTime();
-    displayResult(SortMethod::counting, coll, timer.calculateInterval());
+    showResult(SortMethod::counting, coll, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -1052,7 +1057,7 @@ try
     timer.setBeginTime();
     const auto coll = algorithm::sort::Sort<std::int32_t>().bucket(array, length);
     timer.setEndTime();
-    displayResult(SortMethod::bucket, coll, timer.calculateInterval());
+    showResult(SortMethod::bucket, coll, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -1066,7 +1071,7 @@ try
     timer.setBeginTime();
     const auto coll = algorithm::sort::Sort<std::int32_t>().radix(array, length);
     timer.setEndTime();
-    displayResult(SortMethod::radix, coll, timer.calculateInterval());
+    showResult(SortMethod::radix, coll, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -1116,7 +1121,8 @@ void updateChoice<SortMethod>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.'};
+            throw std::logic_error{
+                "Unexpected " + std::string{toString<category>()} + " method: " + target.data() + '.'};
     }
 }
 
@@ -1140,14 +1146,14 @@ void runChoices<SortMethod>(const std::vector<std::string>& candidates)
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder<std::int32_t>>(arrayLength, arrayRangeMin, arrayRangeMax);
-    const auto functor =
+    const auto addTask =
         [threads, &inputs](
             const std::string_view threadName, void (*targetMethod)(const std::int32_t* const, const std::uint32_t))
     { threads->enqueue(threadName, targetMethod, inputs->getRandomArray().get(), inputs->getLength()); };
-    const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
+    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+
     auto indices =
         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
-
     for (const auto index : indices)
     {
         const auto& target = candidates.at(index);
@@ -1155,37 +1161,37 @@ void runChoices<SortMethod>(const std::vector<std::string>& candidates)
         {
             using sort::SortSolution;
             case abbrVal(SortMethod::bubble):
-                functor(name(target), &SortSolution::bubbleMethod);
+                addTask(taskNamer(target), &SortSolution::bubbleMethod);
                 break;
             case abbrVal(SortMethod::selection):
-                functor(name(target), &SortSolution::selectionMethod);
+                addTask(taskNamer(target), &SortSolution::selectionMethod);
                 break;
             case abbrVal(SortMethod::insertion):
-                functor(name(target), &SortSolution::insertionMethod);
+                addTask(taskNamer(target), &SortSolution::insertionMethod);
                 break;
             case abbrVal(SortMethod::shell):
-                functor(name(target), &SortSolution::shellMethod);
+                addTask(taskNamer(target), &SortSolution::shellMethod);
                 break;
             case abbrVal(SortMethod::merge):
-                functor(name(target), &SortSolution::mergeMethod);
+                addTask(taskNamer(target), &SortSolution::mergeMethod);
                 break;
             case abbrVal(SortMethod::quick):
-                functor(name(target), &SortSolution::quickMethod);
+                addTask(taskNamer(target), &SortSolution::quickMethod);
                 break;
             case abbrVal(SortMethod::heap):
-                functor(name(target), &SortSolution::heapMethod);
+                addTask(taskNamer(target), &SortSolution::heapMethod);
                 break;
             case abbrVal(SortMethod::counting):
-                functor(name(target), &SortSolution::countingMethod);
+                addTask(taskNamer(target), &SortSolution::countingMethod);
                 break;
             case abbrVal(SortMethod::bucket):
-                functor(name(target), &SortSolution::bucketMethod);
+                addTask(taskNamer(target), &SortSolution::bucketMethod);
                 break;
             case abbrVal(SortMethod::radix):
-                functor(name(target), &SortSolution::radixMethod);
+                addTask(taskNamer(target), &SortSolution::radixMethod);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};
         }
     }
 
