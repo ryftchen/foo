@@ -5,14 +5,16 @@ edition = "2021"
 rust-version = "1.75"
 
 [dependencies]
-futures-util = "=0.3.30"
+futures = {version = "=0.3.11", default-features = false, features = ["std"]}
 getopts = "=0.2.17"
 http = "=1.0.0"
 hyper = {version = "=1.0.0", features = ["http1", "server"]}
 hyper-staticfile = "=0.10.0"
 hyper-util = {version = "=0.1.0", features = ["tokio"]}
+litemap = "=0.7.4"
 shellexpand = "=3.1.0"
 tokio = {version = "=1.13.0", features = ["macros", "rt-multi-thread", "net", "io-util"]}
+zerofrom = "=0.1.5"
 
 [profile.release]
 strip = true
