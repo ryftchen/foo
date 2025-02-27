@@ -834,7 +834,7 @@ void Command::dumpConfiguration()
     std::cout << configure::getDefaultConfiguration() << std::endl;
 }
 
-void Command::showVersionIcon() const
+void Command::displayVersionInfo() const
 {
     validateDependenciesVersion();
     std::cout << utility::io::executeCommand(std::format(
@@ -887,7 +887,7 @@ void Command::Notifier::Handler<Category::help>::execute() const
 template <>
 void Command::Notifier::Handler<Category::version>::execute() const
 {
-    obj.showVersionIcon();
+    obj.displayVersionInfo();
 }
 
 void Command::enterConsoleMode()

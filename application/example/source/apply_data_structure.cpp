@@ -52,18 +52,19 @@ ApplyDataStructure& manager()
 
 //! @brief Get the task name curried.
 //! @return task name curried
-static const auto& getTaskNameCurried()
+static const auto& taskNameCurried()
 {
     static const auto curried = utility::currying::curry(action::presetTaskName, TypeInfo<ApplyDataStructure>::name);
     return curried;
 }
 
 //! @brief Convert category enumeration to string.
-//! @param cat - the specific value of Category enum
+//! @tparam Cat - the specific value of Category enum
 //! @return category name
-consteval std::string_view toString(const Category cat)
+template <Category Cat>
+consteval std::string_view toString()
 {
-    switch (cat)
+    switch (Cat)
     {
         case Category::linear:
             return TypeInfo<LinearInstance>::name;
@@ -82,7 +83,7 @@ consteval std::string_view toString(const Category cat)
 template <Category Cat>
 constexpr auto& getCategoryOpts()
 {
-    return std::invoke(TypeInfo<ApplyDataStructure>::fields.find(REFLECTION_STR(toString(Cat))).value, manager());
+    return std::invoke(TypeInfo<ApplyDataStructure>::fields.find(REFLECTION_STR(toString<Cat>())).value, manager());
 }
 
 //! @brief Get the alias of the category in data structure choices.
@@ -92,7 +93,7 @@ template <Category Cat>
 consteval std::string_view getCategoryAlias()
 {
     constexpr auto attr =
-        TypeInfo<ApplyDataStructure>::fields.find(REFLECTION_STR(toString(Cat))).attrs.find(REFLECTION_STR("alias"));
+        TypeInfo<ApplyDataStructure>::fields.find(REFLECTION_STR(toString<Cat>())).attrs.find(REFLECTION_STR("alias"));
     static_assert(attr.hasValue);
     return attr.value;
 }
@@ -180,10 +181,10 @@ constexpr std::string_view toString(const TreeInstance instance)
 
 namespace linear
 {
-//! @brief Display the contents of the linear result.
+//! @brief Show the contents of the linear result.
 //! @param instance - the specific value of LinearInstance enum
 //! @param result - linear result
-static void displayResult(const LinearInstance instance, const std::string_view result)
+static void showResult(const LinearInstance instance, const std::string_view result)
 {
     COMMON_PRINT("\n==> %-10s Instance <==\n%s", getTitle(instance).c_str(), result.data());
 }
@@ -192,7 +193,7 @@ void LinearStructure::linkedListInstance()
 try
 {
     const auto output = Linear().linkedList().str();
-    displayResult(LinearInstance::linkedList, output);
+    showResult(LinearInstance::linkedList, output);
 }
 catch (const std::exception& err)
 {
@@ -203,7 +204,7 @@ void LinearStructure::stackInstance()
 try
 {
     const auto output = Linear().stack().str();
-    displayResult(LinearInstance::stack, output);
+    showResult(LinearInstance::stack, output);
 }
 catch (const std::exception& err)
 {
@@ -214,7 +215,7 @@ void LinearStructure::queueInstance()
 try
 {
     const auto output = Linear().queue().str();
-    displayResult(LinearInstance::queue, output);
+    showResult(LinearInstance::queue, output);
 }
 catch (const std::exception& err)
 {
@@ -244,7 +245,7 @@ void updateChoice<LinearInstance>(const std::string_view target)
         default:
             bits.reset();
             throw std::logic_error{
-                "Unexpected " + std::string{toString(category)} + " instance: " + target.data() + '.'};
+                "Unexpected " + std::string{toString<category>()} + " instance: " + target.data() + '.'};
     }
 }
 
@@ -264,13 +265,13 @@ void runChoices<LinearInstance>(const std::vector<std::string>& candidates)
     APP_DS_PRINT_TASK_BEGIN_TITLE(category);
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
-    const auto functor = [threads](const std::string_view threadName, void (*targetInstance)())
+    const auto addTask = [threads](const std::string_view threadName, void (*targetInstance)())
     { threads->enqueue(threadName, targetInstance); };
-    const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
+    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+
+    std::cout << "\nInstances of the " << toString<category>() << " structure:" << std::endl;
     auto indices =
         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
-
-    std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
     for (const auto index : indices)
     {
         const auto& target = candidates.at(index);
@@ -278,16 +279,16 @@ void runChoices<LinearInstance>(const std::vector<std::string>& candidates)
         {
             using linear::LinearStructure;
             case abbrVal(LinearInstance::linkedList):
-                functor(name(target), &LinearStructure::linkedListInstance);
+                addTask(taskNamer(target), &LinearStructure::linkedListInstance);
                 break;
             case abbrVal(LinearInstance::stack):
-                functor(name(target), &LinearStructure::stackInstance);
+                addTask(taskNamer(target), &LinearStructure::stackInstance);
                 break;
             case abbrVal(LinearInstance::queue):
-                functor(name(target), &LinearStructure::queueInstance);
+                addTask(taskNamer(target), &LinearStructure::queueInstance);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " instance: " + target + '.'};
         }
     }
 
@@ -297,10 +298,10 @@ void runChoices<LinearInstance>(const std::vector<std::string>& candidates)
 
 namespace tree
 {
-//! @brief Display the contents of the tree result.
+//! @brief Show the contents of the tree result.
 //! @param instance - the specific value of TreeInstance enum
 //! @param result - tree result
-static void displayResult(const TreeInstance instance, const std::string_view result)
+static void showResult(const TreeInstance instance, const std::string_view result)
 {
     COMMON_PRINT("\n==> %-19s Instance <==\n%s", getTitle(instance).c_str(), result.data());
 }
@@ -309,7 +310,7 @@ void TreeStructure::bsInstance()
 try
 {
     const auto output = Tree().bs().str();
-    displayResult(TreeInstance::binarySearch, output);
+    showResult(TreeInstance::binarySearch, output);
 }
 catch (const std::exception& err)
 {
@@ -320,7 +321,7 @@ void TreeStructure::avlInstance()
 try
 {
     const auto output = Tree().avl().str();
-    displayResult(TreeInstance::adelsonVelskyLandis, output);
+    showResult(TreeInstance::adelsonVelskyLandis, output);
 }
 catch (const std::exception& err)
 {
@@ -331,7 +332,7 @@ void TreeStructure::splayInstance()
 try
 {
     const auto output = Tree().splay().str();
-    displayResult(TreeInstance::splay, output);
+    showResult(TreeInstance::splay, output);
 }
 catch (const std::exception& err)
 {
@@ -361,7 +362,7 @@ void updateChoice<TreeInstance>(const std::string_view target)
         default:
             bits.reset();
             throw std::logic_error{
-                "Unexpected " + std::string{toString(category)} + " instance: " + target.data() + '.'};
+                "Unexpected " + std::string{toString<category>()} + " instance: " + target.data() + '.'};
     }
 }
 
@@ -381,13 +382,13 @@ void runChoices<TreeInstance>(const std::vector<std::string>& candidates)
     APP_DS_PRINT_TASK_BEGIN_TITLE(category);
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
-    const auto functor = [threads](const std::string_view threadName, void (*targetInstance)())
+    const auto addTask = [threads](const std::string_view threadName, void (*targetInstance)())
     { threads->enqueue(threadName, targetInstance); };
-    const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
+    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+
+    std::cout << "\nInstances of the " << toString<category>() << " structure:" << std::endl;
     auto indices =
         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
-
-    std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
     for (const auto index : indices)
     {
         const auto& target = candidates.at(index);
@@ -395,16 +396,16 @@ void runChoices<TreeInstance>(const std::vector<std::string>& candidates)
         {
             using tree::TreeStructure;
             case abbrVal(TreeInstance::binarySearch):
-                functor(name(target), &TreeStructure::bsInstance);
+                addTask(taskNamer(target), &TreeStructure::bsInstance);
                 break;
             case abbrVal(TreeInstance::adelsonVelskyLandis):
-                functor(name(target), &TreeStructure::avlInstance);
+                addTask(taskNamer(target), &TreeStructure::avlInstance);
                 break;
             case abbrVal(TreeInstance::splay):
-                functor(name(target), &TreeStructure::splayInstance);
+                addTask(taskNamer(target), &TreeStructure::splayInstance);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " instance: " + target + '.'};
         }
     }
 

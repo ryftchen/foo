@@ -52,18 +52,19 @@ ApplyNumeric& manager()
 
 //! @brief Get the task name curried.
 //! @return task name curried
-static const auto& getTaskNameCurried()
+static const auto& taskNameCurried()
 {
     static const auto curried = utility::currying::curry(action::presetTaskName, TypeInfo<ApplyNumeric>::name);
     return curried;
 }
 
 //! @brief Convert category enumeration to string.
-//! @param cat - the specific value of Category enum
+//! @tparam Cat - the specific value of Category enum
 //! @return category name
-consteval std::string_view toString(const Category cat)
+template <Category Cat>
+consteval std::string_view toString()
 {
-    switch (cat)
+    switch (Cat)
     {
         case Category::arithmetic:
             return TypeInfo<ArithmeticMethod>::name;
@@ -86,7 +87,7 @@ consteval std::string_view toString(const Category cat)
 template <Category Cat>
 constexpr auto& getCategoryOpts()
 {
-    return std::invoke(TypeInfo<ApplyNumeric>::fields.find(REFLECTION_STR(toString(Cat))).value, manager());
+    return std::invoke(TypeInfo<ApplyNumeric>::fields.find(REFLECTION_STR(toString<Cat>())).value, manager());
 }
 
 //! @brief Get the alias of the category in numeric choices.
@@ -96,7 +97,7 @@ template <Category Cat>
 consteval std::string_view getCategoryAlias()
 {
     constexpr auto attr =
-        TypeInfo<ApplyNumeric>::fields.find(REFLECTION_STR(toString(Cat))).attrs.find(REFLECTION_STR("alias"));
+        TypeInfo<ApplyNumeric>::fields.find(REFLECTION_STR(toString<Cat>())).attrs.find(REFLECTION_STR("alias"));
     static_assert(attr.hasValue);
     return attr.value;
 }
@@ -229,13 +230,13 @@ constexpr std::string_view toString(const PrimeMethod method)
 
 namespace arithmetic
 {
-//! @brief Display the contents of the arithmetic result.
+//! @brief Show the contents of the arithmetic result.
 //! @param method - the specific value of ArithmeticMethod enum
 //! @param result - arithmetic result
 //! @param a - first integer for elementary arithmetic
 //! @param b - second integer for elementary arithmetic
 //! @param op - operator of arithmetic
-static void displayResult(
+static void showResult(
     const ArithmeticMethod method, const std::int32_t result, const std::int32_t a, const std::int32_t b, const char op)
 {
     COMMON_PRINT("\n==> %-14s Method <==\n(%d) %c (%d) = %d\n", getTitle(method).c_str(), a, op, b, result);
@@ -245,7 +246,7 @@ void ArithmeticSolution::additionMethod(const std::int32_t augend, const std::in
 try
 {
     const auto calc = numeric::arithmetic::Arithmetic().addition(augend, addend);
-    displayResult(ArithmeticMethod::addition, calc, augend, addend, '+');
+    showResult(ArithmeticMethod::addition, calc, augend, addend, '+');
 }
 catch (const std::exception& err)
 {
@@ -256,7 +257,7 @@ void ArithmeticSolution::subtractionMethod(const std::int32_t minuend, const std
 try
 {
     const auto calc = numeric::arithmetic::Arithmetic().subtraction(minuend, subtrahend);
-    displayResult(ArithmeticMethod::subtraction, calc, minuend, subtrahend, '-');
+    showResult(ArithmeticMethod::subtraction, calc, minuend, subtrahend, '-');
 }
 catch (const std::exception& err)
 {
@@ -267,7 +268,7 @@ void ArithmeticSolution::multiplicationMethod(const std::int32_t multiplier, con
 try
 {
     const auto calc = numeric::arithmetic::Arithmetic().multiplication(multiplier, multiplicand);
-    displayResult(ArithmeticMethod::multiplication, calc, multiplier, multiplicand, '*');
+    showResult(ArithmeticMethod::multiplication, calc, multiplier, multiplicand, '*');
 }
 catch (const std::exception& err)
 {
@@ -278,7 +279,7 @@ void ArithmeticSolution::divisionMethod(const std::int32_t dividend, const std::
 try
 {
     const auto calc = numeric::arithmetic::Arithmetic().division(dividend, divisor);
-    displayResult(ArithmeticMethod::division, calc, dividend, divisor, '/');
+    showResult(ArithmeticMethod::division, calc, dividend, divisor, '/');
 }
 catch (const std::exception& err)
 {
@@ -310,7 +311,8 @@ void updateChoice<ArithmeticMethod>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.'};
+            throw std::logic_error{
+                "Unexpected " + std::string{toString<category>()} + " method: " + target.data() + '.'};
     }
 }
 
@@ -332,14 +334,14 @@ void runChoices<ArithmeticMethod>(const std::vector<std::string>& candidates)
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
-    const auto functor =
+    const auto addTask =
         [threads,
          &inputs](const std::string_view threadName, void (*targetMethod)(const std::int32_t, const std::int32_t))
     { threads->enqueue(threadName, targetMethod, inputs->getIntegers().first, inputs->getIntegers().second); };
-    const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
+    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+
     auto indices =
         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
-
     for (const auto index : indices)
     {
         const auto& target = candidates.at(index);
@@ -347,19 +349,19 @@ void runChoices<ArithmeticMethod>(const std::vector<std::string>& candidates)
         {
             using arithmetic::ArithmeticSolution;
             case abbrVal(ArithmeticMethod::addition):
-                functor(name(target), &ArithmeticSolution::additionMethod);
+                addTask(taskNamer(target), &ArithmeticSolution::additionMethod);
                 break;
             case abbrVal(ArithmeticMethod::subtraction):
-                functor(name(target), &ArithmeticSolution::subtractionMethod);
+                addTask(taskNamer(target), &ArithmeticSolution::subtractionMethod);
                 break;
             case abbrVal(ArithmeticMethod::multiplication):
-                functor(name(target), &ArithmeticSolution::multiplicationMethod);
+                addTask(taskNamer(target), &ArithmeticSolution::multiplicationMethod);
                 break;
             case abbrVal(ArithmeticMethod::division):
-                functor(name(target), &ArithmeticSolution::divisionMethod);
+                addTask(taskNamer(target), &ArithmeticSolution::divisionMethod);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};
         }
     }
 
@@ -369,11 +371,11 @@ void runChoices<ArithmeticMethod>(const std::vector<std::string>& candidates)
 
 namespace divisor
 {
-//! @brief Display the contents of the divisor result.
+//! @brief Show the contents of the divisor result.
 //! @param method - the specific value of DivisorMethod enum
 //! @param result - divisor result
 //! @param interval - time interval
-static void displayResult(const DivisorMethod method, const std::set<std::int32_t>& result, const double interval)
+static void showResult(const DivisorMethod method, const std::set<std::int32_t>& result, const double interval)
 {
     const std::uint32_t arrayBufferSize = result.size() * maxAlignOfPrint;
     std::vector<char> arrayBuffer(arrayBufferSize + 1);
@@ -391,7 +393,7 @@ try
     timer.setBeginTime();
     const auto coll = numeric::divisor::Divisor().euclidean(a, b);
     timer.setEndTime();
-    displayResult(DivisorMethod::euclidean, coll, timer.calculateInterval());
+    showResult(DivisorMethod::euclidean, coll, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -405,7 +407,7 @@ try
     timer.setBeginTime();
     const auto coll = numeric::divisor::Divisor().stein(a, b);
     timer.setEndTime();
-    displayResult(DivisorMethod::stein, coll, timer.calculateInterval());
+    showResult(DivisorMethod::stein, coll, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -431,7 +433,8 @@ void updateChoice<DivisorMethod>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.'};
+            throw std::logic_error{
+                "Unexpected " + std::string{toString<category>()} + " method: " + target.data() + '.'};
     }
 }
 
@@ -453,13 +456,13 @@ void runChoices<DivisorMethod>(const std::vector<std::string>& candidates)
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
-    const auto functor =
+    const auto addTask =
         [threads, &inputs](const std::string_view threadName, void (*targetMethod)(std::int32_t, std::int32_t))
     { threads->enqueue(threadName, targetMethod, inputs->getIntegers().first, inputs->getIntegers().second); };
-    const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
+    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+
     auto indices =
         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
-
     for (const auto index : indices)
     {
         const auto& target = candidates.at(index);
@@ -467,13 +470,13 @@ void runChoices<DivisorMethod>(const std::vector<std::string>& candidates)
         {
             using divisor::DivisorSolution;
             case abbrVal(DivisorMethod::euclidean):
-                functor(name(target), &DivisorSolution::euclideanMethod);
+                addTask(taskNamer(target), &DivisorSolution::euclideanMethod);
                 break;
             case abbrVal(DivisorMethod::stein):
-                functor(name(target), &DivisorSolution::steinMethod);
+                addTask(taskNamer(target), &DivisorSolution::steinMethod);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};
         }
     }
 
@@ -483,11 +486,11 @@ void runChoices<DivisorMethod>(const std::vector<std::string>& candidates)
 
 namespace integral
 {
-//! @brief Display the contents of the integral result.
+//! @brief Show the contents of the integral result.
 //! @param method - the specific value of IntegralMethod enum
 //! @param result - integral result
 //! @param interval - time interval
-static void displayResult(const IntegralMethod method, const double result, const double interval)
+static void showResult(const IntegralMethod method, const double result, const double interval)
 {
     COMMON_PRINT(
         "\n==> %-11s Method <==\nI(def)=%+.5f, run time: %8.5f ms\n", getTitle(method).c_str(), result, interval);
@@ -500,7 +503,7 @@ try
     timer.setBeginTime();
     const auto sum = numeric::integral::Trapezoidal(expr)(lower, upper, numeric::integral::epsilon);
     timer.setEndTime();
-    displayResult(IntegralMethod::trapezoidal, sum, timer.calculateInterval());
+    showResult(IntegralMethod::trapezoidal, sum, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -514,7 +517,7 @@ try
     timer.setBeginTime();
     const auto sum = numeric::integral::Trapezoidal(expr)(lower, upper, numeric::integral::epsilon);
     timer.setEndTime();
-    displayResult(IntegralMethod::simpson, sum, timer.calculateInterval());
+    showResult(IntegralMethod::simpson, sum, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -528,7 +531,7 @@ try
     timer.setBeginTime();
     const auto sum = numeric::integral::Romberg(expr)(lower, upper, numeric::integral::epsilon);
     timer.setEndTime();
-    displayResult(IntegralMethod::romberg, sum, timer.calculateInterval());
+    showResult(IntegralMethod::romberg, sum, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -542,7 +545,7 @@ try
     timer.setBeginTime();
     const auto sum = numeric::integral::Gauss(expr)(lower, upper, numeric::integral::epsilon);
     timer.setEndTime();
-    displayResult(IntegralMethod::gauss, sum, timer.calculateInterval());
+    showResult(IntegralMethod::gauss, sum, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -556,7 +559,7 @@ try
     timer.setBeginTime();
     const auto sum = numeric::integral::MonteCarlo(expr)(lower, upper, numeric::integral::epsilon);
     timer.setEndTime();
-    displayResult(IntegralMethod::monteCarlo, sum, timer.calculateInterval());
+    showResult(IntegralMethod::monteCarlo, sum, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -591,7 +594,8 @@ void updateChoice<IntegralMethod>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.'};
+            throw std::logic_error{
+                "Unexpected " + std::string{toString<category>()} + " method: " + target.data() + '.'};
     }
 }
 
@@ -614,14 +618,14 @@ void runChoices<IntegralMethod>(const std::vector<std::string>& candidates)
     {
         auto& pooling = action::resourcePool();
         auto* const threads = pooling.newElement(bits.count());
-        const auto functor = [threads, &expression, &range](
+        const auto addTask = [threads, &expression, &range](
                                  const std::string_view threadName,
                                  void (*targetMethod)(const integral::Expression&, const double, const double))
         { threads->enqueue(threadName, targetMethod, std::ref(expression), range.range1, range.range2); };
-        const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
+        const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+
         auto indices =
             std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
-
         for (const auto index : indices)
         {
             const auto& target = candidates.at(index);
@@ -629,22 +633,22 @@ void runChoices<IntegralMethod>(const std::vector<std::string>& candidates)
             {
                 using integral::IntegralSolution;
                 case abbrVal(IntegralMethod::trapezoidal):
-                    functor(name(target), &IntegralSolution::trapezoidalMethod);
+                    addTask(taskNamer(target), &IntegralSolution::trapezoidalMethod);
                     break;
                 case abbrVal(IntegralMethod::simpson):
-                    functor(name(target), &IntegralSolution::adaptiveSimpsonMethod);
+                    addTask(taskNamer(target), &IntegralSolution::adaptiveSimpsonMethod);
                     break;
                 case abbrVal(IntegralMethod::romberg):
-                    functor(name(target), &IntegralSolution::rombergMethod);
+                    addTask(taskNamer(target), &IntegralSolution::rombergMethod);
                     break;
                 case abbrVal(IntegralMethod::gauss):
-                    functor(name(target), &IntegralSolution::gaussLegendreMethod);
+                    addTask(taskNamer(target), &IntegralSolution::gaussLegendreMethod);
                     break;
                 case abbrVal(IntegralMethod::monteCarlo):
-                    functor(name(target), &IntegralSolution::monteCarloMethod);
+                    addTask(taskNamer(target), &IntegralSolution::monteCarloMethod);
                     break;
                 default:
-                    throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
+                    throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};
             }
         }
         pooling.deleteElement(threads);
@@ -672,11 +676,11 @@ void runChoices<IntegralMethod>(const std::vector<std::string>& candidates)
 
 namespace prime
 {
-//! @brief Display the contents of the prime result.
+//! @brief Show the contents of the prime result.
 //! @param method - the specific value of PrimeMethod enum
 //! @param result - prime result
 //! @param interval - time interval
-static void displayResult(const PrimeMethod method, const std::vector<std::uint32_t>& result, const double interval)
+static void showResult(const PrimeMethod method, const std::vector<std::uint32_t>& result, const double interval)
 {
     const std::uint32_t arrayBufferSize = result.size() * maxAlignOfPrint;
     std::vector<char> arrayBuffer(arrayBufferSize + 1);
@@ -694,7 +698,7 @@ try
     timer.setBeginTime();
     const auto coll = numeric::prime::Prime().eratosthenes(max);
     timer.setEndTime();
-    displayResult(PrimeMethod::eratosthenes, coll, timer.calculateInterval());
+    showResult(PrimeMethod::eratosthenes, coll, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -708,7 +712,7 @@ try
     timer.setBeginTime();
     const auto coll = numeric::prime::Prime().euler(max);
     timer.setEndTime();
-    displayResult(PrimeMethod::euler, coll, timer.calculateInterval());
+    showResult(PrimeMethod::euler, coll, timer.calculateInterval());
 }
 catch (const std::exception& err)
 {
@@ -734,7 +738,8 @@ void updateChoice<PrimeMethod>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target.data() + '.'};
+            throw std::logic_error{
+                "Unexpected " + std::string{toString<category>()} + " method: " + target.data() + '.'};
     }
 }
 
@@ -756,13 +761,13 @@ void runChoices<PrimeMethod>(const std::vector<std::string>& candidates)
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(maxPositiveInteger);
-    const auto functor =
+    const auto addTask =
         [threads, &inputs](const std::string_view threadName, void (*targetMethod)(const std::uint32_t))
     { threads->enqueue(threadName, targetMethod, inputs->getMaxPositiveInteger()); };
-    const auto name = utility::currying::curry(getTaskNameCurried(), getCategoryAlias<category>());
+    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+
     auto indices =
         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
-
     for (const auto index : indices)
     {
         const auto& target = candidates.at(index);
@@ -770,13 +775,13 @@ void runChoices<PrimeMethod>(const std::vector<std::string>& candidates)
         {
             using prime::PrimeSolution;
             case abbrVal(PrimeMethod::eratosthenes):
-                functor(name(target), &PrimeSolution::eratosthenesMethod);
+                addTask(taskNamer(target), &PrimeSolution::eratosthenesMethod);
                 break;
             case abbrVal(PrimeMethod::euler):
-                functor(name(target), &PrimeSolution::eulerMethod);
+                addTask(taskNamer(target), &PrimeSolution::eulerMethod);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};
         }
     }
 

@@ -117,12 +117,12 @@ private:
     void dispatch();
     //! @brief Execute the command line of console mode.
     void executeInConsole() const;
-    //! @brief Print help message.
+    //! @brief Show help message.
     void showHelpMessage() const;
     //! @brief Dump configuration.
     static void dumpConfiguration();
-    //! @brief Print version icon.
-    void showVersionIcon() const;
+    //! @brief Display version information.
+    void displayVersionInfo() const;
     //! @brief Check for excessive arguments.
     void checkForExcessiveArguments();
 
