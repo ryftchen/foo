@@ -5,14 +5,14 @@ edition = "2021"
 rust-version = "1.75"
 
 [dependencies]
-futures-util = "0.3.0"
-getopts = "0.2.0"
-http = "1.0.0"
-hyper = {version = "1.0.0", features = ["http1", "server"]}
-hyper-staticfile = "0.10.0"
-hyper-util = {version = "0.1.0", features = ["tokio"]}
-shellexpand = "3.1.0"
-tokio = {version = "1.0.0", features = ["macros", "rt-multi-thread", "net", "io-util"]}
+futures-util = "0.3"
+getopts = "0.2"
+http = "1.0"
+hyper = {version = "1.0", features = ["http1", "server"]}
+hyper-staticfile = "0.10"
+hyper-util = {version = "0.1", features = ["tokio"]}
+shellexpand = "3.1"
+tokio = {version = "1.13", features = ["macros", "rt-multi-thread", "net", "io-util"]}
 litemap = "=0.7.4"
 zerofrom = "=0.1.5"
 
