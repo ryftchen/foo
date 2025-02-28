@@ -16,7 +16,7 @@ async fn run(args: arg::Args) {
     }
     print!("The archive server starts listening ...\n{}", prompt);
 
-    let _ret = futures::future::join_all(srv_vec).await;
+    let _ret = futures_util::future::join_all(srv_vec).await;
 }
 
 #[tokio::main]
