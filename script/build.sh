@@ -569,7 +569,7 @@ EOF
     exit "${STATUS}"
 }
 
-function try_to_perform_single_choice_options()
+function try_perform_single_choice_options()
 {
     perform_help_option
     perform_initialize_option
@@ -942,7 +942,7 @@ function perform_browser_option()
     fi
 }
 
-function try_to_perform_multiple_choice_options()
+function try_perform_multiple_choice_options()
 {
     check_extra_dependencies
 
@@ -1186,9 +1186,9 @@ function main()
     clean_up_temporary_files
 
     parse_parameters "$@"
-    try_to_perform_single_choice_options
+    try_perform_single_choice_options
     build_native
-    try_to_perform_multiple_choice_options
+    try_perform_multiple_choice_options
 
     exit "${STATUS}"
 }
