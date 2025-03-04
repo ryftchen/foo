@@ -199,9 +199,9 @@ const char* const version = numeric::arithmetic::version();
 namespace input
 {
 //! @brief One of integers for arithmetic methods.
-constexpr std::int32_t integerA = 1073741823;
+constexpr std::int32_t integerA = 46340;
 //! @brief One of integers for arithmetic methods.
-constexpr std::int32_t integerB = -2;
+constexpr std::int32_t integerB = -46340;
 } // namespace input
 
 //! @brief Solution of arithmetic.
