@@ -61,25 +61,25 @@ std::shared_ptr<arithmetic::InputBuilder> ArithmeticTestBase::inputs = nullptr;
 //! @brief Test for the addition method in the solution of arithmetic.
 TEST_F(ArithmeticTestBase, additionMethod)
 {
-    ASSERT_EQ(1073741821, sut.addition(inputs->getIntegers().first, inputs->getIntegers().second));
+    ASSERT_EQ(0, sut.addition(inputs->getIntegers().first, inputs->getIntegers().second));
 }
 
 //! @brief Test for the subtraction method in the solution of arithmetic.
 TEST_F(ArithmeticTestBase, subtractionMethod)
 {
-    ASSERT_EQ(1073741825, sut.subtraction(inputs->getIntegers().first, inputs->getIntegers().second));
+    ASSERT_EQ(92680, sut.subtraction(inputs->getIntegers().first, inputs->getIntegers().second));
 }
 
 //! @brief Test for the multiplication method in the solution of arithmetic.
 TEST_F(ArithmeticTestBase, multiplicationMethod)
 {
-    ASSERT_EQ(-2147483646, sut.multiplication(inputs->getIntegers().first, inputs->getIntegers().second));
+    ASSERT_EQ(-2147395600, sut.multiplication(inputs->getIntegers().first, inputs->getIntegers().second));
 }
 
 //! @brief Test for the division method in the solution of arithmetic.
 TEST_F(ArithmeticTestBase, divisionMethod)
 {
-    ASSERT_EQ(-536870911, sut.division(inputs->getIntegers().first, inputs->getIntegers().second));
+    ASSERT_EQ(-1, sut.division(inputs->getIntegers().first, inputs->getIntegers().second));
 }
 
 //! @brief Test base of divisor.
