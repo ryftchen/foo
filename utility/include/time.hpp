@@ -21,21 +21,19 @@ extern const char* version() noexcept;
 class Time
 {
 public:
+    //! @brief Construct a new Time object.
+    Time();
     //! @brief Destroy the Time object.
     virtual ~Time() = default;
 
-    //! @brief Set the beginning time.
-    void setBeginTime();
-    //! @brief Set the ending time.
-    void setEndTime();
-    //! @brief Calculate the time interval.
-    [[nodiscard]] double calculateInterval() const;
+    //! @brief Reset the beginning time.
+    void resetBeginTime();
+    //! @brief Calculate the elapsed time.
+    [[nodiscard]] double calcElapsedTime() const;
 
 private:
     //! @brief Beginning time.
     std::chrono::high_resolution_clock::time_point beginTime{};
-    //! @brief Ending time.
-    std::chrono::high_resolution_clock::time_point endTime{};
 };
 
 //! @brief Perform millisecond-level sleep.

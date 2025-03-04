@@ -272,8 +272,8 @@ static void showResult(
 {
     if (-1 != result)
     {
-        COMMON_PRINT(
-            "\n==> %-16s Method <==\npattern \"%s\" found starting (1st) at index %d, run time: %8.5f ms\n",
+        std::printf(
+            "\n==> %-16s Method <==\npattern \"%s\" found starting (1st) at index %ld, run time: %8.5f ms\n",
             getTitle(method).c_str(),
             pattern,
             result,
@@ -281,7 +281,7 @@ static void showResult(
     }
     else
     {
-        COMMON_PRINT(
+        std::printf(
             "\n==> %-16s Method <==\npattern \"%s\" could not be found, run time: %8.5f ms\n",
             getTitle(method).c_str(),
             pattern,
@@ -297,10 +297,9 @@ void MatchSolution::rkMethod(
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto shift = algorithm::match::Match().rk(text, pattern, textLen, patternLen);
-    timer.setEndTime();
-    showResult(MatchMethod::rabinKarp, shift, pattern, timer.calculateInterval());
+    showResult(MatchMethod::rabinKarp, shift, pattern, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -315,10 +314,9 @@ void MatchSolution::kmpMethod(
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto shift = algorithm::match::Match().kmp(text, pattern, textLen, patternLen);
-    timer.setEndTime();
-    showResult(MatchMethod::knuthMorrisPratt, shift, pattern, timer.calculateInterval());
+    showResult(MatchMethod::knuthMorrisPratt, shift, pattern, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -333,10 +331,9 @@ void MatchSolution::bmMethod(
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto shift = algorithm::match::Match().bm(text, pattern, textLen, patternLen);
-    timer.setEndTime();
-    showResult(MatchMethod::boyerMoore, shift, pattern, timer.calculateInterval());
+    showResult(MatchMethod::boyerMoore, shift, pattern, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -351,10 +348,9 @@ void MatchSolution::horspoolMethod(
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto shift = algorithm::match::Match().horspool(text, pattern, textLen, patternLen);
-    timer.setEndTime();
-    showResult(MatchMethod::horspool, shift, pattern, timer.calculateInterval());
+    showResult(MatchMethod::horspool, shift, pattern, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -369,10 +365,9 @@ void MatchSolution::sundayMethod(
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto shift = algorithm::match::Match().sunday(text, pattern, textLen, patternLen);
-    timer.setEndTime();
-    showResult(MatchMethod::sunday, shift, pattern, timer.calculateInterval());
+    showResult(MatchMethod::sunday, shift, pattern, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -487,7 +482,7 @@ namespace notation
 //! @param descr - notation description
 static void showResult(const NotationMethod method, const std::string_view result, const char* const descr)
 {
-    COMMON_PRINT("\n==> %-7s Method <==\n%s: %s\n", getTitle(method).c_str(), descr, result.data());
+    std::printf("\n==> %-7s Method <==\n%s: %s\n", getTitle(method).c_str(), descr, result.data());
 }
 
 void NotationSolution::prefixMethod(const std::string_view infix)
@@ -593,7 +588,7 @@ static void showResult(
 {
     if (result.has_value())
     {
-        COMMON_PRINT(
+        std::printf(
             "\n==> %-9s Method <==\nF(min)=%+.5f X=%+.5f, run time: %8.5f ms\n",
             getTitle(method).c_str(),
             std::get<0>(result.value()),
@@ -602,7 +597,7 @@ static void showResult(
     }
     else
     {
-        COMMON_PRINT(
+        std::printf(
             "\n==> %-9s Method <==\nF(min) could not be found, run time: %8.5f ms\n",
             getTitle(method).c_str(),
             interval);
@@ -613,10 +608,9 @@ void OptimalSolution::gradientDescentMethod(const Function& func, const double l
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto tuple = algorithm::optimal::Gradient(func)(left, right, algorithm::optimal::epsilon);
-    timer.setEndTime();
-    showResult(OptimalMethod::gradient, tuple, timer.calculateInterval());
+    showResult(OptimalMethod::gradient, tuple, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -627,10 +621,9 @@ void OptimalSolution::simulatedAnnealingMethod(const Function& func, const doubl
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto tuple = algorithm::optimal::Annealing(func)(left, right, algorithm::optimal::epsilon);
-    timer.setEndTime();
-    showResult(OptimalMethod::annealing, tuple, timer.calculateInterval());
+    showResult(OptimalMethod::annealing, tuple, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -641,10 +634,9 @@ void OptimalSolution::particleSwarmMethod(const Function& func, const double lef
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto tuple = algorithm::optimal::Particle(func)(left, right, algorithm::optimal::epsilon);
-    timer.setEndTime();
-    showResult(OptimalMethod::particle, tuple, timer.calculateInterval());
+    showResult(OptimalMethod::particle, tuple, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -655,10 +647,9 @@ void OptimalSolution::geneticMethod(const Function& func, const double left, con
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto tuple = algorithm::optimal::Genetic(func)(left, right, algorithm::optimal::epsilon);
-    timer.setEndTime();
-    showResult(OptimalMethod::genetic, tuple, timer.calculateInterval());
+    showResult(OptimalMethod::genetic, tuple, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -779,8 +770,8 @@ static void showResult(const SearchMethod method, const std::int64_t result, con
 {
     if (-1 != result)
     {
-        COMMON_PRINT(
-            "\n==> %-13s Method <==\nfound the key \"%.5f\" that appears in the index %d, run time: %8.5f ms\n",
+        std::printf(
+            "\n==> %-13s Method <==\nfound the key \"%.5f\" that appears in the index %ld, run time: %8.5f ms\n",
             getTitle(method).c_str(),
             key,
             result,
@@ -788,7 +779,7 @@ static void showResult(const SearchMethod method, const std::int64_t result, con
     }
     else
     {
-        COMMON_PRINT(
+        std::printf(
             "\n==> %-13s Method <==\ncould not find the key \"%.5f\", run time: %8.5f ms\n",
             getTitle(method).c_str(),
             key,
@@ -800,10 +791,9 @@ void SearchSolution::binaryMethod(const float* const array, const std::uint32_t 
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto index = algorithm::search::Search<float>().binary(array, length, key);
-    timer.setEndTime();
-    showResult(SearchMethod::binary, index, key, timer.calculateInterval());
+    showResult(SearchMethod::binary, index, key, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -814,10 +804,9 @@ void SearchSolution::interpolationMethod(const float* const array, const std::ui
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto index = algorithm::search::Search<float>().interpolation(array, length, key);
-    timer.setEndTime();
-    showResult(SearchMethod::interpolation, index, key, timer.calculateInterval());
+    showResult(SearchMethod::interpolation, index, key, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -828,10 +817,9 @@ void SearchSolution::fibonacciMethod(const float* const array, const std::uint32
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto index = algorithm::search::Search<float>().fibonacci(array, length, key);
-    timer.setEndTime();
-    showResult(SearchMethod::fibonacci, index, key, timer.calculateInterval());
+    showResult(SearchMethod::fibonacci, index, key, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -930,7 +918,7 @@ static void showResult(const SortMethod method, const std::vector<std::int32_t>&
 {
     const std::uint32_t arrayBufferSize = result.size() * maxAlignOfPrint;
     std::vector<char> arrayBuffer(arrayBufferSize + 1);
-    COMMON_PRINT(
+    std::printf(
         "\n==> %-9s Method <==\n%s\n(asc) run time: %8.5f ms\n",
         getTitle(method).c_str(),
         InputBuilder<std::int32_t>::template spliceAll<std::int32_t>(
@@ -942,10 +930,9 @@ void SortSolution::bubbleMethod(const std::int32_t* const array, const std::uint
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto coll = algorithm::sort::Sort<std::int32_t>().bubble(array, length);
-    timer.setEndTime();
-    showResult(SortMethod::bubble, coll, timer.calculateInterval());
+    showResult(SortMethod::bubble, coll, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -956,10 +943,9 @@ void SortSolution::selectionMethod(const std::int32_t* const array, const std::u
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto coll = algorithm::sort::Sort<std::int32_t>().selection(array, length);
-    timer.setEndTime();
-    showResult(SortMethod::selection, coll, timer.calculateInterval());
+    showResult(SortMethod::selection, coll, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -970,10 +956,9 @@ void SortSolution::insertionMethod(const std::int32_t* const array, const std::u
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto coll = algorithm::sort::Sort<std::int32_t>().insertion(array, length);
-    timer.setEndTime();
-    showResult(SortMethod::insertion, coll, timer.calculateInterval());
+    showResult(SortMethod::insertion, coll, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -984,10 +969,9 @@ void SortSolution::shellMethod(const std::int32_t* const array, const std::uint3
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto coll = algorithm::sort::Sort<std::int32_t>().shell(array, length);
-    timer.setEndTime();
-    showResult(SortMethod::shell, coll, timer.calculateInterval());
+    showResult(SortMethod::shell, coll, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -998,10 +982,9 @@ void SortSolution::mergeMethod(const std::int32_t* const array, const std::uint3
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto coll = algorithm::sort::Sort<std::int32_t>().merge(array, length);
-    timer.setEndTime();
-    showResult(SortMethod::merge, coll, timer.calculateInterval());
+    showResult(SortMethod::merge, coll, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -1012,10 +995,9 @@ void SortSolution::quickMethod(const std::int32_t* const array, const std::uint3
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto coll = algorithm::sort::Sort<std::int32_t>().quick(array, length);
-    timer.setEndTime();
-    showResult(SortMethod::quick, coll, timer.calculateInterval());
+    showResult(SortMethod::quick, coll, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -1026,10 +1008,9 @@ void SortSolution::heapMethod(const std::int32_t* const array, const std::uint32
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto coll = algorithm::sort::Sort<std::int32_t>().heap(array, length);
-    timer.setEndTime();
-    showResult(SortMethod::heap, coll, timer.calculateInterval());
+    showResult(SortMethod::heap, coll, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -1040,10 +1021,9 @@ void SortSolution::countingMethod(const std::int32_t* const array, const std::ui
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto coll = algorithm::sort::Sort<std::int32_t>().counting(array, length);
-    timer.setEndTime();
-    showResult(SortMethod::counting, coll, timer.calculateInterval());
+    showResult(SortMethod::counting, coll, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -1054,10 +1034,9 @@ void SortSolution::bucketMethod(const std::int32_t* const array, const std::uint
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto coll = algorithm::sort::Sort<std::int32_t>().bucket(array, length);
-    timer.setEndTime();
-    showResult(SortMethod::bucket, coll, timer.calculateInterval());
+    showResult(SortMethod::bucket, coll, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -1068,10 +1047,9 @@ void SortSolution::radixMethod(const std::int32_t* const array, const std::uint3
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto coll = algorithm::sort::Sort<std::int32_t>().radix(array, length);
-    timer.setEndTime();
-    showResult(SortMethod::radix, coll, timer.calculateInterval());
+    showResult(SortMethod::radix, coll, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {

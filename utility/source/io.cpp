@@ -343,42 +343,39 @@ std::string executeCommand(const std::string_view command, const std::size_t tim
     std::vector<char> buffer(4096);
     for (const auto startTime = std::chrono::steady_clock::now();;)
     {
-        if (timeout > 0)
-        {
-            const auto elapsedTime =
-                std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - startTime);
-            if (static_cast<std::size_t>(elapsedTime.count()) > timeout)
-            {
-                ::pclose(pipe);
-                throw std::runtime_error{"Execute command timeout."};
-            }
-        }
-
         const std::size_t readLen = std::fread(buffer.data(), sizeof(char), buffer.size(), pipe);
-        if (0 == readLen)
+        if ((0 != timeout)
+            && (std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - startTime).count()
+                > timeout))
+        {
+            ::pclose(pipe);
+            throw std::runtime_error{"Execute command timeout."};
+        }
+        else if (0 == readLen)
         {
             break;
         }
         output.append(buffer.data(), readLen);
     }
 
-    const int exitStatus = ::pclose(pipe);
-    if (-1 == exitStatus)
+    const int status = ::pclose(pipe);
+    if (-1 == status)
     {
         throw std::runtime_error{"Could not close pipe when trying to execute command."};
     }
-    if (WIFEXITED(exitStatus))
+
+    if (WIFEXITED(status))
     {
-        if (const int exitCode = WEXITSTATUS(exitStatus); EXIT_SUCCESS != exitCode)
+        if (const int exitCode = WEXITSTATUS(status); EXIT_SUCCESS != exitCode)
         {
             throw std::runtime_error{
                 "Returns exit code " + std::to_string(exitCode) + " when the command is executed."};
         }
     }
-    else if (WIFSIGNALED(exitStatus))
+    else if (WIFSIGNALED(status))
     {
-        const int signal = WTERMSIG(exitStatus);
-        throw std::runtime_error{"Terminated by signal " + std::to_string(signal) + " when the command is executed."};
+        throw std::runtime_error{
+            "Terminated by signal " + std::to_string(WTERMSIG(status)) + " when the command is executed."};
     }
     else
     {
@@ -403,7 +400,7 @@ void waitForUserInput(const std::function<bool(const std::string_view)>& operati
     ::epoll_event event{};
     event.events = ::EPOLLIN;
     event.data.fd = STDIN_FILENO;
-    if (::epoll_ctl(epollFD, EPOLL_CTL_ADD, STDIN_FILENO, &event))
+    if (::epoll_ctl(epollFD, EPOLL_CTL_ADD, STDIN_FILENO, &event) == -1)
     {
         ::close(epollFD);
         throw std::runtime_error{"Could not control epoll when trying to wait for user input."};
@@ -411,8 +408,7 @@ void waitForUserInput(const std::function<bool(const std::string_view)>& operati
 
     for (;;)
     {
-        const int status = ::epoll_wait(epollFD, &event, 1, timeout);
-        if (-1 == status)
+        if (const int status = ::epoll_wait(epollFD, &event, 1, timeout); -1 == status)
         {
             ::close(epollFD);
             throw std::runtime_error{"Not the expected wait result for epoll."};

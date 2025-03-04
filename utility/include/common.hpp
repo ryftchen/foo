@@ -11,12 +11,14 @@
 #include <cstring>
 #include <shared_mutex>
 
-//! @brief Format as a string and printing.
-#define COMMON_PRINT(fmt, ...) std::cout << utility::common::formatString(fmt __VA_OPT__(, ) __VA_ARGS__) << std::flush
+//! @brief Do stringify for internal use.
+#define COMMON_INTERNAL_STRINGIFY(x) #x
 //! @brief Do stringify.
-#define COMMON_STRINGIFY(x) #x
-//! @brief Convert to string.
-#define COMMON_TO_STRING(x) COMMON_STRINGIFY(x)
+#define COMMON_STRINGIFY(x) COMMON_INTERNAL_STRINGIFY(x)
+//! @brief Do concatenation for internal use.
+#define COMMON_INTERNAL_CONCAT(x, y) x##y
+//! @brief Do concatenation.
+#define COMMON_CONCAT(x, y) COMMON_INTERNAL_CONCAT(x, y)
 
 //! @brief The utility module.
 namespace utility // NOLINT(modernize-concat-nested-namespaces)

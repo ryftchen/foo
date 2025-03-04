@@ -224,7 +224,7 @@ namespace behavioral
 //! @param result - behavioral result
 static void showResult(const BehavioralInstance instance, const std::string_view result)
 {
-    COMMON_PRINT("\n==> %-21s Instance <==\n%s", getTitle(instance).c_str(), result.data());
+    std::printf("\n==> %-21s Instance <==\n%s", getTitle(instance).c_str(), result.data());
 }
 
 void BehavioralPattern::chainOfResponsibilityInstance()
@@ -477,7 +477,7 @@ namespace creational
 //! @param result - creational result
 static void showResult(const CreationalInstance instance, const std::string_view result)
 {
-    COMMON_PRINT("\n==> %-15s Instance <==\n%s", getTitle(instance).c_str(), result.data());
+    std::printf("\n==> %-15s Instance <==\n%s", getTitle(instance).c_str(), result.data());
 }
 
 void CreationalPattern::abstractFactoryInstance()
@@ -628,7 +628,7 @@ namespace structural
 //! @param result - structural result
 static void showResult(const StructuralInstance instance, const std::string_view result)
 {
-    COMMON_PRINT("\n==> %-9s Instance <==\n%s", getTitle(instance).c_str(), result.data());
+    std::printf("\n==> %-9s Instance <==\n%s", getTitle(instance).c_str(), result.data());
 }
 
 void StructuralPattern::adapterInstance()

@@ -16,29 +16,19 @@ const char* version() noexcept
     return ver;
 }
 
-void Time::setBeginTime()
+Time::Time()
+{
+    resetBeginTime();
+}
+
+void Time::resetBeginTime()
 {
     beginTime = std::chrono::high_resolution_clock::now();
 }
 
-void Time::setEndTime()
+double Time::calcElapsedTime() const
 {
-    endTime = std::chrono::high_resolution_clock::now();
-}
-
-double Time::calculateInterval() const
-{
-    if ((std::chrono::high_resolution_clock::time_point{} == beginTime)
-        || (std::chrono::high_resolution_clock::time_point{} == endTime))
-    {
-        throw std::logic_error{"Either the begin time or the end time is not set."};
-    }
-    if (beginTime > endTime)
-    {
-        throw std::logic_error{"The end time cannot be earlier than the begin time."};
-    }
-
-    return std::chrono::duration<double, std::milli>(endTime - beginTime).count();
+    return std::chrono::duration<double, std::milli>(std::chrono::high_resolution_clock::now() - beginTime).count();
 }
 
 //! @brief Create a one-shot timer with blocking.
@@ -47,19 +37,13 @@ double Time::calculateInterval() const
 //! @return the value is 0 if the termination condition is met, otherwise -1 on timeout
 int blockingTimer(const std::function<bool()>& termination, const std::size_t timeout)
 {
-    for (const auto startTime = std::chrono::steady_clock::now();;)
+    for (Time timer{};;)
     {
-        if (timeout > 0)
+        if ((0 != timeout) && (timer.calcElapsedTime() > timeout))
         {
-            const auto elapsedTime =
-                std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - startTime);
-            if (static_cast<std::size_t>(elapsedTime.count()) > timeout)
-            {
-                return -1;
-            }
+            return -1;
         }
-
-        if (termination())
+        else if (termination())
         {
             return 0;
         }
