@@ -10,33 +10,34 @@
 #include "application/example/include/apply_data_structure.hpp"
 #include "application/example/include/apply_design_pattern.hpp"
 #include "application/example/include/apply_numeric.hpp"
+#include "utility/include/common.hpp"
 #include "utility/include/memory.hpp"
 #include "utility/include/reflection.hpp"
 #include "utility/include/thread.hpp"
 
 //! @brief Reflect the sub-cli category name and alias name to the field in the command line argument mapping.
-#define ACTION_REFLECT_COMMAND_SUB_CLI_FIELD(category, alias)      \
-    Field                                                          \
-    {                                                              \
-        REFLECTION_STR(#category), &Type::category##Opts, AttrList \
-        {                                                          \
-            Attr                                                   \
-            {                                                      \
-                REFLECTION_STR("alias"), #alias                    \
-            }                                                      \
-        }                                                          \
+#define ACTION_REFLECT_COMMAND_SUB_CLI_FIELD(category, alias)                                      \
+    Field                                                                                          \
+    {                                                                                              \
+        REFLECTION_STR(COMMON_STRINGIFY(category)), &Type::COMMON_CONCAT(category, Opts), AttrList \
+        {                                                                                          \
+            Attr                                                                                   \
+            {                                                                                      \
+                REFLECTION_STR("alias"), COMMON_STRINGIFY(alias)                                   \
+            }                                                                                      \
+        }                                                                                          \
     }
 //! @brief Reflect the sub-cli category entry and choice name to the field in the command line argument mapping.
-#define ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(entry, choice) \
-    Field                                                            \
-    {                                                                \
-        REFLECTION_STR(#entry), Type::entry, AttrList                \
-        {                                                            \
-            Attr                                                     \
-            {                                                        \
-                REFLECTION_STR("choice"), #choice                    \
-            }                                                        \
-        }                                                            \
+#define ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(entry, choice)   \
+    Field                                                              \
+    {                                                                  \
+        REFLECTION_STR(COMMON_STRINGIFY(entry)), Type::entry, AttrList \
+        {                                                              \
+            Attr                                                       \
+            {                                                          \
+                REFLECTION_STR("choice"), COMMON_STRINGIFY(choice)     \
+            }                                                          \
+        }                                                              \
     }
 
 //! @brief Static reflection for ApplyAlgorithm. Used to map command line arguments.

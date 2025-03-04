@@ -497,19 +497,19 @@ int View::buildTLVPacket4Depend(const std::vector<std::string>& args, char* buf)
     tlv::TLVValue val{};
     std::string extLibraries{};
 #if defined(__GLIBC__) && defined(__GLIBC_MINOR__)
-    extLibraries += "GNU C Library " COMMON_TO_STRING(__GLIBC__) "." COMMON_TO_STRING(__GLIBC_MINOR__) "\n";
+    extLibraries += "GNU C Library " COMMON_STRINGIFY(__GLIBC__) "." COMMON_STRINGIFY(__GLIBC_MINOR__) "\n";
 #else
 #error Could not find the GNU C library version.
 #endif // defined(__GLIBC__) && defined(__GLIBC_MINOR__)
 #if defined(_GLIBCXX_RELEASE) && defined(__GLIBCXX__)
     extLibraries +=
-        "GNU C++ Standard Library " COMMON_TO_STRING(_GLIBCXX_RELEASE) " (" COMMON_TO_STRING(__GLIBCXX__) ")\n";
+        "GNU C++ Standard Library " COMMON_STRINGIFY(_GLIBCXX_RELEASE) " (" COMMON_STRINGIFY(__GLIBCXX__) ")\n";
 #else
 #error Could not find the GNU C++ Standard library version.
 #endif // defined(_GLIBCXX_RELEASE) && defined(__GLIBCXX__)
 #if defined(__GNU_MP_VERSION) && defined(__GNU_MP_VERSION_MINOR) && defined(__GNU_MP_VERSION_PATCHLEVEL)
-    extLibraries += "GNU MP Library " COMMON_TO_STRING(__GNU_MP_VERSION) "." COMMON_TO_STRING(
-        __GNU_MP_VERSION_MINOR) "." COMMON_TO_STRING(__GNU_MP_VERSION_PATCHLEVEL) "\n";
+    extLibraries += "GNU MP Library " COMMON_STRINGIFY(__GNU_MP_VERSION) "." COMMON_STRINGIFY(
+        __GNU_MP_VERSION_MINOR) "." COMMON_STRINGIFY(__GNU_MP_VERSION_PATCHLEVEL) "\n";
 #else
 #error Could not find the GNU MP library version.
 #endif // defined(__GNU_MP_VERSION) && defined(__GNU_MP_VERSION_MINOR) && defined(__GNU_MP_VERSION_PATCHLEVEL)
@@ -520,7 +520,7 @@ int View::buildTLVPacket4Depend(const std::vector<std::string>& args, char* buf)
 #endif // defined(MPFR_VERSION_STRING)
 #if defined(RL_VERSION_MAJOR) && defined(RL_VERSION_MINOR)
     extLibraries +=
-        "GNU Readline Library " COMMON_TO_STRING(RL_VERSION_MAJOR) "." COMMON_TO_STRING(RL_VERSION_MINOR) "\n";
+        "GNU Readline Library " COMMON_STRINGIFY(RL_VERSION_MAJOR) "." COMMON_STRINGIFY(RL_VERSION_MINOR) "\n";
 #else
 #error Could not find the GNU Readline library version.
 #endif // defined(RL_VERSION_MAJOR) && defined(RL_VERSION_MINOR)

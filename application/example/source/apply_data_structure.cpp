@@ -186,7 +186,7 @@ namespace linear
 //! @param result - linear result
 static void showResult(const LinearInstance instance, const std::string_view result)
 {
-    COMMON_PRINT("\n==> %-10s Instance <==\n%s", getTitle(instance).c_str(), result.data());
+    std::printf("\n==> %-10s Instance <==\n%s", getTitle(instance).c_str(), result.data());
 }
 
 void LinearStructure::linkedListInstance()
@@ -303,7 +303,7 @@ namespace tree
 //! @param result - tree result
 static void showResult(const TreeInstance instance, const std::string_view result)
 {
-    COMMON_PRINT("\n==> %-19s Instance <==\n%s", getTitle(instance).c_str(), result.data());
+    std::printf("\n==> %-19s Instance <==\n%s", getTitle(instance).c_str(), result.data());
 }
 
 void TreeStructure::bsInstance()

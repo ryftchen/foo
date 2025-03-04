@@ -239,7 +239,7 @@ namespace arithmetic
 static void showResult(
     const ArithmeticMethod method, const std::int32_t result, const std::int32_t a, const std::int32_t b, const char op)
 {
-    COMMON_PRINT("\n==> %-14s Method <==\n(%d) %c (%d) = %d\n", getTitle(method).c_str(), a, op, b, result);
+    std::printf("\n==> %-14s Method <==\n(%d) %c (%d) = %d\n", getTitle(method).c_str(), a, op, b, result);
 }
 
 void ArithmeticSolution::additionMethod(const std::int32_t augend, const std::int32_t addend)
@@ -379,7 +379,7 @@ static void showResult(const DivisorMethod method, const std::set<std::int32_t>&
 {
     const std::uint32_t arrayBufferSize = result.size() * maxAlignOfPrint;
     std::vector<char> arrayBuffer(arrayBufferSize + 1);
-    COMMON_PRINT(
+    std::printf(
         "\n==> %-9s Method <==\n%s\nrun time: %8.5f ms\n",
         getTitle(method).c_str(),
         InputBuilder::template spliceAllIntegers<std::int32_t>(result, arrayBuffer.data(), arrayBufferSize + 1),
@@ -390,10 +390,9 @@ void DivisorSolution::euclideanMethod(std::int32_t a, std::int32_t b)
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto coll = numeric::divisor::Divisor().euclidean(a, b);
-    timer.setEndTime();
-    showResult(DivisorMethod::euclidean, coll, timer.calculateInterval());
+    showResult(DivisorMethod::euclidean, coll, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -404,10 +403,9 @@ void DivisorSolution::steinMethod(std::int32_t a, std::int32_t b)
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto coll = numeric::divisor::Divisor().stein(a, b);
-    timer.setEndTime();
-    showResult(DivisorMethod::stein, coll, timer.calculateInterval());
+    showResult(DivisorMethod::stein, coll, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -492,7 +490,7 @@ namespace integral
 //! @param interval - time interval
 static void showResult(const IntegralMethod method, const double result, const double interval)
 {
-    COMMON_PRINT(
+    std::printf(
         "\n==> %-11s Method <==\nI(def)=%+.5f, run time: %8.5f ms\n", getTitle(method).c_str(), result, interval);
 }
 
@@ -500,10 +498,9 @@ void IntegralSolution::trapezoidalMethod(const Expression& expr, double lower, d
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto sum = numeric::integral::Trapezoidal(expr)(lower, upper, numeric::integral::epsilon);
-    timer.setEndTime();
-    showResult(IntegralMethod::trapezoidal, sum, timer.calculateInterval());
+    showResult(IntegralMethod::trapezoidal, sum, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -514,10 +511,9 @@ void IntegralSolution::adaptiveSimpsonMethod(const Expression& expr, const doubl
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto sum = numeric::integral::Trapezoidal(expr)(lower, upper, numeric::integral::epsilon);
-    timer.setEndTime();
-    showResult(IntegralMethod::simpson, sum, timer.calculateInterval());
+    showResult(IntegralMethod::simpson, sum, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -528,10 +524,9 @@ void IntegralSolution::rombergMethod(const Expression& expr, const double lower,
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto sum = numeric::integral::Romberg(expr)(lower, upper, numeric::integral::epsilon);
-    timer.setEndTime();
-    showResult(IntegralMethod::romberg, sum, timer.calculateInterval());
+    showResult(IntegralMethod::romberg, sum, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -542,10 +537,9 @@ void IntegralSolution::gaussLegendreMethod(const Expression& expr, const double 
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto sum = numeric::integral::Gauss(expr)(lower, upper, numeric::integral::epsilon);
-    timer.setEndTime();
-    showResult(IntegralMethod::gauss, sum, timer.calculateInterval());
+    showResult(IntegralMethod::gauss, sum, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -556,10 +550,9 @@ void IntegralSolution::monteCarloMethod(const Expression& expr, const double low
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto sum = numeric::integral::MonteCarlo(expr)(lower, upper, numeric::integral::epsilon);
-    timer.setEndTime();
-    showResult(IntegralMethod::monteCarlo, sum, timer.calculateInterval());
+    showResult(IntegralMethod::monteCarlo, sum, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -684,7 +677,7 @@ static void showResult(const PrimeMethod method, const std::vector<std::uint32_t
 {
     const std::uint32_t arrayBufferSize = result.size() * maxAlignOfPrint;
     std::vector<char> arrayBuffer(arrayBufferSize + 1);
-    COMMON_PRINT(
+    std::printf(
         "\n==> %-9s Method <==\n%s\nrun time: %8.5f ms\n",
         getTitle(method).c_str(),
         InputBuilder::template spliceAllIntegers<std::uint32_t>(result, arrayBuffer.data(), arrayBufferSize + 1),
@@ -695,10 +688,9 @@ void PrimeSolution::eratosthenesMethod(const std::uint32_t max)
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto coll = numeric::prime::Prime().eratosthenes(max);
-    timer.setEndTime();
-    showResult(PrimeMethod::eratosthenes, coll, timer.calculateInterval());
+    showResult(PrimeMethod::eratosthenes, coll, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -709,10 +701,9 @@ void PrimeSolution::eulerMethod(const std::uint32_t max)
 try
 {
     utility::time::Time timer{};
-    timer.setBeginTime();
+
     const auto coll = numeric::prime::Prime().euler(max);
-    timer.setEndTime();
-    showResult(PrimeMethod::euler, coll, timer.calculateInterval());
+    showResult(PrimeMethod::euler, coll, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
 {
