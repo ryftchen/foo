@@ -9,6 +9,7 @@
 #ifndef __PRECOMPILED_HEADER
 #include <cassert>
 #include <filesystem>
+#include <format>
 #include <fstream>
 #include <ranges>
 #include <regex>
@@ -200,6 +201,19 @@ std::string_view Log::getPrefix(const OutputLevel level)
     }
 
     return traceLevelPrefix;
+}
+
+std::string Log::generateTimestampLabel(
+    const std::string_view prefix, const std::string_view srcFile, const std::uint32_t srcLine)
+{
+    return std::format(
+        "[{}] {} [{}#{}] ",
+        utility::time::getCurrentSystemTime(),
+        prefix,
+        (std::string_view::npos != srcFile.rfind(sourceDirectory))
+            ? srcFile.substr(srcFile.rfind(sourceDirectory) + sourceDirectory.length(), srcFile.length())
+            : srcFile,
+        srcLine);
 }
 
 std::vector<std::string> Log::reformatContents(const std::string_view label, const std::string_view formatted)

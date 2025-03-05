@@ -9,7 +9,6 @@
 #include "configure.hpp"
 
 #ifndef __PRECOMPILED_HEADER
-#include <format>
 #include <forward_list>
 #include <iostream>
 #include <mutex>
@@ -351,6 +350,13 @@ private:
     //! @param level - output level
     //! @return output prefix
     static std::string_view getPrefix(const OutputLevel level);
+    //! @brief Generate the timestamp label.
+    //! @param prefix - output prefix
+    //! @param srcFile - current code file
+    //! @param srcLine - current code line
+    //! @return label information
+    static std::string generateTimestampLabel(
+        const std::string_view prefix, const std::string_view srcFile, const std::uint32_t srcLine);
     //! @brief Reformat log contents.
     //! @param label - label information
     //! @param formatted - formatted body information
@@ -471,13 +477,9 @@ void Log::flush(
     try
     {
         auto rows = reformatContents(
-            std::format(
-                "[{}] {} [{}#{}] ",
-                utility::time::getCurrentSystemTime(),
+            generateTimestampLabel(
                 isInServingState(State::work) ? (daemonLock.lock(), getPrefix(severity)) : traceLevelPrefix,
-                (std::string_view::npos != srcFile.rfind(sourceDirectory))
-                    ? srcFile.substr(srcFile.rfind(sourceDirectory) + sourceDirectory.length(), srcFile.length())
-                    : srcFile,
+                srcFile,
                 srcLine),
             utility::common::formatString(format.data(), std::forward<Args>(args)...));
         if (daemonLock.owns_lock())

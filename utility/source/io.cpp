@@ -8,6 +8,7 @@
 
 #include <sys/epoll.h>
 #include <sys/file.h>
+#include <cstring>
 #include <filesystem>
 #include <iostream>
 
@@ -19,6 +20,141 @@ const char* version() noexcept
 {
     static const char* const ver = "0.1.0";
     return ver;
+}
+
+//! @brief Execute the command line.
+//! @param command - target command line to be executed
+//! @return command line output
+std::string executeCommand(const std::string_view command)
+{
+    std::FILE* const pipe = ::popen(command.data(), "r");
+    if (nullptr == pipe)
+    {
+        throw std::runtime_error{"Could not open pipe when trying to execute command."};
+    }
+
+    std::string output{};
+    for (std::vector<char> buffer(4096);;)
+    {
+        const std::size_t readLen = std::fread(buffer.data(), sizeof(char), buffer.size(), pipe);
+        if (0 == readLen)
+        {
+            break;
+        }
+        output.append(buffer.data(), readLen);
+    }
+
+    const int status = ::pclose(pipe);
+    if (WIFEXITED(status) && (WEXITSTATUS(status) != EXIT_SUCCESS))
+    {
+        throw std::runtime_error{"The command returned exit code " + std::to_string(WEXITSTATUS(status)) + '.'};
+    }
+    if (WIFSIGNALED(status))
+    {
+        throw std::runtime_error{"The command was terminated by signal " + std::to_string(WTERMSIG(status)) + '.'};
+    }
+
+    return output;
+};
+
+//! @brief Wait for input from the user.
+//! @param operation - handling for inputs (interrupt waiting if the return value is true, otherwise continue waiting)
+//! @param timeout - timeout period (ms)
+void waitForUserInput(const std::function<bool(const std::string_view)>& operation, const int timeout)
+{
+    const int epollFD = ::epoll_create1(0);
+    if (-1 == epollFD)
+    {
+        throw std::runtime_error{"Could not create epoll when trying to wait for user input."};
+    }
+
+    ::epoll_event event{};
+    event.events = ::EPOLLIN;
+    event.data.fd = STDIN_FILENO;
+    if (::epoll_ctl(epollFD, EPOLL_CTL_ADD, STDIN_FILENO, &event) == -1)
+    {
+        ::close(epollFD);
+        throw std::runtime_error{"Could not control epoll when trying to wait for user input."};
+    }
+
+    for (;;)
+    {
+        if (const int status = ::epoll_wait(epollFD, &event, 1, timeout); -1 == status)
+        {
+            ::close(epollFD);
+            throw std::runtime_error{
+                "Failed to wait epoll when waiting for user input, errno: " + std::string{std::strerror(errno)} + '.'};
+        }
+        else if (0 == status)
+        {
+            break;
+        }
+
+        if (event.events & ::EPOLLIN)
+        {
+            std::string input{};
+            std::getline(std::cin, input);
+            if (operation(input))
+            {
+                break;
+            }
+        }
+    }
+
+    ::close(epollFD);
+}
+
+//! @brief Get the file contents.
+//! @param filename - file path
+//! @param toLock - lock or not
+//! @param toReverse - reverse or not
+//! @param totalRows - number of rows
+//! @return file contents
+std::list<std::string> getFileContents(
+    const std::string_view filename, const bool toLock, const bool toReverse, const std::size_t totalRows)
+{
+    FileReader fileReader(filename);
+    fileReader.open();
+    if (toLock)
+    {
+        fileReader.lock();
+    }
+
+    auto& input = fileReader.stream();
+    input.seekg(0, std::ios::beg);
+    std::string line{};
+    std::list<std::string> contents{};
+    if (!toReverse)
+    {
+        while ((contents.size() < totalRows) && std::getline(input, line))
+        {
+            contents.emplace_back(line);
+        }
+    }
+    else
+    {
+        const std::size_t numOfLines =
+                              std::count(std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>{}, '\n'),
+                          startLine = (numOfLines > totalRows) ? (numOfLines - totalRows + 1) : 1;
+        input.clear();
+        input.seekg(0, std::ios::beg);
+        for (std::size_t i = 0; i < (startLine - 1); ++i)
+        {
+            input.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+        while (std::getline(input, line))
+        {
+            contents.emplace_front(line);
+        }
+    }
+
+    if (toLock)
+    {
+        fileReader.unlock();
+    }
+    fileReader.close();
+
+    return contents;
 }
 
 FDStreamBuffer::~FDStreamBuffer()
@@ -325,160 +461,5 @@ void FileWriter::unlock() const
 std::ostream& FileWriter::stream()
 {
     return output;
-}
-
-//! @brief Execute the command line.
-//! @param command - target command line to be executed
-//! @param timeout - timeout period (ms)
-//! @return command line output
-std::string executeCommand(const std::string_view command, const std::size_t timeout)
-{
-    std::FILE* const pipe = ::popen(command.data(), "r");
-    if (nullptr == pipe)
-    {
-        throw std::runtime_error{"Could not open pipe when trying to execute command."};
-    }
-
-    std::string output{};
-    std::vector<char> buffer(4096);
-    for (const auto startTime = std::chrono::steady_clock::now();;)
-    {
-        const std::size_t readLen = std::fread(buffer.data(), sizeof(char), buffer.size(), pipe);
-        if ((0 != timeout)
-            && (std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - startTime).count()
-                > timeout))
-        {
-            ::pclose(pipe);
-            throw std::runtime_error{"Execute command timeout."};
-        }
-        else if (0 == readLen)
-        {
-            break;
-        }
-        output.append(buffer.data(), readLen);
-    }
-
-    const int status = ::pclose(pipe);
-    if (-1 == status)
-    {
-        throw std::runtime_error{"Could not close pipe when trying to execute command."};
-    }
-
-    if (WIFEXITED(status))
-    {
-        if (const int exitCode = WEXITSTATUS(status); EXIT_SUCCESS != exitCode)
-        {
-            throw std::runtime_error{
-                "Returns exit code " + std::to_string(exitCode) + " when the command is executed."};
-        }
-    }
-    else if (WIFSIGNALED(status))
-    {
-        throw std::runtime_error{
-            "Terminated by signal " + std::to_string(WTERMSIG(status)) + " when the command is executed."};
-    }
-    else
-    {
-        throw std::runtime_error{"The termination status is unknown when the command is executed."};
-    }
-
-    return output;
-};
-
-//! @brief Wait for input from the user.
-//! @param operation - handling for the input (interrupt waiting if the return value is true, otherwise continue
-//! waiting)
-//! @param timeout - timeout period (ms)
-void waitForUserInput(const std::function<bool(const std::string_view)>& operation, const int timeout)
-{
-    const int epollFD = ::epoll_create1(0);
-    if (-1 == epollFD)
-    {
-        throw std::runtime_error{"Could not create epoll when trying to wait for user input."};
-    }
-
-    ::epoll_event event{};
-    event.events = ::EPOLLIN;
-    event.data.fd = STDIN_FILENO;
-    if (::epoll_ctl(epollFD, EPOLL_CTL_ADD, STDIN_FILENO, &event) == -1)
-    {
-        ::close(epollFD);
-        throw std::runtime_error{"Could not control epoll when trying to wait for user input."};
-    }
-
-    for (;;)
-    {
-        if (const int status = ::epoll_wait(epollFD, &event, 1, timeout); -1 == status)
-        {
-            ::close(epollFD);
-            throw std::runtime_error{"Not the expected wait result for epoll."};
-        }
-        else if ((0 != status) && (event.events & ::EPOLLIN))
-        {
-            std::string input{};
-            std::getline(std::cin, input);
-            if (operation(input))
-            {
-                break;
-            }
-            continue;
-        }
-        break;
-    }
-
-    ::close(epollFD);
-}
-
-//! @brief Get the file contents.
-//! @param filename - file path
-//! @param toLock - lock or not
-//! @param toReverse - reverse or not
-//! @param totalRows - number of rows
-//! @return file contents
-std::list<std::string> getFileContents(
-    const std::string_view filename, const bool toLock, const bool toReverse, const std::size_t totalRows)
-{
-    FileReader fileReader(filename);
-    fileReader.open();
-    if (toLock)
-    {
-        fileReader.lock();
-    }
-
-    auto& input = fileReader.stream();
-    input.seekg(0, std::ios::beg);
-    std::string line{};
-    std::list<std::string> contents{};
-    if (!toReverse)
-    {
-        while ((contents.size() < totalRows) && std::getline(input, line))
-        {
-            contents.emplace_back(line);
-        }
-    }
-    else
-    {
-        const std::size_t numOfLines =
-                              std::count(std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>{}, '\n'),
-                          startLine = (numOfLines > totalRows) ? (numOfLines - totalRows + 1) : 1;
-        input.clear();
-        input.seekg(0, std::ios::beg);
-        for (std::size_t i = 0; i < (startLine - 1); ++i)
-        {
-            input.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        }
-        while (std::getline(input, line))
-        {
-            contents.emplace_front(line);
-        }
-    }
-
-    if (toLock)
-    {
-        fileReader.unlock();
-    }
-    fileReader.close();
-
-    return contents;
 }
 } // namespace utility::io

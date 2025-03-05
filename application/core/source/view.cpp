@@ -572,8 +572,7 @@ int View::buildTLVPacket4Execute(const std::vector<std::string>& args, char* buf
     }
 
     int len = 0;
-    constexpr std::uint16_t execTimeout = 5000;
-    if (const int shmId = fillSharedMemory(utility::io::executeCommand("/bin/bash -c " + cmd, execTimeout));
+    if (const int shmId = fillSharedMemory(utility::io::executeCommand("/bin/bash -c " + cmd));
         tlv::encodeTLV(buf, len, tlv::TLVValue{.bashShmId = shmId}) < 0)
     {
         throw std::runtime_error{"Failed to build packet for the execute option."};
@@ -881,7 +880,7 @@ void View::segmentedOutput(const std::string_view buffer)
         if (!withoutPaging && (moreRows || (terminalRows == counter)))
         {
             std::cout << hint << "\n\x1b[1A\x1b[" << hint.length() << 'C' << std::flush;
-            utility::io::waitForUserInput(handling, -1);
+            utility::io::waitForUserInput(handling);
         }
     }
 
