@@ -20,7 +20,7 @@ namespace io
 {
 extern const char* version() noexcept;
 
-extern std::string executeCommand(const std::string_view command, const std::size_t timeout = 0);
+extern std::string executeCommand(const std::string_view command);
 extern void waitForUserInput(const std::function<bool(const std::string_view)>& operation, const int timeout = -1);
 extern std::list<std::string> getFileContents(
     const std::string_view filename,

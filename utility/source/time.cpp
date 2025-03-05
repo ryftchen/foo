@@ -35,27 +35,25 @@ double Time::calcElapsedTime() const
 //! @param termination - termination condition
 //! @param timeout - timeout period (ms)
 //! @return the value is 0 if the termination condition is met, otherwise -1 on timeout
-int blockingTimer(const std::function<bool()>& termination, const std::size_t timeout)
+int blockingTimer(const std::function<bool()>& termination, const int timeout)
 {
-    for (Time timer{};;)
+    for (const Time timer{}; (timeout < 0) || (timer.calcElapsedTime() <= timeout);)
     {
-        if ((0 != timeout) && (timer.calcElapsedTime() > timeout))
-        {
-            return -1;
-        }
-        else if (termination())
+        if (termination())
         {
             return 0;
         }
         std::this_thread::yield();
     }
+
+    return -1;
 }
 
 //! @brief Get the current system time, like "1970-01-01 00:00:00.000000 UTC".
 //! @return current system time
 std::string getCurrentSystemTime()
 {
-    constexpr std::uint16_t dateLen = 32, dateStartYear = 1900;
+    constexpr std::uint16_t dateLen = 32, startYear = 1900;
     char date[dateLen] = {'\0'};
     const auto now = std::chrono::system_clock::now();
     const auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()) % 1000000;
@@ -67,7 +65,7 @@ std::string getCurrentSystemTime()
         date,
         dateLen,
         "%04u-%02u-%02u %02u:%02u:%02u.%06lu %.3s",
-        tm.tm_year + dateStartYear,
+        tm.tm_year + startYear,
         tm.tm_mon + 1,
         tm.tm_mday,
         tm.tm_hour,
