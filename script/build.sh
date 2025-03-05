@@ -805,9 +805,7 @@ to improve accuracy. (y or n)"
     fi
 
     local codeql_db=./${FOLDER[rep]}/sca/query
-    if [[ ! -d ${codeql_db} ]]; then
-        shell_command "mkdir -p ${codeql_db}"
-    fi
+    shell_command "rm -rf ${codeql_db} && mkdir -p ${codeql_db}"
     shell_command "codeql database create ${codeql_db} --codescanning-config=./.codeql --language=cpp --ram=2048 \
 --command='${build_script}${other_option}' --command='${build_script} --test${other_option}' --source-root=./ --overwrite"
     local codeql_sarif=${codeql_db}/codeql.sarif
