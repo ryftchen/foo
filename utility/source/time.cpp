@@ -53,7 +53,7 @@ int blockingTimer(const std::function<bool()>& termination, const int timeout)
 //! @return current system time
 std::string getCurrentSystemTime()
 {
-    constexpr std::uint16_t dateLen = 32, startYear = 1900;
+    constexpr std::uint16_t dateLen = 32, sinceWhen = 1900;
     char date[dateLen] = {'\0'};
     const auto now = std::chrono::system_clock::now();
     const auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()) % 1000000;
@@ -65,7 +65,7 @@ std::string getCurrentSystemTime()
         date,
         dateLen,
         "%04u-%02u-%02u %02u:%02u:%02u.%06lu %.3s",
-        tm.tm_year + startYear,
+        tm.tm_year + sinceWhen,
         tm.tm_mon + 1,
         tm.tm_mday,
         tm.tm_hour,
