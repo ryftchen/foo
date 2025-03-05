@@ -389,7 +389,7 @@ static void showResult(const DivisorMethod method, const std::set<std::int32_t>&
 void DivisorSolution::euclideanMethod(std::int32_t a, std::int32_t b)
 try
 {
-    utility::time::Time timer{};
+    const utility::time::Time timer{};
 
     const auto coll = numeric::divisor::Divisor().euclidean(a, b);
     showResult(DivisorMethod::euclidean, coll, timer.calcElapsedTime());
@@ -402,7 +402,7 @@ catch (const std::exception& err)
 void DivisorSolution::steinMethod(std::int32_t a, std::int32_t b)
 try
 {
-    utility::time::Time timer{};
+    const utility::time::Time timer{};
 
     const auto coll = numeric::divisor::Divisor().stein(a, b);
     showResult(DivisorMethod::stein, coll, timer.calcElapsedTime());
@@ -497,7 +497,7 @@ static void showResult(const IntegralMethod method, const double result, const d
 void IntegralSolution::trapezoidalMethod(const Expression& expr, double lower, double upper)
 try
 {
-    utility::time::Time timer{};
+    const utility::time::Time timer{};
 
     const auto sum = numeric::integral::Trapezoidal(expr)(lower, upper, numeric::integral::epsilon);
     showResult(IntegralMethod::trapezoidal, sum, timer.calcElapsedTime());
@@ -510,7 +510,7 @@ catch (const std::exception& err)
 void IntegralSolution::adaptiveSimpsonMethod(const Expression& expr, const double lower, const double upper)
 try
 {
-    utility::time::Time timer{};
+    const utility::time::Time timer{};
 
     const auto sum = numeric::integral::Trapezoidal(expr)(lower, upper, numeric::integral::epsilon);
     showResult(IntegralMethod::simpson, sum, timer.calcElapsedTime());
@@ -523,7 +523,7 @@ catch (const std::exception& err)
 void IntegralSolution::rombergMethod(const Expression& expr, const double lower, const double upper)
 try
 {
-    utility::time::Time timer{};
+    const utility::time::Time timer{};
 
     const auto sum = numeric::integral::Romberg(expr)(lower, upper, numeric::integral::epsilon);
     showResult(IntegralMethod::romberg, sum, timer.calcElapsedTime());
@@ -536,7 +536,7 @@ catch (const std::exception& err)
 void IntegralSolution::gaussLegendreMethod(const Expression& expr, const double lower, const double upper)
 try
 {
-    utility::time::Time timer{};
+    const utility::time::Time timer{};
 
     const auto sum = numeric::integral::Gauss(expr)(lower, upper, numeric::integral::epsilon);
     showResult(IntegralMethod::gauss, sum, timer.calcElapsedTime());
@@ -549,7 +549,7 @@ catch (const std::exception& err)
 void IntegralSolution::monteCarloMethod(const Expression& expr, const double lower, const double upper)
 try
 {
-    utility::time::Time timer{};
+    const utility::time::Time timer{};
 
     const auto sum = numeric::integral::MonteCarlo(expr)(lower, upper, numeric::integral::epsilon);
     showResult(IntegralMethod::monteCarlo, sum, timer.calcElapsedTime());
@@ -687,7 +687,7 @@ static void showResult(const PrimeMethod method, const std::vector<std::uint32_t
 void PrimeSolution::eratosthenesMethod(const std::uint32_t max)
 try
 {
-    utility::time::Time timer{};
+    const utility::time::Time timer{};
 
     const auto coll = numeric::prime::Prime().eratosthenes(max);
     showResult(PrimeMethod::eratosthenes, coll, timer.calcElapsedTime());
@@ -700,7 +700,7 @@ catch (const std::exception& err)
 void PrimeSolution::eulerMethod(const std::uint32_t max)
 try
 {
-    utility::time::Time timer{};
+    const utility::time::Time timer{};
 
     const auto coll = numeric::prime::Prime().euler(max);
     showResult(PrimeMethod::euler, coll, timer.calcElapsedTime());
