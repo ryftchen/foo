@@ -652,13 +652,14 @@ void View::encryptMessage(char* buffer, const int length)
     ::EVP_CIPHER_CTX* const ctx = ::EVP_CIPHER_CTX_new();
     do
     {
-        constexpr std::array<unsigned char, 16>
-            key = {0x37, 0x47, 0x10, 0x33, 0x6F, 0x18, 0xC8, 0x9A, 0x4B, 0xC1, 0x2B, 0x97, 0x92, 0x19, 0x25, 0x6D},
+        if (constexpr std::array<unsigned char, 16> key =
+                {0x37, 0x47, 0x10, 0x33, 0x6F, 0x18, 0xC8, 0x9A, 0x4B, 0xC1, 0x2B, 0x97, 0x92, 0x19, 0x25, 0x6D},
             iv = {0x9F, 0x7B, 0x0E, 0x68, 0x2D, 0x2F, 0x4E, 0x7F, 0x1A, 0xFA, 0x61, 0xD3, 0xC6, 0x18, 0xF4, 0xC1};
-        if (!::EVP_EncryptInit_ex(ctx, ::EVP_aes_128_cfb128(), nullptr, key.data(), iv.data()))
+            !::EVP_EncryptInit_ex(ctx, ::EVP_aes_128_cfb128(), nullptr, key.data(), iv.data()))
         {
             break;
         }
+
         int outLen = 0;
         if (!::EVP_EncryptUpdate(
                 ctx,
@@ -669,6 +670,7 @@ void View::encryptMessage(char* buffer, const int length)
         {
             break;
         }
+
         int tempLen = 0;
         if (!::EVP_EncryptFinal_ex(ctx, reinterpret_cast<unsigned char*>(buffer) + outLen, &tempLen))
         {
@@ -684,13 +686,14 @@ void View::decryptMessage(char* buffer, const int length)
     ::EVP_CIPHER_CTX* const ctx = ::EVP_CIPHER_CTX_new();
     do
     {
-        constexpr std::array<unsigned char, 16>
-            key = {0x37, 0x47, 0x10, 0x33, 0x6F, 0x18, 0xC8, 0x9A, 0x4B, 0xC1, 0x2B, 0x97, 0x92, 0x19, 0x25, 0x6D},
+        if (constexpr std::array<unsigned char, 16> key =
+                {0x37, 0x47, 0x10, 0x33, 0x6F, 0x18, 0xC8, 0x9A, 0x4B, 0xC1, 0x2B, 0x97, 0x92, 0x19, 0x25, 0x6D},
             iv = {0x9F, 0x7B, 0x0E, 0x68, 0x2D, 0x2F, 0x4E, 0x7F, 0x1A, 0xFA, 0x61, 0xD3, 0xC6, 0x18, 0xF4, 0xC1};
-        if (!::EVP_DecryptInit_ex(ctx, ::EVP_aes_128_cfb128(), nullptr, key.data(), iv.data()))
+            !::EVP_DecryptInit_ex(ctx, ::EVP_aes_128_cfb128(), nullptr, key.data(), iv.data()))
         {
             break;
         }
+
         int outLen = 0;
         if (!::EVP_DecryptUpdate(
                 ctx,
@@ -701,6 +704,7 @@ void View::decryptMessage(char* buffer, const int length)
         {
             break;
         }
+
         int tempLen = 0;
         if (!::EVP_DecryptFinal_ex(ctx, reinterpret_cast<unsigned char*>(buffer) + outLen, &tempLen))
         {
@@ -884,7 +888,7 @@ void View::segmentedOutput(const std::string_view buffer)
         }
     }
 
-    std::cout << utility::common::colorOff;
+    std::cout << utility::common::colorOff << std::flush;
     if (lineNum > terminalRows)
     {
         std::cout << std::endl;

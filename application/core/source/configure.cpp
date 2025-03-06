@@ -18,6 +18,15 @@
 
 namespace application::configure
 {
+//! @brief Anonymous namespace.
+inline namespace
+{
+//! @brief Maximum access limit.
+constexpr std::uint8_t maxAccessLimit = 10;
+//! @brief The semaphore that controls the maximum access limit.
+std::counting_semaphore<maxAccessLimit> configSem(maxAccessLimit);
+} // namespace
+
 Configure& Configure::getInstance(const std::string_view filename)
 {
     static Configure configurator(filename);
@@ -348,13 +357,6 @@ bool loadConfiguration(const std::string_view filename)
 
     return false;
 }
-
-//! @brief Anonymous namespace.
-inline namespace
-{
-//! @brief The semaphore that controls the maximum access limit.
-std::counting_semaphore<maxAccessLimit> configSem(maxAccessLimit);
-} // namespace
 
 //! @brief Retrieve data repository.
 //! @return current configuration data repository

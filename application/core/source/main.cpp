@@ -17,6 +17,15 @@
 
 namespace application
 {
+//! @brief Anonymous namespace.
+inline namespace
+{
+//! @brief Interrupt flag for the SIGALRM signal.
+volatile std::sig_atomic_t alarmInterrupted = 0;
+//! @brief Interrupt flag for the SIGCHLD signal.
+volatile std::sig_atomic_t childInterrupted = 0;
+} // namespace
+
 //! @brief The run function.
 //! @param argc - argument count
 //! @param argv - argument vector
@@ -44,15 +53,6 @@ catch (const std::exception& err)
     std::cerr << getExecutableName() << ": " << err.what() << std::endl;
     return EXIT_FAILURE;
 }
-
-//! @brief Anonymous namespace.
-inline namespace
-{
-//! @brief Interrupt flag for the SIGALRM signal.
-volatile std::sig_atomic_t alarmInterrupted = 0;
-//! @brief Interrupt flag for the SIGCHLD signal.
-volatile std::sig_atomic_t childInterrupted = 0;
-} // namespace
 
 //! @brief Parent process signal handler for the SIGALRM signal.
 //! @param sig - signal type
