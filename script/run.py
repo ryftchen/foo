@@ -375,7 +375,7 @@ class Task:
             full_cmd = f"LLVM_PROFILE_FILE=\
 \"{self.report_path}/dca/chk_cov/foo_chk_cov_{str(self.complete_steps + 1)}.profraw\" {full_cmd}"
         if len(enter) != 0:
-            command += "<" + enter.replace("\nquit", "")
+            command += " > " + enter.replace("\nquit", "")
         align_len = max(
             len(command) + Output.stat_cont_len_excl_cmd,
             Output.stat_min_cont_len,
@@ -492,7 +492,7 @@ class Task:
         case_names = [
             Path(f"{folder[0]}/case_name")
             .read_text(encoding="utf-8")
-            .replace(f"{self.app_bin_cmd}<", f"{self.app_bin_cmd}&lt;")
+            .replace(f"{self.app_bin_cmd} > ", f"{self.app_bin_cmd} &gt; ")
             for folder in case_folders_with_ctime
         ]
         stdout, _, _ = common.execute_command("pip3 show ValgrindCI")
@@ -519,9 +519,10 @@ class Task:
             fcntl.flock(index_content.fileno(), fcntl.LOCK_UN)
         multi_inst_count = sum(1 for sub in sorted_case_folders if "_inst_" in sub)
         fail_case_num = len(sorted_case_folders) - multi_inst_count + int(multi_inst_count / 2)
+        exec_date = datetime.strftime(datetime.now(), "%Y-%m-%d")
         old_content = (
             old_content.replace(
-                r"<p><b>{{ num_errors }}</b> errors</p>", f"<p><b>{fail_case_num}</b> failure cases</p>"
+                r"<p><b>{{ num_errors }}</b> errors</p>", f"<p><b>{fail_case_num}</b> failure cases on {exec_date}</p>"
             )
             .replace(r"<th>Source file name</th>", "<th>Case index</th>")
             .replace(r"<th>Valgrind errors</th>", "<th>Case name</th>")
