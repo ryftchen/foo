@@ -40,13 +40,14 @@ struct HlRegex
     //! @brief Code file highlighting.
     const std::regex codeFile{codeFileRegex.data()};
 };
+} // namespace
+
 //! @brief Log style.
-const HlRegex& logStyle()
+static const HlRegex& logStyle()
 {
     static const HlRegex highlight{};
     return highlight;
 };
-} // namespace
 
 Log& Log::getInstance()
 {

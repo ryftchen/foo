@@ -81,6 +81,30 @@ inline constexpr std::size_t operator""_bkdrHash(const char* str) noexcept
     return bkdrHashInCompiling(str);
 }
 
+extern std::string base64Encode(const std::string_view data);
+extern std::string base64Decode(const std::string_view data);
+extern std::string formatString(const std::string_view format, ...);
+
+//! @brief Compare whether two strings are equal.
+//! @param str1 - string 1
+//! @param str2 - string 2
+//! @return be equal or not equal
+inline bool allStrEqual(const char* const str1, const char* const str2)
+{
+    return std::strcmp(str1, str2) == 0;
+}
+//! @brief Compare whether multiple strings are equal.
+//! @tparam Others - type of arguments of string
+//! @param str1 - string 1
+//! @param str2 - string 2
+//! @param others - arguments of string
+//! @return be equal or not equal
+template <typename... Others>
+inline bool allStrEqual(const char* const str1, const char* const str2, Others const&... others)
+{
+    return allStrEqual(str1, str2) && allStrEqual(str2, others...);
+}
+
 //! @brief Splice strings into constexpr type.
 //! @tparam Strings - target strings to be spliced
 template <const std::string_view&... Strings>
@@ -107,26 +131,6 @@ public:
 //! @tparam Strings - target strings to be spliced
 template <const std::string_view&... Strings>
 static constexpr auto concatString = ConcatString<Strings...>::value;
-
-//! @brief Compare whether two strings are equal.
-//! @param str1 - string 1
-//! @param str2 - string 2
-//! @return be equal or not equal
-inline bool allStrEqual(const char* const str1, const char* const str2)
-{
-    return std::strcmp(str1, str2) == 0;
-}
-//! @brief Compare whether multiple strings are equal.
-//! @tparam Others - type of arguments of string
-//! @param str1 - string 1
-//! @param str2 - string 2
-//! @param others - arguments of string
-//! @return be equal or not equal
-template <typename... Others>
-inline bool allStrEqual(const char* const str1, const char* const str2, Others const&... others)
-{
-    return allStrEqual(str1, str2) && allStrEqual(str2, others...);
-}
 
 //! @brief Check whether the target value is part of the enumeration.
 //! @tparam EnumType - type of enumeration
@@ -250,9 +254,5 @@ private:
     //! @brief Lock mode.
     const LockMode mode{LockMode::read};
 };
-
-extern std::string formatString(const std::string_view format, ...);
-extern std::string base64Encode(const std::string_view data);
-extern std::string base64Decode(const std::string_view data);
 } // namespace common
 } // namespace utility

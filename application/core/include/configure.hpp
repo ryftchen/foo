@@ -16,8 +16,6 @@ namespace configure
 {
 //! @brief Default configuration filename.
 constexpr std::string_view defaultConfigFile = "configure/foo.json";
-//! @brief Maximum access limit.
-constexpr std::uint8_t maxAccessLimit = 10;
 
 //! @brief The literal string of the field.
 namespace field
