@@ -761,8 +761,7 @@ int View::fillSharedMemory(const std::string_view contents)
     }
 
     auto* const shrMem = reinterpret_cast<SharedMemory*>(shm);
-    shrMem->signal.store(false);
-    for (;;)
+    for (shrMem->signal.store(false);;)
     {
         if (!shrMem->signal.load())
         {
@@ -792,8 +791,7 @@ void View::fetchSharedMemory(const int shmId, std::string& contents)
     }
 
     auto* const shrMem = reinterpret_cast<SharedMemory*>(shm);
-    shrMem->signal.store(true);
-    for (;;)
+    for (shrMem->signal.store(true);;)
     {
         if (shrMem->signal.load())
         {

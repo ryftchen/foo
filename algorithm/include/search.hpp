@@ -181,8 +181,7 @@ std::vector<std::uint32_t> Search<T>::generateFibonacciNumber(const std::uint32_
     const double phi = (1.0 + std::sqrt(5.0)) / 2.0, estimate = std::log(limit * std::sqrt(5.0)) / std::log(phi);
     std::vector<std::uint32_t> fibonacci{};
     fibonacci.reserve(static_cast<std::uint32_t>(estimate) + 1);
-    std::uint32_t f1 = 0, f2 = 1;
-    for (;;)
+    for (std::uint32_t f1 = 0, f2 = 1;;)
     {
         const std::uint32_t temp = f1 + f2;
         f1 = f2;

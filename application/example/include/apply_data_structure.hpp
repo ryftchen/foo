@@ -455,7 +455,7 @@ public:
         splay::Output tracker{};
         auto& process = tracker.output();
         SplayTree root = nullptr;
-        constexpr std::array<std::int16_t, 6> nodes = {10, 50, 40, 30, 20, 60};
+        constexpr std::array<std::int16_t, 7> nodes = {10, 50, 40, 70, 30, 20, 60};
 
         process << "insert: ";
         std::for_each(
@@ -477,6 +477,15 @@ public:
 
         process << "\nminimum: " << getMinimum(root)->key;
         process << "\nmaximum: " << getMaximum(root)->key;
+        process << "\ntree details:\n";
+        tracker.printSplayTree(root, root->key, 0);
+
+        constexpr std::int16_t deleteNode = 70;
+        process << "delete root node: " << deleteNode;
+        root = splayTreeDelete(root, deleteNode);
+
+        process << "\nin-order traversal: ";
+        tracker.inorderSplayTree(root);
         process << "\ntree details:\n";
         tracker.printSplayTree(root, root->key, 0);
 

@@ -512,7 +512,7 @@ try
 {
     const utility::time::Time timer{};
 
-    const auto sum = numeric::integral::Trapezoidal(expr)(lower, upper, numeric::integral::epsilon);
+    const auto sum = numeric::integral::Simpson(expr)(lower, upper, numeric::integral::epsilon);
     showResult(IntegralMethod::simpson, sum, timer.calcElapsedTime());
 }
 catch (const std::exception& err)
