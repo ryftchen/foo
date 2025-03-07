@@ -479,18 +479,10 @@ std::vector<std::string> Argument::preprocessArguments(const std::vector<std::st
     {
         const auto startWithPrefixChars = [this](const std::string_view str)
         {
-            if (!str.empty())
+            if (str.length() > 1)
             {
                 const auto legalPrefix = [this](const char c) { return prefixChars.find(c) != std::string::npos; };
-                const bool windowsStyle = legalPrefix('/');
-                if (windowsStyle && legalPrefix(str.at(0)))
-                {
-                    return true;
-                }
-                else if (!windowsStyle && (str.length() > 1))
-                {
-                    return legalPrefix(str.at(0)) && legalPrefix(str.at(1));
-                }
+                return legalPrefix(str.at(0)) && legalPrefix(str.at(1));
             }
             return false;
         };

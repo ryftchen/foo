@@ -125,7 +125,6 @@ Node* createNode(const Type key, Node* const parent, Node* const left, Node* con
 Node* insertNode(BSTree tree, Node* const z)
 {
     Node *x = tree, *y = nullptr;
-
     while (nullptr != x)
     {
         y = x;
@@ -157,7 +156,6 @@ Node* deleteNode(BSTree tree, Node* const z)
 {
     Node *y = ((nullptr == z->left) || (nullptr == z->right)) ? z : getSuccessor(z),
          *x = (nullptr != y->left) ? y->left : y->right;
-
     if (nullptr != x)
     {
         x->parent = y->parent;
@@ -397,7 +395,6 @@ Node* rightRightRotation(AVLTree k1)
 Node* leftRightRotation(AVLTree k3)
 {
     k3->left = rightRightRotation(k3->left);
-
     return leftLeftRotation(k3);
 }
 
@@ -407,7 +404,6 @@ Node* leftRightRotation(AVLTree k3)
 Node* rightLeftRotation(AVLTree k1)
 {
     k1->right = leftLeftRotation(k1->right);
-
     return rightRightRotation(k1);
 }
 
@@ -508,8 +504,7 @@ Node* avlTreeInsert(AVLTree tree, const Type key)
 {
     if (nullptr == tree)
     {
-        tree = createNode(key, nullptr, nullptr);
-        if (nullptr == tree)
+        if (nullptr == (tree = createNode(key, nullptr, nullptr)))
         {
             return nullptr;
         }
@@ -542,8 +537,7 @@ Node* avlTreeInsert(AVLTree tree, const Type key)
 //! @return root node after deleting
 Node* avlTreeDelete(AVLTree tree, const Type key)
 {
-    const Node* const z = avlTreeSearch(tree, key);
-    if (nullptr != z)
+    if (const Node* const z = avlTreeSearch(tree, key); nullptr != z)
     {
         tree = deleteNode(tree, z);
     }
@@ -696,7 +690,6 @@ Node* createNode(const Type key, Node* const left, Node* const right)
 Node* insertNode(SplayTree tree, Node* const z)
 {
     Node *x = tree, *y = nullptr;
-
     while (nullptr != x)
     {
         y = x;
@@ -755,11 +748,9 @@ Node* splayTreeSplay(SplayTree tree, const Type key)
     {
         return nullptr;
     }
-    Node n{}, *l = nullptr, *r = nullptr, *c = nullptr;
 
-    n.left = n.right = nullptr;
-    l = r = &n;
-    for (;;)
+    Node n{}, *l = nullptr, *r = nullptr;
+    for (n.left = n.right = nullptr, l = r = &n;;)
     {
         if (key < tree->key)
         {
@@ -769,7 +760,7 @@ Node* splayTreeSplay(SplayTree tree, const Type key)
             }
             else if (key < tree->left->key)
             {
-                c = tree->left;
+                Node* c = tree->left;
                 tree->left = c->right;
                 c->right = tree;
                 tree = c;
@@ -790,7 +781,7 @@ Node* splayTreeSplay(SplayTree tree, const Type key)
             }
             else if (key > tree->right->key)
             {
-                c = tree->right;
+                Node* c = tree->right;
                 tree->right = c->left;
                 c->left = tree;
                 tree = c;

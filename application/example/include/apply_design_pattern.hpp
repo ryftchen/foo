@@ -252,9 +252,8 @@ public:
         using iterator::ConcreteAggregate, iterator::Iterator;
         constexpr std::uint32_t size = 5;
         std::shared_ptr<ConcreteAggregate> list = std::make_shared<ConcreteAggregate>(size);
-        std::shared_ptr<Iterator> iter = list->createIterator();
 
-        for (; !iter->isDone(); iter->next())
+        for (std::shared_ptr<Iterator> iter = list->createIterator(); !iter->isDone(); iter->next())
         {
             iterator::output() << "item value: " << iter->currentItem() << '\n';
         }
