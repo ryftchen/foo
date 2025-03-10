@@ -45,9 +45,12 @@ std::string executeCommand(const std::string_view command)
     }
 
     const int status = ::pclose(pipe);
-    if (WIFEXITED(status) && (WEXITSTATUS(status) != EXIT_SUCCESS))
+    if (WIFEXITED(status))
     {
-        throw std::runtime_error{"The command returned exit code " + std::to_string(WEXITSTATUS(status)) + '.'};
+        if (const int exitCode = WEXITSTATUS(status); EXIT_SUCCESS != exitCode)
+        {
+            throw std::runtime_error{"The command returned exit code " + std::to_string(exitCode) + '.'};
+        }
     }
     if (WIFSIGNALED(status))
     {
