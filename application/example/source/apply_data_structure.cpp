@@ -192,8 +192,8 @@ static void showResult(const LinearInstance instance, const std::string_view res
 void LinearStructure::linkedListInstance()
 try
 {
-    const auto output = Linear().linkedList().str();
-    showResult(LinearInstance::linkedList, output);
+    const auto output = Linear().linkedList();
+    showResult(LinearInstance::linkedList, output.str());
 }
 catch (const std::exception& err)
 {
@@ -203,8 +203,8 @@ catch (const std::exception& err)
 void LinearStructure::stackInstance()
 try
 {
-    const auto output = Linear().stack().str();
-    showResult(LinearInstance::stack, output);
+    const auto output = Linear().stack();
+    showResult(LinearInstance::stack, output.str());
 }
 catch (const std::exception& err)
 {
@@ -214,8 +214,8 @@ catch (const std::exception& err)
 void LinearStructure::queueInstance()
 try
 {
-    const auto output = Linear().queue().str();
-    showResult(LinearInstance::queue, output);
+    const auto output = Linear().queue();
+    showResult(LinearInstance::queue, output.str());
 }
 catch (const std::exception& err)
 {
@@ -308,8 +308,8 @@ static void showResult(const TreeInstance instance, const std::string_view resul
 void TreeStructure::bsInstance()
 try
 {
-    const auto output = Tree().bs().str();
-    showResult(TreeInstance::binarySearch, output);
+    const auto output = Tree().bs();
+    showResult(TreeInstance::binarySearch, output.str());
 }
 catch (const std::exception& err)
 {
@@ -319,8 +319,8 @@ catch (const std::exception& err)
 void TreeStructure::avlInstance()
 try
 {
-    const auto output = Tree().avl().str();
-    showResult(TreeInstance::adelsonVelskyLandis, output);
+    const auto output = Tree().avl();
+    showResult(TreeInstance::adelsonVelskyLandis, output.str());
 }
 catch (const std::exception& err)
 {
@@ -330,8 +330,8 @@ catch (const std::exception& err)
 void TreeStructure::splayInstance()
 try
 {
-    const auto output = Tree().splay().str();
-    showResult(TreeInstance::splay, output);
+    const auto output = Tree().splay();
+    showResult(TreeInstance::splay, output.str());
 }
 catch (const std::exception& err)
 {
