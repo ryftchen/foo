@@ -741,10 +741,10 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
             for line in readlines:
                 if re.search(r"(^TOTAL(\s+\d+\s+\d+\s+\d+\.\d+%){4}$)", line):
                     matches = re.findall(r"(\d+\.\d+%)", line)
-                    percentages = [str(float(s.strip("%"))) for s in matches]
+                    percentages = [float(s.strip("%")) for s in matches]
                     if len(percentages) == 4:
                         for index, per in enumerate(percentages):
-                            cov_per[category[index]] = str(per) + "%"
+                            cov_per[category[index]] = f"{per:.2f}%"
                     break
             if len(cov_per) == 0:
                 for cat in category:
