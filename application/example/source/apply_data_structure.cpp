@@ -265,27 +265,26 @@ void runChoices<LinearInstance>(const std::vector<std::string>& candidates)
     APP_DS_PRINT_TASK_BEGIN_TITLE(category);
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
-    const auto addTask = [threads](const std::string_view threadName, void (*targetInstance)())
-    { threads->enqueue(threadName, targetInstance); };
     const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+    const auto addTask = [threads, &taskNamer](const std::string_view subTask, void (*targetInstance)())
+    { threads->enqueue(taskNamer(subTask), targetInstance); };
 
     std::cout << "\nInstances of the " << toString<category>() << " structure:" << std::endl;
-    auto indices =
-        std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
-    for (const auto index : indices)
+    for (const auto index :
+         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using linear::LinearStructure;
             case abbrVal(LinearInstance::linkedList):
-                addTask(taskNamer(target), &LinearStructure::linkedListInstance);
+                addTask(target, &LinearStructure::linkedListInstance);
                 break;
             case abbrVal(LinearInstance::stack):
-                addTask(taskNamer(target), &LinearStructure::stackInstance);
+                addTask(target, &LinearStructure::stackInstance);
                 break;
             case abbrVal(LinearInstance::queue):
-                addTask(taskNamer(target), &LinearStructure::queueInstance);
+                addTask(target, &LinearStructure::queueInstance);
                 break;
             default:
                 throw std::logic_error{"Unknown " + std::string{toString<category>()} + " instance: " + target + '.'};
@@ -382,27 +381,26 @@ void runChoices<TreeInstance>(const std::vector<std::string>& candidates)
     APP_DS_PRINT_TASK_BEGIN_TITLE(category);
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
-    const auto addTask = [threads](const std::string_view threadName, void (*targetInstance)())
-    { threads->enqueue(threadName, targetInstance); };
     const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+    const auto addTask = [threads, &taskNamer](const std::string_view subTask, void (*targetInstance)())
+    { threads->enqueue(taskNamer(subTask), targetInstance); };
 
     std::cout << "\nInstances of the " << toString<category>() << " structure:" << std::endl;
-    auto indices =
-        std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
-    for (const auto index : indices)
+    for (const auto index :
+         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using tree::TreeStructure;
             case abbrVal(TreeInstance::binarySearch):
-                addTask(taskNamer(target), &TreeStructure::bsInstance);
+                addTask(target, &TreeStructure::bsInstance);
                 break;
             case abbrVal(TreeInstance::adelsonVelskyLandis):
-                addTask(taskNamer(target), &TreeStructure::avlInstance);
+                addTask(target, &TreeStructure::avlInstance);
                 break;
             case abbrVal(TreeInstance::splay):
-                addTask(taskNamer(target), &TreeStructure::splayInstance);
+                addTask(target, &TreeStructure::splayInstance);
                 break;
             default:
                 throw std::logic_error{"Unknown " + std::string{toString<category>()} + " instance: " + target + '.'};

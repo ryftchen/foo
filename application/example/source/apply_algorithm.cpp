@@ -426,44 +426,43 @@ void runChoices<MatchMethod>(const std::vector<std::string>& candidates)
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(patternString);
+    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
     const auto addTask =
-        [threads, &inputs](
-            const std::string_view threadName,
+        [threads, &inputs, &taskNamer](
+            const std::string_view subTask,
             void (*targetMethod)(
                 const unsigned char* const, const unsigned char* const, const std::uint32_t, const std::uint32_t))
     {
         threads->enqueue(
-            threadName,
+            taskNamer(subTask),
             targetMethod,
             inputs->getMatchingText().get(),
             inputs->getSinglePattern().get(),
             inputs->getTextLength(),
             inputs->getPatternLength());
     };
-    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
 
-    auto indices =
-        std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
-    for (const auto index : indices)
+    for (const auto index :
+         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using match::MatchSolution;
             case abbrVal(MatchMethod::rabinKarp):
-                addTask(taskNamer(target), &MatchSolution::rkMethod);
+                addTask(target, &MatchSolution::rkMethod);
                 break;
             case abbrVal(MatchMethod::knuthMorrisPratt):
-                addTask(taskNamer(target), &MatchSolution::kmpMethod);
+                addTask(target, &MatchSolution::kmpMethod);
                 break;
             case abbrVal(MatchMethod::boyerMoore):
-                addTask(taskNamer(target), &MatchSolution::bmMethod);
+                addTask(target, &MatchSolution::bmMethod);
                 break;
             case abbrVal(MatchMethod::horspool):
-                addTask(taskNamer(target), &MatchSolution::horspoolMethod);
+                addTask(target, &MatchSolution::horspoolMethod);
                 break;
             case abbrVal(MatchMethod::sunday):
-                addTask(taskNamer(target), &MatchSolution::sundayMethod);
+                addTask(target, &MatchSolution::sundayMethod);
                 break;
             default:
                 throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};
@@ -549,24 +548,23 @@ void runChoices<NotationMethod>(const std::vector<std::string>& candidates)
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(infixString);
-    const auto addTask =
-        [threads, &inputs](const std::string_view threadName, void (*targetMethod)(const std::string_view))
-    { threads->enqueue(threadName, targetMethod, inputs->getInfixNotation()); };
     const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+    const auto addTask =
+        [threads, &inputs, &taskNamer](const std::string_view subTask, void (*targetMethod)(const std::string_view))
+    { threads->enqueue(taskNamer(subTask), targetMethod, inputs->getInfixNotation()); };
 
-    auto indices =
-        std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
-    for (const auto index : indices)
+    for (const auto index :
+         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using notation::NotationSolution;
             case abbrVal(NotationMethod::prefix):
-                addTask(taskNamer(target), &NotationSolution::prefixMethod);
+                addTask(target, &NotationSolution::prefixMethod);
                 break;
             case abbrVal(NotationMethod::postfix):
-                addTask(taskNamer(target), &NotationSolution::postfixMethod);
+                addTask(target, &NotationSolution::postfixMethod);
                 break;
             default:
                 throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};
@@ -700,36 +698,35 @@ void runChoices<OptimalMethod>(const std::vector<std::string>& candidates)
     assert(bits.size() == candidates.size());
 
     using optimal::InputBuilder, optimal::input::Rastrigin;
-    const auto calcFunc =
-        [&candidates, &bits](const optimal::Function& function, const optimal::FuncRange<double, double>& range)
+    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+    const auto calcFunc = [&candidates, &bits, &taskNamer](
+                              const optimal::Function& function, const optimal::FuncRange<double, double>& range)
     {
         auto& pooling = action::resourcePool();
         auto* const threads = pooling.newElement(bits.count());
-        const auto addTask = [threads, &function, &range](
-                                 const std::string_view threadName,
+        const auto addTask = [threads, &function, &range, &taskNamer](
+                                 const std::string_view subTask,
                                  void (*targetMethod)(const optimal::Function&, const double, const double))
-        { threads->enqueue(threadName, targetMethod, std::ref(function), range.range1, range.range2); };
-        const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+        { threads->enqueue(taskNamer(subTask), targetMethod, std::ref(function), range.range1, range.range2); };
 
-        auto indices =
-            std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
-        for (const auto index : indices)
+        for (const auto index :
+             std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
         {
             const auto& target = candidates.at(index);
             switch (utility::common::bkdrHash(target.c_str()))
             {
                 using optimal::OptimalSolution;
                 case abbrVal(OptimalMethod::gradient):
-                    addTask(taskNamer(target), &OptimalSolution::gradientDescentMethod);
+                    addTask(target, &OptimalSolution::gradientDescentMethod);
                     break;
                 case abbrVal(OptimalMethod::annealing):
-                    addTask(taskNamer(target), &OptimalSolution::simulatedAnnealingMethod);
+                    addTask(target, &OptimalSolution::simulatedAnnealingMethod);
                     break;
                 case abbrVal(OptimalMethod::particle):
-                    addTask(taskNamer(target), &OptimalSolution::particleSwarmMethod);
+                    addTask(target, &OptimalSolution::particleSwarmMethod);
                     break;
                 case abbrVal(OptimalMethod::genetic):
-                    addTask(taskNamer(target), &OptimalSolution::geneticMethod);
+                    addTask(target, &OptimalSolution::geneticMethod);
                     break;
                 default:
                     throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};
@@ -873,31 +870,34 @@ void runChoices<SearchMethod>(const std::vector<std::string>& candidates)
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder<float>>(arrayLength, arrayRangeMin, arrayRangeMax);
-    const auto addTask = [threads, &inputs](
-                             const std::string_view threadName,
-                             void (*targetMethod)(const float* const, const std::uint32_t, const float))
+    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+    const auto addTask =
+        [threads, &inputs, &taskNamer](
+            const std::string_view subTask, void (*targetMethod)(const float* const, const std::uint32_t, const float))
     {
         threads->enqueue(
-            threadName, targetMethod, inputs->getOrderedArray().get(), inputs->getLength(), inputs->getSearchKey());
+            taskNamer(subTask),
+            targetMethod,
+            inputs->getOrderedArray().get(),
+            inputs->getLength(),
+            inputs->getSearchKey());
     };
-    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
 
-    auto indices =
-        std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
-    for (const auto index : indices)
+    for (const auto index :
+         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using search::SearchSolution;
             case abbrVal(SearchMethod::binary):
-                addTask(taskNamer(target), &SearchSolution::binaryMethod);
+                addTask(target, &SearchSolution::binaryMethod);
                 break;
             case abbrVal(SearchMethod::interpolation):
-                addTask(taskNamer(target), &SearchSolution::interpolationMethod);
+                addTask(target, &SearchSolution::interpolationMethod);
                 break;
             case abbrVal(SearchMethod::fibonacci):
-                addTask(taskNamer(target), &SearchSolution::fibonacciMethod);
+                addTask(target, &SearchSolution::fibonacciMethod);
                 break;
             default:
                 throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};
@@ -1124,49 +1124,48 @@ void runChoices<SortMethod>(const std::vector<std::string>& candidates)
     auto& pooling = action::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder<std::int32_t>>(arrayLength, arrayRangeMin, arrayRangeMax);
-    const auto addTask =
-        [threads, &inputs](
-            const std::string_view threadName, void (*targetMethod)(const std::int32_t* const, const std::uint32_t))
-    { threads->enqueue(threadName, targetMethod, inputs->getRandomArray().get(), inputs->getLength()); };
     const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+    const auto addTask =
+        [threads, &inputs, &taskNamer](
+            const std::string_view subTask, void (*targetMethod)(const std::int32_t* const, const std::uint32_t))
+    { threads->enqueue(taskNamer(subTask), targetMethod, inputs->getRandomArray().get(), inputs->getLength()); };
 
-    auto indices =
-        std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
-    for (const auto index : indices)
+    for (const auto index :
+         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using sort::SortSolution;
             case abbrVal(SortMethod::bubble):
-                addTask(taskNamer(target), &SortSolution::bubbleMethod);
+                addTask(target, &SortSolution::bubbleMethod);
                 break;
             case abbrVal(SortMethod::selection):
-                addTask(taskNamer(target), &SortSolution::selectionMethod);
+                addTask(target, &SortSolution::selectionMethod);
                 break;
             case abbrVal(SortMethod::insertion):
-                addTask(taskNamer(target), &SortSolution::insertionMethod);
+                addTask(target, &SortSolution::insertionMethod);
                 break;
             case abbrVal(SortMethod::shell):
-                addTask(taskNamer(target), &SortSolution::shellMethod);
+                addTask(target, &SortSolution::shellMethod);
                 break;
             case abbrVal(SortMethod::merge):
-                addTask(taskNamer(target), &SortSolution::mergeMethod);
+                addTask(target, &SortSolution::mergeMethod);
                 break;
             case abbrVal(SortMethod::quick):
-                addTask(taskNamer(target), &SortSolution::quickMethod);
+                addTask(target, &SortSolution::quickMethod);
                 break;
             case abbrVal(SortMethod::heap):
-                addTask(taskNamer(target), &SortSolution::heapMethod);
+                addTask(target, &SortSolution::heapMethod);
                 break;
             case abbrVal(SortMethod::counting):
-                addTask(taskNamer(target), &SortSolution::countingMethod);
+                addTask(target, &SortSolution::countingMethod);
                 break;
             case abbrVal(SortMethod::bucket):
-                addTask(taskNamer(target), &SortSolution::bucketMethod);
+                addTask(target, &SortSolution::bucketMethod);
                 break;
             case abbrVal(SortMethod::radix):
-                addTask(taskNamer(target), &SortSolution::radixMethod);
+                addTask(target, &SortSolution::radixMethod);
                 break;
             default:
                 throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};

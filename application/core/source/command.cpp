@@ -648,10 +648,9 @@ catch (const std::exception& err)
 
 void Command::validate()
 {
-    auto& bits = taskDispatcher.nativeCategories;
-    auto indices = std::views::iota(0U, bits.size())
-        | std::views::filter([this](const auto i) { return mainCLI.isUsed(toString(Category(i))); });
-    for (const auto index : indices)
+    for (auto& bits = taskDispatcher.nativeCategories;
+         const auto index : std::views::iota(0U, bits.size())
+             | std::views::filter([this](const auto i) { return mainCLI.isUsed(toString(Category(i))); }))
     {
         checkForExcessiveArguments();
         bits.set(Category(index));
@@ -678,8 +677,8 @@ void Command::validate()
                      [this, &subCLI](const auto& categoryPair)
                      { return subCLI.isUsed(categoryPair.first) ? (checkForExcessiveArguments(), true) : false; }))
         {
-            const auto& pendingTasks = subCLI.get<std::vector<std::string>>(categoryName);
-            for (const auto& target : pendingTasks)
+            for (const auto& pendingTasks = subCLI.get<std::vector<std::string>>(categoryName);
+                 const auto& target : pendingTasks)
             {
                 std::visit(
                     action::EvtVisitor{[this, &target](auto&& event) {
@@ -700,10 +699,9 @@ void Command::dispatch()
 {
     if (!taskDispatcher.NativeManager::empty())
     {
-        const auto& bits = taskDispatcher.nativeCategories;
-        auto indices =
-            std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); });
-        for (const auto index : indices)
+        for (const auto& bits = taskDispatcher.nativeCategories;
+             const auto index :
+             std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
         {
             defaultNotifier.notify(Category(index));
         }
@@ -713,9 +711,10 @@ void Command::dispatch()
     {
         if (taskDispatcher.extraHelpOnly)
         {
-            auto filtered = std::views::keys(extraChoices)
-                | std::views::filter([this](const auto& subCLIName) { return mainCLI.isSubCommandUsed(subCLIName); });
-            if (std::ranges::distance(filtered) != 0)
+            if (auto filtered = std::views::keys(extraChoices)
+                    | std::views::filter([this](const auto& subCLIName)
+                                         { return mainCLI.isSubCommandUsed(subCLIName); });
+                std::ranges::distance(filtered) != 0)
             {
                 const auto& subCLI = mainCLI.at<utility::argument::Argument>(*std::ranges::begin(filtered));
                 std::cout << subCLI.help().str() << std::flush;
