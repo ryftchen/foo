@@ -112,7 +112,7 @@ private:
         HistoryState* history{nullptr};
     };
     //! @brief Internal terminal.
-    std::unique_ptr<Terminal> terminal{};
+    const std::unique_ptr<Terminal> terminal{};
 
     //! @brief Get all registered options with help prompts.
     //! @return all registered options with help prompts

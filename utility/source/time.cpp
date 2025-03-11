@@ -26,11 +26,6 @@ void Time::resetBeginTime()
     beginTime = std::chrono::high_resolution_clock::now();
 }
 
-double Time::calcElapsedTime() const
-{
-    return std::chrono::duration<double, std::milli>(std::chrono::high_resolution_clock::now() - beginTime).count();
-}
-
 //! @brief Create a one-shot timer with blocking.
 //! @param termination - termination condition
 //! @param timeout - timeout period (ms)
@@ -56,7 +51,8 @@ std::string getCurrentSystemTime()
     constexpr std::uint16_t dateLen = 32, sinceWhen = 1900;
     char date[dateLen] = {'\0'};
     const auto now = std::chrono::system_clock::now();
-    const auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()) % 1000000;
+    const auto microsec =
+        (std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()) % 1000000).count();
     const std::time_t tt = std::chrono::system_clock::to_time_t(now);
     std::tm tm{};
 
@@ -71,7 +67,7 @@ std::string getCurrentSystemTime()
         tm.tm_hour,
         tm.tm_min,
         tm.tm_sec,
-        microseconds.count(),
+        microsec,
         tm.tm_zone);
 
     return std::string{date};

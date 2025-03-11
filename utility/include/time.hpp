@@ -29,12 +29,22 @@ public:
     //! @brief Reset the beginning time.
     void resetBeginTime();
     //! @brief Calculate the elapsed time.
-    [[nodiscard]] double calcElapsedTime() const;
+    //! @tparam Rep - type of number of ticks
+    //! @tparam Period - type of tick period
+    //! @return elapsed time
+    template <typename Rep = double, typename Period = std::milli>
+    [[nodiscard]] Rep calcElapsedTime() const;
 
 private:
     //! @brief Beginning time.
     std::chrono::high_resolution_clock::time_point beginTime{};
 };
+
+template <typename Rep, typename Period>
+Rep Time::calcElapsedTime() const
+{
+    return std::chrono::duration<Rep, Period>(std::chrono::high_resolution_clock::now() - beginTime).count();
+}
 
 //! @brief Perform millisecond-level sleep.
 //! @param duration - sleep duration

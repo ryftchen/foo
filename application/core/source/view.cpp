@@ -437,7 +437,8 @@ void View::Access::enableWait() const
     }
     else
     {
-        utility::time::millisecondLevelSleep(inst.timeoutPeriod);
+        const std::uint32_t maxWaitTime = inst.timeoutPeriod;
+        utility::time::millisecondLevelSleep(maxWaitTime);
     }
 }
 
