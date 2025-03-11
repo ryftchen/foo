@@ -56,29 +56,19 @@ utility::json::JSON Configure::parseConfigFile(const std::string_view configFile
 }
 
 //! @brief Check the "logger" object in the helper list.
-//! @param helperList - object in the helper list
+//! @param helper - object of helper
 template <>
-void Configure::checkObjectInHelperList<log::Log>(const utility::json::JSON& helperList)
+void Configure::checkObjectInHelperList<log::Log>(const utility::json::JSON& helper)
 {
-    if (!helperList.hasKey(field::logger))
+    if (!helper.hasKey(field::properties) || !helper.hasKey(field::required))
     {
         throw std::runtime_error{
-            R"("Incomplete configuration, miss ")" + std::string{field::logger} + R"(" object in ")"
-            + std::string{field::helperList} + R"(" object.)"};
+            "Incomplete 3rd level configuration in \"" + std::string{field::logger} + "\" field in \""
+            + std::string{field::helperList} + "\" field (" + helper.toUnescapedString() + ")."};
     }
 
-    const auto& loggerObject = helperList.at(field::logger);
-    if (!loggerObject.hasKey(field::properties) || !loggerObject.hasKey(field::required))
-    {
-        throw std::runtime_error{
-            R"(Incomplete configuration, ")" + std::string{field::logger} + R"(" object in ")"
-            + std::string{field::helperList} + R"(" object ()" + loggerObject.toUnescapedString() + ")."};
-    }
-
-    bool isVerified = true;
-    isVerified &= loggerObject.isObjectType();
-    const auto &loggerProperties = loggerObject.at(field::properties),
-               &loggerRequired = loggerObject.at(field::required);
+    bool isVerified = helper.isObjectType();
+    const auto &loggerProperties = helper.at(field::properties), &loggerRequired = helper.at(field::required);
     isVerified &= loggerProperties.isObjectType() && loggerRequired.isArrayType()
         && (loggerProperties.size() == loggerRequired.length());
     for (const auto& item : loggerRequired.arrayRange())
@@ -122,35 +112,25 @@ void Configure::checkObjectInHelperList<log::Log>(const utility::json::JSON& hel
     if (!isVerified)
     {
         throw std::runtime_error{
-            R"(Illegal configuration, ")" + std::string{field::logger} + R"(" object in ")"
-            + std::string{field::helperList} + R"(" object ()" + loggerObject.toUnescapedString() + ")."};
+            "Illegal 3rd level configuration in \"" + std::string{field::logger} + "\" field in \""
+            + std::string{field::helperList} + "\" field (" + helper.toUnescapedString() + ")."};
     }
 }
 
 //! @brief Check the "viewer" object in the helper list.
-//! @param helperList - object in the helper list
+//! @param helper - object of helper
 template <>
-void Configure::checkObjectInHelperList<view::View>(const utility::json::JSON& helperList)
+void Configure::checkObjectInHelperList<view::View>(const utility::json::JSON& helper)
 {
-    if (!helperList.hasKey(field::viewer))
+    if (!helper.hasKey(field::properties) || !helper.hasKey(field::required))
     {
         throw std::runtime_error{
-            R"(Incomplete configuration, miss ")" + std::string{field::viewer} + R"(" object in ")"
-            + std::string{field::helperList} + R"(" object.)"};
+            "Incomplete 3rd level configuration in \"" + std::string{field::viewer} + "\" field in \""
+            + std::string{field::helperList} + "\" field (" + helper.toUnescapedString() + ")."};
     }
 
-    const auto& viewerObject = helperList.at(field::viewer);
-    if (!viewerObject.hasKey(field::properties) || !viewerObject.hasKey(field::required))
-    {
-        throw std::runtime_error{
-            R"(Incomplete configuration, ")" + std::string{field::viewer} + R"(" object in ")"
-            + std::string{field::helperList} + R"(" object ()" + viewerObject.toUnescapedString() + ")."};
-    }
-
-    bool isVerified = true;
-    isVerified &= viewerObject.isObjectType();
-    const auto &viewerProperties = viewerObject.at(field::properties),
-               &viewerRequired = viewerObject.at(field::required);
+    bool isVerified = helper.isObjectType();
+    const auto &viewerProperties = helper.at(field::properties), &viewerRequired = helper.at(field::required);
     isVerified &= viewerProperties.isObjectType() && viewerRequired.isArrayType()
         && (viewerProperties.size() == viewerRequired.length());
     for (const auto& item : viewerRequired.arrayRange())
@@ -185,8 +165,8 @@ void Configure::checkObjectInHelperList<view::View>(const utility::json::JSON& h
     if (!isVerified)
     {
         throw std::runtime_error{
-            R"(Illegal configuration, ")" + std::string{field::viewer} + R"(" object in ")"
-            + std::string{field::helperList} + R"(" object ()" + viewerObject.toUnescapedString() + ")."};
+            "Illegal 3rd level configuration in \"" + std::string{field::viewer} + "\" field in \""
+            + std::string{field::helperList} + "\" field (" + helper.toUnescapedString() + ")."};
     }
 }
 
@@ -195,18 +175,40 @@ void Configure::verifyConfigData(const utility::json::JSON& configData)
     if (!configData.hasKey(field::activateHelper) || !configData.hasKey(field::helperList)
         || !configData.hasKey(field::helperTimeout))
     {
-        throw std::runtime_error{"Incomplete configuration (" + configData.toUnescapedString() + ")."};
+        throw std::runtime_error{"Incomplete 1st level configuration (" + configData.toUnescapedString() + ")."};
     }
 
     if (!configData.at(field::activateHelper).isBooleanType() || !configData.at(field::helperList).isObjectType()
         || !configData.at(field::helperTimeout).isIntegralType()
         || configData.at(field::helperTimeout).toIntegral() < 0)
     {
-        throw std::runtime_error{"Illegal configuration (" + configData.toUnescapedString() + ")."};
+        throw std::runtime_error{"Illegal 1st level configuration (" + configData.toUnescapedString() + ")."};
     }
 
-    checkObjectInHelperList<log::Log>(configData.at(field::helperList));
-    checkObjectInHelperList<view::View>(configData.at(field::helperList));
+    const auto& helperListObject = configData.at(field::helperList);
+    if (!helperListObject.hasKey(field::logger) || !helperListObject.hasKey(field::viewer))
+    {
+        throw std::runtime_error{
+            "Incomplete 2nd level configuration in \"" + std::string{field::helperList} + "\" field ("
+            + helperListObject.toUnescapedString() + ")."};
+    }
+    for (const auto& [key, item] : helperListObject.objectRange())
+    {
+        switch (utility::common::bkdrHash(key.c_str()))
+        {
+            using utility::common::operator""_bkdrHash;
+            case operator""_bkdrHash(field::logger.data()):
+                checkObjectInHelperList<log::Log>(item);
+                break;
+            case operator""_bkdrHash(field::viewer.data()):
+                checkObjectInHelperList<view::View>(item);
+                break;
+            default:
+                throw std::runtime_error{
+                    "Illegal 2nd level configuration in \"" + std::string{field::helperList} + "\" field ("
+                    + helperListObject.toUnescapedString() + ")."};
+        }
+    }
 }
 
 //! @brief Get the full path to the configuration file.

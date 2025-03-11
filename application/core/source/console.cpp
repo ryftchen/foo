@@ -65,7 +65,7 @@ Console::RetCode Console::optionExecutor(const std::string_view option)
     if (terminal->regTable.cend() == regIter)
     {
         throw std::runtime_error{
-            "The console option \"" + inputs.front() + R"(" could not be found. Enter the "usage" for help.)"};
+            "The console option (" + inputs.front() + ") could not be found. Enter the \"usage\" for help."};
     }
 
     return regIter->second.second(inputs);
