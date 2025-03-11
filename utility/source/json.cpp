@@ -343,23 +343,23 @@ static JSON parseNumber(const std::string_view fmt, std::size_t& offset)
 //! @return JSON boolean
 static JSON parseBoolean(const std::string_view fmt, std::size_t& offset)
 {
-    constexpr std::string_view trueStr = "true", falseStr = "false";
+    constexpr std::string_view trueLit = "true", falseLit = "false";
     JSON boolean{};
-    if (fmt.substr(offset, trueStr.length()) == trueStr)
+    if (fmt.substr(offset, trueLit.length()) == trueLit)
     {
         boolean = true;
     }
-    else if (fmt.substr(offset, falseStr.length()) == falseStr)
+    else if (fmt.substr(offset, falseLit.length()) == falseLit)
     {
         boolean = false;
     }
     else
     {
         throw std::runtime_error{
-            R"(JSON boolean: Expected "true" or "false", found ")" + std::string{fmt.substr(offset, falseStr.length())}
-            + "\"."};
+            "JSON boolean: Expected \"" + std::string{trueLit} + "\" or \"" + std::string{falseLit} + "\", found \""
+            + std::string{fmt.substr(offset, falseLit.length())} + "\"."};
     }
-    offset += (boolean.toBoolean() ? trueStr.length() : falseStr.length());
+    offset += (boolean.toBoolean() ? trueLit.length() : falseLit.length());
 
     return boolean;
 }
@@ -370,13 +370,14 @@ static JSON parseBoolean(const std::string_view fmt, std::size_t& offset)
 //! @return JSON null
 static JSON parseNull(const std::string_view fmt, std::size_t& offset)
 {
-    constexpr std::string_view nullStr = "null";
-    if (fmt.substr(offset, nullStr.length()) != nullStr)
+    constexpr std::string_view nullLit = "null";
+    if (fmt.substr(offset, nullLit.length()) != nullLit)
     {
         throw std::runtime_error{
-            R"(JSON null: Expected "null", found ")" + std::string{fmt.substr(offset, nullStr.length())} + "\"."};
+            "JSON null: Expected \"" + std::string{nullLit} + "\", found \""
+            + std::string{fmt.substr(offset, nullLit.length())} + "\"."};
     }
-    offset += nullStr.length();
+    offset += nullLit.length();
 
     return {};
 }
