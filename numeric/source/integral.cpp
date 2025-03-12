@@ -109,13 +109,12 @@ double Romberg::operator()(double lower, double upper, const double eps) const
     double sum = 0.0;
     const double height = upper - lower;
     const auto trapezoidFunctor = std::bind(trapezoid, std::ref(expr), lower, height, std::placeholders::_1);
-    double t0 = trapezoidFunctor(std::pow(2, k));
 
+    double t0 = trapezoidFunctor(std::pow(2, k));
     k = 1;
     double t1Zero = trapezoidFunctor(std::pow(2, k)),
            t1 = std::pow(4, k) / (std::pow(4, k) - 1) * trapezoidFunctor(std::pow(2, k + 1))
         - 1.0 / std::pow(4, k) * t1Zero;
-
     while (std::fabs(t1 - t0) > eps)
     {
         ++k;
@@ -180,7 +179,7 @@ double MonteCarlo::operator()(double lower, double upper, const double eps) cons
 
 double MonteCarlo::sampleFromUniformDistribution(const double lower, const double upper, const double eps) const
 {
-    const std::uint32_t n = std::max<std::uint32_t>((upper - lower) / eps, 1.0 / eps);
+    const std::uint32_t n = 1.0 / eps;
     std::uniform_real_distribution<double> dist(lower, upper);
     std::mt19937 engine(std::random_device{}());
     double sum = 0.0;
@@ -195,7 +194,7 @@ double MonteCarlo::sampleFromUniformDistribution(const double lower, const doubl
 
 double MonteCarlo::sampleFromNormalDistribution(const double lower, const double upper, const double eps) const
 {
-    const std::uint32_t n = std::max<std::uint32_t>((upper - lower) / eps, 1.0 / eps);
+    const std::uint32_t n = 1.0 / eps;
     const double mu = (lower + upper) / 2.0, sigma = (upper - lower) / 6.0;
     std::mt19937 engine(std::random_device{}());
     std::uniform_real_distribution<double> dist(0.0, 1.0);
