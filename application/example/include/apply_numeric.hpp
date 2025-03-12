@@ -385,38 +385,22 @@ const char* const version = numeric::integral::version();
 //! @brief Set input parameters.
 namespace input
 {
-//! @brief Expression example 1.
-class Expression1 : public numeric::integral::Expression
+//! @brief Griewank expression.
+class Griewank : public numeric::integral::Expression
 {
 public:
-    //! @brief The operator (()) overloading of Expression1 class.
+    //! @brief The operator (()) overloading of Griewank class.
     //! @param x - independent variable
     //! @return dependent variable
-    double operator()(const double x) const override { return (x * std::sin(x)) / (1.0 + std::cos(x) * std::cos(x)); }
+    double operator()(const double x) const override { return 1.0 + 1.0 / 4000.0 * x * x - std::cos(x); }
 
     //! @brief Left endpoint.
-    static constexpr double range1{-std::numbers::pi / 2.0};
+    static constexpr double range1{-600.0};
     //! @brief Right endpoint.
-    static constexpr double range2{2.0 * std::numbers::pi};
-    //! @brief Expression example 1.
-    static constexpr std::string_view exprDescr{"I=∫(-π/2→2π)x*sin(x)/(1+(cos(x))^2)dx"};
-};
-
-//! @brief Expression example 2.
-class Expression2 : public numeric::integral::Expression
-{
-public:
-    //! @brief The operator (()) overloading of Expression2 class.
-    //! @param x - independent variable
-    //! @return dependent variable
-    double operator()(const double x) const override { return x + 10.0 * std::sin(5.0 * x) + 7.0 * std::cos(4.0 * x); }
-
-    //! @brief Left endpoint.
-    static constexpr double range1{0.0};
-    //! @brief Right endpoint.
-    static constexpr double range2{9.0};
-    //! @brief Expression example 2.
-    static constexpr std::string_view exprDescr{"I=∫(0→9)x+10sin(5x)+7cos(4x)dx"};
+    static constexpr double range2{600.0};
+    //! @brief One-dimensional Griewank.
+    static constexpr std::string_view exprDescr{
+        "f(x)=1+1/4000*Σ(1→n)[(Xi)^2]-Π(1→n)[cos(Xi/(i)^(1/2))],x∈[-600,600] (one-dimensional Griewank)"};
 };
 } // namespace input
 
@@ -434,7 +418,7 @@ public:
     //! @param expr - target expression
     //! @param lower - lower endpoint
     //! @param upper - upper endpoint
-    static void trapezoidalMethod(const Expression& expr, double lower, double upper);
+    static void trapezoidalMethod(const Expression& expr, const double lower, const double upper);
     //! @brief The adaptive Simpson's 1/3 method.
     //! @param expr - target expression
     //! @param lower - lower endpoint
@@ -528,6 +512,7 @@ struct ExprMapHash
 //! @brief Alias for the integral expression.
 //! @tparam Ts - type of expressions
 template <typename... Ts>
+requires (std::derived_from<Ts, numeric::integral::Expression> && ...)
 using IntegralExpr = std::variant<Ts...>;
 //! @brief Alias for the integral expression map.
 //! @tparam Ts - type of expressions
@@ -556,15 +541,13 @@ public:
         constexpr std::string_view prefix = "\nIntegral expression:\n";
         std::visit(
             ExprOverloaded{
-                [&prefix](const input::Expression1& /*expr*/)
-                { std::cout << prefix << input::Expression1::exprDescr << std::endl; },
-                [&prefix](const input::Expression2& /*expr*/)
-                { std::cout << prefix << input::Expression2::exprDescr << std::endl; },
+                [&prefix](const input::Griewank& /*expr*/)
+                { std::cout << prefix << input::Griewank::exprDescr << std::endl; },
                 [](auto&& expr)
                 {
-                    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
-                    auto* exprPtr = const_cast<std::remove_const_t<std::remove_reference_t<decltype(expr)>>*>(&expr);
-                    if (nullptr != dynamic_cast<numeric::integral::Expression*>(exprPtr))
+                    if (auto* exprPtr = // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
+                        const_cast<std::remove_const_t<std::remove_reference_t<decltype(expr)>>*>(&expr);
+                        nullptr != dynamic_cast<numeric::integral::Expression*>(exprPtr))
                     {
                         throw std::runtime_error{"Unknown expression type (" + std::string{typeid(expr).name()} + ")."};
                     }

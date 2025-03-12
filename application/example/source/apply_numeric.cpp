@@ -492,7 +492,7 @@ static void showResult(const IntegralMethod method, const double result, const d
         "\n==> %-11s Method <==\nI(def)=%+.5f, run time: %8.5f ms\n", getTitle(method).c_str(), result, interval);
 }
 
-void IntegralSolution::trapezoidalMethod(const Expression& expr, double lower, double upper)
+void IntegralSolution::trapezoidalMethod(const Expression& expr, const double lower, const double upper)
 try
 {
     const utility::time::Time timer{};
@@ -603,7 +603,6 @@ void runChoices<IntegralMethod>(const std::vector<std::string>& candidates)
     }
     assert(bits.size() == candidates.size());
 
-    using integral::InputBuilder, integral::input::Expression1;
     const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
     const auto calcExpr = [&candidates, &bits, &taskNamer](
                               const integral::Expression& expression, const integral::ExprRange<double, double>& range)
@@ -646,8 +645,9 @@ void runChoices<IntegralMethod>(const std::vector<std::string>& candidates)
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
 
-    const auto inputs = std::make_shared<InputBuilder<Expression1>>(integral::IntegralExprMap<Expression1>{
-        {{Expression1::range1, Expression1::range2, Expression1::exprDescr}, Expression1{}}});
+    using integral::InputBuilder, integral::input::Griewank;
+    const auto inputs = std::make_shared<InputBuilder<Griewank>>(
+        integral::IntegralExprMap<Griewank>{{{Griewank::range1, Griewank::range2, Griewank::exprDescr}, Griewank{}}});
     for ([[maybe_unused]] const auto& [range, expression] : inputs->getExpressionMap())
     {
         inputs->printExpression(expression);

@@ -697,7 +697,6 @@ void runChoices<OptimalMethod>(const std::vector<std::string>& candidates)
     }
     assert(bits.size() == candidates.size());
 
-    using optimal::InputBuilder, optimal::input::Rastrigin;
     const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
     const auto calcFunc = [&candidates, &bits, &taskNamer](
                               const optimal::Function& function, const optimal::FuncRange<double, double>& range)
@@ -737,6 +736,7 @@ void runChoices<OptimalMethod>(const std::vector<std::string>& candidates)
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
 
+    using optimal::InputBuilder, optimal::input::Rastrigin;
     static_assert(Rastrigin::range1 < Rastrigin::range2);
     const auto inputs = std::make_shared<InputBuilder<Rastrigin>>(optimal::OptimalFuncMap<Rastrigin>{
         {{Rastrigin::range1, Rastrigin::range2, Rastrigin::funcDescr}, Rastrigin{}}});
