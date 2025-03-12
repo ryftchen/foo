@@ -139,13 +139,13 @@ public:
     ~IntegralTestBase() override = default;
 
     //! @brief Alias for the target expression.
-    using Expression1 = integral::input::Expression1;
+    using Griewank = integral::input::Griewank;
     //! @brief Set up the test case.
     static void SetUpTestCase()
     {
         TST_NUM_PRINT_TASK_TITLE(Category::integral, "BEGIN");
-        inputs = std::make_shared<integral::InputBuilder<Expression1>>(integral::IntegralExprMap<Expression1>{
-            {{Expression1::range1, Expression1::range2, Expression1::exprDescr}, Expression1{}}});
+        inputs = std::make_shared<integral::InputBuilder<Griewank>>(integral::IntegralExprMap<Griewank>{
+            {{Griewank::range1, Griewank::range2, Griewank::exprDescr}, Griewank{}}});
     }
     //! @brief Tear down the test case.
     static void TearDownTestCase()
@@ -159,79 +159,79 @@ public:
     void TearDown() override {}
 
     //! @brief Input builder.
-    static std::shared_ptr<integral::InputBuilder<Expression1>> inputs;
+    static std::shared_ptr<integral::InputBuilder<Griewank>> inputs;
     //! @brief Allowable error.
-    static constexpr double error{1e-1};
+    static constexpr double error{1e3};
 };
-std::shared_ptr<integral::InputBuilder<integral::input::Expression1>> IntegralTestBase::inputs = nullptr;
+std::shared_ptr<integral::InputBuilder<integral::input::Griewank>> IntegralTestBase::inputs = nullptr;
 
 //! @brief Test for the trapezoidal method in the solution of integral.
 TEST_F(IntegralTestBase, trapezoidalMethod)
 {
     const auto range = inputs->getExpressionMap().cbegin()->first;
-    const auto expression = std::get<Expression1>(inputs->getExpressionMap().cbegin()->second);
+    const auto expression = std::get<Griewank>(inputs->getExpressionMap().cbegin()->second);
     const std::shared_ptr<numeric::integral::Integral> trapezoidal =
         std::make_shared<numeric::integral::Trapezoidal>(expression);
     double result = 0.0;
 
     ASSERT_NO_THROW(result = (*trapezoidal)(range.range1, range.range2, numeric::integral::epsilon));
-    EXPECT_GT(result, -4.08951 - error);
-    EXPECT_LT(result, -4.08951 + error);
+    EXPECT_GT(result, +37199.91164 - error);
+    EXPECT_LT(result, +37199.91164 + error);
 }
 
 //! @brief Test for the adaptive Simpson's 1/3 method in the solution of integral.
 TEST_F(IntegralTestBase, adaptiveSimpsonMethod)
 {
     const auto range = inputs->getExpressionMap().cbegin()->first;
-    const auto expression = std::get<Expression1>(inputs->getExpressionMap().cbegin()->second);
+    const auto expression = std::get<Griewank>(inputs->getExpressionMap().cbegin()->second);
     const std::shared_ptr<numeric::integral::Integral> simpson =
         std::make_shared<numeric::integral::Simpson>(expression);
     double result = 0.0;
 
     ASSERT_NO_THROW(result = (*simpson)(range.range1, range.range2, numeric::integral::epsilon));
-    EXPECT_GT(result, -4.08951 - error);
-    EXPECT_LT(result, -4.08951 + error);
+    EXPECT_GT(result, +37199.91164 - error);
+    EXPECT_LT(result, +37199.91164 + error);
 }
 
 //! @brief Test for the Romberg method in the solution of integral.
 TEST_F(IntegralTestBase, rombergMethod)
 {
     const auto range = inputs->getExpressionMap().cbegin()->first;
-    const auto expression = std::get<Expression1>(inputs->getExpressionMap().cbegin()->second);
+    const auto expression = std::get<Griewank>(inputs->getExpressionMap().cbegin()->second);
     const std::shared_ptr<numeric::integral::Integral> romberg =
         std::make_shared<numeric::integral::Romberg>(expression);
     double result = 0.0;
 
     ASSERT_NO_THROW(result = (*romberg)(range.range1, range.range2, numeric::integral::epsilon));
-    EXPECT_GT(result, -4.08951 - error);
-    EXPECT_LT(result, -4.08951 + error);
+    EXPECT_GT(result, +37199.91164 - error);
+    EXPECT_LT(result, +37199.91164 + error);
 }
 
 //! @brief Test for the Gauss-Legendre's 5-points method in the solution of integral.
 TEST_F(IntegralTestBase, gaussLegendreMethod)
 {
     const auto range = inputs->getExpressionMap().cbegin()->first;
-    const auto expression = std::get<Expression1>(inputs->getExpressionMap().cbegin()->second);
+    const auto expression = std::get<Griewank>(inputs->getExpressionMap().cbegin()->second);
     const std::shared_ptr<numeric::integral::Integral> gauss = std::make_shared<numeric::integral::Gauss>(expression);
     double result = 0.0;
 
     ASSERT_NO_THROW(result = (*gauss)(range.range1, range.range2, numeric::integral::epsilon));
-    EXPECT_GT(result, -4.08951 - error);
-    EXPECT_LT(result, -4.08951 + error);
+    EXPECT_GT(result, +37199.91164 - error);
+    EXPECT_LT(result, +37199.91164 + error);
 }
 
 //! @brief Test for the Monte-Carlo method in the solution of integral.
 TEST_F(IntegralTestBase, monteCarloMethod)
 {
     const auto range = inputs->getExpressionMap().cbegin()->first;
-    const auto expression = std::get<Expression1>(inputs->getExpressionMap().cbegin()->second);
+    const auto expression = std::get<Griewank>(inputs->getExpressionMap().cbegin()->second);
     const std::shared_ptr<numeric::integral::Integral> monteCarlo =
         std::make_shared<numeric::integral::MonteCarlo>(expression);
     double result = 0.0;
 
     ASSERT_NO_THROW(result = (*monteCarlo)(range.range1, range.range2, numeric::integral::epsilon));
-    EXPECT_GT(result, -4.08951 - error);
-    EXPECT_LT(result, -4.08951 + error);
+    EXPECT_GT(result, +37199.91164 - error);
+    EXPECT_LT(result, +37199.91164 + error);
 }
 
 //! @brief Test base of prime.

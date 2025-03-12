@@ -499,24 +499,6 @@ public:
     static constexpr std::string_view funcDescr{
         "f(x)=An+Σ(1→n)[(Xi)^2-Acos(2π*Xi)],A=10,x∈[-5.12,5.12] (one-dimensional Rastrigin)"};
 };
-
-//! @brief Griewank function.
-class Griewank : public algorithm::optimal::Function
-{
-public:
-    //! @brief The operator (()) overloading of Griewank class.
-    //! @param x - independent variable
-    //! @return dependent variable
-    double operator()(const double x) const override { return 1.0 + 1.0 / 4000.0 * x * x - std::cos(x); }
-
-    //! @brief Left endpoint.
-    static constexpr double range1{-600.0};
-    //! @brief Right endpoint.
-    static constexpr double range2{600.0};
-    //! @brief One-dimensional Griewank.
-    static constexpr std::string_view funcDescr{
-        "f(x)=1+1/4000*Σ(1→n)[(Xi)^2]-Π(1→n)[cos(Xi/(i)^(1/2))],x∈[-600,600] (one-dimensional Griewank)"};
-};
 } // namespace input
 
 //! @brief Alias for the target function.
@@ -622,6 +604,7 @@ struct FuncMapHash
 //! @brief Alias for the optimal function.
 //! @tparam Ts - type of functions
 template <typename... Ts>
+requires (std::derived_from<Ts, algorithm::optimal::Function> && ...)
 using OptimalFunc = std::variant<Ts...>;
 //! @brief Alias for the optimal function map.
 //! @tparam Ts - type of functions
@@ -652,13 +635,11 @@ public:
             FuncOverloaded{
                 [&prefix](const input::Rastrigin& /*func*/)
                 { std::cout << prefix << input::Rastrigin::funcDescr << std::endl; },
-                [&prefix](const input::Griewank& /*func*/)
-                { std::cout << prefix << input::Griewank::funcDescr << std::endl; },
                 [](auto&& func)
                 {
-                    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
-                    auto* funcPtr = const_cast<std::remove_const_t<std::remove_reference_t<decltype(func)>>*>(&func);
-                    if (nullptr != dynamic_cast<algorithm::optimal::Function*>(funcPtr))
+                    if (auto* funcPtr = // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
+                        const_cast<std::remove_const_t<std::remove_reference_t<decltype(func)>>*>(&func);
+                        nullptr != dynamic_cast<algorithm::optimal::Function*>(funcPtr))
                     {
                         throw std::runtime_error{"Unknown function type (" + std::string{typeid(func).name()} + ")."};
                     }
