@@ -189,7 +189,8 @@ private:
     //! @param eps - precision of calculation
     //! @return result of definite integral
     //! @note I≈1/N*[F(X1)/P(X1)+...+F(Xn)/P(Xn)]
-    [[nodiscard]] double sampleFromNormalDistribution(const double lower, const double upper, const double eps) const;
+    [[deprecated, nodiscard]] double sampleFromNormalDistribution(
+        const double lower, const double upper, const double eps) const;
 };
 } // namespace integral
 } // namespace numeric

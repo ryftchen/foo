@@ -517,7 +517,7 @@ void Log::nativeOutput(const std::string_view format, Args&&... args)
     const auto rows = reformatContents(
         std::string{sourceDirectory.substr(1, sourceDirectory.length() - 2)} + ": ",
         utility::common::formatString(format.data(), std::forward<Args>(args)...));
-    std::for_each(rows.begin(), rows.end(), [](const auto& output) { std::clog << output << std::endl; });
+    std::for_each(rows.cbegin(), rows.cend(), [](const auto& output) { std::clog << output << std::endl; });
 }
 
 //! @brief Instance information, if enabled.
