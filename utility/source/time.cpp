@@ -16,6 +16,16 @@ const char* version() noexcept
     return ver;
 }
 
+Time::Time()
+{
+    reset();
+}
+
+void Time::reset()
+{
+    beginTime = std::chrono::high_resolution_clock::now();
+}
+
 //! @brief Get the current system time, like "1970-01-01 00:00:00.000000 UTC".
 //! @return current system time
 std::string getCurrentSystemTime()
@@ -51,7 +61,7 @@ std::string getCurrentSystemTime()
 //! @return the value is 0 if the termination condition is met, otherwise -1 on timeout
 int blockingTimer(const std::function<bool()>& termination, const int timeout)
 {
-    for (const Time timer{}; (timeout < 0) || (timer.calcElapsedTime() <= timeout);)
+    for (const Time timer{}; (timeout < 0) || (timer.elapsedTime() <= timeout);)
     {
         if (termination())
         {
@@ -61,15 +71,5 @@ int blockingTimer(const std::function<bool()>& termination, const int timeout)
     }
 
     return -1;
-}
-
-Time::Time()
-{
-    resetBeginTime();
-}
-
-void Time::resetBeginTime()
-{
-    beginTime = std::chrono::high_resolution_clock::now();
 }
 } // namespace utility::time

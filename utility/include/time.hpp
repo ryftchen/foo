@@ -17,16 +17,6 @@ namespace time
 {
 extern const char* version() noexcept;
 
-//! @brief Perform millisecond-level sleep.
-//! @param duration - sleep duration
-inline void millisecondLevelSleep(const std::size_t duration)
-{
-    std::this_thread::sleep_for(std::chrono::operator""ms(duration));
-}
-
-extern std::string getCurrentSystemTime();
-extern int blockingTimer(const std::function<bool()>& termination, const int timeout = -1);
-
 //! @brief Timing.
 class Time
 {
@@ -37,13 +27,13 @@ public:
     virtual ~Time() = default;
 
     //! @brief Reset the beginning time.
-    void resetBeginTime();
+    void reset();
     //! @brief Calculate the elapsed time.
     //! @tparam Rep - type of number of ticks
     //! @tparam Period - type of tick period
     //! @return elapsed time
     template <typename Rep = double, typename Period = std::milli>
-    [[nodiscard]] Rep calcElapsedTime() const;
+    [[nodiscard]] Rep elapsedTime() const;
 
 private:
     //! @brief Beginning time.
@@ -51,9 +41,19 @@ private:
 };
 
 template <typename Rep, typename Period>
-Rep Time::calcElapsedTime() const
+Rep Time::elapsedTime() const
 {
     return std::chrono::duration<Rep, Period>(std::chrono::high_resolution_clock::now() - beginTime).count();
 }
+
+//! @brief Perform millisecond-level sleep.
+//! @param duration - sleep duration
+inline void millisecondLevelSleep(const std::size_t duration)
+{
+    std::this_thread::sleep_for(std::chrono::operator""ms(duration));
+}
+
+extern std::string getCurrentSystemTime();
+extern int blockingTimer(const std::function<bool()>& termination, const int timeout = -1);
 } // namespace time
 } // namespace utility

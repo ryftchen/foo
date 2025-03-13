@@ -391,7 +391,7 @@ try
     const utility::time::Time timer{};
 
     const auto coll = numeric::divisor::Divisor().euclidean(a, b);
-    showResult(DivisorMethod::euclidean, coll, timer.calcElapsedTime());
+    showResult(DivisorMethod::euclidean, coll, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -404,7 +404,7 @@ try
     const utility::time::Time timer{};
 
     const auto coll = numeric::divisor::Divisor().stein(a, b);
-    showResult(DivisorMethod::stein, coll, timer.calcElapsedTime());
+    showResult(DivisorMethod::stein, coll, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -498,7 +498,7 @@ try
     const utility::time::Time timer{};
 
     const auto sum = numeric::integral::Trapezoidal(expr)(lower, upper, numeric::integral::epsilon);
-    showResult(IntegralMethod::trapezoidal, sum, timer.calcElapsedTime());
+    showResult(IntegralMethod::trapezoidal, sum, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -511,7 +511,7 @@ try
     const utility::time::Time timer{};
 
     const auto sum = numeric::integral::Simpson(expr)(lower, upper, numeric::integral::epsilon);
-    showResult(IntegralMethod::simpson, sum, timer.calcElapsedTime());
+    showResult(IntegralMethod::simpson, sum, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -524,7 +524,7 @@ try
     const utility::time::Time timer{};
 
     const auto sum = numeric::integral::Romberg(expr)(lower, upper, numeric::integral::epsilon);
-    showResult(IntegralMethod::romberg, sum, timer.calcElapsedTime());
+    showResult(IntegralMethod::romberg, sum, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -537,7 +537,7 @@ try
     const utility::time::Time timer{};
 
     const auto sum = numeric::integral::Gauss(expr)(lower, upper, numeric::integral::epsilon);
-    showResult(IntegralMethod::gauss, sum, timer.calcElapsedTime());
+    showResult(IntegralMethod::gauss, sum, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -550,7 +550,7 @@ try
     const utility::time::Time timer{};
 
     const auto sum = numeric::integral::MonteCarlo(expr)(lower, upper, numeric::integral::epsilon);
-    showResult(IntegralMethod::monteCarlo, sum, timer.calcElapsedTime());
+    showResult(IntegralMethod::monteCarlo, sum, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -687,7 +687,7 @@ try
     const utility::time::Time timer{};
 
     const auto coll = numeric::prime::Prime().eratosthenes(max);
-    showResult(PrimeMethod::eratosthenes, coll, timer.calcElapsedTime());
+    showResult(PrimeMethod::eratosthenes, coll, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -700,7 +700,7 @@ try
     const utility::time::Time timer{};
 
     const auto coll = numeric::prime::Prime().euler(max);
-    showResult(PrimeMethod::euler, coll, timer.calcElapsedTime());
+    showResult(PrimeMethod::euler, coll, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
