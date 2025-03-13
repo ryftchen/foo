@@ -497,7 +497,7 @@ public:
     static constexpr double range2{5.12};
     //! @brief One-dimensional Rastrigin.
     static constexpr std::string_view funcDescr{
-        "f(x)=An+Σ(1→n)[(Xi)^2-Acos(2π*Xi)],A=10,x∈[-5.12,5.12] (one-dimensional Rastrigin)"};
+        "f(x)=A*n+Σ(i=1→n)[(Xi)^2-A*cos(2π*Xi)],A=10,x∈[-5.12,5.12] (one-dimensional Rastrigin)"};
 };
 } // namespace input
 

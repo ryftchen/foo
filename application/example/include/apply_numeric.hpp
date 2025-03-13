@@ -400,7 +400,7 @@ public:
     static constexpr double range2{600.0};
     //! @brief One-dimensional Griewank.
     static constexpr std::string_view exprDescr{
-        "f(x)=1+1/4000*Σ(1→n)[(Xi)^2]-Π(1→n)[cos(Xi/(i)^(1/2))],x∈[-600,600] (one-dimensional Griewank)"};
+        "f(x)=1+(1/4000)*Σ(i=1→n)[(Xi)^2]-Π(i=1→n)[cos(Xi/(i^(1/2)))],x∈[-600,600] (one-dimensional Griewank)"};
 };
 } // namespace input
 
