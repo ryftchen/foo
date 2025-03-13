@@ -82,7 +82,7 @@ constexpr std::string_view debugLevelPrefixRegex = R"(\[DBG\])";
 //! @brief Regular expression of info level in log.
 constexpr std::string_view infoLevelPrefixRegex = R"(\[INF\])";
 //! @brief Regular expression of warning level in log.
-constexpr std::string_view warnLevelPrefixRegex = R"(\[WRN\])";
+constexpr std::string_view warningLevelPrefixRegex = R"(\[WRN\])";
 //! @brief Regular expression of error level in log.
 constexpr std::string_view errorLevelPrefixRegex = R"(\[ERR\])";
 //! @brief Regular expression of trace level in log.

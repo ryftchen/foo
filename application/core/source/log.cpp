@@ -25,20 +25,17 @@ inline namespace
 //! @brief Regular expressions for log highlighting.
 struct HlRegex
 {
-    //! @brief Debug level prefix highlighting.
-    const std::regex debugLevel{debugLevelPrefixRegex.data()};
-    //! @brief Info level prefix highlighting.
-    const std::regex infoLevel{infoLevelPrefixRegex.data()};
-    //! @brief Warning level prefix highlighting.
-    const std::regex warningLevel{warnLevelPrefixRegex.data()};
-    //! @brief Error level prefix highlighting.
-    const std::regex errorLevel{errorLevelPrefixRegex.data()};
-    //! @brief Trace level prefix highlighting.
-    const std::regex traceLevel{traceLevelPrefixRegex.data()};
-    //! @brief Date time highlighting.
-    const std::regex dateTime{dateTimeRegex.data()};
-    //! @brief Code file highlighting.
-    const std::regex codeFile{codeFileRegex.data()};
+    //! @brief Alternatives to predefined level prefix highlighting.
+    const std::vector<std::pair<std::regex, std::string>> predefinedLevelPrefixes{
+        {std::regex{debugLevelPrefixRegex.data()}, std::string{debugLevelPrefixWithColor}},
+        {std::regex{infoLevelPrefixRegex.data()}, std::string{infoLevelPrefixWithColor}},
+        {std::regex{warningLevelPrefixRegex.data()}, std::string{warningLevelPrefixWithColor}},
+        {std::regex{errorLevelPrefixRegex.data()}, std::string{errorLevelPrefixWithColor}},
+        {std::regex{traceLevelPrefixRegex.data()}, std::string{traceLevelPrefixWithColor}}};
+    //! @brief Identity segments for basic highlighting (date time, code file, etc.).
+    const std::vector<std::pair<std::regex, std::string>> identitySegments{
+        {std::regex{dateTimeRegex.data()}, std::string{dateTimeBaseColor}},
+        {std::regex{codeFileRegex.data()}, std::string{codeFileBaseColor}}};
 };
 } // namespace
 
@@ -514,40 +511,22 @@ std::ostream& operator<<(std::ostream& os, const Log::State state)
 std::string& changeToLogStyle(std::string& line)
 {
     const auto& style = logStyle();
-    if (std::regex_search(line, style.debugLevel))
+    if (const auto segIter = std::find_if(
+            style.predefinedLevelPrefixes.cbegin(),
+            style.predefinedLevelPrefixes.cend(),
+            [&line](const auto& predefined) { return std::regex_search(line, predefined.first); });
+        style.predefinedLevelPrefixes.cend() != segIter)
     {
-        line = std::regex_replace(line, style.debugLevel, debugLevelPrefixWithColor.data());
-    }
-    else if (std::regex_search(line, style.infoLevel))
-    {
-        line = std::regex_replace(line, style.infoLevel, infoLevelPrefixWithColor.data());
-    }
-    else if (std::regex_search(line, style.warningLevel))
-    {
-        line = std::regex_replace(line, style.warningLevel, warningLevelPrefixWithColor.data());
-    }
-    else if (std::regex_search(line, style.errorLevel))
-    {
-        line = std::regex_replace(line, style.errorLevel, errorLevelPrefixWithColor.data());
-    }
-    else if (std::regex_search(line, style.traceLevel))
-    {
-        line = std::regex_replace(line, style.traceLevel, traceLevelPrefixWithColor.data());
+        line = std::regex_replace(line, segIter->first, segIter->second);
     }
 
-    if (std::regex_search(line, style.dateTime))
+    for (std::smatch match{}; [[maybe_unused]] const auto& [segment, scheme] : style.identitySegments)
     {
-        const auto searchIter = std::sregex_iterator(line.begin(), line.end(), style.dateTime);
-        const auto dateTimeWithColor =
-            dateTimeBaseColor.data() + (*searchIter).str() + utility::common::colorOff.data();
-        line = std::regex_replace(line, style.dateTime, dateTimeWithColor);
-    }
-    if (std::regex_search(line, style.codeFile))
-    {
-        const auto searchIter = std::sregex_iterator(line.begin(), line.end(), style.codeFile);
-        const auto codeFileWithColor =
-            codeFileBaseColor.data() + (*searchIter).str() + utility::common::colorOff.data();
-        line = std::regex_replace(line, style.codeFile, codeFileWithColor);
+        if (std::regex_search(line, match, segment))
+        {
+            line =
+                match.prefix().str() + scheme + match.str() + utility::common::colorOff.data() + match.suffix().str();
+        }
     }
 
     return line;
