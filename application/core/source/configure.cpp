@@ -27,6 +27,32 @@ constexpr std::uint8_t maxAccessLimit = 10;
 std::counting_semaphore<maxAccessLimit> configSem(maxAccessLimit);
 } // namespace
 
+std::string getFullConfigPath(const std::string_view filename)
+{
+    const char* const processHome = std::getenv("FOO_HOME");
+    if (nullptr == processHome)
+    {
+        throw std::runtime_error{"The environment variable FOO_HOME is not set."};
+    }
+
+    return std::string{processHome} + '/' + filename.data();
+}
+
+const utility::json::JSON& retrieveDataRepo()
+try
+{
+    configSem.acquire();
+    const auto& dataRepo = Configure::getInstance().retrieve();
+    configSem.release();
+
+    return dataRepo;
+}
+catch (...)
+{
+    configSem.release();
+    throw;
+}
+
 Configure& Configure::getInstance(const std::string_view filename)
 {
     static Configure configurator(filename);
@@ -211,20 +237,6 @@ void Configure::verifyConfigData(const utility::json::JSON& configData)
     }
 }
 
-//! @brief Get the full path to the configuration file.
-//! @param filename - configuration file path
-//! @return full path to the configuration file
-std::string getFullConfigPath(const std::string_view filename)
-{
-    const char* const processHome = std::getenv("FOO_HOME");
-    if (nullptr == processHome)
-    {
-        throw std::runtime_error{"The environment variable FOO_HOME is not set."};
-    }
-
-    return std::string{processHome} + '/' + filename.data();
-}
-
 // NOLINTBEGIN(readability-magic-numbers)
 //! @brief Get the default configuration.
 //! @return default configuration
@@ -358,22 +370,5 @@ bool loadConfiguration(const std::string_view filename)
     }
 
     return false;
-}
-
-//! @brief Retrieve data repository.
-//! @return current configuration data repository
-const utility::json::JSON& retrieveDataRepo()
-try
-{
-    configSem.acquire();
-    const auto& dataRepo = Configure::getInstance().retrieve();
-    configSem.release();
-
-    return dataRepo;
-}
-catch (...)
-{
-    configSem.release();
-    throw;
 }
 } // namespace application::configure

@@ -14,9 +14,6 @@ namespace application // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Configuration-related functions in the application module.
 namespace configure
 {
-//! @brief Default configuration filename.
-constexpr std::string_view defaultConfigFile = "configure/foo.json";
-
 //! @brief The literal string of the field.
 namespace field
 {
@@ -52,7 +49,15 @@ constexpr std::string_view udpPort = "udpPort";
 constexpr std::string_view helperTimeout = "helperTimeout";
 } // namespace field
 
-extern std::string getFullConfigPath(const std::string_view filename = defaultConfigFile);
+//! @brief Default configuration filename.
+constexpr std::string_view defaultConfigFile = "configure/foo.json";
+//! @brief Get the full path to the configuration file.
+//! @param filename - configuration file path
+//! @return full path to the configuration file
+std::string getFullConfigPath(const std::string_view filename = defaultConfigFile);
+//! @brief Retrieve data repository.
+//! @return current configuration data repository
+const utility::json::JSON& retrieveDataRepo();
 
 //! @brief Configuration.
 class Configure final
@@ -106,10 +111,6 @@ private:
     static void checkObjectInHelperList(const utility::json::JSON& helper);
 };
 
-extern utility::json::JSON getDefaultConfiguration();
-extern bool loadConfiguration(const std::string_view filename = defaultConfigFile);
-
-const utility::json::JSON& retrieveDataRepo();
 //! @brief Configuration details.
 namespace detail
 {
@@ -185,5 +186,8 @@ inline int helperTimeout()
     return (retrieveDataRepo() / field::helperTimeout).toIntegral();
 }
 } // namespace detail
+
+extern utility::json::JSON getDefaultConfiguration();
+extern bool loadConfiguration(const std::string_view filename = defaultConfigFile);
 } // namespace configure
 } // namespace application
