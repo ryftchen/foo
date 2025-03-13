@@ -149,9 +149,9 @@ private:
     //! @brief Minimum velocity.
     static constexpr double vMin{-0.5};
     //! @brief Swarm size.
-    static constexpr std::uint32_t size{200};
+    static constexpr std::uint32_t size{300};
     //! @brief The number of iterations.
-    static constexpr std::uint32_t numOfIteration{100};
+    static constexpr std::uint32_t numOfIteration{50};
 
     //! @brief Individual information in the swarm.
     struct Individual
@@ -197,13 +197,13 @@ private:
     //! @brief The number of chromosomes.
     std::uint32_t chromosomeNum{0};
     //! @brief Crossover probability.
-    static constexpr double crossPr{0.85};
+    static constexpr double crossPr{0.95};
     //! @brief Mutation probability.
-    static constexpr double mutatePr{0.035};
+    static constexpr double mutatePr{0.045};
     //! @brief Population size.
-    static constexpr std::uint32_t size{200};
+    static constexpr std::uint32_t size{300};
     //! @brief The number of generations.
-    static constexpr std::uint32_t numOfGeneration{100};
+    static constexpr std::uint32_t numOfGeneration{50};
 
     //! @brief Alias for the individual's chromosome in species.
     using Chromosome = std::vector<std::uint8_t>;
