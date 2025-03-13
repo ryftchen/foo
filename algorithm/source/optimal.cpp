@@ -22,8 +22,8 @@ const char* version() noexcept
 
 std::optional<std::tuple<double, double>> Gradient::operator()(const double left, const double right, const double eps)
 {
-    std::mt19937 engine(std::random_device{}());
     double x = 0.0, y = 0.0;
+    std::mt19937 engine(std::random_device{}());
     std::uniform_real_distribution<double> candidate(left, right);
     std::unordered_multiset<double> climbing{};
     while (climbing.size() < loopTime)
@@ -182,7 +182,7 @@ std::optional<std::tuple<double, double>> Genetic::operator()(const double left,
     }
 
     Population pop{populationInit()};
-    for (std::uint32_t i = 0; i < numOfIteration; ++i)
+    for (std::uint32_t i = 0; i < numOfGeneration; ++i)
     {
         select(pop);
         crossover(pop);
