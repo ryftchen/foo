@@ -299,7 +299,7 @@ try
     const utility::time::Time timer{};
 
     const auto shift = algorithm::match::Match().rk(text, pattern, textLen, patternLen);
-    showResult(MatchMethod::rabinKarp, shift, pattern, timer.calcElapsedTime());
+    showResult(MatchMethod::rabinKarp, shift, pattern, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -316,7 +316,7 @@ try
     const utility::time::Time timer{};
 
     const auto shift = algorithm::match::Match().kmp(text, pattern, textLen, patternLen);
-    showResult(MatchMethod::knuthMorrisPratt, shift, pattern, timer.calcElapsedTime());
+    showResult(MatchMethod::knuthMorrisPratt, shift, pattern, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -333,7 +333,7 @@ try
     const utility::time::Time timer{};
 
     const auto shift = algorithm::match::Match().bm(text, pattern, textLen, patternLen);
-    showResult(MatchMethod::boyerMoore, shift, pattern, timer.calcElapsedTime());
+    showResult(MatchMethod::boyerMoore, shift, pattern, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -350,7 +350,7 @@ try
     const utility::time::Time timer{};
 
     const auto shift = algorithm::match::Match().horspool(text, pattern, textLen, patternLen);
-    showResult(MatchMethod::horspool, shift, pattern, timer.calcElapsedTime());
+    showResult(MatchMethod::horspool, shift, pattern, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -367,7 +367,7 @@ try
     const utility::time::Time timer{};
 
     const auto shift = algorithm::match::Match().sunday(text, pattern, textLen, patternLen);
-    showResult(MatchMethod::sunday, shift, pattern, timer.calcElapsedTime());
+    showResult(MatchMethod::sunday, shift, pattern, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -608,7 +608,7 @@ try
     const utility::time::Time timer{};
 
     const auto tuple = algorithm::optimal::Gradient(func)(left, right, algorithm::optimal::epsilon);
-    showResult(OptimalMethod::gradient, tuple, timer.calcElapsedTime());
+    showResult(OptimalMethod::gradient, tuple, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -621,7 +621,7 @@ try
     const utility::time::Time timer{};
 
     const auto tuple = algorithm::optimal::Annealing(func)(left, right, algorithm::optimal::epsilon);
-    showResult(OptimalMethod::annealing, tuple, timer.calcElapsedTime());
+    showResult(OptimalMethod::annealing, tuple, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -634,7 +634,7 @@ try
     const utility::time::Time timer{};
 
     const auto tuple = algorithm::optimal::Particle(func)(left, right, algorithm::optimal::epsilon);
-    showResult(OptimalMethod::particle, tuple, timer.calcElapsedTime());
+    showResult(OptimalMethod::particle, tuple, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -647,7 +647,7 @@ try
     const utility::time::Time timer{};
 
     const auto tuple = algorithm::optimal::Genetic(func)(left, right, algorithm::optimal::epsilon);
-    showResult(OptimalMethod::genetic, tuple, timer.calcElapsedTime());
+    showResult(OptimalMethod::genetic, tuple, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -790,7 +790,7 @@ try
     const utility::time::Time timer{};
 
     const auto index = algorithm::search::Search<float>().binary(array, length, key);
-    showResult(SearchMethod::binary, index, key, timer.calcElapsedTime());
+    showResult(SearchMethod::binary, index, key, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -803,7 +803,7 @@ try
     const utility::time::Time timer{};
 
     const auto index = algorithm::search::Search<float>().interpolation(array, length, key);
-    showResult(SearchMethod::interpolation, index, key, timer.calcElapsedTime());
+    showResult(SearchMethod::interpolation, index, key, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -816,7 +816,7 @@ try
     const utility::time::Time timer{};
 
     const auto index = algorithm::search::Search<float>().fibonacci(array, length, key);
-    showResult(SearchMethod::fibonacci, index, key, timer.calcElapsedTime());
+    showResult(SearchMethod::fibonacci, index, key, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -932,7 +932,7 @@ try
     const utility::time::Time timer{};
 
     const auto coll = algorithm::sort::Sort<std::int32_t>().bubble(array, length);
-    showResult(SortMethod::bubble, coll, timer.calcElapsedTime());
+    showResult(SortMethod::bubble, coll, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -945,7 +945,7 @@ try
     const utility::time::Time timer{};
 
     const auto coll = algorithm::sort::Sort<std::int32_t>().selection(array, length);
-    showResult(SortMethod::selection, coll, timer.calcElapsedTime());
+    showResult(SortMethod::selection, coll, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -958,7 +958,7 @@ try
     const utility::time::Time timer{};
 
     const auto coll = algorithm::sort::Sort<std::int32_t>().insertion(array, length);
-    showResult(SortMethod::insertion, coll, timer.calcElapsedTime());
+    showResult(SortMethod::insertion, coll, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -971,7 +971,7 @@ try
     const utility::time::Time timer{};
 
     const auto coll = algorithm::sort::Sort<std::int32_t>().shell(array, length);
-    showResult(SortMethod::shell, coll, timer.calcElapsedTime());
+    showResult(SortMethod::shell, coll, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -984,7 +984,7 @@ try
     const utility::time::Time timer{};
 
     const auto coll = algorithm::sort::Sort<std::int32_t>().merge(array, length);
-    showResult(SortMethod::merge, coll, timer.calcElapsedTime());
+    showResult(SortMethod::merge, coll, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -997,7 +997,7 @@ try
     const utility::time::Time timer{};
 
     const auto coll = algorithm::sort::Sort<std::int32_t>().quick(array, length);
-    showResult(SortMethod::quick, coll, timer.calcElapsedTime());
+    showResult(SortMethod::quick, coll, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -1010,7 +1010,7 @@ try
     const utility::time::Time timer{};
 
     const auto coll = algorithm::sort::Sort<std::int32_t>().heap(array, length);
-    showResult(SortMethod::heap, coll, timer.calcElapsedTime());
+    showResult(SortMethod::heap, coll, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -1023,7 +1023,7 @@ try
     const utility::time::Time timer{};
 
     const auto coll = algorithm::sort::Sort<std::int32_t>().counting(array, length);
-    showResult(SortMethod::counting, coll, timer.calcElapsedTime());
+    showResult(SortMethod::counting, coll, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -1036,7 +1036,7 @@ try
     const utility::time::Time timer{};
 
     const auto coll = algorithm::sort::Sort<std::int32_t>().bucket(array, length);
-    showResult(SortMethod::bucket, coll, timer.calcElapsedTime());
+    showResult(SortMethod::bucket, coll, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -1049,7 +1049,7 @@ try
     const utility::time::Time timer{};
 
     const auto coll = algorithm::sort::Sort<std::int32_t>().radix(array, length);
-    showResult(SortMethod::radix, coll, timer.calcElapsedTime());
+    showResult(SortMethod::radix, coll, timer.elapsedTime());
 }
 catch (const std::exception& err)
 {
