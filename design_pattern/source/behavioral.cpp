@@ -7,6 +7,7 @@
 #include "behavioral.hpp"
 
 #include <algorithm>
+#include <iomanip>
 
 namespace design_pattern::behavioral
 {
@@ -262,13 +263,13 @@ std::uint32_t Colleague::getId() const
 
 void ConcreteColleague::send(const std::string_view msg)
 {
-    output() << "message \"" << msg << "\" sent by colleague " << id << '\n';
+    output() << "message " << std::quoted(msg) << " sent by colleague " << id << '\n';
     mediator.lock()->distribute(shared_from_this(), msg);
 }
 
 void ConcreteColleague::receive(const std::string_view msg)
 {
-    output() << "message \"" << msg << "\" received by colleague " << id << '\n';
+    output() << "message " << std::quoted(msg) << " received by colleague " << id << '\n';
 }
 
 //! @brief Output stream for the mediator pattern. Need to be cleared manually.
