@@ -101,15 +101,15 @@ std::optional<std::tuple<double, double>> Annealing::operator()(const double lef
 
 std::optional<std::tuple<double, double>> Particle::operator()(const double left, const double right, const double eps)
 {
-    std::uniform_real_distribution<double> candidate(left, right), v(vMin, vMax);
+    std::uniform_real_distribution<double> candidate(left, right), vel(vMin, vMax);
     Swarm swarm(size, Individual{});
     std::generate(
         swarm.begin(),
         swarm.end(),
-        [this, &candidate, &v]()
+        [this, &candidate, &vel]()
         {
             const double x = candidate(engine);
-            return Individual{x, v(engine), x, func(x), func(x)};
+            return Individual{x, vel(engine), x, func(x), func(x)};
         });
     const auto initialBest = std::min_element(
         swarm.cbegin(), swarm.cend(), [](const auto& min1, const auto& min2) { return min1.xFitness < min2.xFitness; });
@@ -212,11 +212,10 @@ double Genetic::geneticDecode(const Chromosome& chr) const
 {
     const double max = std::pow(2, chromosomeNum) - 1.0;
     double convert = 0.0;
-    std::uint32_t index = 0;
     std::for_each(
         chr.cbegin(),
         chr.cend(),
-        [&convert, &index](const auto bit)
+        [&convert, index = 0](const auto bit) mutable
         {
             convert += bit * std::pow(2, index);
             ++index;
@@ -231,11 +230,8 @@ Genetic::Population Genetic::populationInit()
     std::for_each(
         pop.begin(),
         pop.end(),
-        [this](auto& chr)
-        {
-            std::uniform_int_distribution<std::uint8_t> bit(0, 1);
-            std::generate(chr.begin(), chr.end(), [this, &bit]() { return bit(engine); });
-        });
+        [this, bit = std::uniform_int_distribution<std::uint8_t>(0, 1)](auto& chr) mutable
+        { std::generate(chr.begin(), chr.end(), [this, &bit]() { return bit(engine); }); });
 
     return pop;
 }
@@ -246,8 +242,8 @@ void Genetic::geneticCross(Chromosome& chr1, Chromosome& chr2)
     chrTemp.reserve(chr1.size());
     std::copy(chr1.cbegin(), chr1.cend(), std::back_inserter(chrTemp));
 
-    std::uint32_t crossBegin = getRandomLessThanLimit(chromosomeNum - 1),
-                  crossEnd = getRandomLessThanLimit(chromosomeNum - 1);
+    std::uniform_int_distribution<std::uint32_t> randomPos(0, chromosomeNum - 1);
+    std::uint32_t crossBegin = randomPos(engine), crossEnd = randomPos(engine);
     if (crossBegin > crossEnd)
     {
         std::swap(crossBegin, crossEnd);
@@ -261,12 +257,13 @@ void Genetic::crossover(Population& pop)
     Population popCross{};
     popCross.reserve(pop.size());
 
-    std::vector<std::reference_wrapper<Chromosome>> candidate(pop.begin(), pop.end());
-    std::shuffle(candidate.begin(), candidate.end(), engine);
-    for (auto chrIter = candidate.begin(); (candidate.end() != chrIter) && (std::next(chrIter, 1) != candidate.end());
+    std::vector<std::reference_wrapper<Chromosome>> candidates(pop.begin(), pop.end());
+    std::shuffle(candidates.begin(), candidates.end(), engine);
+    for (auto chrIter = candidates.begin();
+         (candidates.end() != chrIter) && (std::next(chrIter, 1) != candidates.end());
          std::advance(chrIter, 2))
     {
-        Chromosome parent1 = chrIter->get(), parent2 = std::next(chrIter, 1)->get();
+        auto parent1 = chrIter->get(), parent2 = std::next(chrIter, 1)->get();
         if (crossPr > probability(engine))
         {
             geneticCross(parent1, parent2);
@@ -274,9 +271,9 @@ void Genetic::crossover(Population& pop)
         popCross.emplace_back(std::move(parent1));
         popCross.emplace_back(std::move(parent2));
 
-        if ((pop.size() % 2) && (std::next(chrIter, 2) == (candidate.end() - 1)))
+        if ((pop.size() % 2) && (std::next(chrIter, 2) == (candidates.end() - 1)))
         {
-            Chromosome single = std::next(chrIter, 2)->get();
+            auto single = std::next(chrIter, 2)->get();
             popCross.emplace_back(std::move(single));
         }
     }
@@ -286,27 +283,21 @@ void Genetic::crossover(Population& pop)
 
 void Genetic::geneticMutation(Chromosome& chr)
 {
-    std::uint32_t flip = getRandomLessThanLimit(chromosomeNum - 1) + 1;
-    std::vector<std::reference_wrapper<std::uint8_t>> mutateChr(chr.begin(), chr.end());
-    std::shuffle(mutateChr.begin(), mutateChr.end(), engine);
-    for (auto geneIter = mutateChr.begin(); (mutateChr.end() != geneIter) && (0 != flip); ++geneIter, --flip)
-    {
-        geneIter->get() = !geneIter->get();
-    }
+    std::for_each(
+        chr.begin(),
+        chr.end(),
+        [this](auto& bit)
+        {
+            if (mutatePr > probability(engine))
+            {
+                bit = !bit;
+            }
+        });
 }
 
 void Genetic::mutate(Population& pop)
 {
-    std::for_each(
-        pop.begin(),
-        pop.end(),
-        [this](auto& ind)
-        {
-            if (mutatePr > probability(engine))
-            {
-                geneticMutation(ind);
-            }
-        });
+    std::for_each(pop.begin(), pop.end(), [this](auto& ind) { geneticMutation(ind); });
 }
 
 double Genetic::calculateFitness(const Chromosome& chr)
@@ -324,7 +315,7 @@ std::optional<std::pair<double, double>> Genetic::fitnessLinearTransformation(co
         std::back_inserter(reFitness),
         [this](const auto& ind) { return calculateFitness(ind); });
 
-    const double reFitnessMin = *(std::min_element(reFitness.cbegin(), reFitness.cend())),
+    const double reFitnessMin = *std::min_element(reFitness.cbegin(), reFitness.cend()),
                  reFitnessAvg = std::reduce(reFitness.cbegin(), reFitness.cend(), 0.0) / reFitness.size();
     if (std::fabs(reFitnessMin - reFitnessAvg) < property.eps)
     {
@@ -334,7 +325,7 @@ std::optional<std::pair<double, double>> Genetic::fitnessLinearTransformation(co
                  beta = -(reFitnessMin * reFitnessAvg) / (reFitnessAvg - reFitnessMin);
     if (std::isnan(alpha) || std::isinf(alpha) || std::isnan(beta) || std::isinf(beta))
     {
-        return std::make_optional(std::pair<double, double>(1.0, 0.0));
+        return std::nullopt;
     }
 
     return std::make_optional(std::pair<double, double>(alpha, beta));
@@ -342,10 +333,10 @@ std::optional<std::pair<double, double>> Genetic::fitnessLinearTransformation(co
 
 auto Genetic::rouletteWheelSelection(const Population& pop, const std::vector<double>& cumFitness)
 {
-    const double pr = probability(engine);
-    const auto cumIter =
-        std::find_if(cumFitness.cbegin(), cumFitness.cend(), [&pr](const auto cumulation) { return cumulation > pr; });
-
+    const auto cumIter = std::find_if(
+        cumFitness.cbegin(),
+        cumFitness.cend(),
+        [pr = probability(engine)](const auto cumulation) { return cumulation > pr; });
     return std::next(pop.cbegin(), std::distance(cumFitness.cbegin(), cumIter));
 }
 
@@ -386,13 +377,12 @@ void Genetic::select(Population& pop)
         fitnessVal.cbegin(),
         fitnessVal.cend(),
         std::back_inserter(fitnessAvg),
-        [&sum](const auto fitVal) { return fitVal / sum; });
+        [sum](const auto fitVal) { return fitVal / sum; });
 
-    double previous = 0.0;
     std::for_each(
         fitnessAvg.begin(),
         fitnessAvg.end(),
-        [&previous](auto& fitCum)
+        [previous = 0.0](auto& fitCum) mutable
         {
             fitCum += previous;
             previous = fitCum;
@@ -414,10 +404,5 @@ Genetic::Chromosome Genetic::getBestIndividual(const Population& pop)
     const auto indBestIter = std::next(pop.cbegin(), std::distance(fitnessVal.cbegin(), fitValBestIter));
 
     return *indBestIter;
-}
-
-std::uint32_t Genetic::getRandomLessThanLimit(const std::uint32_t limit)
-{
-    return std::uniform_int_distribution<std::uint32_t>{0, limit}(engine);
 }
 } // namespace algorithm::optimal
