@@ -83,7 +83,7 @@ inline constexpr std::size_t operator""_bkdrHash(const char* str) noexcept
 
 extern std::string base64Encode(const std::string_view data);
 extern std::string base64Decode(const std::string_view data);
-extern std::string formatString(const std::string_view format, ...);
+extern std::string formatString(const char* const fmt, ...);
 
 //! @brief Compare whether two strings are equal.
 //! @param str1 - string 1

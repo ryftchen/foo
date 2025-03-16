@@ -143,23 +143,23 @@ std::string base64Decode(const std::string_view data)
 // NOLINTEND(readability-magic-numbers)
 
 //! @brief Format as a string.
-//! @param format - null-terminated multibyte string specifying how to interpret the data
+//! @param fmt - null-terminated multibyte string specifying how to interpret the data
 //! @param ... - arguments
 //! @return string after formatting
-std::string formatString(const std::string_view format, ...)
+std::string formatString(const char* const fmt, ...)
 {
     std::va_list list{};
-    ::va_start(list, format);
-    const int bufferSize = std::vsnprintf(nullptr, 0, format.data(), list);
+    ::va_start(list, fmt);
+    const int bufferSize = std::vsnprintf(nullptr, 0, fmt, list);
     ::va_end(list);
     if (bufferSize < 0)
     {
         throw std::runtime_error{"Unable to format string."};
     }
 
-    ::va_start(list, format);
+    ::va_start(list, fmt);
     std::vector<char> buffer(bufferSize + 1);
-    std::vsnprintf(buffer.data(), bufferSize + 1, format.data(), list);
+    std::vsnprintf(buffer.data(), bufferSize + 1, fmt, list);
     ::va_end(list);
 
     return std::string{buffer.cbegin(), buffer.cbegin() + bufferSize};
