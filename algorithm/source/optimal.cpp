@@ -23,7 +23,7 @@ const char* version() noexcept
 std::optional<std::tuple<double, double>> Gradient::operator()(const double left, const double right, const double eps)
 {
     double x = 0.0, y = 0.0;
-    std::mt19937 engine(std::random_device{}());
+    std::mt19937_64 engine(std::random_device{}());
     std::uniform_real_distribution<double> candidate(left, right);
     std::unordered_multiset<double> climbing{};
     while (climbing.size() < loopTime)
@@ -66,7 +66,7 @@ double Gradient::calculateFirstDerivative(const double x, const double eps) cons
 std::optional<std::tuple<double, double>> Annealing::operator()(const double left, const double right, const double eps)
 {
     std::uniform_real_distribution<double> perturbation(left, right), pr(0.0, 1.0);
-    std::mt19937 engine(std::random_device{}());
+    std::mt19937_64 engine(std::random_device{}());
     double temperature = initialT, x = perturbation(engine), y = func(x);
     while (temperature > minimalT)
     {
