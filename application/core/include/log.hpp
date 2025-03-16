@@ -9,6 +9,7 @@
 #include "configure.hpp"
 
 #ifndef __PRECOMPILED_HEADER
+#include <format>
 #include <forward_list>
 #include <iostream>
 #include <mutex>
@@ -26,40 +27,44 @@
 
 //! @brief Log with debug level.
 #define LOG_DBG application::log::Log::Holder<application::log::Log::OutputLevel::debug>().stream()
-//! @brief Log with debug level (formatted).
-#define LOG_DBG_F(fmt, ...)                                                                                 \
-    if (application::configure::detail::activateHelper())                                                   \
-        application::log::Log::getInstance().flush(                                                         \
-            application::log::Log::OutputLevel::debug, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__); \
-    else                                                                                                    \
-        application::log::Log::nativeOutput(fmt __VA_OPT__(, ) __VA_ARGS__)
+//! @brief Log with debug level (printf style).
+#define LOG_DBG_P(fmt, ...)              \
+    application::log::Log::legacyOutput( \
+        application::log::Log::OutputLevel::debug, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
+//! @brief Log with debug level (format style).
+#define LOG_DBG_F(fmt, ...)              \
+    application::log::Log::modernOutput( \
+        application::log::Log::OutputLevel::debug, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with info level.
 #define LOG_INF application::log::Log::Holder<application::log::Log::OutputLevel::info>().stream()
-//! @brief Log with info level (formatted).
-#define LOG_INF_F(fmt, ...)                                                                                \
-    if (application::configure::detail::activateHelper())                                                  \
-        application::log::Log::getInstance().flush(                                                        \
-            application::log::Log::OutputLevel::info, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__); \
-    else                                                                                                   \
-        application::log::Log::nativeOutput(fmt __VA_OPT__(, ) __VA_ARGS__)
+//! @brief Log with info level (printf style).
+#define LOG_INF_P(fmt, ...)              \
+    application::log::Log::legacyOutput( \
+        application::log::Log::OutputLevel::info, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
+//! @brief Log with info level (format style).
+#define LOG_INF_F(fmt, ...)              \
+    application::log::Log::modernOutput( \
+        application::log::Log::OutputLevel::info, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with warning level.
 #define LOG_WRN application::log::Log::Holder<application::log::Log::OutputLevel::warning>().stream()
-//! @brief Log with warning level (formatted).
-#define LOG_WRN_F(fmt, ...)                                                                                   \
-    if (application::configure::detail::activateHelper())                                                     \
-        application::log::Log::getInstance().flush(                                                           \
-            application::log::Log::OutputLevel::warning, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__); \
-    else                                                                                                      \
-        application::log::Log::nativeOutput(fmt __VA_OPT__(, ) __VA_ARGS__)
+//! @brief Log with warning level (printf style).
+#define LOG_WRN_P(fmt, ...)              \
+    application::log::Log::legacyOutput( \
+        application::log::Log::OutputLevel::warning, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
+//! @brief Log with warning level (format style).
+#define LOG_WRN_F(fmt, ...)              \
+    application::log::Log::modernOutput( \
+        application::log::Log::OutputLevel::warning, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with error level.
 #define LOG_ERR application::log::Log::Holder<application::log::Log::OutputLevel::error>().stream()
-//! @brief Log with error level (formatted).
-#define LOG_ERR_F(fmt, ...)                                                                                 \
-    if (application::configure::detail::activateHelper())                                                   \
-        application::log::Log::getInstance().flush(                                                         \
-            application::log::Log::OutputLevel::error, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__); \
-    else                                                                                                    \
-        application::log::Log::nativeOutput(fmt __VA_OPT__(, ) __VA_ARGS__)
+//! @brief Log with error level (printf style).
+#define LOG_ERR_P(fmt, ...)              \
+    application::log::Log::legacyOutput( \
+        application::log::Log::OutputLevel::error, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
+//! @brief Log with error level (format style).
+#define LOG_ERR_F(fmt, ...)              \
+    application::log::Log::modernOutput( \
+        application::log::Log::OutputLevel::error, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 
 //! @brief The application module.
 namespace application // NOLINT(modernize-concat-nested-namespaces)
@@ -243,7 +248,7 @@ public:
         Log& inst;
     };
 
-    //! @brief Flush log to queue.
+    //! @brief Log output for legacy (printf style).
     //! @tparam Args - type of arguments of log format
     //! @param severity - level of severity
     //! @param srcFile - current code file
@@ -251,18 +256,26 @@ public:
     //! @param format - log format to be flushed
     //! @param args - arguments of log format
     template <typename... Args>
-    void flush(
+    static void legacyOutput(
         const OutputLevel severity,
         const std::string_view srcFile,
         const std::uint32_t srcLine,
         const std::string_view format,
         Args&&... args);
-    //! @brief Log of native output.
+    //! @brief Log output for modern (format style).
     //! @tparam Args - type of arguments of log format
+    //! @param severity - level of severity
+    //! @param srcFile - current code file
+    //! @param srcLine - current code line
     //! @param format - log format to be flushed
     //! @param args - arguments of log format
     template <typename... Args>
-    static void nativeOutput(const std::string_view format, Args&&... args);
+    static void modernOutput(
+        const OutputLevel severity,
+        const std::string_view srcFile,
+        const std::uint32_t srcLine,
+        const std::format_string<Args...>& format,
+        Args&&... args);
     //! @brief Log holder for flushing.
     //! @tparam Lv - output level
     template <OutputLevel Lv>
@@ -273,7 +286,7 @@ public:
         //! @param srcLoc - current source location
         explicit Holder(const std::source_location& srcLoc = std::source_location::current()) : location{srcLoc} {}
         //! @brief Destroy the Holder object.
-        virtual ~Holder() { flush(); }
+        virtual ~Holder() { legacyOutput(Lv, location.file_name(), location.line(), output.str()); }
 
         //! @brief Get the output stream for flushing.
         //! @return reference of the output stream object, which is on string based
@@ -284,19 +297,6 @@ public:
         std::ostringstream output{};
         //! @brief Source location.
         const std::source_location location{};
-
-        //! @brief Flush the output stream.
-        inline void flush()
-        {
-            if (configure::detail::activateHelper())
-            {
-                getInstance().flush(Lv, location.file_name(), location.line(), output.str());
-            }
-            else
-            {
-                nativeOutput(output.str());
-            }
-        }
     };
 
     static_assert((sourceDirectory.front() == '/') && (sourceDirectory.back() == '/'));
@@ -346,20 +346,23 @@ private:
     //! @brief Mutex for controlling cache.
     std::recursive_mutex cacheMtx{};
 
+    //! @brief Flush log to queue.
+    //! @param severity - level of severity
+    //! @param srcFile - current code file
+    //! @param srcLine - current code line
+    //! @param formatted - formatted body
+    void flush(
+        const OutputLevel severity,
+        const std::string_view srcFile,
+        const std::uint32_t srcLine,
+        const std::string_view formatted);
     //! @brief Get the prefix corresponding to the level.
     //! @param level - output level
     //! @return output prefix
     static std::string_view getPrefix(const OutputLevel level);
-    //! @brief Generate the timestamp label.
-    //! @param prefix - output prefix
-    //! @param srcFile - current code file
-    //! @param srcLine - current code line
-    //! @return label information
-    static std::string generateTimestampLabel(
-        const std::string_view prefix, const std::string_view srcFile, const std::uint32_t srcLine);
     //! @brief Reformat log contents.
     //! @param label - label information
-    //! @param formatted - formatted body information
+    //! @param formatted - formatted body
     //! @return log contents
     static std::vector<std::string> reformatContents(const std::string_view label, const std::string_view formatted);
 
@@ -458,65 +461,44 @@ protected:
     friend std::ostream& operator<<(std::ostream& os, const State state);
 };
 
-extern std::string& changeToLogStyle(std::string& line);
-
 template <typename... Args>
-void Log::flush(
+void Log::legacyOutput(
     const OutputLevel severity,
     const std::string_view srcFile,
     const std::uint32_t srcLine,
     const std::string_view format,
     Args&&... args)
 {
-    if (severity < priorityLevel)
+    if (configure::detail::activateHelper())
     {
+        getInstance().flush(
+            severity, srcFile, srcLine, utility::common::formatString(format.data(), std::forward<Args>(args)...));
         return;
     }
 
-    std::unique_lock<std::mutex> daemonLock(daemonMtx, std::defer_lock);
-    try
-    {
-        auto rows = reformatContents(
-            generateTimestampLabel(
-                isInServingState(State::work) ? (daemonLock.lock(), getPrefix(severity)) : traceLevelPrefix,
-                srcFile,
-                srcLine),
-            utility::common::formatString(format.data(), std::forward<Args>(args)...));
-        if (daemonLock.owns_lock())
-        {
-            std::for_each(rows.begin(), rows.end(), [this](auto& output) { logQueue.push(std::move(output)); });
-            daemonLock.unlock();
-            daemonCond.notify_one();
-        }
-        else
-        {
-            const std::lock_guard<std::recursive_mutex> cacheLock(cacheMtx);
-            std::for_each(
-                rows.begin(),
-                rows.end(),
-                [this](auto& output)
-                {
-                    unprocessedCache.emplace_front(output);
-                    std::cerr << changeToLogStyle(output) << std::endl;
-                });
-        }
-    }
-    catch (...)
-    {
-        if (daemonLock.owns_lock())
-        {
-            daemonLock.unlock();
-        }
-        throw;
-    }
-}
-
-template <typename... Args>
-void Log::nativeOutput(const std::string_view format, Args&&... args)
-{
     const auto rows = reformatContents(
         std::string{sourceDirectory.substr(1, sourceDirectory.length() - 2)} + ": ",
         utility::common::formatString(format.data(), std::forward<Args>(args)...));
+    std::for_each(rows.cbegin(), rows.cend(), [](const auto& output) { std::clog << output << std::endl; });
+}
+
+template <typename... Args>
+void Log::modernOutput(
+    const OutputLevel severity,
+    const std::string_view srcFile,
+    const std::uint32_t srcLine,
+    const std::format_string<Args...>& format,
+    Args&&... args)
+{
+    if (configure::detail::activateHelper())
+    {
+        getInstance().flush(severity, srcFile, srcLine, std::vformat(format.get(), std::make_format_args(args...)));
+        return;
+    }
+
+    const auto rows = reformatContents(
+        std::string{sourceDirectory.substr(1, sourceDirectory.length() - 2)} + ": ",
+        std::vformat(format.get(), std::make_format_args(args...)));
     std::for_each(rows.cbegin(), rows.cend(), [](const auto& output) { std::clog << output << std::endl; });
 }
 
@@ -536,5 +518,7 @@ inline utility::common::ReadWriteLock& loggerFileLock()
     return Log::Access().getFileLock();
 }
 } // namespace info
+
+extern std::string& changeToLogStyle(std::string& line);
 } // namespace log
 } // namespace application

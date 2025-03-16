@@ -9,7 +9,6 @@
 #ifndef __PRECOMPILED_HEADER
 #include <cassert>
 #include <filesystem>
-#include <format>
 #include <fstream>
 #include <ranges>
 #include <regex>
@@ -95,7 +94,7 @@ retry:
             {
                 goto retry; // NOLINT(cppcoreguidelines-avoid-goto,hicpp-avoid-goto)
             }
-            LOG_ERR << "Failed to rollback " << name << '.';
+            LOG_ERR_F("Failed to rollback {}.", name);
         }
     }
 }
@@ -182,6 +181,59 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
+void Log::flush(
+    const OutputLevel severity,
+    const std::string_view srcFile,
+    const std::uint32_t srcLine,
+    const std::string_view formatted)
+{
+    if (severity < priorityLevel)
+    {
+        return;
+    }
+
+    std::unique_lock<std::mutex> daemonLock(daemonMtx, std::defer_lock);
+    try
+    {
+        auto rows = reformatContents(
+            std::format(
+                "[{}] {} [{}#{}] ",
+                utility::time::getCurrentSystemTime(),
+                isInServingState(State::work) ? (daemonLock.lock(), getPrefix(severity)) : traceLevelPrefix,
+                (std::string_view::npos != srcFile.rfind(sourceDirectory))
+                    ? srcFile.substr(srcFile.rfind(sourceDirectory) + sourceDirectory.length(), srcFile.length())
+                    : srcFile,
+                srcLine),
+            formatted);
+        if (daemonLock.owns_lock())
+        {
+            std::for_each(rows.begin(), rows.end(), [this](auto& output) { logQueue.push(std::move(output)); });
+            daemonLock.unlock();
+            daemonCond.notify_one();
+        }
+        else
+        {
+            const std::lock_guard<std::recursive_mutex> cacheLock(cacheMtx);
+            std::for_each(
+                rows.begin(),
+                rows.end(),
+                [this](auto& output)
+                {
+                    unprocessedCache.emplace_front(output);
+                    std::cerr << changeToLogStyle(output) << std::endl;
+                });
+        }
+    }
+    catch (...)
+    {
+        if (daemonLock.owns_lock())
+        {
+            daemonLock.unlock();
+        }
+        throw;
+    }
+}
+
 std::string_view Log::getPrefix(const OutputLevel level)
 {
     switch (level)
@@ -199,19 +251,6 @@ std::string_view Log::getPrefix(const OutputLevel level)
     }
 
     return traceLevelPrefix;
-}
-
-std::string Log::generateTimestampLabel(
-    const std::string_view prefix, const std::string_view srcFile, const std::uint32_t srcLine)
-{
-    return std::format(
-        "[{}] {} [{}#{}] ",
-        utility::time::getCurrentSystemTime(),
-        prefix,
-        (std::string_view::npos != srcFile.rfind(sourceDirectory))
-            ? srcFile.substr(srcFile.rfind(sourceDirectory) + sourceDirectory.length(), srcFile.length())
-            : srcFile,
-        srcLine);
 }
 
 std::vector<std::string> Log::reformatContents(const std::string_view label, const std::string_view formatted)

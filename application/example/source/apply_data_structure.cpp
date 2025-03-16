@@ -197,7 +197,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 
 void LinearStructure::stackInstance()
@@ -208,7 +208,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 
 void LinearStructure::queueInstance()
@@ -219,7 +219,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 } // namespace linear
 
@@ -313,7 +313,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 
 void TreeStructure::avlInstance()
@@ -324,7 +324,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 
 void TreeStructure::splayInstance()
@@ -335,7 +335,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 } // namespace tree
 

@@ -235,7 +235,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 
 void BehavioralPattern::commandInstance()
@@ -246,7 +246,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 
 void BehavioralPattern::interpreterInstance()
@@ -257,7 +257,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 
 void BehavioralPattern::iteratorInstance()
@@ -268,7 +268,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 
 void BehavioralPattern::mediatorInstance()
@@ -279,7 +279,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 
 void BehavioralPattern::mementoInstance()
@@ -290,7 +290,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 
 void BehavioralPattern::observerInstance()
@@ -301,7 +301,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 
 void BehavioralPattern::stateInstance()
@@ -312,7 +312,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 
 void BehavioralPattern::strategyInstance()
@@ -323,7 +323,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 
 void BehavioralPattern::templateMethodInstance()
@@ -334,7 +334,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 
 void BehavioralPattern::visitorInstance()
@@ -345,7 +345,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 } // namespace behavioral
 
@@ -487,7 +487,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 
 void CreationalPattern::builderInstance()
@@ -498,7 +498,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 
 void CreationalPattern::factoryMethodInstance()
@@ -509,7 +509,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 
 void CreationalPattern::prototypeInstance()
@@ -520,7 +520,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 
 void CreationalPattern::singletonInstance()
@@ -531,7 +531,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 } // namespace creational
 
@@ -637,7 +637,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 
 void StructuralPattern::bridgeInstance()
@@ -648,7 +648,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 
 void StructuralPattern::compositeInstance()
@@ -659,7 +659,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 
 void StructuralPattern::decoratorInstance()
@@ -670,7 +670,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 
 void StructuralPattern::facadeInstance()
@@ -681,7 +681,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 
 void StructuralPattern::flyweightInstance()
@@ -692,7 +692,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 
 void StructuralPattern::proxyInstance()
@@ -703,7 +703,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_ERR << "Exception in solution (" << __func__ << "): " << err.what();
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 } // namespace structural
 
