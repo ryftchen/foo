@@ -149,7 +149,7 @@ private:
     //! @brief Minimum velocity.
     static constexpr double vMin{-0.5};
     //! @brief Swarm size.
-    static constexpr std::uint32_t size{300};
+    static constexpr std::uint32_t size{200};
     //! @brief The number of iterations.
     static constexpr std::uint32_t numOfIteration{50};
 
@@ -196,19 +196,6 @@ private:
     std::uniform_real_distribution<double> probability{0.0, 1.0};
     //! @brief The number of chromosomes.
     std::uint32_t chromosomeNum{0};
-    //! @brief Crossover probability.
-    static constexpr double crossPr{0.95};
-    //! @brief Mutation probability.
-    static constexpr double mutatePr{0.045};
-    //! @brief Population size.
-    static constexpr std::uint32_t size{300};
-    //! @brief The number of generations.
-    static constexpr std::uint32_t numOfGeneration{50};
-
-    //! @brief Alias for the individual's chromosome in species.
-    using Chromosome = std::vector<std::uint8_t>;
-    //! @brief Alias for the population in species.
-    using Population = std::vector<Chromosome>;
     //! @brief Properties of species.
     struct Property
     {
@@ -219,11 +206,24 @@ private:
         //! @brief The precision of calculation.
         double eps{0.0};
     } /** @brief A Property object for storing properties of species. */ property{};
+    //! @brief Crossover probability.
+    static constexpr double crossPr{0.9};
+    //! @brief Mutation probability.
+    static constexpr double mutatePr{0.05};
+    //! @brief Population size.
+    static constexpr std::uint32_t size{200};
+    //! @brief The number of generations.
+    static constexpr std::uint32_t numOfGeneration{50};
+
     //! @brief Update species.
     //! @param left - left endpoint
     //! @param right - right endpoint
     //! @param eps - precision of calculation
     void updateSpecies(const double left, const double right, const double eps);
+    //! @brief Alias for the individual's chromosome in species.
+    using Chromosome = std::vector<std::uint8_t>;
+    //! @brief Alias for the population in species.
+    using Population = std::vector<Chromosome>;
     //! @brief The genetic decode.
     //! @param chr - individual's chromosome
     //! @return decoded value
@@ -268,10 +268,6 @@ private:
     //! @param pop - whole population
     //! @return the best individual's chromosome
     Chromosome getBestIndividual(const Population& pop);
-    //! @brief Get a random number from 0 to the limit.
-    //! @param limit - maximum random number
-    //! @return random number
-    std::uint32_t getRandomLessThanLimit(const std::uint32_t limit);
 };
 } // namespace optimal
 } // namespace algorithm
