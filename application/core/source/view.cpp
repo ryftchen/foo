@@ -305,7 +305,7 @@ retry:
             {
                 goto retry; // NOLINT(cppcoreguidelines-avoid-goto,hicpp-avoid-goto)
             }
-            LOG_ERR << "Failed to rollback " << name << '.';
+            LOG_ERR_F("Failed to rollback {}.", name);
         }
     }
 }
