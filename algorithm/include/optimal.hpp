@@ -135,7 +135,7 @@ private:
     //! @brief Target function.
     const Function& func;
     //! @brief Random engine.
-    std::mt19937 engine{std::random_device{}()};
+    std::mt19937_64 engine{std::random_device{}()};
     //! @brief Cognitive coefficient.
     static constexpr double c1{1.5};
     //! @brief Social coefficient.
@@ -191,7 +191,7 @@ private:
     //! @brief Target function.
     const Function& func;
     //! @brief Random engine.
-    std::mt19937 engine{std::random_device{}()};
+    std::mt19937_64 engine{std::random_device{}()};
     //! @brief The probability of a possible event (from 0 to 1).
     std::uniform_real_distribution<double> probability{0.0, 1.0};
     //! @brief The number of chromosomes.
