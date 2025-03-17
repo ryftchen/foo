@@ -106,7 +106,6 @@ double Romberg::operator()(double lower, double upper, const double eps) const
 {
     const std::int8_t sign = getSign(lower, upper);
     std::uint32_t k = 0;
-    double sum = 0.0;
     const double height = upper - lower;
     const auto trapezoidFunctor = std::bind(trapezoid, std::ref(expr), lower, height, std::placeholders::_1);
 
@@ -126,7 +125,7 @@ double Romberg::operator()(double lower, double upper, const double eps) const
                 - 1.0 / std::pow(4, i) * t1Zero;
         }
     }
-    sum = trapezoidFunctor(std::pow(2, k)) * sign;
+    const double sum = trapezoidFunctor(std::pow(2, k)) * sign;
 
     return sum;
 }
@@ -180,8 +179,8 @@ double MonteCarlo::operator()(double lower, double upper, const double eps) cons
 double MonteCarlo::sampleFromUniformDistribution(const double lower, const double upper, const double eps) const
 {
     const std::uint32_t n = 1.0 / eps;
+    std::ranlux48 engine(std::random_device{}());
     std::uniform_real_distribution<double> dist(lower, upper);
-    std::ranlux24 engine(std::random_device{}());
     double sum = 0.0;
     for (std::uint32_t i = 0; i < n; ++i)
     {
@@ -196,7 +195,7 @@ double MonteCarlo::sampleFromNormalDistribution(const double lower, const double
 {
     const std::uint32_t n = 1.0 / eps;
     const double mu = (lower + upper) / 2.0, sigma = (upper - lower) / 6.0;
-    std::ranlux24 engine(std::random_device{}());
+    std::ranlux48 engine(std::random_device{}());
     std::uniform_real_distribution<double> dist(0.0, 1.0);
     double sum = 0.0, x = 0.0;
     for (std::uint32_t i = 0; i < n; ++i)
