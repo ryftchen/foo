@@ -511,9 +511,9 @@ void Argument::parseArgsInternal(const std::vector<std::string>& rawArguments)
         titleName = arguments.front();
     }
 
-    const auto end = arguments.cend();
+    const auto ending = arguments.cend();
     auto positionalArgIter = positionalArgs.begin();
-    for (auto iterator = std::next(arguments.begin()); end != iterator;)
+    for (auto iterator = std::next(arguments.begin()); ending != iterator;)
     {
         const auto& currentArg = *iterator;
         if (Register::checkIfPositional(currentArg, prefixChars))
@@ -523,7 +523,7 @@ void Argument::parseArgsInternal(const std::vector<std::string>& rawArguments)
                 const std::string_view maybeCommand = currentArg;
                 if (const auto subParserIter = subParserMap.find(maybeCommand); subParserMap.cend() != subParserIter)
                 {
-                    const auto unprocessedArguments = std::vector<std::string>(iterator, end);
+                    const auto unprocessedArguments = std::vector<std::string>(iterator, ending);
                     isParsed = true;
                     subParserUsed[maybeCommand] = true;
                     return subParserIter->second->get().parseArgs(unprocessedArguments);
@@ -533,14 +533,14 @@ void Argument::parseArgsInternal(const std::vector<std::string>& rawArguments)
             }
 
             const auto argument = positionalArgIter++;
-            iterator = argument->consume(iterator, end);
+            iterator = argument->consume(iterator, ending);
             continue;
         }
 
         if (const auto argMapIter = argumentMap.find(currentArg); argumentMap.cend() != argMapIter)
         {
             const auto argument = argMapIter->second;
-            iterator = argument->consume(std::next(iterator), end, argMapIter->first);
+            iterator = argument->consume(std::next(iterator), ending, argMapIter->first);
         }
         else if (const auto& compoundArg = currentArg; (compoundArg.length() > 1)
                  && isValidPrefixChar(compoundArg.at(0)) && !isValidPrefixChar(compoundArg.at(1)))
@@ -552,7 +552,7 @@ void Argument::parseArgsInternal(const std::vector<std::string>& rawArguments)
                 if (const auto argMapIter2 = argumentMap.find(hypotheticalArg); argumentMap.cend() != argMapIter2)
                 {
                     auto argument = argMapIter2->second;
-                    iterator = argument->consume(iterator, end, argMapIter2->first);
+                    iterator = argument->consume(iterator, ending, argMapIter2->first);
                 }
                 else
                 {
