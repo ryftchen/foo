@@ -228,7 +228,7 @@ private:
     //! @param chr - individual's chromosome
     //! @return decoded value
     [[nodiscard]] double geneticDecode(const Chromosome& chr) const;
-    //! @brief Initialize the population.
+    //! @brief Initialize the population with binary.
     //! @return initial population
     Population populationInit();
     //! @brief The genetic cross.
