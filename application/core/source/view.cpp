@@ -163,15 +163,15 @@ static int decodeTLV(char* buf, const int len, TLVValue& val)
     }
 
     Packet dec(buf, len);
-    int type = 0, sum = 0;
-
+    int type = 0;
     dec.read<int>(&type);
     if (TLVType::header != type)
     {
         return -1;
     }
-    dec.read<int>(&sum);
 
+    int sum = 0;
+    dec.read<int>(&sum);
     while (sum > 0)
     {
         dec.read<int>(&type);
@@ -609,8 +609,7 @@ int View::buildTLVPacket4Monitor(const std::vector<std::string>& args, char* buf
     }
     else if (args.size() == 1)
     {
-        const auto& input = args.front();
-        if ((input.length() != 1) || !std::isdigit(input.front()))
+        if (const auto& input = args.front(); (input.length() != 1) || !std::isdigit(input.front()))
         {
             throw std::runtime_error{"Only decimal bases are supported for the specified number of stack frames."};
         }
@@ -672,8 +671,7 @@ void View::encryptMessage(char* buffer, const int length)
             break;
         }
 
-        int tempLen = 0;
-        if (!::EVP_EncryptFinal_ex(ctx, reinterpret_cast<unsigned char*>(buffer) + outLen, &tempLen))
+        if (int tempLen = 0; !::EVP_EncryptFinal_ex(ctx, reinterpret_cast<unsigned char*>(buffer) + outLen, &tempLen))
         {
             break;
         }
@@ -706,8 +704,7 @@ void View::decryptMessage(char* buffer, const int length)
             break;
         }
 
-        int tempLen = 0;
-        if (!::EVP_DecryptFinal_ex(ctx, reinterpret_cast<unsigned char*>(buffer) + outLen, &tempLen))
+        if (int tempLen = 0; !::EVP_DecryptFinal_ex(ctx, reinterpret_cast<unsigned char*>(buffer) + outLen, &tempLen))
         {
             break;
         }
