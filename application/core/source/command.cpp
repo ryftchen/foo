@@ -681,8 +681,7 @@ void Command::validate()
                      [this, &subCLI](const auto& categoryPair)
                      { return subCLI.isUsed(categoryPair.first) ? (checkForExcessiveArguments(), true) : false; }))
         {
-            for (const auto& pendingTasks = subCLI.get<std::vector<std::string>>(categoryName);
-                 const auto& target : pendingTasks)
+            for (const auto& target : subCLI.get<std::vector<std::string>>(categoryName))
             {
                 std::visit(
                     action::EvtVisitor{[this, &target](auto&& event) {
@@ -720,8 +719,8 @@ void Command::dispatch()
                                          { return mainCLI.isSubCommandUsed(subCLIName); });
                 std::ranges::distance(filtered) != 0)
             {
-                const auto& subCLI = mainCLI.at<utility::argument::Argument>(*std::ranges::begin(filtered));
-                std::cout << subCLI.help().str() << std::flush;
+                std::cout << mainCLI.at<utility::argument::Argument>(*std::ranges::begin(filtered)).help().str()
+                          << std::flush;
             }
             return;
         }
