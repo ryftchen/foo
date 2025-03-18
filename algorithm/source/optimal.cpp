@@ -120,8 +120,8 @@ std::optional<std::tuple<double, double>> Particle::operator()(const double left
     storage.reserve(swarm.size());
     for (std::uint32_t i = 0; i < numOfIteration; ++i)
     {
-        const double w = wBegin - (wBegin - wEnd) * std::pow(static_cast<double>(i + 1) / numOfIteration, 2);
-        for (auto& ind : swarm)
+        for (const double w = wBegin - (wBegin - wEnd) * std::pow(static_cast<double>(i + 1) / numOfIteration, 2);
+             auto& ind : swarm)
         {
             const double rand1 =
                              static_cast<std::uint32_t>(coeff(engine) * static_cast<std::uint32_t>(1.0 / eps)) * eps,
@@ -176,12 +176,7 @@ std::optional<std::tuple<double, double>> Particle::operator()(const double left
 std::optional<std::tuple<double, double>> Genetic::operator()(const double left, const double right, const double eps)
 {
     updateSpecies(left, right, eps);
-    if (constexpr std::uint32_t minChrNum = 3; chromosomeNum < minChrNum)
-    {
-        throw std::logic_error{"A precision of " + std::to_string(eps) + " is not sufficient."};
-    }
-
-    Population pop{populationInit()};
+    auto pop{populationInit()};
     for (std::uint32_t i = 0; i < numOfGeneration; ++i)
     {
         select(pop);
@@ -206,6 +201,11 @@ void Genetic::updateSpecies(const double left, const double right, const double 
         ++num;
     }
     chromosomeNum = num + 1;
+
+    if (constexpr std::uint32_t minChrNum = 3; chromosomeNum < minChrNum)
+    {
+        throw std::logic_error{"A precision of " + std::to_string(eps) + " is not sufficient."};
+    }
 }
 
 double Genetic::geneticDecode(const Chromosome& chr) const
@@ -238,47 +238,37 @@ Genetic::Population Genetic::populationInit()
 
 void Genetic::geneticCross(Chromosome& chr1, Chromosome& chr2)
 {
-    Chromosome chrTemp{};
-    chrTemp.reserve(chr1.size());
-    std::copy(chr1.cbegin(), chr1.cend(), std::back_inserter(chrTemp));
-
+    std::uint32_t pmxBegin = 0, pmxEnd = 0;
     std::uniform_int_distribution<std::uint32_t> randomPos(0, chromosomeNum - 1);
-    std::uint32_t crossBegin = randomPos(engine), crossEnd = randomPos(engine);
-    if (crossBegin > crossEnd)
+    do
     {
-        std::swap(crossBegin, crossEnd);
+        pmxBegin = randomPos(engine);
+        pmxEnd = randomPos(engine);
+        if (pmxBegin > pmxEnd)
+        {
+            std::swap(pmxBegin, pmxEnd);
+        }
     }
-    std::copy_n(chr2.cbegin() + crossBegin, crossEnd - crossBegin, chr1.begin() + crossBegin);
-    std::copy_n(chrTemp.cbegin() + crossBegin, crossEnd - crossBegin, chr2.begin() + crossBegin);
+    while ((pmxBegin == pmxEnd) || ((pmxEnd - pmxBegin) == (chromosomeNum - 1)));
+
+    auto chrTemp{chr1};
+    std::copy_n(chr2.cbegin() + pmxBegin, pmxEnd - pmxBegin, chr1.begin() + pmxBegin);
+    std::copy_n(chrTemp.cbegin() + pmxBegin, pmxEnd - pmxBegin, chr2.begin() + pmxBegin);
 }
 
 void Genetic::crossover(Population& pop)
 {
-    Population popCross{};
-    popCross.reserve(pop.size());
-
-    std::vector<std::reference_wrapper<Chromosome>> candidates(pop.begin(), pop.end());
-    std::shuffle(candidates.begin(), candidates.end(), engine);
-    for (auto chrIter = candidates.begin();
-         (candidates.end() != chrIter) && (std::next(chrIter, 1) != candidates.end());
+    std::vector<std::reference_wrapper<Chromosome>> selector(pop.begin(), pop.end());
+    std::shuffle(selector.begin(), selector.end(), engine);
+    for (auto chrIter = selector.begin(); (selector.end() != chrIter) && (selector.end() != std::next(chrIter, 1));
          std::advance(chrIter, 2))
     {
-        auto parent1 = chrIter->get(), parent2 = std::next(chrIter, 1)->get();
         if (crossPr > probability(engine))
         {
+            auto &parent1 = chrIter->get(), &parent2 = std::next(chrIter, 1)->get();
             geneticCross(parent1, parent2);
         }
-        popCross.emplace_back(std::move(parent1));
-        popCross.emplace_back(std::move(parent2));
-
-        if ((pop.size() % 2) && (std::next(chrIter, 2) == (candidates.end() - 1)))
-        {
-            auto single = std::next(chrIter, 2)->get();
-            popCross.emplace_back(std::move(single));
-        }
     }
-
-    std::copy(popCross.cbegin(), popCross.cend(), pop.begin());
 }
 
 void Genetic::geneticMutation(Chromosome& chr)
@@ -342,16 +332,16 @@ auto Genetic::rouletteWheelSelection(const Population& pop, const std::vector<do
 
 void Genetic::stochasticTournamentSelection(Population& pop, const std::vector<double>& cumFitness)
 {
-    Population popNew{};
-    popNew.reserve(pop.size());
-    while (popNew.size() < pop.size())
+    Population selected{};
+    selected.reserve(pop.size());
+    while (selected.size() < pop.size())
     {
         auto competitor1 = *rouletteWheelSelection(pop, cumFitness),
              competitor2 = *rouletteWheelSelection(pop, cumFitness);
-        popNew.emplace_back(
+        selected.emplace_back(
             std::move((calculateFitness(competitor1) >= calculateFitness(competitor2)) ? competitor1 : competitor2));
     }
-    std::copy(popNew.cbegin(), popNew.cend(), pop.begin());
+    std::copy(selected.cbegin(), selected.cend(), pop.begin());
 }
 
 void Genetic::select(Population& pop)
