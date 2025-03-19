@@ -53,7 +53,7 @@ protected:
     Optimal() = default;
 };
 
-//! @brief Gradient descent.
+//! @brief Gradient descent (GD).
 class Gradient : public Optimal
 {
 public:
@@ -86,7 +86,7 @@ private:
     [[nodiscard]] double calculateFirstDerivative(const double x, const double eps) const;
 };
 
-//! @brief Simulated annealing.
+//! @brief Simulated annealing (SA).
 class Annealing : public Optimal
 {
 public:
@@ -106,16 +106,32 @@ private:
     //! @brief Target function.
     const Function& func;
     //! @brief Initial temperature.
-    static constexpr double initialT{100.0};
+    static constexpr double initialT{10000.0};
     //! @brief Minimal temperature.
-    static constexpr double minimalT{0.01};
+    static constexpr double minimalT{0.001};
     //! @brief Cooling rate.
-    static constexpr double coolingRate{0.98};
+    static constexpr double coolingRate{0.99};
     //! @brief Length of Markov chain.
-    static constexpr std::uint32_t markovChain{500};
+    static constexpr std::uint32_t markovChain{100};
+
+    //! @brief Temperature-dependent Cauchy-like distribution.
+    //! @param prev - current model
+    //! @param min - minimum of model
+    //! @param max - maximum of model
+    //! @param temp - current temperature
+    //! @param xi - random number in the interval [0, 1]
+    //! @return new model
+    static double cauchyLikeDistribution(
+        const double prev, const double min, const double max, const double temp, const double xi);
+    //! @brief Metropolis acceptance criterion which based on the Metropolis-Hastings algorithm.
+    //! @param deltaE - energy difference
+    //! @param temp - current temperature
+    //! @param xi - random number in the interval [0, 1]
+    //! @return accept or not
+    static bool metropolisAcceptanceCriterion(const double deltaE, const double temp, const double xi);
 };
 
-//! @brief Particle swarm.
+//! @brief Particle swarm optimization (PSO).
 class Particle : public Optimal
 {
 public:
@@ -150,8 +166,8 @@ private:
     static constexpr double vMin{-0.5};
     //! @brief Swarm size.
     static constexpr std::uint32_t size{200};
-    //! @brief The number of iterations.
-    static constexpr std::uint32_t numOfIteration{50};
+    //! @brief Maximum number of iterations.
+    static constexpr std::uint32_t maxIterations{50};
 
     //! @brief Individual information in the swarm.
     struct Individual
@@ -161,17 +177,26 @@ private:
         //! @brief Velocity value.
         double velocity{0.0};
         //! @brief The best position.
-        double positionBest{0.0};
+        double posBest{0.0};
         //! @brief Fitness of independent variable.
         double xFitness{0.0};
         //! @brief Fitness of the best position.
-        double fitnessPositionBest{0.0};
+        double posBestFitness{0.0};
     };
     //! @brief Alias for the swarm information.
     using Swarm = std::vector<Individual>;
+    //! @brief Initialize the swarm.
+    //! @param left - left endpoint
+    //! @param right - right endpoint
+    //! @return initial swarm
+    Swarm swarmInit(const double left, const double right);
+    //! @brief Non-linear decreasing weight.
+    //! @param iteration - current number of iterations
+    //! @return inertia weight
+    static double nonlinearDecreasingWeight(const std::uint32_t iteration);
 };
 
-//! @brief Genetic.
+//! @brief Genetic algorithm (GA).
 class Genetic : public Optimal
 {
 public:
