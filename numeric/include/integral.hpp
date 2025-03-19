@@ -107,7 +107,6 @@ private:
     //! @param right - right endpoint
     //! @param step - number of steps
     //! @return result of definite integral
-    //! @note I≈1/3*h*{F(X0)+4*[F(X1)+...+F(X2n-1)]+2*[F(X2)+...+F(X2n-2)]+F(Xn)},h=(b-a)/n
     [[nodiscard]] double compositeSimpsonOneThird(
         const double left, const double right, const std::uint32_t step) const;
     //! @brief Simpson's 1/3 formula.
@@ -150,7 +149,6 @@ public:
     //! @param upper - upper endpoint
     //! @param eps - precision of calculation
     //! @return result of integral
-    //! @note x=1/2*[(b-a)*t+(a+b)]
     [[nodiscard]] double operator()(double lower, double upper, const double eps) const override;
 
 private:
@@ -181,14 +179,12 @@ private:
     //! @param upper - upper endpoint
     //! @param eps - precision of calculation
     //! @return result of definite integral
-    //! @note I≈(b-a)/N*[F(X1)+F(X2)+...+F(Xn)]
     [[nodiscard]] double sampleFromUniformDistribution(const double lower, const double upper, const double eps) const;
     //! @brief Sample from the normal distribution (Box-Muller transform).
     //! @param lower - lower endpoint
     //! @param upper - upper endpoint
     //! @param eps - precision of calculation
     //! @return result of definite integral
-    //! @note I≈1/N*[F(X1)/P(X1)+...+F(Xn)/P(Xn)]
     [[deprecated, nodiscard]] double sampleFromNormalDistribution(
         const double lower, const double upper, const double eps) const;
 };
