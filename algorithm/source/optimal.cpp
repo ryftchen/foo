@@ -22,39 +22,40 @@ const char* version() noexcept
 
 std::optional<std::tuple<double, double>> Gradient::operator()(const double left, const double right, const double eps)
 {
-    double x = 0.0, y = 0.0;
     std::mt19937_64 engine(std::random_device{}());
     std::uniform_real_distribution<double> candidate(left, right);
     std::unordered_multiset<double> climbing{};
+    climbing.reserve(loopTime);
     while (climbing.size() < loopTime)
     {
         climbing.emplace(candidate(engine));
     }
 
-    std::vector<std::tuple<double, double>> storage{};
-    storage.reserve(climbing.size());
+    double x = 0.0, y = 0.0, xBest = x, yBest = y;
     for (const auto climber : climbing)
     {
         x = climber;
-        std::uint32_t numOfIteration = 0;
+        std::uint32_t iteration = 0;
         double learningRate = initialLearningRate, gradient = calculateFirstDerivative(x, eps),
                dx = learningRate * gradient;
         while ((std::fabs(dx) > eps) && ((x - dx) >= left) && ((x - dx) <= right))
         {
             x -= dx;
-            ++numOfIteration;
-            learningRate = initialLearningRate * 1.0 / (1.0 + decay * numOfIteration);
+            ++iteration;
+            learningRate = initialLearningRate * 1.0 / (1.0 + decay * iteration);
             gradient = calculateFirstDerivative(x, eps);
             dx = learningRate * gradient;
         }
-        storage.emplace_back(func(x), x);
-    }
-    std::tie(y, x) = *std::min_element(
-        storage.cbegin(),
-        storage.cend(),
-        [](const auto& min1, const auto& min2) { return std::get<0>(min1) < std::get<0>(min2); });
 
-    return std::make_optional(std::make_tuple(y, x));
+        y = func(x);
+        if (y < yBest)
+        {
+            xBest = x;
+            yBest = y;
+        }
+    }
+
+    return std::make_optional(std::make_tuple(yBest, xBest));
 }
 
 double Gradient::calculateFirstDerivative(const double x, const double eps) const
@@ -67,20 +68,22 @@ std::optional<std::tuple<double, double>> Annealing::operator()(const double lef
 {
     std::mt19937_64 engine(std::random_device{}());
     std::uniform_real_distribution<double> perturbation(left, right), pr(0.0, 1.0);
-    double temperature = initialT, x = perturbation(engine), y = func(x);
+    double temperature = initialT, x = std::round(perturbation(engine) / eps) * eps, y = func(x), xBest = x, yBest = y;
     while (temperature > minimalT)
     {
-        double xBest = x, yBest = y;
-        bool found = false;
+        x = xBest;
+        y = yBest;
         for (std::uint32_t i = 0; i < markovChain; ++i)
         {
-            double xNew = static_cast<std::int64_t>(perturbation(engine) * static_cast<std::uint32_t>(1.0 / eps)) * eps,
-                   yNew = func(xNew);
-            if ((yNew <= y) || (std::exp(-(yNew - y) / temperature) > pr(engine)))
+            double xNbr = cauchyLikeDistribution(x, left, right, temperature, pr(engine));
+            if ((xNbr < left) || (xNbr > right))
             {
-                found = true;
-                x = xNew;
-                y = yNew;
+                xNbr = std::round(perturbation(engine) / eps) * eps;
+            }
+            if (const double yNbr = func(xNbr); metropolisAcceptanceCriterion(yNbr - y, temperature, pr(engine)))
+            {
+                x = xNbr;
+                y = yNbr;
                 if (y < yBest)
                 {
                     xBest = x;
@@ -88,47 +91,38 @@ std::optional<std::tuple<double, double>> Annealing::operator()(const double lef
                 }
             }
         }
-        if (found)
-        {
-            x = xBest;
-            y = yBest;
-        }
         temperature *= coolingRate;
     }
 
-    return std::make_optional(std::make_tuple(y, x));
+    return std::make_optional(std::make_tuple(yBest, xBest));
+}
+
+double Annealing::cauchyLikeDistribution(
+    const double prev, const double min, const double max, const double temp, const double xi)
+{
+    const double sgn = ((xi - 0.5) > 0) - ((xi - 0.5) < 0);
+    return prev + (temp * sgn * (1 + 1 / (std::pow(temp, 2 * xi - 1) - 1))) * (max - min);
+}
+
+bool Annealing::metropolisAcceptanceCriterion(const double deltaE, const double temp, const double xi)
+{
+    return (deltaE < 0) || (std::exp(-deltaE / temp) > xi);
 }
 
 std::optional<std::tuple<double, double>> Particle::operator()(const double left, const double right, const double eps)
 {
-    std::uniform_real_distribution<double> candidate(left, right), vel(vMin, vMax);
-    Swarm swarm(size, Individual{});
-    std::generate(
-        swarm.begin(),
-        swarm.end(),
-        [this, &candidate, &vel]()
-        {
-            const double x = candidate(engine);
-            return Individual{x, vel(engine), x, func(x), func(x)};
-        });
+    auto swarm{swarmInit(left, right)};
     const auto initialBest = std::min_element(
         swarm.cbegin(), swarm.cend(), [](const auto& min1, const auto& min2) { return min1.xFitness < min2.xFitness; });
-    double xBest = initialBest->x, xFitnessBest = initialBest->xFitness;
+    double gloBest = initialBest->x, gloBestFitness = initialBest->xFitness;
 
     std::uniform_real_distribution<double> coeff(0.0, 1.0);
-    std::vector<std::tuple<double, double>> storage{};
-    storage.reserve(swarm.size());
-    for (std::uint32_t i = 0; i < numOfIteration; ++i)
+    for (std::uint32_t i = 0; i < maxIterations; ++i)
     {
-        for (const double w = wBegin - (wBegin - wEnd) * std::pow(static_cast<double>(i + 1) / numOfIteration, 2);
-             auto& ind : swarm)
+        for (const double w = nonlinearDecreasingWeight(i); auto& ind : swarm)
         {
-            const double rand1 =
-                             static_cast<std::uint32_t>(coeff(engine) * static_cast<std::uint32_t>(1.0 / eps)) * eps,
-                         rand2 =
-                             static_cast<std::uint32_t>(coeff(engine) * static_cast<std::uint32_t>(1.0 / eps)) * eps;
-
-            ind.velocity = w * ind.velocity + c1 * rand1 * (ind.positionBest - ind.x) + c2 * rand2 * (xBest - ind.x);
+            const double rand1 = std::round(coeff(engine) / eps) * eps, rand2 = std::round(coeff(engine) / eps) * eps;
+            ind.velocity = w * ind.velocity + c1 * rand1 * (ind.posBest - ind.x) + c2 * rand2 * (gloBest - ind.x);
             if (ind.velocity > vMax)
             {
                 ind.velocity = vMax;
@@ -152,25 +146,41 @@ std::optional<std::tuple<double, double>> Particle::operator()(const double left
 
         for (auto& ind : swarm)
         {
-            if (ind.xFitness < ind.fitnessPositionBest)
+            if (ind.xFitness < ind.posBestFitness)
             {
-                ind.positionBest = ind.x;
-                ind.fitnessPositionBest = ind.xFitness;
+                ind.posBest = ind.x;
+                ind.posBestFitness = ind.xFitness;
             }
-            if (ind.xFitness < xFitnessBest)
+            if (ind.xFitness < gloBestFitness)
             {
-                xBest = ind.x;
-                xFitnessBest = ind.xFitness;
+                gloBest = ind.x;
+                gloBestFitness = ind.xFitness;
             }
         }
-        storage.emplace_back(xFitnessBest, xBest);
     }
-    std::tie(xFitnessBest, xBest) = *std::min_element(
-        storage.cbegin(),
-        storage.cend(),
-        [](const auto& min1, const auto& min2) { return std::get<0>(min1) < std::get<0>(min2); });
 
-    return std::make_optional(std::make_tuple(xFitnessBest, xBest));
+    return std::make_optional(std::make_tuple(gloBestFitness, gloBest));
+}
+
+Particle::Swarm Particle::swarmInit(const double left, const double right)
+{
+    std::uniform_real_distribution<double> candidate(left, right), vel(vMin, vMax);
+    Swarm swarm(size, Individual{});
+    std::generate(
+        swarm.begin(),
+        swarm.end(),
+        [this, &candidate, &vel]()
+        {
+            const double x = candidate(engine);
+            return Individual{x, vel(engine), x, func(x), func(x)};
+        });
+
+    return swarm;
+}
+
+double Particle::nonlinearDecreasingWeight(const std::uint32_t iteration)
+{
+    return wBegin - (wBegin - wEnd) * std::pow(static_cast<double>(iteration + 1) / maxIterations, 2);
 }
 
 std::optional<std::tuple<double, double>> Genetic::operator()(const double left, const double right, const double eps)
@@ -202,7 +212,7 @@ void Genetic::updateSpecies(const double left, const double right, const double 
     }
     chromosomeNum = num + 1;
 
-    if (constexpr std::uint32_t minChrNum = 3; chromosomeNum < minChrNum)
+    if (constexpr std::uint32_t minChrNum = 2; chromosomeNum < minChrNum)
     {
         throw std::logic_error{"A precision of " + std::to_string(eps) + " is not sufficient."};
     }
