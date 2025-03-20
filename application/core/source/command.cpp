@@ -951,7 +951,7 @@ catch (const std::exception& err)
 template <typename T>
 void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& client)
 {
-    static constexpr auto helperResetter = []<HelperType Helper>() constexpr
+    static constexpr auto gracefulReset = []<HelperType Helper>() constexpr
     {
         triggerHelper<Helper>(ExtEvent::reload);
         triggerHelper<Helper>(ExtEvent::startup);
@@ -987,7 +987,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
             auto retCode = RetCode::success;
             try
             {
-                helperResetter.template operator()<log::Log>();
+                gracefulReset.template operator()<log::Log>();
 
                 LOG_INF << "Refreshed the outputs.";
             }
@@ -1012,7 +1012,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
                 client->waitIfAlive();
                 interactionLatency();
                 client.reset();
-                helperResetter.template operator()<view::View>();
+                gracefulReset.template operator()<view::View>();
 
                 client = std::make_shared<T>();
                 launchClient(client);
