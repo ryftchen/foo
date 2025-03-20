@@ -31,11 +31,10 @@ std::optional<std::tuple<double, double>> Gradient::operator()(const double left
         climbing.emplace(candidate(engine));
     }
 
-    double x = 0.0, y = 0.0, xBest = x, yBest = y;
-    for (const auto climber : climbing)
+    double xBest = *climbing.cbegin(), yBest = func(xBest);
+    for (std::uint32_t iteration = 0; auto x : climbing)
     {
-        x = climber;
-        std::uint32_t iteration = 0;
+        iteration = 0;
         double learningRate = initialLearningRate, gradient = calculateFirstDerivative(x, eps),
                dx = learningRate * gradient;
         while ((std::fabs(dx) > eps) && ((x - dx) >= left) && ((x - dx) <= right))
@@ -47,8 +46,7 @@ std::optional<std::tuple<double, double>> Gradient::operator()(const double left
             dx = learningRate * gradient;
         }
 
-        y = func(x);
-        if (y < yBest)
+        if (const double y = func(x); y < yBest)
         {
             xBest = x;
             yBest = y;
@@ -113,50 +111,13 @@ std::optional<std::tuple<double, double>> Particle::operator()(const double left
 {
     auto swarm{swarmInit(left, right)};
     const auto initialBest = std::min_element(
-        swarm.cbegin(), swarm.cend(), [](const auto& min1, const auto& min2) { return min1.xFitness < min2.xFitness; });
-    double gloBest = initialBest->x, gloBestFitness = initialBest->xFitness;
+        swarm.cbegin(), swarm.cend(), [](const auto& min1, const auto& min2) { return min1.fitness < min2.fitness; });
+    double gloBest = initialBest->x, gloBestFitness = initialBest->fitness;
 
-    std::uniform_real_distribution<double> coeff(0.0, 1.0);
-    for (std::uint32_t i = 0; i < maxIterations; ++i)
+    for (std::uint32_t k = 0; k < maxIterations; ++k)
     {
-        for (const double w = nonlinearDecreasingWeight(i); auto& ind : swarm)
-        {
-            const double rand1 = std::round(coeff(engine) / eps) * eps, rand2 = std::round(coeff(engine) / eps) * eps;
-            ind.velocity = w * ind.velocity + c1 * rand1 * (ind.posBest - ind.x) + c2 * rand2 * (gloBest - ind.x);
-            if (ind.velocity > vMax)
-            {
-                ind.velocity = vMax;
-            }
-            else if (ind.velocity < vMin)
-            {
-                ind.velocity = vMin;
-            }
-
-            ind.x += ind.velocity;
-            if (ind.x > right)
-            {
-                ind.x = right;
-            }
-            else if (ind.x < left)
-            {
-                ind.x = left;
-            }
-            ind.xFitness = func(ind.x);
-        }
-
-        for (auto& ind : swarm)
-        {
-            if (ind.xFitness < ind.posBestFitness)
-            {
-                ind.posBest = ind.x;
-                ind.posBestFitness = ind.xFitness;
-            }
-            if (ind.xFitness < gloBestFitness)
-            {
-                gloBest = ind.x;
-                gloBestFitness = ind.xFitness;
-            }
-        }
+        updateParticles(swarm, k, gloBest, left, right, eps);
+        updateBests(swarm, gloBest, gloBestFitness);
     }
 
     return std::make_optional(std::make_tuple(gloBestFitness, gloBest));
@@ -164,23 +125,75 @@ std::optional<std::tuple<double, double>> Particle::operator()(const double left
 
 Particle::Swarm Particle::swarmInit(const double left, const double right)
 {
-    std::uniform_real_distribution<double> candidate(left, right), vel(vMin, vMax);
+    std::uniform_real_distribution<double> candidate(left, right), velocity(vMin, vMax);
     Swarm swarm(size, Individual{});
     std::generate(
         swarm.begin(),
         swarm.end(),
-        [this, &candidate, &vel]()
+        [this, &candidate, &velocity]()
         {
             const double x = candidate(engine);
-            return Individual{x, vel(engine), x, func(x), func(x)};
+            return Individual{x, velocity(engine), x, func(x), func(x)};
         });
 
     return swarm;
 }
 
+void Particle::updateParticles(
+    Swarm& swarm,
+    const std::uint32_t iteration,
+    const double gloBest,
+    const double left,
+    const double right,
+    const double eps)
+{
+    for (const double w = nonlinearDecreasingWeight(iteration); auto& ind : swarm)
+    {
+        const double rand1 = std::round(perturbation(engine) / eps) * eps,
+                     rand2 = std::round(perturbation(engine) / eps) * eps;
+        ind.v = w * ind.v + c1 * rand1 * (ind.persBest - ind.x) + c2 * rand2 * (gloBest - ind.x);
+        if (ind.v > vMax)
+        {
+            ind.v = vMax;
+        }
+        else if (ind.v < vMin)
+        {
+            ind.v = vMin;
+        }
+
+        ind.x += ind.v;
+        if (ind.x > right)
+        {
+            ind.x = right;
+        }
+        else if (ind.x < left)
+        {
+            ind.x = left;
+        }
+        ind.fitness = func(ind.x);
+    }
+}
+
 double Particle::nonlinearDecreasingWeight(const std::uint32_t iteration)
 {
     return wBegin - (wBegin - wEnd) * std::pow(static_cast<double>(iteration + 1) / maxIterations, 2);
+}
+
+void Particle::updateBests(Swarm& swarm, double& gloBest, double& gloBestFitness)
+{
+    for (auto& ind : swarm)
+    {
+        if (ind.fitness < ind.persBestFitness)
+        {
+            ind.persBest = ind.x;
+            ind.persBestFitness = ind.fitness;
+        }
+        if (ind.fitness < gloBestFitness)
+        {
+            gloBest = ind.x;
+            gloBestFitness = ind.fitness;
+        }
+    }
 }
 
 std::optional<std::tuple<double, double>> Genetic::operator()(const double left, const double right, const double eps)
@@ -193,9 +206,9 @@ std::optional<std::tuple<double, double>> Genetic::operator()(const double left,
         crossover(pop);
         mutate(pop);
     }
-    const double x = geneticDecode(getBestIndividual(pop));
+    const double xBest = geneticDecode(getBestIndividual(pop));
 
-    return std::make_optional(std::make_tuple(func(x), x));
+    return std::make_optional(std::make_tuple(func(xBest), xBest));
 }
 
 void Genetic::updateSpecies(const double left, const double right, const double eps)

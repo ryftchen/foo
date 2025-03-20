@@ -152,6 +152,8 @@ private:
     const Function& func;
     //! @brief Random engine.
     std::mt19937_64 engine{std::random_device{}()};
+    //! @brief The perturbation for the coefficient (from 0 to 1).
+    std::uniform_real_distribution<double> perturbation{0.0, 1.0};
     //! @brief Cognitive coefficient.
     static constexpr double c1{1.5};
     //! @brief Social coefficient.
@@ -172,16 +174,16 @@ private:
     //! @brief Individual information in the swarm.
     struct Individual
     {
-        //! @brief Independent variable.
+        //! @brief Position vector.
         double x{0.0};
-        //! @brief Velocity value.
-        double velocity{0.0};
-        //! @brief The best position.
-        double posBest{0.0};
-        //! @brief Fitness of independent variable.
-        double xFitness{0.0};
-        //! @brief Fitness of the best position.
-        double posBestFitness{0.0};
+        //! @brief Velocity vector.
+        double v{0.0};
+        //! @brief Personal best position.
+        double persBest{0.0};
+        //! @brief Fitness of the position vector.
+        double fitness{0.0};
+        //! @brief Fitness of the personal best position.
+        double persBestFitness{0.0};
     };
     //! @brief Alias for the swarm information.
     using Swarm = std::vector<Individual>;
@@ -190,10 +192,29 @@ private:
     //! @param right - right endpoint
     //! @return initial swarm
     Swarm swarmInit(const double left, const double right);
+    //! @brief Update the velocity and position of each particle in the swarm.
+    //! @param swarm - particle swarm
+    //! @param iteration - current number of iterations
+    //! @param gloBest - global best position
+    //! @param left - left endpoint
+    //! @param right - right endpoint
+    //! @param eps - precision of calculation
+    void updateParticles(
+        Swarm& swarm,
+        const std::uint32_t iteration,
+        const double gloBest,
+        const double left,
+        const double right,
+        const double eps);
     //! @brief Non-linear decreasing weight.
     //! @param iteration - current number of iterations
     //! @return inertia weight
     static double nonlinearDecreasingWeight(const std::uint32_t iteration);
+    //! @brief Update the personal best position of each particle in the swarm and the global best position.
+    //! @param swarm - particle swarm
+    //! @param gloBest - global best position
+    //! @param gloBestFitness - fitness of the global best position
+    static void updateBests(Swarm& swarm, double& gloBest, double& gloBestFitness);
 };
 
 //! @brief Genetic algorithm (GA).
