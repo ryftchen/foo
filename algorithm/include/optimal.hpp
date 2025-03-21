@@ -86,6 +86,57 @@ private:
     [[nodiscard]] double calculateFirstDerivative(const double x, const double eps) const;
 };
 
+//! @brief Tabu search (TS).
+class Tabu : public Optimal
+{
+public:
+    //! @brief Construct a new Tabu object.
+    //! @param func - target function
+    explicit Tabu(const Function& func) : func{func} {}
+
+    //! @brief The operator (()) overloading of Tabu class.
+    //! @param left - left endpoint
+    //! @param right - right endpoint
+    //! @param eps - precision of calculation
+    //! @return result of optimal
+    [[nodiscard]] std::optional<std::tuple<double, double>> operator()(
+        const double left, const double right, const double eps) override;
+
+private:
+    //! @brief Target function.
+    const Function& func;
+    //! @brief Tabu tenure.
+    static constexpr std::uint32_t tabuTenure{50};
+    //! @brief Initial step length.
+    static constexpr double initialStep{1.0};
+    //! @brief Exponential decay of step length.
+    static constexpr double expDecay{0.95};
+    //! @brief Size of the neighborhood.
+    static constexpr std::uint32_t neighborSize{100};
+    //! @brief Maximum number of iterations.
+    static constexpr std::uint32_t maxIterations{1000};
+
+    //! @brief Update the neighborhood.
+    //! @param neighborhood - neighborhood of solution
+    //! @param solution - current solution
+    //! @param stepLen - step length
+    //! @param left - left endpoint
+    //! @param right - right endpoint
+    static void updateNeighborhood(
+        std::vector<double>& neighborhood,
+        const double solution,
+        const double stepLen,
+        const double left,
+        const double right);
+    //! @brief Neighborhood search.
+    //! @param neighborhood - neighborhood of solution
+    //! @param solution - current solution
+    //! @param tabuList - tabu list
+    //! @return best fitness and solution
+    std::tuple<double, double> neighborhoodSearch(
+        const std::vector<double>& neighborhood, const double solution, const std::vector<double>& tabuList);
+};
+
 //! @brief Simulated annealing (SA).
 class Annealing : public Optimal
 {
@@ -112,7 +163,7 @@ private:
     //! @brief Cooling rate.
     static constexpr double coolingRate{0.99};
     //! @brief Length of Markov chain.
-    static constexpr std::uint32_t markovChain{100};
+    static constexpr std::uint32_t markovChainLength{100};
 
     //! @brief Temperature-dependent Cauchy-like distribution.
     //! @param prev - current model
@@ -167,9 +218,9 @@ private:
     //! @brief Minimum velocity.
     static constexpr double vMin{-0.5};
     //! @brief Swarm size.
-    static constexpr std::uint32_t size{200};
+    static constexpr std::uint32_t swarmSize{100};
     //! @brief Maximum number of iterations.
-    static constexpr std::uint32_t maxIterations{50};
+    static constexpr std::uint32_t maxIterations{100};
 
     //! @brief Individual information in the swarm.
     struct Individual
@@ -257,7 +308,7 @@ private:
     //! @brief Mutation probability.
     static constexpr double mutatePr{0.05};
     //! @brief Population size.
-    static constexpr std::uint32_t size{200};
+    static constexpr std::uint32_t popSize{200};
     //! @brief The number of generations.
     static constexpr std::uint32_t numOfGeneration{50};
 

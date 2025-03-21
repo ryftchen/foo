@@ -55,7 +55,7 @@ class Task:
             "--help": [],
             "--match": ["rab", "knu", "boy", "hor", "sun"],
             "--notation": ["pre", "pos"],
-            "--optimal": ["gra", "ann", "par", "gen"],
+            "--optimal": ["gra", "tab", "ann", "par", "gen"],
             "--search": ["bin", "int", "fib"],
             "--sort": ["bub", "sel", "ins", "she", "mer", "qui", "hea", "cou", "buc", "rad"],
         },
