@@ -78,6 +78,8 @@ enum OptimalMethod : std::uint8_t
 {
     //! @brief Gradient.
     gradient,
+    //! @brief Tabu.
+    tabu,
     //! @brief Annealing.
     annealing,
     //! @brief Particle.
@@ -90,7 +92,7 @@ template <>
 struct Bottom<OptimalMethod>
 {
     //! @brief Maximum value of the OptimalMethod enum.
-    static constexpr std::uint8_t value{4};
+    static constexpr std::uint8_t value{5};
 };
 
 //! @brief Enumerate specific search methods.
@@ -516,6 +518,11 @@ public:
     //! @param left - left endpoint
     //! @param right - right endpoint
     static void gradientDescentMethod(const Function& func, const double left, const double right);
+    //! @brief The tabu method.
+    //! @param func - target function
+    //! @param left - left endpoint
+    //! @param right - right endpoint
+    static void tabuMethod(const Function& func, const double left, const double right);
     //! @brief The simulated annealing method.
     //! @param func - target function
     //! @param left - left endpoint

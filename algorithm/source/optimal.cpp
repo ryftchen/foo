@@ -62,6 +62,87 @@ double Gradient::calculateFirstDerivative(const double x, const double eps) cons
     return (func(x + differential) - func(x - differential)) / eps;
 }
 
+std::optional<std::tuple<double, double>> Tabu::operator()(const double left, const double right, const double eps)
+{
+    std::mt19937_64 engine(std::random_device{}());
+    double solution = std::uniform_real_distribution<double>{left, right}(engine), xBest = solution,
+           yBest = func(xBest), stepLen = initialStep;
+
+    std::vector<double> neighborhood{}, tabuList{};
+    neighborhood.reserve(neighborSize);
+    tabuList.reserve(tabuTenure);
+    tabuList.emplace_back(solution);
+    for (std::uint32_t i = 0; i < maxIterations; ++i)
+    {
+        updateNeighborhood(neighborhood, solution, stepLen, left, right);
+        const auto [yBestNbr, xBestNbr] = neighborhoodSearch(neighborhood, solution, tabuList);
+        neighborhood.clear();
+        if (yBestNbr < yBest)
+        {
+            xBest = xBestNbr;
+            yBest = yBestNbr;
+        }
+
+        solution = xBest;
+        tabuList.emplace_back(solution);
+        if (tabuList.size() > tabuTenure)
+        {
+            tabuList.erase(tabuList.cbegin());
+        }
+        stepLen *= expDecay;
+        if (stepLen < eps)
+        {
+            break;
+        }
+    }
+
+    return std::make_optional(std::make_tuple(yBest, xBest));
+}
+
+void Tabu::updateNeighborhood(
+    std::vector<double>& neighborhood,
+    const double solution,
+    const double stepLen,
+    const double left,
+    const double right)
+{
+    for (std::uint32_t i = 0; i < neighborSize / 2; ++i)
+    {
+        double neighbor1 = solution + i * stepLen;
+        if (neighbor1 > right)
+        {
+            neighbor1 = right;
+        }
+        neighborhood.emplace_back(neighbor1);
+
+        double neighbor2 = solution - i * stepLen;
+        if (neighbor2 < left)
+        {
+            neighbor2 = left;
+        }
+        neighborhood.emplace_back(neighbor2);
+    }
+}
+
+std::tuple<double, double> Tabu::neighborhoodSearch(
+    const std::vector<double>& neighborhood, const double solution, const std::vector<double>& tabuList)
+{
+    double xBestNbr = solution, yBestNbr = func(xBestNbr);
+    for (const auto neighbor : neighborhood)
+    {
+        if (std::find(tabuList.cbegin(), tabuList.cend(), neighbor) == tabuList.cend())
+        {
+            if (const double fitness = func(neighbor); fitness < yBestNbr)
+            {
+                xBestNbr = neighbor;
+                yBestNbr = fitness;
+            }
+        }
+    }
+
+    return std::make_tuple(yBestNbr, xBestNbr);
+}
+
 std::optional<std::tuple<double, double>> Annealing::operator()(const double left, const double right, const double eps)
 {
     std::mt19937_64 engine(std::random_device{}());
@@ -71,7 +152,7 @@ std::optional<std::tuple<double, double>> Annealing::operator()(const double lef
     {
         x = xBest;
         y = yBest;
-        for (std::uint32_t i = 0; i < markovChain; ++i)
+        for (std::uint32_t i = 0; i < markovChainLength; ++i)
         {
             double xNbr = cauchyLikeDistribution(x, left, right, temperature, pr(engine));
             if ((xNbr < left) || (xNbr > right))
@@ -114,9 +195,9 @@ std::optional<std::tuple<double, double>> Particle::operator()(const double left
         swarm.cbegin(), swarm.cend(), [](const auto& min1, const auto& min2) { return min1.fitness < min2.fitness; });
     double gloBest = initialBest->x, gloBestFitness = initialBest->fitness;
 
-    for (std::uint32_t k = 0; k < maxIterations; ++k)
+    for (std::uint32_t i = 0; i < maxIterations; ++i)
     {
-        updateParticles(swarm, k, gloBest, left, right, eps);
+        updateParticles(swarm, i, gloBest, left, right, eps);
         updateBests(swarm, gloBest, gloBestFitness);
     }
 
@@ -126,7 +207,7 @@ std::optional<std::tuple<double, double>> Particle::operator()(const double left
 Particle::Swarm Particle::swarmInit(const double left, const double right)
 {
     std::uniform_real_distribution<double> candidate(left, right), velocity(vMin, vMax);
-    Swarm swarm(size, Individual{});
+    Swarm swarm(swarmSize, Individual{});
     std::generate(
         swarm.begin(),
         swarm.end(),
@@ -249,7 +330,7 @@ double Genetic::geneticDecode(const Chromosome& chr) const
 
 Genetic::Population Genetic::populationInit()
 {
-    Population pop(size, Chromosome(chromosomeNum, 0));
+    Population pop(popSize, Chromosome(chromosomeNum, 0));
     std::for_each(
         pop.begin(),
         pop.end(),

@@ -190,6 +190,7 @@ constexpr std::string_view toString(const NotationMethod method)
 //! @brief Mapping table for enum and string about optimal methods. X macro.
 #define APP_ALGO_OPTIMAL_METHOD_TABLE \
     ELEM(gradient , "gradient" )      \
+    ELEM(tabu     , "tabu"     )      \
     ELEM(annealing, "annealing")      \
     ELEM(particle , "particle" )      \
     ELEM(genetic  , "genetic"  )
@@ -615,6 +616,19 @@ catch (const std::exception& err)
     LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 
+void OptimalSolution::tabuMethod(const Function& func, const double left, const double right)
+try
+{
+    const utility::time::Time timer{};
+
+    const auto tuple = algorithm::optimal::Tabu(func)(left, right, algorithm::optimal::epsilon);
+    showResult(OptimalMethod::tabu, tuple, timer.elapsedTime());
+}
+catch (const std::exception& err)
+{
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
+}
+
 void OptimalSolution::simulatedAnnealingMethod(const Function& func, const double left, const double right)
 try
 {
@@ -668,6 +682,9 @@ void updateChoice<OptimalMethod>(const std::string_view target)
         case abbrVal(OptimalMethod::gradient):
             bits.set(OptimalMethod::gradient);
             break;
+        case abbrVal(OptimalMethod::tabu):
+            bits.set(OptimalMethod::tabu);
+            break;
         case abbrVal(OptimalMethod::annealing):
             bits.set(OptimalMethod::annealing);
             break;
@@ -717,6 +734,9 @@ void runChoices<OptimalMethod>(const std::vector<std::string>& candidates)
                 using optimal::OptimalSolution;
                 case abbrVal(OptimalMethod::gradient):
                     addTask(target, &OptimalSolution::gradientDescentMethod);
+                    break;
+                case abbrVal(OptimalMethod::tabu):
+                    addTask(target, &OptimalSolution::tabuMethod);
                     break;
                 case abbrVal(OptimalMethod::annealing):
                     addTask(target, &OptimalSolution::simulatedAnnealingMethod);

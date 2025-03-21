@@ -125,6 +125,7 @@ struct utility::reflection::TypeInfo<application::app_algo::OptimalMethod>
     static constexpr FieldList fields
     {
         ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(gradient , gra),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(tabu     , tab),
         ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(annealing, ann),
         ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(particle , par),
         ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(genetic  , gen),
@@ -135,6 +136,7 @@ struct utility::reflection::TypeInfo<application::app_algo::OptimalMethod>
         REFLECTION_STR("descr"),
         "optimal-related choices\n"
         "- gra    Gradient Descent\n"
+        "- tab    Tabu\n"
         "- ann    Simulated Annealing\n"
         "- par    Particle Swarm\n"
         "- gen    Genetic\n"

@@ -214,6 +214,20 @@ TEST_F(OptimalTestBase, gradientDescentMethod)
     EXPECT_LT(std::get<0>(result.value()), 0.0 + error);
 }
 
+//! @brief Test for the tabu method in the solution of optimal.
+TEST_F(OptimalTestBase, tabuMethod)
+{
+    const auto range = inputs->getFunctionMap().cbegin()->first;
+    const auto function = std::get<Rastrigin>(inputs->getFunctionMap().cbegin()->second);
+    const std::shared_ptr<algorithm::optimal::Optimal> tabu = std::make_shared<algorithm::optimal::Tabu>(function);
+    std::optional<std::tuple<double, double>> result = std::nullopt;
+
+    ASSERT_NO_THROW(result = (*tabu)(range.range1, range.range2, algorithm::optimal::epsilon));
+    ASSERT_TRUE(result.has_value());
+    EXPECT_GT(std::get<0>(result.value()), 0.0 - error);
+    EXPECT_LT(std::get<0>(result.value()), 0.0 + error);
+}
+
 //! @brief Test for the simulated annealing method in the solution of optimal.
 TEST_F(OptimalTestBase, simulatedAnnealingMethod)
 {
