@@ -806,11 +806,10 @@ to improve accuracy. (y or n)"
 
     local codeql_db=./${FOLDER[rep]}/sca/query
     shell_command "rm -rf ${codeql_db} && mkdir -p ${codeql_db}"
-    shell_command "codeql database create ${codeql_db} --codescanning-config=./.codeql --language=cpp --ram=2048 \
---command='${build_script}${other_option}' --command='${build_script} --test${other_option}' --source-root=./ --overwrite"
+    shell_command "codeql database create ${codeql_db} --codescanning-config=./.codeql --language=cpp --source-root=./ \
+--command='${build_script}${other_option}' --command='${build_script} --test${other_option}'"
     local codeql_sarif=${codeql_db}/codeql.sarif
-    shell_command "codeql database analyze ${codeql_db} --format=sarif-latest --output=${codeql_sarif} --rerun \
---no-sarif-minify --ram=2048"
+    shell_command "codeql database analyze ${codeql_db} --format=sarif-latest --output=${codeql_sarif}"
     if echo "${input}" | grep -iq '^y'; then
         build_script=./${FOLDER[scr]}/$(basename "$0")
         shell_command "${build_script}${other_option} >/dev/null && ${build_script} --test${other_option} >/dev/null"
