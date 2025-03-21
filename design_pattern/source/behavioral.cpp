@@ -360,7 +360,7 @@ void Subject::attach(const std::shared_ptr<Observer>& observer)
 
 void Subject::detach(const int index)
 {
-    observers.erase(observers.begin() + index);
+    observers.erase(observers.cbegin() + index);
 }
 
 void Subject::notify()

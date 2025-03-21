@@ -1030,7 +1030,7 @@ void View::createViewServer()
                 {
                     throw std::runtime_error{"Unknown TCP message."};
                 }
-                args.erase(args.begin());
+                args.erase(args.cbegin());
                 optIter->second.functor(args, buffer);
                 newSocket->toSend(buffer, sizeof(buffer));
             }
@@ -1069,7 +1069,7 @@ void View::createViewServer()
             {
                 throw std::runtime_error{"Unknown UDP message."};
             }
-            args.erase(args.begin());
+            args.erase(args.cbegin());
             optIter->second.functor(args, buffer);
             udpServer->toSendTo(buffer, sizeof(buffer), ip, port);
         }

@@ -280,7 +280,7 @@ std::vector<std::string> Log::reformatContents(const std::string_view label, con
             {
                 line.erase(
                     std::remove_if(line.begin(), line.end(), [](const auto c) { return ('\n' == c) || ('\r' == c); }),
-                    line.end());
+                    line.cend());
                 return line;
             })
         | std::views::filter([](const auto& line) { return !line.empty(); })
