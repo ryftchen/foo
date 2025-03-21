@@ -103,7 +103,7 @@ void Composite::add(const std::shared_ptr<Component>& component)
 void Composite::remove(const std::uint32_t index)
 {
     std::shared_ptr<Component> child = children[index];
-    children.erase(children.begin() + index);
+    children.erase(children.cbegin() + index);
     child.reset();
 }
 
