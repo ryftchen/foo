@@ -309,7 +309,7 @@ private:
     //! @brief Forward messages for extra type tasks.
     action::MessageForwarder applyingForwarder{};
 
-    //! @brief Enter console mode.
+    //! @brief Go to console mode for troubleshooting.
     static void enterConsoleMode();
     //! @brief Register the command line to console mode.
     //! @tparam T - type of client
