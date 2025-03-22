@@ -381,7 +381,7 @@ public:
 private:
     //! @brief Collection of prototypes.
     static std::unique_ptr<Prototype> types[2];
-    //! @brief The number of types.
+    //! @brief Number of types.
     static int nTypes;
 };
 
