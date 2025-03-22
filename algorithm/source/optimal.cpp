@@ -148,6 +148,7 @@ std::optional<std::tuple<double, double>> Annealing::operator()(const double lef
     std::mt19937_64 engine(std::random_device{}());
     std::uniform_real_distribution<double> perturbation(left, right), pr(0.0, 1.0);
     double temperature = initialT, x = std::round(perturbation(engine) / eps) * eps, y = func(x), xBest = x, yBest = y;
+
     while (temperature > minimalT)
     {
         x = xBest;
@@ -233,24 +234,11 @@ void Particle::updateParticles(
         const double rand1 = std::round(perturbation(engine) / eps) * eps,
                      rand2 = std::round(perturbation(engine) / eps) * eps;
         ind.v = w * ind.v + c1 * rand1 * (ind.persBest - ind.x) + c2 * rand2 * (gloBest - ind.x);
-        if (ind.v > vMax)
-        {
-            ind.v = vMax;
-        }
-        else if (ind.v < vMin)
-        {
-            ind.v = vMin;
-        }
+        ind.v = std::clamp(ind.v, vMin, vMax);
 
         ind.x += ind.v;
-        if (ind.x > right)
-        {
-            ind.x = right;
-        }
-        else if (ind.x < left)
-        {
-            ind.x = left;
-        }
+        ind.x = std::clamp(ind.x, left, right);
+
         ind.fitness = func(ind.x);
     }
 }
