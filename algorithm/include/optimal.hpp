@@ -268,6 +268,74 @@ private:
     static void updateBests(Swarm& swarm, double& gloBest, double& gloBestFitness);
 };
 
+//! @brief Ant colony optimization (ACO).
+class Ant : public Optimal
+{
+public:
+    //! @brief Construct a new Ant object.
+    //! @param func - target function
+    explicit Ant(const Function& func) : func{func} {}
+
+    //! @brief The operator (()) overloading of Ant class.
+    //! @param left - left endpoint
+    //! @param right - right endpoint
+    //! @param eps - precision of calculation
+    //! @return result of optimal
+    [[nodiscard]] std::optional<std::tuple<double, double>> operator()(
+        const double left, const double right, const double eps) override;
+
+private:
+    //! @brief Target function.
+    const Function& func;
+    //! @brief Random engine.
+    std::mt19937_64 engine{std::random_device{}()};
+    //! @brief Coefficient of the step length for the local search.
+    std::uniform_real_distribution<double> localCoeff{-1.0, 1.0};
+    //! @brief Coefficient of the range for the global search.
+    std::uniform_real_distribution<double> globalCoeff{-0.5, 0.5};
+    //! @brief Pheromone evaporation rate.
+    static constexpr double rho{0.9};
+    //! @brief Exploration probability.
+    static constexpr double p0{0.2};
+    //! @brief Initial step length.
+    static constexpr double initialStep{1.0};
+    //! @brief Number of ants.
+    static constexpr std::uint32_t numOfAnts{500};
+    //! @brief Maximum number of iterations.
+    static constexpr std::uint32_t maxIterations{500};
+
+    //! @brief State of the ant in the colony.
+    struct State
+    {
+        //! @brief Position coordinate.
+        double position{0.0};
+        //! @brief Pheromone intensity level.
+        double pheromone{0.0};
+        //! @brief Transition probability.
+        double transPr{0.0};
+    };
+    //! @brief Alias for the colony information.
+    using Colony = std::vector<State>;
+    //! @brief Initialize the colony.
+    //! @param left - left endpoint
+    //! @param right - right endpoint
+    //! @return initial colony
+    Colony colonyInit(const double left, const double right);
+    //! @brief Perform the state transition for each ant in the colony.
+    //! @param colony - ant colony
+    //! @param eps - precision of calculation
+    static void stateTransition(Colony& colony, const double eps);
+    //! @brief Construct the paths of the ants in the search space.
+    //! @param colony - ant colony
+    //! @param stepLen - step length
+    //! @param left - left endpoint
+    //! @param right - right endpoint
+    void pathConstruction(Colony& colony, const double stepLen, const double left, const double right);
+    //! @brief Update the pheromone intensity levels.
+    //! @param colony - ant colony
+    void updatePheromones(Colony& colony);
+};
+
 //! @brief Genetic algorithm (GA).
 class Genetic : public Optimal
 {

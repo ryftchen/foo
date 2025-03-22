@@ -193,6 +193,7 @@ constexpr std::string_view toString(const NotationMethod method)
     ELEM(tabu     , "tabu"     )      \
     ELEM(annealing, "annealing")      \
     ELEM(particle , "particle" )      \
+    ELEM(ant      , "ant"      )      \
     ELEM(genetic  , "genetic"  )
 // clang-format on
 //! @brief Convert method enumeration to string.
@@ -655,6 +656,19 @@ catch (const std::exception& err)
     LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
 }
 
+void OptimalSolution::antColonyMethod(const Function& func, const double left, const double right)
+try
+{
+    const utility::time::Time timer{};
+
+    const auto tuple = algorithm::optimal::Ant(func)(left, right, algorithm::optimal::epsilon);
+    showResult(OptimalMethod::ant, tuple, timer.elapsedTime());
+}
+catch (const std::exception& err)
+{
+    LOG_ERR_P("Exception in solution (%s): %s", __func__, err.what());
+}
+
 void OptimalSolution::geneticMethod(const Function& func, const double left, const double right)
 try
 {
@@ -690,6 +704,9 @@ void updateChoice<OptimalMethod>(const std::string_view target)
             break;
         case abbrVal(OptimalMethod::particle):
             bits.set(OptimalMethod::particle);
+            break;
+        case abbrVal(OptimalMethod::ant):
+            bits.set(OptimalMethod::ant);
             break;
         case abbrVal(OptimalMethod::genetic):
             bits.set(OptimalMethod::genetic);
@@ -743,6 +760,9 @@ void runChoices<OptimalMethod>(const std::vector<std::string>& candidates)
                     break;
                 case abbrVal(OptimalMethod::particle):
                     addTask(target, &OptimalSolution::particleSwarmMethod);
+                    break;
+                case abbrVal(OptimalMethod::ant):
+                    addTask(target, &OptimalSolution::antColonyMethod);
                     break;
                 case abbrVal(OptimalMethod::genetic):
                     addTask(target, &OptimalSolution::geneticMethod);

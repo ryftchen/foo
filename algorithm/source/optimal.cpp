@@ -277,6 +277,92 @@ void Particle::updateBests(Swarm& swarm, double& gloBest, double& gloBestFitness
     }
 }
 
+std::optional<std::tuple<double, double>> Ant::operator()(const double left, const double right, const double eps)
+{
+    auto colony{colonyInit(left, right)};
+    double xBest = colony.front().position, yBest = func(xBest), stepLen = initialStep;
+
+    for (std::uint32_t i = 0; i < maxIterations; ++i)
+    {
+        stateTransition(colony, eps);
+        pathConstruction(colony, stepLen, left, right);
+        updatePheromones(colony);
+
+        const auto currBest = std::min_element(
+            colony.cbegin(),
+            colony.cend(),
+            [](const auto& min1, const auto& min2) { return min1.pheromone < min2.pheromone; });
+        if (const double x = currBest->position, y = func(x); y < yBest)
+        {
+            xBest = x;
+            yBest = y;
+        }
+        stepLen = initialStep * 1.0 / (1.0 + i);
+        if (stepLen < eps)
+        {
+            break;
+        }
+    }
+
+    return std::make_optional(std::make_tuple(yBest, xBest));
+}
+
+Ant::Colony Ant::colonyInit(const double left, const double right)
+{
+    std::uniform_real_distribution<double> candidate(left, right);
+    Colony colony(numOfAnts, State{});
+    std::generate(
+        colony.begin(),
+        colony.end(),
+        [this, &candidate]()
+        {
+            const double x = candidate(engine);
+            return State{x, func(x), 0.0};
+        });
+
+    return colony;
+}
+
+void Ant::stateTransition(Colony& colony, const double eps)
+{
+    const double minTau = std::min_element(
+                              colony.cbegin(),
+                              colony.cend(),
+                              [](const auto& min1, const auto& min2) { return min1.pheromone < min2.pheromone; })
+                              ->pheromone,
+                 maxTau = std::max_element(
+                              colony.cbegin(),
+                              colony.cend(),
+                              [](const auto& max1, const auto& max2) { return max1.pheromone < max2.pheromone; })
+                              ->pheromone;
+    std::for_each(
+        colony.begin(),
+        colony.end(),
+        [minTau, maxTau, eps](auto& state) { state.transPr = (maxTau - state.pheromone) / (maxTau - minTau + eps); });
+}
+
+void Ant::pathConstruction(Colony& colony, const double stepLen, const double left, const double right)
+{
+    for (auto& state : colony)
+    {
+        double pos = state.position
+            + ((state.transPr < p0) ? stepLen * localCoeff(engine) : (right - left) * globalCoeff(engine));
+        pos = std::clamp(pos, left, right);
+        if (func(pos) < func(state.position))
+        {
+            state.position = pos;
+        }
+    }
+}
+
+void Ant::updatePheromones(Colony& colony)
+{
+    std::for_each(
+        colony.begin(),
+        colony.end(),
+        [this](auto& state) { state.pheromone = (1.0 - rho) * state.pheromone + func(state.position); });
+}
+
 std::optional<std::tuple<double, double>> Genetic::operator()(const double left, const double right, const double eps)
 {
     updateSpecies(left, right, eps);
