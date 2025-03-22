@@ -157,13 +157,13 @@ private:
     //! @brief Target function.
     const Function& func;
     //! @brief Initial temperature.
-    static constexpr double initialT{10000.0};
+    static constexpr double initialT{100.0};
     //! @brief Minimal temperature.
-    static constexpr double minimalT{0.001};
+    static constexpr double minimalT{0.01};
     //! @brief Cooling rate.
     static constexpr double coolingRate{0.99};
     //! @brief Length of Markov chain.
-    static constexpr std::uint32_t markovChainLength{100};
+    static constexpr std::uint32_t markovChainLength{200};
 
     //! @brief Temperature-dependent Cauchy-like distribution.
     //! @param prev - current model
