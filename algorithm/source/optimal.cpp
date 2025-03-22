@@ -367,7 +367,7 @@ std::optional<std::tuple<double, double>> Genetic::operator()(const double left,
 {
     updateSpecies(left, right, eps);
     auto pop{populationInit()};
-    for (std::uint32_t i = 0; i < numOfGeneration; ++i)
+    for (std::uint32_t i = 0; i < numOfGenerations; ++i)
     {
         select(pop);
         crossover(pop);
@@ -382,17 +382,17 @@ void Genetic::updateSpecies(const double left, const double right, const double 
 {
     property.lower = left;
     property.upper = right;
-    property.eps = eps;
+    property.prec = eps;
 
     std::uint32_t num = 0;
-    const double max = (property.upper - property.lower) * (1.0 / property.eps);
+    const double max = (property.upper - property.lower) * (1.0 / property.prec);
     while ((max <= std::pow(2, num)) || (max >= std::pow(2, num + 1)))
     {
         ++num;
     }
-    chromosomeNum = num + 1;
+    chromosomeNumber = num + 1;
 
-    if (constexpr std::uint32_t minChrNum = 2; chromosomeNum < minChrNum)
+    if (chromosomeNumber < minChrNum)
     {
         throw std::logic_error{"A precision of " + std::to_string(eps) + " is not sufficient."};
     }
@@ -400,7 +400,7 @@ void Genetic::updateSpecies(const double left, const double right, const double 
 
 double Genetic::geneticDecode(const Chromosome& chr) const
 {
-    const double max = std::pow(2, chromosomeNum) - 1.0;
+    const double max = std::pow(2, chromosomeNumber) - 1.0;
     double convert = 0.0;
     std::for_each(
         chr.cbegin(),
@@ -416,7 +416,7 @@ double Genetic::geneticDecode(const Chromosome& chr) const
 
 Genetic::Population Genetic::populationInit()
 {
-    Population pop(popSize, Chromosome(chromosomeNum, 0));
+    Population pop(popSize, Chromosome(chromosomeNumber, 0));
     std::for_each(
         pop.begin(),
         pop.end(),
@@ -429,7 +429,7 @@ Genetic::Population Genetic::populationInit()
 void Genetic::geneticCross(Chromosome& chr1, Chromosome& chr2)
 {
     std::uint32_t pmxBegin = 0, pmxEnd = 0;
-    std::uniform_int_distribution<std::uint32_t> randomPos(0, chromosomeNum - 1);
+    std::uniform_int_distribution<std::uint32_t> randomPos(0, chromosomeNumber - 1);
     do
     {
         pmxBegin = randomPos(engine);
@@ -439,7 +439,7 @@ void Genetic::geneticCross(Chromosome& chr1, Chromosome& chr2)
             std::swap(pmxBegin, pmxEnd);
         }
     }
-    while ((pmxBegin == pmxEnd) || ((pmxEnd - pmxBegin) == (chromosomeNum - 1)));
+    while ((pmxBegin == pmxEnd) || ((pmxEnd - pmxBegin) == (chromosomeNumber - 1)));
 
     auto chrTemp{chr1};
     std::copy_n(chr2.cbegin() + pmxBegin, pmxEnd - pmxBegin, chr1.begin() + pmxBegin);
@@ -485,28 +485,17 @@ double Genetic::calculateFitness(const Chromosome& chr)
     return -func(geneticDecode(chr));
 }
 
-std::optional<std::pair<double, double>> Genetic::fitnessLinearTransformation(const Population& pop)
+std::optional<std::pair<double, double>> Genetic::goldbergLinearScaling(
+    const std::vector<double>& fitness, const double eps)
 {
-    std::vector<double> reFitness{};
-    reFitness.reserve(pop.size());
-    std::transform(
-        pop.cbegin(),
-        pop.cend(),
-        std::back_inserter(reFitness),
-        [this](const auto& ind) { return calculateFitness(ind); });
-
-    const double reFitnessMin = *std::min_element(reFitness.cbegin(), reFitness.cend()),
-                 reFitnessAvg = std::reduce(reFitness.cbegin(), reFitness.cend(), 0.0) / reFitness.size();
-    if (std::fabs(reFitnessMin - reFitnessAvg) < property.eps)
+    const double fitMax = *std::max_element(fitness.cbegin(), fitness.cend()),
+                 fitAvg = std::reduce(fitness.cbegin(), fitness.cend(), 0.0) / fitness.size();
+    if (std::fabs(fitMax - fitAvg) < eps)
     {
         return std::nullopt;
     }
-    const double alpha = reFitnessAvg / (reFitnessAvg - reFitnessMin),
-                 beta = -(reFitnessMin * reFitnessAvg) / (reFitnessAvg - reFitnessMin);
-    if (std::isnan(alpha) || std::isinf(alpha) || std::isnan(beta) || std::isinf(beta))
-    {
-        return std::nullopt;
-    }
+    const double alpha = (cMult - 1.0) * fitAvg / (fitMax - fitAvg),
+                 beta = (fitMax - cMult * fitAvg) * fitAvg / (fitMax - fitAvg);
 
     return std::make_optional(std::pair<double, double>(alpha, beta));
 }
@@ -529,60 +518,61 @@ void Genetic::stochasticTournamentSelection(Population& pop, const std::vector<d
         auto competitor1 = *rouletteWheelSelection(pop, cumFitness),
              competitor2 = *rouletteWheelSelection(pop, cumFitness);
         selected.emplace_back(
-            std::move((calculateFitness(competitor1) >= calculateFitness(competitor2)) ? competitor1 : competitor2));
+            std::move((calculateFitness(competitor1) > calculateFitness(competitor2)) ? competitor1 : competitor2));
     }
     std::copy(selected.cbegin(), selected.cend(), pop.begin());
 }
 
 void Genetic::select(Population& pop)
 {
-    const auto coeff = fitnessLinearTransformation(pop).value_or(std::pair<double, double>(1.0, 0.0));
-    double sum = 0.0;
-    std::vector<double> fitnessVal{};
-    fitnessVal.reserve(pop.size());
+    std::vector<double> fitness{};
+    fitness.reserve(pop.size());
     std::transform(
         pop.cbegin(),
         pop.cend(),
-        std::back_inserter(fitnessVal),
-        [this, alpha = coeff.first, beta = coeff.second, &sum](const auto& ind)
-        {
-            const double fitVal = alpha * calculateFitness(ind) + beta;
-            sum += fitVal;
-            return fitVal;
-        });
+        std::back_inserter(fitness),
+        [this](const auto& ind) { return calculateFitness(ind); });
+    if (const double fitMin = *std::min_element(fitness.cbegin(), fitness.cend()); fitMin <= 0.0)
+    {
+        std::for_each(
+            fitness.begin(), fitness.end(), [fitMin, eps = property.prec](auto& fit) { fit = fit - fitMin + eps; });
+    }
 
-    std::vector<double> fitnessAvg{};
-    fitnessAvg.reserve(fitnessVal.size());
-    std::transform(
-        fitnessVal.cbegin(),
-        fitnessVal.cend(),
-        std::back_inserter(fitnessAvg),
-        [sum](const auto fitVal) { return fitVal / sum; });
+    double sum = 0.0;
+    const auto coeff =
+        goldbergLinearScaling(fitness, property.prec).value_or(std::pair<double, double>(0.0, 1.0 / popSize));
+    std::for_each(
+        fitness.begin(),
+        fitness.end(),
+        [alpha = coeff.first, beta = coeff.second, &sum](auto& fit)
+        {
+            fit = alpha * fit + beta;
+            sum += fit;
+        });
 
     std::for_each(
-        fitnessAvg.begin(),
-        fitnessAvg.end(),
-        [previous = 0.0](auto& fitCum) mutable
+        fitness.begin(),
+        fitness.end(),
+        [sum, prev = 0.0](auto& cum) mutable
         {
-            fitCum += previous;
-            previous = fitCum;
+            cum /= sum;
+            cum += prev;
+            prev = cum;
         });
-    stochasticTournamentSelection(pop, fitnessAvg);
+    stochasticTournamentSelection(pop, fitness);
 }
 
 Genetic::Chromosome Genetic::getBestIndividual(const Population& pop)
 {
-    std::vector<double> fitnessVal{};
-    fitnessVal.reserve(pop.size());
+    std::vector<double> fitness{};
+    fitness.reserve(pop.size());
     std::transform(
         pop.cbegin(),
         pop.cend(),
-        std::back_inserter(fitnessVal),
+        std::back_inserter(fitness),
         [this](const auto& ind) { return calculateFitness(ind); });
 
-    const auto fitValBestIter = std::max_element(fitnessVal.cbegin(), fitnessVal.cend());
-    const auto indBestIter = std::next(pop.cbegin(), std::distance(fitnessVal.cbegin(), fitValBestIter));
-
-    return *indBestIter;
+    return *std::next(
+        pop.cbegin(), std::distance(fitness.cbegin(), std::max_element(fitness.cbegin(), fitness.cend())));
 }
 } // namespace algorithm::optimal
