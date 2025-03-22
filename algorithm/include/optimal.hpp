@@ -359,8 +359,20 @@ private:
     std::mt19937_64 engine{std::random_device{}()};
     //! @brief The probability of a possible event (from 0 to 1).
     std::uniform_real_distribution<double> probability{0.0, 1.0};
-    //! @brief The number of chromosomes.
-    std::uint32_t chromosomeNum{0};
+    //! @brief Crossover probability.
+    static constexpr double crossPr{0.75};
+    //! @brief Mutation probability.
+    static constexpr double mutatePr{0.025};
+    //! @brief Population size.
+    static constexpr std::uint32_t popSize{500};
+    //! @brief Number of generations.
+    static constexpr std::uint32_t numOfGenerations{20};
+    //! @brief The linear scaling coefficient.
+    static constexpr double cMult{1.01};
+    //! @brief Minimum number of chromosomes.
+    static constexpr std::uint32_t minChrNum{2};
+    //! @brief Number of chromosomes.
+    std::uint32_t chromosomeNumber{0};
     //! @brief Properties of species.
     struct Property
     {
@@ -369,16 +381,8 @@ private:
         //! @brief Right endpoint.
         double upper{0.0};
         //! @brief The precision of calculation.
-        double eps{0.0};
+        double prec{0.0};
     } /** @brief A Property object for storing properties of species. */ property{};
-    //! @brief Crossover probability.
-    static constexpr double crossPr{0.9};
-    //! @brief Mutation probability.
-    static constexpr double mutatePr{0.05};
-    //! @brief Population size.
-    static constexpr std::uint32_t popSize{200};
-    //! @brief The number of generations.
-    static constexpr std::uint32_t numOfGeneration{50};
 
     //! @brief Update species.
     //! @param left - left endpoint
@@ -413,10 +417,12 @@ private:
     //! @param chr - individual's chromosome
     //! @return fitness of the individual
     double calculateFitness(const Chromosome& chr);
-    //! @brief Linear transformation of fitness.
-    //! @param pop - whole population
+    //! @brief The Goldberg linear scaling.
+    //! @param fitness - original fitness
+    //! @param eps - precision of calculation
     //! @return coefficient of the linear transformation
-    std::optional<std::pair<double, double>> fitnessLinearTransformation(const Population& pop);
+    static std::optional<std::pair<double, double>> goldbergLinearScaling(
+        const std::vector<double>& fitness, const double eps);
     //! @brief The roulette wheel selection.
     //! @param pop - whole population
     //! @param cumFitness - cumulative fitness
