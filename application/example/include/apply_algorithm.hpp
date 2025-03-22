@@ -84,6 +84,8 @@ enum OptimalMethod : std::uint8_t
     annealing,
     //! @brief Particle.
     particle,
+    //! @brief Ant.
+    ant,
     //! @brief Genetic.
     genetic
 };
@@ -92,7 +94,7 @@ template <>
 struct Bottom<OptimalMethod>
 {
     //! @brief Maximum value of the OptimalMethod enum.
-    static constexpr std::uint8_t value{5};
+    static constexpr std::uint8_t value{6};
 };
 
 //! @brief Enumerate specific search methods.
@@ -533,6 +535,11 @@ public:
     //! @param left - left endpoint
     //! @param right - right endpoint
     static void particleSwarmMethod(const Function& func, const double left, const double right);
+    //! @brief The ant colony method.
+    //! @param func - target function
+    //! @param left - left endpoint
+    //! @param right - right endpoint
+    static void antColonyMethod(const Function& func, const double left, const double right);
     //! @brief The genetic method.
     //! @param func - target function
     //! @param left - left endpoint

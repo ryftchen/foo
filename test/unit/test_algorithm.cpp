@@ -258,6 +258,20 @@ TEST_F(OptimalTestBase, particleSwarmMethod)
     EXPECT_LT(std::get<0>(result.value()), 0.0 + error);
 }
 
+//! @brief Test for the ant colony method in the solution of optimal.
+TEST_F(OptimalTestBase, antColonyMethod)
+{
+    const auto range = inputs->getFunctionMap().cbegin()->first;
+    const auto function = std::get<Rastrigin>(inputs->getFunctionMap().cbegin()->second);
+    const std::shared_ptr<algorithm::optimal::Optimal> ant = std::make_shared<algorithm::optimal::Ant>(function);
+    std::optional<std::tuple<double, double>> result = std::nullopt;
+
+    ASSERT_NO_THROW(result = (*ant)(range.range1, range.range2, algorithm::optimal::epsilon));
+    ASSERT_TRUE(result.has_value());
+    EXPECT_GT(std::get<0>(result.value()), 0.0 - error);
+    EXPECT_LT(std::get<0>(result.value()), 0.0 + error);
+}
+
 //! @brief Test for the genetic method in the solution of optimal.
 TEST_F(OptimalTestBase, geneticMethod)
 {

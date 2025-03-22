@@ -128,6 +128,7 @@ struct utility::reflection::TypeInfo<application::app_algo::OptimalMethod>
         ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(tabu     , tab),
         ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(annealing, ann),
         ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(particle , par),
+        ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(ant      , ant),
         ACTION_REFLECT_COMMAND_SUB_CLI_CATEGORY_FIELD(genetic  , gen),
     };
     // clang-format on
@@ -139,6 +140,7 @@ struct utility::reflection::TypeInfo<application::app_algo::OptimalMethod>
         "- tab    Tabu\n"
         "- ann    Simulated Annealing\n"
         "- par    Particle Swarm\n"
+        "- ant    Ant Colony\n"
         "- gen    Genetic\n"
         "add the choices listed above"}};
 };
