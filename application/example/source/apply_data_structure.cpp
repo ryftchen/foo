@@ -15,9 +15,8 @@
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
 
-#include "application/core/include/action.hpp"
 #include "application/core/include/log.hpp"
-#include "utility/include/currying.hpp"
+#include "application/parameter/include/register_data_structure.hpp"
 
 //! @brief Title of printing when data structure tasks are beginning.
 #define APP_DS_PRINT_TASK_BEGIN_TITLE(category)                                                               \
@@ -35,12 +34,9 @@
 
 namespace application::app_ds
 {
-//! @brief Alias for the type information.
-//! @tparam T - type of target object
-template <typename T>
-using TypeInfo = utility::reflection::TypeInfo<T>;
 //! @brief Alias for Category.
 using Category = ApplyDataStructure::Category;
+using reg_ds::taskNameCurried, reg_ds::toString, reg_ds::getCategoryOpts, reg_ds::getCategoryAlias, reg_ds::abbrVal;
 
 //! @brief Get the data structure choice manager.
 //! @return reference of the ApplyDataStructure object
@@ -50,84 +46,12 @@ ApplyDataStructure& manager()
     return manager;
 }
 
-//! @brief Get the task name curried.
-//! @return task name curried
-static const auto& taskNameCurried()
-{
-    static const auto curried = utility::currying::curry(action::presetTaskName, TypeInfo<ApplyDataStructure>::name);
-    return curried;
-}
-
-//! @brief Convert category enumeration to string.
-//! @tparam Cat - the specific value of Category enum
-//! @return category name
-template <Category Cat>
-consteval std::string_view toString()
-{
-    switch (Cat)
-    {
-        case Category::linear:
-            return TypeInfo<LinearInstance>::name;
-        case Category::tree:
-            return TypeInfo<TreeInstance>::name;
-        default:
-            break;
-    }
-
-    return {};
-}
-
-//! @brief Get the bit flags of the category in data structure choices.
-//! @tparam Cat - the specific value of Category enum
-//! @return reference of the category bit flags
-template <Category Cat>
-constexpr auto& getCategoryOpts()
-{
-    return std::invoke(TypeInfo<ApplyDataStructure>::fields.find(REFLECTION_STR(toString<Cat>())).value, manager());
-}
-
-//! @brief Get the alias of the category in data structure choices.
-//! @tparam Cat - the specific value of Category enum
-//! @return alias of the category name
-template <Category Cat>
-consteval std::string_view getCategoryAlias()
-{
-    constexpr auto attr =
-        TypeInfo<ApplyDataStructure>::fields.find(REFLECTION_STR(toString<Cat>())).attrs.find(REFLECTION_STR("alias"));
-    static_assert(attr.hasValue);
-    return attr.value;
-}
-
-//! @brief Abbreviation value for the target instance.
-//! @tparam T - type of target instance
-//! @param instance - target instance
-//! @return abbreviation value
-template <typename T>
-consteval std::size_t abbrVal(const T instance)
-{
-    static_assert(Bottom<T>::value == TypeInfo<T>::fields.size);
-    std::size_t value = 0;
-    TypeInfo<T>::fields.forEach(
-        [instance, &value](const auto field)
-        {
-            if (field.name == toString(instance))
-            {
-                static_assert(1 == field.attrs.size);
-                const auto attr = field.attrs.find(REFLECTION_STR("choice"));
-                static_assert(attr.hasValue);
-                value = utility::common::operator""_bkdrHash(attr.value);
-            }
-        });
-
-    return value;
-}
-
 //! @brief Get the title of a particular instance in data structure choices.
 //! @tparam T - type of target instance
 //! @param instance - target instance
 //! @return initial capitalized title
 template <typename T>
-std::string getTitle(const T instance)
+static std::string getTitle(const T instance)
 {
     std::string title(toString(instance));
     title.at(0) = std::toupper(title.at(0));
@@ -145,7 +69,7 @@ std::string getTitle(const T instance)
 //! @brief Convert instance enumeration to string.
 //! @param instance - the specific value of LinearInstance enum
 //! @return instance name
-constexpr std::string_view toString(const LinearInstance instance)
+static constexpr std::string_view toString(const LinearInstance instance)
 {
 //! @cond
 #define ELEM(val, str) str,
@@ -167,7 +91,7 @@ constexpr std::string_view toString(const LinearInstance instance)
 //! @brief Convert instance enumeration to string.
 //! @param instance - the specific value of TreeInstance enum
 //! @return instance name
-constexpr std::string_view toString(const TreeInstance instance)
+static constexpr std::string_view toString(const TreeInstance instance)
 {
 //! @cond
 #define ELEM(val, str) str,
@@ -263,7 +187,7 @@ void runChoices<LinearInstance>(const std::vector<std::string>& candidates)
     assert(bits.size() == candidates.size());
 
     APP_DS_PRINT_TASK_BEGIN_TITLE(category);
-    auto& pooling = action::resourcePool();
+    auto& pooling = configure::task::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
     const auto addTask = [threads, &taskNamer](const std::string_view subTask, void (*targetInstance)())
@@ -379,7 +303,7 @@ void runChoices<TreeInstance>(const std::vector<std::string>& candidates)
     assert(bits.size() == candidates.size());
 
     APP_DS_PRINT_TASK_BEGIN_TITLE(category);
-    auto& pooling = action::resourcePool();
+    auto& pooling = configure::task::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
     const auto addTask = [threads, &taskNamer](const std::string_view subTask, void (*targetInstance)())

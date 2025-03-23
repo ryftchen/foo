@@ -371,4 +371,15 @@ bool loadConfiguration(const std::string_view filename)
 
     return false;
 }
+
+namespace task
+{
+//! @brief Get memory pool for task when making multi-threading.
+//! @return reference of the ResourcePool object
+ResourcePool& resourcePool()
+{
+    static ResourcePool pooling{};
+    return pooling;
+}
+} // namespace task
 } // namespace application::configure

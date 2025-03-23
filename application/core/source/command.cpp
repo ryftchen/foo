@@ -10,7 +10,6 @@
 
 #ifndef __PRECOMPILED_HEADER
 #include <barrier>
-#include <coroutine>
 #include <latch>
 #include <ranges>
 #else
@@ -46,13 +45,14 @@ enum class ExtEvent : std::uint8_t
     //! @brief Reload.
     reload
 };
+} // namespace
 
 //! @brief Trigger the external helper with event.
 //! @tparam Helper - type of helper
 //! @param event - target event
 template <HelperType Helper>
 requires std::derived_from<Helper, utility::fsm::FSM<Helper>>
-void triggerHelper(const ExtEvent event)
+static void triggerHelper(const ExtEvent event)
 {
     if (!configure::detail::activateHelper())
     {
@@ -79,80 +79,17 @@ void triggerHelper(const ExtEvent event)
 //! @tparam Helpers - type of arguments of helper
 template <HelperType... Helpers>
 requires (std::derived_from<Helpers, utility::fsm::FSM<Helpers>> && ...)
-void helperDaemon()
+static void helperDaemon()
 {
     utility::thread::Thread extendingThd(sizeof...(Helpers));
     (extendingThd.enqueue(Helpers::name, &Helpers::service, &Helpers::getInstance()), ...);
 }
 
-//! @brief Awaitable coroutine.
-class Awaitable
-{
-public:
-    // NOLINTBEGIN(readability-identifier-naming)
-    //! @brief Promise type for use in coroutines.
-    struct promise_type
-    {
-        //! @brief Get the return object for the coroutine.
-        //! @return awaitable instance
-        Awaitable get_return_object() { return Awaitable{std::coroutine_handle<promise_type>::from_promise(*this)}; }
-        //! @brief Initial suspend point of the coroutine.
-        //! @return std::suspend_never object indicating that the coroutine should not be suspended initially
-        static std::suspend_never initial_suspend() noexcept { return {}; }
-        //! @brief Final suspend point of the coroutine.
-        //! @return std::suspend_always object indicating that the coroutine should be suspended finally
-        static std::suspend_always final_suspend() noexcept { return {}; }
-        //! @brief Complete the coroutine without returning a value.
-        static void return_void() noexcept {}
-        //! @brief Handle exceptions thrown within the coroutine.
-        static void unhandled_exception() { std::rethrow_exception(std::current_exception()); }
-    };
-    // NOLINTEND(readability-identifier-naming)
-
-    //! @brief Construct a new Awaitable object.
-    //! @param handle - coroutine handle
-    explicit Awaitable(const std::coroutine_handle<promise_type>& handle) : handle{handle} {}
-    //! @brief Destroy the Awaitable object.
-    virtual ~Awaitable()
-    {
-        if (handle)
-        {
-            handle.destroy();
-        }
-    }
-    //! @brief Construct a new Awaitable object.
-    Awaitable(const Awaitable&) = delete;
-    //! @brief Construct a new Awaitable object.
-    Awaitable(Awaitable&&) = delete;
-    //! @brief The operator (=) overloading of Awaitable class.
-    //! @return reference of the Awaitable object
-    Awaitable& operator=(const Awaitable&) = delete;
-    //! @brief The operator (=) overloading of Awaitable class.
-    //! @return reference of the Awaitable object
-    Awaitable& operator=(Awaitable&&) = delete;
-
-    //! @brief Resume the execution of the coroutine if it is suspended.
-    void resume() const
-    {
-        if (handle)
-        {
-            handle.resume();
-        }
-    }
-    //! @brief Check whether the coroutine has been completed.
-    //! @return be done or not
-    [[nodiscard]] bool done() const { return handle ? handle.done() : true; }
-
-private:
-    //! @brief Coroutine handle.
-    std::coroutine_handle<promise_type> handle{};
-};
-
 //! @brief Coroutine for managing the lifecycle of helper components.
 //! @tparam Helpers - type of arguments of helper
 //! @return object that represents the execution of the coroutine
 template <HelperType... Helpers>
-Awaitable helperLifecycle()
+static action::Awaitable helperLifecycle()
 {
     if (!configure::detail::activateHelper())
     {
@@ -186,7 +123,6 @@ Awaitable helperLifecycle()
 
     awaitDaemon.wait();
 }
-} // namespace
 
 // clang-format off
 //! @brief Mapping table for enum and string about command categories. X macro.
@@ -199,7 +135,7 @@ Awaitable helperLifecycle()
 //! @brief Convert category enumeration to string.
 //! @param cat - the specific value of Category enum
 //! @return category name
-constexpr std::string_view toString(const Category cat)
+static constexpr std::string_view toString(const Category cat)
 {
 //! @cond
 #define ELEM(val, str) str,

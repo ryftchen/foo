@@ -15,9 +15,8 @@
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
 
-#include "application/core/include/action.hpp"
 #include "application/core/include/log.hpp"
-#include "utility/include/currying.hpp"
+#include "application/parameter/include/register_numeric.hpp"
 
 //! @brief Title of printing when numeric tasks are beginning.
 #define APP_NUM_PRINT_TASK_BEGIN_TITLE(category)                                                                    \
@@ -35,12 +34,10 @@
 
 namespace application::app_num
 {
-//! @brief Alias for the type information.
-//! @tparam T - type of target object
-template <typename T>
-using TypeInfo = utility::reflection::TypeInfo<T>;
 //! @brief Alias for Category.
 using Category = ApplyNumeric::Category;
+using reg_num::taskNameCurried, reg_num::toString, reg_num::getCategoryOpts, reg_num::getCategoryAlias,
+    reg_num::abbrVal;
 
 //! @brief Get the numeric choice manager.
 //! @return reference of the ApplyNumeric object
@@ -50,88 +47,12 @@ ApplyNumeric& manager()
     return manager;
 }
 
-//! @brief Get the task name curried.
-//! @return task name curried
-static const auto& taskNameCurried()
-{
-    static const auto curried = utility::currying::curry(action::presetTaskName, TypeInfo<ApplyNumeric>::name);
-    return curried;
-}
-
-//! @brief Convert category enumeration to string.
-//! @tparam Cat - the specific value of Category enum
-//! @return category name
-template <Category Cat>
-consteval std::string_view toString()
-{
-    switch (Cat)
-    {
-        case Category::arithmetic:
-            return TypeInfo<ArithmeticMethod>::name;
-        case Category::divisor:
-            return TypeInfo<DivisorMethod>::name;
-        case Category::integral:
-            return TypeInfo<IntegralMethod>::name;
-        case Category::prime:
-            return TypeInfo<PrimeMethod>::name;
-        default:
-            break;
-    }
-
-    return {};
-}
-
-//! @brief Get the bit flags of the category in numeric choices.
-//! @tparam Cat - the specific value of Category enum
-//! @return reference of the category bit flags
-template <Category Cat>
-constexpr auto& getCategoryOpts()
-{
-    return std::invoke(TypeInfo<ApplyNumeric>::fields.find(REFLECTION_STR(toString<Cat>())).value, manager());
-}
-
-//! @brief Get the alias of the category in numeric choices.
-//! @tparam Cat - the specific value of Category enum
-//! @return alias of the category name
-template <Category Cat>
-consteval std::string_view getCategoryAlias()
-{
-    constexpr auto attr =
-        TypeInfo<ApplyNumeric>::fields.find(REFLECTION_STR(toString<Cat>())).attrs.find(REFLECTION_STR("alias"));
-    static_assert(attr.hasValue);
-    return attr.value;
-}
-
-//! @brief Abbreviation value for the target method.
-//! @tparam T - type of target method
-//! @param method - target method
-//! @return abbreviation value
-template <typename T>
-consteval std::size_t abbrVal(const T method)
-{
-    static_assert(Bottom<T>::value == TypeInfo<T>::fields.size);
-    std::size_t value = 0;
-    TypeInfo<T>::fields.forEach(
-        [method, &value](const auto field)
-        {
-            if (field.name == toString(method))
-            {
-                static_assert(1 == field.attrs.size);
-                const auto attr = field.attrs.find(REFLECTION_STR("choice"));
-                static_assert(attr.hasValue);
-                value = utility::common::operator""_bkdrHash(attr.value);
-            }
-        });
-
-    return value;
-}
-
 //! @brief Get the title of a particular method in numeric choices.
 //! @tparam T - type of target method
 //! @param method - target method
 //! @return initial capitalized title
 template <typename T>
-std::string getTitle(const T method)
+static std::string getTitle(const T method)
 {
     std::string title(toString(method));
     title.at(0) = std::toupper(title.at(0));
@@ -150,7 +71,7 @@ std::string getTitle(const T method)
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of ArithmeticMethod enum
 //! @return method name
-constexpr std::string_view toString(const ArithmeticMethod method)
+static constexpr std::string_view toString(const ArithmeticMethod method)
 {
 //! @cond
 #define ELEM(val, str) str,
@@ -171,7 +92,7 @@ constexpr std::string_view toString(const ArithmeticMethod method)
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of DivisorMethod enum
 //! @return method name
-constexpr std::string_view toString(const DivisorMethod method)
+static constexpr std::string_view toString(const DivisorMethod method)
 {
 //! @cond
 #define ELEM(val, str) str,
@@ -195,7 +116,7 @@ constexpr std::string_view toString(const DivisorMethod method)
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of IntegralMethod enum
 //! @return method name
-constexpr std::string_view toString(const IntegralMethod method)
+static constexpr std::string_view toString(const IntegralMethod method)
 {
 //! @cond
 #define ELEM(val, str) str,
@@ -216,7 +137,7 @@ constexpr std::string_view toString(const IntegralMethod method)
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of PrimeMethod enum
 //! @return method name
-constexpr std::string_view toString(const PrimeMethod method)
+static constexpr std::string_view toString(const PrimeMethod method)
 {
 //! @cond
 #define ELEM(val, str) str,
@@ -331,7 +252,7 @@ void runChoices<ArithmeticMethod>(const std::vector<std::string>& candidates)
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
     using arithmetic::InputBuilder, arithmetic::input::integerA, arithmetic::input::integerB;
-    auto& pooling = action::resourcePool();
+    auto& pooling = configure::task::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
     const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
@@ -448,7 +369,7 @@ void runChoices<DivisorMethod>(const std::vector<std::string>& candidates)
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
     using divisor::InputBuilder, divisor::input::integerA, divisor::input::integerB;
-    auto& pooling = action::resourcePool();
+    auto& pooling = configure::task::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
     const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
@@ -600,7 +521,7 @@ void runChoices<IntegralMethod>(const std::vector<std::string>& candidates)
     const auto calcExpr = [&candidates, &bits, &taskNamer](
                               const integral::Expression& expression, const integral::ExprRange<double, double>& range)
     {
-        auto& pooling = action::resourcePool();
+        auto& pooling = configure::task::resourcePool();
         auto* const threads = pooling.newElement(bits.count());
         const auto addTask = [threads, &expression, &range, &taskNamer](
                                  const std::string_view subTask,
@@ -738,7 +659,7 @@ void runChoices<PrimeMethod>(const std::vector<std::string>& candidates)
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
     using prime::InputBuilder, prime::input::maxPositiveInteger;
-    auto& pooling = action::resourcePool();
+    auto& pooling = configure::task::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(maxPositiveInteger);
     const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());

@@ -15,9 +15,8 @@
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
 
-#include "application/core/include/action.hpp"
 #include "application/core/include/log.hpp"
-#include "utility/include/currying.hpp"
+#include "application/parameter/include/register_algorithm.hpp"
 
 //! @brief Title of printing when algorithm tasks are beginning.
 #define APP_ALGO_PRINT_TASK_BEGIN_TITLE(category)                                                                     \
@@ -35,12 +34,10 @@
 
 namespace application::app_algo
 {
-//! @brief Alias for the type information.
-//! @tparam T - type of target object
-template <typename T>
-using TypeInfo = utility::reflection::TypeInfo<T>;
 //! @brief Alias for Category.
 using Category = ApplyAlgorithm::Category;
+using reg_algo::taskNameCurried, reg_algo::toString, reg_algo::getCategoryOpts, reg_algo::getCategoryAlias,
+    reg_algo::abbrVal;
 
 //! @brief Get the algorithm choice manager.
 //! @return reference of the ApplyAlgorithm object
@@ -50,90 +47,12 @@ ApplyAlgorithm& manager()
     return manager;
 }
 
-//! @brief Get the task name curried.
-//! @return task name curried
-static const auto& taskNameCurried()
-{
-    static const auto curried = utility::currying::curry(action::presetTaskName, TypeInfo<ApplyAlgorithm>::name);
-    return curried;
-}
-
-//! @brief Convert category enumeration to string.
-//! @tparam Cat - the specific value of Category enum
-//! @return category name
-template <Category Cat>
-consteval std::string_view toString()
-{
-    switch (Cat)
-    {
-        case Category::match:
-            return TypeInfo<MatchMethod>::name;
-        case Category::notation:
-            return TypeInfo<NotationMethod>::name;
-        case Category::optimal:
-            return TypeInfo<OptimalMethod>::name;
-        case Category::search:
-            return TypeInfo<SearchMethod>::name;
-        case Category::sort:
-            return TypeInfo<SortMethod>::name;
-        default:
-            break;
-    }
-
-    return {};
-}
-
-//! @brief Get the bit flags of the category in algorithm choices.
-//! @tparam Cat - the specific value of Category enum
-//! @return reference of the category bit flags
-template <Category Cat>
-constexpr auto& getCategoryOpts()
-{
-    return std::invoke(TypeInfo<ApplyAlgorithm>::fields.find(REFLECTION_STR(toString<Cat>())).value, manager());
-}
-
-//! @brief Get the alias of the category in algorithm choices.
-//! @tparam Cat - the specific value of Category enum
-//! @return alias of the category name
-template <Category Cat>
-consteval std::string_view getCategoryAlias()
-{
-    constexpr auto attr =
-        TypeInfo<ApplyAlgorithm>::fields.find(REFLECTION_STR(toString<Cat>())).attrs.find(REFLECTION_STR("alias"));
-    static_assert(attr.hasValue);
-    return attr.value;
-}
-
-//! @brief Abbreviation value for the target method.
-//! @tparam T - type of target method
-//! @param method - target method
-//! @return abbreviation value
-template <typename T>
-consteval std::size_t abbrVal(const T method)
-{
-    static_assert(Bottom<T>::value == TypeInfo<T>::fields.size);
-    std::size_t value = 0;
-    TypeInfo<T>::fields.forEach(
-        [method, &value](const auto field)
-        {
-            if (field.name == toString(method))
-            {
-                static_assert(1 == field.attrs.size);
-                const auto attr = field.attrs.find(REFLECTION_STR("choice"));
-                static_assert(attr.hasValue);
-                value = utility::common::operator""_bkdrHash(attr.value);
-            }
-        });
-
-    return value;
-}
-
 //! @brief Get the title of a particular method in algorithm choices.
 //! @tparam T - type of target method
 //! @param method - target method
 //! @return initial capitalized title
 template <typename T>
-std::string getTitle(const T method)
+static std::string getTitle(const T method)
 {
     std::string title(toString(method));
     title.at(0) = std::toupper(title.at(0));
@@ -153,7 +72,7 @@ std::string getTitle(const T method)
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of MatchMethod enum
 //! @return method name
-constexpr std::string_view toString(const MatchMethod method)
+static constexpr std::string_view toString(const MatchMethod method)
 {
 //! @cond
 #define ELEM(val, str) str,
@@ -174,7 +93,7 @@ constexpr std::string_view toString(const MatchMethod method)
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of NotationMethod enum
 //! @return method name
-constexpr std::string_view toString(const NotationMethod method)
+static constexpr std::string_view toString(const NotationMethod method)
 {
 //! @cond
 #define ELEM(val, str) str,
@@ -199,7 +118,7 @@ constexpr std::string_view toString(const NotationMethod method)
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of OptimalMethod enum
 //! @return method name
-constexpr std::string_view toString(const OptimalMethod method)
+static constexpr std::string_view toString(const OptimalMethod method)
 {
 //! @cond
 #define ELEM(val, str) str,
@@ -221,7 +140,7 @@ constexpr std::string_view toString(const OptimalMethod method)
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of SearchMethod enum
 //! @return method name
-constexpr std::string_view toString(const SearchMethod method)
+static constexpr std::string_view toString(const SearchMethod method)
 {
 //! @cond
 #define ELEM(val, str) str,
@@ -250,7 +169,7 @@ constexpr std::string_view toString(const SearchMethod method)
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of SortMethod enum
 //! @return method name
-constexpr std::string_view toString(const SortMethod method)
+static constexpr std::string_view toString(const SortMethod method)
 {
 //! @cond
 #define ELEM(val, str) str,
@@ -420,7 +339,7 @@ void runChoices<MatchMethod>(const std::vector<std::string>& candidates)
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
     using match::InputBuilder, match::input::patternString;
     static_assert(InputBuilder::maxDigit > patternString.length());
-    auto& pooling = action::resourcePool();
+    auto& pooling = configure::task::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(patternString);
     const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
@@ -542,7 +461,7 @@ void runChoices<NotationMethod>(const std::vector<std::string>& candidates)
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
     using notation::InputBuilder, notation::input::infixString;
-    auto& pooling = action::resourcePool();
+    auto& pooling = configure::task::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(infixString);
     const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
@@ -724,7 +643,7 @@ void runChoices<OptimalMethod>(const std::vector<std::string>& candidates)
     const auto calcFunc = [&candidates, &bits, &taskNamer](
                               const optimal::Function& function, const optimal::FuncRange<double, double>& range)
     {
-        auto& pooling = action::resourcePool();
+        auto& pooling = configure::task::resourcePool();
         auto* const threads = pooling.newElement(bits.count());
         const auto addTask = [threads, &function, &range, &taskNamer](
                                  const std::string_view subTask,
@@ -895,7 +814,7 @@ void runChoices<SearchMethod>(const std::vector<std::string>& candidates)
     using search::InputBuilder, search::input::arrayLength, search::input::arrayRangeMin, search::input::arrayRangeMax;
     static_assert((arrayRangeMin < arrayRangeMax) && (arrayLength > 0));
 
-    auto& pooling = action::resourcePool();
+    auto& pooling = configure::task::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder<float>>(arrayLength, arrayRangeMin, arrayRangeMax);
     const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
@@ -1139,7 +1058,7 @@ void runChoices<SortMethod>(const std::vector<std::string>& candidates)
     using sort::InputBuilder, sort::input::arrayLength, sort::input::arrayRangeMin, sort::input::arrayRangeMax;
     static_assert((arrayRangeMin < arrayRangeMax) && (arrayLength > 0));
 
-    auto& pooling = action::resourcePool();
+    auto& pooling = configure::task::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder<std::int32_t>>(arrayLength, arrayRangeMin, arrayRangeMax);
     const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
