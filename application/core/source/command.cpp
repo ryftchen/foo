@@ -23,6 +23,11 @@ namespace application::command
 //! @brief Anonymous namespace.
 inline namespace
 {
+//! @brief Alias for the type information.
+//! @tparam T - type of target object
+template <typename T>
+using TypeInfo = utility::reflection::TypeInfo<T>;
+
 //! @brief Constraint for external helpers.
 //! @tparam T - type of helper
 template <typename T>
@@ -284,100 +289,87 @@ void Command::initializeExtraCLI()
     constexpr std::string_view helpDescr = getDescr(Category::help), optMetavar = "OPT";
     auto& checklist = taskDispatcher.extraChecklist;
     std::vector<std::string> candidates{};
-    candidates.reserve(std::max(
-        {TypeInfo<app_algo::MatchMethod>::fields.size,
-         TypeInfo<app_algo::NotationMethod>::fields.size,
-         TypeInfo<app_algo::OptimalMethod>::fields.size,
-         TypeInfo<app_algo::SearchMethod>::fields.size,
-         TypeInfo<app_algo::SortMethod>::fields.size,
-         TypeInfo<app_dp::BehavioralInstance>::fields.size,
-         TypeInfo<app_dp::CreationalInstance>::fields.size,
-         TypeInfo<app_dp::StructuralInstance>::fields.size,
-         TypeInfo<app_ds::LinearInstance>::fields.size,
-         TypeInfo<app_ds::TreeInstance>::fields.size,
-         TypeInfo<app_num::ArithmeticMethod>::fields.size,
-         TypeInfo<app_num::DivisorMethod>::fields.size,
-         TypeInfo<app_num::IntegralMethod>::fields.size,
-         TypeInfo<app_num::PrimeMethod>::fields.size}));
+    reserveChoices(candidates);
 
     auto& algoTable = extraChoices[subCLIAppAlgo.title()];
     checklist.emplace(
         subCLIAppAlgo.title(),
         ExtraManager::IntfWrap{[]() { return !app_algo::manager().empty(); }, []() { app_algo::manager().reset(); }});
-    subCLIAppAlgo.addDescription(getDescr<app_algo::ApplyAlgorithm>());
+    subCLIAppAlgo.addDescription(reg_algo::descr<app_algo::ApplyAlgorithm>());
     subCLIAppAlgo.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
     candidates = extractChoices<app_algo::MatchMethod>();
-    algoTable.emplace(TypeInfo<app_algo::MatchMethod>::name, CategoryExtAttr{candidates, app_algo::MatchMethod{}});
+    algoTable.emplace(reg_algo::name<app_algo::MatchMethod>(), CategoryExtAttr{candidates, app_algo::MatchMethod{}});
     subCLIAppAlgo
         .addArgument(
-            prefix1 + std::string{getAlias<app_algo::ApplyAlgorithm, app_algo::MatchMethod>()},
-            prefix2 + std::string{TypeInfo<app_algo::MatchMethod>::name})
+            prefix1 + std::string{reg_algo::alias<app_algo::MatchMethod>()},
+            prefix2 + std::string{reg_algo::name<app_algo::MatchMethod>()})
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
         .metavar(optMetavar)
-        .help(getDescr<app_algo::MatchMethod>());
+        .help(reg_algo::descr<app_algo::MatchMethod>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<app_algo::MatchMethod>& msg)
                                       { app_algo::updateChoice<app_algo::MatchMethod>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<app_algo::MatchMethod>& msg)
                                       { app_algo::runChoices<app_algo::MatchMethod>(msg.coll); });
     candidates = extractChoices<app_algo::NotationMethod>();
     algoTable.emplace(
-        TypeInfo<app_algo::NotationMethod>::name, CategoryExtAttr{candidates, app_algo::NotationMethod{}});
+        reg_algo::name<app_algo::NotationMethod>(), CategoryExtAttr{candidates, app_algo::NotationMethod{}});
     subCLIAppAlgo
         .addArgument(
-            prefix1 + std::string{getAlias<app_algo::ApplyAlgorithm, app_algo::NotationMethod>()},
-            prefix2 + std::string{TypeInfo<app_algo::NotationMethod>::name})
+            prefix1 + std::string{reg_algo::alias<app_algo::NotationMethod>()},
+            prefix2 + std::string{reg_algo::name<app_algo::NotationMethod>()})
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
         .metavar(optMetavar)
-        .help(getDescr<app_algo::NotationMethod>());
+        .help(reg_algo::descr<app_algo::NotationMethod>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<app_algo::NotationMethod>& msg)
                                       { app_algo::updateChoice<app_algo::NotationMethod>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<app_algo::NotationMethod>& msg)
                                       { app_algo::runChoices<app_algo::NotationMethod>(msg.coll); });
     candidates = extractChoices<app_algo::OptimalMethod>();
-    algoTable.emplace(TypeInfo<app_algo::OptimalMethod>::name, CategoryExtAttr{candidates, app_algo::OptimalMethod{}});
+    algoTable.emplace(
+        reg_algo::name<app_algo::OptimalMethod>(), CategoryExtAttr{candidates, app_algo::OptimalMethod{}});
     subCLIAppAlgo
         .addArgument(
-            prefix1 + std::string{getAlias<app_algo::ApplyAlgorithm, app_algo::OptimalMethod>()},
-            prefix2 + std::string{TypeInfo<app_algo::OptimalMethod>::name})
+            prefix1 + std::string{reg_algo::alias<app_algo::OptimalMethod>()},
+            prefix2 + std::string{reg_algo::name<app_algo::OptimalMethod>()})
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
         .metavar(optMetavar)
-        .help(getDescr<app_algo::OptimalMethod>());
+        .help(reg_algo::descr<app_algo::OptimalMethod>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<app_algo::OptimalMethod>& msg)
                                       { app_algo::updateChoice<app_algo::OptimalMethod>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<app_algo::OptimalMethod>& msg)
                                       { app_algo::runChoices<app_algo::OptimalMethod>(msg.coll); });
     candidates = extractChoices<app_algo::SearchMethod>();
-    algoTable.emplace(TypeInfo<app_algo::SearchMethod>::name, CategoryExtAttr{candidates, app_algo::SearchMethod{}});
+    algoTable.emplace(reg_algo::name<app_algo::SearchMethod>(), CategoryExtAttr{candidates, app_algo::SearchMethod{}});
     subCLIAppAlgo
         .addArgument(
-            prefix1 + std::string{getAlias<app_algo::ApplyAlgorithm, app_algo::SearchMethod>()},
-            prefix2 + std::string{TypeInfo<app_algo::SearchMethod>::name})
+            prefix1 + std::string{reg_algo::alias<app_algo::SearchMethod>()},
+            prefix2 + std::string{reg_algo::name<app_algo::SearchMethod>()})
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
         .metavar(optMetavar)
-        .help(getDescr<app_algo::SearchMethod>());
+        .help(reg_algo::descr<app_algo::SearchMethod>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<app_algo::SearchMethod>& msg)
                                       { app_algo::updateChoice<app_algo::SearchMethod>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<app_algo::SearchMethod>& msg)
                                       { app_algo::runChoices<app_algo::SearchMethod>(msg.coll); });
     candidates = extractChoices<app_algo::SortMethod>();
-    algoTable.emplace(TypeInfo<app_algo::SortMethod>::name, CategoryExtAttr{candidates, app_algo::SortMethod{}});
+    algoTable.emplace(reg_algo::name<app_algo::SortMethod>(), CategoryExtAttr{candidates, app_algo::SortMethod{}});
     subCLIAppAlgo
         .addArgument(
-            prefix1 + std::string{getAlias<app_algo::ApplyAlgorithm, app_algo::SortMethod>()},
-            prefix2 + std::string{TypeInfo<app_algo::SortMethod>::name})
+            prefix1 + std::string{reg_algo::alias<app_algo::SortMethod>()},
+            prefix2 + std::string{reg_algo::name<app_algo::SortMethod>()})
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
         .metavar(optMetavar)
-        .help(getDescr<app_algo::SortMethod>());
+        .help(reg_algo::descr<app_algo::SortMethod>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<app_algo::SortMethod>& msg)
                                       { app_algo::updateChoice<app_algo::SortMethod>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<app_algo::SortMethod>& msg)
@@ -388,52 +380,52 @@ void Command::initializeExtraCLI()
     checklist.emplace(
         subCLIAppDp.title(),
         ExtraManager::IntfWrap{[]() { return !app_dp::manager().empty(); }, []() { app_dp::manager().reset(); }});
-    subCLIAppDp.addDescription(getDescr<app_dp::ApplyDesignPattern>());
+    subCLIAppDp.addDescription(reg_dp::descr<app_dp::ApplyDesignPattern>());
     subCLIAppDp.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
     candidates = extractChoices<app_dp::BehavioralInstance>();
     dpTable.emplace(
-        TypeInfo<app_dp::BehavioralInstance>::name, CategoryExtAttr{candidates, app_dp::BehavioralInstance{}});
+        reg_dp::name<app_dp::BehavioralInstance>(), CategoryExtAttr{candidates, app_dp::BehavioralInstance{}});
     subCLIAppDp
         .addArgument(
-            prefix1 + std::string{getAlias<app_dp::ApplyDesignPattern, app_dp::BehavioralInstance>()},
-            prefix2 + std::string{TypeInfo<app_dp::BehavioralInstance>::name})
+            prefix1 + std::string{reg_dp::alias<app_dp::BehavioralInstance>()},
+            prefix2 + std::string{reg_dp::name<app_dp::BehavioralInstance>()})
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
         .metavar(optMetavar)
-        .help(getDescr<app_dp::BehavioralInstance>());
+        .help(reg_dp::descr<app_dp::BehavioralInstance>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<app_dp::BehavioralInstance>& msg)
                                       { app_dp::updateChoice<app_dp::BehavioralInstance>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<app_dp::BehavioralInstance>& msg)
                                       { app_dp::runChoices<app_dp::BehavioralInstance>(msg.coll); });
     candidates = extractChoices<app_dp::CreationalInstance>();
     dpTable.emplace(
-        TypeInfo<app_dp::CreationalInstance>::name, CategoryExtAttr{candidates, app_dp::CreationalInstance{}});
+        reg_dp::name<app_dp::CreationalInstance>(), CategoryExtAttr{candidates, app_dp::CreationalInstance{}});
     subCLIAppDp
         .addArgument(
-            prefix1 + std::string{getAlias<app_dp::ApplyDesignPattern, app_dp::CreationalInstance>()},
-            prefix2 + std::string{TypeInfo<app_dp::CreationalInstance>::name})
+            prefix1 + std::string{reg_dp::alias<app_dp::CreationalInstance>()},
+            prefix2 + std::string{reg_dp::name<app_dp::CreationalInstance>()})
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
         .metavar(optMetavar)
-        .help(getDescr<app_dp::CreationalInstance>());
+        .help(reg_dp::descr<app_dp::CreationalInstance>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<app_dp::CreationalInstance>& msg)
                                       { app_dp::updateChoice<app_dp::CreationalInstance>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<app_dp::CreationalInstance>& msg)
                                       { app_dp::runChoices<app_dp::CreationalInstance>(msg.coll); });
     candidates = extractChoices<app_dp::StructuralInstance>();
     dpTable.emplace(
-        TypeInfo<app_dp::StructuralInstance>::name, CategoryExtAttr{candidates, app_dp::StructuralInstance{}});
+        reg_dp::name<app_dp::StructuralInstance>(), CategoryExtAttr{candidates, app_dp::StructuralInstance{}});
     subCLIAppDp
         .addArgument(
-            prefix1 + std::string{getAlias<app_dp::ApplyDesignPattern, app_dp::StructuralInstance>()},
-            prefix2 + std::string{TypeInfo<app_dp::StructuralInstance>::name})
+            prefix1 + std::string{reg_dp::alias<app_dp::StructuralInstance>()},
+            prefix2 + std::string{reg_dp::name<app_dp::StructuralInstance>()})
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
         .metavar(optMetavar)
-        .help(getDescr<app_dp::StructuralInstance>());
+        .help(reg_dp::descr<app_dp::StructuralInstance>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<app_dp::StructuralInstance>& msg)
                                       { app_dp::updateChoice<app_dp::StructuralInstance>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<app_dp::StructuralInstance>& msg)
@@ -444,34 +436,34 @@ void Command::initializeExtraCLI()
     checklist.emplace(
         subCLIAppDs.title(),
         ExtraManager::IntfWrap{[]() { return !app_ds::manager().empty(); }, []() { app_ds::manager().reset(); }});
-    subCLIAppDs.addDescription(getDescr<app_ds::ApplyDataStructure>());
+    subCLIAppDs.addDescription(reg_ds::descr<app_ds::ApplyDataStructure>());
     subCLIAppDs.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
     candidates = extractChoices<app_ds::LinearInstance>();
-    dsTable.emplace(TypeInfo<app_ds::LinearInstance>::name, CategoryExtAttr{candidates, app_ds::LinearInstance{}});
+    dsTable.emplace(reg_ds::name<app_ds::LinearInstance>(), CategoryExtAttr{candidates, app_ds::LinearInstance{}});
     subCLIAppDs
         .addArgument(
-            prefix1 + std::string{getAlias<app_ds::ApplyDataStructure, app_ds::LinearInstance>()},
-            prefix2 + std::string{TypeInfo<app_ds::LinearInstance>::name})
+            prefix1 + std::string{reg_ds::alias<app_ds::LinearInstance>()},
+            prefix2 + std::string{reg_ds::name<app_ds::LinearInstance>()})
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
         .metavar(optMetavar)
-        .help(getDescr<app_ds::LinearInstance>());
+        .help(reg_ds::descr<app_ds::LinearInstance>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<app_ds::LinearInstance>& msg)
                                       { app_ds::updateChoice<app_ds::LinearInstance>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<app_ds::LinearInstance>& msg)
                                       { app_ds::runChoices<app_ds::LinearInstance>(msg.coll); });
     candidates = extractChoices<app_ds::TreeInstance>();
-    dsTable.emplace(TypeInfo<app_ds::TreeInstance>::name, CategoryExtAttr{candidates, app_ds::TreeInstance{}});
+    dsTable.emplace(reg_ds::name<app_ds::TreeInstance>(), CategoryExtAttr{candidates, app_ds::TreeInstance{}});
     subCLIAppDs
         .addArgument(
-            prefix1 + std::string{getAlias<app_ds::ApplyDataStructure, app_ds::TreeInstance>()},
-            prefix2 + std::string{TypeInfo<app_ds::TreeInstance>::name})
+            prefix1 + std::string{reg_ds::alias<app_ds::TreeInstance>()},
+            prefix2 + std::string{reg_ds::name<app_ds::TreeInstance>()})
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
         .metavar(optMetavar)
-        .help(getDescr<app_ds::TreeInstance>());
+        .help(reg_ds::descr<app_ds::TreeInstance>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<app_ds::TreeInstance>& msg)
                                       { app_ds::updateChoice<app_ds::TreeInstance>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<app_ds::TreeInstance>& msg)
@@ -482,65 +474,65 @@ void Command::initializeExtraCLI()
     checklist.emplace(
         subCLIAppNum.title(),
         ExtraManager::IntfWrap{[]() { return !app_num::manager().empty(); }, []() { app_num::manager().reset(); }});
-    subCLIAppNum.addDescription(getDescr<app_num::ApplyNumeric>());
+    subCLIAppNum.addDescription(reg_num::descr<app_num::ApplyNumeric>());
     subCLIAppNum.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
     candidates = extractChoices<app_num::ArithmeticMethod>();
     numTable.emplace(
-        TypeInfo<app_num::ArithmeticMethod>::name, CategoryExtAttr{candidates, app_num::ArithmeticMethod{}});
+        reg_num::name<app_num::ArithmeticMethod>(), CategoryExtAttr{candidates, app_num::ArithmeticMethod{}});
     subCLIAppNum
         .addArgument(
-            prefix1 + std::string{getAlias<app_num::ApplyNumeric, app_num::ArithmeticMethod>()},
-            prefix2 + std::string{TypeInfo<app_num::ArithmeticMethod>::name})
+            prefix1 + std::string{reg_num::alias<app_num::ArithmeticMethod>()},
+            prefix2 + std::string{reg_num::name<app_num::ArithmeticMethod>()})
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
         .metavar(optMetavar)
-        .help(getDescr<app_num::ArithmeticMethod>());
+        .help(reg_num::descr<app_num::ArithmeticMethod>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<app_num::ArithmeticMethod>& msg)
                                       { app_num::updateChoice<app_num::ArithmeticMethod>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<app_num::ArithmeticMethod>& msg)
                                       { app_num::runChoices<app_num::ArithmeticMethod>(msg.coll); });
     candidates = extractChoices<app_num::DivisorMethod>();
-    numTable.emplace(TypeInfo<app_num::DivisorMethod>::name, CategoryExtAttr{candidates, app_num::DivisorMethod{}});
+    numTable.emplace(reg_num::name<app_num::DivisorMethod>(), CategoryExtAttr{candidates, app_num::DivisorMethod{}});
     subCLIAppNum
         .addArgument(
-            prefix1 + std::string{getAlias<app_num::ApplyNumeric, app_num::DivisorMethod>()},
-            prefix2 + std::string{TypeInfo<app_num::DivisorMethod>::name})
+            prefix1 + std::string{reg_num::alias<app_num::DivisorMethod>()},
+            prefix2 + std::string{reg_num::name<app_num::DivisorMethod>()})
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
         .metavar(optMetavar)
-        .help(getDescr<app_num::DivisorMethod>());
+        .help(reg_num::descr<app_num::DivisorMethod>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<app_num::DivisorMethod>& msg)
                                       { app_num::updateChoice<app_num::DivisorMethod>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<app_num::DivisorMethod>& msg)
                                       { app_num::runChoices<app_num::DivisorMethod>(msg.coll); });
     candidates = extractChoices<app_num::IntegralMethod>();
-    numTable.emplace(TypeInfo<app_num::IntegralMethod>::name, CategoryExtAttr{candidates, app_num::IntegralMethod{}});
+    numTable.emplace(reg_num::name<app_num::IntegralMethod>(), CategoryExtAttr{candidates, app_num::IntegralMethod{}});
     subCLIAppNum
         .addArgument(
-            prefix1 + std::string{getAlias<app_num::ApplyNumeric, app_num::IntegralMethod>()},
-            prefix2 + std::string{TypeInfo<app_num::IntegralMethod>::name})
+            prefix1 + std::string{reg_num::alias<app_num::IntegralMethod>()},
+            prefix2 + std::string{reg_num::name<app_num::IntegralMethod>()})
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
         .metavar(optMetavar)
-        .help(getDescr<app_num::IntegralMethod>());
+        .help(reg_num::descr<app_num::IntegralMethod>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<app_num::IntegralMethod>& msg)
                                       { app_num::updateChoice<app_num::IntegralMethod>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<app_num::IntegralMethod>& msg)
                                       { app_num::runChoices<app_num::IntegralMethod>(msg.coll); });
     candidates = extractChoices<app_num::PrimeMethod>();
-    numTable.emplace(TypeInfo<app_num::PrimeMethod>::name, CategoryExtAttr{candidates, app_num::PrimeMethod{}});
+    numTable.emplace(reg_num::name<app_num::PrimeMethod>(), CategoryExtAttr{candidates, app_num::PrimeMethod{}});
     subCLIAppNum
         .addArgument(
-            prefix1 + std::string{getAlias<app_num::ApplyNumeric, app_num::PrimeMethod>()},
-            prefix2 + std::string{TypeInfo<app_num::PrimeMethod>::name})
+            prefix1 + std::string{reg_num::alias<app_num::PrimeMethod>()},
+            prefix2 + std::string{reg_num::name<app_num::PrimeMethod>()})
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
         .metavar(optMetavar)
-        .help(getDescr<app_num::PrimeMethod>());
+        .help(reg_num::descr<app_num::PrimeMethod>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<app_num::PrimeMethod>& msg)
                                       { app_num::updateChoice<app_num::PrimeMethod>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<app_num::PrimeMethod>& msg)
@@ -673,6 +665,25 @@ void Command::dispatch()
                 categoryAttr.event);
         }
     }
+}
+
+void Command::reserveChoices(std::vector<std::string>& choices)
+{
+    choices.reserve(std::max(
+        {TypeInfo<app_algo::MatchMethod>::fields.size,
+         TypeInfo<app_algo::NotationMethod>::fields.size,
+         TypeInfo<app_algo::OptimalMethod>::fields.size,
+         TypeInfo<app_algo::SearchMethod>::fields.size,
+         TypeInfo<app_algo::SortMethod>::fields.size,
+         TypeInfo<app_dp::BehavioralInstance>::fields.size,
+         TypeInfo<app_dp::CreationalInstance>::fields.size,
+         TypeInfo<app_dp::StructuralInstance>::fields.size,
+         TypeInfo<app_ds::LinearInstance>::fields.size,
+         TypeInfo<app_ds::TreeInstance>::fields.size,
+         TypeInfo<app_num::ArithmeticMethod>::fields.size,
+         TypeInfo<app_num::DivisorMethod>::fields.size,
+         TypeInfo<app_num::IntegralMethod>::fields.size,
+         TypeInfo<app_num::PrimeMethod>::fields.size}));
 }
 
 template <typename T>

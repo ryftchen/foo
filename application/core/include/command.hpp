@@ -10,10 +10,10 @@
 #include "console.hpp"
 #include "note.hpp"
 
-#include "application/parameter/include/register_algorithm.hpp"
-#include "application/parameter/include/register_data_structure.hpp"
-#include "application/parameter/include/register_design_pattern.hpp"
-#include "application/parameter/include/register_numeric.hpp"
+#include "application/option/include/register_algorithm.hpp"
+#include "application/option/include/register_data_structure.hpp"
+#include "application/option/include/register_design_pattern.hpp"
+#include "application/option/include/register_numeric.hpp"
 #include "utility/include/argument.hpp"
 
 //! @brief The application module.
@@ -85,20 +85,16 @@ private:
     std::condition_variable parserCond{};
     //! @brief Flag to indicate whether parsing of arguments is completed.
     std::atomic<bool> isParsed{false};
-    //! @brief Alias for the type information.
-    //! @tparam T - type of target object
-    template <typename T>
-    using TypeInfo = utility::reflection::TypeInfo<T>;
     //! @brief Parse argument helper for commander.
     utility::argument::Argument mainCLI{"foo", note::version()};
     //! @brief Parse argument helper to apply algorithm.
-    utility::argument::Argument subCLIAppAlgo{TypeInfo<app_algo::ApplyAlgorithm>::name, reg_algo::version()};
+    utility::argument::Argument subCLIAppAlgo{reg_algo::name<app_algo::ApplyAlgorithm>(), reg_algo::version()};
     //! @brief Parse argument helper to apply design pattern.
-    utility::argument::Argument subCLIAppDp{TypeInfo<app_dp::ApplyDesignPattern>::name, reg_dp::version()};
+    utility::argument::Argument subCLIAppDp{reg_dp::name<app_dp::ApplyDesignPattern>(), reg_dp::version()};
     //! @brief Parse argument helper to apply data structure.
-    utility::argument::Argument subCLIAppDs{TypeInfo<app_ds::ApplyDataStructure>::name, reg_ds::version()};
+    utility::argument::Argument subCLIAppDs{reg_ds::name<app_ds::ApplyDataStructure>(), reg_ds::version()};
     //! @brief Parse argument helper to apply numeric.
-    utility::argument::Argument subCLIAppNum{TypeInfo<app_num::ApplyNumeric>::name, reg_num::version()};
+    utility::argument::Argument subCLIAppNum{reg_num::name<app_num::ApplyNumeric>(), reg_num::version()};
     //! @brief Flag to indicate whether the command is faulty.
     std::atomic<bool> isFaulty{false};
 
@@ -150,17 +146,9 @@ private:
     //! @param cat - the specific value of Category enum
     //! @return alias name
     static consteval std::string_view getAlias(const Category cat);
-    //! @brief Get the description.
-    //! @tparam T - type of sub-cli or sub-cli category
-    //! @return description
-    template <typename T>
-    static inline consteval std::string_view getDescr();
-    //! @brief Get the alias name.
-    //! @tparam SubCLI - type of sub-cli
-    //! @tparam Cat - type of sub-cli category
-    //! @return alias name
-    template <typename SubCLI, typename Cat>
-    static inline consteval std::string_view getAlias();
+    //! @brief Reserve choices based on the maximum size of the entry under the sub-cli category.
+    //! @param choices - choices to be updated
+    static void reserveChoices(std::vector<std::string>& choices);
     //! @brief Extract all choices in the sub-cli category.
     //! @tparam T - type of sub-cli category
     //! @return all choices
@@ -343,17 +331,5 @@ private:
     //! @return ASCII banner text content
     static std::string getIconBanner();
 };
-
-template <typename T>
-inline consteval std::string_view Command::getDescr()
-{
-    return TypeInfo<T>::attrs.find(REFLECTION_STR("descr")).value;
-}
-
-template <typename SubCLI, typename Cat>
-inline consteval std::string_view Command::getAlias()
-{
-    return TypeInfo<SubCLI>::fields.find(REFLECTION_STR(TypeInfo<Cat>::name)).attrs.find(REFLECTION_STR("alias")).value;
-}
 } // namespace command
 } // namespace application
