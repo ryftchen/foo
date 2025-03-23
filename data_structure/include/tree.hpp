@@ -19,12 +19,12 @@ extern const char* version() noexcept;
 //! @brief The binary search tree structure.
 namespace bs
 {
-//! @brief Alias for the type of key in the node of the binary search tree.
-typedef int Type;
 #ifdef __cplusplus
 extern "C"
 {
 #endif // __cplusplus
+    //! @brief Alias for the type of key in the node of the binary search tree.
+    typedef int Type;
 #pragma pack(push, 8)
     //! @brief The node of the binary search tree.
     typedef struct BSTreeNode
@@ -92,12 +92,12 @@ private:
 //! @brief The Adelson-Velsky-Landis tree structure.
 namespace avl
 {
-//! @brief Alias for the type of key in the node of the AVL tree.
-typedef int Type;
 #ifdef __cplusplus
 extern "C"
 {
 #endif // __cplusplus
+    //! @brief Alias for the type of key in the node of the AVL tree.
+    typedef int Type;
 #pragma pack(push, 8)
     //! @brief The node of the AVL tree.
     typedef struct AVLTreeNode
@@ -167,12 +167,12 @@ private:
 //! @brief The splay tree structure.
 namespace splay
 {
-//! @brief Alias for the type of key in the node of the splay tree.
-typedef int Type;
 #ifdef __cplusplus
 extern "C"
 {
 #endif // __cplusplus
+    //! @brief Alias for the type of key in the node of the splay tree.
+    typedef int Type;
 #pragma pack(push, 8)
     //! @brief The node of the splay tree.
     typedef struct SplayTreeNode
