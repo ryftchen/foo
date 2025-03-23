@@ -8,7 +8,6 @@
 
 #include <functional>
 #include <stdexcept>
-#include <unordered_set>
 
 namespace algorithm::optimal
 {
@@ -22,16 +21,9 @@ const char* version() noexcept
 
 std::optional<std::tuple<double, double>> Gradient::operator()(const double left, const double right, const double eps)
 {
-    std::mt19937_64 engine(std::random_device{}());
-    std::uniform_real_distribution<double> candidate(left, right);
-    std::unordered_multiset<double> climbing{};
-    climbing.reserve(loopTime);
-    while (climbing.size() < loopTime)
-    {
-        climbing.emplace(candidate(engine));
-    }
-
+    const auto climbing{createClimbers(left, right)};
     double xBest = *climbing.cbegin(), yBest = func(xBest);
+
     for (std::uint32_t iteration = 0; auto x : climbing)
     {
         iteration = 0;
@@ -54,6 +46,20 @@ std::optional<std::tuple<double, double>> Gradient::operator()(const double left
     }
 
     return std::make_optional(std::make_tuple(yBest, xBest));
+}
+
+std::unordered_multiset<double> Gradient::createClimbers(const double left, const double right)
+{
+    std::mt19937_64 engine(std::random_device{}());
+    std::uniform_real_distribution<double> candidate(left, right);
+    std::unordered_multiset<double> climbing{};
+    climbing.reserve(loopTime);
+    while (climbing.size() < loopTime)
+    {
+        climbing.emplace(candidate(engine));
+    }
+
+    return climbing;
 }
 
 double Gradient::calculateFirstDerivative(const double x, const double eps) const

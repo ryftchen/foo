@@ -299,7 +299,6 @@ void MatchSolution::rkMethod(
 try
 {
     const utility::time::Time timer{};
-
     const auto shift = algorithm::match::Match().rk(text, pattern, textLen, patternLen);
     showResult(MatchMethod::rabinKarp, shift, pattern, timer.elapsedTime());
 }
@@ -316,7 +315,6 @@ void MatchSolution::kmpMethod(
 try
 {
     const utility::time::Time timer{};
-
     const auto shift = algorithm::match::Match().kmp(text, pattern, textLen, patternLen);
     showResult(MatchMethod::knuthMorrisPratt, shift, pattern, timer.elapsedTime());
 }
@@ -333,7 +331,6 @@ void MatchSolution::bmMethod(
 try
 {
     const utility::time::Time timer{};
-
     const auto shift = algorithm::match::Match().bm(text, pattern, textLen, patternLen);
     showResult(MatchMethod::boyerMoore, shift, pattern, timer.elapsedTime());
 }
@@ -350,7 +347,6 @@ void MatchSolution::horspoolMethod(
 try
 {
     const utility::time::Time timer{};
-
     const auto shift = algorithm::match::Match().horspool(text, pattern, textLen, patternLen);
     showResult(MatchMethod::horspool, shift, pattern, timer.elapsedTime());
 }
@@ -367,7 +363,6 @@ void MatchSolution::sundayMethod(
 try
 {
     const utility::time::Time timer{};
-
     const auto shift = algorithm::match::Match().sunday(text, pattern, textLen, patternLen);
     showResult(MatchMethod::sunday, shift, pattern, timer.elapsedTime());
 }
@@ -608,7 +603,6 @@ void OptimalSolution::gradientDescentMethod(const Function& func, const double l
 try
 {
     const utility::time::Time timer{};
-
     const auto tuple = algorithm::optimal::Gradient(func)(left, right, algorithm::optimal::epsilon);
     showResult(OptimalMethod::gradient, tuple, timer.elapsedTime());
 }
@@ -621,7 +615,6 @@ void OptimalSolution::tabuMethod(const Function& func, const double left, const 
 try
 {
     const utility::time::Time timer{};
-
     const auto tuple = algorithm::optimal::Tabu(func)(left, right, algorithm::optimal::epsilon);
     showResult(OptimalMethod::tabu, tuple, timer.elapsedTime());
 }
@@ -634,7 +627,6 @@ void OptimalSolution::simulatedAnnealingMethod(const Function& func, const doubl
 try
 {
     const utility::time::Time timer{};
-
     const auto tuple = algorithm::optimal::Annealing(func)(left, right, algorithm::optimal::epsilon);
     showResult(OptimalMethod::annealing, tuple, timer.elapsedTime());
 }
@@ -647,7 +639,6 @@ void OptimalSolution::particleSwarmMethod(const Function& func, const double lef
 try
 {
     const utility::time::Time timer{};
-
     const auto tuple = algorithm::optimal::Particle(func)(left, right, algorithm::optimal::epsilon);
     showResult(OptimalMethod::particle, tuple, timer.elapsedTime());
 }
@@ -660,7 +651,6 @@ void OptimalSolution::antColonyMethod(const Function& func, const double left, c
 try
 {
     const utility::time::Time timer{};
-
     const auto tuple = algorithm::optimal::Ant(func)(left, right, algorithm::optimal::epsilon);
     showResult(OptimalMethod::ant, tuple, timer.elapsedTime());
 }
@@ -673,7 +663,6 @@ void OptimalSolution::geneticMethod(const Function& func, const double left, con
 try
 {
     const utility::time::Time timer{};
-
     const auto tuple = algorithm::optimal::Genetic(func)(left, right, algorithm::optimal::epsilon);
     showResult(OptimalMethod::genetic, tuple, timer.elapsedTime());
 }
@@ -777,7 +766,9 @@ void runChoices<OptimalMethod>(const std::vector<std::string>& candidates)
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
 
     using optimal::InputBuilder, optimal::input::Rastrigin;
-    static_assert(Rastrigin::range1 < Rastrigin::range2);
+    static_assert(
+        (Rastrigin::range1 < Rastrigin::range2)
+        && (algorithm::optimal::epsilon >= std::numeric_limits<double>::epsilon()));
     const auto inputs = std::make_shared<InputBuilder<Rastrigin>>(optimal::OptimalFuncMap<Rastrigin>{
         {{Rastrigin::range1, Rastrigin::range2, Rastrigin::funcDescr}, Rastrigin{}}});
     for ([[maybe_unused]] const auto& [range, function] : inputs->getFunctionMap())
@@ -828,7 +819,6 @@ void SearchSolution::binaryMethod(const float* const array, const std::uint32_t 
 try
 {
     const utility::time::Time timer{};
-
     const auto index = algorithm::search::Search<float>().binary(array, length, key);
     showResult(SearchMethod::binary, index, key, timer.elapsedTime());
 }
@@ -841,7 +831,6 @@ void SearchSolution::interpolationMethod(const float* const array, const std::ui
 try
 {
     const utility::time::Time timer{};
-
     const auto index = algorithm::search::Search<float>().interpolation(array, length, key);
     showResult(SearchMethod::interpolation, index, key, timer.elapsedTime());
 }
@@ -854,7 +843,6 @@ void SearchSolution::fibonacciMethod(const float* const array, const std::uint32
 try
 {
     const utility::time::Time timer{};
-
     const auto index = algorithm::search::Search<float>().fibonacci(array, length, key);
     showResult(SearchMethod::fibonacci, index, key, timer.elapsedTime());
 }
@@ -970,7 +958,6 @@ void SortSolution::bubbleMethod(const std::int32_t* const array, const std::uint
 try
 {
     const utility::time::Time timer{};
-
     const auto coll = algorithm::sort::Sort<std::int32_t>().bubble(array, length);
     showResult(SortMethod::bubble, coll, timer.elapsedTime());
 }
@@ -983,7 +970,6 @@ void SortSolution::selectionMethod(const std::int32_t* const array, const std::u
 try
 {
     const utility::time::Time timer{};
-
     const auto coll = algorithm::sort::Sort<std::int32_t>().selection(array, length);
     showResult(SortMethod::selection, coll, timer.elapsedTime());
 }
@@ -996,7 +982,6 @@ void SortSolution::insertionMethod(const std::int32_t* const array, const std::u
 try
 {
     const utility::time::Time timer{};
-
     const auto coll = algorithm::sort::Sort<std::int32_t>().insertion(array, length);
     showResult(SortMethod::insertion, coll, timer.elapsedTime());
 }
@@ -1009,7 +994,6 @@ void SortSolution::shellMethod(const std::int32_t* const array, const std::uint3
 try
 {
     const utility::time::Time timer{};
-
     const auto coll = algorithm::sort::Sort<std::int32_t>().shell(array, length);
     showResult(SortMethod::shell, coll, timer.elapsedTime());
 }
@@ -1022,7 +1006,6 @@ void SortSolution::mergeMethod(const std::int32_t* const array, const std::uint3
 try
 {
     const utility::time::Time timer{};
-
     const auto coll = algorithm::sort::Sort<std::int32_t>().merge(array, length);
     showResult(SortMethod::merge, coll, timer.elapsedTime());
 }
@@ -1035,7 +1018,6 @@ void SortSolution::quickMethod(const std::int32_t* const array, const std::uint3
 try
 {
     const utility::time::Time timer{};
-
     const auto coll = algorithm::sort::Sort<std::int32_t>().quick(array, length);
     showResult(SortMethod::quick, coll, timer.elapsedTime());
 }
@@ -1048,7 +1030,6 @@ void SortSolution::heapMethod(const std::int32_t* const array, const std::uint32
 try
 {
     const utility::time::Time timer{};
-
     const auto coll = algorithm::sort::Sort<std::int32_t>().heap(array, length);
     showResult(SortMethod::heap, coll, timer.elapsedTime());
 }
@@ -1061,7 +1042,6 @@ void SortSolution::countingMethod(const std::int32_t* const array, const std::ui
 try
 {
     const utility::time::Time timer{};
-
     const auto coll = algorithm::sort::Sort<std::int32_t>().counting(array, length);
     showResult(SortMethod::counting, coll, timer.elapsedTime());
 }
@@ -1074,7 +1054,6 @@ void SortSolution::bucketMethod(const std::int32_t* const array, const std::uint
 try
 {
     const utility::time::Time timer{};
-
     const auto coll = algorithm::sort::Sort<std::int32_t>().bucket(array, length);
     showResult(SortMethod::bucket, coll, timer.elapsedTime());
 }
@@ -1087,7 +1066,6 @@ void SortSolution::radixMethod(const std::int32_t* const array, const std::uint3
 try
 {
     const utility::time::Time timer{};
-
     const auto coll = algorithm::sort::Sort<std::int32_t>().radix(array, length);
     showResult(SortMethod::radix, coll, timer.elapsedTime());
 }

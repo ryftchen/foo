@@ -389,7 +389,6 @@ void DivisorSolution::euclideanMethod(std::int32_t a, std::int32_t b)
 try
 {
     const utility::time::Time timer{};
-
     const auto coll = numeric::divisor::Divisor().euclidean(a, b);
     showResult(DivisorMethod::euclidean, coll, timer.elapsedTime());
 }
@@ -402,7 +401,6 @@ void DivisorSolution::steinMethod(std::int32_t a, std::int32_t b)
 try
 {
     const utility::time::Time timer{};
-
     const auto coll = numeric::divisor::Divisor().stein(a, b);
     showResult(DivisorMethod::stein, coll, timer.elapsedTime());
 }
@@ -496,7 +494,6 @@ void IntegralSolution::trapezoidalMethod(const Expression& expr, const double lo
 try
 {
     const utility::time::Time timer{};
-
     const auto sum = numeric::integral::Trapezoidal(expr)(lower, upper, numeric::integral::epsilon);
     showResult(IntegralMethod::trapezoidal, sum, timer.elapsedTime());
 }
@@ -509,7 +506,6 @@ void IntegralSolution::adaptiveSimpsonMethod(const Expression& expr, const doubl
 try
 {
     const utility::time::Time timer{};
-
     const auto sum = numeric::integral::Simpson(expr)(lower, upper, numeric::integral::epsilon);
     showResult(IntegralMethod::simpson, sum, timer.elapsedTime());
 }
@@ -522,7 +518,6 @@ void IntegralSolution::rombergMethod(const Expression& expr, const double lower,
 try
 {
     const utility::time::Time timer{};
-
     const auto sum = numeric::integral::Romberg(expr)(lower, upper, numeric::integral::epsilon);
     showResult(IntegralMethod::romberg, sum, timer.elapsedTime());
 }
@@ -535,7 +530,6 @@ void IntegralSolution::gaussLegendreMethod(const Expression& expr, const double 
 try
 {
     const utility::time::Time timer{};
-
     const auto sum = numeric::integral::Gauss(expr)(lower, upper, numeric::integral::epsilon);
     showResult(IntegralMethod::gauss, sum, timer.elapsedTime());
 }
@@ -548,7 +542,6 @@ void IntegralSolution::monteCarloMethod(const Expression& expr, const double low
 try
 {
     const utility::time::Time timer{};
-
     const auto sum = numeric::integral::MonteCarlo(expr)(lower, upper, numeric::integral::epsilon);
     showResult(IntegralMethod::monteCarlo, sum, timer.elapsedTime());
 }
@@ -646,6 +639,7 @@ void runChoices<IntegralMethod>(const std::vector<std::string>& candidates)
     APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
 
     using integral::InputBuilder, integral::input::Griewank;
+    static_assert(numeric::integral::epsilon >= std::numeric_limits<double>::epsilon());
     const auto inputs = std::make_shared<InputBuilder<Griewank>>(
         integral::IntegralExprMap<Griewank>{{{Griewank::range1, Griewank::range2, Griewank::exprDescr}, Griewank{}}});
     for ([[maybe_unused]] const auto& [range, expression] : inputs->getExpressionMap())
@@ -685,7 +679,6 @@ void PrimeSolution::eratosthenesMethod(const std::uint32_t max)
 try
 {
     const utility::time::Time timer{};
-
     const auto coll = numeric::prime::Prime().eratosthenes(max);
     showResult(PrimeMethod::eratosthenes, coll, timer.elapsedTime());
 }
@@ -698,7 +691,6 @@ void PrimeSolution::eulerMethod(const std::uint32_t max)
 try
 {
     const utility::time::Time timer{};
-
     const auto coll = numeric::prime::Prime().euler(max);
     showResult(PrimeMethod::euler, coll, timer.elapsedTime());
 }
