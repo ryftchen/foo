@@ -16,7 +16,7 @@
 #endif // __PRECOMPILED_HEADER
 
 #include "application/core/include/log.hpp"
-#include "application/parameter/include/register_data_structure.hpp"
+#include "application/option/include/register_data_structure.hpp"
 
 //! @brief Title of printing when data structure tasks are beginning.
 #define APP_DS_PRINT_TASK_BEGIN_TITLE(category)                                                               \
