@@ -8,11 +8,24 @@
 
 namespace application::action
 {
-//! @brief Get memory pool when making multi-threading.
-//! @return reference of the ResourcePool object
-ResourcePool& resourcePool()
+Awaitable::~Awaitable()
 {
-    static ResourcePool pooling{};
-    return pooling;
+    if (handle)
+    {
+        handle.destroy();
+    }
+}
+
+void Awaitable::resume() const
+{
+    if (handle)
+    {
+        handle.resume();
+    }
+}
+
+bool Awaitable::done() const
+{
+    return handle ? handle.done() : true;
 }
 } // namespace application::action

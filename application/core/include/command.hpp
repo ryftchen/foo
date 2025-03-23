@@ -10,6 +10,10 @@
 #include "console.hpp"
 #include "note.hpp"
 
+#include "application/parameter/include/register_algorithm.hpp"
+#include "application/parameter/include/register_data_structure.hpp"
+#include "application/parameter/include/register_design_pattern.hpp"
+#include "application/parameter/include/register_numeric.hpp"
 #include "utility/include/argument.hpp"
 
 //! @brief The application module.
@@ -88,13 +92,13 @@ private:
     //! @brief Parse argument helper for commander.
     utility::argument::Argument mainCLI{"foo", note::version()};
     //! @brief Parse argument helper to apply algorithm.
-    utility::argument::Argument subCLIAppAlgo{TypeInfo<app_algo::ApplyAlgorithm>::name, note::version()};
+    utility::argument::Argument subCLIAppAlgo{TypeInfo<app_algo::ApplyAlgorithm>::name, reg_algo::version()};
     //! @brief Parse argument helper to apply design pattern.
-    utility::argument::Argument subCLIAppDp{TypeInfo<app_dp::ApplyDesignPattern>::name, note::version()};
+    utility::argument::Argument subCLIAppDp{TypeInfo<app_dp::ApplyDesignPattern>::name, reg_dp::version()};
     //! @brief Parse argument helper to apply data structure.
-    utility::argument::Argument subCLIAppDs{TypeInfo<app_ds::ApplyDataStructure>::name, note::version()};
+    utility::argument::Argument subCLIAppDs{TypeInfo<app_ds::ApplyDataStructure>::name, reg_ds::version()};
     //! @brief Parse argument helper to apply numeric.
-    utility::argument::Argument subCLIAppNum{TypeInfo<app_num::ApplyNumeric>::name, note::version()};
+    utility::argument::Argument subCLIAppNum{TypeInfo<app_num::ApplyNumeric>::name, reg_num::version()};
     //! @brief Flag to indicate whether the command is faulty.
     std::atomic<bool> isFaulty{false};
 

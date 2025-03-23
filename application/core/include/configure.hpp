@@ -7,6 +7,8 @@
 #pragma once
 
 #include "utility/include/json.hpp"
+#include "utility/include/memory.hpp"
+#include "utility/include/thread.hpp"
 
 //! @brief The application module.
 namespace application // NOLINT(modernize-concat-nested-namespaces)
@@ -111,6 +113,9 @@ private:
     static void checkObjectInHelperList(const utility::json::JSON& helper);
 };
 
+extern utility::json::JSON getDefaultConfiguration();
+extern bool loadConfiguration(const std::string_view filename = defaultConfigFile);
+
 //! @brief Configuration details.
 namespace detail
 {
@@ -187,7 +192,21 @@ inline int helperTimeout()
 }
 } // namespace detail
 
-extern utility::json::JSON getDefaultConfiguration();
-extern bool loadConfiguration(const std::string_view filename = defaultConfigFile);
+//! @brief Activity configuration applied to tasks.
+namespace task
+{
+//! @brief Alias for memory pool for task when making multi-threading.
+using ResourcePool = utility::memory::Memory<utility::thread::Thread>;
+extern ResourcePool& resourcePool();
+//! @brief Preset full name for the task.
+//! @param cli - sub-cli name
+//! @param cat - category name
+//! @param cho - choice name
+//! @return full name
+inline std::string presetName(const std::string_view cli, const std::string_view cat, const std::string_view cho)
+{
+    return '@' + std::string{cli} + '_' + std::string{cat} + '_' + std::string{cho};
+}
+} // namespace task
 } // namespace configure
 } // namespace application
