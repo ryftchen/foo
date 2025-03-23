@@ -8,6 +8,7 @@
 
 #include <optional>
 #include <random>
+#include <unordered_set>
 
 //! @brief The algorithm module.
 namespace algorithm // NOLINT(modernize-concat-nested-namespaces)
@@ -79,6 +80,11 @@ private:
     //! @brief Loop time.
     static constexpr std::uint32_t loopTime{1000};
 
+    //! @brief Create climbers.
+    //! @param left - left endpoint
+    //! @param right - right endpoint
+    //! @return collection of climbers
+    static std::unordered_multiset<double> createClimbers(const double left, const double right);
     //! @brief Calculate the first derivative.
     //! @param x - independent variable
     //! @param eps - precision of calculation
