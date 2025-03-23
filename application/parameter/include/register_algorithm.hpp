@@ -12,7 +12,7 @@
 #include "utility/include/currying.hpp"
 #include "utility/include/reflection.hpp"
 
-//! @brief Reflect the algorithm category name and alias name to the field in the command line argument mapping.
+//! @brief Reflect the algorithm category name and alias name to the field in the mapping.
 #define REG_ALGO_REFLECT_FIRST_LEVEL_FIELD(category, alias)                                        \
     Field                                                                                          \
     {                                                                                              \
@@ -24,7 +24,7 @@
             }                                                                                      \
         }                                                                                          \
     }
-//! @brief Reflect the algorithm category entry and choice name to the field in the command line argument mapping.
+//! @brief Reflect the entry under the algorithm category and choice name to the field in the mapping.
 #define REG_ALGO_REFLECT_SECOND_LEVEL_FIELD(entry, choice)             \
     Field                                                              \
     {                                                                  \

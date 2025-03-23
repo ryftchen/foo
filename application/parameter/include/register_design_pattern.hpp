@@ -12,7 +12,7 @@
 #include "utility/include/currying.hpp"
 #include "utility/include/reflection.hpp"
 
-//! @brief Reflect the design pattern category name and alias name to the field in the command line argument mapping.
+//! @brief Reflect the design pattern category name and alias name to the field in the mapping.
 #define REG_DP_REFLECT_FIRST_LEVEL_FIELD(category, alias)                                          \
     Field                                                                                          \
     {                                                                                              \
@@ -24,7 +24,7 @@
             }                                                                                      \
         }                                                                                          \
     }
-//! @brief Reflect the design pattern category entry and choice name to the field in the command line argument mapping.
+//! @brief Reflect the entry under the design pattern category and choice name to the field in the mapping.
 #define REG_DP_REFLECT_SECOND_LEVEL_FIELD(entry, choice)               \
     Field                                                              \
     {                                                                  \
