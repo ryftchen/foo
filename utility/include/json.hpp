@@ -89,7 +89,7 @@ public:
     //! @tparam T - type of string value
     //! @param s - string value
     template <typename T>
-    JSON(const T s, typename std::enable_if<std::is_convertible<T, std::string>::value>::type* /*type*/ = nullptr) :
+    JSON(const T s, typename std::enable_if<std::is_convertible_v<T, std::string>>::type* /*type*/ = nullptr) :
         data{String{s}}, type{Type::string}
     {
     }
@@ -97,7 +97,7 @@ public:
     //! @tparam T - type of floating value
     //! @param f - floating value
     template <typename T>
-    JSON(const T f, typename std::enable_if<std::is_floating_point<T>::value>::type* /*type*/ = 0) :
+    JSON(const T f, typename std::enable_if<std::is_floating_point_v<T>>::type* /*type*/ = 0) :
         data{static_cast<Floating>(f)}, type{Type::floating}
     {
     }
@@ -105,9 +105,7 @@ public:
     //! @tparam T - type of integral value
     //! @param i - integral value
     template <typename T>
-    JSON(
-        const T i,
-        typename std::enable_if<std::is_integral<T>::value && !std::is_same<T, bool>::value>::type* /*type*/ = 0) :
+    JSON(const T i, typename std::enable_if<std::is_integral_v<T> && !std::is_same_v<T, bool>>::type* /*type*/ = 0) :
         data{static_cast<Integral>(i)}, type{Type::integral}
     {
     }
@@ -115,7 +113,7 @@ public:
     //! @tparam T - type of boolean value
     //! @param b - boolean value
     template <typename T>
-    JSON(const T b, typename std::enable_if<std::is_same<T, bool>::value>::type* /*type*/ = 0) :
+    JSON(const T b, typename std::enable_if<std::is_same_v<T, bool>>::type* /*type*/ = 0) :
         data{static_cast<Boolean>(b)}, type{Type::boolean}
     {
     }
@@ -126,26 +124,25 @@ public:
     //! @param s - string value
     //! @return reference of the JSON object
     template <typename T>
-    typename std::enable_if<std::is_convertible<T, std::string>::value, JSON&>::type operator=(const T s);
+    typename std::enable_if<std::is_convertible_v<T, std::string>, JSON&>::type operator=(const T s);
     //! @brief The operator (=) overloading of JSON class.
     //! @tparam T - type of floating value
     //! @param f - floating value
     //! @return reference of the JSON object
     template <typename T>
-    typename std::enable_if<std::is_floating_point<T>::value, JSON&>::type operator=(const T f);
+    typename std::enable_if<std::is_floating_point_v<T>, JSON&>::type operator=(const T f);
     //! @brief The operator (=) overloading of JSON class.
     //! @tparam T - type of integral value
     //! @param i - integral value
     //! @return reference of the JSON object
     template <typename T>
-    typename std::enable_if<std::is_integral<T>::value && !std::is_same<T, bool>::value, JSON&>::type operator=(
-        const T i);
+    typename std::enable_if<std::is_integral_v<T> && !std::is_same_v<T, bool>, JSON&>::type operator=(const T i);
     //! @brief The operator (=) overloading of JSON class.
     //! @tparam T - type of boolean value
     //! @param b - boolean value
     //! @return reference of the JSON object
     template <typename T>
-    typename std::enable_if<std::is_same<T, bool>::value, JSON&>::type operator=(const T b);
+    typename std::enable_if<std::is_same_v<T, bool>, JSON&>::type operator=(const T b);
     // NOLINTEND(misc-unconventional-assign-operator)
 
     //! @brief JSON wrapper.
@@ -371,7 +368,7 @@ protected:
 
 // NOLINTBEGIN(misc-unconventional-assign-operator)
 template <typename T>
-typename std::enable_if<std::is_convertible<T, std::string>::value, JSON&>::type JSON::operator=(const T s)
+typename std::enable_if<std::is_convertible_v<T, std::string>, JSON&>::type JSON::operator=(const T s)
 {
     setType(Type::string);
     data.value = String{s};
@@ -380,7 +377,7 @@ typename std::enable_if<std::is_convertible<T, std::string>::value, JSON&>::type
 }
 
 template <typename T>
-typename std::enable_if<std::is_floating_point<T>::value, JSON&>::type JSON::operator=(const T f)
+typename std::enable_if<std::is_floating_point_v<T>, JSON&>::type JSON::operator=(const T f)
 {
     setType(Type::floating);
     data.value = static_cast<Floating>(f);
@@ -389,8 +386,7 @@ typename std::enable_if<std::is_floating_point<T>::value, JSON&>::type JSON::ope
 }
 
 template <typename T>
-typename std::enable_if<std::is_integral<T>::value && !std::is_same<T, bool>::value, JSON&>::type JSON::operator=(
-    const T i)
+typename std::enable_if<std::is_integral_v<T> && !std::is_same_v<T, bool>, JSON&>::type JSON::operator=(const T i)
 {
     setType(Type::integral);
     data.value = static_cast<Integral>(i);
@@ -399,7 +395,7 @@ typename std::enable_if<std::is_integral<T>::value && !std::is_same<T, bool>::va
 }
 
 template <typename T>
-typename std::enable_if<std::is_same<T, bool>::value, JSON&>::type JSON::operator=(const T b)
+typename std::enable_if<std::is_same_v<T, bool>, JSON&>::type JSON::operator=(const T b)
 {
     setType(Type::boolean);
     data.value = static_cast<Boolean>(b);
