@@ -175,20 +175,10 @@ extern const char* version() noexcept;
 //! @tparam T - type of target object
 template <typename T>
 using TypeInfo = utility::reflection::TypeInfo<T>;
-//! @brief Constraint for mapping sub-cli.
-//! @tparam T - type of mapping sub-cli
-template <typename T>
-concept mappingSubCLI = std::is_same_v<T, app_num::ApplyNumeric>;
-//! @brief Constraint for mapping sub-cli category.
-//! @tparam T - type of mapping sub-cli category
-template <typename T>
-concept mappingSubCLICat = std::is_same_v<T, app_num::ArithmeticMethod> || std::is_same_v<T, app_num::DivisorMethod>
-    || std::is_same_v<T, app_num::IntegralMethod> || std::is_same_v<T, app_num::PrimeMethod>;
 //! @brief Get the name directly for sub-cli related registration.
 //! @tparam T - type of sub-cli or sub-cli category
 //! @return name
 template <typename T>
-requires mappingSubCLI<T> || mappingSubCLICat<T>
 inline consteval std::string_view name()
 {
     return TypeInfo<T>::name;
@@ -197,7 +187,6 @@ inline consteval std::string_view name()
 //! @tparam T - type of sub-cli or sub-cli category
 //! @return description
 template <typename T>
-requires mappingSubCLI<T> || mappingSubCLICat<T>
 inline consteval std::string_view descr()
 {
     return TypeInfo<T>::attrs.find(REFLECTION_STR("descr")).value;
@@ -206,7 +195,6 @@ inline consteval std::string_view descr()
 //! @tparam T - type of sub-cli category
 //! @return alias
 template <typename T>
-requires mappingSubCLICat<T>
 inline consteval std::string_view alias()
 {
     return TypeInfo<app_num::ApplyNumeric>::fields.find(REFLECTION_STR(TypeInfo<T>::name))
