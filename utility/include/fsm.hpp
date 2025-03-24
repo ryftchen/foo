@@ -17,31 +17,23 @@ namespace fsm
 {
 extern const char* version() noexcept;
 
-//! @brief Alias for invoke result.
+//! @brief Alias for invoke result type.
 //! @tparam Func - type of callable function
 //! @tparam Args - type of function arguments
 template <typename Func, typename... Args>
-using InvokeResult = std::invoke_result_t<Func, Args...>;
-
-//! @brief Alias for checking whether to be invocable.
-//! @tparam Func - type of callable function
-//! @tparam Args - type of function arguments
-template <typename Func, typename... Args>
-using IsInvocable = std::is_invocable<Func, Args...>;
-
-//! @brief Invoke result.
+using InvokeResultType = std::invoke_result_t<Func, Args...>;
+//! @brief Invoke callable.
 //! @tparam Func - type of callable function
 //! @tparam Args - type of function arguments
 //! @param func - callable function
 //! @param args - function arguments
-//! @return wrapping of calls
+//! @return result from calls
 template <typename Func, typename... Args>
-inline InvokeResult<Func, Args...> invokeResult(Func&& func, Args&&... args)
+inline InvokeResultType<Func, Args...> invokeCallable(Func&& func, Args&&... args)
 {
     return func(args...);
 }
-
-//! @brief Invoke result. Multiple objects.
+//! @brief Invoke callable. Multiple objects.
 //! @tparam Ret - type of return value
 //! @tparam T1 - type of class to which the function belongs
 //! @tparam T2 - type of object to which the function belongs
@@ -49,114 +41,109 @@ inline InvokeResult<Func, Args...> invokeResult(Func&& func, Args&&... args)
 //! @param func - callable function
 //! @param obj - object to which the function belongs
 //! @param args - function arguments
-//! @return wrapping of calls
+//! @return result from calls
 template <typename Ret, typename T1, typename T2, typename... Args>
-inline InvokeResult<Ret T1::*, T2, Args...> invokeResult(Ret T1::*func, T2&& obj, Args&&... args)
+inline InvokeResultType<Ret T1::*, T2, Args...> invokeCallable(Ret T1::*func, T2&& obj, Args&&... args)
 {
     return (obj.*func)(args...);
 }
 
-//! @brief Binary function helper.
+//! @brief Flexible invoke helper.
 //! @tparam Func - type of callable function
 //! @tparam Arg1 - type of function arguments
 //! @tparam Arg2 - type of function arguments
-//! @tparam val1 - flag to indicate the value when exclude both Arg1 and Arg2
-//! @tparam val2 - flag to indicate the value when include only Arg1
-//! @tparam val3 - flag to indicate the value when include only Arg2
-//! @tparam val4 - flag to indicate the value when include both Arg1 and Arg2
+//! @tparam isInvocable0 - flag to indicate the value when exclude both Arg1 and Arg2
+//! @tparam isInvocable1 - flag to indicate the value when include only Arg1
+//! @tparam isInvocable2 - flag to indicate the value when include only Arg2
+//! @tparam isInvocable12 - flag to indicate the value when include both Arg1 and Arg2
 template <
     typename Func,
     typename Arg1,
     typename Arg2,
-    bool val1 = IsInvocable<Func>::value,
-    bool val2 = IsInvocable<Func, Arg1>::value,
-    bool val3 = IsInvocable<Func, Arg2>::value,
-    bool val4 = IsInvocable<Func, Arg1, Arg2>::value>
-struct BinaryFuncHelper;
-
-//! @brief Binary function helper. Exclude both Arg1 and Arg2.
+    bool isInvocable0 = std::is_invocable_v<Func>,
+    bool isInvocable1 = std::is_invocable_v<Func, Arg1>,
+    bool isInvocable2 = std::is_invocable_v<Func, Arg2>,
+    bool isInvocable12 = std::is_invocable_v<Func, Arg1, Arg2>>
+struct FlexInvokeHelper;
+//! @brief Flexible invoke helper. Exclude both Arg1 and Arg2.
 //! @tparam Func - type of callable function
 //! @tparam Arg1 - type of function arguments
 //! @tparam Arg2 - type of function arguments
 template <typename Func, typename Arg1, typename Arg2>
-struct BinaryFuncHelper<Func, Arg1, Arg2, true, false, false, false>
+struct FlexInvokeHelper<Func, Arg1, Arg2, true, false, false, false>
 {
-    //! @brief Alias for invoke result.
-    using ResultType = InvokeResult<Func>;
+    //! @brief Alias for return type.
+    using ReturnType = InvokeResultType<Func>;
     //! @brief Invoke operation.
     //! @param func - callable function
     //! @return invoke result
-    static inline ResultType invoke(Func&& func, Arg1&& /*arg1*/, Arg2&& /*arg2*/) { return invokeResult(func); }
+    static inline ReturnType invoke(Func&& func, Arg1&& /*arg1*/, Arg2&& /*arg2*/) { return invokeCallable(func); }
 };
-
-//! @brief Binary function helper. Include only Arg1.
+//! @brief Flexible invoke helper. Include only Arg1.
 //! @tparam Func - type of callable function
 //! @tparam Arg1 - type of function arguments
 //! @tparam Arg2 - type of function arguments
 template <typename Func, typename Arg1, typename Arg2>
-struct BinaryFuncHelper<Func, Arg1, Arg2, false, true, false, false>
+struct FlexInvokeHelper<Func, Arg1, Arg2, false, true, false, false>
 {
-    //! @brief Alias for invoke result.
-    using ResultType = InvokeResult<Func, Arg1>;
+    //! @brief Alias for return type.
+    using ReturnType = InvokeResultType<Func, Arg1>;
     //! @brief Invoke operation.
     //! @param func - callable function
     //! @param arg1 - function argument
     //! @return invoke result
-    static inline ResultType invoke(Func&& func, Arg1&& arg1, Arg2&& /*arg2*/) { return invokeResult(func, arg1); }
+    static inline ReturnType invoke(Func&& func, Arg1&& arg1, Arg2&& /*arg2*/) { return invokeCallable(func, arg1); }
 };
-
-//! @brief Binary function helper. Include only Arg2.
+//! @brief Flexible invoke helper. Include only Arg2.
 //! @tparam Func - type of callable function
 //! @tparam Arg1 - type of function arguments
 //! @tparam Arg2 - type of function arguments
 template <typename Func, typename Arg1, typename Arg2>
-struct BinaryFuncHelper<Func, Arg1, Arg2, false, false, true, false>
+struct FlexInvokeHelper<Func, Arg1, Arg2, false, false, true, false>
 {
-    //! @brief Alias for invoke result.
-    using ResultType = InvokeResult<Func, Arg2>;
+    //! @brief Alias for return type.
+    using ReturnType = InvokeResultType<Func, Arg2>;
     //! @brief Invoke operation.
     //! @param func - callable function
     //! @param arg2 - function arguments
     //! @return invoke result
-    static inline ResultType invoke(Func&& func, Arg1&& /*arg1*/, Arg2&& arg2) { return invokeResult(func, arg2); }
+    static inline ReturnType invoke(Func&& func, Arg1&& /*arg1*/, Arg2&& arg2) { return invokeCallable(func, arg2); }
 };
-
-//! @brief Binary function helper. Include both Arg1 and Arg2.
+//! @brief Flexible invoke helper. Include both Arg1 and Arg2.
 //! @tparam Func - type of callable function
 //! @tparam Arg1 - type of function arguments
 //! @tparam Arg2 - type of function arguments
 template <typename Func, typename Arg1, typename Arg2>
-struct BinaryFuncHelper<Func, Arg1, Arg2, false, false, false, true>
+struct FlexInvokeHelper<Func, Arg1, Arg2, false, false, false, true>
 {
-    //! @brief Alias for invoke result.
-    using ResultType = InvokeResult<Func, Arg1, Arg2>;
+    //! @brief Alias for return type.
+    using ReturnType = InvokeResultType<Func, Arg1, Arg2>;
     //! @brief Invoke operation.
     //! @param func - callable function
     //! @param arg1 - function arguments
     //! @param arg2 - function arguments
     //! @return invoke result
-    static inline ResultType invoke(Func&& func, Arg1&& arg1, Arg2&& arg2) { return invokeResult(func, arg1, arg2); }
+    static inline ReturnType invoke(Func&& func, Arg1&& arg1, Arg2&& arg2) { return invokeCallable(func, arg1, arg2); }
 };
 
-//! @brief Alias for invoke result of binary function.
+//! @brief Alias for adaptive invoke result type.
 //! @tparam Func - type of callable function
 //! @tparam Arg1 - type of function arguments
 //! @tparam Arg2 - type of function arguments
 template <typename Func, typename Arg1, typename Arg2>
-using InvokeAsBinaryFuncResult = typename BinaryFuncHelper<Func, Arg1, Arg2>::ResultType;
-
-//! @brief Invoke as binary function.
+using AdaptInvokeResultType = typename FlexInvokeHelper<Func, Arg1, Arg2>::ReturnType;
+//! @brief Adaptive invoke.
 //! @tparam Func - type of callable function
 //! @tparam Arg1 - type of function arguments
 //! @tparam Arg2 - type of function arguments
 //! @param func - callable function
 //! @param arg1 - function arguments
 //! @param arg2 - function arguments
-//! @return invoke result of binary function
+//! @return result from calls
 template <typename Func, typename Arg1, typename Arg2>
-inline InvokeAsBinaryFuncResult<Func, Arg1, Arg2> invokeAsBinaryFunc(Func&& func, Arg1&& arg1, Arg2&& arg2)
+inline AdaptInvokeResultType<Func, Arg1, Arg2> adaptiveInvoke(Func&& func, Arg1&& arg1, Arg2&& arg2)
 {
-    return BinaryFuncHelper<Func, Arg1, Arg2>::invoke(
+    return FlexInvokeHelper<Func, Arg1, Arg2>::invoke(
         std::forward<Func>(func), std::forward<Arg1>(arg1), std::forward<Arg2>(arg2));
 }
 
@@ -171,7 +158,6 @@ struct List
 //! @tparam Types - type of behaviors
 template <typename... Types>
 struct Concat;
-
 //! @brief Associate events with behaviors.
 //! @tparam T - type of triggered event
 //! @tparam Types - type of behaviors
@@ -181,7 +167,6 @@ struct Concat<T, List<Types...>>
     //! @brief Alias for list.
     using Type = List<T, Types...>;
 };
-
 //! @brief Associate.
 template <>
 struct Concat<>
@@ -195,7 +180,6 @@ struct Concat<>
 //! @tparam Types - type of behaviors
 template <template <typename> class Predicate, typename... Types>
 struct Filter;
-
 //! @brief The filter of events and behaviors. Based on conditions.
 //! @tparam Predicate - type of predicate
 //! @tparam T - specific type for predicate
@@ -209,7 +193,6 @@ struct Filter<Predicate, T, Types...>
         typename Concat<T, typename Filter<Predicate, Types...>::Type>::Type,
         typename Filter<Predicate, Types...>::Type>::type;
 };
-
 //! @brief The filter of behaviors.
 //! @tparam Predicate - type of predicate
 template <template <typename> class Predicate>
@@ -270,7 +253,7 @@ private:
         template <typename Action>
         static inline void processEvent(Action&& action, Derived& self, const Event& event)
         {
-            invokeAsBinaryFunc(action, self, event);
+            adaptiveInvoke(action, self, event);
         }
         //! @brief Process the specific event by default.
         static inline constexpr void processEvent(
@@ -287,7 +270,7 @@ private:
         template <typename Guard>
         static inline bool checkGuard(Guard&& guard, const Derived& self, const Event& event)
         {
-            return invokeAsBinaryFunc(guard, self, event);
+            return adaptiveInvoke(guard, self, event);
         }
         //! @brief Check guard condition by default.
         //! @return pass or not pass
@@ -303,7 +286,6 @@ private:
     //! @tparam Types - type of behaviors
     template <typename Event, typename... Types>
     struct ByEventType;
-
     //! @brief Classification by event type. Include both event and behaviors.
     //! @tparam Event - type of triggered event
     //! @tparam Types - type of behaviors
@@ -317,7 +299,6 @@ private:
         //! @brief Alias for filter type.
         using Type = typename Filter<Predicate, Types...>::Type;
     };
-
     //! @brief Classification by event type. Include only event.
     //! @tparam Event - type of triggered event
     template <typename Event>
@@ -332,7 +313,6 @@ private:
     //! @tparam Types - type of behaviors
     template <typename Event, typename... Types>
     struct handleEvent;
-
     //! @brief Handle the specific event. Include both event and behaviors.
     //! @tparam Event - type of triggered event
     //! @tparam T - type of derived class
@@ -352,7 +332,6 @@ private:
                 : handleEvent<Event, List<Types...>>::execute(self, event, state);
         }
     };
-
     //! @brief Handle the specific event. Include only event.
     //! @tparam Event - type of triggered event
     template <typename Event>
