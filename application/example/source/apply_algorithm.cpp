@@ -639,15 +639,16 @@ void runChoices<OptimalMethod>(const std::vector<std::string>& candidates)
     }
     assert(bits.size() == candidates.size());
 
+    using optimal::Function, optimal::FuncRange;
     const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
-    const auto calcFunc = [&candidates, &bits, &taskNamer](
-                              const optimal::Function& function, const optimal::FuncRange<double, double>& range)
+    const auto calcFunc =
+        [&candidates, &bits, &taskNamer](const Function& function, const FuncRange<double, double>& range)
     {
         auto& pooling = configure::task::resourcePool();
         auto* const threads = pooling.newElement(bits.count());
-        const auto addTask = [threads, &function, &range, &taskNamer](
-                                 const std::string_view subTask,
-                                 void (*targetMethod)(const optimal::Function&, const double, const double))
+        const auto addTask =
+            [threads, &function, &range, &taskNamer](
+                const std::string_view subTask, void (*targetMethod)(const Function&, const double, const double))
         { threads->enqueue(taskNamer(subTask), targetMethod, std::ref(function), range.range1, range.range2); };
 
         for (const auto index :
@@ -684,12 +685,12 @@ void runChoices<OptimalMethod>(const std::vector<std::string>& candidates)
 
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
 
-    using optimal::InputBuilder, optimal::input::Rastrigin;
+    using optimal::InputBuilder, optimal::OptimalFuncMap, optimal::input::Rastrigin;
     static_assert(
         (Rastrigin::range1 < Rastrigin::range2)
         && (algorithm::optimal::epsilon >= std::numeric_limits<double>::epsilon()));
-    const auto inputs = std::make_shared<InputBuilder<Rastrigin>>(optimal::OptimalFuncMap<Rastrigin>{
-        {{Rastrigin::range1, Rastrigin::range2, Rastrigin::funcDescr}, Rastrigin{}}});
+    const auto inputs = std::make_shared<InputBuilder<Rastrigin>>(
+        OptimalFuncMap<Rastrigin>{{{Rastrigin::range1, Rastrigin::range2, Rastrigin::funcDescr}, Rastrigin{}}});
     for ([[maybe_unused]] const auto& [range, function] : inputs->getFunctionMap())
     {
         inputs->printFunction(function);
@@ -813,7 +814,6 @@ void runChoices<SearchMethod>(const std::vector<std::string>& candidates)
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
     using search::InputBuilder, search::input::arrayLength, search::input::arrayRangeMin, search::input::arrayRangeMax;
     static_assert((arrayRangeMin < arrayRangeMax) && (arrayLength > 0));
-
     auto& pooling = configure::task::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder<float>>(arrayLength, arrayRangeMin, arrayRangeMax);
@@ -1057,7 +1057,6 @@ void runChoices<SortMethod>(const std::vector<std::string>& candidates)
     APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
     using sort::InputBuilder, sort::input::arrayLength, sort::input::arrayRangeMin, sort::input::arrayRangeMax;
     static_assert((arrayRangeMin < arrayRangeMax) && (arrayLength > 0));
-
     auto& pooling = configure::task::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder<std::int32_t>>(arrayLength, arrayRangeMin, arrayRangeMax);

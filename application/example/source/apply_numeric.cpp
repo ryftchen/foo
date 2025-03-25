@@ -517,15 +517,16 @@ void runChoices<IntegralMethod>(const std::vector<std::string>& candidates)
     }
     assert(bits.size() == candidates.size());
 
+    using integral::Expression, integral::ExprRange;
     const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
-    const auto calcExpr = [&candidates, &bits, &taskNamer](
-                              const integral::Expression& expression, const integral::ExprRange<double, double>& range)
+    const auto calcExpr =
+        [&candidates, &bits, &taskNamer](const Expression& expression, const ExprRange<double, double>& range)
     {
         auto& pooling = configure::task::resourcePool();
         auto* const threads = pooling.newElement(bits.count());
-        const auto addTask = [threads, &expression, &range, &taskNamer](
-                                 const std::string_view subTask,
-                                 void (*targetMethod)(const integral::Expression&, const double, const double))
+        const auto addTask =
+            [threads, &expression, &range, &taskNamer](
+                const std::string_view subTask, void (*targetMethod)(const Expression&, const double, const double))
         { threads->enqueue(taskNamer(subTask), targetMethod, std::ref(expression), range.range1, range.range2); };
 
         for (const auto index :
@@ -559,10 +560,10 @@ void runChoices<IntegralMethod>(const std::vector<std::string>& candidates)
 
     APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
 
-    using integral::InputBuilder, integral::input::Griewank;
+    using integral::InputBuilder, integral::IntegralExprMap, integral::input::Griewank;
     static_assert(numeric::integral::epsilon >= std::numeric_limits<double>::epsilon());
     const auto inputs = std::make_shared<InputBuilder<Griewank>>(
-        integral::IntegralExprMap<Griewank>{{{Griewank::range1, Griewank::range2, Griewank::exprDescr}, Griewank{}}});
+        IntegralExprMap<Griewank>{{{Griewank::range1, Griewank::range2, Griewank::exprDescr}, Griewank{}}});
     for ([[maybe_unused]] const auto& [range, expression] : inputs->getExpressionMap())
     {
         inputs->printExpression(expression);

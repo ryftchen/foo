@@ -382,11 +382,15 @@ namespace integral
 {
 //! @brief The version used to apply.
 const char* const version = numeric::integral::version();
+
+//! @brief Alias for the target expression.
+using Expression = numeric::integral::Expression;
+
 //! @brief Set input parameters.
 namespace input
 {
 //! @brief Griewank expression.
-class Griewank : public numeric::integral::Expression
+class Griewank : public Expression
 {
 public:
     //! @brief The operator (()) overloading of Griewank class.
@@ -403,9 +407,6 @@ public:
         "f(x)=1+(1/4000)*Σ(i=1→n)[(Xi)^2]-Π(i=1→n)[cos(Xi/(i^(1/2)))],x∈[-600,600] (one-dimensional Griewank)"};
 };
 } // namespace input
-
-//! @brief Alias for the target expression.
-using Expression = numeric::integral::Expression;
 
 //! @brief Solution of integral.
 class IntegralSolution
@@ -448,12 +449,10 @@ struct ExprOverloaded : Ts...
 {
     using Ts::operator()...;
 };
-
 //! @brief Explicit deduction guide for ExprOverloaded.
 //! @tparam Ts - type of visitors
 template <typename... Ts>
 ExprOverloaded(Ts...) -> ExprOverloaded<Ts...>;
-
 //! @brief Range properties of the expression.
 //! @tparam T1 - type of lower endpoint
 //! @tparam T2 - type of upper endpoint
@@ -508,11 +507,10 @@ struct ExprMapHash
         return seed;
     }
 };
-
 //! @brief Alias for the integral expression.
 //! @tparam Ts - type of expressions
 template <typename... Ts>
-requires (std::derived_from<Ts, numeric::integral::Expression> && ...)
+requires (std::derived_from<Ts, Expression> && ...)
 using IntegralExpr = std::variant<Ts...>;
 //! @brief Alias for the integral expression map.
 //! @tparam Ts - type of expressions
@@ -547,7 +545,7 @@ public:
                 {
                     if (auto* exprPtr = // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
                         const_cast<std::remove_const_t<std::remove_reference_t<decltype(expr)>>*>(&expr);
-                        nullptr != dynamic_cast<numeric::integral::Expression*>(exprPtr))
+                        nullptr != dynamic_cast<Expression*>(exprPtr))
                     {
                         throw std::runtime_error{"Unknown expression type (" + std::string{typeid(expr).name()} + ")."};
                     }
