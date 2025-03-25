@@ -5,6 +5,7 @@
 //! @copyright Copyright (c) 2022-2025 ryftchen. All rights reserved.
 
 #include "apply_design_pattern.hpp"
+#include "register_design_pattern.hpp"
 
 #ifndef __PRECOMPILED_HEADER
 #include <cassert>
@@ -16,7 +17,6 @@
 #endif // __PRECOMPILED_HEADER
 
 #include "application/core/include/log.hpp"
-#include "application/option/include/register_design_pattern.hpp"
 
 //! @brief Title of printing when design pattern tasks are beginning.
 #define APP_DP_PRINT_TASK_BEGIN_TITLE(category)                                                               \
@@ -34,9 +34,9 @@
 
 namespace application::app_dp
 {
+using reg_dp::taskNameCurried, reg_dp::toString, reg_dp::getCategoryOpts, reg_dp::getCategoryAlias, reg_dp::abbrVal;
 //! @brief Alias for Category.
 using Category = ApplyDesignPattern::Category;
-using reg_dp::taskNameCurried, reg_dp::toString, reg_dp::getCategoryOpts, reg_dp::getCategoryAlias, reg_dp::abbrVal;
 
 //! @brief Get the design pattern choice manager.
 //! @return reference of the ApplyDesignPattern object

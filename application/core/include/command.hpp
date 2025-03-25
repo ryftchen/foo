@@ -10,10 +10,10 @@
 #include "console.hpp"
 #include "note.hpp"
 
-#include "application/option/include/register_algorithm.hpp"
-#include "application/option/include/register_data_structure.hpp"
-#include "application/option/include/register_design_pattern.hpp"
-#include "application/option/include/register_numeric.hpp"
+#include "application/example/include/register_algorithm.hpp"
+#include "application/example/include/register_data_structure.hpp"
+#include "application/example/include/register_design_pattern.hpp"
+#include "application/example/include/register_numeric.hpp"
 #include "utility/include/argument.hpp"
 
 //! @brief The application module.

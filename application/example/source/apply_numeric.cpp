@@ -5,6 +5,7 @@
 //! @copyright Copyright (c) 2022-2025 ryftchen. All rights reserved.
 
 #include "apply_numeric.hpp"
+#include "register_numeric.hpp"
 
 #ifndef __PRECOMPILED_HEADER
 #include <cassert>
@@ -16,7 +17,6 @@
 #endif // __PRECOMPILED_HEADER
 
 #include "application/core/include/log.hpp"
-#include "application/option/include/register_numeric.hpp"
 
 //! @brief Title of printing when numeric tasks are beginning.
 #define APP_NUM_PRINT_TASK_BEGIN_TITLE(category)                                                                    \
@@ -34,10 +34,10 @@
 
 namespace application::app_num
 {
-//! @brief Alias for Category.
-using Category = ApplyNumeric::Category;
 using reg_num::taskNameCurried, reg_num::toString, reg_num::getCategoryOpts, reg_num::getCategoryAlias,
     reg_num::abbrVal;
+//! @brief Alias for Category.
+using Category = ApplyNumeric::Category;
 
 //! @brief Get the numeric choice manager.
 //! @return reference of the ApplyNumeric object
