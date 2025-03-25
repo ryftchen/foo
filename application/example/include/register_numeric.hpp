@@ -6,8 +6,9 @@
 
 #pragma once
 
+#include "apply_numeric.hpp"
+
 #include "application/core/include/configure.hpp"
-#include "application/example/include/apply_numeric.hpp"
 #include "utility/include/common.hpp"
 #include "utility/include/currying.hpp"
 #include "utility/include/reflection.hpp"

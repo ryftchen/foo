@@ -6,8 +6,9 @@
 
 #pragma once
 
+#include "apply_data_structure.hpp"
+
 #include "application/core/include/configure.hpp"
-#include "application/example/include/apply_data_structure.hpp"
 #include "utility/include/common.hpp"
 #include "utility/include/currying.hpp"
 #include "utility/include/reflection.hpp"

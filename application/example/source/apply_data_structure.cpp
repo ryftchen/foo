@@ -5,6 +5,7 @@
 //! @copyright Copyright (c) 2022-2025 ryftchen. All rights reserved.
 
 #include "apply_data_structure.hpp"
+#include "register_data_structure.hpp"
 
 #ifndef __PRECOMPILED_HEADER
 #include <cassert>
@@ -16,7 +17,6 @@
 #endif // __PRECOMPILED_HEADER
 
 #include "application/core/include/log.hpp"
-#include "application/option/include/register_data_structure.hpp"
 
 //! @brief Title of printing when data structure tasks are beginning.
 #define APP_DS_PRINT_TASK_BEGIN_TITLE(category)                                                               \
@@ -34,9 +34,9 @@
 
 namespace application::app_ds
 {
+using reg_ds::taskNameCurried, reg_ds::toString, reg_ds::getCategoryOpts, reg_ds::getCategoryAlias, reg_ds::abbrVal;
 //! @brief Alias for Category.
 using Category = ApplyDataStructure::Category;
-using reg_ds::taskNameCurried, reg_ds::toString, reg_ds::getCategoryOpts, reg_ds::getCategoryAlias, reg_ds::abbrVal;
 
 //! @brief Get the data structure choice manager.
 //! @return reference of the ApplyDataStructure object

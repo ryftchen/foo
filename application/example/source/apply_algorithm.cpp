@@ -5,6 +5,7 @@
 //! @copyright Copyright (c) 2022-2025 ryftchen. All rights reserved.
 
 #include "apply_algorithm.hpp"
+#include "register_algorithm.hpp"
 
 #ifndef __PRECOMPILED_HEADER
 #include <cassert>
@@ -16,7 +17,6 @@
 #endif // __PRECOMPILED_HEADER
 
 #include "application/core/include/log.hpp"
-#include "application/option/include/register_algorithm.hpp"
 
 //! @brief Title of printing when algorithm tasks are beginning.
 #define APP_ALGO_PRINT_TASK_BEGIN_TITLE(category)                                                                     \
@@ -34,10 +34,10 @@
 
 namespace application::app_algo
 {
-//! @brief Alias for Category.
-using Category = ApplyAlgorithm::Category;
 using reg_algo::taskNameCurried, reg_algo::toString, reg_algo::getCategoryOpts, reg_algo::getCategoryAlias,
     reg_algo::abbrVal;
+//! @brief Alias for Category.
+using Category = ApplyAlgorithm::Category;
 
 //! @brief Get the algorithm choice manager.
 //! @return reference of the ApplyAlgorithm object

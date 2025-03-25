@@ -45,12 +45,10 @@ set(LIBRARY_OUTPUT_PATH ${BUILD_DIR}/lib)
 
 aux_source_directory(${CMAKE_SOURCE_DIR}/application/core/source APPLICATION_LIST)
 aux_source_directory(${CMAKE_SOURCE_DIR}/application/example/source APPLICATION_LIST)
-aux_source_directory(${CMAKE_SOURCE_DIR}/application/option/source APPLICATION_LIST)
 include_directories(
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/application/core/include
-    ${CMAKE_SOURCE_DIR}/application/example/include
-    ${CMAKE_SOURCE_DIR}/application/option/include)
+    ${CMAKE_SOURCE_DIR}/application/example/include)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/utility)
 add_subdirectory(${CMAKE_SOURCE_DIR}/algorithm)
