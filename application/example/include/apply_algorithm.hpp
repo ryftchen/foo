@@ -480,11 +480,15 @@ namespace optimal
 {
 //! @brief The version used to apply.
 const char* const version = algorithm::optimal::version();
+
+//! @brief Alias for the target function.
+using Function = algorithm::optimal::Function;
+
 //! @brief Set input parameters.
 namespace input
 {
 //! @brief Rastrigin function.
-class Rastrigin : public algorithm::optimal::Function
+class Rastrigin : public Function
 {
 public:
     //! @brief The operator (()) overloading of Rastrigin class.
@@ -504,9 +508,6 @@ public:
         "f(x)=A*n+Σ(i=1→n)[(Xi)^2-A*cos(2π*Xi)],A=10,x∈[-5.12,5.12] (one-dimensional Rastrigin)"};
 };
 } // namespace input
-
-//! @brief Alias for the target function.
-using Function = algorithm::optimal::Function;
 
 //! @brief Solution of optimal.
 class OptimalSolution
@@ -554,12 +555,10 @@ struct FuncOverloaded : Ts...
 {
     using Ts::operator()...;
 };
-
 //! @brief Explicit deduction guide for FuncOverloaded.
 //! @tparam Ts - type of visitors
 template <typename... Ts>
 FuncOverloaded(Ts...) -> FuncOverloaded<Ts...>;
-
 //! @brief Range properties of the function.
 //! @tparam T1 - type of left endpoint
 //! @tparam T2 - type of right endpoint
@@ -614,11 +613,10 @@ struct FuncMapHash
         return seed;
     }
 };
-
 //! @brief Alias for the optimal function.
 //! @tparam Ts - type of functions
 template <typename... Ts>
-requires (std::derived_from<Ts, algorithm::optimal::Function> && ...)
+requires (std::derived_from<Ts, Function> && ...)
 using OptimalFunc = std::variant<Ts...>;
 //! @brief Alias for the optimal function map.
 //! @tparam Ts - type of functions
@@ -653,7 +651,7 @@ public:
                 {
                     if (auto* funcPtr = // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
                         const_cast<std::remove_const_t<std::remove_reference_t<decltype(func)>>*>(&func);
-                        nullptr != dynamic_cast<algorithm::optimal::Function*>(funcPtr))
+                        nullptr != dynamic_cast<Function*>(funcPtr))
                     {
                         throw std::runtime_error{"Unknown function type (" + std::string{typeid(func).name()} + ")."};
                     }
