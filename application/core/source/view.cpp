@@ -463,12 +463,12 @@ std::vector<std::string> View::splitString(const std::string_view str)
     return split;
 }
 
-int View::buildNullTLVPacket(char* buf)
+int View::buildAckTLVPacket(char* buf)
 {
     int len = 0;
     if (tlv::encodeTLV(buf, len, tlv::TLVValue{}) < 0)
     {
-        throw std::runtime_error{"Failed to build null packet."};
+        throw std::runtime_error{"Failed to build acknowledge packet."};
     }
     encryptMessage(buf, len);
 
@@ -1037,7 +1037,7 @@ void View::createViewServer()
             catch (const std::exception& err)
             {
                 LOG_WRN << err.what();
-                buildNullTLVPacket(buffer);
+                buildAckTLVPacket(buffer);
                 newSocket->toSend(buffer, sizeof(buffer));
             }
         };
@@ -1076,7 +1076,7 @@ void View::createViewServer()
         catch (const std::exception& err)
         {
             LOG_WRN << err.what();
-            buildNullTLVPacket(buffer);
+            buildAckTLVPacket(buffer);
             udpServer->toSendTo(buffer, sizeof(buffer), ip, port);
         }
     };

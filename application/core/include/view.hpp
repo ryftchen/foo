@@ -252,10 +252,10 @@ private:
     //! @param str - target string
     //! @return strings after split
     static std::vector<std::string> splitString(const std::string_view str);
-    //! @brief Build the null TLV packet.
+    //! @brief Build the TLV packet to acknowledge only.
     //! @param buf - TLV packet buffer
     //! @return buffer length
-    static int buildNullTLVPacket(char* buf);
+    static int buildAckTLVPacket(char* buf);
     //! @brief Build the TLV packet to stop connection.
     //! @param buf - TLV packet buffer
     //! @return buffer length
