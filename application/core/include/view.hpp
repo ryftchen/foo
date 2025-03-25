@@ -314,13 +314,13 @@ private:
     //! @brief Segmented output.
     //! @param buffer - output buffer
     static void segmentedOutput(const std::string_view buffer);
-    //! @brief Get the log contents.
+    //! @brief Preview the log contents.
     //! @return log contents
-    static std::string getLogContents();
-    //! @brief Get the status reports.
+    static std::string previewLogContents();
+    //! @brief Preview the status reports.
     //! @param frame - maximum frame
     //! @return status reports
-    static std::string getStatusReports(const std::uint16_t frame);
+    static std::string previewStatusReports(const std::uint16_t frame);
 
     //! @brief TCP server.
     std::shared_ptr<utility::socket::TCPServer> tcpServer{};

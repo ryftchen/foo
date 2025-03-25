@@ -545,7 +545,7 @@ try
 {
     std::unique_lock<std::mutex> parserLock(parserMtx);
     mainCLI.parseArgs(argc, argv);
-    validate();
+    preCheck();
 
     isParsed.store(true);
     parserLock.unlock();
@@ -578,7 +578,7 @@ catch (const std::exception& err)
     LOG_WRN << err.what();
 }
 
-void Command::validate()
+void Command::preCheck()
 {
     for (auto& bits = taskDispatcher.nativeCategories;
          const auto index : std::views::iota(0U, bits.size())
