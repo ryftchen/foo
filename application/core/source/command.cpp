@@ -16,8 +16,6 @@
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
 
-#include "utility/include/currying.hpp"
-
 namespace application::command
 {
 //! @brief Anonymous namespace.
