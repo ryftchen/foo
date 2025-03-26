@@ -295,17 +295,13 @@ retry:
     }
     catch (const std::exception& err)
     {
-        LOG_ERR << "Suspend the " << name << " during " << safeCurrentState() << " state: " << err.what();
+        LOG_ERR << "Suspend the " << name << " during " << safeCurrentState() << " state. " << err.what();
 
         safeProcessEvent(Standby{});
         if (awaitNotification2Retry())
         {
             safeProcessEvent(Relaunch{});
-            if (safeCurrentState() == State::init)
-            {
-                goto retry; // NOLINT(cppcoreguidelines-avoid-goto,hicpp-avoid-goto)
-            }
-            LOG_ERR_F("Failed to rollback {}.", name);
+            goto retry; // NOLINT(cppcoreguidelines-avoid-goto,hicpp-avoid-goto)
         }
     }
 }
@@ -1028,7 +1024,7 @@ void View::createViewServer()
                 const auto optIter = supportedOptions.find(args.at(0));
                 if (supportedOptions.cend() == optIter)
                 {
-                    throw std::runtime_error{"Unknown TCP message."};
+                    throw std::runtime_error{"Dropped unknown request message from TCP client."};
                 }
                 args.erase(args.cbegin());
                 optIter->second.functor(args, buffer);
@@ -1067,7 +1063,9 @@ void View::createViewServer()
             const auto optIter = supportedOptions.find(args.at(0));
             if (supportedOptions.cend() == optIter)
             {
-                throw std::runtime_error{"Unknown UDP message."};
+                throw std::runtime_error{
+                    "Dropped unknown request message from " + std::string{ip} + ':' + std::to_string(port)
+                    + " UDP client."};
             }
             args.erase(args.cbegin());
             optIter->second.functor(args, buffer);

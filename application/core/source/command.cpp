@@ -713,7 +713,7 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
         }
         catch (const std::exception& err)
         {
-            LOG_WRN << err.what();
+            LOG_WRN_F("Received response message from TCP server. {}", err.what());
         }
         disableWait4Client();
     };
@@ -726,7 +726,7 @@ template <>
 void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::socket::UDPSocket>& client)
 {
     client->onRawMessageReceived =
-        [&client](char* buffer, const int length, const std::string_view /*ip*/, const std::uint16_t /*port*/)
+        [&client](char* buffer, const int length, const std::string_view ip, const std::uint16_t port)
     {
         try
         {
@@ -737,7 +737,7 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
         }
         catch (const std::exception& err)
         {
-            LOG_WRN << err.what();
+            LOG_WRN_F("Received response message from {}:{} UDP server. {}", ip, port, err.what());
         }
         disableWait4Client();
     };

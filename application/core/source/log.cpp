@@ -84,17 +84,13 @@ retry:
     }
     catch (const std::exception& err)
     {
-        LOG_ERR << "Suspend the " << name << " during " << safeCurrentState() << " state: " << err.what();
+        LOG_ERR << "Suspend the " << name << " during " << safeCurrentState() << " state. " << err.what();
 
         safeProcessEvent(Standby{});
         if (awaitNotification2Retry())
         {
             safeProcessEvent(Relaunch{});
-            if (safeCurrentState() == State::init)
-            {
-                goto retry; // NOLINT(cppcoreguidelines-avoid-goto,hicpp-avoid-goto)
-            }
-            LOG_ERR_F("Failed to rollback {}.", name);
+            goto retry; // NOLINT(cppcoreguidelines-avoid-goto,hicpp-avoid-goto)
         }
     }
 }
