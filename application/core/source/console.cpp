@@ -8,6 +8,7 @@
 
 #ifndef __PRECOMPILED_HEADER
 #include <readline/readline.h>
+#include <algorithm>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -141,17 +142,15 @@ void Console::setDefaultOptions()
         [this](const Args& /*inputs*/)
         {
             const auto pairs = getOptionHelpPairs();
-            std::size_t maxLen = 0;
-            std::for_each(
-                pairs.cbegin(),
-                pairs.cend(),
-                [&maxLen](const auto& pair) { maxLen = std::max(pair.first.length(), maxLen); });
+            const std::size_t align =
+                std::ranges::max(pairs, std::less<std::size_t>{}, [](const auto& pair) { return pair.first.length(); })
+                    .first.length();
 
             std::ostringstream out{};
             out << "console option:\n\n";
             for (const auto& [option, help] : pairs)
             {
-                out << std::setiosflags(std::ios_base::left) << std::setw(maxLen) << option << "    " << help
+                out << std::setiosflags(std::ios_base::left) << std::setw(align) << option << "    " << help
                     << std::resetiosflags(std::ios_base::left) << '\n';
             }
             std::cout << out.str() << std::flush;
@@ -205,13 +204,7 @@ void Console::reserveConsole()
 
 char** Console::getOptionCompleter(const char* text, int start, int /*end*/)
 {
-    char** completionList = nullptr;
-    if (0 == start)
-    {
-        completionList = ::rl_completion_matches(text, &Console::getOptionIterator);
-    }
-
-    return completionList;
+    return (0 == start) ? ::rl_completion_matches(text, &Console::getOptionIterator) : nullptr;
 }
 
 char* Console::getOptionIterator(const char* text, int state)

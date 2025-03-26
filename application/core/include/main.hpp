@@ -24,14 +24,14 @@ static volatile std::sig_atomic_t signalStatus = 0;
 
 //! @brief Get the executable name.
 //! @return executable name
-[[gnu::always_inline]] static inline std::string getExecutableName()
+[[gnu::always_inline]] static inline std::string executableName()
 {
     return std::filesystem::canonical(std::filesystem::path{"/proc/self/exe"}).filename().string();
 }
 
 //! @brief Signal handler for SIGSEGV signal, etc.
 //! @param sig - signal type
-static void signalHandler(int sig)
+static void signalHandler(const int sig)
 {
     signalStatus = sig;
     constexpr std::uint16_t maxFrame = 128;
@@ -86,7 +86,7 @@ static void signalHandler(int sig)
     std::fprintf(
         ::stderr,
         "%s: Crash occurred.\n\n<SIGNAL>\n%d\n\n<BACKTRACE>\n%s\n<VERBOSE>\n%s\n",
-        getExecutableName().c_str(),
+        executableName().c_str(),
         sig,
         originalTrace.str().c_str(),
         detailedTrace.str().c_str());
@@ -99,7 +99,7 @@ static void signalHandler(int sig)
 }
 
 //! @brief The constructor function before starting the main function. Switch to the target path.
-[[using gnu: constructor, noinline]] static void inInitial()
+[[using gnu: constructor, noinline]] static void onInitial()
 {
     std::signal(SIGABRT, signalHandler);
     std::signal(SIGSEGV, signalHandler);
@@ -111,7 +111,7 @@ static void signalHandler(int sig)
     const auto homePath = std::filesystem::absolute(defaultHome);
     if (!std::filesystem::is_directory(homePath))
     {
-        std::fprintf(::stdout, "%s: Could not find the home directory.\n", getExecutableName().c_str());
+        std::fprintf(::stdout, "%s: Could not find the home directory.\n", executableName().c_str());
         std::exit(EXIT_FAILURE);
     }
 
@@ -126,12 +126,11 @@ static void signalHandler(int sig)
 }
 
 //! @brief The destructor function before finishing the main function. Check the signal status.
-[[using gnu: destructor, noinline]] static void inFinal()
+[[using gnu: destructor, noinline]] static void onFinal()
 {
     if (signalStatus)
     {
-        std::fprintf(
-            ::stdout, "%s: Signal %d was the last signal received.\n", getExecutableName().c_str(), signalStatus);
+        std::fprintf(::stdout, "%s: Signal %d was the last signal received.\n", executableName().c_str(), signalStatus);
     }
 }
 } // namespace application
