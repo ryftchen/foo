@@ -587,7 +587,7 @@ int View::buildTLVPacket4Journal(const std::vector<std::string>& args, char* buf
     }
 
     int len = 0;
-    if (const int shmId = fillSharedMemory(previewLogContents());
+    if (const int shmId = fillSharedMemory(logContentsPreview());
         tlv::encodeTLV(buf, len, tlv::TLVValue{.logShmId = shmId}) < 0)
     {
         throw std::runtime_error{"Failed to build packet for the journal option."};
@@ -612,7 +612,7 @@ int View::buildTLVPacket4Monitor(const std::vector<std::string>& args, char* buf
     }
 
     int len = 0;
-    if (const int shmId = fillSharedMemory(previewStatusReports(!args.empty() ? std::stoul(args.front()) : 1));
+    if (const int shmId = fillSharedMemory(statusReportsPreview(!args.empty() ? std::stoul(args.front()) : 1));
         tlv::encodeTLV(buf, len, tlv::TLVValue{.statusShmId = shmId}) < 0)
     {
         throw std::runtime_error{"Failed to build packet for the monitor option."};
@@ -887,7 +887,7 @@ void View::segmentedOutput(const std::string_view buffer)
     }
 }
 
-std::string View::previewLogContents()
+std::string View::logContentsPreview()
 {
     utility::common::ReadWriteGuard guard(log::info::loggerFileLock(), LockMode::read);
     constexpr std::uint16_t maxRows = 24 * 100;
@@ -899,7 +899,7 @@ std::string View::previewLogContents()
     return std::move(transfer).str();
 }
 
-std::string View::previewStatusReports(const std::uint16_t frame)
+std::string View::statusReportsPreview(const std::uint16_t frame)
 {
     const int pid = ::getpid();
     constexpr std::uint16_t totalLen = 512;
