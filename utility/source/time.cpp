@@ -58,7 +58,7 @@ std::string getCurrentSystemTime()
 //! @brief Create a one-shot timer with blocking.
 //! @param termination - termination condition
 //! @param timeout - timeout period (ms)
-//! @return the value is 0 if the termination condition is met, otherwise -1 on timeout
+//! @return 0 if the termination condition is met, otherwise -1 on timeout
 int blockingTimer(const std::function<bool()>& termination, const int timeout)
 {
     for (const Time timer{}; (timeout < 0) || (timer.elapsedTime() <= timeout);)

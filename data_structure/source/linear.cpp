@@ -79,7 +79,7 @@ static Node* getNode(DLL head, const int index)
 
 //! @brief Create a doubly linked list.
 //! @param dll - doubly linked list
-//! @return the value is 0 if successful, otherwise -1
+//! @return 0 if successful, otherwise -1
 int createDll(DLL* const dll)
 {
     *dll = createNode(nullptr);
@@ -93,7 +93,7 @@ int createDll(DLL* const dll)
 
 //! @brief Destroy a doubly linked list.
 //! @param dll - doubly linked list
-//! @return the value is 0 if successful, otherwise -1
+//! @return 0 if successful, otherwise -1
 int destroyDll(DLL* const dll)
 {
     if (nullptr == *dll)
@@ -174,7 +174,7 @@ void* dllGetLast(DLL head)
 //! @param head - head of the list
 //! @param index - node index
 //! @param val - value of the target node
-//! @return the value is 0 if successful, otherwise -1
+//! @return 0 if successful, otherwise -1
 int dllInsert(DLL head, const int index, void* const val)
 {
     if (0 == index)
@@ -205,7 +205,7 @@ int dllInsert(DLL head, const int index, void* const val)
 //! @brief Insert the target node into the doubly linked list as the first node.
 //! @param head - head of the list
 //! @param val - value of the target node
-//! @return the value is 0 if successful, otherwise -1
+//! @return 0 if successful, otherwise -1
 int dllInsertFirst(DLL head, void* const val)
 {
     Node* const node = createNode(val);
@@ -225,7 +225,7 @@ int dllInsertFirst(DLL head, void* const val)
 //! @brief Insert the target node into the doubly linked list as the last node.
 //! @param head - head of the list
 //! @param val - value of the target node
-//! @return the value is 0 if successful, otherwise -1
+//! @return 0 if successful, otherwise -1
 int dllInsertLast(DLL head, void* const val)
 {
     Node* const node = createNode(val);
@@ -245,7 +245,7 @@ int dllInsertLast(DLL head, void* const val)
 //! @brief Delete the target node from the doubly linked list by index.
 //! @param head - head of the list
 //! @param index - node index
-//! @return the value is 0 if successful, otherwise -1
+//! @return 0 if successful, otherwise -1
 int dllDelete(DLL head, const int index)
 {
     const Node* const node = getNode(head, index);
@@ -263,7 +263,7 @@ int dllDelete(DLL head, const int index)
 
 //! @brief Delete the first node from the doubly linked list.
 //! @param head - head of the list
-//! @return the value is 0 if successful, otherwise -1
+//! @return 0 if successful, otherwise -1
 int dllDeleteFirst(DLL head)
 {
     return dllDelete(head, 0);
@@ -271,7 +271,7 @@ int dllDeleteFirst(DLL head)
 
 //! @brief Delete the last node from the doubly linked list.
 //! @param head - head of the list
-//! @return the value is 0 if successful, otherwise -1
+//! @return 0 if successful, otherwise -1
 int dllDeleteLast(DLL head)
 {
     return dllDelete(head, dllSize(head) - 1);
@@ -282,7 +282,7 @@ namespace stack
 {
 //! @brief Create a stack.
 //! @param stack - stack
-//! @return the value is 0 if successful, otherwise -1
+//! @return 0 if successful, otherwise -1
 int createStack(Stack* const stack)
 {
     return createDll(stack);
@@ -290,7 +290,7 @@ int createStack(Stack* const stack)
 
 //! @brief Destroy a stack.
 //! @param stack - stack
-//! @return the value is 0 if successful, otherwise -1
+//! @return 0 if successful, otherwise -1
 int destroyStack(Stack* const stack)
 {
     return destroyDll(stack);
@@ -299,7 +299,7 @@ int destroyStack(Stack* const stack)
 //! @brief Push operation of the stack.
 //! @param head - head of the stack
 //! @param val - value of the target node
-//! @return the value is 0 if successful, otherwise -1
+//! @return 0 if successful, otherwise -1
 int stackPush(Stack head, void* const val)
 {
     return dllInsertFirst(head, val);
@@ -344,7 +344,7 @@ namespace queue
 {
 //! @brief Create a queue.
 //! @param queue - queue
-//! @return the value is 0 if successful, otherwise -1
+//! @return 0 if successful, otherwise -1
 int createQueue(Queue* const queue)
 {
     return createDll(queue);
@@ -352,7 +352,7 @@ int createQueue(Queue* const queue)
 
 //! @brief Destroy a queue.
 //! @param queue - queue
-//! @return the value is 0 if successful, otherwise -1
+//! @return 0 if successful, otherwise -1
 int destroyQueue(Queue* const queue)
 {
     return destroyDll(queue);
@@ -361,7 +361,7 @@ int destroyQueue(Queue* const queue)
 //! @brief Push operation of the queue.
 //! @param head - head of the queue
 //! @param val - value of the target node
-//! @return the value is 0 if successful, otherwise -1
+//! @return 0 if successful, otherwise -1
 int queuePush(Queue head, void* const val)
 {
     return dllInsertLast(head, val);
