@@ -29,7 +29,7 @@ volatile std::sig_atomic_t childInterrupted = 0;
 //! @brief The run function.
 //! @param argc - argument count
 //! @param argv - argument vector
-//! @return the argument to the implicit call to exit()
+//! @return 0 if successful, otherwise 1
 static int run(int argc, char* argv[])
 try
 {

@@ -116,7 +116,7 @@ static int deserialize(Packet& pkt, TLVValue& val, char (TLVValue::*pl)[])
 //! @param buf - TLV packet buffer
 //! @param len - buffer length
 //! @param val - value of TLV to encode
-//! @return the value is 0 if successful, otherwise -1
+//! @return 0 if successful, otherwise -1
 static int encodeTLV(char* buf, int& len, const TLVValue& val)
 {
     if (nullptr == buf)
@@ -154,7 +154,7 @@ static int encodeTLV(char* buf, int& len, const TLVValue& val)
 //! @param buf - TLV packet buffer
 //! @param len - buffer length
 //! @param val - value of TLV to decode
-//! @return the value is 0 if successful, otherwise -1
+//! @return 0 if successful, otherwise -1
 static int decodeTLV(char* buf, const int len, TLVValue& val)
 {
     if (nullptr == buf)

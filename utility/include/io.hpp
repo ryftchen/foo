@@ -58,7 +58,7 @@ private:
     static constexpr std::size_t bufferSize{4096};
 
     //! @brief Flush the output buffer with the file descriptor.
-    //! @return the value is 0 if successful, otherwise -1
+    //! @return 0 if successful, otherwise -1
     int flush();
 
 protected:
@@ -70,18 +70,18 @@ protected:
     //! @return character written
     int_type overflow(int_type c) override;
     //! @brief Synchronize the output buffer with the file descriptor.
-    //! @return the value is 0 if successful, otherwise -1
+    //! @return 0 if successful, otherwise -1
     int sync() override;
     //! @brief Set the position indicator for the stream buffer.
     //! @param off - offset to move the position indicator
     //! @param way - direction to move the position indicator
     //! @param mode - mode for seeking
-    //! @return the value is the new position if successful, otherwise -1
+    //! @return new position if successful, otherwise -1
     std::streampos seekoff(std::streamoff off, std::ios_base::seekdir way, std::ios_base::openmode mode) override;
     //! @brief Set the position indicator to an absolute position.
     //! @param sp - absolute position to set
     //! @param mode - mode for seeking
-    //! @return the value is the new position if successful, otherwise -1
+    //! @return new position if successful, otherwise -1
     std::streampos seekpos(std::streampos sp, std::ios_base::openmode mode) override;
     //! @brief Get the number of characters available for reading.
     //! @return number of characters available in the input buffer
