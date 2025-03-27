@@ -47,6 +47,74 @@ struct Bottom<Category>
     static constexpr std::uint8_t value{4};
 };
 
+//! @brief Gather and notify handlers.
+//! @tparam Key - type of key
+//! @tparam Subject - type of subject
+template <typename Key, typename Subject>
+class Notifier
+{
+public:
+    //! @brief Destroy the Notifier object.
+    virtual ~Notifier() = default;
+
+    //! @brief The base action when notified.
+    class ActionBase
+    {
+    public:
+        //! @brief Destroy the ActionBase object.
+        virtual ~ActionBase() = default;
+
+        //! @brief Perform the specific operation.
+        virtual void execute() const = 0;
+    };
+    //! @brief The action when notified.
+    //! @tparam CRTP - type of derived class for CRTP
+    template <typename CRTP>
+    class Action : public ActionBase
+    {
+    public:
+        //! @brief Perform the specific operation.
+        void execute() const override { static_cast<const CRTP&>(*this).execute(); }
+    };
+    //! @brief The handler that performs an action when notified.
+    //! @tparam key - specific key
+    template <Key key>
+    class Handler : public Action<Handler<key>>
+    {
+    public:
+        //! @brief Construct a new Handler object.
+        //! @param subject - involved subject
+        explicit Handler(const Subject& subject) : subject{subject} {}
+        //! @brief Construct a new Handler object.
+        Handler() = delete;
+
+        //! @brief Perform the specific operation.
+        void execute() const override;
+
+    private:
+        //! @brief The involved subject.
+        const Subject& subject{};
+    };
+
+    //! @brief Attach a handler with a specific key to the notifier.
+    //! @param key - specific key
+    //! @param handler - handler to be attached
+    void attach(const Key key, std::shared_ptr<ActionBase> handler) { handlers[key] = std::move(handler); }
+    //! @brief Notify the handler associated with the given key.
+    //! @param key - specific key
+    void notify(const Key key) const
+    {
+        if (handlers.contains(key))
+        {
+            handlers.at(key)->execute();
+        }
+    }
+
+private:
+    //! @brief Map of handlers identified by a key.
+    std::map<Key, std::shared_ptr<ActionBase>> handlers{};
+};
+
 //! @brief Execute the command line.
 class Command final
 {
@@ -126,7 +194,7 @@ private:
     //! @brief Check for excessive arguments.
     void checkForExcessiveArguments();
 
-    //! @brief Alias for the extend attribute of the sub-cli category.
+    //! @brief Alias for the extend attribute of the sub-cli's category.
     struct CategoryExtAttr
     {
         //! @brief The candidates for the choice.
@@ -134,7 +202,7 @@ private:
         //! @brief The internal event for applying.
         const action::EventType event{};
     };
-    //! @brief Alias for the map of sub-cli category name and CategoryExtAttr.
+    //! @brief Alias for the map of sub-cli's category name and CategoryExtAttr.
     using CategoryExtMap = std::map<std::string, CategoryExtAttr>;
     //! @brief Alias for the map of sub-cli name and CategoryExtMap.
     using ExtraChoiceMap = std::map<std::string, CategoryExtMap>;
@@ -146,11 +214,11 @@ private:
     //! @param cat - the specific value of Category enum
     //! @return alias name
     static consteval std::string_view getAlias(const Category cat);
-    //! @brief Reserve choices based on the maximum size of the entry under the sub-cli category.
+    //! @brief Reserve choices based on the maximum size of the entry under the sub-cli's category.
     //! @param choices - choices to be updated
     static void reserveChoices(std::vector<std::string>& choices);
-    //! @brief Extract all choices in the sub-cli category.
-    //! @tparam T - type of sub-cli category
+    //! @brief Extract all choices in the sub-cli's category.
+    //! @tparam T - type of sub-cli's category
     //! @return all choices
     template <typename T>
     static std::vector<std::string> extractChoices();
@@ -233,71 +301,11 @@ private:
         }
     } /** @brief Dispatch all types of tasks. */ taskDispatcher{};
 
-    //! @brief Gather and notify handlers.
-    class Notifier
-    {
-    public:
-        //! @brief Destroy the Notifier object.
-        virtual ~Notifier() = default;
-
-        //! @brief The base action when notified.
-        class ActionBase
-        {
-        public:
-            //! @brief Destroy the ActionBase object.
-            virtual ~ActionBase() = default;
-
-            //! @brief Perform the specific operation.
-            virtual void execute() const = 0;
-        };
-        //! @brief The action when notified.
-        //! @tparam CRTP - type of derived class for CRTP
-        template <typename CRTP>
-        class Action : public ActionBase
-        {
-        public:
-            //! @brief Perform the specific operation.
-            void execute() const override { static_cast<const CRTP&>(*this).execute(); }
-        };
-        //! @brief The handler that performs an action when notified.
-        //! @tparam Cat - the specific value of Category enum
-        //! @tparam T - type of involved object
-        template <Category Cat, typename T = Command>
-        class Handler : public Action<Handler<Cat>>
-        {
-        public:
-            //! @brief Construct a new Handler object.
-            //! @param obj - target involved object
-            explicit Handler(const T& obj) : obj{obj} {}
-            //! @brief Construct a new Handler object.
-            Handler() = delete;
-
-            //! @brief Perform the specific operation.
-            void execute() const override;
-
-        private:
-            //! @brief The involved object.
-            const T& obj{};
-        };
-
-        //! @brief Attach a handler with a specific key to the notifier.
-        //! @param cat - the specific value of Category enum
-        //! @param handler - handler to be attached
-        void attach(const Category cat, std::shared_ptr<ActionBase> handler) { handlers[cat] = std::move(handler); }
-        //! @brief Notify the handler associated with the given key.
-        //! @param cat - the specific value of Category enum
-        void notify(const Category cat) const
-        {
-            if (handlers.contains(cat))
-            {
-                handlers.at(cat)->execute();
-            }
-        }
-
-    private:
-        //! @brief Map of handlers identified by a key.
-        std::map<Category, std::shared_ptr<ActionBase>> handlers{};
-    } /** @brief Notify for native type tasks. */ defaultNotifier{};
+    friend class Notifier<Category, Command>;
+    //! @brief Alias for the local notifier.
+    using LocalNotifier = Notifier<Category, Command>;
+    //! @brief Local notification for native type tasks.
+    LocalNotifier defaultNotifier{};
     //! @brief Forward messages for extra type tasks.
     action::MessageForwarder applyingForwarder{};
 
@@ -323,6 +331,9 @@ private:
     static void enableWait4Client();
     //! @brief Awaken inside the client in console mode.
     static void disableWait4Client();
+    //! @brief Build the exit request message in console mode.
+    //! @return exit request message
+    static std::string buildExitRequest4Client();
     //! @brief Console latency in the millisecond range.
     static void interactionLatency();
     //! @brief Validate dependencies version.
