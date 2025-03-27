@@ -8,12 +8,6 @@
 
 #include "configure.hpp"
 
-#ifndef __PRECOMPILED_HEADER
-#include <vector>
-#else
-#include "application/pch/precompiled_header.hpp"
-#endif // __PRECOMPILED_HEADER
-
 #include "utility/include/common.hpp"
 #include "utility/include/fsm.hpp"
 #include "utility/include/socket.hpp"
@@ -30,74 +24,6 @@ inline constexpr std::uint16_t minPortNumber = 1024;
 inline constexpr std::uint16_t maxPortNumber = 65535;
 //! @brief The internal symbol for exiting.
 inline constexpr std::string_view exitSymbol = "stop";
-
-//! @brief Type-length-value scheme.
-namespace tlv
-{
-//! @brief Enumerate the types in TLV.
-enum TLVType : int
-{
-    //! @brief Header.
-    header = 0x3b9aca07,
-    //! @brief Stop.
-    stop = 0,
-    //! @brief Depend.
-    depend,
-    //! @brief Execute.
-    execute,
-    //! @brief Journal.
-    journal,
-    //! @brief Monitor.
-    monitor,
-    //! @brief Profile.
-    profile
-};
-
-//! @brief TLV packet.
-class Packet
-{
-public:
-    //! @brief Construct a new Packet object.
-    //! @param buf - TVL packet buffer
-    //! @param len - buffer length
-    Packet(char* buf, const std::uint32_t len) : buffer{buf}, tail{buffer + len}, writer{buffer}, reader{buffer} {}
-    //! @brief Destroy the Packet object.
-    virtual ~Packet() = default;
-
-    //! @brief Write data to the packet buffer.
-    //! @tparam T - type of data to be written
-    //! @param data - original data
-    //! @return whether it is continuously writable
-    template <typename T>
-    bool write(const T data);
-    //! @brief Write data to the packet buffer.
-    //! @param dst - data after conversion
-    //! @param offset - data offset
-    //! @return whether it is continuously writable
-    bool write(const void* const dst, const int offset);
-    //! @brief Read data to the packet buffer.
-    //! @tparam T - type of data to be read
-    //! @param data - original data
-    //! @return whether it is continuously readable
-    template <typename T>
-    bool read(T* const data);
-    //! @brief Read data to the packet buffer.
-    //! @param dst - data after conversion
-    //! @param offset - data offset
-    //! @return whether it is continuously readable
-    bool read(void* const dst, const int offset);
-
-private:
-    //! @brief TLV packet buffer pointer.
-    char* buffer{nullptr};
-    //! @brief Pointer to the end of the buffer.
-    const char* const tail{nullptr};
-    //! @brief Pointer to the current writing location.
-    char* writer{nullptr};
-    //! @brief Pointer to the current reading location.
-    const char* reader{nullptr};
-};
-} // namespace tlv
 
 //! @brief Viewer.
 class View final : public utility::fsm::FSM<View>
@@ -252,53 +178,39 @@ private:
     //! @param str - target string
     //! @return strings after split
     static std::vector<std::string> splitString(const std::string_view str);
-    //! @brief Build the TLV packet to acknowledge only.
+    //! @brief Build the TLV packet of the response message to acknowledge only.
     //! @param buf - TLV packet buffer
     //! @return buffer length
     static int buildAckTLVPacket(char* buf);
-    //! @brief Build the TLV packet to stop connection.
+    //! @brief Build the TLV packet of the response message to stop connection.
     //! @param buf - TLV packet buffer
     //! @return buffer length
     static int buildTLVPacket4Stop(char* buf);
-    //! @brief Build the TLV packet to get library information.
+    //! @brief Build the TLV packet of the response message to get library information.
     //! @param args - container of arguments
     //! @param buf - TLV packet buffer
     //! @return buffer length
     static int buildTLVPacket4Depend(const std::vector<std::string>& args, char* buf);
-    //! @brief Build the TLV packet to get bash outputs.
+    //! @brief Build the TLV packet of the response message to get bash outputs.
     //! @param args - container of arguments
     //! @param buf - TLV packet buffer
     //! @return buffer length
     static int buildTLVPacket4Execute(const std::vector<std::string>& args, char* buf);
-    //! @brief Build the TLV packet to get log contents.
+    //! @brief Build the TLV packet of the response message to get log contents.
     //! @param args - container of arguments
     //! @param buf - TLV packet buffer
     //! @return buffer length
     static int buildTLVPacket4Journal(const std::vector<std::string>& args, char* buf);
-    //! @brief Build the TLV packet to get status reports.
+    //! @brief Build the TLV packet of the response message to get status reports.
     //! @param args - container of arguments
     //! @param buf - TLV packet buffer
     //! @return buffer length
     static int buildTLVPacket4Monitor(const std::vector<std::string>& args, char* buf);
-    //! @brief Build the TLV packet to get current configuration.
+    //! @brief Build the TLV packet of the response message to get current configuration.
     //! @param args - container of arguments
     //! @param buf - TLV packet buffer
     //! @return buffer length
     static int buildTLVPacket4Profile(const std::vector<std::string>& args, char* buf);
-    //! @brief Encrypt the message with AES-128-CFB-128.
-    //! @param buffer - message buffer
-    //! @param length - buffer length
-    static void encryptMessage(char* buffer, const int length);
-    //! @brief Decrypt the message with AES-128-CFB-128.
-    //! @param buffer - message buffer
-    //! @param length - buffer length
-    static void decryptMessage(char* buffer, const int length);
-    //! @brief Compress the data with LZ4.
-    //! @param cache - data cache
-    static void compressData(std::vector<char>& cache);
-    //! @brief Decompress the data with LZ4.
-    //! @param cache - data cache
-    static void decompressData(std::vector<char>& cache);
     //! @brief Fill the shared memory.
     //! @param contents - contents to be filled
     //! @return shm id
@@ -342,6 +254,10 @@ private:
     std::atomic<bool> outputCompleted{false};
     //! @brief Spin lock for controlling state.
     mutable utility::common::SpinLock stateLock{};
+    //! @brief Renew the server.
+    //! @tparam T - type of server
+    template <typename T>
+    void renewServer();
 
     //! @brief Safely retrieve the current state.
     //! @return current state

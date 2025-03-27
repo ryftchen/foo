@@ -12,8 +12,6 @@
 #include <format>
 #include <forward_list>
 #include <iostream>
-#include <mutex>
-#include <queue>
 #include <source_location>
 #include <sstream>
 #else

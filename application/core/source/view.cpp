@@ -5,6 +5,7 @@
 //! @copyright Copyright (c) 2022-2025 ryftchen. All rights reserved.
 
 #include "view.hpp"
+#include "data.hpp"
 #include "log.hpp"
 
 #ifndef __PRECOMPILED_HEADER
@@ -26,12 +27,32 @@
 
 namespace application::view
 {
+//! @brief Type-length-value scheme.
 namespace tlv
 {
 //! @brief Invalid shared memory id in TLV value.
 constexpr int invalidShmId = -1;
 //! @brief Default information size in TLV value.
 constexpr std::uint16_t defaultInfoSize = 256;
+
+//! @brief Enumerate the types in TLV.
+enum TLVType : int
+{
+    //! @brief Header.
+    header = 0x3b9aca07,
+    //! @brief Stop.
+    stop = 0,
+    //! @brief Depend.
+    depend,
+    //! @brief Execute.
+    execute,
+    //! @brief Journal.
+    journal,
+    //! @brief Monitor.
+    monitor,
+    //! @brief Profile.
+    profile
+};
 
 //! @brief Value in TLV.
 struct TLVValue
@@ -58,7 +79,7 @@ struct TLVValue
 //! @return summary offset of length-value
 template <typename T>
 requires std::is_arithmetic_v<T>
-static int serialize(Packet& pkt, const TLVValue& val, T TLVValue::*pl)
+static int serialize(data::Packet& pkt, const TLVValue& val, T TLVValue::*pl)
 {
     constexpr int length = sizeof(T);
     pkt.write<int>(length);
@@ -72,7 +93,7 @@ static int serialize(Packet& pkt, const TLVValue& val, T TLVValue::*pl)
 //! @param val - value of TLV to encode
 //! @param pl - target payload that has been included in the value of TLV
 //! @return summary offset of length-value
-static int serialize(Packet& pkt, const TLVValue& val, char (TLVValue::*pl)[])
+static int serialize(data::Packet& pkt, const TLVValue& val, char (TLVValue::*pl)[])
 {
     const int length = std::strlen(val.*pl);
     pkt.write<int>(length);
@@ -89,7 +110,7 @@ static int serialize(Packet& pkt, const TLVValue& val, char (TLVValue::*pl)[])
 //! @return summary offset of length-value
 template <typename T>
 requires std::is_arithmetic_v<T>
-static int deserialize(Packet& pkt, TLVValue& val, T TLVValue::*pl)
+static int deserialize(data::Packet& pkt, TLVValue& val, T TLVValue::*pl)
 {
     int length = 0;
     pkt.read<int>(&length);
@@ -103,7 +124,7 @@ static int deserialize(Packet& pkt, TLVValue& val, T TLVValue::*pl)
 //! @param val - value of TLV to decode
 //! @param pl - target payload that has been included in the value of TLV
 //! @return summary offset of length-value
-static int deserialize(Packet& pkt, TLVValue& val, char (TLVValue::*pl)[])
+static int deserialize(data::Packet& pkt, TLVValue& val, char (TLVValue::*pl)[])
 {
     int length = 0;
     pkt.read<int>(&length);
@@ -125,13 +146,12 @@ static int encodeTLV(char* buf, int& len, const TLVValue& val)
     }
 
     int sum = 0;
-    Packet enc(buf, len);
+    data::Packet enc(buf, len);
     enc.write<int>(TLVType::header);
     enc.write<int>(sum);
 
     enc.write<int>(TLVType::stop);
     sum += sizeof(int) + serialize(enc, val, &TLVValue::stopTag);
-
     enc.write<int>(TLVType::depend);
     sum += sizeof(int) + serialize(enc, val, &TLVValue::libInfo);
     enc.write<int>(TLVType::execute);
@@ -162,7 +182,7 @@ static int decodeTLV(char* buf, const int len, TLVValue& val)
         return -1;
     }
 
-    Packet dec(buf, len);
+    data::Packet dec(buf, len);
     int type = 0;
     dec.read<int>(&type);
     if (TLVType::header != type)
@@ -202,58 +222,6 @@ static int decodeTLV(char* buf, const int len, TLVValue& val)
     }
 
     return 0;
-}
-
-template <typename T>
-bool Packet::write(const T data)
-{
-    T temp{};
-    if constexpr (sizeof(T) == sizeof(int))
-    {
-        temp = ::htonl(data);
-    }
-    else if constexpr (sizeof(T) == sizeof(short))
-    {
-        temp = ::htons(data);
-    }
-    else
-    {
-        temp = data;
-    }
-
-    return write(&temp, sizeof(T));
-}
-
-bool Packet::write(const void* const dst, const int offset)
-{
-    std::memcpy(writer, dst, offset);
-    writer += offset;
-
-    return (writer < tail) ? true : false;
-}
-
-template <typename T>
-bool Packet::read(T* const data)
-{
-    const bool isEnd = read(data, sizeof(T));
-    if constexpr (sizeof(T) == sizeof(int))
-    {
-        *data = ::ntohl(*data);
-    }
-    else if constexpr (sizeof(T) == sizeof(short))
-    {
-        *data = ::ntohs(*data);
-    }
-
-    return isEnd;
-}
-
-bool Packet::read(void* const dst, const int offset)
-{
-    std::memcpy(dst, reader, offset);
-    reader += offset;
-
-    return (reader < tail) ? true : false;
 }
 } // namespace tlv
 
@@ -390,7 +358,7 @@ catch (const std::exception& err)
 
 bool View::Access::onParsing(char* buffer, const int length) const
 {
-    decryptMessage(buffer, length);
+    data::decryptMessage(buffer, length);
 
     tlv::TLVValue value{};
     if (tlv::decodeTLV(buffer, length, value) < 0)
@@ -466,7 +434,7 @@ int View::buildAckTLVPacket(char* buf)
     {
         throw std::runtime_error{"Failed to build acknowledge packet."};
     }
-    encryptMessage(buf, len);
+    data::encryptMessage(buf, len);
 
     return len;
 }
@@ -478,7 +446,7 @@ int View::buildTLVPacket4Stop(char* buf)
     {
         throw std::runtime_error{"Failed to build packet to stop"};
     }
-    encryptMessage(buf, len);
+    data::encryptMessage(buf, len);
 
     return len;
 }
@@ -542,7 +510,7 @@ int View::buildTLVPacket4Depend(const std::vector<std::string>& args, char* buf)
     {
         throw std::runtime_error{"Failed to build packet for the depend option."};
     }
-    encryptMessage(buf, len);
+    data::encryptMessage(buf, len);
 
     return len;
 }
@@ -574,7 +542,7 @@ int View::buildTLVPacket4Execute(const std::vector<std::string>& args, char* buf
     {
         throw std::runtime_error{"Failed to build packet for the execute option."};
     }
-    encryptMessage(buf, len);
+    data::encryptMessage(buf, len);
 
     return len;
 }
@@ -592,7 +560,7 @@ int View::buildTLVPacket4Journal(const std::vector<std::string>& args, char* buf
     {
         throw std::runtime_error{"Failed to build packet for the journal option."};
     }
-    encryptMessage(buf, len);
+    data::encryptMessage(buf, len);
 
     return len;
 }
@@ -617,7 +585,7 @@ int View::buildTLVPacket4Monitor(const std::vector<std::string>& args, char* buf
     {
         throw std::runtime_error{"Failed to build packet for the monitor option."};
     }
-    encryptMessage(buf, len);
+    data::encryptMessage(buf, len);
 
     return len;
 }
@@ -637,106 +605,9 @@ int View::buildTLVPacket4Profile(const std::vector<std::string>& args, char* buf
     {
         throw std::runtime_error{"Failed to build packet for the profile option."};
     }
-    encryptMessage(buf, len);
+    data::encryptMessage(buf, len);
 
     return len;
-}
-
-// NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
-void View::encryptMessage(char* buffer, const int length)
-{
-    ::EVP_CIPHER_CTX* const ctx = ::EVP_CIPHER_CTX_new();
-    do
-    {
-        if (constexpr std::array<unsigned char, 16> key =
-                {0x37, 0x47, 0x10, 0x33, 0x6F, 0x18, 0xC8, 0x9A, 0x4B, 0xC1, 0x2B, 0x97, 0x92, 0x19, 0x25, 0x6D},
-            iv = {0x9F, 0x7B, 0x0E, 0x68, 0x2D, 0x2F, 0x4E, 0x7F, 0x1A, 0xFA, 0x61, 0xD3, 0xC6, 0x18, 0xF4, 0xC1};
-            !::EVP_EncryptInit_ex(ctx, ::EVP_aes_128_cfb128(), nullptr, key.data(), iv.data()))
-        {
-            break;
-        }
-
-        int outLen = 0;
-        if (!::EVP_EncryptUpdate(
-                ctx,
-                reinterpret_cast<unsigned char*>(buffer),
-                &outLen,
-                reinterpret_cast<unsigned char*>(buffer),
-                length))
-        {
-            break;
-        }
-
-        if (int tempLen = 0; !::EVP_EncryptFinal_ex(ctx, reinterpret_cast<unsigned char*>(buffer) + outLen, &tempLen))
-        {
-            break;
-        }
-    }
-    while (0);
-    ::EVP_CIPHER_CTX_free(ctx);
-}
-
-void View::decryptMessage(char* buffer, const int length)
-{
-    ::EVP_CIPHER_CTX* const ctx = ::EVP_CIPHER_CTX_new();
-    do
-    {
-        if (constexpr std::array<unsigned char, 16> key =
-                {0x37, 0x47, 0x10, 0x33, 0x6F, 0x18, 0xC8, 0x9A, 0x4B, 0xC1, 0x2B, 0x97, 0x92, 0x19, 0x25, 0x6D},
-            iv = {0x9F, 0x7B, 0x0E, 0x68, 0x2D, 0x2F, 0x4E, 0x7F, 0x1A, 0xFA, 0x61, 0xD3, 0xC6, 0x18, 0xF4, 0xC1};
-            !::EVP_DecryptInit_ex(ctx, ::EVP_aes_128_cfb128(), nullptr, key.data(), iv.data()))
-        {
-            break;
-        }
-
-        int outLen = 0;
-        if (!::EVP_DecryptUpdate(
-                ctx,
-                reinterpret_cast<unsigned char*>(buffer),
-                &outLen,
-                reinterpret_cast<unsigned char*>(buffer),
-                length))
-        {
-            break;
-        }
-
-        if (int tempLen = 0; !::EVP_DecryptFinal_ex(ctx, reinterpret_cast<unsigned char*>(buffer) + outLen, &tempLen))
-        {
-            break;
-        }
-    }
-    while (0);
-    ::EVP_CIPHER_CTX_free(ctx);
-}
-// NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
-
-void View::compressData(std::vector<char>& cache)
-{
-    const int compressedCap = ::LZ4_compressBound(cache.size());
-    std::vector<char> compressed(compressedCap);
-
-    const int compressedSize = ::LZ4_compress_default(cache.data(), compressed.data(), cache.size(), compressedCap);
-    if (compressedSize < 0)
-    {
-        throw std::runtime_error{"Failed to compress data."};
-    }
-    compressed.resize(compressedSize);
-    cache = std::move(compressed);
-}
-
-void View::decompressData(std::vector<char>& cache)
-{
-    constexpr int decompressedCap = 65536 * 10 * 10;
-    std::vector<char> decompressed(decompressedCap);
-
-    const int decompressedSize =
-        ::LZ4_decompress_safe(cache.data(), decompressed.data(), cache.size(), decompressedCap);
-    if (decompressedSize < 0)
-    {
-        throw std::runtime_error{"Failed to decompress data."};
-    }
-    decompressed.resize(decompressedSize);
-    cache = std::move(decompressed);
 }
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
@@ -757,19 +628,21 @@ int View::fillSharedMemory(const std::string_view contents)
     auto* const shrMem = reinterpret_cast<SharedMemory*>(shm);
     for (shrMem->signal.store(false);;)
     {
-        if (!shrMem->signal.load())
+        if (shrMem->signal.load())
         {
-            std::vector<char> processed(contents.data(), contents.data() + contents.length());
-            compressData(processed);
-            encryptMessage(processed.data(), processed.size());
-            *reinterpret_cast<int*>(shrMem->buffer) = processed.size();
-            std::memcpy(
-                shrMem->buffer + sizeof(int), processed.data(), std::min(maxShmSize, processed.size()) * sizeof(char));
-
-            shrMem->signal.store(true);
-            break;
+            std::this_thread::yield();
+            continue;
         }
-        std::this_thread::yield();
+
+        std::vector<char> processed(contents.data(), contents.data() + contents.length());
+        data::compressData(processed);
+        data::encryptMessage(processed.data(), processed.size());
+        *reinterpret_cast<int*>(shrMem->buffer) = processed.size();
+        std::memcpy(
+            shrMem->buffer + sizeof(int), processed.data(), std::min(maxShmSize, processed.size()) * sizeof(char));
+
+        shrMem->signal.store(true);
+        break;
     }
     ::shmdt(shm);
 
@@ -787,19 +660,21 @@ void View::fetchSharedMemory(const int shmId, std::string& contents)
     auto* const shrMem = reinterpret_cast<SharedMemory*>(shm);
     for (shrMem->signal.store(true);;)
     {
-        if (shrMem->signal.load())
+        if (!shrMem->signal.load())
         {
-            std::vector<char> processed(*reinterpret_cast<int*>(shrMem->buffer));
-            std::memcpy(
-                processed.data(), shrMem->buffer + sizeof(int), std::min(maxShmSize, processed.size()) * sizeof(char));
-            decryptMessage(processed.data(), processed.size());
-            decompressData(processed);
-            contents = std::string{processed.data(), processed.data() + processed.size()};
-
-            shrMem->signal.store(false);
-            break;
+            std::this_thread::yield();
+            continue;
         }
-        std::this_thread::yield();
+
+        std::vector<char> processed(*reinterpret_cast<int*>(shrMem->buffer));
+        std::memcpy(
+            processed.data(), shrMem->buffer + sizeof(int), std::min(maxShmSize, processed.size()) * sizeof(char));
+        data::decryptMessage(processed.data(), processed.size());
+        data::decompressData(processed);
+        contents = std::string{processed.data(), processed.data() + processed.size()};
+
+        shrMem->signal.store(false);
+        break;
     }
     ::shmdt(shm);
     ::shmctl(shmId, IPC_RMID, nullptr);
@@ -959,6 +834,104 @@ std::string View::statusReportsPreview(const std::uint16_t frame)
         { return acc.empty() ? utility::io::executeCommand(cmd) : (acc + '\n' + utility::io::executeCommand(cmd)); });
 }
 
+//! @brief Renew the TCP server.
+template <>
+void View::renewServer<utility::socket::TCPServer>()
+{
+    tcpServer = std::make_shared<utility::socket::TCPServer>();
+    tcpServer->onNewConnection = [this](const std::shared_ptr<utility::socket::TCPSocket> newSocket)
+    {
+        std::weak_ptr<utility::socket::TCPSocket> weakSock = newSocket;
+        newSocket->onMessageReceived = [this, weakSock](const std::string_view message)
+        {
+            if (message.empty())
+            {
+                return;
+            }
+
+            auto newSocket = weakSock.lock();
+            if (!newSocket)
+            {
+                return;
+            }
+
+            char respBuffer[1024] = {'\0'};
+            try
+            {
+                const auto plaintext = utility::common::base64Decode(message);
+                if (plaintext == exitSymbol)
+                {
+                    buildTLVPacket4Stop(respBuffer);
+                    newSocket->toSend(respBuffer, sizeof(respBuffer));
+                    newSocket->asyncExit();
+                    return;
+                }
+
+                auto args = splitString(plaintext);
+                const auto optIter = supportedOptions.find(args.at(0));
+                if (supportedOptions.cend() == optIter)
+                {
+                    throw std::runtime_error{"Dropped unknown request message from TCP client."};
+                }
+                args.erase(args.cbegin());
+                optIter->second.functor(args, respBuffer);
+                newSocket->toSend(respBuffer, sizeof(respBuffer));
+            }
+            catch (const std::exception& err)
+            {
+                LOG_WRN << err.what();
+                buildAckTLVPacket(respBuffer);
+                newSocket->toSend(respBuffer, sizeof(respBuffer));
+            }
+        };
+    };
+}
+
+//! @brief Renew the UDP server.
+template <>
+void View::renewServer<utility::socket::UDPServer>()
+{
+    udpServer = std::make_shared<utility::socket::UDPServer>();
+    udpServer->onMessageReceived =
+        [this](const std::string_view message, const std::string_view ip, const std::uint16_t port)
+    {
+        if (message.empty())
+        {
+            return;
+        }
+
+        char respBuffer[1024] = {'\0'};
+        try
+        {
+            const auto plaintext = utility::common::base64Decode(message);
+            if (plaintext == exitSymbol)
+            {
+                buildTLVPacket4Stop(respBuffer);
+                udpServer->toSendTo(respBuffer, sizeof(respBuffer), ip, port);
+                return;
+            }
+
+            auto args = splitString(plaintext);
+            const auto optIter = supportedOptions.find(args.at(0));
+            if (supportedOptions.cend() == optIter)
+            {
+                throw std::runtime_error{
+                    "Dropped unknown request message from " + std::string{ip} + ':' + std::to_string(port)
+                    + " UDP client."};
+            }
+            args.erase(args.cbegin());
+            optIter->second.functor(args, respBuffer);
+            udpServer->toSendTo(respBuffer, sizeof(respBuffer), ip, port);
+        }
+        catch (const std::exception& err)
+        {
+            LOG_WRN << err.what();
+            buildAckTLVPacket(respBuffer);
+            udpServer->toSendTo(respBuffer, sizeof(respBuffer), ip, port);
+        }
+    };
+}
+
 View::State View::safeCurrentState() const
 {
     stateLock.lock();
@@ -991,93 +964,8 @@ bool View::isInServingState(const State state) const
 
 void View::createViewServer()
 {
-    tcpServer = std::make_shared<utility::socket::TCPServer>();
-    tcpServer->onNewConnection = [this](const std::shared_ptr<utility::socket::TCPSocket> newSocket)
-    {
-        std::weak_ptr<utility::socket::TCPSocket> weakSock = newSocket;
-        newSocket->onMessageReceived = [this, weakSock](const std::string_view message)
-        {
-            if (message.empty())
-            {
-                return;
-            }
-
-            auto newSocket = weakSock.lock();
-            if (!newSocket)
-            {
-                return;
-            }
-
-            char buffer[1024] = {'\0'};
-            try
-            {
-                const auto plaintext = utility::common::base64Decode(message);
-                if (plaintext == exitSymbol)
-                {
-                    buildTLVPacket4Stop(buffer);
-                    newSocket->toSend(buffer, sizeof(buffer));
-                    newSocket->asyncExit();
-                    return;
-                }
-
-                auto args = splitString(plaintext);
-                const auto optIter = supportedOptions.find(args.at(0));
-                if (supportedOptions.cend() == optIter)
-                {
-                    throw std::runtime_error{"Dropped unknown request message from TCP client."};
-                }
-                args.erase(args.cbegin());
-                optIter->second.functor(args, buffer);
-                newSocket->toSend(buffer, sizeof(buffer));
-            }
-            catch (const std::exception& err)
-            {
-                LOG_WRN << err.what();
-                buildAckTLVPacket(buffer);
-                newSocket->toSend(buffer, sizeof(buffer));
-            }
-        };
-    };
-
-    udpServer = std::make_shared<utility::socket::UDPServer>();
-    udpServer->onMessageReceived =
-        [this](const std::string_view message, const std::string_view ip, const std::uint16_t port)
-    {
-        if (message.empty())
-        {
-            return;
-        }
-
-        char buffer[1024] = {'\0'};
-        try
-        {
-            const auto plaintext = utility::common::base64Decode(message);
-            if (plaintext == exitSymbol)
-            {
-                buildTLVPacket4Stop(buffer);
-                udpServer->toSendTo(buffer, sizeof(buffer), ip, port);
-                return;
-            }
-
-            auto args = splitString(plaintext);
-            const auto optIter = supportedOptions.find(args.at(0));
-            if (supportedOptions.cend() == optIter)
-            {
-                throw std::runtime_error{
-                    "Dropped unknown request message from " + std::string{ip} + ':' + std::to_string(port)
-                    + " UDP client."};
-            }
-            args.erase(args.cbegin());
-            optIter->second.functor(args, buffer);
-            udpServer->toSendTo(buffer, sizeof(buffer), ip, port);
-        }
-        catch (const std::exception& err)
-        {
-            LOG_WRN << err.what();
-            buildAckTLVPacket(buffer);
-            udpServer->toSendTo(buffer, sizeof(buffer), ip, port);
-        }
-    };
+    renewServer<utility::socket::TCPServer>();
+    renewServer<utility::socket::UDPServer>();
 }
 
 void View::destroyViewServer()
