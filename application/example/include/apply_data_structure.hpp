@@ -161,16 +161,12 @@ public:
     //! @brief Destroy the Linear object.
     virtual ~Linear() = default;
 
+    // NOLINTBEGIN(google-build-using-namespace)
     //! @brief Linked list.
     //! @return procedure output
     static std::ostringstream linkedList()
     {
-        namespace doubly_linked_list = date_structure::linear::doubly_linked_list;
-        using doubly_linked_list::createDll, doubly_linked_list::destroyDll, doubly_linked_list::DLL,
-            doubly_linked_list::dllDelete, doubly_linked_list::dllDeleteFirst, doubly_linked_list::dllDeleteLast,
-            doubly_linked_list::dllGet, doubly_linked_list::dllGetFirst, doubly_linked_list::dllGetLast,
-            doubly_linked_list::dllInsert, doubly_linked_list::dllInsertFirst, doubly_linked_list::dllInsertLast,
-            doubly_linked_list::dllIsEmpty, doubly_linked_list::dllSize;
+        using namespace date_structure::linear::doubly_linked_list;
         date_structure::linear::Output tracker{};
         auto& process = tracker.output();
         process << std::boolalpha;
@@ -223,9 +219,7 @@ public:
     //! @return procedure output
     static std::ostringstream stack()
     {
-        namespace stack = date_structure::linear::stack;
-        using stack::createStack, stack::destroyStack, stack::Stack, stack::stackIsEmpty, stack::stackPop,
-            stack::stackPush, stack::stackSize, stack::stackTop;
+        using namespace date_structure::linear::stack;
         date_structure::linear::Output tracker{};
         auto& process = tracker.output();
         process << std::boolalpha;
@@ -270,9 +264,7 @@ public:
     //! @return procedure output
     static std::ostringstream queue()
     {
-        namespace queue = date_structure::linear::queue;
-        using queue::createQueue, queue::destroyQueue, queue::Queue, queue::queueFront, queue::queueIsEmpty,
-            queue::queuePop, queue::queuePush, queue::queueSize;
+        using namespace date_structure::linear::queue;
         date_structure::linear::Output tracker{};
         auto& process = tracker.output();
         process << std::boolalpha;
@@ -313,6 +305,7 @@ public:
 
         return std::ostringstream(process.str());
     }
+    // NOLINTEND(google-build-using-namespace)
 };
 
 //! @brief Structure of linear.
@@ -347,13 +340,13 @@ public:
     //! @brief Destroy the Tree object.
     virtual ~Tree() = default;
 
+    // NOLINTBEGIN(google-build-using-namespace)
     //! @brief Binary search.
     //! @return procedure output
     static std::ostringstream bs()
     {
-        namespace bs = date_structure::tree::bs;
-        using bs::BSTree, bs::bsTreeDelete, bs::bsTreeInsert, bs::destroyBSTree, bs::getMaximum, bs::getMinimum;
-        bs::Output tracker{};
+        using namespace date_structure::tree::bs;
+        Output tracker{};
         auto& process = tracker.output();
         BSTree root = nullptr;
         constexpr std::array<std::int16_t, 6> nodes = {1, 5, 4, 3, 2, 6};
@@ -398,10 +391,8 @@ public:
     //! @return procedure output
     static std::ostringstream avl()
     {
-        namespace avl = date_structure::tree::avl;
-        using avl::AVLTree, avl::avlTreeDelete, avl::avlTreeInsert, avl::destroyAVLTree, avl::getHeight,
-            avl::getMaximum, avl::getMinimum;
-        avl::Output tracker{};
+        using namespace date_structure::tree::avl;
+        Output tracker{};
         auto& process = tracker.output();
         AVLTree root = nullptr;
         constexpr std::array<std::int16_t, 16> nodes = {3, 2, 1, 4, 5, 6, 7, 16, 15, 14, 13, 12, 11, 10, 8, 9};
@@ -449,10 +440,8 @@ public:
     //! @return procedure output
     static std::ostringstream splay()
     {
-        namespace splay = date_structure::tree::splay;
-        using splay::destroySplayTree, splay::getMaximum, splay::getMinimum, splay::SplayTree, splay::splayTreeInsert,
-            splay::splayTreeSplay;
-        splay::Output tracker{};
+        using namespace date_structure::tree::splay;
+        Output tracker{};
         auto& process = tracker.output();
         SplayTree root = nullptr;
         constexpr std::array<std::int16_t, 7> nodes = {10, 50, 40, 70, 30, 20, 60};
@@ -500,6 +489,7 @@ public:
 
         return std::ostringstream(process.str());
     }
+    // NOLINTEND(google-build-using-namespace)
 };
 
 //! @brief Structure of tree.
