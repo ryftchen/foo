@@ -244,20 +244,20 @@ void Command::initializeNativeCLI()
         .argsNum(0)
         .implicitValue(true)
         .help(getDescr(Category::help));
-    defaultNotifier.attach(Category::help, std::make_shared<Notifier::Handler<Category::help>>(*this));
+    defaultNotifier.attach(Category::help, std::make_shared<LocalNotifier::Handler<Category::help>>(*this));
     mainCLI
         .addArgument(
             prefix1 + std::string{getAlias(Category::version)}, prefix2 + std::string{toString(Category::version)})
         .argsNum(0)
         .implicitValue(true)
         .help(getDescr(Category::version));
-    defaultNotifier.attach(Category::version, std::make_shared<Notifier::Handler<Category::version>>(*this));
+    defaultNotifier.attach(Category::version, std::make_shared<LocalNotifier::Handler<Category::version>>(*this));
     mainCLI
         .addArgument(prefix1 + std::string{getAlias(Category::dump)}, prefix2 + std::string{toString(Category::dump)})
         .argsNum(0)
         .implicitValue(true)
         .help(getDescr(Category::dump));
-    defaultNotifier.attach(Category::dump, std::make_shared<Notifier::Handler<Category::dump>>(*this));
+    defaultNotifier.attach(Category::dump, std::make_shared<LocalNotifier::Handler<Category::dump>>(*this));
     mainCLI
         .addArgument(
             prefix1 + std::string{getAlias(Category::console)}, prefix2 + std::string{toString(Category::console)})
@@ -276,7 +276,7 @@ void Command::initializeNativeCLI()
             })
         .metavar("CMD")
         .help(getDescr(Category::console));
-    defaultNotifier.attach(Category::console, std::make_shared<Notifier::Handler<Category::console>>(*this));
+    defaultNotifier.attach(Category::console, std::make_shared<LocalNotifier::Handler<Category::console>>(*this));
 }
 
 // NOLINTNEXTLINE(readability-function-size)
@@ -766,7 +766,7 @@ void Command::executeInConsole() const
         session->optionExecutor(option);
     }
 
-    udpClient->toSend(utility::common::base64Encode(view::exitSymbol));
+    udpClient->toSend(buildExitRequest4Client());
     udpClient->waitIfAlive();
     interactionLatency();
 }
@@ -811,30 +811,34 @@ void Command::checkForExcessiveArguments()
 
 //! @brief Perform the specific operation for Category::console.
 template <>
-void Command::Notifier::Handler<Category::console>::execute() const
+template <>
+void Command::LocalNotifier::Handler<Category::console>::execute() const
 {
-    obj.executeInConsole();
+    subject.executeInConsole();
 }
 
 //! @brief Perform the specific operation for Category::dump.
 template <>
-void Command::Notifier::Handler<Category::dump>::execute() const
+template <>
+void Command::LocalNotifier::Handler<Category::dump>::execute() const
 {
-    obj.dumpConfiguration();
+    subject.dumpConfiguration();
 }
 
 //! @brief Perform the specific operation for Category::help.
 template <>
-void Command::Notifier::Handler<Category::help>::execute() const
+template <>
+void Command::LocalNotifier::Handler<Category::help>::execute() const
 {
-    obj.showHelpMessage();
+    subject.showHelpMessage();
 }
 
 //! @brief Perform the specific operation for Category::version.
 template <>
-void Command::Notifier::Handler<Category::version>::execute() const
+template <>
+void Command::LocalNotifier::Handler<Category::version>::execute() const
 {
-    obj.displayVersionInfo();
+    subject.displayVersionInfo();
 }
 
 void Command::enterConsoleMode()
@@ -881,7 +885,7 @@ try
     }
     while (RetCode::quit != retCode);
 
-    tcpClient->toSend(utility::common::base64Encode(view::exitSymbol));
+    tcpClient->toSend(buildExitRequest4Client());
     tcpClient->waitIfAlive();
     interactionLatency();
 #ifndef NDEBUG
@@ -907,11 +911,12 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
         auto retCode = RetCode::success;
         try
         {
-            client->toSend(utility::common::base64Encode(std::accumulate(
+            auto reqBuffer = utility::common::base64Encode(std::accumulate(
                 inputs.cbegin(),
                 inputs.cend(),
                 std::string{},
-                [](const auto& acc, const auto& token) { return acc.empty() ? token : (acc + ' ' + token); })));
+                [](const auto& acc, const auto& token) { return acc.empty() ? token : (acc + ' ' + token); }));
+            client->toSend(std::move(reqBuffer));
             enableWait4Client();
         }
         catch (const std::exception& err)
@@ -953,7 +958,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
             auto retCode = RetCode::success;
             try
             {
-                client->toSend(utility::common::base64Encode(view::exitSymbol));
+                client->toSend(buildExitRequest4Client());
                 client->waitIfAlive();
                 interactionLatency();
                 client.reset();
@@ -990,6 +995,11 @@ void Command::enableWait4Client()
 void Command::disableWait4Client()
 {
     view::View::Access().disableWait();
+}
+
+std::string Command::buildExitRequest4Client()
+{
+    return utility::common::base64Encode(view::exitSymbol);
 }
 
 void Command::interactionLatency()

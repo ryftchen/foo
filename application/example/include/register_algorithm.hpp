@@ -223,7 +223,7 @@ extern const char* version() noexcept;
 template <typename T>
 using TypeInfo = utility::reflection::TypeInfo<T>;
 //! @brief Get the name directly for sub-cli related registration.
-//! @tparam T - type of sub-cli or sub-cli category
+//! @tparam T - type of sub-cli or sub-cli's category
 //! @return name
 template <typename T>
 inline consteval std::string_view name()
@@ -231,7 +231,7 @@ inline consteval std::string_view name()
     return TypeInfo<T>::name;
 }
 //! @brief Get the description directly for sub-cli related registration.
-//! @tparam T - type of sub-cli or sub-cli category
+//! @tparam T - type of sub-cli or sub-cli's category
 //! @return description
 template <typename T>
 inline consteval std::string_view descr()
@@ -239,7 +239,7 @@ inline consteval std::string_view descr()
     return TypeInfo<T>::attrs.find(REFLECTION_STR("descr")).value;
 }
 //! @brief Get the alias directly for sub-cli related registration.
-//! @tparam T - type of sub-cli category
+//! @tparam T - type of sub-cli's category
 //! @return alias
 template <typename T>
 inline consteval std::string_view alias()
