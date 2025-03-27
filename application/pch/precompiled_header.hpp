@@ -7,6 +7,7 @@
 #ifndef APPLICATION_PCH_H
 #define APPLICATION_PCH_H
 
+#include <netinet/in.h>
 #include <openssl/evp.h>
 #include <readline/history.h>
 #include <readline/readline.h>
@@ -23,6 +24,7 @@
 #include <ncurses.h>
 #endif // defined(__has_include) && __has_include(<ncurses.h>)
 #include <algorithm>
+#include <array>
 #include <barrier>
 #include <bitset>
 #include <cassert>
@@ -42,14 +44,13 @@
 #include <latch>
 #include <list>
 #include <memory>
-#include <mutex>
 #include <numeric>
-#include <queue>
 #include <ranges>
 #include <regex>
 #include <source_location>
 #include <span>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 #include <syncstream>
 #include <unordered_map>
