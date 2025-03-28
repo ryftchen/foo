@@ -34,18 +34,7 @@
 
 namespace application::app_num
 {
-using reg_num::taskNameCurried, reg_num::toString, reg_num::getCategoryOpts, reg_num::getCategoryAlias,
-    reg_num::abbrVal;
-//! @brief Alias for Category.
-using Category = ApplyNumeric::Category;
-
-//! @brief Get the numeric choice manager.
-//! @return reference of the ApplyNumeric object
-ApplyNumeric& manager()
-{
-    static ApplyNumeric manager{};
-    return manager;
-}
+using namespace reg_num; // NOLINT(google-build-using-namespace)
 
 //! @brief Get the title of a particular method in numeric choices.
 //! @tparam T - type of target method
@@ -59,95 +48,6 @@ static std::string getTitle(const T method)
 
     return title;
 }
-
-// clang-format off
-//! @brief Mapping table for enum and string about arithmetic methods. X macro.
-#define APP_NUM_ARITHMETIC_METHOD_TABLE    \
-    ELEM(addition      , "addition"      ) \
-    ELEM(subtraction   , "subtraction"   ) \
-    ELEM(multiplication, "multiplication") \
-    ELEM(division      , "division"      )
-// clang-format on
-//! @brief Convert method enumeration to string.
-//! @param method - the specific value of ArithmeticMethod enum
-//! @return method name
-static constexpr std::string_view toString(const ArithmeticMethod method)
-{
-//! @cond
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {APP_NUM_ARITHMETIC_METHOD_TABLE};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<ArithmeticMethod>::value);
-    return table[method];
-//! @endcond
-#undef ELEM
-}
-#undef APP_NUM_ARITHMETIC_METHOD_TABLE
-
-// clang-format off
-//! @brief Mapping table for enum and string about divisor methods. X macro.
-#define APP_NUM_DIVISOR_METHOD_TABLE \
-    ELEM(euclidean, "euclidean")     \
-    ELEM(stein    , "stein"    )
-// clang-format on
-//! @brief Convert method enumeration to string.
-//! @param method - the specific value of DivisorMethod enum
-//! @return method name
-static constexpr std::string_view toString(const DivisorMethod method)
-{
-//! @cond
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {APP_NUM_DIVISOR_METHOD_TABLE};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<DivisorMethod>::value);
-    return table[method];
-//! @endcond
-#undef ELEM
-}
-#undef APP_NUM_DIVISOR_METHOD_TABLE
-
-// clang-format off
-//! @brief Mapping table for enum and string about integral methods. X macro.
-#define APP_NUM_INTEGRAL_METHOD_TABLE \
-    ELEM(trapezoidal, "trapezoidal")  \
-    ELEM(simpson    , "simpson"    )  \
-    ELEM(romberg    , "romberg"    )  \
-    ELEM(gauss      , "gauss"      )  \
-    ELEM(monteCarlo , "monteCarlo" )
-// clang-format on
-//! @brief Convert method enumeration to string.
-//! @param method - the specific value of IntegralMethod enum
-//! @return method name
-static constexpr std::string_view toString(const IntegralMethod method)
-{
-//! @cond
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {APP_NUM_INTEGRAL_METHOD_TABLE};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<IntegralMethod>::value);
-    return table[method];
-//! @endcond
-#undef ELEM
-}
-#undef APP_NUM_INTEGRAL_METHOD_TABLE
-
-// clang-format off
-//! @brief Mapping table for enum and string about prime methods. X macro.
-#define APP_NUM_PRIME_METHOD_TABLE     \
-    ELEM(eratosthenes, "eratosthenes") \
-    ELEM(euler       , "euler"       )
-// clang-format on
-//! @brief Convert method enumeration to string.
-//! @param method - the specific value of PrimeMethod enum
-//! @return method name
-static constexpr std::string_view toString(const PrimeMethod method)
-{
-//! @cond
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {APP_NUM_PRIME_METHOD_TABLE};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<PrimeMethod>::value);
-    return table[method];
-//! @endcond
-#undef ELEM
-}
-#undef APP_NUM_PRIME_METHOD_TABLE
 
 namespace arithmetic
 {
@@ -208,39 +108,9 @@ catch (const std::exception& err)
 }
 } // namespace arithmetic
 
-//! @brief Update arithmetic-related choice.
-//! @param target - target method
-template <>
-void updateChoice<ArithmeticMethod>(const std::string_view target)
-{
-    constexpr auto category = Category::arithmetic;
-    auto& bits = getCategoryOpts<category>();
-
-    switch (utility::common::bkdrHash(target.data()))
-    {
-        case abbrVal(ArithmeticMethod::addition):
-            bits.set(ArithmeticMethod::addition);
-            break;
-        case abbrVal(ArithmeticMethod::subtraction):
-            bits.set(ArithmeticMethod::subtraction);
-            break;
-        case abbrVal(ArithmeticMethod::multiplication):
-            bits.set(ArithmeticMethod::multiplication);
-            break;
-        case abbrVal(ArithmeticMethod::division):
-            bits.set(ArithmeticMethod::division);
-            break;
-        default:
-            bits.reset();
-            throw std::logic_error{
-                "Unexpected " + std::string{toString<category>()} + " method: " + target.data() + '.'};
-    }
-}
-
-//! @brief Run arithmetic-related choices.
+//! @brief To apply arithmetic-related methods.
 //! @param candidates - container for the candidate target methods
-template <>
-void runChoices<ArithmeticMethod>(const std::vector<std::string>& candidates)
+void applyingArithmetic(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::arithmetic;
     const auto& bits = getCategoryOpts<category>();
@@ -331,33 +201,9 @@ catch (const std::exception& err)
 }
 } // namespace divisor
 
-//! @brief Update divisor-related choice.
-//! @param target - target method
-template <>
-void updateChoice<DivisorMethod>(const std::string_view target)
-{
-    constexpr auto category = Category::divisor;
-    auto& bits = getCategoryOpts<category>();
-
-    switch (utility::common::bkdrHash(target.data()))
-    {
-        case abbrVal(DivisorMethod::euclidean):
-            bits.set(DivisorMethod::euclidean);
-            break;
-        case abbrVal(DivisorMethod::stein):
-            bits.set(DivisorMethod::stein);
-            break;
-        default:
-            bits.reset();
-            throw std::logic_error{
-                "Unexpected " + std::string{toString<category>()} + " method: " + target.data() + '.'};
-    }
-}
-
-//! @brief Run divisor-related choices.
+//! @brief To apply divisor-related methods.
 //! @param candidates - container for the candidate target methods
-template <>
-void runChoices<DivisorMethod>(const std::vector<std::string>& candidates)
+void applyingDivisor(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::divisor;
     const auto& bits = getCategoryOpts<category>();
@@ -472,42 +318,9 @@ catch (const std::exception& err)
 }
 } // namespace integral
 
-//! @brief Update integral-related choice.
-//! @param target - target method
-template <>
-void updateChoice<IntegralMethod>(const std::string_view target)
-{
-    constexpr auto category = Category::integral;
-    auto& bits = getCategoryOpts<category>();
-
-    switch (utility::common::bkdrHash(target.data()))
-    {
-        case abbrVal(IntegralMethod::trapezoidal):
-            bits.set(IntegralMethod::trapezoidal);
-            break;
-        case abbrVal(IntegralMethod::simpson):
-            bits.set(IntegralMethod::simpson);
-            break;
-        case abbrVal(IntegralMethod::romberg):
-            bits.set(IntegralMethod::romberg);
-            break;
-        case abbrVal(IntegralMethod::gauss):
-            bits.set(IntegralMethod::gauss);
-            break;
-        case abbrVal(IntegralMethod::monteCarlo):
-            bits.set(IntegralMethod::monteCarlo);
-            break;
-        default:
-            bits.reset();
-            throw std::logic_error{
-                "Unexpected " + std::string{toString<category>()} + " method: " + target.data() + '.'};
-    }
-}
-
-//! @brief Run integral-related choices.
+//! @brief To apply integral-related methods.
 //! @param candidates - container for the candidate target methods
-template <>
-void runChoices<IntegralMethod>(const std::vector<std::string>& candidates)
+void applyingIntegral(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::integral;
     const auto& bits = getCategoryOpts<category>();
@@ -622,33 +435,9 @@ catch (const std::exception& err)
 }
 } // namespace prime
 
-//! @brief Update prime-related choice.
-//! @param target - target method
-template <>
-void updateChoice<PrimeMethod>(const std::string_view target)
-{
-    constexpr auto category = Category::prime;
-    auto& bits = getCategoryOpts<category>();
-
-    switch (utility::common::bkdrHash(target.data()))
-    {
-        case abbrVal(PrimeMethod::eratosthenes):
-            bits.set(PrimeMethod::eratosthenes);
-            break;
-        case abbrVal(PrimeMethod::euler):
-            bits.set(PrimeMethod::euler);
-            break;
-        default:
-            bits.reset();
-            throw std::logic_error{
-                "Unexpected " + std::string{toString<category>()} + " method: " + target.data() + '.'};
-    }
-}
-
-//! @brief Run prime-related choices.
+//! @brief To apply prime-related methods.
 //! @param candidates - container for the candidate target methods
-template <>
-void runChoices<PrimeMethod>(const std::vector<std::string>& candidates)
+void applyingPrime(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::prime;
     const auto& bits = getCategoryOpts<category>();

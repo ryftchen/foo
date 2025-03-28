@@ -8,15 +8,14 @@
 
 #ifndef __PRECOMPILED_HEADER
 #include <coroutine>
-#include <functional>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
 
-#include "application/example/include/apply_algorithm.hpp"
-#include "application/example/include/apply_data_structure.hpp"
-#include "application/example/include/apply_design_pattern.hpp"
-#include "application/example/include/apply_numeric.hpp"
+#include "application/example/include/register_algorithm.hpp"
+#include "application/example/include/register_data_structure.hpp"
+#include "application/example/include/register_design_pattern.hpp"
+#include "application/example/include/register_numeric.hpp"
 
 //! @brief The application module.
 namespace application // NOLINT(modernize-concat-nested-namespaces)
@@ -120,34 +119,34 @@ struct MessageTypeList
 };
 //! @brief Alias for the message type list.
 using MessageTypes = MessageTypeList<
-    UpdatingIndication<UpdateChoice<app_algo::MatchMethod>>,
-    RunningIndication<RunChoices<app_algo::MatchMethod>>,
-    UpdatingIndication<UpdateChoice<app_algo::NotationMethod>>,
-    RunningIndication<RunChoices<app_algo::NotationMethod>>,
-    UpdatingIndication<UpdateChoice<app_algo::OptimalMethod>>,
-    RunningIndication<RunChoices<app_algo::OptimalMethod>>,
-    UpdatingIndication<UpdateChoice<app_algo::SearchMethod>>,
-    RunningIndication<RunChoices<app_algo::SearchMethod>>,
-    UpdatingIndication<UpdateChoice<app_algo::SortMethod>>,
-    RunningIndication<RunChoices<app_algo::SortMethod>>,
-    UpdatingIndication<UpdateChoice<app_dp::BehavioralInstance>>,
-    RunningIndication<RunChoices<app_dp::BehavioralInstance>>,
-    UpdatingIndication<UpdateChoice<app_dp::CreationalInstance>>,
-    RunningIndication<RunChoices<app_dp::CreationalInstance>>,
-    UpdatingIndication<UpdateChoice<app_dp::StructuralInstance>>,
-    RunningIndication<RunChoices<app_dp::StructuralInstance>>,
-    UpdatingIndication<UpdateChoice<app_ds::LinearInstance>>,
-    RunningIndication<RunChoices<app_ds::LinearInstance>>,
-    UpdatingIndication<UpdateChoice<app_ds::TreeInstance>>,
-    RunningIndication<RunChoices<app_ds::TreeInstance>>,
-    UpdatingIndication<UpdateChoice<app_num::ArithmeticMethod>>,
-    RunningIndication<RunChoices<app_num::ArithmeticMethod>>,
-    UpdatingIndication<UpdateChoice<app_num::DivisorMethod>>,
-    RunningIndication<RunChoices<app_num::DivisorMethod>>,
-    UpdatingIndication<UpdateChoice<app_num::IntegralMethod>>,
-    RunningIndication<RunChoices<app_num::IntegralMethod>>,
-    UpdatingIndication<UpdateChoice<app_num::PrimeMethod>>,
-    RunningIndication<RunChoices<app_num::PrimeMethod>>>;
+    UpdatingIndication<UpdateChoice<reg_algo::MatchMethod>>,
+    RunningIndication<RunChoices<reg_algo::MatchMethod>>,
+    UpdatingIndication<UpdateChoice<reg_algo::NotationMethod>>,
+    RunningIndication<RunChoices<reg_algo::NotationMethod>>,
+    UpdatingIndication<UpdateChoice<reg_algo::OptimalMethod>>,
+    RunningIndication<RunChoices<reg_algo::OptimalMethod>>,
+    UpdatingIndication<UpdateChoice<reg_algo::SearchMethod>>,
+    RunningIndication<RunChoices<reg_algo::SearchMethod>>,
+    UpdatingIndication<UpdateChoice<reg_algo::SortMethod>>,
+    RunningIndication<RunChoices<reg_algo::SortMethod>>,
+    UpdatingIndication<UpdateChoice<reg_dp::BehavioralInstance>>,
+    RunningIndication<RunChoices<reg_dp::BehavioralInstance>>,
+    UpdatingIndication<UpdateChoice<reg_dp::CreationalInstance>>,
+    RunningIndication<RunChoices<reg_dp::CreationalInstance>>,
+    UpdatingIndication<UpdateChoice<reg_dp::StructuralInstance>>,
+    RunningIndication<RunChoices<reg_dp::StructuralInstance>>,
+    UpdatingIndication<UpdateChoice<reg_ds::LinearInstance>>,
+    RunningIndication<RunChoices<reg_ds::LinearInstance>>,
+    UpdatingIndication<UpdateChoice<reg_ds::TreeInstance>>,
+    RunningIndication<RunChoices<reg_ds::TreeInstance>>,
+    UpdatingIndication<UpdateChoice<reg_num::ArithmeticMethod>>,
+    RunningIndication<RunChoices<reg_num::ArithmeticMethod>>,
+    UpdatingIndication<UpdateChoice<reg_num::DivisorMethod>>,
+    RunningIndication<RunChoices<reg_num::DivisorMethod>>,
+    UpdatingIndication<UpdateChoice<reg_num::IntegralMethod>>,
+    RunningIndication<RunChoices<reg_num::IntegralMethod>>,
+    UpdatingIndication<UpdateChoice<reg_num::PrimeMethod>>,
+    RunningIndication<RunChoices<reg_num::PrimeMethod>>>;
 
 //! @brief Alias for the message handler.
 //! @tparam Msg - type of message
@@ -313,19 +312,19 @@ template <typename... Ts>
 EvtVisitor(Ts...) -> EvtVisitor<Ts...>;
 //! @brief Alias for the applied action event type.
 using EventType = std::variant<
-    app_algo::MatchMethod,
-    app_algo::NotationMethod,
-    app_algo::OptimalMethod,
-    app_algo::SearchMethod,
-    app_algo::SortMethod,
-    app_dp::BehavioralInstance,
-    app_dp::CreationalInstance,
-    app_dp::StructuralInstance,
-    app_ds::LinearInstance,
-    app_ds::TreeInstance,
-    app_num::ArithmeticMethod,
-    app_num::DivisorMethod,
-    app_num::IntegralMethod,
-    app_num::PrimeMethod>;
+    reg_algo::MatchMethod,
+    reg_algo::NotationMethod,
+    reg_algo::OptimalMethod,
+    reg_algo::SearchMethod,
+    reg_algo::SortMethod,
+    reg_dp::BehavioralInstance,
+    reg_dp::CreationalInstance,
+    reg_dp::StructuralInstance,
+    reg_ds::LinearInstance,
+    reg_ds::TreeInstance,
+    reg_num::ArithmeticMethod,
+    reg_num::DivisorMethod,
+    reg_num::IntegralMethod,
+    reg_num::PrimeMethod>;
 } // namespace action
 } // namespace application

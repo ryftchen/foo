@@ -6,12 +6,6 @@
 
 #pragma once
 
-#ifndef __PRECOMPILED_HEADER
-#include <bitset>
-#else
-#include "application/pch/precompiled_header.hpp"
-#endif // __PRECOMPILED_HEADER
-
 #include "design_pattern/include/behavioral.hpp"
 #include "design_pattern/include/creational.hpp"
 #include "design_pattern/include/structural.hpp"
@@ -22,173 +16,12 @@ namespace application // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Design-pattern-applying-related functions in the application module.
 namespace app_dp
 {
-//! @brief Represent the maximum value of an enum.
-//! @tparam T - type of specific enum
-template <typename T>
-struct Bottom;
-
-//! @brief Enumerate specific behavioral instances.
-enum BehavioralInstance : std::uint8_t
-{
-    //! @brief Chain of responsibility.
-    chainOfResponsibility,
-    //! @brief Command.
-    command,
-    //! @brief Interpreter.
-    interpreter,
-    //! @brief Iterator.
-    iterator,
-    //! @brief Mediator.
-    mediator,
-    //! @brief Memento.
-    memento,
-    //! @brief Observer.
-    observer,
-    //! @brief State.
-    state,
-    //! @brief Strategy.
-    strategy,
-    //! @brief Template method.
-    templateMethod,
-    //! @brief Visitor.
-    visitor
-};
-//! @brief Store the maximum value of the BehavioralInstance enum.
-template <>
-struct Bottom<BehavioralInstance>
-{
-    //! @brief Maximum value of the BehavioralInstance enum.
-    static constexpr std::uint8_t value{11};
-};
-
-//! @brief Enumerate specific creational instances.
-enum CreationalInstance : std::uint8_t
-{
-    //! @brief Abstract factory.
-    abstractFactory,
-    //! @brief Builder.
-    builder,
-    //! @brief Factory method.
-    factoryMethod,
-    //! @brief Prototype.
-    prototype,
-    //! @brief Singleton.
-    singleton
-};
-//! @brief Store the maximum value of the CreationalInstance enum.
-template <>
-struct Bottom<CreationalInstance>
-{
-    //! @brief Maximum value of the CreationalInstance enum.
-    static constexpr std::uint8_t value{5};
-};
-
-//! @brief Enumerate specific structural instances.
-enum StructuralInstance : std::uint8_t
-{
-    //! @brief Adapter.
-    adapter,
-    //! @brief Bridge.
-    bridge,
-    //! @brief Composite.
-    composite,
-    //! @brief Decorator.
-    decorator,
-    //! @brief Facade.
-    facade,
-    //! @brief Flyweight.
-    flyweight,
-    //! @brief Proxy.
-    proxy
-};
-//! @brief Store the maximum value of the StructuralInstance enum.
-template <>
-struct Bottom<StructuralInstance>
-{
-    //! @brief Maximum value of the StructuralInstance enum.
-    static constexpr std::uint8_t value{7};
-};
-
-//! @brief Manage design pattern choices.
-class ApplyDesignPattern
-{
-public:
-    //! @brief Enumerate specific design pattern choices.
-    enum Category : std::uint8_t
-    {
-        //! @brief Behavioral.
-        behavioral,
-        //! @brief Creational.
-        creational,
-        //! @brief Structural.
-        structural
-    };
-
-    //! @brief Bit flags for managing behavioral instances.
-    std::bitset<Bottom<BehavioralInstance>::value> behavioralOpts{};
-    //! @brief Bit flags for managing creational instances.
-    std::bitset<Bottom<CreationalInstance>::value> creationalOpts{};
-    //! @brief Bit flags for managing structural instances.
-    std::bitset<Bottom<StructuralInstance>::value> structuralOpts{};
-
-    //! @brief Check whether any design pattern choices do not exist.
-    //! @return any design pattern choices do not exist or exist
-    [[nodiscard]] inline bool empty() const
-    {
-        return behavioralOpts.none() && creationalOpts.none() && structuralOpts.none();
-    }
-    //! @brief Reset bit flags that manage design pattern choices.
-    inline void reset()
-    {
-        behavioralOpts.reset();
-        creationalOpts.reset();
-        structuralOpts.reset();
-    }
-
-protected:
-    //! @brief The operator (<<) overloading of the Category enum.
-    //! @param os - output stream object
-    //! @param cat - the specific value of Category enum
-    //! @return reference of the output stream object
-    friend std::ostream& operator<<(std::ostream& os, const Category cat)
-    {
-        switch (cat)
-        {
-            case Category::behavioral:
-                os << "BEHAVIORAL";
-                break;
-            case Category::creational:
-                os << "CREATIONAL";
-                break;
-            case Category::structural:
-                os << "STRUCTURAL";
-                break;
-            default:
-                os << "UNKNOWN (" << static_cast<std::underlying_type_t<Category>>(cat) << ')';
-                break;
-        }
-
-        return os;
-    }
-};
-extern ApplyDesignPattern& manager();
-
-//! @brief Update choice.
-//! @tparam T - type of target instance
-//! @param target - target instance
-template <typename T>
-void updateChoice(const std::string_view target);
-//! @brief Run choices.
-//! @tparam T - type of target instance
-//! @param candidates - container for the candidate target instances
-template <typename T>
-void runChoices(const std::vector<std::string>& candidates);
-
 //! @brief Apply behavioral.
 namespace behavioral
 {
 //! @brief The version used to apply.
 const char* const version = design_pattern::behavioral::version();
+
 //! @brief Behavioral instances.
 class Behavioral
 {
@@ -422,16 +255,14 @@ public:
     static void visitorInstance();
 };
 } // namespace behavioral
-template <>
-void updateChoice<BehavioralInstance>(const std::string_view target);
-template <>
-void runChoices<BehavioralInstance>(const std::vector<std::string>& candidates);
+extern void applyingBehavioral(const std::vector<std::string>& candidates);
 
 //! @brief Apply creational.
 namespace creational
 {
 //! @brief The version used to apply.
 const char* const version = design_pattern::creational::version();
+
 //! @brief Creational instances.
 class Creational
 {
@@ -560,16 +391,14 @@ public:
     static void singletonInstance();
 };
 } // namespace creational
-template <>
-void updateChoice<CreationalInstance>(const std::string_view target);
-template <>
-void runChoices<CreationalInstance>(const std::vector<std::string>& candidates);
+extern void applyingCreational(const std::vector<std::string>& candidates);
 
 //! @brief Apply structural.
 namespace structural
 {
 //! @brief The version used to apply.
 const char* const version = design_pattern::structural::version();
+
 //! @brief Structural instances.
 class Structural
 {
@@ -709,9 +538,6 @@ public:
     static void proxyInstance();
 };
 } // namespace structural
-template <>
-void updateChoice<StructuralInstance>(const std::string_view target);
-template <>
-void runChoices<StructuralInstance>(const std::vector<std::string>& candidates);
+extern void applyingStructural(const std::vector<std::string>& candidates);
 } // namespace app_dp
 } // namespace application

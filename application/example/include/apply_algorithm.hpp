@@ -8,11 +8,9 @@
 
 #ifndef __PRECOMPILED_HEADER
 #include <mpfr.h>
-#include <bitset>
 #include <cstring>
 #include <iostream>
 #include <memory>
-#include <unordered_map>
 #include <variant>
 #else
 #include "application/pch/precompiled_header.hpp"
@@ -30,218 +28,12 @@ namespace application // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Algorithm-applying-related functions in the application module.
 namespace app_algo
 {
-//! @brief Represent the maximum value of an enum.
-//! @tparam T - type of specific enum
-template <typename T>
-struct Bottom;
-
-//! @brief Enumerate specific match methods.
-enum MatchMethod : std::uint8_t
-{
-    //! @brief Rabin-Karp.
-    rabinKarp,
-    //! @brief Knuth-Morris-Pratt.
-    knuthMorrisPratt,
-    //! @brief Boyer-Moore.
-    boyerMoore,
-    //! @brief Horspool.
-    horspool,
-    //! @brief Sunday.
-    sunday
-};
-//! @brief Store the maximum value of the MatchMethod enum.
-template <>
-struct Bottom<MatchMethod>
-{
-    //! @brief Maximum value of the MatchMethod enum.
-    static constexpr std::uint8_t value{5};
-};
-
-//! @brief Enumerate specific notation methods.
-enum NotationMethod : std::uint8_t
-{
-    //! @brief Prefix.
-    prefix,
-    //! @brief Postfix.
-    postfix
-};
-//! @brief Store the maximum value of the NotationMethod enum.
-template <>
-struct Bottom<NotationMethod>
-{
-    //! @brief Maximum value of the NotationMethod enum.
-    static constexpr std::uint8_t value{2};
-};
-
-//! @brief Enumerate specific optimal methods.
-enum OptimalMethod : std::uint8_t
-{
-    //! @brief Gradient.
-    gradient,
-    //! @brief Tabu.
-    tabu,
-    //! @brief Annealing.
-    annealing,
-    //! @brief Particle.
-    particle,
-    //! @brief Ant.
-    ant,
-    //! @brief Genetic.
-    genetic
-};
-//! @brief Store the maximum value of the OptimalMethod enum.
-template <>
-struct Bottom<OptimalMethod>
-{
-    //! @brief Maximum value of the OptimalMethod enum.
-    static constexpr std::uint8_t value{6};
-};
-
-//! @brief Enumerate specific search methods.
-enum SearchMethod : std::uint8_t
-{
-    //! @brief Binary.
-    binary,
-    //! @brief Interpolation.
-    interpolation,
-    //! @brief Fibonacci.
-    fibonacci
-};
-//! @brief Store the maximum value of the SearchMethod enum.
-template <>
-struct Bottom<SearchMethod>
-{
-    //! @brief Maximum value of the SearchMethod enum.
-    static constexpr std::uint8_t value{3};
-};
-
-//! @brief Enumerate specific sort methods.
-enum SortMethod : std::uint8_t
-{
-    //! @brief Bubble.
-    bubble,
-    //! @brief Selection.
-    selection,
-    //! @brief Insertion.
-    insertion,
-    //! @brief Shell.
-    shell,
-    //! @brief Merge.
-    merge,
-    //! @brief Quick.
-    quick,
-    //! @brief Heap.
-    heap,
-    //! @brief Counting.
-    counting,
-    //! @brief Bucket.
-    bucket,
-    //! @brief Radix.
-    radix
-};
-//! @brief Store the maximum value of the SortMethod enum.
-template <>
-struct Bottom<SortMethod>
-{
-    //! @brief Maximum value of the SortMethod enum.
-    static constexpr std::uint8_t value{10};
-};
-
-//! @brief Manage algorithm choices.
-class ApplyAlgorithm
-{
-public:
-    //! @brief Enumerate specific algorithm choices.
-    enum Category : std::uint8_t
-    {
-        //! @brief Match.
-        match,
-        //! @brief Notation.
-        notation,
-        //! @brief Optimal.
-        optimal,
-        //! @brief Search.
-        search,
-        //! @brief Sort.
-        sort
-    };
-
-    //! @brief Bit flags for managing match methods.
-    std::bitset<Bottom<MatchMethod>::value> matchOpts{};
-    //! @brief Bit flags for managing notation methods.
-    std::bitset<Bottom<NotationMethod>::value> notationOpts{};
-    //! @brief Bit flags for managing optimal methods.
-    std::bitset<Bottom<OptimalMethod>::value> optimalOpts{};
-    //! @brief Bit flags for managing search methods.
-    std::bitset<Bottom<SearchMethod>::value> searchOpts{};
-    //! @brief Bit flags for managing sort methods.
-    std::bitset<Bottom<SortMethod>::value> sortOpts{};
-
-    //! @brief Check whether any algorithm choices do not exist.
-    //! @return any algorithm choices do not exist or exist
-    [[nodiscard]] inline bool empty() const
-    {
-        return matchOpts.none() && notationOpts.none() && optimalOpts.none() && searchOpts.none() && sortOpts.none();
-    }
-    //! @brief Reset bit flags that manage algorithm choices.
-    inline void reset()
-    {
-        matchOpts.reset();
-        notationOpts.reset();
-        optimalOpts.reset();
-        searchOpts.reset();
-        sortOpts.reset();
-    }
-
-protected:
-    //! @brief The operator (<<) overloading of the Category enum.
-    //! @param os - output stream object
-    //! @param cat - the specific value of Category enum
-    //! @return reference of the output stream object
-    friend std::ostream& operator<<(std::ostream& os, const Category cat)
-    {
-        switch (cat)
-        {
-            case Category::match:
-                os << "MATCH";
-                break;
-            case Category::notation:
-                os << "NOTATION";
-                break;
-            case Category::optimal:
-                os << "OPTIMAL";
-                break;
-            case Category::search:
-                os << "SEARCH";
-                break;
-            case Category::sort:
-                os << "SORT";
-                break;
-            default:
-                os << "UNKNOWN (" << static_cast<std::underlying_type_t<Category>>(cat) << ')';
-        }
-
-        return os;
-    }
-};
-extern ApplyAlgorithm& manager();
-
-//! @brief Update choice.
-//! @tparam T - type of target method
-//! @param target - target method
-template <typename T>
-void updateChoice(const std::string_view target);
-//! @brief Run choices.
-//! @tparam T - type of target method
-//! @param candidates - container for the candidate target methods
-template <typename T>
-void runChoices(const std::vector<std::string>& candidates);
-
 //! @brief Apply match.
 namespace match
 {
 //! @brief The version used to apply.
 const char* const version = algorithm::match::version();
+
 //! @brief Set input parameters.
 namespace input
 {
@@ -414,16 +206,14 @@ private:
     }
 };
 } // namespace match
-template <>
-void updateChoice<MatchMethod>(const std::string_view target);
-template <>
-void runChoices<MatchMethod>(const std::vector<std::string>& candidates);
+extern void applyingMatch(const std::vector<std::string>& candidates);
 
 //! @brief Apply notation.
 namespace notation
 {
 //! @brief The version used to apply.
 const char* const version = algorithm::notation::version();
+
 //! @brief Set input parameters.
 namespace input
 {
@@ -470,10 +260,7 @@ private:
     const std::string infixNotation{};
 };
 } // namespace notation
-template <>
-void updateChoice<NotationMethod>(const std::string_view target);
-template <>
-void runChoices<NotationMethod>(const std::vector<std::string>& candidates);
+extern void applyingNotation(const std::vector<std::string>& candidates);
 
 //! @brief Apply optimal.
 namespace optimal
@@ -482,7 +269,7 @@ namespace optimal
 const char* const version = algorithm::optimal::version();
 
 //! @brief Alias for the target function.
-using Function = algorithm::optimal::Function;
+using Function = std::function<double(const double)>;
 
 //! @brief Set input parameters.
 namespace input
@@ -491,13 +278,13 @@ namespace input
 class Rastrigin : public Function
 {
 public:
+    //! @brief Construct a new Rastrigin object.
+    Rastrigin() : Function{[this](const double x) { return operator()(x); }} {}
+
     //! @brief The operator (()) overloading of Rastrigin class.
     //! @param x - independent variable
     //! @return dependent variable
-    double operator()(const double x) const override
-    {
-        return x * x - 10.0 * std::cos(2.0 * std::numbers::pi * x) + 10.0;
-    }
+    double operator()(const double x) const { return x * x - 10.0 * std::cos(2.0 * std::numbers::pi * x) + 10.0; }
 
     //! @brief Left endpoint.
     static constexpr double range1{-5.12};
@@ -664,16 +451,14 @@ private:
     const OptimalFuncMap<Ts...> functionMap{};
 };
 } // namespace optimal
-template <>
-void updateChoice<OptimalMethod>(const std::string_view target);
-template <>
-void runChoices<OptimalMethod>(const std::vector<std::string>& candidates);
+extern void applyingOptimal(const std::vector<std::string>& candidates);
 
 //! @brief Apply search.
 namespace search
 {
 //! @brief The version used to apply.
 const char* const version = algorithm::search::version();
+
 //! @brief Set input parameters.
 namespace input
 {
@@ -880,16 +665,14 @@ private:
     }
 };
 } // namespace search
-template <>
-void updateChoice<SearchMethod>(const std::string_view target);
-template <>
-void runChoices<SearchMethod>(const std::vector<std::string>& candidates);
+extern void applyingSearch(const std::vector<std::string>& candidates);
 
 //! @brief Apply sort.
 namespace sort
 {
 //! @brief The version used to apply.
 const char* const version = algorithm::sort::version();
+
 //! @brief Set input parameters.
 namespace input
 {
@@ -1116,9 +899,6 @@ private:
     }
 };
 } // namespace sort
-template <>
-void updateChoice<SortMethod>(const std::string_view target);
-template <>
-void runChoices<SortMethod>(const std::vector<std::string>& candidates);
+extern void applyingSort(const std::vector<std::string>& candidates);
 } // namespace app_algo
 } // namespace application

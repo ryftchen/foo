@@ -34,18 +34,7 @@
 
 namespace application::app_algo
 {
-using reg_algo::taskNameCurried, reg_algo::toString, reg_algo::getCategoryOpts, reg_algo::getCategoryAlias,
-    reg_algo::abbrVal;
-//! @brief Alias for Category.
-using Category = ApplyAlgorithm::Category;
-
-//! @brief Get the algorithm choice manager.
-//! @return reference of the ApplyAlgorithm object
-ApplyAlgorithm& manager()
-{
-    static ApplyAlgorithm manager{};
-    return manager;
-}
+using namespace reg_algo; // NOLINT(google-build-using-namespace)
 
 //! @brief Get the title of a particular method in algorithm choices.
 //! @tparam T - type of target method
@@ -59,127 +48,6 @@ static std::string getTitle(const T method)
 
     return title;
 }
-
-// clang-format off
-//! @brief Mapping table for enum and string about match methods. X macro.
-#define APP_ALGO_MATCH_METHOD_TABLE            \
-    ELEM(rabinKarp       , "rabinKarp"       ) \
-    ELEM(knuthMorrisPratt, "knuthMorrisPratt") \
-    ELEM(boyerMoore      , "boyerMoore"      ) \
-    ELEM(horspool        , "horspool"        ) \
-    ELEM(sunday          , "sunday"          )
-// clang-format on
-//! @brief Convert method enumeration to string.
-//! @param method - the specific value of MatchMethod enum
-//! @return method name
-static constexpr std::string_view toString(const MatchMethod method)
-{
-//! @cond
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {APP_ALGO_MATCH_METHOD_TABLE};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<MatchMethod>::value);
-    return table[method];
-//! @endcond
-#undef ELEM
-}
-#undef APP_ALGO_MATCH_METHOD_TABLE
-
-// clang-format off
-//! @brief Mapping table for enum and string about notation methods. X macro.
-#define APP_ALGO_NOTATION_METHOD_TABLE \
-    ELEM(prefix , "prefix" )           \
-    ELEM(postfix, "postfix")
-// clang-format on
-//! @brief Convert method enumeration to string.
-//! @param method - the specific value of NotationMethod enum
-//! @return method name
-static constexpr std::string_view toString(const NotationMethod method)
-{
-//! @cond
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {APP_ALGO_NOTATION_METHOD_TABLE};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<NotationMethod>::value);
-    return table[method];
-//! @endcond
-#undef ELEM
-}
-#undef APP_ALGO_NOTATION_METHOD_TABLE
-
-// clang-format off
-//! @brief Mapping table for enum and string about optimal methods. X macro.
-#define APP_ALGO_OPTIMAL_METHOD_TABLE \
-    ELEM(gradient , "gradient" )      \
-    ELEM(tabu     , "tabu"     )      \
-    ELEM(annealing, "annealing")      \
-    ELEM(particle , "particle" )      \
-    ELEM(ant      , "ant"      )      \
-    ELEM(genetic  , "genetic"  )
-// clang-format on
-//! @brief Convert method enumeration to string.
-//! @param method - the specific value of OptimalMethod enum
-//! @return method name
-static constexpr std::string_view toString(const OptimalMethod method)
-{
-//! @cond
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {APP_ALGO_OPTIMAL_METHOD_TABLE};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<OptimalMethod>::value);
-    return table[method];
-//! @endcond
-#undef ELEM
-}
-#undef APP_ALGO_OPTIMAL_METHOD_TABLE
-
-// clang-format off
-//! @brief Mapping table for enum and string about search methods. X macro.
-#define APP_ALGO_SEARCH_METHOD_TABLE     \
-    ELEM(binary       , "binary"       ) \
-    ELEM(interpolation, "interpolation") \
-    ELEM(fibonacci    , "fibonacci"    )
-// clang-format on
-//! @brief Convert method enumeration to string.
-//! @param method - the specific value of SearchMethod enum
-//! @return method name
-static constexpr std::string_view toString(const SearchMethod method)
-{
-//! @cond
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {APP_ALGO_SEARCH_METHOD_TABLE};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<SearchMethod>::value);
-    return table[method];
-//! @endcond
-#undef ELEM
-}
-#undef APP_ALGO_SEARCH_METHOD_TABLE
-
-// clang-format off
-//! @brief Mapping table for enum and string about sort methods. X macro.
-#define APP_ALGO_SORT_METHOD_TABLE \
-    ELEM(bubble   , "bubble"   )   \
-    ELEM(selection, "selection")   \
-    ELEM(insertion, "insertion")   \
-    ELEM(shell    , "shell"    )   \
-    ELEM(merge    , "merge"    )   \
-    ELEM(quick    , "quick"    )   \
-    ELEM(heap     , "heap"     )   \
-    ELEM(counting , "counting" )   \
-    ELEM(bucket   , "bucket"   )   \
-    ELEM(radix    , "radix"    )
-// clang-format on
-//! @brief Convert method enumeration to string.
-//! @param method - the specific value of SortMethod enum
-//! @return method name
-static constexpr std::string_view toString(const SortMethod method)
-{
-//! @cond
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {APP_ALGO_SORT_METHOD_TABLE};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<SortMethod>::value);
-    return table[method];
-//! @endcond
-#undef ELEM
-}
-#undef APP_ALGO_SORT_METHOD_TABLE
 
 namespace match
 {
@@ -291,42 +159,9 @@ catch (const std::exception& err)
 }
 } // namespace match
 
-//! @brief Update match-related choice.
-//! @param target - target method
-template <>
-void updateChoice<MatchMethod>(const std::string_view target)
-{
-    constexpr auto category = Category::match;
-    auto& bits = getCategoryOpts<category>();
-
-    switch (utility::common::bkdrHash(target.data()))
-    {
-        case abbrVal(MatchMethod::rabinKarp):
-            bits.set(MatchMethod::rabinKarp);
-            break;
-        case abbrVal(MatchMethod::knuthMorrisPratt):
-            bits.set(MatchMethod::knuthMorrisPratt);
-            break;
-        case abbrVal(MatchMethod::boyerMoore):
-            bits.set(MatchMethod::boyerMoore);
-            break;
-        case abbrVal(MatchMethod::horspool):
-            bits.set(MatchMethod::horspool);
-            break;
-        case abbrVal(MatchMethod::sunday):
-            bits.set(MatchMethod::sunday);
-            break;
-        default:
-            bits.reset();
-            throw std::logic_error{
-                "Unexpected " + std::string{toString<category>()} + " method: " + target.data() + '.'};
-    }
-}
-
-//! @brief Run match-related choices.
+//! @brief To apply match-related methods.
 //! @param candidates - container for the candidate target methods
-template <>
-void runChoices<MatchMethod>(const std::vector<std::string>& candidates)
+void applyingMatch(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::match;
     const auto& bits = getCategoryOpts<category>();
@@ -423,33 +258,9 @@ catch (const std::exception& err)
 }
 } // namespace notation
 
-//! @brief Update notation-related choice.
-//! @param target - target method
-template <>
-void updateChoice<NotationMethod>(const std::string_view target)
-{
-    constexpr auto category = Category::notation;
-    auto& bits = getCategoryOpts<category>();
-
-    switch (utility::common::bkdrHash(target.data()))
-    {
-        case abbrVal(NotationMethod::prefix):
-            bits.set(NotationMethod::prefix);
-            break;
-        case abbrVal(NotationMethod::postfix):
-            bits.set(NotationMethod::postfix);
-            break;
-        default:
-            bits.reset();
-            throw std::logic_error{
-                "Unexpected " + std::string{toString<category>()} + " method: " + target.data() + '.'};
-    }
-}
-
-//! @brief Run notation-related choices.
+//! @brief To apply notation-related methods.
 //! @param candidates - container for the candidate target methods
-template <>
-void runChoices<NotationMethod>(const std::vector<std::string>& candidates)
+void applyingNotation(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::notation;
     const auto& bits = getCategoryOpts<category>();
@@ -591,45 +402,9 @@ catch (const std::exception& err)
 }
 } // namespace optimal
 
-//! @brief Update optimal-related choice.
-//! @param target - target method
-template <>
-void updateChoice<OptimalMethod>(const std::string_view target)
-{
-    constexpr auto category = Category::optimal;
-    auto& bits = getCategoryOpts<category>();
-
-    switch (utility::common::bkdrHash(target.data()))
-    {
-        case abbrVal(OptimalMethod::gradient):
-            bits.set(OptimalMethod::gradient);
-            break;
-        case abbrVal(OptimalMethod::tabu):
-            bits.set(OptimalMethod::tabu);
-            break;
-        case abbrVal(OptimalMethod::annealing):
-            bits.set(OptimalMethod::annealing);
-            break;
-        case abbrVal(OptimalMethod::particle):
-            bits.set(OptimalMethod::particle);
-            break;
-        case abbrVal(OptimalMethod::ant):
-            bits.set(OptimalMethod::ant);
-            break;
-        case abbrVal(OptimalMethod::genetic):
-            bits.set(OptimalMethod::genetic);
-            break;
-        default:
-            bits.reset();
-            throw std::logic_error{
-                "Unexpected " + std::string{toString<category>()} + " method: " + target.data() + '.'};
-    }
-}
-
-//! @brief Run optimal-related choices.
+//! @brief To apply optimal-related methods.
 //! @param candidates - container for the candidate target methods
-template <>
-void runChoices<OptimalMethod>(const std::vector<std::string>& candidates)
+void applyingOptimal(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::optimal;
     const auto& bits = getCategoryOpts<category>();
@@ -772,36 +547,9 @@ catch (const std::exception& err)
 }
 } // namespace search
 
-//! @brief Update search-related choice.
-//! @param target - target method
-template <>
-void updateChoice<SearchMethod>(const std::string_view target)
-{
-    constexpr auto category = Category::search;
-    auto& bits = getCategoryOpts<category>();
-
-    switch (utility::common::bkdrHash(target.data()))
-    {
-        case abbrVal(SearchMethod::binary):
-            bits.set(SearchMethod::binary);
-            break;
-        case abbrVal(SearchMethod::interpolation):
-            bits.set(SearchMethod::interpolation);
-            break;
-        case abbrVal(SearchMethod::fibonacci):
-            bits.set(SearchMethod::fibonacci);
-            break;
-        default:
-            bits.reset();
-            throw std::logic_error{
-                "Unexpected " + std::string{toString<category>()} + " method: " + target.data() + '.'};
-    }
-}
-
-//! @brief Run search-related choices.
+//! @brief To apply search-related methods.
 //! @param candidates - container for the candidate target methods
-template <>
-void runChoices<SearchMethod>(const std::vector<std::string>& candidates)
+void applyingSearch(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::search;
     const auto& bits = getCategoryOpts<category>();
@@ -994,57 +742,9 @@ catch (const std::exception& err)
 }
 } // namespace sort
 
-//! @brief Update sort-related choice.
-//! @param target - target method
-template <>
-void updateChoice<SortMethod>(const std::string_view target)
-{
-    constexpr auto category = Category::sort;
-    auto& bits = getCategoryOpts<category>();
-
-    switch (utility::common::bkdrHash(target.data()))
-    {
-        case abbrVal(SortMethod::bubble):
-            bits.set(SortMethod::bubble);
-            break;
-        case abbrVal(SortMethod::selection):
-            bits.set(SortMethod::selection);
-            break;
-        case abbrVal(SortMethod::insertion):
-            bits.set(SortMethod::insertion);
-            break;
-        case abbrVal(SortMethod::shell):
-            bits.set(SortMethod::shell);
-            break;
-        case abbrVal(SortMethod::merge):
-            bits.set(SortMethod::merge);
-            break;
-        case abbrVal(SortMethod::quick):
-            bits.set(SortMethod::quick);
-            break;
-        case abbrVal(SortMethod::heap):
-            bits.set(SortMethod::heap);
-            break;
-        case abbrVal(SortMethod::counting):
-            bits.set(SortMethod::counting);
-            break;
-        case abbrVal(SortMethod::bucket):
-            bits.set(SortMethod::bucket);
-            break;
-        case abbrVal(SortMethod::radix):
-            bits.set(SortMethod::radix);
-            break;
-        default:
-            bits.reset();
-            throw std::logic_error{
-                "Unexpected " + std::string{toString<category>()} + " method: " + target.data() + '.'};
-    }
-}
-
-//! @brief Run sort-related choices.
+//! @brief To apply sort-related methods.
 //! @param candidates - container for the candidate target methods
-template <>
-void runChoices<SortMethod>(const std::vector<std::string>& candidates)
+void applyingSort(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::sort;
     const auto& bits = getCategoryOpts<category>();

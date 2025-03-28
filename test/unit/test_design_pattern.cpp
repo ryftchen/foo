@@ -22,8 +22,6 @@ namespace test // NOLINT(modernize-concat-nested-namespaces)
 namespace tst_dp
 {
 using namespace application::app_dp; // NOLINT(google-build-using-namespace)
-//! @brief Alias for Category.
-using Category = ApplyDesignPattern::Category;
 
 //! @brief Test base of behavioral.
 class BehavioralTestBase : public ::testing::Test
@@ -35,9 +33,9 @@ public:
     ~BehavioralTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase() { TST_DP_PRINT_TASK_TITLE(Category::behavioral, "BEGIN"); }
+    static void SetUpTestCase() { TST_DP_PRINT_TASK_TITLE("BEHAVIORAL", "BEGIN"); }
     //! @brief Tear down the test case.
-    static void TearDownTestCase() { TST_DP_PRINT_TASK_TITLE(Category::behavioral, "END"); }
+    static void TearDownTestCase() { TST_DP_PRINT_TASK_TITLE("BEHAVIORAL", "END"); }
     //! @brief Set up.
     void SetUp() override {}
     //! @brief Tear down.
@@ -142,9 +140,9 @@ public:
     ~CreationalTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase() { TST_DP_PRINT_TASK_TITLE(Category::creational, "BEGIN"); }
+    static void SetUpTestCase() { TST_DP_PRINT_TASK_TITLE("CREATIONAL", "BEGIN"); }
     //! @brief Tear down the test case.
-    static void TearDownTestCase() { TST_DP_PRINT_TASK_TITLE(Category::creational, "END"); }
+    static void TearDownTestCase() { TST_DP_PRINT_TASK_TITLE("CREATIONAL", "END"); }
     //! @brief Set up.
     void SetUp() override {}
     //! @brief Tear down.
@@ -201,9 +199,9 @@ public:
     ~StructuralTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase() { TST_DP_PRINT_TASK_TITLE(Category::structural, "BEGIN"); }
+    static void SetUpTestCase() { TST_DP_PRINT_TASK_TITLE("STRUCTURAL", "BEGIN"); }
     //! @brief Tear down the test case.
-    static void TearDownTestCase() { TST_DP_PRINT_TASK_TITLE(Category::structural, "END"); }
+    static void TearDownTestCase() { TST_DP_PRINT_TASK_TITLE("STRUCTURAL", "END"); }
     //! @brief Set up.
     void SetUp() override {}
     //! @brief Tear down.

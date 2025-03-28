@@ -22,8 +22,6 @@ namespace test // NOLINT(modernize-concat-nested-namespaces)
 namespace tst_algo
 {
 using namespace application::app_algo; // NOLINT(google-build-using-namespace)
-//! @brief Alias for Category.
-using Category = ApplyAlgorithm::Category;
 
 //! @brief Test base of match.
 class MatchTestBase : public ::testing::Test
@@ -37,13 +35,13 @@ public:
     //! @brief Set up the test case.
     static void SetUpTestCase()
     {
-        TST_ALGO_PRINT_TASK_TITLE(Category::match, "BEGIN");
+        TST_ALGO_PRINT_TASK_TITLE("MATCH", "BEGIN");
         inputs = std::make_shared<match::InputBuilder>(match::input::patternString);
     }
     //! @brief Tear down the test case.
     static void TearDownTestCase()
     {
-        TST_ALGO_PRINT_TASK_TITLE(Category::match, "END");
+        TST_ALGO_PRINT_TASK_TITLE("MATCH", "END");
         inputs.reset();
     }
     //! @brief Set up.
@@ -130,13 +128,13 @@ public:
     //! @brief Set up the test case.
     static void SetUpTestCase()
     {
-        TST_ALGO_PRINT_TASK_TITLE(Category::notation, "BEGIN");
+        TST_ALGO_PRINT_TASK_TITLE("NOTATION", "BEGIN");
         inputs = std::make_shared<notation::InputBuilder>(notation::input::infixString);
     }
     //! @brief Tear down the test case.
     static void TearDownTestCase()
     {
-        TST_ALGO_PRINT_TASK_TITLE(Category::notation, "END");
+        TST_ALGO_PRINT_TASK_TITLE("NOTATION", "END");
         inputs.reset();
     }
     //! @brief Set up.
@@ -177,14 +175,14 @@ public:
     //! @brief Set up the test case.
     static void SetUpTestCase()
     {
-        TST_ALGO_PRINT_TASK_TITLE(Category::optimal, "BEGIN");
+        TST_ALGO_PRINT_TASK_TITLE("OPTIMAL", "BEGIN");
         inputs = std::make_shared<optimal::InputBuilder<Rastrigin>>(optimal::OptimalFuncMap<Rastrigin>{
             {{Rastrigin::range1, Rastrigin::range2, Rastrigin::funcDescr}, Rastrigin{}}});
     }
     //! @brief Tear down the test case.
     static void TearDownTestCase()
     {
-        TST_ALGO_PRINT_TASK_TITLE(Category::optimal, "END");
+        TST_ALGO_PRINT_TASK_TITLE("OPTIMAL", "END");
         inputs.reset();
     }
     //! @brief Set up.
@@ -299,7 +297,7 @@ public:
     //! @brief Set up the test case.
     static void SetUpTestCase()
     {
-        TST_ALGO_PRINT_TASK_TITLE(Category::search, "BEGIN");
+        TST_ALGO_PRINT_TASK_TITLE("SEARCH", "BEGIN");
         inputs = std::make_shared<search::InputBuilder<float>>(
             search::input::arrayLength, search::input::arrayRangeMin, search::input::arrayRangeMax);
         updateExpColl();
@@ -307,7 +305,7 @@ public:
     //! @brief Tear down the test case.
     static void TearDownTestCase()
     {
-        TST_ALGO_PRINT_TASK_TITLE(Category::search, "END");
+        TST_ALGO_PRINT_TASK_TITLE("SEARCH", "END");
         inputs.reset();
     }
     //! @brief Set up.
@@ -378,7 +376,7 @@ public:
     //! @brief Set up the test case.
     static void SetUpTestCase()
     {
-        TST_ALGO_PRINT_TASK_TITLE(Category::sort, "BEGIN");
+        TST_ALGO_PRINT_TASK_TITLE("SORT", "BEGIN");
         inputs = std::make_shared<sort::InputBuilder<std::int32_t>>(
             sort::input::arrayLength, sort::input::arrayRangeMin, sort::input::arrayRangeMax);
         updateExpColl();
@@ -386,7 +384,7 @@ public:
     //! @brief Tear down the test case.
     static void TearDownTestCase()
     {
-        TST_ALGO_PRINT_TASK_TITLE(Category::sort, "END");
+        TST_ALGO_PRINT_TASK_TITLE("SORT", "END");
         inputs.reset();
     }
     //! @brief Set up.

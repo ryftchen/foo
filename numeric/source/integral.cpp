@@ -6,7 +6,6 @@
 
 #include "integral.hpp"
 
-#include <functional>
 #include <random>
 
 namespace numeric::integral

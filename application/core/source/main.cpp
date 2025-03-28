@@ -10,6 +10,7 @@
 #ifndef __PRECOMPILED_HEADER
 #include <sys/prctl.h>
 #include <sys/wait.h>
+#include <iostream>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
