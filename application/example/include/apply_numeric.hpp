@@ -7,11 +7,8 @@
 #pragma once
 
 #ifndef __PRECOMPILED_HEADER
-#include <algorithm>
-#include <bitset>
 #include <cmath>
 #include <iostream>
-#include <unordered_map>
 #include <variant>
 #else
 #include "application/pch/precompiled_header.hpp"
@@ -28,173 +25,12 @@ namespace application // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Numeric-applying-related functions in the application module.
 namespace app_num
 {
-//! @brief Represent the maximum value of an enum.
-//! @tparam T - type of specific enum
-template <typename T>
-struct Bottom;
-
-//! @brief Enumerate specific arithmetic methods.
-enum ArithmeticMethod : std::uint8_t
-{
-    //! @brief Addition.
-    addition,
-    //! @brief Subtraction.
-    subtraction,
-    //! @brief Multiplication.
-    multiplication,
-    //! @brief Division.
-    division
-};
-//! @brief Store the maximum value of the ArithmeticMethod enum.
-template <>
-struct Bottom<ArithmeticMethod>
-{
-    //! @brief Maximum value of the ArithmeticMethod enum.
-    static constexpr std::uint8_t value{4};
-};
-
-//! @brief Enumerate specific divisor methods.
-enum DivisorMethod : std::uint8_t
-{
-    //! @brief Euclidean.
-    euclidean,
-    //! @brief Stein.
-    stein
-};
-//! @brief Store the maximum value of the DivisorMethod enum.
-template <>
-struct Bottom<DivisorMethod>
-{
-    //! @brief Maximum value of the DivisorMethod enum.
-    static constexpr std::uint8_t value{2};
-};
-
-//! @brief Enumerate specific integral methods.
-enum IntegralMethod : std::uint8_t
-{
-    //! @brief Trapezoidal.
-    trapezoidal,
-    //! @brief Simpson.
-    simpson,
-    //! @brief Romberg.
-    romberg,
-    //! @brief Gauss.
-    gauss,
-    //! @brief Monte-Carlo.
-    monteCarlo
-};
-//! @brief Store the maximum value of the IntegralMethod enum.
-template <>
-struct Bottom<IntegralMethod>
-{
-    //! @brief Maximum value of the IntegralMethod enum.
-    static constexpr std::uint8_t value{5};
-};
-
-//! @brief Enumerate specific prime methods.
-enum PrimeMethod : std::uint8_t
-{
-    //! @brief Eratosthenes.
-    eratosthenes,
-    //! @brief Euler.
-    euler
-};
-//! @brief Store the maximum value of the PrimeMethod enum.
-template <>
-struct Bottom<PrimeMethod>
-{
-    //! @brief Maximum value of the PrimeMethod enum.
-    static constexpr std::uint8_t value{2};
-};
-
-//! @brief Manage numeric choices.
-class ApplyNumeric
-{
-public:
-    //! @brief Enumerate specific numeric choices.
-    enum Category : std::uint8_t
-    {
-        //! @brief Arithmetic.
-        arithmetic,
-        //! @brief Divisor.
-        divisor,
-        //! @brief Integral.
-        integral,
-        //! @brief Prime.
-        prime
-    };
-
-    //! @brief Bit flags for managing arithmetic methods.
-    std::bitset<Bottom<ArithmeticMethod>::value> arithmeticOpts{};
-    //! @brief Bit flags for managing divisor methods.
-    std::bitset<Bottom<DivisorMethod>::value> divisorOpts{};
-    //! @brief Bit flags for managing integral methods.
-    std::bitset<Bottom<IntegralMethod>::value> integralOpts{};
-    //! @brief Bit flags for managing prime methods.
-    std::bitset<Bottom<PrimeMethod>::value> primeOpts{};
-
-    //! @brief Check whether any numeric choices do not exist.
-    //! @return any numeric choices do not exist or exist
-    [[nodiscard]] inline bool empty() const
-    {
-        return arithmeticOpts.none() && divisorOpts.none() && integralOpts.none() && primeOpts.none();
-    }
-    //! @brief Reset bit flags that manage numeric choices.
-    inline void reset()
-    {
-        arithmeticOpts.reset();
-        divisorOpts.reset();
-        integralOpts.reset();
-        primeOpts.reset();
-    }
-
-protected:
-    //! @brief The operator (<<) overloading of the Category enum.
-    //! @param os - output stream object
-    //! @param cat - the specific value of Category enum
-    //! @return reference of the output stream object
-    friend std::ostream& operator<<(std::ostream& os, const Category cat)
-    {
-        switch (cat)
-        {
-            case Category::arithmetic:
-                os << "ARITHMETIC";
-                break;
-            case Category::divisor:
-                os << "DIVISOR";
-                break;
-            case Category::integral:
-                os << "INTEGRAL";
-                break;
-            case Category::prime:
-                os << "PRIME";
-                break;
-            default:
-                os << "UNKNOWN (" << static_cast<std::underlying_type_t<Category>>(cat) << ')';
-                break;
-        }
-
-        return os;
-    }
-};
-extern ApplyNumeric& manager();
-
-//! @brief Update choice.
-//! @tparam T - type of target method
-//! @param target - target method
-template <typename T>
-void updateChoice(const std::string_view target);
-//! @brief Run choices.
-//! @tparam T - type of target method
-//! @param candidates - container for the candidate target methods
-template <typename T>
-void runChoices(const std::vector<std::string>& candidates);
-
 //! @brief Apply arithmetic.
 namespace arithmetic
 {
 //! @brief The version used to apply.
 const char* const version = numeric::arithmetic::version();
+
 //! @brief Set input parameters.
 namespace input
 {
@@ -259,16 +95,14 @@ private:
     const std::int32_t integer2{0};
 };
 } // namespace arithmetic
-template <>
-void updateChoice<ArithmeticMethod>(const std::string_view target);
-template <>
-void runChoices<ArithmeticMethod>(const std::vector<std::string>& candidates);
+extern void applyingArithmetic(const std::vector<std::string>& candidates);
 
 //! @brief Apply divisor.
 namespace divisor
 {
 //! @brief The version used to apply.
 const char* const version = numeric::divisor::version();
+
 //! @brief Set input parameters.
 namespace input
 {
@@ -372,10 +206,7 @@ private:
     const std::int32_t integer2{0};
 };
 } // namespace divisor
-template <>
-void updateChoice<DivisorMethod>(const std::string_view target);
-template <>
-void runChoices<DivisorMethod>(const std::vector<std::string>& candidates);
+extern void applyingDivisor(const std::vector<std::string>& candidates);
 
 //! @brief Apply integral.
 namespace integral
@@ -384,7 +215,7 @@ namespace integral
 const char* const version = numeric::integral::version();
 
 //! @brief Alias for the target expression.
-using Expression = numeric::integral::Expression;
+using Expression = std::function<double(const double)>;
 
 //! @brief Set input parameters.
 namespace input
@@ -393,10 +224,13 @@ namespace input
 class Griewank : public Expression
 {
 public:
+    //! @brief Construct a new Griewank object.
+    Griewank() : Expression{[this](const double x) { return operator()(x); }} {}
+
     //! @brief The operator (()) overloading of Griewank class.
     //! @param x - independent variable
     //! @return dependent variable
-    double operator()(const double x) const override { return 1.0 + 1.0 / 4000.0 * x * x - std::cos(x); }
+    double operator()(const double x) const { return 1.0 + 1.0 / 4000.0 * x * x - std::cos(x); }
 
     //! @brief Left endpoint.
     static constexpr double range1{-600.0};
@@ -558,16 +392,14 @@ private:
     const IntegralExprMap<Ts...> expressionMap{};
 };
 } // namespace integral
-template <>
-void updateChoice<IntegralMethod>(const std::string_view target);
-template <>
-void runChoices<IntegralMethod>(const std::vector<std::string>& candidates);
+extern void applyingIntegral(const std::vector<std::string>& candidates);
 
 //! @brief Apply prime.
 namespace prime
 {
 //! @brief The version used to apply.
 const char* const version = numeric::prime::version();
+
 //! @brief Set input parameters.
 namespace input
 {
@@ -661,9 +493,6 @@ private:
     const std::uint32_t maxPositiveInteger{0};
 };
 } // namespace prime
-template <>
-void updateChoice<PrimeMethod>(const std::string_view target);
-template <>
-void runChoices<PrimeMethod>(const std::vector<std::string>& candidates);
+extern void applyingPrime(const std::vector<std::string>& candidates);
 } // namespace app_num
 } // namespace application

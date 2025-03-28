@@ -10,10 +10,6 @@
 #include "console.hpp"
 #include "note.hpp"
 
-#include "application/example/include/register_algorithm.hpp"
-#include "application/example/include/register_data_structure.hpp"
-#include "application/example/include/register_design_pattern.hpp"
-#include "application/example/include/register_numeric.hpp"
 #include "utility/include/argument.hpp"
 
 //! @brief The application module.
@@ -156,13 +152,13 @@ private:
     //! @brief Parse argument helper for commander.
     utility::argument::Argument mainCLI{"foo", note::version()};
     //! @brief Parse argument helper to apply algorithm.
-    utility::argument::Argument subCLIAppAlgo{reg_algo::name<app_algo::ApplyAlgorithm>(), reg_algo::version()};
+    utility::argument::Argument subCLIAppAlgo{reg_algo::title<reg_algo::ApplyAlgorithm>(), reg_algo::version()};
     //! @brief Parse argument helper to apply design pattern.
-    utility::argument::Argument subCLIAppDp{reg_dp::name<app_dp::ApplyDesignPattern>(), reg_dp::version()};
+    utility::argument::Argument subCLIAppDp{reg_dp::title<reg_dp::ApplyDesignPattern>(), reg_dp::version()};
     //! @brief Parse argument helper to apply data structure.
-    utility::argument::Argument subCLIAppDs{reg_ds::name<app_ds::ApplyDataStructure>(), reg_ds::version()};
+    utility::argument::Argument subCLIAppDs{reg_ds::title<reg_ds::ApplyDataStructure>(), reg_ds::version()};
     //! @brief Parse argument helper to apply numeric.
-    utility::argument::Argument subCLIAppNum{reg_num::name<app_num::ApplyNumeric>(), reg_num::version()};
+    utility::argument::Argument subCLIAppNum{reg_num::title<reg_num::ApplyNumeric>(), reg_num::version()};
     //! @brief Flag to indicate whether the command is faulty.
     std::atomic<bool> isFaulty{false};
 

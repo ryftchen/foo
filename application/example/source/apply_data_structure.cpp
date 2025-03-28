@@ -34,17 +34,7 @@
 
 namespace application::app_ds
 {
-using reg_ds::taskNameCurried, reg_ds::toString, reg_ds::getCategoryOpts, reg_ds::getCategoryAlias, reg_ds::abbrVal;
-//! @brief Alias for Category.
-using Category = ApplyDataStructure::Category;
-
-//! @brief Get the data structure choice manager.
-//! @return reference of the ApplyDataStructure object
-ApplyDataStructure& manager()
-{
-    static ApplyDataStructure manager{};
-    return manager;
-}
+using namespace reg_ds; // NOLINT(google-build-using-namespace)
 
 //! @brief Get the title of a particular instance in data structure choices.
 //! @tparam T - type of target instance
@@ -58,50 +48,6 @@ static std::string getTitle(const T instance)
 
     return title;
 }
-
-// clang-format off
-//! @brief Mapping table for enum and string about linear instances. X macro.
-#define APP_DS_LINEAR_INSTANCE_TABLE \
-    ELEM(linkedList, "linkedList")   \
-    ELEM(stack     , "stack"     )   \
-    ELEM(queue     , "queue"     )
-// clang-format on
-//! @brief Convert instance enumeration to string.
-//! @param instance - the specific value of LinearInstance enum
-//! @return instance name
-static constexpr std::string_view toString(const LinearInstance instance)
-{
-//! @cond
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {APP_DS_LINEAR_INSTANCE_TABLE};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<LinearInstance>::value);
-    return table[instance];
-//! @endcond
-#undef ELEM
-}
-#undef APP_DS_LINEAR_INSTANCE_TABLE
-
-// clang-format off
-//! @brief Mapping table for enum and string about tree instances. X macro.
-#define APP_DS_TREE_INSTANCE_TABLE                   \
-    ELEM(binarySearch       , "binarySearch"       ) \
-    ELEM(adelsonVelskyLandis, "adelsonVelskyLandis") \
-    ELEM(splay              , "splay"              )
-// clang-format on
-//! @brief Convert instance enumeration to string.
-//! @param instance - the specific value of TreeInstance enum
-//! @return instance name
-static constexpr std::string_view toString(const TreeInstance instance)
-{
-//! @cond
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {APP_DS_TREE_INSTANCE_TABLE};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<TreeInstance>::value);
-    return table[instance];
-//! @endcond
-#undef ELEM
-}
-#undef APP_DS_TREE_INSTANCE_TABLE
 
 namespace linear
 {
@@ -147,36 +93,9 @@ catch (const std::exception& err)
 }
 } // namespace linear
 
-//! @brief Update linear-related choice.
-//! @param target - target instance
-template <>
-void updateChoice<LinearInstance>(const std::string_view target)
-{
-    constexpr auto category = Category::linear;
-    auto& bits = getCategoryOpts<category>();
-
-    switch (utility::common::bkdrHash(target.data()))
-    {
-        case abbrVal(LinearInstance::linkedList):
-            bits.set(LinearInstance::linkedList);
-            break;
-        case abbrVal(LinearInstance::stack):
-            bits.set(LinearInstance::stack);
-            break;
-        case abbrVal(LinearInstance::queue):
-            bits.set(LinearInstance::queue);
-            break;
-        default:
-            bits.reset();
-            throw std::logic_error{
-                "Unexpected " + std::string{toString<category>()} + " instance: " + target.data() + '.'};
-    }
-}
-
-//! @brief Run linear-related choices.
+//! @brief To apply linear-related instances.
 //! @param candidates - container for the candidate target instances
-template <>
-void runChoices<LinearInstance>(const std::vector<std::string>& candidates)
+void applyingLinear(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::linear;
     const auto& bits = getCategoryOpts<category>();
@@ -263,36 +182,9 @@ catch (const std::exception& err)
 }
 } // namespace tree
 
-//! @brief Update tree-related choice.
-//! @param target - target instance
-template <>
-void updateChoice<TreeInstance>(const std::string_view target)
-{
-    constexpr auto category = Category::tree;
-    auto& bits = getCategoryOpts<category>();
-
-    switch (utility::common::bkdrHash(target.data()))
-    {
-        case abbrVal(TreeInstance::binarySearch):
-            bits.set(TreeInstance::binarySearch);
-            break;
-        case abbrVal(TreeInstance::adelsonVelskyLandis):
-            bits.set(TreeInstance::adelsonVelskyLandis);
-            break;
-        case abbrVal(TreeInstance::splay):
-            bits.set(TreeInstance::splay);
-            break;
-        default:
-            bits.reset();
-            throw std::logic_error{
-                "Unexpected " + std::string{toString<category>()} + " instance: " + target.data() + '.'};
-    }
-}
-
-//! @brief Run tree-related choices.
+//! @brief To apply tree-related instances.
 //! @param candidates - container for the candidate target instances
-template <>
-void runChoices<TreeInstance>(const std::vector<std::string>& candidates)
+void applyingTree(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::tree;
     const auto& bits = getCategoryOpts<category>();

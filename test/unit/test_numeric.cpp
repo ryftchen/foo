@@ -22,8 +22,6 @@ namespace test // NOLINT(modernize-concat-nested-namespaces)
 namespace tst_num
 {
 using namespace application::app_num; // NOLINT(google-build-using-namespace)
-//! @brief Alias for Category.
-using Category = ApplyNumeric::Category;
 
 //! @brief Test base of arithmetic.
 class ArithmeticTestBase : public ::testing::Test
@@ -37,13 +35,13 @@ public:
     //! @brief Set up the test case.
     static void SetUpTestCase()
     {
-        TST_NUM_PRINT_TASK_TITLE(Category::arithmetic, "BEGIN");
+        TST_NUM_PRINT_TASK_TITLE("ARITHMETIC", "BEGIN");
         inputs = std::make_shared<arithmetic::InputBuilder>(arithmetic::input::integerA, arithmetic::input::integerB);
     }
     //! @brief Tear down the test case.
     static void TearDownTestCase()
     {
-        TST_NUM_PRINT_TASK_TITLE(Category::arithmetic, "END");
+        TST_NUM_PRINT_TASK_TITLE("ARITHMETIC", "END");
         inputs.reset();
     }
     //! @brief Set up.
@@ -94,13 +92,13 @@ public:
     //! @brief Set up the test case.
     static void SetUpTestCase()
     {
-        TST_NUM_PRINT_TASK_TITLE(Category::divisor, "BEGIN");
+        TST_NUM_PRINT_TASK_TITLE("DIVISOR", "BEGIN");
         inputs = std::make_shared<divisor::InputBuilder>(divisor::input::integerA, divisor::input::integerB);
     }
     //! @brief Tear down the test case.
     static void TearDownTestCase()
     {
-        TST_NUM_PRINT_TASK_TITLE(Category::divisor, "END");
+        TST_NUM_PRINT_TASK_TITLE("DIVISOR", "END");
         inputs.reset();
     }
     //! @brief Set up.
@@ -143,14 +141,14 @@ public:
     //! @brief Set up the test case.
     static void SetUpTestCase()
     {
-        TST_NUM_PRINT_TASK_TITLE(Category::integral, "BEGIN");
+        TST_NUM_PRINT_TASK_TITLE("INTEGRAL", "BEGIN");
         inputs = std::make_shared<integral::InputBuilder<Griewank>>(integral::IntegralExprMap<Griewank>{
             {{Griewank::range1, Griewank::range2, Griewank::exprDescr}, Griewank{}}});
     }
     //! @brief Tear down the test case.
     static void TearDownTestCase()
     {
-        TST_NUM_PRINT_TASK_TITLE(Category::integral, "END");
+        TST_NUM_PRINT_TASK_TITLE("INTEGRAL", "END");
         inputs.reset();
     }
     //! @brief Set up.
@@ -246,13 +244,13 @@ public:
     //! @brief Set up the test case.
     static void SetUpTestCase()
     {
-        TST_NUM_PRINT_TASK_TITLE(Category::prime, "BEGIN");
+        TST_NUM_PRINT_TASK_TITLE("PRIME", "BEGIN");
         inputs = std::make_shared<prime::InputBuilder>(prime::input::maxPositiveInteger);
     }
     //! @brief Tear down the test case.
     static void TearDownTestCase()
     {
-        TST_NUM_PRINT_TASK_TITLE(Category::prime, "END");
+        TST_NUM_PRINT_TASK_TITLE("PRIME", "END");
         inputs.reset();
     }
     //! @brief Set up.

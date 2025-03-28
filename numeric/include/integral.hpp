@@ -7,6 +7,7 @@
 #pragma once
 
 #include <cstdint>
+#include <functional>
 
 //! @brief The numeric module.
 namespace numeric // NOLINT(modernize-concat-nested-namespaces)
@@ -17,18 +18,7 @@ namespace integral
 extern const char* version() noexcept;
 
 //! @brief Target expressions.
-class Expression
-{
-public:
-    //! @brief Destroy the Expression object.
-    virtual ~Expression() = default;
-
-    //! @brief The operator (()) overloading of Function class.
-    //! @param x - independent variable
-    //! @return dependent variable
-    virtual inline double operator()(const double x) const = 0;
-};
-
+using Expression = std::function<double(const double)>;
 //! @brief The precision of calculation.
 inline constexpr double epsilon = 1e-5;
 
@@ -75,7 +65,7 @@ public:
 
 private:
     //! @brief Target expression.
-    const Expression& expr;
+    const Expression expr{};
 };
 
 //! @brief The adaptive Simpson's 1/3 method.
@@ -95,7 +85,7 @@ public:
 
 private:
     //! @brief Target expression.
-    const Expression& expr;
+    const Expression expr{};
     //! @brief Calculate the value of the definite integral with the Simpson's rule.
     //! @param left - left endpoint
     //! @param right - right endpoint
@@ -133,7 +123,7 @@ public:
 
 private:
     //! @brief Target expression.
-    const Expression& expr;
+    const Expression expr{};
 };
 
 //! @brief The Gauss-Legendre's 5-points method.
@@ -153,7 +143,7 @@ public:
 
 private:
     //! @brief Target expression.
-    const Expression& expr;
+    const Expression expr{};
 };
 
 //! @brief The Monte-Carlo method.
@@ -173,7 +163,7 @@ public:
 
 private:
     //! @brief Target expression.
-    const Expression& expr;
+    const Expression expr{};
     //! @brief Sample from the uniform distribution.
     //! @param lower - lower endpoint
     //! @param upper - upper endpoint

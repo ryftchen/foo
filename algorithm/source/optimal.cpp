@@ -6,7 +6,6 @@
 
 #include "optimal.hpp"
 
-#include <functional>
 #include <stdexcept>
 
 namespace algorithm::optimal

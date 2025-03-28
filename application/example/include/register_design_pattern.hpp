@@ -6,12 +6,218 @@
 
 #pragma once
 
-#include "apply_design_pattern.hpp"
+#ifndef __PRECOMPILED_HEADER
+#include <bitset>
+#else
+#include "application/pch/precompiled_header.hpp"
+#endif // __PRECOMPILED_HEADER
 
 #include "application/core/include/configure.hpp"
 #include "utility/include/common.hpp"
 #include "utility/include/currying.hpp"
 #include "utility/include/reflection.hpp"
+
+//! @brief The application module.
+namespace application // NOLINT(modernize-concat-nested-namespaces)
+{
+//! @brief Design-pattern-registering-related functions in the application module.
+namespace reg_dp
+{
+extern const char* version() noexcept;
+
+//! @brief Represent the maximum value of an enum.
+//! @tparam T - type of specific enum
+template <typename T>
+struct Bottom;
+
+//! @brief Enumerate specific behavioral instances.
+enum BehavioralInstance : std::uint8_t
+{
+    //! @brief Chain of responsibility.
+    chainOfResponsibility,
+    //! @brief Command.
+    command,
+    //! @brief Interpreter.
+    interpreter,
+    //! @brief Iterator.
+    iterator,
+    //! @brief Mediator.
+    mediator,
+    //! @brief Memento.
+    memento,
+    //! @brief Observer.
+    observer,
+    //! @brief State.
+    state,
+    //! @brief Strategy.
+    strategy,
+    //! @brief Template method.
+    templateMethod,
+    //! @brief Visitor.
+    visitor
+};
+//! @brief Store the maximum value of the BehavioralInstance enum.
+template <>
+struct Bottom<BehavioralInstance>
+{
+    //! @brief Maximum value of the BehavioralInstance enum.
+    static constexpr std::uint8_t value{11};
+};
+
+//! @brief Enumerate specific creational instances.
+enum CreationalInstance : std::uint8_t
+{
+    //! @brief Abstract factory.
+    abstractFactory,
+    //! @brief Builder.
+    builder,
+    //! @brief Factory method.
+    factoryMethod,
+    //! @brief Prototype.
+    prototype,
+    //! @brief Singleton.
+    singleton
+};
+//! @brief Store the maximum value of the CreationalInstance enum.
+template <>
+struct Bottom<CreationalInstance>
+{
+    //! @brief Maximum value of the CreationalInstance enum.
+    static constexpr std::uint8_t value{5};
+};
+
+//! @brief Enumerate specific structural instances.
+enum StructuralInstance : std::uint8_t
+{
+    //! @brief Adapter.
+    adapter,
+    //! @brief Bridge.
+    bridge,
+    //! @brief Composite.
+    composite,
+    //! @brief Decorator.
+    decorator,
+    //! @brief Facade.
+    facade,
+    //! @brief Flyweight.
+    flyweight,
+    //! @brief Proxy.
+    proxy
+};
+//! @brief Store the maximum value of the StructuralInstance enum.
+template <>
+struct Bottom<StructuralInstance>
+{
+    //! @brief Maximum value of the StructuralInstance enum.
+    static constexpr std::uint8_t value{7};
+};
+
+//! @brief Manage design pattern choices.
+class ApplyDesignPattern
+{
+public:
+    //! @brief Enumerate specific design pattern choices.
+    enum Category : std::uint8_t
+    {
+        //! @brief Behavioral.
+        behavioral,
+        //! @brief Creational.
+        creational,
+        //! @brief Structural.
+        structural
+    };
+
+    //! @brief Bit flags for managing behavioral instances.
+    std::bitset<Bottom<BehavioralInstance>::value> behavioralOpts{};
+    //! @brief Bit flags for managing creational instances.
+    std::bitset<Bottom<CreationalInstance>::value> creationalOpts{};
+    //! @brief Bit flags for managing structural instances.
+    std::bitset<Bottom<StructuralInstance>::value> structuralOpts{};
+
+    //! @brief Check whether any design pattern choices do not exist.
+    //! @return any design pattern choices do not exist or exist
+    [[nodiscard]] inline bool empty() const
+    {
+        return behavioralOpts.none() && creationalOpts.none() && structuralOpts.none();
+    }
+    //! @brief Reset bit flags that manage design pattern choices.
+    inline void reset()
+    {
+        behavioralOpts.reset();
+        creationalOpts.reset();
+        structuralOpts.reset();
+    }
+
+protected:
+    //! @brief The operator (<<) overloading of the Category enum.
+    //! @param os - output stream object
+    //! @param cat - the specific value of Category enum
+    //! @return reference of the output stream object
+    friend std::ostream& operator<<(std::ostream& os, const Category cat)
+    {
+        switch (cat)
+        {
+            case Category::behavioral:
+                os << "BEHAVIORAL";
+                break;
+            case Category::creational:
+                os << "CREATIONAL";
+                break;
+            case Category::structural:
+                os << "STRUCTURAL";
+                break;
+            default:
+                os << "UNKNOWN (" << static_cast<std::underlying_type_t<Category>>(cat) << ')';
+                break;
+        }
+
+        return os;
+    }
+};
+extern ApplyDesignPattern& manager();
+
+//! @brief Update choice.
+//! @tparam T - type of target instance
+//! @param target - target instance
+template <typename T>
+void updateChoice(const std::string_view target);
+//! @brief Run choices.
+//! @tparam T - type of target instance
+//! @param candidates - container for the candidate target instances
+template <typename T>
+void runChoices(const std::vector<std::string>& candidates);
+
+//! @brief Register behavioral.
+namespace behavioral
+{
+extern const char* version() noexcept;
+} // namespace behavioral
+template <>
+void updateChoice<BehavioralInstance>(const std::string_view target);
+template <>
+void runChoices<BehavioralInstance>(const std::vector<std::string>& candidates);
+
+//! @brief Register creational.
+namespace creational
+{
+extern const char* version() noexcept;
+} // namespace creational
+template <>
+void updateChoice<CreationalInstance>(const std::string_view target);
+template <>
+void runChoices<CreationalInstance>(const std::vector<std::string>& candidates);
+
+//! @brief Register structural.
+namespace structural
+{
+extern const char* version() noexcept;
+} // namespace structural
+template <>
+void updateChoice<StructuralInstance>(const std::string_view target);
+template <>
+void runChoices<StructuralInstance>(const std::vector<std::string>& candidates);
+} // namespace reg_dp
+} // namespace application
 
 //! @brief Reflect the design pattern category name and alias name to the field in the mapping.
 #define REG_DP_REFLECT_FIRST_LEVEL_FIELD(category, alias)                                          \
@@ -40,8 +246,8 @@
 
 //! @brief Static reflection for ApplyDesignPattern. Used to map command line arguments.
 template <>
-struct utility::reflection::TypeInfo<application::app_dp::ApplyDesignPattern>
-    : TypeInfoBase<application::app_dp::ApplyDesignPattern>
+struct utility::reflection::TypeInfo<application::reg_dp::ApplyDesignPattern>
+    : TypeInfoBase<application::reg_dp::ApplyDesignPattern>
 {
     //! @brief Name.
     static constexpr std::string_view name{"app-dp"};
@@ -59,8 +265,8 @@ struct utility::reflection::TypeInfo<application::app_dp::ApplyDesignPattern>
 };
 //! @brief Static reflection for BehavioralInstance. Used to map command line arguments.
 template <>
-struct utility::reflection::TypeInfo<application::app_dp::BehavioralInstance>
-    : TypeInfoBase<application::app_dp::BehavioralInstance>
+struct utility::reflection::TypeInfo<application::reg_dp::BehavioralInstance>
+    : TypeInfoBase<application::reg_dp::BehavioralInstance>
 {
     //! @brief Name.
     static constexpr std::string_view name{"behavioral"};
@@ -100,8 +306,8 @@ struct utility::reflection::TypeInfo<application::app_dp::BehavioralInstance>
 };
 //! @brief Static reflection for CreationalInstance. Used to map command line arguments.
 template <>
-struct utility::reflection::TypeInfo<application::app_dp::CreationalInstance>
-    : TypeInfoBase<application::app_dp::CreationalInstance>
+struct utility::reflection::TypeInfo<application::reg_dp::CreationalInstance>
+    : TypeInfoBase<application::reg_dp::CreationalInstance>
 {
     //! @brief Name.
     static constexpr std::string_view name{"creational"};
@@ -129,8 +335,8 @@ struct utility::reflection::TypeInfo<application::app_dp::CreationalInstance>
 };
 //! @brief Static reflection for StructuralInstance. Used to map command line arguments.
 template <>
-struct utility::reflection::TypeInfo<application::app_dp::StructuralInstance>
-    : TypeInfoBase<application::app_dp::StructuralInstance>
+struct utility::reflection::TypeInfo<application::reg_dp::StructuralInstance>
+    : TypeInfoBase<application::reg_dp::StructuralInstance>
 {
     //! @brief Name.
     static constexpr std::string_view name{"structural"};
@@ -164,23 +370,17 @@ struct utility::reflection::TypeInfo<application::app_dp::StructuralInstance>
 #undef REG_DP_REFLECT_FIRST_LEVEL_FIELD
 #undef REG_DP_REFLECT_SECOND_LEVEL_FIELD
 
-//! @brief The application module.
-namespace application // NOLINT(modernize-concat-nested-namespaces)
+namespace application::reg_dp
 {
-//! @brief Design-pattern-registering-related functions in the application module.
-namespace reg_dp
-{
-extern const char* version() noexcept;
-
 //! @brief Alias for the type information.
 //! @tparam T - type of target object
 template <typename T>
 using TypeInfo = utility::reflection::TypeInfo<T>;
-//! @brief Get the name directly for sub-cli related registration.
+//! @brief Get the title name directly for sub-cli related registration.
 //! @tparam T - type of sub-cli or sub-cli's category
-//! @return name
+//! @return title name
 template <typename T>
-inline consteval std::string_view name()
+inline consteval std::string_view title()
 {
     return TypeInfo<T>::name;
 }
@@ -198,19 +398,20 @@ inline consteval std::string_view descr()
 template <typename T>
 inline consteval std::string_view alias()
 {
-    return TypeInfo<app_dp::ApplyDesignPattern>::fields.find(REFLECTION_STR(TypeInfo<T>::name))
+    return TypeInfo<ApplyDesignPattern>::fields.find(REFLECTION_STR(TypeInfo<T>::name))
         .attrs.find(REFLECTION_STR("alias"))
         .value;
 }
 
-//! @brief Alias for Category.
-using Category = app_dp::ApplyDesignPattern::Category;
 //! @brief Get the task name curried.
 //! @return task name curried
 inline auto taskNameCurried()
 {
-    return utility::currying::curry(configure::task::presetName, TypeInfo<app_dp::ApplyDesignPattern>::name);
+    return utility::currying::curry(configure::task::presetName, TypeInfo<ApplyDesignPattern>::name);
 }
+
+//! @brief Alias for Category.
+using Category = ApplyDesignPattern::Category;
 //! @brief Convert category enumeration to string.
 //! @tparam Cat - the specific value of Category enum
 //! @return category name
@@ -220,11 +421,11 @@ inline consteval std::string_view toString()
     switch (Cat)
     {
         case Category::behavioral:
-            return TypeInfo<app_dp::BehavioralInstance>::name;
+            return TypeInfo<BehavioralInstance>::name;
         case Category::creational:
-            return TypeInfo<app_dp::CreationalInstance>::name;
+            return TypeInfo<CreationalInstance>::name;
         case Category::structural:
-            return TypeInfo<app_dp::StructuralInstance>::name;
+            return TypeInfo<StructuralInstance>::name;
         default:
             break;
     }
@@ -237,8 +438,7 @@ inline consteval std::string_view toString()
 template <Category Cat>
 inline constexpr auto& getCategoryOpts()
 {
-    return std::invoke(
-        TypeInfo<app_dp::ApplyDesignPattern>::fields.find(REFLECTION_STR(toString<Cat>())).value, app_dp::manager());
+    return std::invoke(TypeInfo<ApplyDesignPattern>::fields.find(REFLECTION_STR(toString<Cat>())).value, manager());
 }
 //! @brief Get the alias of the category in design pattern choices.
 //! @tparam Cat - the specific value of Category enum
@@ -246,11 +446,12 @@ inline constexpr auto& getCategoryOpts()
 template <Category Cat>
 inline consteval std::string_view getCategoryAlias()
 {
-    constexpr auto attr = TypeInfo<app_dp::ApplyDesignPattern>::fields.find(REFLECTION_STR(toString<Cat>()))
-                              .attrs.find(REFLECTION_STR("alias"));
+    constexpr auto attr =
+        TypeInfo<ApplyDesignPattern>::fields.find(REFLECTION_STR(toString<Cat>())).attrs.find(REFLECTION_STR("alias"));
     static_assert(attr.hasValue);
     return attr.value;
 }
+
 //! @brief Abbreviation value for the target instance.
 //! @tparam T - type of target instance
 //! @param instance - target instance
@@ -258,7 +459,7 @@ inline consteval std::string_view getCategoryAlias()
 template <typename T>
 inline consteval std::size_t abbrVal(const T instance)
 {
-    static_assert(app_dp::Bottom<T>::value == TypeInfo<T>::fields.size);
+    static_assert(Bottom<T>::value == TypeInfo<T>::fields.size);
     std::size_t value = 0;
     TypeInfo<T>::fields.forEach(
         [instance, &value](const auto field)
@@ -274,5 +475,84 @@ inline consteval std::size_t abbrVal(const T instance)
 
     return value;
 }
-} // namespace reg_dp
-} // namespace application
+
+// clang-format off
+//! @brief Mapping table for enum and string about behavioral instances. X macro.
+#define REG_DP_BEHAVIORAL_INSTANCE_TABLE                 \
+    ELEM(chainOfResponsibility, "chainOfResponsibility") \
+    ELEM(command              , "command"              ) \
+    ELEM(interpreter          , "interpreter"          ) \
+    ELEM(iterator             , "iterator"             ) \
+    ELEM(mediator             , "mediator"             ) \
+    ELEM(memento              , "memento"              ) \
+    ELEM(observer             , "observer"             ) \
+    ELEM(state                , "state"                ) \
+    ELEM(strategy             , "strategy"             ) \
+    ELEM(templateMethod       , "templateMethod"       ) \
+    ELEM(visitor              , "visitor"              )
+// clang-format on
+//! @brief Convert instance enumeration to string.
+//! @param instance - the specific value of BehavioralInstance enum
+//! @return instance name
+inline constexpr std::string_view toString(const BehavioralInstance instance)
+{
+//! @cond
+#define ELEM(val, str) str,
+    constexpr std::string_view table[] = {REG_DP_BEHAVIORAL_INSTANCE_TABLE};
+    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<BehavioralInstance>::value);
+    return table[instance];
+//! @endcond
+#undef ELEM
+}
+#undef REG_DP_BEHAVIORAL_INSTANCE_TABLE
+
+// clang-format off
+//! @brief Mapping table for enum and string about creational instances. X macro.
+#define REG_DP_CREATIONAL_INSTANCE_TABLE     \
+    ELEM(abstractFactory, "abstractFactory") \
+    ELEM(builder        , "builder"        ) \
+    ELEM(factoryMethod  , "factoryMethod"  ) \
+    ELEM(prototype      , "prototype"      ) \
+    ELEM(singleton      , "singleton"      )
+// clang-format on
+//! @brief Convert instance enumeration to string.
+//! @param instance - the specific value of CreationalInstance enum
+//! @return instance name
+inline constexpr std::string_view toString(const CreationalInstance instance)
+{
+//! @cond
+#define ELEM(val, str) str,
+    constexpr std::string_view table[] = {REG_DP_CREATIONAL_INSTANCE_TABLE};
+    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<CreationalInstance>::value);
+    return table[instance];
+//! @endcond
+#undef ELEM
+}
+#undef REG_DP_CREATIONAL_INSTANCE_TABLE
+
+// clang-format off
+//! @brief Mapping table for enum and string about structural instances. X macro.
+#define REG_DP_STRUCTURAL_INSTANCE_TABLE \
+    ELEM(adapter  , "adapter"  )         \
+    ELEM(bridge   , "bridge"   )         \
+    ELEM(composite, "composite")         \
+    ELEM(decorator, "decorator")         \
+    ELEM(facade   , "facade"   )         \
+    ELEM(flyweight, "flyweight")         \
+    ELEM(proxy    , "proxy"    )
+// clang-format on
+//! @brief Convert instance enumeration to string.
+//! @param instance - the specific value of StructuralInstance enum
+//! @return instance name
+inline constexpr std::string_view toString(const StructuralInstance instance)
+{
+//! @cond
+#define ELEM(val, str) str,
+    constexpr std::string_view table[] = {REG_DP_STRUCTURAL_INSTANCE_TABLE};
+    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<StructuralInstance>::value);
+    return table[instance];
+//! @endcond
+#undef ELEM
+}
+#undef REG_DP_STRUCTURAL_INSTANCE_TABLE
+} // namespace application::reg_dp

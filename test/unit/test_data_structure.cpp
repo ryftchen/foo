@@ -22,8 +22,6 @@ namespace test // NOLINT(modernize-concat-nested-namespaces)
 namespace tst_ds
 {
 using namespace application::app_ds; // NOLINT(google-build-using-namespace)
-//! @brief Alias for Category.
-using Category = ApplyDataStructure::Category;
 
 //! @brief Test base of linear.
 class LinearTestBase : public ::testing::Test
@@ -35,9 +33,9 @@ public:
     ~LinearTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase() { TST_DS_PRINT_TASK_TITLE(Category::linear, "BEGIN"); }
+    static void SetUpTestCase() { TST_DS_PRINT_TASK_TITLE("LINEAR", "BEGIN"); }
     //! @brief Tear down the test case.
-    static void TearDownTestCase() { TST_DS_PRINT_TASK_TITLE(Category::linear, "END"); }
+    static void TearDownTestCase() { TST_DS_PRINT_TASK_TITLE("LINEAR", "END"); }
     //! @brief Set up.
     void SetUp() override {}
     //! @brief Tear down.
@@ -72,9 +70,9 @@ public:
     ~TreeTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase() { TST_DS_PRINT_TASK_TITLE(Category::tree, "BEGIN"); }
+    static void SetUpTestCase() { TST_DS_PRINT_TASK_TITLE("TREE", "BEGIN"); }
     //! @brief Tear down the test case.
-    static void TearDownTestCase() { TST_DS_PRINT_TASK_TITLE(Category::tree, "END"); }
+    static void TearDownTestCase() { TST_DS_PRINT_TASK_TITLE("TREE", "END"); }
     //! @brief Set up.
     void SetUp() override {}
     //! @brief Tear down.

@@ -34,17 +34,7 @@
 
 namespace application::app_dp
 {
-using reg_dp::taskNameCurried, reg_dp::toString, reg_dp::getCategoryOpts, reg_dp::getCategoryAlias, reg_dp::abbrVal;
-//! @brief Alias for Category.
-using Category = ApplyDesignPattern::Category;
-
-//! @brief Get the design pattern choice manager.
-//! @return reference of the ApplyDesignPattern object
-ApplyDesignPattern& manager()
-{
-    static ApplyDesignPattern manager{};
-    return manager;
-}
+using namespace reg_dp; // NOLINT(google-build-using-namespace)
 
 //! @brief Get the title of a particular instance in design pattern choices.
 //! @tparam T - type of target instance
@@ -58,86 +48,6 @@ static std::string getTitle(const T instance)
 
     return title;
 }
-
-// clang-format off
-//! @brief Mapping table for enum and string about behavioral instances. X macro.
-#define APP_DP_BEHAVIORAL_INSTANCE_TABLE                 \
-    ELEM(chainOfResponsibility, "chainOfResponsibility") \
-    ELEM(command              , "command"              ) \
-    ELEM(interpreter          , "interpreter"          ) \
-    ELEM(iterator             , "iterator"             ) \
-    ELEM(mediator             , "mediator"             ) \
-    ELEM(memento              , "memento"              ) \
-    ELEM(observer             , "observer"             ) \
-    ELEM(state                , "state"                ) \
-    ELEM(strategy             , "strategy"             ) \
-    ELEM(templateMethod       , "templateMethod"       ) \
-    ELEM(visitor              , "visitor"              )
-// clang-format on
-//! @brief Convert instance enumeration to string.
-//! @param instance - the specific value of BehavioralInstance enum
-//! @return instance name
-static constexpr std::string_view toString(const BehavioralInstance instance)
-{
-//! @cond
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {APP_DP_BEHAVIORAL_INSTANCE_TABLE};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<BehavioralInstance>::value);
-    return table[instance];
-//! @endcond
-#undef ELEM
-}
-#undef APP_DP_BEHAVIORAL_INSTANCE_TABLE
-
-// clang-format off
-//! @brief Mapping table for enum and string about creational instances. X macro.
-#define APP_DP_CREATIONAL_INSTANCE_TABLE     \
-    ELEM(abstractFactory, "abstractFactory") \
-    ELEM(builder        , "builder"        ) \
-    ELEM(factoryMethod  , "factoryMethod"  ) \
-    ELEM(prototype      , "prototype"      ) \
-    ELEM(singleton      , "singleton"      )
-// clang-format on
-//! @brief Convert instance enumeration to string.
-//! @param instance - the specific value of CreationalInstance enum
-//! @return instance name
-static constexpr std::string_view toString(const CreationalInstance instance)
-{
-//! @cond
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {APP_DP_CREATIONAL_INSTANCE_TABLE};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<CreationalInstance>::value);
-    return table[instance];
-//! @endcond
-#undef ELEM
-}
-#undef APP_DP_CREATIONAL_INSTANCE_TABLE
-
-// clang-format off
-//! @brief Mapping table for enum and string about structural instances. X macro.
-#define APP_DP_STRUCTURAL_INSTANCE_TABLE \
-    ELEM(adapter  , "adapter"  )         \
-    ELEM(bridge   , "bridge"   )         \
-    ELEM(composite, "composite")         \
-    ELEM(decorator, "decorator")         \
-    ELEM(facade   , "facade"   )         \
-    ELEM(flyweight, "flyweight")         \
-    ELEM(proxy    , "proxy"    )
-// clang-format on
-//! @brief Convert instance enumeration to string.
-//! @param instance - the specific value of StructuralInstance enum
-//! @return instance name
-static constexpr std::string_view toString(const StructuralInstance instance)
-{
-//! @cond
-#define ELEM(val, str) str,
-    constexpr std::string_view table[] = {APP_DP_STRUCTURAL_INSTANCE_TABLE};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<StructuralInstance>::value);
-    return table[instance];
-//! @endcond
-#undef ELEM
-}
-#undef APP_DP_STRUCTURAL_INSTANCE_TABLE
 
 namespace behavioral
 {
@@ -271,60 +181,9 @@ catch (const std::exception& err)
 }
 } // namespace behavioral
 
-//! @brief Update behavioral-related choice.
-//! @param target - target instance
-template <>
-void updateChoice<BehavioralInstance>(const std::string_view target)
-{
-    constexpr auto category = Category::behavioral;
-    auto& bits = getCategoryOpts<category>();
-
-    switch (utility::common::bkdrHash(target.data()))
-    {
-        case abbrVal(BehavioralInstance::chainOfResponsibility):
-            bits.set(BehavioralInstance::chainOfResponsibility);
-            break;
-        case abbrVal(BehavioralInstance::command):
-            bits.set(BehavioralInstance::command);
-            break;
-        case abbrVal(BehavioralInstance::interpreter):
-            bits.set(BehavioralInstance::interpreter);
-            break;
-        case abbrVal(BehavioralInstance::iterator):
-            bits.set(BehavioralInstance::iterator);
-            break;
-        case abbrVal(BehavioralInstance::mediator):
-            bits.set(BehavioralInstance::mediator);
-            break;
-        case abbrVal(BehavioralInstance::memento):
-            bits.set(BehavioralInstance::memento);
-            break;
-        case abbrVal(BehavioralInstance::observer):
-            bits.set(BehavioralInstance::observer);
-            break;
-        case abbrVal(BehavioralInstance::state):
-            bits.set(BehavioralInstance::state);
-            break;
-        case abbrVal(BehavioralInstance::strategy):
-            bits.set(BehavioralInstance::strategy);
-            break;
-        case abbrVal(BehavioralInstance::templateMethod):
-            bits.set(BehavioralInstance::templateMethod);
-            break;
-        case abbrVal(BehavioralInstance::visitor):
-            bits.set(BehavioralInstance::visitor);
-            break;
-        default:
-            bits.reset();
-            throw std::logic_error{
-                "Unexpected " + std::string{toString<category>()} + " instance: " + target.data() + '.'};
-    }
-}
-
-//! @brief Run behavioral-related choices.
+//! @brief To apply behavioral-related instances.
 //! @param candidates - container for the candidate target instances
-template <>
-void runChoices<BehavioralInstance>(const std::vector<std::string>& candidates)
+void applyingBehavioral(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::behavioral;
     const auto& bits = getCategoryOpts<category>();
@@ -457,42 +316,9 @@ catch (const std::exception& err)
 }
 } // namespace creational
 
-//! @brief Update creational-related choice.
-//! @param target - target instance
-template <>
-void updateChoice<CreationalInstance>(const std::string_view target)
-{
-    constexpr auto category = Category::creational;
-    auto& bits = getCategoryOpts<category>();
-
-    switch (utility::common::bkdrHash(target.data()))
-    {
-        case abbrVal(CreationalInstance::abstractFactory):
-            bits.set(CreationalInstance::abstractFactory);
-            break;
-        case abbrVal(CreationalInstance::builder):
-            bits.set(CreationalInstance::builder);
-            break;
-        case abbrVal(CreationalInstance::factoryMethod):
-            bits.set(CreationalInstance::factoryMethod);
-            break;
-        case abbrVal(CreationalInstance::prototype):
-            bits.set(CreationalInstance::prototype);
-            break;
-        case abbrVal(CreationalInstance::singleton):
-            bits.set(CreationalInstance::singleton);
-            break;
-        default:
-            bits.reset();
-            throw std::logic_error{
-                "Unexpected " + std::string{toString<category>()} + " instance: " + target.data() + '.'};
-    }
-}
-
-//! @brief Run creational-related choices.
+//! @brief To apply creational-related instances.
 //! @param candidates - container for the candidate target instances
-template <>
-void runChoices<CreationalInstance>(const std::vector<std::string>& candidates)
+void applyingCreational(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::creational;
     const auto& bits = getCategoryOpts<category>();
@@ -629,48 +455,9 @@ catch (const std::exception& err)
 }
 } // namespace structural
 
-//! @brief Update structural-related choice.
-//! @param target - target instance
-template <>
-void updateChoice<StructuralInstance>(const std::string_view target)
-{
-    constexpr auto category = Category::structural;
-    auto& bits = getCategoryOpts<category>();
-
-    switch (utility::common::bkdrHash(target.data()))
-    {
-        case abbrVal(StructuralInstance::adapter):
-            bits.set(StructuralInstance::adapter);
-            break;
-        case abbrVal(StructuralInstance::bridge):
-            bits.set(StructuralInstance::bridge);
-            break;
-        case abbrVal(StructuralInstance::composite):
-            bits.set(StructuralInstance::composite);
-            break;
-        case abbrVal(StructuralInstance::decorator):
-            bits.set(StructuralInstance::decorator);
-            break;
-        case abbrVal(StructuralInstance::facade):
-            bits.set(StructuralInstance::facade);
-            break;
-        case abbrVal(StructuralInstance::flyweight):
-            bits.set(StructuralInstance::flyweight);
-            break;
-        case abbrVal(StructuralInstance::proxy):
-            bits.set(StructuralInstance::proxy);
-            break;
-        default:
-            bits.reset();
-            throw std::logic_error{
-                "Unexpected " + std::string{toString<category>()} + " instance: " + target.data() + '.'};
-    }
-}
-
-//! @brief Run structural-related choices.
+//! @brief To apply structural-related instances.
 //! @param candidates - container for the candidate target instances
-template <>
-void runChoices<StructuralInstance>(const std::vector<std::string>& candidates)
+void applyingStructural(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::structural;
     const auto& bits = getCategoryOpts<category>();

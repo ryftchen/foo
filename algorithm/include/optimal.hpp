@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <functional>
 #include <optional>
 #include <random>
 #include <unordered_set>
@@ -19,18 +20,7 @@ namespace optimal
 extern const char* version() noexcept;
 
 //! @brief Target functions.
-class Function
-{
-public:
-    //! @brief Destroy the Function object.
-    virtual ~Function() = default;
-
-    //! @brief The operator (()) overloading of Function class.
-    //! @param x - independent variable
-    //! @return dependent variable
-    virtual inline double operator()(const double x) const = 0;
-};
-
+using Function = std::function<double(const double)>;
 //! @brief The precision of calculation.
 inline constexpr double epsilon = 1e-5;
 
@@ -72,7 +62,7 @@ public:
 
 private:
     //! @brief Target function.
-    const Function& func;
+    const Function func{};
     //! @brief Initial learning rate.
     static constexpr double initialLearningRate{0.01};
     //! @brief Decay.
@@ -110,7 +100,7 @@ public:
 
 private:
     //! @brief Target function.
-    const Function& func;
+    const Function func{};
     //! @brief Tabu tenure.
     static constexpr std::uint32_t tabuTenure{50};
     //! @brief Initial step length.
@@ -161,7 +151,7 @@ public:
 
 private:
     //! @brief Target function.
-    const Function& func;
+    const Function func{};
     //! @brief Initial temperature.
     static constexpr double initialT{100.0};
     //! @brief Minimal temperature.
@@ -206,7 +196,7 @@ public:
 
 private:
     //! @brief Target function.
-    const Function& func;
+    const Function func{};
     //! @brief Random engine.
     std::mt19937_64 engine{std::random_device{}()};
     //! @brief The perturbation for the coefficient (from 0 to 1).
@@ -292,7 +282,7 @@ public:
 
 private:
     //! @brief Target function.
-    const Function& func;
+    const Function func{};
     //! @brief Random engine.
     std::mt19937_64 engine{std::random_device{}()};
     //! @brief Coefficient of the step length for the local search.
@@ -360,7 +350,7 @@ public:
 
 private:
     //! @brief Target function.
-    const Function& func;
+    const Function func{};
     //! @brief Random engine.
     std::mt19937_64 engine{std::random_device{}()};
     //! @brief The probability of a possible event (from 0 to 1).

@@ -8,9 +8,7 @@
 
 #ifndef __PRECOMPILED_HEADER
 #include <algorithm>
-#include <bitset>
 #include <cstdint>
-#include <cstring>
 #include <span>
 #include <vector>
 #else
@@ -26,116 +24,12 @@ namespace application // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Data-structure-applying-related functions in the application module.
 namespace app_ds
 {
-//! @brief Represent the maximum value of an enum.
-//! @tparam T - type of specific enum
-template <typename T>
-struct Bottom;
-
-//! @brief Enumerate specific linear instances.
-enum LinearInstance : std::uint8_t
-{
-    //! @brief Linked list.
-    linkedList,
-    //! @brief Stack.
-    stack,
-    //! @brief Queue.
-    queue
-};
-//! @brief Store the maximum value of the LinearInstance enum.
-template <>
-struct Bottom<LinearInstance>
-{
-    //! @brief Maximum value of the LinearInstance enum.
-    static constexpr std::uint8_t value{3};
-};
-
-//! @brief Enumerate specific tree instances.
-enum TreeInstance : std::uint8_t
-{
-    //! @brief Binary search.
-    binarySearch,
-    //! @brief Adelson-Velsky-Landis.
-    adelsonVelskyLandis,
-    //! @brief Splay.
-    splay
-};
-//! @brief Store the maximum value of the TreeInstance enum.
-template <>
-struct Bottom<TreeInstance>
-{
-    //! @brief Maximum value of the TreeInstance enum.
-    static constexpr std::uint8_t value{3};
-};
-
-//! @brief Manage data structure choices.
-class ApplyDataStructure
-{
-public:
-    //! @brief Enumerate specific data structure choices.
-    enum Category : std::uint8_t
-    {
-        //! @brief Linear.
-        linear,
-        //! @brief Tree.
-        tree
-    };
-
-    //! @brief Bit flags for managing linear instances.
-    std::bitset<Bottom<LinearInstance>::value> linearOpts{};
-    //! @brief Bit flags for managing tree instances.
-    std::bitset<Bottom<TreeInstance>::value> treeOpts{};
-
-    //! @brief Check whether any data structure choices do not exist.
-    //! @return any data structure choices do not exist or exist
-    [[nodiscard]] inline bool empty() const { return linearOpts.none() && treeOpts.none(); }
-    //! @brief Reset bit flags that manage data structure choices.
-    inline void reset()
-    {
-        linearOpts.reset();
-        treeOpts.reset();
-    }
-
-protected:
-    //! @brief The operator (<<) overloading of the Category enum.
-    //! @param os - output stream object
-    //! @param cat - the specific value of Category enum
-    //! @return reference of the output stream object
-    friend std::ostream& operator<<(std::ostream& os, const Category cat)
-    {
-        switch (cat)
-        {
-            case Category::linear:
-                os << "LINEAR";
-                break;
-            case Category::tree:
-                os << "TREE";
-                break;
-            default:
-                os << "UNKNOWN (" << static_cast<std::underlying_type_t<Category>>(cat) << ')';
-                break;
-        }
-
-        return os;
-    }
-};
-extern ApplyDataStructure& manager();
-
-//! @brief Update choice.
-//! @tparam T - type of target instance
-//! @param target - target instance
-template <typename T>
-void updateChoice(const std::string_view target);
-//! @brief Run choices.
-//! @tparam T - type of target instance
-//! @param candidates - container for the candidate target instances
-template <typename T>
-void runChoices(const std::vector<std::string>& candidates);
-
 //! @brief Apply linear.
 namespace linear
 {
 //! @brief The version used to apply.
 const char* const version = date_structure::linear::version();
+
 //! @brief Metadata, which is used in the instance.
 struct Meta
 {
@@ -323,16 +217,14 @@ public:
     static void queueInstance();
 };
 } // namespace linear
-template <>
-void updateChoice<LinearInstance>(const std::string_view target);
-template <>
-void runChoices<LinearInstance>(const std::vector<std::string>& candidates);
+extern void applyingLinear(const std::vector<std::string>& candidates);
 
 //! @brief Apply tree.
 namespace tree
 {
 //! @brief The version used to apply.
 const char* const version = date_structure::tree::version();
+
 //! @brief Tree instances.
 class Tree
 {
@@ -507,9 +399,6 @@ public:
     static void splayInstance();
 };
 } // namespace tree
-template <>
-void updateChoice<TreeInstance>(const std::string_view target);
-template <>
-void runChoices<TreeInstance>(const std::vector<std::string>& candidates);
+extern void applyingTree(const std::vector<std::string>& candidates);
 } // namespace app_ds
 } // namespace application

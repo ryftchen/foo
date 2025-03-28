@@ -6,12 +6,283 @@
 
 #pragma once
 
-#include "apply_algorithm.hpp"
+#ifndef __PRECOMPILED_HEADER
+#include <bitset>
+#else
+#include "application/pch/precompiled_header.hpp"
+#endif // __PRECOMPILED_HEADER
 
 #include "application/core/include/configure.hpp"
 #include "utility/include/common.hpp"
 #include "utility/include/currying.hpp"
 #include "utility/include/reflection.hpp"
+
+//! @brief The application module.
+namespace application // NOLINT(modernize-concat-nested-namespaces)
+{
+//! @brief Algorithm-registering-related functions in the application module.
+namespace reg_algo
+{
+extern const char* version() noexcept;
+
+//! @brief Represent the maximum value of an enum.
+//! @tparam T - type of specific enum
+template <typename T>
+struct Bottom;
+
+//! @brief Enumerate specific match methods.
+enum MatchMethod : std::uint8_t
+{
+    //! @brief Rabin-Karp.
+    rabinKarp,
+    //! @brief Knuth-Morris-Pratt.
+    knuthMorrisPratt,
+    //! @brief Boyer-Moore.
+    boyerMoore,
+    //! @brief Horspool.
+    horspool,
+    //! @brief Sunday.
+    sunday
+};
+//! @brief Store the maximum value of the MatchMethod enum.
+template <>
+struct Bottom<MatchMethod>
+{
+    //! @brief Maximum value of the MatchMethod enum.
+    static constexpr std::uint8_t value{5};
+};
+
+//! @brief Enumerate specific notation methods.
+enum NotationMethod : std::uint8_t
+{
+    //! @brief Prefix.
+    prefix,
+    //! @brief Postfix.
+    postfix
+};
+//! @brief Store the maximum value of the NotationMethod enum.
+template <>
+struct Bottom<NotationMethod>
+{
+    //! @brief Maximum value of the NotationMethod enum.
+    static constexpr std::uint8_t value{2};
+};
+
+//! @brief Enumerate specific optimal methods.
+enum OptimalMethod : std::uint8_t
+{
+    //! @brief Gradient.
+    gradient,
+    //! @brief Tabu.
+    tabu,
+    //! @brief Annealing.
+    annealing,
+    //! @brief Particle.
+    particle,
+    //! @brief Ant.
+    ant,
+    //! @brief Genetic.
+    genetic
+};
+//! @brief Store the maximum value of the OptimalMethod enum.
+template <>
+struct Bottom<OptimalMethod>
+{
+    //! @brief Maximum value of the OptimalMethod enum.
+    static constexpr std::uint8_t value{6};
+};
+
+//! @brief Enumerate specific search methods.
+enum SearchMethod : std::uint8_t
+{
+    //! @brief Binary.
+    binary,
+    //! @brief Interpolation.
+    interpolation,
+    //! @brief Fibonacci.
+    fibonacci
+};
+//! @brief Store the maximum value of the SearchMethod enum.
+template <>
+struct Bottom<SearchMethod>
+{
+    //! @brief Maximum value of the SearchMethod enum.
+    static constexpr std::uint8_t value{3};
+};
+
+//! @brief Enumerate specific sort methods.
+enum SortMethod : std::uint8_t
+{
+    //! @brief Bubble.
+    bubble,
+    //! @brief Selection.
+    selection,
+    //! @brief Insertion.
+    insertion,
+    //! @brief Shell.
+    shell,
+    //! @brief Merge.
+    merge,
+    //! @brief Quick.
+    quick,
+    //! @brief Heap.
+    heap,
+    //! @brief Counting.
+    counting,
+    //! @brief Bucket.
+    bucket,
+    //! @brief Radix.
+    radix
+};
+//! @brief Store the maximum value of the SortMethod enum.
+template <>
+struct Bottom<SortMethod>
+{
+    //! @brief Maximum value of the SortMethod enum.
+    static constexpr std::uint8_t value{10};
+};
+
+//! @brief Manage algorithm choices.
+class ApplyAlgorithm
+{
+public:
+    //! @brief Enumerate specific algorithm choices.
+    enum Category : std::uint8_t
+    {
+        //! @brief Match.
+        match,
+        //! @brief Notation.
+        notation,
+        //! @brief Optimal.
+        optimal,
+        //! @brief Search.
+        search,
+        //! @brief Sort.
+        sort
+    };
+
+    //! @brief Bit flags for managing match methods.
+    std::bitset<Bottom<MatchMethod>::value> matchOpts{};
+    //! @brief Bit flags for managing notation methods.
+    std::bitset<Bottom<NotationMethod>::value> notationOpts{};
+    //! @brief Bit flags for managing optimal methods.
+    std::bitset<Bottom<OptimalMethod>::value> optimalOpts{};
+    //! @brief Bit flags for managing search methods.
+    std::bitset<Bottom<SearchMethod>::value> searchOpts{};
+    //! @brief Bit flags for managing sort methods.
+    std::bitset<Bottom<SortMethod>::value> sortOpts{};
+
+    //! @brief Check whether any algorithm choices do not exist.
+    //! @return any algorithm choices do not exist or exist
+    [[nodiscard]] inline bool empty() const
+    {
+        return matchOpts.none() && notationOpts.none() && optimalOpts.none() && searchOpts.none() && sortOpts.none();
+    }
+    //! @brief Reset bit flags that manage algorithm choices.
+    inline void reset()
+    {
+        matchOpts.reset();
+        notationOpts.reset();
+        optimalOpts.reset();
+        searchOpts.reset();
+        sortOpts.reset();
+    }
+
+protected:
+    //! @brief The operator (<<) overloading of the Category enum.
+    //! @param os - output stream object
+    //! @param cat - the specific value of Category enum
+    //! @return reference of the output stream object
+    friend std::ostream& operator<<(std::ostream& os, const Category cat)
+    {
+        switch (cat)
+        {
+            case Category::match:
+                os << "MATCH";
+                break;
+            case Category::notation:
+                os << "NOTATION";
+                break;
+            case Category::optimal:
+                os << "OPTIMAL";
+                break;
+            case Category::search:
+                os << "SEARCH";
+                break;
+            case Category::sort:
+                os << "SORT";
+                break;
+            default:
+                os << "UNKNOWN (" << static_cast<std::underlying_type_t<Category>>(cat) << ')';
+        }
+
+        return os;
+    }
+};
+extern ApplyAlgorithm& manager();
+
+//! @brief Update choice.
+//! @tparam T - type of target method
+//! @param target - target method
+template <typename T>
+void updateChoice(const std::string_view target);
+//! @brief Run choices.
+//! @tparam T - type of target method
+//! @param candidates - container for the candidate target methods
+template <typename T>
+void runChoices(const std::vector<std::string>& candidates);
+
+//! @brief Register match.
+namespace match
+{
+extern const char* version() noexcept;
+} // namespace match
+template <>
+void updateChoice<MatchMethod>(const std::string_view target);
+template <>
+void runChoices<MatchMethod>(const std::vector<std::string>& candidates);
+
+//! @brief Register notation.
+namespace notation
+{
+extern const char* version() noexcept;
+} // namespace notation
+template <>
+void updateChoice<NotationMethod>(const std::string_view target);
+template <>
+void runChoices<NotationMethod>(const std::vector<std::string>& candidates);
+
+//! @brief Register optimal.
+namespace optimal
+{
+extern const char* version() noexcept;
+} // namespace optimal
+template <>
+void updateChoice<OptimalMethod>(const std::string_view target);
+template <>
+void runChoices<OptimalMethod>(const std::vector<std::string>& candidates);
+
+//! @brief Register search.
+namespace search
+{
+extern const char* version() noexcept;
+} // namespace search
+template <>
+void updateChoice<SearchMethod>(const std::string_view target);
+template <>
+void runChoices<SearchMethod>(const std::vector<std::string>& candidates);
+
+//! @brief Register sort.
+namespace sort
+{
+extern const char* version() noexcept;
+} // namespace sort
+template <>
+void updateChoice<SortMethod>(const std::string_view target);
+template <>
+void runChoices<SortMethod>(const std::vector<std::string>& candidates);
+} // namespace reg_algo
+} // namespace application
 
 //! @brief Reflect the algorithm category name and alias name to the field in the mapping.
 #define REG_ALGO_REFLECT_FIRST_LEVEL_FIELD(category, alias)                                        \
@@ -40,8 +311,8 @@
 
 //! @brief Static reflection for ApplyAlgorithm. Used to map command line arguments.
 template <>
-struct utility::reflection::TypeInfo<application::app_algo::ApplyAlgorithm>
-    : TypeInfoBase<application::app_algo::ApplyAlgorithm>
+struct utility::reflection::TypeInfo<application::reg_algo::ApplyAlgorithm>
+    : TypeInfoBase<application::reg_algo::ApplyAlgorithm>
 {
     //! @brief Name.
     static constexpr std::string_view name{"app-algo"};
@@ -61,8 +332,8 @@ struct utility::reflection::TypeInfo<application::app_algo::ApplyAlgorithm>
 };
 //! @brief Static reflection for MatchMethod. Used to map command line arguments.
 template <>
-struct utility::reflection::TypeInfo<application::app_algo::MatchMethod>
-    : TypeInfoBase<application::app_algo::MatchMethod>
+struct utility::reflection::TypeInfo<application::reg_algo::MatchMethod>
+    : TypeInfoBase<application::reg_algo::MatchMethod>
 {
     //! @brief Name.
     static constexpr std::string_view name{"match"};
@@ -90,8 +361,8 @@ struct utility::reflection::TypeInfo<application::app_algo::MatchMethod>
 };
 //! @brief Static reflection for NotationMethod. Used to map command line arguments.
 template <>
-struct utility::reflection::TypeInfo<application::app_algo::NotationMethod>
-    : TypeInfoBase<application::app_algo::NotationMethod>
+struct utility::reflection::TypeInfo<application::reg_algo::NotationMethod>
+    : TypeInfoBase<application::reg_algo::NotationMethod>
 {
     //! @brief Name.
     static constexpr std::string_view name{"notation"};
@@ -113,8 +384,8 @@ struct utility::reflection::TypeInfo<application::app_algo::NotationMethod>
 };
 //! @brief Static reflection for OptimalMethod. Used to map command line arguments.
 template <>
-struct utility::reflection::TypeInfo<application::app_algo::OptimalMethod>
-    : TypeInfoBase<application::app_algo::OptimalMethod>
+struct utility::reflection::TypeInfo<application::reg_algo::OptimalMethod>
+    : TypeInfoBase<application::reg_algo::OptimalMethod>
 {
     //! @brief Name.
     static constexpr std::string_view name{"optimal"};
@@ -144,8 +415,8 @@ struct utility::reflection::TypeInfo<application::app_algo::OptimalMethod>
 };
 //! @brief Static reflection for SearchMethod. Used to map command line arguments.
 template <>
-struct utility::reflection::TypeInfo<application::app_algo::SearchMethod>
-    : TypeInfoBase<application::app_algo::SearchMethod>
+struct utility::reflection::TypeInfo<application::reg_algo::SearchMethod>
+    : TypeInfoBase<application::reg_algo::SearchMethod>
 {
     //! @brief Name.
     static constexpr std::string_view name{"search"};
@@ -169,8 +440,8 @@ struct utility::reflection::TypeInfo<application::app_algo::SearchMethod>
 };
 //! @brief Static reflection for SortMethod. Used to map command line arguments.
 template <>
-struct utility::reflection::TypeInfo<application::app_algo::SortMethod>
-    : TypeInfoBase<application::app_algo::SortMethod>
+struct utility::reflection::TypeInfo<application::reg_algo::SortMethod>
+    : TypeInfoBase<application::reg_algo::SortMethod>
 {
     //! @brief Name.
     static constexpr std::string_view name{"sort"};
@@ -210,23 +481,17 @@ struct utility::reflection::TypeInfo<application::app_algo::SortMethod>
 #undef REG_ALGO_REFLECT_FIRST_LEVEL_FIELD
 #undef REG_ALGO_REFLECT_SECOND_LEVEL_FIELD
 
-//! @brief The application module.
-namespace application // NOLINT(modernize-concat-nested-namespaces)
+namespace application::reg_algo
 {
-//! @brief Algorithm-registering-related functions in the application module.
-namespace reg_algo
-{
-extern const char* version() noexcept;
-
 //! @brief Alias for the type information.
 //! @tparam T - type of target object
 template <typename T>
 using TypeInfo = utility::reflection::TypeInfo<T>;
-//! @brief Get the name directly for sub-cli related registration.
+//! @brief Get the title name directly for sub-cli related registration.
 //! @tparam T - type of sub-cli or sub-cli's category
-//! @return name
+//! @return title name
 template <typename T>
-inline consteval std::string_view name()
+inline consteval std::string_view title()
 {
     return TypeInfo<T>::name;
 }
@@ -244,19 +509,20 @@ inline consteval std::string_view descr()
 template <typename T>
 inline consteval std::string_view alias()
 {
-    return TypeInfo<app_algo::ApplyAlgorithm>::fields.find(REFLECTION_STR(TypeInfo<T>::name))
+    return TypeInfo<ApplyAlgorithm>::fields.find(REFLECTION_STR(TypeInfo<T>::name))
         .attrs.find(REFLECTION_STR("alias"))
         .value;
 }
 
-//! @brief Alias for Category.
-using Category = app_algo::ApplyAlgorithm::Category;
 //! @brief Get the task name curried.
 //! @return task name curried
 inline auto taskNameCurried()
 {
-    return utility::currying::curry(configure::task::presetName, TypeInfo<app_algo::ApplyAlgorithm>::name);
+    return utility::currying::curry(configure::task::presetName, TypeInfo<ApplyAlgorithm>::name);
 }
+
+//! @brief Alias for Category.
+using Category = ApplyAlgorithm::Category;
 //! @brief Convert category enumeration to string.
 //! @tparam Cat - the specific value of Category enum
 //! @return category name
@@ -266,15 +532,15 @@ inline consteval std::string_view toString()
     switch (Cat)
     {
         case Category::match:
-            return TypeInfo<app_algo::MatchMethod>::name;
+            return TypeInfo<MatchMethod>::name;
         case Category::notation:
-            return TypeInfo<app_algo::NotationMethod>::name;
+            return TypeInfo<NotationMethod>::name;
         case Category::optimal:
-            return TypeInfo<app_algo::OptimalMethod>::name;
+            return TypeInfo<OptimalMethod>::name;
         case Category::search:
-            return TypeInfo<app_algo::SearchMethod>::name;
+            return TypeInfo<SearchMethod>::name;
         case Category::sort:
-            return TypeInfo<app_algo::SortMethod>::name;
+            return TypeInfo<SortMethod>::name;
         default:
             break;
     }
@@ -287,8 +553,7 @@ inline consteval std::string_view toString()
 template <Category Cat>
 inline constexpr auto& getCategoryOpts()
 {
-    return std::invoke(
-        TypeInfo<app_algo::ApplyAlgorithm>::fields.find(REFLECTION_STR(toString<Cat>())).value, app_algo::manager());
+    return std::invoke(TypeInfo<ApplyAlgorithm>::fields.find(REFLECTION_STR(toString<Cat>())).value, manager());
 }
 //! @brief Get the alias of the category in algorithm choices.
 //! @tparam Cat - the specific value of Category enum
@@ -296,11 +561,12 @@ inline constexpr auto& getCategoryOpts()
 template <Category Cat>
 inline consteval std::string_view getCategoryAlias()
 {
-    constexpr auto attr = TypeInfo<app_algo::ApplyAlgorithm>::fields.find(REFLECTION_STR(toString<Cat>()))
-                              .attrs.find(REFLECTION_STR("alias"));
+    constexpr auto attr =
+        TypeInfo<ApplyAlgorithm>::fields.find(REFLECTION_STR(toString<Cat>())).attrs.find(REFLECTION_STR("alias"));
     static_assert(attr.hasValue);
     return attr.value;
 }
+
 //! @brief Abbreviation value for the target method.
 //! @tparam T - type of target method
 //! @param method - target method
@@ -308,7 +574,7 @@ inline consteval std::string_view getCategoryAlias()
 template <typename T>
 inline consteval std::size_t abbrVal(const T method)
 {
-    static_assert(app_algo::Bottom<T>::value == TypeInfo<T>::fields.size);
+    static_assert(Bottom<T>::value == TypeInfo<T>::fields.size);
     std::size_t value = 0;
     TypeInfo<T>::fields.forEach(
         [method, &value](const auto field)
@@ -324,5 +590,125 @@ inline consteval std::size_t abbrVal(const T method)
 
     return value;
 }
-} // namespace reg_algo
-} // namespace application
+
+// clang-format off
+//! @brief Mapping table for enum and string about match methods. X macro.
+#define REG_ALGO_MATCH_METHOD_TABLE            \
+    ELEM(rabinKarp       , "rabinKarp"       ) \
+    ELEM(knuthMorrisPratt, "knuthMorrisPratt") \
+    ELEM(boyerMoore      , "boyerMoore"      ) \
+    ELEM(horspool        , "horspool"        ) \
+    ELEM(sunday          , "sunday"          )
+// clang-format on
+//! @brief Convert method enumeration to string.
+//! @param method - the specific value of MatchMethod enum
+//! @return method name
+inline constexpr std::string_view toString(const MatchMethod method)
+{
+//! @cond
+#define ELEM(val, str) str,
+    constexpr std::string_view table[] = {REG_ALGO_MATCH_METHOD_TABLE};
+    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<MatchMethod>::value);
+    return table[method];
+//! @endcond
+#undef ELEM
+}
+#undef REG_ALGO_MATCH_METHOD_TABLE
+
+// clang-format off
+//! @brief Mapping table for enum and string about notation methods. X macro.
+#define REG_ALGO_NOTATION_METHOD_TABLE \
+    ELEM(prefix , "prefix" )           \
+    ELEM(postfix, "postfix")
+// clang-format on
+//! @brief Convert method enumeration to string.
+//! @param method - the specific value of NotationMethod enum
+//! @return method name
+inline constexpr std::string_view toString(const NotationMethod method)
+{
+//! @cond
+#define ELEM(val, str) str,
+    constexpr std::string_view table[] = {REG_ALGO_NOTATION_METHOD_TABLE};
+    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<NotationMethod>::value);
+    return table[method];
+//! @endcond
+#undef ELEM
+}
+#undef REG_ALGO_NOTATION_METHOD_TABLE
+
+// clang-format off
+//! @brief Mapping table for enum and string about optimal methods. X macro.
+#define REG_ALGO_OPTIMAL_METHOD_TABLE \
+    ELEM(gradient , "gradient" )      \
+    ELEM(tabu     , "tabu"     )      \
+    ELEM(annealing, "annealing")      \
+    ELEM(particle , "particle" )      \
+    ELEM(ant      , "ant"      )      \
+    ELEM(genetic  , "genetic"  )
+// clang-format on
+//! @brief Convert method enumeration to string.
+//! @param method - the specific value of OptimalMethod enum
+//! @return method name
+inline constexpr std::string_view toString(const OptimalMethod method)
+{
+//! @cond
+#define ELEM(val, str) str,
+    constexpr std::string_view table[] = {REG_ALGO_OPTIMAL_METHOD_TABLE};
+    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<OptimalMethod>::value);
+    return table[method];
+//! @endcond
+#undef ELEM
+}
+#undef REG_ALGO_OPTIMAL_METHOD_TABLE
+
+// clang-format off
+//! @brief Mapping table for enum and string about search methods. X macro.
+#define REG_ALGO_SEARCH_METHOD_TABLE     \
+    ELEM(binary       , "binary"       ) \
+    ELEM(interpolation, "interpolation") \
+    ELEM(fibonacci    , "fibonacci"    )
+// clang-format on
+//! @brief Convert method enumeration to string.
+//! @param method - the specific value of SearchMethod enum
+//! @return method name
+inline constexpr std::string_view toString(const SearchMethod method)
+{
+//! @cond
+#define ELEM(val, str) str,
+    constexpr std::string_view table[] = {REG_ALGO_SEARCH_METHOD_TABLE};
+    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<SearchMethod>::value);
+    return table[method];
+//! @endcond
+#undef ELEM
+}
+#undef REG_ALGO_SEARCH_METHOD_TABLE
+
+// clang-format off
+//! @brief Mapping table for enum and string about sort methods. X macro.
+#define REG_ALGO_SORT_METHOD_TABLE \
+    ELEM(bubble   , "bubble"   )   \
+    ELEM(selection, "selection")   \
+    ELEM(insertion, "insertion")   \
+    ELEM(shell    , "shell"    )   \
+    ELEM(merge    , "merge"    )   \
+    ELEM(quick    , "quick"    )   \
+    ELEM(heap     , "heap"     )   \
+    ELEM(counting , "counting" )   \
+    ELEM(bucket   , "bucket"   )   \
+    ELEM(radix    , "radix"    )
+// clang-format on
+//! @brief Convert method enumeration to string.
+//! @param method - the specific value of SortMethod enum
+//! @return method name
+inline constexpr std::string_view toString(const SortMethod method)
+{
+//! @cond
+#define ELEM(val, str) str,
+    constexpr std::string_view table[] = {REG_ALGO_SORT_METHOD_TABLE};
+    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<SortMethod>::value);
+    return table[method];
+//! @endcond
+#undef ELEM
+}
+#undef REG_ALGO_SORT_METHOD_TABLE
+} // namespace application::reg_algo
