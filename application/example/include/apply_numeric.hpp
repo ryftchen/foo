@@ -216,21 +216,36 @@ const char* const version = numeric::integral::version();
 
 //! @brief Alias for the target expression.
 using Expression = std::function<double(const double)>;
+//! @brief Wrapper for the target expression.
+class ExprBase
+{
+public:
+    //! @brief Destroy the ExprBase object.
+    virtual ~ExprBase() = default;
+
+    //! @brief The operator (()) overloading of ExprBase class.
+    //! @param x - independent variable
+    //! @return dependent variable
+    virtual double operator()(const double x) const = 0;
+    //! @brief The operator (Expression) overloading of Rastrigin class.
+    //! @return Expression object
+    virtual explicit operator Expression() const
+    {
+        return [this](const double x) { return operator()(x); };
+    }
+};
 
 //! @brief Set input parameters.
 namespace input
 {
 //! @brief Griewank expression.
-class Griewank : public Expression
+class Griewank : public ExprBase
 {
 public:
-    //! @brief Construct a new Griewank object.
-    Griewank() : Expression{[this](const double x) { return operator()(x); }} {}
-
     //! @brief The operator (()) overloading of Griewank class.
     //! @param x - independent variable
     //! @return dependent variable
-    double operator()(const double x) const { return 1.0 + 1.0 / 4000.0 * x * x - std::cos(x); }
+    double operator()(const double x) const override { return 1.0 + 1.0 / 4000.0 * x * x - std::cos(x); }
 
     //! @brief Left endpoint.
     static constexpr double range1{-600.0};
@@ -344,7 +359,7 @@ struct ExprMapHash
 //! @brief Alias for the integral expression.
 //! @tparam Ts - type of expressions
 template <typename... Ts>
-requires (std::derived_from<Ts, Expression> && ...)
+requires (std::derived_from<Ts, ExprBase> && ...)
 using IntegralExpr = std::variant<Ts...>;
 //! @brief Alias for the integral expression map.
 //! @tparam Ts - type of expressions
@@ -379,7 +394,7 @@ public:
                 {
                     if (auto* exprPtr = // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
                         const_cast<std::remove_const_t<std::remove_reference_t<decltype(expr)>>*>(&expr);
-                        nullptr != dynamic_cast<Expression*>(exprPtr))
+                        nullptr != dynamic_cast<ExprBase*>(exprPtr))
                     {
                         throw std::runtime_error{"Unknown expression type (" + std::string{typeid(expr).name()} + ")."};
                     }

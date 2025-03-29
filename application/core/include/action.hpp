@@ -8,6 +8,7 @@
 
 #ifndef __PRECOMPILED_HEADER
 #include <coroutine>
+#include <variant>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
@@ -73,6 +74,75 @@ private:
     //! @brief Coroutine handle.
     std::coroutine_handle<promise_type> handle{};
 };
+
+//! @brief Alias for the type information.
+//! @tparam T - type of target object
+template <typename T>
+using TypeInfo = utility::reflection::TypeInfo<T>;
+//! @brief Get the name field directly for sub-cli related registrations.
+//! @tparam T - type of sub-cli or sub-cli's category
+//! @return name field
+template <typename T>
+inline consteval std::string_view name()
+{
+    return TypeInfo<T>::name;
+}
+//! @brief Get the description attribute directly for sub-cli related registrations.
+//! @tparam T - type of sub-cli or sub-cli's category
+//! @return description attribute
+template <typename T>
+inline consteval std::string_view descr()
+{
+    return TypeInfo<T>::attrs.find(REFLECTION_STR("descr")).value;
+}
+//! @brief Get the alias attribute directly for sub-cli related registrations.
+//! @tparam T - type of sub-cli's category
+//! @return alias attribute
+template <typename T>
+requires std::is_same_v<T, reg_algo::MatchMethod> || std::is_same_v<T, reg_algo::NotationMethod>
+    || std::is_same_v<T, reg_algo::OptimalMethod> || std::is_same_v<T, reg_algo::SearchMethod>
+    || std::is_same_v<T, reg_algo::SortMethod>
+inline consteval std::string_view alias()
+{
+    return TypeInfo<reg_algo::ApplyAlgorithm>::fields.find(REFLECTION_STR(TypeInfo<T>::name))
+        .attrs.find(REFLECTION_STR("alias"))
+        .value;
+}
+//! @brief Get the alias attribute directly for sub-cli related registrations.
+//! @tparam T - type of sub-cli's category
+//! @return alias attribute
+template <typename T>
+requires std::is_same_v<T, reg_dp::BehavioralInstance> || std::is_same_v<T, reg_dp::CreationalInstance>
+    || std::is_same_v<T, reg_dp::StructuralInstance>
+inline consteval std::string_view alias()
+{
+    return TypeInfo<reg_dp::ApplyDesignPattern>::fields.find(REFLECTION_STR(TypeInfo<T>::name))
+        .attrs.find(REFLECTION_STR("alias"))
+        .value;
+}
+//! @brief Get the alias attribute directly for sub-cli related registrations.
+//! @tparam T - type of sub-cli's category
+//! @return alias attribute
+template <typename T>
+requires std::is_same_v<T, reg_ds::LinearInstance> || std::is_same_v<T, reg_ds::TreeInstance>
+inline consteval std::string_view alias()
+{
+    return TypeInfo<reg_ds::ApplyDataStructure>::fields.find(REFLECTION_STR(TypeInfo<T>::name))
+        .attrs.find(REFLECTION_STR("alias"))
+        .value;
+}
+//! @brief Get the alias attribute directly for sub-cli related registrations.
+//! @tparam T - type of sub-cli's category
+//! @return alias attribute
+template <typename T>
+requires std::is_same_v<T, reg_num::ArithmeticMethod> || std::is_same_v<T, reg_num::DivisorMethod>
+    || std::is_same_v<T, reg_num::IntegralMethod> || std::is_same_v<T, reg_num::PrimeMethod>
+inline consteval std::string_view alias()
+{
+    return TypeInfo<reg_num::ApplyNumeric>::fields.find(REFLECTION_STR(TypeInfo<T>::name))
+        .attrs.find(REFLECTION_STR("alias"))
+        .value;
+}
 
 //! @brief The "Update Choice" message in the applied action.
 //! @tparam Evt - type of applied action event

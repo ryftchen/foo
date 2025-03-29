@@ -17,6 +17,7 @@
 #endif // __PRECOMPILED_HEADER
 
 #include "application/core/include/log.hpp"
+#include "utility/include/currying.hpp"
 
 //! @brief Title of printing when numeric tasks are beginning.
 #define APP_NUM_PRINT_TASK_BEGIN_TITLE(category)                                                                    \
@@ -47,6 +48,26 @@ static std::string getTitle(const T method)
     title.at(0) = std::toupper(title.at(0));
 
     return title;
+}
+
+//! @brief Get the task name curried.
+//! @return task name curried
+static const auto& taskNameCurried()
+{
+    static const auto curried = utility::currying::curry(configure::task::presetName, TypeInfo<ApplyNumeric>::name);
+    return curried;
+}
+
+//! @brief Get the alias of the category in numeric choices.
+//! @tparam Cat - the specific value of Category enum
+//! @return alias of the category name
+template <Category Cat>
+static consteval std::string_view getCategoryAlias()
+{
+    constexpr auto attr =
+        TypeInfo<ApplyNumeric>::fields.find(REFLECTION_STR(toString<Cat>())).attrs.find(REFLECTION_STR("alias"));
+    static_assert(attr.hasValue);
+    return attr.value;
 }
 
 namespace arithmetic
@@ -107,7 +128,6 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
 }
 } // namespace arithmetic
-
 //! @brief To apply arithmetic-related methods.
 //! @param candidates - container for the candidate target methods
 void applyingArithmetic(const std::vector<std::string>& candidates)
@@ -200,7 +220,6 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
 }
 } // namespace divisor
-
 //! @brief To apply divisor-related methods.
 //! @param candidates - container for the candidate target methods
 void applyingDivisor(const std::vector<std::string>& candidates)
@@ -317,7 +336,6 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
 }
 } // namespace integral
-
 //! @brief To apply integral-related methods.
 //! @param candidates - container for the candidate target methods
 void applyingIntegral(const std::vector<std::string>& candidates)
@@ -434,7 +452,6 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
 }
 } // namespace prime
-
 //! @brief To apply prime-related methods.
 //! @param candidates - container for the candidate target methods
 void applyingPrime(const std::vector<std::string>& candidates)
