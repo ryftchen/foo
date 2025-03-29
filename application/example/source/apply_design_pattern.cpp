@@ -17,6 +17,7 @@
 #endif // __PRECOMPILED_HEADER
 
 #include "application/core/include/log.hpp"
+#include "utility/include/currying.hpp"
 
 //! @brief Title of printing when design pattern tasks are beginning.
 #define APP_DP_PRINT_TASK_BEGIN_TITLE(category)                                                               \
@@ -47,6 +48,27 @@ static std::string getTitle(const T instance)
     title.at(0) = std::toupper(title.at(0));
 
     return title;
+}
+
+//! @brief Get the task name curried.
+//! @return task name curried
+static const auto& taskNameCurried()
+{
+    static const auto curried =
+        utility::currying::curry(configure::task::presetName, TypeInfo<ApplyDesignPattern>::name);
+    return curried;
+}
+
+//! @brief Get the alias of the category in design pattern choices.
+//! @tparam Cat - the specific value of Category enum
+//! @return alias of the category name
+template <Category Cat>
+static consteval std::string_view getCategoryAlias()
+{
+    constexpr auto attr =
+        TypeInfo<ApplyDesignPattern>::fields.find(REFLECTION_STR(toString<Cat>())).attrs.find(REFLECTION_STR("alias"));
+    static_assert(attr.hasValue);
+    return attr.value;
 }
 
 namespace behavioral
@@ -180,7 +202,6 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
 }
 } // namespace behavioral
-
 //! @brief To apply behavioral-related instances.
 //! @param candidates - container for the candidate target instances
 void applyingBehavioral(const std::vector<std::string>& candidates)
@@ -315,7 +336,6 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
 }
 } // namespace creational
-
 //! @brief To apply creational-related instances.
 //! @param candidates - container for the candidate target instances
 void applyingCreational(const std::vector<std::string>& candidates)
@@ -454,7 +474,6 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
 }
 } // namespace structural
-
 //! @brief To apply structural-related instances.
 //! @param candidates - container for the candidate target instances
 void applyingStructural(const std::vector<std::string>& candidates)

@@ -6,6 +6,7 @@
 
 #include "main.hpp"
 #include "command.hpp"
+#include "configure.hpp"
 
 #ifndef __PRECOMPILED_HEADER
 #include <sys/prctl.h>
@@ -55,7 +56,7 @@ try
         [=]()
         {
             using command::Command;
-            ::pthread_setname_np(::pthread_self(), Command::name.c_str());
+            ::pthread_setname_np(::pthread_self(), Command::title.c_str());
             return Command::getInstance().execute(argc, argv);
         });
 

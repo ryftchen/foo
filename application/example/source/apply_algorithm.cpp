@@ -17,6 +17,7 @@
 #endif // __PRECOMPILED_HEADER
 
 #include "application/core/include/log.hpp"
+#include "utility/include/currying.hpp"
 
 //! @brief Title of printing when algorithm tasks are beginning.
 #define APP_ALGO_PRINT_TASK_BEGIN_TITLE(category)                                                                     \
@@ -47,6 +48,26 @@ static std::string getTitle(const T method)
     title.at(0) = std::toupper(title.at(0));
 
     return title;
+}
+
+//! @brief Get the task name curried.
+//! @return task name curried
+static const auto& taskNameCurried()
+{
+    static const auto curried = utility::currying::curry(configure::task::presetName, TypeInfo<ApplyAlgorithm>::name);
+    return curried;
+}
+
+//! @brief Get the alias of the category in algorithm choices.
+//! @tparam Cat - the specific value of Category enum
+//! @return alias of the category name
+template <Category Cat>
+static consteval std::string_view getCategoryAlias()
+{
+    constexpr auto attr =
+        TypeInfo<ApplyAlgorithm>::fields.find(REFLECTION_STR(toString<Cat>())).attrs.find(REFLECTION_STR("alias"));
+    static_assert(attr.hasValue);
+    return attr.value;
 }
 
 namespace match
@@ -158,7 +179,6 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
 }
 } // namespace match
-
 //! @brief To apply match-related methods.
 //! @param candidates - container for the candidate target methods
 void applyingMatch(const std::vector<std::string>& candidates)
@@ -257,7 +277,6 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
 }
 } // namespace notation
-
 //! @brief To apply notation-related methods.
 //! @param candidates - container for the candidate target methods
 void applyingNotation(const std::vector<std::string>& candidates)
@@ -401,7 +420,6 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
 }
 } // namespace optimal
-
 //! @brief To apply optimal-related methods.
 //! @param candidates - container for the candidate target methods
 void applyingOptimal(const std::vector<std::string>& candidates)
@@ -546,7 +564,6 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
 }
 } // namespace search
-
 //! @brief To apply search-related methods.
 //! @param candidates - container for the candidate target methods
 void applyingSearch(const std::vector<std::string>& candidates)
@@ -741,7 +758,6 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
 }
 } // namespace sort
-
 //! @brief To apply sort-related methods.
 //! @param candidates - container for the candidate target methods
 void applyingSort(const std::vector<std::string>& candidates)

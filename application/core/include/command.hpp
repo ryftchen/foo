@@ -131,8 +131,8 @@ public:
     //! @brief Get the Command instance.
     //! @return reference of the Command object
     static Command& getInstance();
-    //! @brief Instance name.
-    static constexpr std::string name{"commander"};
+    //! @brief Instance title.
+    static constexpr std::string title{"commander"};
     //! @brief Interface used to execute.
     //! @param argc - argument count
     //! @param argv - argument vector
@@ -152,13 +152,13 @@ private:
     //! @brief Parse argument helper for commander.
     utility::argument::Argument mainCLI{"foo", note::version()};
     //! @brief Parse argument helper to apply algorithm.
-    utility::argument::Argument subCLIAppAlgo{reg_algo::title<reg_algo::ApplyAlgorithm>(), reg_algo::version()};
+    utility::argument::Argument subCLIAppAlgo{action::name<reg_algo::ApplyAlgorithm>(), reg_algo::version()};
     //! @brief Parse argument helper to apply design pattern.
-    utility::argument::Argument subCLIAppDp{reg_dp::title<reg_dp::ApplyDesignPattern>(), reg_dp::version()};
+    utility::argument::Argument subCLIAppDp{action::name<reg_dp::ApplyDesignPattern>(), reg_dp::version()};
     //! @brief Parse argument helper to apply data structure.
-    utility::argument::Argument subCLIAppDs{reg_ds::title<reg_ds::ApplyDataStructure>(), reg_ds::version()};
+    utility::argument::Argument subCLIAppDs{action::name<reg_ds::ApplyDataStructure>(), reg_ds::version()};
     //! @brief Parse argument helper to apply numeric.
-    utility::argument::Argument subCLIAppNum{reg_num::title<reg_num::ApplyNumeric>(), reg_num::version()};
+    utility::argument::Argument subCLIAppNum{action::name<reg_num::ApplyNumeric>(), reg_num::version()};
     //! @brief Flag to indicate whether the command is faulty.
     std::atomic<bool> isFaulty{false};
 
@@ -210,6 +210,10 @@ private:
     //! @param cat - the specific value of Category enum
     //! @return alias name
     static consteval std::string_view getAlias(const Category cat);
+    //! @brief Alias for the type information.
+    //! @tparam T - type of target object
+    template <typename T>
+    using TypeInfo = utility::reflection::TypeInfo<T>;
     //! @brief Reserve choices based on the maximum size of the entry under the sub-cli's category.
     //! @param choices - choices to be updated
     static void reserveChoices(std::vector<std::string>& choices);

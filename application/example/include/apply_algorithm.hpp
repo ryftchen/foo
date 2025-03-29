@@ -270,21 +270,39 @@ const char* const version = algorithm::optimal::version();
 
 //! @brief Alias for the target function.
 using Function = std::function<double(const double)>;
+//! @brief Wrapper for the target function.
+class FuncBase
+{
+public:
+    //! @brief Destroy the FuncBase object.
+    virtual ~FuncBase() = default;
+
+    //! @brief The operator (()) overloading of FuncBase class.
+    //! @param x - independent variable
+    //! @return dependent variable
+    virtual double operator()(const double x) const = 0;
+    //! @brief The operator (Function) overloading of Rastrigin class.
+    //! @return Function object
+    virtual explicit operator Function() const
+    {
+        return [this](const double x) { return operator()(x); };
+    }
+};
 
 //! @brief Set input parameters.
 namespace input
 {
 //! @brief Rastrigin function.
-class Rastrigin : public Function
+class Rastrigin : public FuncBase
 {
 public:
-    //! @brief Construct a new Rastrigin object.
-    Rastrigin() : Function{[this](const double x) { return operator()(x); }} {}
-
     //! @brief The operator (()) overloading of Rastrigin class.
     //! @param x - independent variable
     //! @return dependent variable
-    double operator()(const double x) const { return x * x - 10.0 * std::cos(2.0 * std::numbers::pi * x) + 10.0; }
+    double operator()(const double x) const override
+    {
+        return x * x - 10.0 * std::cos(2.0 * std::numbers::pi * x) + 10.0;
+    }
 
     //! @brief Left endpoint.
     static constexpr double range1{-5.12};
@@ -403,7 +421,7 @@ struct FuncMapHash
 //! @brief Alias for the optimal function.
 //! @tparam Ts - type of functions
 template <typename... Ts>
-requires (std::derived_from<Ts, Function> && ...)
+requires (std::derived_from<Ts, FuncBase> && ...)
 using OptimalFunc = std::variant<Ts...>;
 //! @brief Alias for the optimal function map.
 //! @tparam Ts - type of functions
@@ -438,7 +456,7 @@ public:
                 {
                     if (auto* funcPtr = // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
                         const_cast<std::remove_const_t<std::remove_reference_t<decltype(func)>>*>(&func);
-                        nullptr != dynamic_cast<Function*>(funcPtr))
+                        nullptr != dynamic_cast<FuncBase*>(funcPtr))
                     {
                         throw std::runtime_error{"Unknown function type (" + std::string{typeid(func).name()} + ")."};
                     }

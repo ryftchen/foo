@@ -8,13 +8,12 @@
 
 #ifndef __PRECOMPILED_HEADER
 #include <bitset>
+#include <functional>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
 
-#include "application/core/include/configure.hpp"
 #include "utility/include/common.hpp"
-#include "utility/include/currying.hpp"
 #include "utility/include/reflection.hpp"
 
 //! @brief The application module.
@@ -176,7 +175,6 @@ void runChoices<TreeInstance>(const std::vector<std::string>& candidates);
             }                                                          \
         }                                                              \
     }
-
 //! @brief Static reflection for ApplyDataStructure. Used to map command line arguments.
 template <>
 struct utility::reflection::TypeInfo<application::reg_ds::ApplyDataStructure>
@@ -245,7 +243,6 @@ struct utility::reflection::TypeInfo<application::reg_ds::TreeInstance>
         "- spl    Splay\n"
         "add the choices listed above"}};
 };
-
 #undef REG_DS_REFLECT_FIRST_LEVEL_FIELD
 #undef REG_DS_REFLECT_SECOND_LEVEL_FIELD
 
@@ -255,40 +252,6 @@ namespace application::reg_ds
 //! @tparam T - type of target object
 template <typename T>
 using TypeInfo = utility::reflection::TypeInfo<T>;
-//! @brief Get the title name directly for sub-cli related registration.
-//! @tparam T - type of sub-cli or sub-cli's category
-//! @return title name
-template <typename T>
-inline consteval std::string_view title()
-{
-    return TypeInfo<T>::name;
-}
-//! @brief Get the description directly for sub-cli related registration.
-//! @tparam T - type of sub-cli or sub-cli's category
-//! @return description
-template <typename T>
-inline consteval std::string_view descr()
-{
-    return TypeInfo<T>::attrs.find(REFLECTION_STR("descr")).value;
-}
-//! @brief Get the alias directly for sub-cli related registration.
-//! @tparam T - type of sub-cli's category
-//! @return alias
-template <typename T>
-inline consteval std::string_view alias()
-{
-    return TypeInfo<ApplyDataStructure>::fields.find(REFLECTION_STR(TypeInfo<T>::name))
-        .attrs.find(REFLECTION_STR("alias"))
-        .value;
-}
-
-//! @brief Get the task name curried.
-//! @return task name curried
-inline auto taskNameCurried()
-{
-    return utility::currying::curry(configure::task::presetName, TypeInfo<ApplyDataStructure>::name);
-}
-
 //! @brief Alias for Category.
 using Category = ApplyDataStructure::Category;
 //! @brief Convert category enumeration to string.
@@ -317,18 +280,6 @@ inline constexpr auto& getCategoryOpts()
 {
     return std::invoke(TypeInfo<ApplyDataStructure>::fields.find(REFLECTION_STR(toString<Cat>())).value, manager());
 }
-//! @brief Get the alias of the category in data structure choices.
-//! @tparam Cat - the specific value of Category enum
-//! @return alias of the category name
-template <Category Cat>
-inline consteval std::string_view getCategoryAlias()
-{
-    constexpr auto attr =
-        TypeInfo<ApplyDataStructure>::fields.find(REFLECTION_STR(toString<Cat>())).attrs.find(REFLECTION_STR("alias"));
-    static_assert(attr.hasValue);
-    return attr.value;
-}
-
 //! @brief Abbreviation value for the target instance.
 //! @tparam T - type of target instance
 //! @param instance - target instance
