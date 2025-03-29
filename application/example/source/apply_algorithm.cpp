@@ -432,71 +432,57 @@ void applyingOptimal(const std::vector<std::string>& candidates)
     }
     assert(bits.size() == candidates.size());
 
-    using optimal::Function, optimal::FuncRange;
+    APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
+    using optimal::InputBuilder, optimal::input::Rastrigin, optimal::Function;
+    static_assert(algorithm::optimal::epsilon >= std::numeric_limits<double>::epsilon());
+    auto& pooling = configure::task::resourcePool();
+    auto* const threads = pooling.newElement(bits.count());
+    const auto inputs =
+        std::make_shared<InputBuilder>(Rastrigin{}, Rastrigin::range1, Rastrigin::range2, Rastrigin::funcDescr);
     const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
-    const auto calcFunc =
-        [&candidates, &bits, &taskNamer](const Function& function, const FuncRange<double, double>& range)
+    const auto addTask =
+        [threads, &inputs, &taskNamer](
+            const std::string_view subTask, void (*targetMethod)(const Function&, const double, const double))
     {
-        auto& pooling = configure::task::resourcePool();
-        auto* const threads = pooling.newElement(bits.count());
-        const auto addTask =
-            [threads, &function, &range, &taskNamer](
-                const std::string_view subTask, void (*targetMethod)(const Function&, const double, const double))
-        { threads->enqueue(taskNamer(subTask), targetMethod, std::ref(function), range.range1, range.range2); };
-
-        for (const auto index :
-             std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
-        {
-            const auto& target = candidates.at(index);
-            switch (utility::common::bkdrHash(target.c_str()))
-            {
-                using optimal::OptimalSolution;
-                case abbrVal(OptimalMethod::gradient):
-                    addTask(target, &OptimalSolution::gradientDescentMethod);
-                    break;
-                case abbrVal(OptimalMethod::tabu):
-                    addTask(target, &OptimalSolution::tabuMethod);
-                    break;
-                case abbrVal(OptimalMethod::annealing):
-                    addTask(target, &OptimalSolution::simulatedAnnealingMethod);
-                    break;
-                case abbrVal(OptimalMethod::particle):
-                    addTask(target, &OptimalSolution::particleSwarmMethod);
-                    break;
-                case abbrVal(OptimalMethod::ant):
-                    addTask(target, &OptimalSolution::antColonyMethod);
-                    break;
-                case abbrVal(OptimalMethod::genetic):
-                    addTask(target, &OptimalSolution::geneticMethod);
-                    break;
-                default:
-                    throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};
-            }
-        }
-        pooling.deleteElement(threads);
+        threads->enqueue(
+            taskNamer(subTask),
+            targetMethod,
+            inputs->getFunction(),
+            inputs->getRanges().first,
+            inputs->getRanges().second);
     };
 
-    APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
-
-    using optimal::InputBuilder, optimal::OptimalFuncMap, optimal::input::Rastrigin;
-    static_assert(
-        (Rastrigin::range1 < Rastrigin::range2)
-        && (algorithm::optimal::epsilon >= std::numeric_limits<double>::epsilon()));
-    const auto inputs = std::make_shared<InputBuilder<Rastrigin>>(
-        OptimalFuncMap<Rastrigin>{{{Rastrigin::range1, Rastrigin::range2, Rastrigin::funcDescr}, Rastrigin{}}});
-    for ([[maybe_unused]] const auto& [range, function] : inputs->getFunctionMap())
+    for (const auto index :
+         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
-        inputs->printFunction(function);
-        switch (function.index())
+        const auto& target = candidates.at(index);
+        switch (utility::common::bkdrHash(target.c_str()))
         {
-            case 0:
-                calcFunc(std::get<0>(function), range);
+            using optimal::OptimalSolution;
+            case abbrVal(OptimalMethod::gradient):
+                addTask(target, &OptimalSolution::gradientDescentMethod);
                 break;
-            [[unlikely]] default:
+            case abbrVal(OptimalMethod::tabu):
+                addTask(target, &OptimalSolution::tabuMethod);
                 break;
+            case abbrVal(OptimalMethod::annealing):
+                addTask(target, &OptimalSolution::simulatedAnnealingMethod);
+                break;
+            case abbrVal(OptimalMethod::particle):
+                addTask(target, &OptimalSolution::particleSwarmMethod);
+                break;
+            case abbrVal(OptimalMethod::ant):
+                addTask(target, &OptimalSolution::antColonyMethod);
+                break;
+            case abbrVal(OptimalMethod::genetic):
+                addTask(target, &OptimalSolution::geneticMethod);
+                break;
+            default:
+                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};
         }
     }
 
+    pooling.deleteElement(threads);
     APP_ALGO_PRINT_TASK_END_TITLE(category);
 }
 

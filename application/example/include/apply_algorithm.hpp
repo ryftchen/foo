@@ -11,7 +11,6 @@
 #include <cstring>
 #include <iostream>
 #include <memory>
-#include <variant>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
@@ -353,120 +352,40 @@ public:
     static void geneticMethod(const Function& func, const double left, const double right);
 };
 
-//! @brief Function object's helper type for the visitor.
-//! @tparam Ts - type of visitors
-template <typename... Ts>
-struct FuncOverloaded : Ts...
-{
-    using Ts::operator()...;
-};
-//! @brief Explicit deduction guide for FuncOverloaded.
-//! @tparam Ts - type of visitors
-template <typename... Ts>
-FuncOverloaded(Ts...) -> FuncOverloaded<Ts...>;
-//! @brief Range properties of the function.
-//! @tparam T1 - type of left endpoint
-//! @tparam T2 - type of right endpoint
-template <typename T1, typename T2>
-struct FuncRange
-{
-    //! @brief Construct a new FuncRange object.
-    //! @param range1 - left endpoint
-    //! @param range2 - light endpoint
-    //! @param funcDescr - function description
-    FuncRange(const T1 range1, const T2 range2, const std::string_view funcDescr) :
-        range1{range1}, range2{range2}, funcDescr{funcDescr}
-    {
-    }
-    //! @brief Construct a new FuncRange object.
-    FuncRange() = delete;
-
-    //! @brief The operator (==) overloading of FuncRange struct.
-    //! @param rhs - right-hand side
-    //! @return be equal or not equal
-    bool operator==(const FuncRange& rhs) const
-    {
-        return std::tie(rhs.range1, rhs.range2, rhs.funcDescr) == std::tie(range1, range2, funcDescr);
-    }
-
-    //! @brief Left endpoint.
-    const T1 range1{};
-    //! @brief Right endpoint.
-    const T2 range2{};
-    //! @brief Function description.
-    const std::string funcDescr{};
-};
-//! @brief Mapping hash value for the function.
-struct FuncMapHash
-{
-    //! @brief The operator (()) overloading of FuncMapHash class.
-    //! @tparam T1 - type of left endpoint
-    //! @tparam T2 - type of right endpoint
-    //! @param range - range properties of the function
-    //! @return hash value
-    template <typename T1, typename T2>
-    std::size_t operator()(const FuncRange<T1, T2>& range) const
-    {
-        const std::size_t hash1 = std::hash<T1>()(range.range1), hash2 = std::hash<T2>()(range.range2),
-                          hash3 = std::hash<std::string>()(range.funcDescr);
-        constexpr std::size_t magicNumber = 0x9e3779b9, leftShift = 6, rightShift = 2;
-        std::size_t seed = 0;
-        seed ^= hash1 + magicNumber + (seed << leftShift) + (seed >> rightShift);
-        seed ^= hash2 + magicNumber + (seed << leftShift) + (seed >> rightShift);
-        seed ^= hash3 + magicNumber + (seed << leftShift) + (seed >> rightShift);
-
-        return seed;
-    }
-};
-//! @brief Alias for the optimal function.
-//! @tparam Ts - type of functions
-template <typename... Ts>
-requires (std::derived_from<Ts, FuncBase> && ...)
-using OptimalFunc = std::variant<Ts...>;
-//! @brief Alias for the optimal function map.
-//! @tparam Ts - type of functions
-template <typename... Ts>
-using OptimalFuncMap = std::unordered_multimap<FuncRange<double, double>, OptimalFunc<Ts...>, FuncMapHash>;
-
 //! @brief Builder for the input.
-//! @tparam Ts - type of functions
-template <typename... Ts>
 class InputBuilder
 {
 public:
-    //! @brief Construct a new InputBuilder object.
-    //! @param functionMap - collection of optimal functions
-    explicit InputBuilder(const OptimalFuncMap<Ts...>& functionMap) : functionMap{functionMap} {}
+    //! @brief Construct a new Input Builder object.
+    //! @param function - target function
+    //! @param range1 - left endpoint
+    //! @param range2 - right endpoint
+    //! @param funcDescr - function description
+    InputBuilder(const Function& function, const double range1, const double range2, const std::string_view funcDescr) :
+        function{function}, range1{range1}, range2{range2}
+    {
+        static_cast<void>(funcDescr);
+#ifdef __RUNTIME_PRINTING
+        std::cout << "\nOptimal function:\n" << funcDescr << std::endl;
+#endif // __RUNTIME_PRINTING
+    }
     //! @brief Destroy the InputBuilder object.
     virtual ~InputBuilder() = default;
 
-    //! @brief Get the collection of optimal functions.
-    //! @return collection of optimal functions
-    inline const OptimalFuncMap<Ts...>& getFunctionMap() const { return functionMap; };
-    //! @brief Print function.
-    //! @param function - target function
-    static void printFunction(const OptimalFunc<Ts...>& function)
-    {
-        constexpr std::string_view prefix = "\nOptimal function:\n";
-        std::visit(
-            FuncOverloaded{
-                [&prefix](const input::Rastrigin& /*func*/)
-                { std::cout << prefix << input::Rastrigin::funcDescr << std::endl; },
-                [](auto&& func)
-                {
-                    if (auto* funcPtr = // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
-                        const_cast<std::remove_const_t<std::remove_reference_t<decltype(func)>>*>(&func);
-                        nullptr != dynamic_cast<FuncBase*>(funcPtr))
-                    {
-                        throw std::runtime_error{"Unknown function type (" + std::string{typeid(func).name()} + ")."};
-                    }
-                }},
-            function);
-    };
+    //! @brief Get the target function.
+    //! @return target function
+    [[nodiscard]] inline Function getFunction() const { return function; }
+    //! @brief Get the pair of ranges.
+    //! @return pair of ranges
+    [[nodiscard]] inline std::pair<double, double> getRanges() const { return std::make_pair(range1, range2); }
 
 private:
-    //! @brief Collection of optimal functions.
-    const OptimalFuncMap<Ts...> functionMap{};
+    //! @brief Target function.
+    const Function function{};
+    //! @brief Left endpoint.
+    const double range1{};
+    //! @brief Right endpoint.
+    const double range2{};
 };
 } // namespace optimal
 extern void applyingOptimal(const std::vector<std::string>& candidates);
