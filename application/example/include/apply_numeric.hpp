@@ -9,7 +9,6 @@
 #ifndef __PRECOMPILED_HEADER
 #include <cmath>
 #include <iostream>
-#include <variant>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
@@ -291,120 +290,41 @@ public:
     static void monteCarloMethod(const Expression& expr, const double lower, const double upper);
 };
 
-//! @brief Expression object's helper type for the visitor.
-//! @tparam Ts - type of visitors
-template <typename... Ts>
-struct ExprOverloaded : Ts...
-{
-    using Ts::operator()...;
-};
-//! @brief Explicit deduction guide for ExprOverloaded.
-//! @tparam Ts - type of visitors
-template <typename... Ts>
-ExprOverloaded(Ts...) -> ExprOverloaded<Ts...>;
-//! @brief Range properties of the expression.
-//! @tparam T1 - type of lower endpoint
-//! @tparam T2 - type of upper endpoint
-template <typename T1, typename T2>
-struct ExprRange
-{
-    //! @brief Construct a new ExprRange object.
-    //! @param range1 - lower endpoint
-    //! @param range2 - upper endpoint
-    //! @param exprDescr - expression description
-    ExprRange(const T1 range1, const T2 range2, const std::string_view exprDescr) :
-        range1{range1}, range2{range2}, exprDescr{exprDescr}
-    {
-    }
-    //! @brief Construct a new ExprRange object.
-    ExprRange() = delete;
-
-    //! @brief The operator (==) overloading of ExprRange struct.
-    //! @param rhs - right-hand side
-    //! @return be equal or not equal
-    bool operator==(const ExprRange& rhs) const
-    {
-        return std::tie(rhs.range1, rhs.range2, rhs.exprDescr) == std::tie(range1, range2, exprDescr);
-    }
-
-    //! @brief Lower endpoint.
-    const T1 range1{};
-    //! @brief Upper endpoint.
-    const T2 range2{};
-    //! @brief Expression description.
-    const std::string exprDescr{};
-};
-//! @brief Mapping hash value for the expression.
-struct ExprMapHash
-{
-    //! @brief The operator (()) overloading of ExprMapHash class.
-    //! @tparam T1 - type of lower endpoint
-    //! @tparam T2 - type of upper endpoint
-    //! @param range - range properties of the expression
-    //! @return hash value
-    template <typename T1, typename T2>
-    std::size_t operator()(const ExprRange<T1, T2>& range) const
-    {
-        const std::size_t hash1 = std::hash<T1>()(range.range1), hash2 = std::hash<T2>()(range.range2),
-                          hash3 = std::hash<std::string>()(range.exprDescr);
-        constexpr std::size_t magicNumber = 0x9e3779b9, leftShift = 6, rightShift = 2;
-        std::size_t seed = 0;
-        seed ^= hash1 + magicNumber + (seed << leftShift) + (seed >> rightShift);
-        seed ^= hash2 + magicNumber + (seed << leftShift) + (seed >> rightShift);
-        seed ^= hash3 + magicNumber + (seed << leftShift) + (seed >> rightShift);
-
-        return seed;
-    }
-};
-//! @brief Alias for the integral expression.
-//! @tparam Ts - type of expressions
-template <typename... Ts>
-requires (std::derived_from<Ts, ExprBase> && ...)
-using IntegralExpr = std::variant<Ts...>;
-//! @brief Alias for the integral expression map.
-//! @tparam Ts - type of expressions
-template <typename... Ts>
-using IntegralExprMap = std::unordered_multimap<ExprRange<double, double>, IntegralExpr<Ts...>, ExprMapHash>;
-
 //! @brief Builder for the input.
-//! @tparam Ts - type of expressions
-template <typename... Ts>
 class InputBuilder
 {
 public:
-    //! @brief Construct a new InputBuilder object.
-    //! @param expressionMap - collection of integral expressions
-    explicit InputBuilder(const IntegralExprMap<Ts...>& expressionMap) : expressionMap{expressionMap} {}
+    //! @brief Construct a new Input Builder object.
+    //! @param expression - target expression
+    //! @param range1 - lower endpoint
+    //! @param range2 - upper endpoint
+    //! @param exprDescr - expression description
+    InputBuilder(
+        const Expression& expression, const double range1, const double range2, const std::string_view exprDescr) :
+        expression{expression}, range1{range1}, range2{range2}
+    {
+        static_cast<void>(exprDescr);
+#ifdef __RUNTIME_PRINTING
+        std::cout << "\nIntegral expression:\n" << exprDescr << std::endl;
+#endif // __RUNTIME_PRINTING
+    }
     //! @brief Destroy the InputBuilder object.
     virtual ~InputBuilder() = default;
 
-    //! @brief Get the collection of integral expressions.
-    //! @return collection of integral expressions
-    inline const IntegralExprMap<Ts...>& getExpressionMap() const { return expressionMap; };
-    //! @brief Print expression.
-    //! @param expression - target expression
-    static void printExpression(const IntegralExpr<Ts...>& expression)
-    {
-        constexpr std::string_view prefix = "\nIntegral expression:\n";
-        std::visit(
-            ExprOverloaded{
-                [&prefix](const input::Griewank& /*expr*/)
-                { std::cout << prefix << input::Griewank::exprDescr << std::endl; },
-                [](auto&& expr)
-                {
-                    if (auto* exprPtr = // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
-                        const_cast<std::remove_const_t<std::remove_reference_t<decltype(expr)>>*>(&expr);
-                        nullptr != dynamic_cast<ExprBase*>(exprPtr))
-                    {
-                        throw std::runtime_error{"Unknown expression type (" + std::string{typeid(expr).name()} + ")."};
-                    }
-                }},
-            expression);
-    };
+    //! @brief Get the target expression.
+    //! @return target expression
+    [[nodiscard]] inline Expression getExpression() const { return expression; }
+    //! @brief Get the pair of ranges.
+    //! @return pair of ranges
+    [[nodiscard]] inline std::pair<double, double> getRanges() const { return std::make_pair(range1, range2); }
 
 private:
-    //! @brief Collection of integral expressions.
-    const IntegralExprMap<Ts...> expressionMap{};
+    //! @brief Target expression.
+    const Expression expression{};
+    //! @brief Lower endpoint.
+    const double range1{};
+    //! @brief Upper endpoint.
+    const double range2{};
 };
 } // namespace integral
 extern void applyingIntegral(const std::vector<std::string>& candidates);

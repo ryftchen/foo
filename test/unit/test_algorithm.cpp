@@ -170,14 +170,13 @@ public:
     //! @brief Destroy the OptimalTestBase object.
     ~OptimalTestBase() override = default;
 
-    //! @brief Alias for the target function.
-    using Rastrigin = optimal::input::Rastrigin;
     //! @brief Set up the test case.
     static void SetUpTestCase()
     {
         TST_ALGO_PRINT_TASK_TITLE("OPTIMAL", "BEGIN");
-        inputs = std::make_shared<optimal::InputBuilder<Rastrigin>>(optimal::OptimalFuncMap<Rastrigin>{
-            {{Rastrigin::range1, Rastrigin::range2, Rastrigin::funcDescr}, Rastrigin{}}});
+        using Rastrigin = optimal::input::Rastrigin;
+        inputs = std::make_shared<optimal::InputBuilder>(
+            Rastrigin{}, Rastrigin::range1, Rastrigin::range2, Rastrigin::funcDescr);
     }
     //! @brief Tear down the test case.
     static void TearDownTestCase()
@@ -191,22 +190,21 @@ public:
     void TearDown() override {}
 
     //! @brief Input builder.
-    static std::shared_ptr<optimal::InputBuilder<Rastrigin>> inputs;
+    static std::shared_ptr<optimal::InputBuilder> inputs;
     //! @brief Allowable error.
     static constexpr double error{1e-3};
 };
-std::shared_ptr<optimal::InputBuilder<optimal::input::Rastrigin>> OptimalTestBase::inputs = nullptr;
+std::shared_ptr<optimal::InputBuilder> OptimalTestBase::inputs = nullptr;
 
 //! @brief Test for the gradient descent method in the solution of optimal.
 TEST_F(OptimalTestBase, gradientDescentMethod)
 {
-    const auto range = inputs->getFunctionMap().cbegin()->first;
-    const auto function = std::get<Rastrigin>(inputs->getFunctionMap().cbegin()->second);
     const std::shared_ptr<algorithm::optimal::Optimal> gradient =
-        std::make_shared<algorithm::optimal::Gradient>(function);
+        std::make_shared<algorithm::optimal::Gradient>(inputs->getFunction());
     std::optional<std::tuple<double, double>> result = std::nullopt;
 
-    ASSERT_NO_THROW(result = (*gradient)(range.range1, range.range2, algorithm::optimal::epsilon));
+    ASSERT_NO_THROW(
+        result = (*gradient)(inputs->getRanges().first, inputs->getRanges().second, algorithm::optimal::epsilon));
     ASSERT_TRUE(result.has_value());
     EXPECT_GT(std::get<0>(result.value()), 0.0 - error);
     EXPECT_LT(std::get<0>(result.value()), 0.0 + error);
@@ -215,12 +213,12 @@ TEST_F(OptimalTestBase, gradientDescentMethod)
 //! @brief Test for the tabu method in the solution of optimal.
 TEST_F(OptimalTestBase, tabuMethod)
 {
-    const auto range = inputs->getFunctionMap().cbegin()->first;
-    const auto function = std::get<Rastrigin>(inputs->getFunctionMap().cbegin()->second);
-    const std::shared_ptr<algorithm::optimal::Optimal> tabu = std::make_shared<algorithm::optimal::Tabu>(function);
+    const std::shared_ptr<algorithm::optimal::Optimal> tabu =
+        std::make_shared<algorithm::optimal::Tabu>(inputs->getFunction());
     std::optional<std::tuple<double, double>> result = std::nullopt;
 
-    ASSERT_NO_THROW(result = (*tabu)(range.range1, range.range2, algorithm::optimal::epsilon));
+    ASSERT_NO_THROW(
+        result = (*tabu)(inputs->getRanges().first, inputs->getRanges().second, algorithm::optimal::epsilon));
     ASSERT_TRUE(result.has_value());
     EXPECT_GT(std::get<0>(result.value()), 0.0 - error);
     EXPECT_LT(std::get<0>(result.value()), 0.0 + error);
@@ -229,13 +227,12 @@ TEST_F(OptimalTestBase, tabuMethod)
 //! @brief Test for the simulated annealing method in the solution of optimal.
 TEST_F(OptimalTestBase, simulatedAnnealingMethod)
 {
-    const auto range = inputs->getFunctionMap().cbegin()->first;
-    const auto function = std::get<Rastrigin>(inputs->getFunctionMap().cbegin()->second);
     const std::shared_ptr<algorithm::optimal::Optimal> annealing =
-        std::make_shared<algorithm::optimal::Annealing>(function);
+        std::make_shared<algorithm::optimal::Annealing>(inputs->getFunction());
     std::optional<std::tuple<double, double>> result = std::nullopt;
 
-    ASSERT_NO_THROW(result = (*annealing)(range.range1, range.range2, algorithm::optimal::epsilon));
+    ASSERT_NO_THROW(
+        result = (*annealing)(inputs->getRanges().first, inputs->getRanges().second, algorithm::optimal::epsilon));
     ASSERT_TRUE(result.has_value());
     EXPECT_GT(std::get<0>(result.value()), 0.0 - error);
     EXPECT_LT(std::get<0>(result.value()), 0.0 + error);
@@ -244,13 +241,12 @@ TEST_F(OptimalTestBase, simulatedAnnealingMethod)
 //! @brief Test for the particle swarm method in the solution of optimal.
 TEST_F(OptimalTestBase, particleSwarmMethod)
 {
-    const auto range = inputs->getFunctionMap().cbegin()->first;
-    const auto function = std::get<Rastrigin>(inputs->getFunctionMap().cbegin()->second);
     const std::shared_ptr<algorithm::optimal::Optimal> particle =
-        std::make_shared<algorithm::optimal::Particle>(function);
+        std::make_shared<algorithm::optimal::Particle>(inputs->getFunction());
     std::optional<std::tuple<double, double>> result = std::nullopt;
 
-    ASSERT_NO_THROW(result = (*particle)(range.range1, range.range2, algorithm::optimal::epsilon));
+    ASSERT_NO_THROW(
+        result = (*particle)(inputs->getRanges().first, inputs->getRanges().second, algorithm::optimal::epsilon));
     ASSERT_TRUE(result.has_value());
     EXPECT_GT(std::get<0>(result.value()), 0.0 - error);
     EXPECT_LT(std::get<0>(result.value()), 0.0 + error);
@@ -259,12 +255,12 @@ TEST_F(OptimalTestBase, particleSwarmMethod)
 //! @brief Test for the ant colony method in the solution of optimal.
 TEST_F(OptimalTestBase, antColonyMethod)
 {
-    const auto range = inputs->getFunctionMap().cbegin()->first;
-    const auto function = std::get<Rastrigin>(inputs->getFunctionMap().cbegin()->second);
-    const std::shared_ptr<algorithm::optimal::Optimal> ant = std::make_shared<algorithm::optimal::Ant>(function);
+    const std::shared_ptr<algorithm::optimal::Optimal> ant =
+        std::make_shared<algorithm::optimal::Ant>(inputs->getFunction());
     std::optional<std::tuple<double, double>> result = std::nullopt;
 
-    ASSERT_NO_THROW(result = (*ant)(range.range1, range.range2, algorithm::optimal::epsilon));
+    ASSERT_NO_THROW(
+        result = (*ant)(inputs->getRanges().first, inputs->getRanges().second, algorithm::optimal::epsilon));
     ASSERT_TRUE(result.has_value());
     EXPECT_GT(std::get<0>(result.value()), 0.0 - error);
     EXPECT_LT(std::get<0>(result.value()), 0.0 + error);
@@ -273,13 +269,12 @@ TEST_F(OptimalTestBase, antColonyMethod)
 //! @brief Test for the genetic method in the solution of optimal.
 TEST_F(OptimalTestBase, geneticMethod)
 {
-    const auto range = inputs->getFunctionMap().cbegin()->first;
-    const auto function = std::get<Rastrigin>(inputs->getFunctionMap().cbegin()->second);
     const std::shared_ptr<algorithm::optimal::Optimal> genetic =
-        std::make_shared<algorithm::optimal::Genetic>(function);
+        std::make_shared<algorithm::optimal::Genetic>(inputs->getFunction());
     std::optional<std::tuple<double, double>> result = std::nullopt;
 
-    ASSERT_NO_THROW(result = (*genetic)(range.range1, range.range2, algorithm::optimal::epsilon));
+    ASSERT_NO_THROW(
+        result = (*genetic)(inputs->getRanges().first, inputs->getRanges().second, algorithm::optimal::epsilon));
     ASSERT_TRUE(result.has_value());
     EXPECT_GT(std::get<0>(result.value()), 0.0 - error);
     EXPECT_LT(std::get<0>(result.value()), 0.0 + error);

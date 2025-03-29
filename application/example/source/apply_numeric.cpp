@@ -348,66 +348,54 @@ void applyingIntegral(const std::vector<std::string>& candidates)
     }
     assert(bits.size() == candidates.size());
 
-    using integral::Expression, integral::ExprRange;
+    APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
+    using integral::InputBuilder, integral::input::Griewank, integral::Expression;
+    static_assert(numeric::integral::epsilon >= std::numeric_limits<double>::epsilon());
+    auto& pooling = configure::task::resourcePool();
+    auto* const threads = pooling.newElement(bits.count());
+    const auto inputs =
+        std::make_shared<InputBuilder>(Griewank{}, Griewank::range1, Griewank::range2, Griewank::exprDescr);
     const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
-    const auto calcExpr =
-        [&candidates, &bits, &taskNamer](const Expression& expression, const ExprRange<double, double>& range)
+    const auto addTask =
+        [threads, &inputs, &taskNamer](
+            const std::string_view subTask, void (*targetMethod)(const Expression&, const double, const double))
     {
-        auto& pooling = configure::task::resourcePool();
-        auto* const threads = pooling.newElement(bits.count());
-        const auto addTask =
-            [threads, &expression, &range, &taskNamer](
-                const std::string_view subTask, void (*targetMethod)(const Expression&, const double, const double))
-        { threads->enqueue(taskNamer(subTask), targetMethod, std::ref(expression), range.range1, range.range2); };
-
-        for (const auto index :
-             std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
-        {
-            const auto& target = candidates.at(index);
-            switch (utility::common::bkdrHash(target.c_str()))
-            {
-                using integral::IntegralSolution;
-                case abbrVal(IntegralMethod::trapezoidal):
-                    addTask(target, &IntegralSolution::trapezoidalMethod);
-                    break;
-                case abbrVal(IntegralMethod::simpson):
-                    addTask(target, &IntegralSolution::adaptiveSimpsonMethod);
-                    break;
-                case abbrVal(IntegralMethod::romberg):
-                    addTask(target, &IntegralSolution::rombergMethod);
-                    break;
-                case abbrVal(IntegralMethod::gauss):
-                    addTask(target, &IntegralSolution::gaussLegendreMethod);
-                    break;
-                case abbrVal(IntegralMethod::monteCarlo):
-                    addTask(target, &IntegralSolution::monteCarloMethod);
-                    break;
-                default:
-                    throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};
-            }
-        }
-        pooling.deleteElement(threads);
+        threads->enqueue(
+            taskNamer(subTask),
+            targetMethod,
+            inputs->getExpression(),
+            inputs->getRanges().first,
+            inputs->getRanges().second);
     };
 
-    APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
-
-    using integral::InputBuilder, integral::IntegralExprMap, integral::input::Griewank;
-    static_assert(numeric::integral::epsilon >= std::numeric_limits<double>::epsilon());
-    const auto inputs = std::make_shared<InputBuilder<Griewank>>(
-        IntegralExprMap<Griewank>{{{Griewank::range1, Griewank::range2, Griewank::exprDescr}, Griewank{}}});
-    for ([[maybe_unused]] const auto& [range, expression] : inputs->getExpressionMap())
+    for (const auto index :
+         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
-        inputs->printExpression(expression);
-        switch (expression.index())
+        const auto& target = candidates.at(index);
+        switch (utility::common::bkdrHash(target.c_str()))
         {
-            case 0:
-                calcExpr(std::get<0>(expression), range);
+            using integral::IntegralSolution;
+            case abbrVal(IntegralMethod::trapezoidal):
+                addTask(target, &IntegralSolution::trapezoidalMethod);
                 break;
-            [[unlikely]] default:
+            case abbrVal(IntegralMethod::simpson):
+                addTask(target, &IntegralSolution::adaptiveSimpsonMethod);
                 break;
+            case abbrVal(IntegralMethod::romberg):
+                addTask(target, &IntegralSolution::rombergMethod);
+                break;
+            case abbrVal(IntegralMethod::gauss):
+                addTask(target, &IntegralSolution::gaussLegendreMethod);
+                break;
+            case abbrVal(IntegralMethod::monteCarlo):
+                addTask(target, &IntegralSolution::monteCarloMethod);
+                break;
+            default:
+                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};
         }
     }
 
+    pooling.deleteElement(threads);
     APP_NUM_PRINT_TASK_END_TITLE(category);
 }
 
