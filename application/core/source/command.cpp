@@ -308,6 +308,8 @@ void Command::initializeExtraCLI()
                                       { reg_algo::updateChoice<reg_algo::MatchMethod>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<reg_algo::MatchMethod>& msg)
                                       { reg_algo::runChoices<reg_algo::MatchMethod>(msg.coll); });
+    relatedVersions.emplace(
+        RelVerPair{name<reg_algo::ApplyAlgorithm>(), reg_algo::match::version()}, name<reg_algo::MatchMethod>());
     candidates = extractChoices<reg_algo::NotationMethod>();
     algoTable.emplace(name<reg_algo::NotationMethod>(), CategoryExtAttr{candidates, reg_algo::NotationMethod{}});
     subCLIAppAlgo
@@ -323,6 +325,8 @@ void Command::initializeExtraCLI()
                                       { reg_algo::updateChoice<reg_algo::NotationMethod>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<reg_algo::NotationMethod>& msg)
                                       { reg_algo::runChoices<reg_algo::NotationMethod>(msg.coll); });
+    relatedVersions.emplace(
+        RelVerPair{name<reg_algo::ApplyAlgorithm>(), reg_algo::notation::version()}, name<reg_algo::NotationMethod>());
     candidates = extractChoices<reg_algo::OptimalMethod>();
     algoTable.emplace(name<reg_algo::OptimalMethod>(), CategoryExtAttr{candidates, reg_algo::OptimalMethod{}});
     subCLIAppAlgo
@@ -338,6 +342,8 @@ void Command::initializeExtraCLI()
                                       { reg_algo::updateChoice<reg_algo::OptimalMethod>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<reg_algo::OptimalMethod>& msg)
                                       { reg_algo::runChoices<reg_algo::OptimalMethod>(msg.coll); });
+    relatedVersions.emplace(
+        RelVerPair{name<reg_algo::ApplyAlgorithm>(), reg_algo::optimal::version()}, name<reg_algo::OptimalMethod>());
     candidates = extractChoices<reg_algo::SearchMethod>();
     algoTable.emplace(name<reg_algo::SearchMethod>(), CategoryExtAttr{candidates, reg_algo::SearchMethod{}});
     subCLIAppAlgo
@@ -353,6 +359,8 @@ void Command::initializeExtraCLI()
                                       { reg_algo::updateChoice<reg_algo::SearchMethod>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<reg_algo::SearchMethod>& msg)
                                       { reg_algo::runChoices<reg_algo::SearchMethod>(msg.coll); });
+    relatedVersions.emplace(
+        RelVerPair{name<reg_algo::ApplyAlgorithm>(), reg_algo::search::version()}, name<reg_algo::SearchMethod>());
     candidates = extractChoices<reg_algo::SortMethod>();
     algoTable.emplace(name<reg_algo::SortMethod>(), CategoryExtAttr{candidates, reg_algo::SortMethod{}});
     subCLIAppAlgo
@@ -367,6 +375,8 @@ void Command::initializeExtraCLI()
                                       { reg_algo::updateChoice<reg_algo::SortMethod>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<reg_algo::SortMethod>& msg)
                                       { reg_algo::runChoices<reg_algo::SortMethod>(msg.coll); });
+    relatedVersions.emplace(
+        RelVerPair{name<reg_algo::ApplyAlgorithm>(), reg_algo::sort::version()}, name<reg_algo::SortMethod>());
     mainCLI.addSubParser(subCLIAppAlgo);
 
     auto& dpTable = extraChoices[subCLIAppDp.title()];
@@ -390,6 +400,9 @@ void Command::initializeExtraCLI()
                                       { reg_dp::updateChoice<reg_dp::BehavioralInstance>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<reg_dp::BehavioralInstance>& msg)
                                       { reg_dp::runChoices<reg_dp::BehavioralInstance>(msg.coll); });
+    relatedVersions.emplace(
+        RelVerPair{name<reg_dp::ApplyDesignPattern>(), reg_dp::behavioral::version()},
+        name<reg_dp::BehavioralInstance>());
     candidates = extractChoices<reg_dp::CreationalInstance>();
     dpTable.emplace(name<reg_dp::CreationalInstance>(), CategoryExtAttr{candidates, reg_dp::CreationalInstance{}});
     subCLIAppDp
@@ -405,6 +418,9 @@ void Command::initializeExtraCLI()
                                       { reg_dp::updateChoice<reg_dp::CreationalInstance>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<reg_dp::CreationalInstance>& msg)
                                       { reg_dp::runChoices<reg_dp::CreationalInstance>(msg.coll); });
+    relatedVersions.emplace(
+        RelVerPair{name<reg_dp::ApplyDesignPattern>(), reg_dp::creational::version()},
+        name<reg_dp::CreationalInstance>());
     candidates = extractChoices<reg_dp::StructuralInstance>();
     dpTable.emplace(name<reg_dp::StructuralInstance>(), CategoryExtAttr{candidates, reg_dp::StructuralInstance{}});
     subCLIAppDp
@@ -420,6 +436,9 @@ void Command::initializeExtraCLI()
                                       { reg_dp::updateChoice<reg_dp::StructuralInstance>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<reg_dp::StructuralInstance>& msg)
                                       { reg_dp::runChoices<reg_dp::StructuralInstance>(msg.coll); });
+    relatedVersions.emplace(
+        RelVerPair{name<reg_dp::ApplyDesignPattern>(), reg_dp::structural::version()},
+        name<reg_dp::StructuralInstance>());
     mainCLI.addSubParser(subCLIAppDp);
 
     auto& dsTable = extraChoices[subCLIAppDs.title()];
@@ -443,6 +462,8 @@ void Command::initializeExtraCLI()
                                       { reg_ds::updateChoice<reg_ds::LinearInstance>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<reg_ds::LinearInstance>& msg)
                                       { reg_ds::runChoices<reg_ds::LinearInstance>(msg.coll); });
+    relatedVersions.emplace(
+        RelVerPair{name<reg_ds::ApplyDataStructure>(), reg_ds::linear::version()}, name<reg_ds::LinearInstance>());
     candidates = extractChoices<reg_ds::TreeInstance>();
     dsTable.emplace(name<reg_ds::TreeInstance>(), CategoryExtAttr{candidates, reg_ds::TreeInstance{}});
     subCLIAppDs
@@ -457,6 +478,8 @@ void Command::initializeExtraCLI()
                                       { reg_ds::updateChoice<reg_ds::TreeInstance>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<reg_ds::TreeInstance>& msg)
                                       { reg_ds::runChoices<reg_ds::TreeInstance>(msg.coll); });
+    relatedVersions.emplace(
+        RelVerPair{name<reg_ds::ApplyDataStructure>(), reg_ds::tree::version()}, name<reg_ds::TreeInstance>());
     mainCLI.addSubParser(subCLIAppDs);
 
     auto& numTable = extraChoices[subCLIAppNum.title()];
@@ -480,6 +503,8 @@ void Command::initializeExtraCLI()
                                       { reg_num::updateChoice<reg_num::ArithmeticMethod>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<reg_num::ArithmeticMethod>& msg)
                                       { reg_num::runChoices<reg_num::ArithmeticMethod>(msg.coll); });
+    relatedVersions.emplace(
+        RelVerPair{name<reg_num::ApplyNumeric>(), reg_num::arithmetic::version()}, name<reg_num::ArithmeticMethod>());
     candidates = extractChoices<reg_num::DivisorMethod>();
     numTable.emplace(name<reg_num::DivisorMethod>(), CategoryExtAttr{candidates, reg_num::DivisorMethod{}});
     subCLIAppNum
@@ -495,6 +520,8 @@ void Command::initializeExtraCLI()
                                       { reg_num::updateChoice<reg_num::DivisorMethod>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<reg_num::DivisorMethod>& msg)
                                       { reg_num::runChoices<reg_num::DivisorMethod>(msg.coll); });
+    relatedVersions.emplace(
+        RelVerPair{name<reg_num::ApplyNumeric>(), reg_num::divisor::version()}, name<reg_num::DivisorMethod>());
     candidates = extractChoices<reg_num::IntegralMethod>();
     numTable.emplace(name<reg_num::IntegralMethod>(), CategoryExtAttr{candidates, reg_num::IntegralMethod{}});
     subCLIAppNum
@@ -510,6 +537,8 @@ void Command::initializeExtraCLI()
                                       { reg_num::updateChoice<reg_num::IntegralMethod>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<reg_num::IntegralMethod>& msg)
                                       { reg_num::runChoices<reg_num::IntegralMethod>(msg.coll); });
+    relatedVersions.emplace(
+        RelVerPair{name<reg_num::ApplyNumeric>(), reg_num::integral::version()}, name<reg_num::IntegralMethod>());
     candidates = extractChoices<reg_num::PrimeMethod>();
     numTable.emplace(name<reg_num::PrimeMethod>(), CategoryExtAttr{candidates, reg_num::PrimeMethod{}});
     subCLIAppNum
@@ -524,6 +553,8 @@ void Command::initializeExtraCLI()
                                       { reg_num::updateChoice<reg_num::PrimeMethod>(msg.cho); });
     applyingForwarder.registerHandler([](const action::RunChoices<reg_num::PrimeMethod>& msg)
                                       { reg_num::runChoices<reg_num::PrimeMethod>(msg.coll); });
+    relatedVersions.emplace(
+        RelVerPair{name<reg_num::ApplyNumeric>(), reg_num::prime::version()}, name<reg_num::PrimeMethod>());
     mainCLI.addSubParser(subCLIAppNum);
 }
 
@@ -999,39 +1030,28 @@ void Command::interactionLatency()
 
 void Command::validateDependenciesVersion() const
 {
-    using utility::common::allStrEqual;
-    if (!allStrEqual(
-            mainCLI.version().data(),
-            utility::argument::version(),
-            utility::common::version(),
-            utility::currying::version(),
-            utility::fsm::version(),
-            utility::io::version(),
-            utility::json::version(),
-            utility::memory::version(),
-            utility::reflection::version(),
-            utility::socket::version(),
-            utility::thread::version(),
-            utility::time::version())
-        || !allStrEqual(
-            subCLIAppAlgo.version().data(),
-            reg_algo::match::version(),
-            reg_algo::notation::version(),
-            reg_algo::optimal::version(),
-            reg_algo::search::version(),
-            reg_algo::sort::version())
-        || !allStrEqual(
-            subCLIAppDp.version().data(),
-            reg_dp::behavioral::version(),
-            reg_dp::creational::version(),
-            reg_dp::structural::version())
-        || !allStrEqual(subCLIAppDs.version().data(), reg_ds::linear::version(), reg_ds::tree::version())
-        || !allStrEqual(
-            subCLIAppNum.version().data(),
-            reg_num::arithmetic::version(),
-            reg_num::divisor::version(),
-            reg_num::integral::version(),
-            reg_num::prime::version()))
+    const bool isNativeMatched = utility::common::allStrEqual(
+                   mainCLI.version().data(),
+                   utility::argument::version(),
+                   utility::common::version(),
+                   utility::currying::version(),
+                   utility::fsm::version(),
+                   utility::io::version(),
+                   utility::json::version(),
+                   utility::memory::version(),
+                   utility::reflection::version(),
+                   utility::socket::version(),
+                   utility::thread::version(),
+                   utility::time::version()),
+               isExtraMatched = (relatedVersions.count({subCLIAppAlgo.title(), subCLIAppAlgo.version()})
+                                 == extraChoices.at(subCLIAppAlgo.title()).size())
+        && (relatedVersions.count({subCLIAppDp.title(), subCLIAppDp.version()})
+            == extraChoices.at(subCLIAppDp.title()).size())
+        && (relatedVersions.count({subCLIAppDs.title(), subCLIAppDs.version()})
+            == extraChoices.at(subCLIAppDs.title()).size())
+        && (relatedVersions.count({subCLIAppNum.title(), subCLIAppNum.version()})
+            == extraChoices.at(subCLIAppNum.title()).size());
+    if (!isNativeMatched || !isExtraMatched)
     {
         throw std::runtime_error{std::format(
             "Dependencies version number mismatch. Expected main version: {} ({})"
