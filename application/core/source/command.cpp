@@ -806,7 +806,7 @@ void Command::displayVersionInfo() const
     validateDependenciesVersion();
     std::cout << utility::io::executeCommand(std::format(
         "tput rev ; echo '{}{}{}' ; tput sgr0 ; echo ; echo '{}' ; echo 'Built with {} for {} on {}.'",
-        getIconBanner(),
+        createIconBanner(),
 #ifndef NDEBUG
         "            DEBUG VERSION ",
 #else
@@ -873,7 +873,7 @@ try
 #ifndef NDEBUG
     LOG_DBG << "Enter console mode.";
 #endif // NDEBUG
-    std::cout << utility::io::executeCommand("tput bel ; echo '" + getIconBanner() + "' ; sleep 0.1s") << std::flush;
+    std::cout << utility::io::executeCommand("tput bel ; echo '" + createIconBanner() + "' ; sleep 0.1s") << std::flush;
     auto tcpClient = std::make_shared<utility::socket::TCPSocket>();
     launchClient(tcpClient);
     const char* const userEnv = std::getenv("USER");
@@ -1069,14 +1069,15 @@ void Command::validateDependenciesVersion() const
     }
 }
 
-std::string Command::getIconBanner()
+std::string Command::createIconBanner()
 {
-    return std::format(
-        "{}{}{}{}{}",
-        R"(  ______   ______     ______    \n)",
-        R"( /\  ___\ /\  __ \   /\  __ \   \n)",
-        R"( \ \  __\ \ \ \/\ \  \ \ \/\ \  \n)",
-        R"(  \ \_\    \ \_____\  \ \_____\ \n)",
-        R"(   \/_/     \/_____/   \/_____/ \n)");
+    std::string banner{};
+    banner += R"(  ______   ______     ______    \n)";
+    banner += R"( /\  ___\ /\  __ \   /\  __ \   \n)";
+    banner += R"( \ \  __\ \ \ \/\ \  \ \ \/\ \  \n)";
+    banner += R"(  \ \_\    \ \_____\  \ \_____\ \n)";
+    banner += R"(   \/_/     \/_____/   \/_____/ \n)";
+
+    return banner;
 }
 } // namespace application::command

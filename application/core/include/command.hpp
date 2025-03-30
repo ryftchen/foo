@@ -360,9 +360,9 @@ private:
     static void interactionLatency();
     //! @brief Validate dependencies version.
     void validateDependenciesVersion() const;
-    //! @brief Get ASCII banner text.
+    //! @brief Create the ASCII banner text.
     //! @return ASCII banner text content
-    static std::string getIconBanner();
+    static std::string createIconBanner();
 };
 } // namespace command
 } // namespace application
