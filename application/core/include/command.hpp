@@ -308,6 +308,28 @@ private:
     LocalNotifier defaultNotifier{};
     //! @brief Forward messages for extra type tasks.
     action::MessageForwarder applyingForwarder{};
+    //! @brief Alias for the pair of the sub-cli name and the sub-cli version.
+    using RelVerPair = std::pair<std::string, std::string>;
+    //! @brief Mapping hash value for the related versions.
+    struct RelVerHash
+    {
+        //! @brief The operator (()) overloading of RelVerHash class.
+        //! @param pair - pair of the sub-cli name and the sub-cli version
+        //! @return hash value
+        std::size_t operator()(const RelVerPair& pair) const
+        {
+            const std::size_t hash1 = std::hash<std::string>()(pair.first),
+                              hash2 = std::hash<std::string>()(pair.second);
+            constexpr std::size_t magicNumber = 0x9e3779b9, leftShift = 6, rightShift = 2;
+            std::size_t seed = 0;
+            seed ^= hash1 + magicNumber + (seed << leftShift) + (seed >> rightShift);
+            seed ^= hash2 + magicNumber + (seed << leftShift) + (seed >> rightShift);
+
+            return seed;
+        }
+    };
+    //! @brief Mapping table of related versions. Fill as needed.
+    std::unordered_multimap<RelVerPair, std::string, RelVerHash> relatedVersions{};
 
     //! @brief Go to console mode for troubleshooting.
     static void enterConsoleMode();
