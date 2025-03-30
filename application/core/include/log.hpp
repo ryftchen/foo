@@ -98,54 +98,54 @@ constexpr std::string_view codeFileRegex = R"(\[[^ ]+\.(c|h|cc|hh|cpp|hpp|tpp|cx
 constexpr std::string_view sourceDirectory = R"(/foo/)";
 //! @brief Debug level prefix with color. Include ANSI escape codes.
 constexpr auto debugLevelPrefixWithColor = utility::common::concatString<
-    utility::common::colorBlue,
-    utility::common::colorBold,
-    utility::common::colorForBackground,
+    utility::common::escColorBlue,
+    utility::common::escFontBold,
+    utility::common::escBgColor,
     debugLevelPrefix,
-    utility::common::colorOff>;
+    utility::common::escOff>;
 //! @brief Info level prefix with color. Include ANSI escape codes.
 constexpr auto infoLevelPrefixWithColor = utility::common::concatString<
-    utility::common::colorGreen,
-    utility::common::colorBold,
-    utility::common::colorForBackground,
+    utility::common::escColorGreen,
+    utility::common::escFontBold,
+    utility::common::escBgColor,
     infoLevelPrefix,
-    utility::common::colorOff>;
+    utility::common::escOff>;
 //! @brief Warning level prefix with color. Include ANSI escape codes.
 constexpr auto warningLevelPrefixWithColor = utility::common::concatString<
-    utility::common::colorYellow,
-    utility::common::colorBold,
-    utility::common::colorForBackground,
+    utility::common::escColorYellow,
+    utility::common::escFontBold,
+    utility::common::escBgColor,
     warningLevelPrefix,
-    utility::common::colorOff>;
+    utility::common::escOff>;
 //! @brief Error level prefix with color. Include ANSI escape codes.
 constexpr auto errorLevelPrefixWithColor = utility::common::concatString<
-    utility::common::colorRed,
-    utility::common::colorBold,
-    utility::common::colorForBackground,
+    utility::common::escColorRed,
+    utility::common::escFontBold,
+    utility::common::escBgColor,
     errorLevelPrefix,
-    utility::common::colorOff>;
+    utility::common::escOff>;
 //! @brief Trace level prefix with color. Include ANSI escape codes.
 constexpr auto traceLevelPrefixWithColor = utility::common::concatString<
-    utility::common::colorInverse,
-    utility::common::colorBold,
-    utility::common::colorForBackground,
+    utility::common::escFontInverse,
+    utility::common::escFontBold,
+    utility::common::escBgColor,
     traceLevelPrefix,
-    utility::common::colorOff>;
+    utility::common::escOff>;
 //! @brief Base color of the date time. Include ANSI escape codes.
 constexpr auto dateTimeBaseColor = utility::common::concatString<
-    utility::common::colorForForeground,
-    utility::common::colorBold,
-    utility::common::colorDim,
-    utility::common::colorForBackground>;
+    utility::common::escFgColor,
+    utility::common::escFontBold,
+    utility::common::escFontDim,
+    utility::common::escBgColor>;
 //! @brief Base color of the code file. Include ANSI escape codes.
 constexpr auto codeFileBaseColor = utility::common::concatString<
-    utility::common::colorForForeground,
-    utility::common::colorBold,
-    utility::common::colorUnderline,
-    utility::common::colorForBackground>;
+    utility::common::escFgColor,
+    utility::common::escFontBold,
+    utility::common::escFontUnderline,
+    utility::common::escBgColor>;
 //! @brief Base color of the history cache. Include ANSI escape codes.
 constexpr auto historyCacheBaseColor = utility::common::
-    concatString<utility::common::colorInverse, utility::common::colorItalic, utility::common::colorForBackground>;
+    concatString<utility::common::escFontInverse, utility::common::escFontItalic, utility::common::escBgColor>;
 
 //! @brief Logger.
 class Log final : public utility::fsm::FSM<Log>

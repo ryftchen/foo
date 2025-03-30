@@ -382,14 +382,14 @@ class Task:
             len(str(self.total_steps)) * 2 + len(" / ") + Output.stat_cont_len_excl_cmd,
         )
         Output.refresh_status(
-            Output.color["blue"], f"CASE: {f'{command}':<{align_len - Output.stat_cont_len_excl_cmd}} # START "
+            Output.esc_color["blue"], f"CASE: {f'{command}':<{align_len - Output.stat_cont_len_excl_cmd}} # START "
         )
 
         stdout, stderr, return_code = common.execute_command(full_cmd, enter)
         if len(stdout.strip()) == 0 or stderr or return_code != 0:
             print(f"\n[STDOUT]\n{stdout}\n[STDERR]\n{stderr}\n[RETURN CODE]\n{return_code}")
             Output.refresh_status(
-                Output.color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
+                Output.esc_color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
             )
         else:
             stdout = stdout.expandtabs()
@@ -398,21 +398,21 @@ class Task:
             if any(sub in stdout for sub in self.suspicious_output):
                 self.passed_steps -= 1
                 Output.refresh_status(
-                    Output.color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
+                    Output.esc_color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
                 )
             elif self.stored_options["chk"]["mem"]:
                 self.convert_valgrind_output(command, align_len)
 
         self.complete_steps += 1
         Output.refresh_status(
-            Output.color["blue"], f"CASE: {f'{command}':<{align_len - Output.stat_cont_len_excl_cmd}} # FINISH"
+            Output.esc_color["blue"], f"CASE: {f'{command}':<{align_len - Output.stat_cont_len_excl_cmd}} # FINISH"
         )
 
         stat = "SUCCESS" if self.passed_steps == self.complete_steps else "PARTIAL"
         stat_color = (
-            Output.color["yellow"]
+            Output.esc_color["yellow"]
             if stat != "SUCCESS" or self.complete_steps != self.total_steps
-            else Output.color["green"]
+            else Output.esc_color["green"]
         )
         Output.refresh_status(
             stat_color,
@@ -585,13 +585,13 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
                 Path(f"{case_path}_inst_2/case_name").write_text(command, encoding="utf-8")
             self.passed_steps -= 1
             Output.refresh_status(
-                Output.color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
+                Output.esc_color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
             )
         elif inst_num == 0 or inst_num > 2 or len(stderr) != 0:
             self.passed_steps -= 1
             print("\n[CHECK MEMORY]\nUnsupported valgrind output xml file content.")
             Output.refresh_status(
-                Output.color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
+                Output.esc_color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
             )
 
     def format_run_log(self):
@@ -600,7 +600,7 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
             fcntl.flock(run_log.fileno(), fcntl.LOCK_EX)
             old_content = run_log.read()
             fcntl.flock(run_log.fileno(), fcntl.LOCK_UN)
-        new_content = re.sub(Output.color_esc_regex, "", old_content)
+        new_content = re.sub(Output.esc_regex_pattern, "", old_content)
         with open(self.log_file, "wt", encoding="utf-8") as run_log:
             fcntl.flock(run_log.fileno(), fcntl.LOCK_EX)
             run_log.write(new_content)
@@ -754,11 +754,11 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
 
 
 class Output:
-    color = {"red": "\033[0;31;40m", "green": "\033[0;32;40m", "yellow": "\033[0;33;40m", "blue": "\033[0;34;40m"}
-    color_bg = "\033[49m"
-    color_bold = "\033[1m"
-    color_off = "\033[0m"
-    color_esc_regex = r"((\033\[.*?(m|s|u|A|J))|(\007|\017))"
+    esc_color = {"red": "\033[0;31;40m", "green": "\033[0;32;40m", "yellow": "\033[0;33;40m", "blue": "\033[0;34;40m"}
+    esc_bg_color = "\033[49m"
+    esc_font_bold = "\033[1m"
+    esc_off = "\033[0m"
+    esc_regex_pattern = r"((\033\[.*?(m|s|u|A|J))|(\007|\017))"
     stat_min_cont_len = 55
     stat_cont_len_excl_cmd = 15
     tbl_min_key_width = 15
@@ -770,10 +770,10 @@ class Output:
         sys.exit(1)
 
     @classmethod
-    def refresh_status(cls, color_fg, content):
+    def refresh_status(cls, esc_fg_color, content):
         print(
-            f"""{color_fg}{cls.color_bold}{cls.color_bg}[ {datetime.strftime(datetime.now(), "%b %d %H:%M:%S")} \
-# {content} ]{cls.color_off}"""
+            f"""{esc_fg_color}{cls.esc_font_bold}{cls.esc_bg_color}\
+[ {datetime.strftime(datetime.now(), "%b %d %H:%M:%S")} # {content} ]{cls.esc_off}"""
         )
 
     @classmethod

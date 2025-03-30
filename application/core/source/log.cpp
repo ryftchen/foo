@@ -392,7 +392,7 @@ void Log::startLogging()
     const std::lock_guard<std::recursive_mutex> cacheLock(cacheMtx);
     while (!unprocessedCache.empty())
     {
-        std::cout << historyCacheBaseColor.data() + unprocessedCache.front() + utility::common::colorOff.data()
+        std::cout << historyCacheBaseColor.data() + unprocessedCache.front() + utility::common::escOff.data()
                   << std::endl;
         unprocessedCache.pop_front();
     }
@@ -559,8 +559,7 @@ std::string& changeToLogStyle(std::string& line)
     {
         if (std::regex_search(line, match, segment))
         {
-            line =
-                match.prefix().str() + scheme + match.str() + utility::common::colorOff.data() + match.suffix().str();
+            line = match.prefix().str() + scheme + match.str() + utility::common::escOff.data() + match.suffix().str();
         }
     }
 
