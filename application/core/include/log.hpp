@@ -26,42 +26,42 @@
 //! @brief Log with debug level.
 #define LOG_DBG application::log::Log::Holder<application::log::Log::OutputLevel::debug>().stream()
 //! @brief Log with debug level (printf style).
-#define LOG_DBG_P(fmt, ...)              \
-    application::log::Log::legacyOutput( \
+#define LOG_DBG_P(fmt, ...)             \
+    application::log::Log::printfStyle( \
         application::log::Log::OutputLevel::debug, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with debug level (format style).
-#define LOG_DBG_F(fmt, ...)              \
-    application::log::Log::modernOutput( \
+#define LOG_DBG_F(fmt, ...)             \
+    application::log::Log::formatStyle( \
         application::log::Log::OutputLevel::debug, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with info level.
 #define LOG_INF application::log::Log::Holder<application::log::Log::OutputLevel::info>().stream()
 //! @brief Log with info level (printf style).
-#define LOG_INF_P(fmt, ...)              \
-    application::log::Log::legacyOutput( \
+#define LOG_INF_P(fmt, ...)             \
+    application::log::Log::printfStyle( \
         application::log::Log::OutputLevel::info, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with info level (format style).
-#define LOG_INF_F(fmt, ...)              \
-    application::log::Log::modernOutput( \
+#define LOG_INF_F(fmt, ...)             \
+    application::log::Log::formatStyle( \
         application::log::Log::OutputLevel::info, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with warning level.
 #define LOG_WRN application::log::Log::Holder<application::log::Log::OutputLevel::warning>().stream()
 //! @brief Log with warning level (printf style).
-#define LOG_WRN_P(fmt, ...)              \
-    application::log::Log::legacyOutput( \
+#define LOG_WRN_P(fmt, ...)             \
+    application::log::Log::printfStyle( \
         application::log::Log::OutputLevel::warning, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with warning level (format style).
-#define LOG_WRN_F(fmt, ...)              \
-    application::log::Log::modernOutput( \
+#define LOG_WRN_F(fmt, ...)             \
+    application::log::Log::formatStyle( \
         application::log::Log::OutputLevel::warning, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with error level.
 #define LOG_ERR application::log::Log::Holder<application::log::Log::OutputLevel::error>().stream()
 //! @brief Log with error level (printf style).
-#define LOG_ERR_P(fmt, ...)              \
-    application::log::Log::legacyOutput( \
+#define LOG_ERR_P(fmt, ...)             \
+    application::log::Log::printfStyle( \
         application::log::Log::OutputLevel::error, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with error level (format style).
-#define LOG_ERR_F(fmt, ...)              \
-    application::log::Log::modernOutput( \
+#define LOG_ERR_F(fmt, ...)             \
+    application::log::Log::formatStyle( \
         application::log::Log::OutputLevel::error, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 
 //! @brief The application module.
@@ -254,7 +254,7 @@ public:
     //! @param format - log format to be flushed
     //! @param args - arguments of log format
     template <typename... Args>
-    static void legacyOutput(
+    static void printfStyle(
         const OutputLevel severity,
         const std::string_view srcFile,
         const std::uint32_t srcLine,
@@ -268,7 +268,7 @@ public:
     //! @param format - log format to be flushed
     //! @param args - arguments of log format
     template <typename... Args>
-    static void modernOutput(
+    static void formatStyle(
         const OutputLevel severity,
         const std::string_view srcFile,
         const std::uint32_t srcLine,
@@ -284,7 +284,7 @@ public:
         //! @param srcLoc - current source location
         explicit Holder(const std::source_location& srcLoc = std::source_location::current()) : location{srcLoc} {}
         //! @brief Destroy the Holder object.
-        virtual ~Holder() { legacyOutput(Lv, location.file_name(), location.line(), output.str()); }
+        virtual ~Holder() { printfStyle(Lv, location.file_name(), location.line(), output.str()); }
 
         //! @brief Get the output stream for flushing.
         //! @return reference of the output stream object, which is on string based
@@ -460,7 +460,7 @@ protected:
 };
 
 template <typename... Args>
-void Log::legacyOutput(
+void Log::printfStyle(
     const OutputLevel severity,
     const std::string_view srcFile,
     const std::uint32_t srcLine,
@@ -481,7 +481,7 @@ void Log::legacyOutput(
 }
 
 template <typename... Args>
-void Log::modernOutput(
+void Log::formatStyle(
     const OutputLevel severity,
     const std::string_view srcFile,
     const std::uint32_t srcLine,
