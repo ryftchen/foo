@@ -739,7 +739,7 @@ void View::printSharedMemory(const int shmId, const bool withoutPaging)
         {
             std::cout << line << '\n';
         }
-        std::cout << utility::common::colorOff << std::flush;
+        std::cout << utility::common::escOff << std::flush;
     }
     else
     {
@@ -801,7 +801,7 @@ void View::segmentedOutput(const std::string_view buffer)
         }
     }
 
-    std::cout << utility::common::colorOff << std::flush;
+    std::cout << utility::common::escOff << std::flush;
     if (lineNum > terminalRows)
     {
         std::cout << std::endl;

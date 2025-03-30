@@ -7,9 +7,9 @@ declare -r COMP_CMD="compile_commands.json"
 declare -r BASH_RC=".bashrc"
 declare SUDO=""
 declare STATUS=0
-declare -rA STATUS_COLOR=([exec]="\033[0;33;40m\033[1m\033[49m" [succ]="\033[0;32;40m\033[1m\033[49m"
+declare -rA ESC_COLOR=([exec]="\033[0;33;40m\033[1m\033[49m" [succ]="\033[0;32;40m\033[1m\033[49m"
     [fail]="\033[0;31;40m\033[1m\033[49m" [time]="\033[0;39;40m\033[1m\033[2m\033[49m")
-declare -r STATUS_COLOR_OFF="\033[0m"
+declare -r ESC_OFF="\033[0m"
 declare -A ARGS=([help]=false [assume]=false [dry]=false [initialize]=false [clean]=false [install]=false
     [uninstall]=false [container]=false [archive]=false [test]=false [release]=false [hook]=false [spell]=false
     [statistics]=false [format]=false [lint]=false [query]=false [doxygen]=false [browser]=false)
@@ -34,16 +34,16 @@ function die()
 function shell_command()
 {
     if [[ ${ARGS[dry]} != false ]]; then
-        printf "${STATUS_COLOR[exec]}[ exec ] ${STATUS_COLOR[time]}$(date "+%b %d %T")${STATUS_COLOR_OFF} $ %s\n" "$*"
+        printf "${ESC_COLOR[exec]}[ exec ] ${ESC_COLOR[time]}$(date "+%b %d %T")${ESC_OFF} $ %s\n" "$*"
         echo
         return
     fi
 
-    printf "${STATUS_COLOR[exec]}[ exec ] ${STATUS_COLOR[time]}$(date "+%b %d %T")${STATUS_COLOR_OFF} $ %s\n" "$*"
+    printf "${ESC_COLOR[exec]}[ exec ] ${ESC_COLOR[time]}$(date "+%b %d %T")${ESC_OFF} $ %s\n" "$*"
     if shell "$@"; then
-        printf "${STATUS_COLOR[succ]}[ succ ] ${STATUS_COLOR[time]}$(date "+%b %d %T")${STATUS_COLOR_OFF} $ %s\n" "$*"
+        printf "${ESC_COLOR[succ]}[ succ ] ${ESC_COLOR[time]}$(date "+%b %d %T")${ESC_OFF} $ %s\n" "$*"
     else
-        printf "${STATUS_COLOR[fail]}[ fail ] ${STATUS_COLOR[time]}$(date "+%b %d %T")${STATUS_COLOR_OFF} $ %s\n" "$*"
+        printf "${ESC_COLOR[fail]}[ fail ] ${ESC_COLOR[time]}$(date "+%b %d %T")${ESC_OFF} $ %s\n" "$*"
         STATUS=1
     fi
     echo
