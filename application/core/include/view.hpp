@@ -94,7 +94,7 @@ public:
 
         //! @brief Get the supported options.
         //! @return supported options
-        [[nodiscard]] inline const auto& getSupportedOptions() const noexcept { return inst.supportedOptions; }
+        [[nodiscard]] inline auto getSupportedOptions() const noexcept { return inst.supportedOptions; }
         //! @brief Get the TCP server host address.
         //! @return TCP server host address
         [[nodiscard]] inline std::string getTCPHost() const noexcept { return inst.tcpHost; }
@@ -125,34 +125,81 @@ private:
     {
     }
 
-    //! @brief Alias for the lock mode.
-    using LockMode = utility::common::ReadWriteLock::LockMode;
     //! @brief Timeout period (ms) to waiting for the viewer to change to the target state.
     const std::uint32_t timeoutPeriod{static_cast<std::uint32_t>(configure::detail::helperTimeout())};
-    //! @brief Alias for the attribute of the target option.
-    struct OptionAttr
+    //! @brief Option attribute.
+    struct OptBase
     {
-        //! @brief Alias for the functor to build the TLV packet.
-        using BuildFunctor = int (*)(const std::vector<std::string>&, char*);
-        //! @brief Help prompt.
-        const std::string prompt{};
-        //! @brief Build functor.
-        const BuildFunctor functor{};
+        //! @brief The option arguments.
+        const std::vector<std::string> args{};
     };
+    //! @brief Option attribute for the depend option.
+    struct OptDepend : public OptBase
+    {
+        //! @brief The option name.
+        static constexpr std::string_view name{"depend"};
+        //! @brief The option prompt.
+        static constexpr std::string_view prompt{"list all associated libraries"};
+    };
+    //! @brief Option attribute for the execute option.
+    struct OptExecute : public OptBase
+    {
+        //! @brief The option name.
+        static constexpr std::string_view name{"execute"};
+        //! @brief The option prompt.
+        static constexpr std::string_view prompt{"enter bash commands in quotes [inputs: 'CMD']"};
+    };
+    //! @brief Option attribute for the journal option.
+    struct OptJournal : public OptBase
+    {
+        //! @brief The option name.
+        static constexpr std::string_view name{"journal"};
+        //! @brief The option prompt.
+        static constexpr std::string_view prompt{"view the log with highlights"};
+    };
+    //! @brief Option attribute for the monitor option.
+    struct OptMonitor : public OptBase
+    {
+        //! @brief The option name.
+        static constexpr std::string_view name{"monitor"};
+        //! @brief The option prompt.
+        static constexpr std::string_view prompt{"query process status and stacks [inputs: NUM]"};
+    };
+    //! @brief Option attribute for the profile option.
+    struct OptProfile : public OptBase
+    {
+        //! @brief The option name.
+        static constexpr std::string_view name{"profile"};
+        //! @brief The option prompt.
+        static constexpr std::string_view prompt{"display current configuration"};
+    };
+    //! @brief Option type object's helper type for the visitor.
+    //! @tparam Ts - type of visitors
+    template <typename... Ts>
+    struct OptionVisitor : Ts...
+    {
+        using Ts::operator()...;
+    };
+    //! @brief Explicit deduction guide for OptionVisitor.
+    //! @tparam Ts - type of visitors
+    template <typename... Ts>
+    OptionVisitor(Ts...) -> OptionVisitor<Ts...>;
+    //! @brief Alias for the option type.
+    using OptionType = std::variant<OptBase, OptDepend, OptExecute, OptJournal, OptMonitor, OptProfile>;
     //! @brief Alias for the map of option name and OptionAttr.
-    using OptionMap = std::map<std::string, OptionAttr>;
+    using OptionMap = std::map<std::string_view, std::string_view>;
     // clang-format off
     //! @brief Mapping table of all viewer options.
     const OptionMap supportedOptions
     {
-        // - Option -+---------------------- Help ----------------------+------- Build Packet -------
-        // ----------+--------------------------------------------------+----------------------------
-        { "depend"   , { "list all associated libraries"                 , &buildTLVPacket4Depend  }},
-        { "execute"  , { "enter bash commands in quotes [inputs: 'CMD']" , &buildTLVPacket4Execute }},
-        { "journal"  , { "view the log with highlights"                  , &buildTLVPacket4Journal }},
-        { "monitor"  , { "query process status and stacks [inputs: NUM]" , &buildTLVPacket4Monitor }},
-        { "profile"  , { "display current configuration"                 , &buildTLVPacket4Profile }}
-        // ----------+--------------------------------------------------+----------------------------
+        // ---- Option ----+-------- Help --------
+        // ----------------+----------------------
+        { OptDepend::name  , OptDepend::prompt  },
+        { OptExecute::name , OptExecute::prompt },
+        { OptJournal::name , OptJournal::prompt },
+        { OptMonitor::name , OptMonitor::prompt },
+        { OptProfile::name , OptProfile::prompt }
+        // ----------------+----------------------
     };
     // clang-format on
     //! @brief Maximum size of the shared memory.
@@ -174,6 +221,16 @@ private:
     const std::string udpHost{"localhost"};
     //! @brief UDP server port number.
     const std::uint16_t udpPort{61502};
+    //! @brief Alias for the lock mode.
+    using LockMode = utility::common::ReadWriteLock::LockMode;
+    //! @brief Build the response message.
+    //! @param reqPlaintext - plaintext of the request
+    //! @param respBuffer - buffer to store the response
+    static void buildResponse(const std::string_view reqPlaintext, char* respBuffer);
+    //! @brief Extract the option from the request.
+    //! @param reqPlaintext - plaintext of the request
+    //! @return option type
+    static OptionType extractOption(const std::string_view reqPlaintext);
     //! @brief Split string by space.
     //! @param str - target string
     //! @return strings after split
@@ -343,7 +400,7 @@ namespace info
 {
 //! @brief Get the current supported viewer options.
 //! @return current supported viewer options
-inline const auto& viewerSupportedOptions()
+inline auto viewerSupportedOptions()
 {
     return View::Access().getSupportedOptions();
 }

@@ -894,7 +894,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
         triggerHelper<Helper>(ExtEvent::reload);
         triggerHelper<Helper>(ExtEvent::startup);
     };
-    const auto asyncSender = [&client](const console::Console::Args& inputs)
+    const auto asyncReqSender = [&client](const console::Console::Args& inputs)
     {
         using RetCode = console::Console::RetCode;
         auto retCode = RetCode::success;
@@ -965,9 +965,9 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
             interactionLatency();
             return retCode;
         });
-    for (const auto& [name, attr] : view::info::viewerSupportedOptions())
+    for (const auto& [name, prompt] : view::info::viewerSupportedOptions())
     {
-        session.registerOption(name, attr.prompt, asyncSender);
+        session.registerOption(name, prompt, asyncReqSender);
     }
 }
 
