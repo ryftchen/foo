@@ -311,8 +311,6 @@ private:
     {
     }
 
-    //! @brief Alias for the lock mode.
-    using LockMode = utility::common::ReadWriteLock::LockMode;
     //! @brief Timeout period (ms) to waiting for the logger to change to the target state.
     const std::uint32_t timeoutPeriod{static_cast<std::uint32_t>(configure::detail::helperTimeout())};
     //! @brief The queue of logs.
@@ -344,6 +342,8 @@ private:
     //! @brief Mutex for controlling cache.
     std::recursive_mutex cacheMtx{};
 
+    //! @brief Alias for the lock mode.
+    using LockMode = utility::common::ReadWriteLock::LockMode;
     //! @brief Flush log to queue.
     //! @param severity - level of severity
     //! @param srcFile - current code file

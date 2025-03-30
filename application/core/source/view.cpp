@@ -414,6 +414,52 @@ void View::Access::disableWait() const
     inst.outputCond.notify_one();
 }
 
+void View::buildResponse(const std::string_view reqPlaintext, char* respBuffer)
+{
+    std::visit(
+        OptionVisitor{
+            [&respBuffer](const OptDepend& opt) { buildTLVPacket4Depend(opt.args, respBuffer); },
+            [&respBuffer](const OptExecute& opt) { buildTLVPacket4Execute(opt.args, respBuffer); },
+            [&respBuffer](const OptJournal& opt) { buildTLVPacket4Journal(opt.args, respBuffer); },
+            [&respBuffer](const OptMonitor& opt) { buildTLVPacket4Monitor(opt.args, respBuffer); },
+            [&respBuffer](const OptProfile& opt) { buildTLVPacket4Profile(opt.args, respBuffer); },
+            [](const auto& opt)
+            {
+                // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
+                if (auto* optPtr = const_cast<std::remove_const_t<std::remove_reference_t<decltype(opt)>>*>(&opt);
+                    nullptr != dynamic_cast<OptBase*>(optPtr))
+                {
+                    throw std::runtime_error{"Unknown option type (" + std::string{typeid(opt).name()} + ")."};
+                }
+            }},
+        extractOption(reqPlaintext));
+}
+
+View::OptionType View::extractOption(const std::string_view reqPlaintext)
+{
+    auto args = splitString(reqPlaintext);
+    const auto option = args.at(0);
+    args.erase(args.cbegin());
+    switch (utility::common::bkdrHash(option.c_str()))
+    {
+        using utility::common::operator""_bkdrHash;
+        case operator""_bkdrHash(OptDepend::name.data()):
+            return OptDepend{};
+        case operator""_bkdrHash(OptExecute::name.data()):
+            return OptExecute{std::move(args)};
+        case operator""_bkdrHash(OptJournal::name.data()):
+            return OptJournal{};
+        case operator""_bkdrHash(OptMonitor::name.data()):
+            return OptMonitor{std::move(args)};
+        case operator""_bkdrHash(OptProfile::name.data()):
+            return OptProfile{};
+        default:
+            break;
+    }
+
+    return {};
+}
+
 std::vector<std::string> View::splitString(const std::string_view str)
 {
     std::vector<std::string> split{};
@@ -839,10 +885,10 @@ template <>
 void View::renewServer<utility::socket::TCPServer>()
 {
     tcpServer = std::make_shared<utility::socket::TCPServer>();
-    tcpServer->onNewConnection = [this](const std::shared_ptr<utility::socket::TCPSocket> newSocket)
+    tcpServer->onNewConnection = [](const std::shared_ptr<utility::socket::TCPSocket> newSocket)
     {
         std::weak_ptr<utility::socket::TCPSocket> weakSock = newSocket;
-        newSocket->onMessageReceived = [this, weakSock](const std::string_view message)
+        newSocket->onMessageReceived = [weakSock](const std::string_view message)
         {
             if (message.empty())
             {
@@ -858,8 +904,8 @@ void View::renewServer<utility::socket::TCPServer>()
             char respBuffer[1024] = {'\0'};
             try
             {
-                const auto plaintext = utility::common::base64Decode(message);
-                if (plaintext == exitSymbol)
+                const auto reqPlaintext = utility::common::base64Decode(message);
+                if (reqPlaintext == exitSymbol)
                 {
                     buildTLVPacket4Stop(respBuffer);
                     newSocket->toSend(respBuffer, sizeof(respBuffer));
@@ -867,14 +913,7 @@ void View::renewServer<utility::socket::TCPServer>()
                     return;
                 }
 
-                auto args = splitString(plaintext);
-                const auto optIter = supportedOptions.find(args.at(0));
-                if (supportedOptions.cend() == optIter)
-                {
-                    throw std::runtime_error{"Dropped unknown request message from TCP client."};
-                }
-                args.erase(args.cbegin());
-                optIter->second.functor(args, respBuffer);
+                buildResponse(reqPlaintext, respBuffer);
                 newSocket->toSend(respBuffer, sizeof(respBuffer));
             }
             catch (const std::exception& err)
@@ -903,24 +942,15 @@ void View::renewServer<utility::socket::UDPServer>()
         char respBuffer[1024] = {'\0'};
         try
         {
-            const auto plaintext = utility::common::base64Decode(message);
-            if (plaintext == exitSymbol)
+            const auto reqPlaintext = utility::common::base64Decode(message);
+            if (reqPlaintext == exitSymbol)
             {
                 buildTLVPacket4Stop(respBuffer);
                 udpServer->toSendTo(respBuffer, sizeof(respBuffer), ip, port);
                 return;
             }
 
-            auto args = splitString(plaintext);
-            const auto optIter = supportedOptions.find(args.at(0));
-            if (supportedOptions.cend() == optIter)
-            {
-                throw std::runtime_error{
-                    "Dropped unknown request message from " + std::string{ip} + ':' + std::to_string(port)
-                    + " UDP client."};
-            }
-            args.erase(args.cbegin());
-            optIter->second.functor(args, respBuffer);
+            buildResponse(reqPlaintext, respBuffer);
             udpServer->toSendTo(respBuffer, sizeof(respBuffer), ip, port);
         }
         catch (const std::exception& err)
