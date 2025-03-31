@@ -804,20 +804,25 @@ void Command::dumpConfiguration()
 void Command::displayVersionInfo() const
 {
     validateDependenciesVersion();
-    std::cout << utility::io::executeCommand(std::format(
-        "tput rev ; echo '{}{}{}' ; tput sgr0 ; echo ; echo '{}' ; echo 'Built with {} for {} on {}.'",
-        createIconBanner(),
+
+    const auto version = std::format(
 #ifndef NDEBUG
-        "            DEBUG VERSION ",
+                   "{}{}{}            DEBUG VERSION {} {}\n",
 #else
-        "          RELEASE VERSION ",
+                   "{}{}{}          RELEASE VERSION {} {}\n",
 #endif // NDEBUG
-        mainCLI.version() + ' ',
-        note::copyright(),
-        note::compiler(),
-        note::processor(),
-        note::buildDate()))
-              << std::flush;
+                   utility::common::escFontInverse,
+                   utility::common::escBgColor,
+                   createIconBanner(),
+                   mainCLI.version(),
+                   utility::common::escOff),
+               copyright = std::format(
+                   "{}\nBuilt with {} for {} on {}.\n",
+                   note::copyright(),
+                   note::compiler(),
+                   note::processor(),
+                   note::buildDate());
+    std::cout << version << copyright << std::flush;
 }
 
 void Command::checkForExcessiveArguments()
@@ -873,7 +878,9 @@ try
 #ifndef NDEBUG
     LOG_DBG << "Enter console mode.";
 #endif // NDEBUG
-    std::cout << utility::io::executeCommand("tput bel ; echo '" + createIconBanner() + "' ; sleep 0.1s") << std::flush;
+    interactionLatency();
+    std::cout << createIconBanner() << std::endl;
+
     auto tcpClient = std::make_shared<utility::socket::TCPSocket>();
     launchClient(tcpClient);
     const char* const userEnv = std::getenv("USER");
@@ -1069,15 +1076,14 @@ void Command::validateDependenciesVersion() const
     }
 }
 
-std::string Command::createIconBanner()
+constexpr std::string_view Command::createIconBanner()
 {
-    std::string banner{};
-    banner += R"(  ______   ______     ______    \n)";
-    banner += R"( /\  ___\ /\  __ \   /\  __ \   \n)";
-    banner += R"( \ \  __\ \ \ \/\ \  \ \ \/\ \  \n)";
-    banner += R"(  \ \_\    \ \_____\  \ \_____\ \n)";
-    banner += R"(   \/_/     \/_____/   \/_____/ \n)";
-
-    return banner;
+    // clang-format off
+    return R"(  ______   ______     ______    )""\n"
+           R"( /\  ___\ /\  __ \   /\  __ \   )""\n"
+           R"( \ \  __\ \ \ \/\ \  \ \ \/\ \  )""\n"
+           R"(  \ \_\    \ \_____\  \ \_____\ )""\n"
+           R"(   \/_/     \/_____/   \/_____/ )""\n";
+    // clang-format on
 }
 } // namespace application::command
