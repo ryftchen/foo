@@ -874,13 +874,10 @@ try
         std::cout << "exit" << std::endl;
         return;
     }
-
-#ifndef NDEBUG
     LOG_DBG << "Enter console mode.";
-#endif // NDEBUG
+
     interactionLatency();
     std::cout << createIconBanner() << std::endl;
-
     auto tcpClient = std::make_shared<utility::socket::TCPSocket>();
     launchClient(tcpClient);
     const char* const userEnv = std::getenv("USER");
@@ -911,13 +908,11 @@ try
         interactionLatency();
     }
     while (RetCode::quit != retCode);
-
     tcpClient->toSend(buildExitRequest4Client());
     tcpClient->waitIfAlive();
     interactionLatency();
-#ifndef NDEBUG
+
     LOG_DBG << "Exit console mode.";
-#endif // NDEBUG
 }
 catch (const std::exception& err)
 {
