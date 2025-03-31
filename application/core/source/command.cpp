@@ -731,7 +731,7 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
         }
         catch (const std::exception& err)
         {
-            LOG_WRN_F("Received response message from TCP server. {}", err.what());
+            LOG_WRN << err.what();
         }
         disableWait4Client();
     };
@@ -744,7 +744,7 @@ template <>
 void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::socket::UDPSocket>& client)
 {
     client->onRawMessageReceived =
-        [&client](char* buffer, const int length, const std::string_view ip, const std::uint16_t port)
+        [&client](char* buffer, const int length, const std::string_view /*ip*/, const std::uint16_t /*port*/)
     {
         try
         {
@@ -755,7 +755,7 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
         }
         catch (const std::exception& err)
         {
-            LOG_WRN_F("Received response message from {}:{} UDP server. {}", ip, port, err.what());
+            LOG_WRN << err.what();
         }
         disableWait4Client();
     };
@@ -961,7 +961,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
             {
                 gracefulReset.template operator()<log::Log>();
 
-                LOG_INF << "Refreshed the outputs.";
+                LOG_INF_F("Refreshed the {} outputs.", log::Log::name);
             }
             catch (const std::exception& err)
             {
@@ -988,7 +988,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
 
                 client = std::make_shared<T>();
                 launchClient(client);
-                LOG_INF << "Reconnected to the servers.";
+                LOG_INF_F("Reconnected to the {} servers.", view::View::name);
             }
             catch (const std::exception& err)
             {
