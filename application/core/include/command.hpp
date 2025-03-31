@@ -362,7 +362,7 @@ private:
     void validateDependenciesVersion() const;
     //! @brief Create the ASCII banner text.
     //! @return ASCII banner text content
-    static std::string createIconBanner();
+    static constexpr std::string_view createIconBanner();
 };
 } // namespace command
 } // namespace application
