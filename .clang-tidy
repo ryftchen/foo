@@ -163,13 +163,13 @@ CheckOptions:
   - key: performance-inefficient-string-concatenation.StrictMode
     value: '1'
   - key: readability-function-cognitive-complexity.Threshold
-    value: '25'
+    value: '20'
   - key: readability-function-cognitive-complexity.IgnoreMacros
     value: 'true'
   - key: readability-function-size.BranchThreshold
     value: '10'
   - key: readability-function-size.LineThreshold
-    value: '200'
+    value: '100'
   - key: readability-function-size.ParameterThreshold
     value: '7'
   - key: readability-function-size.StatementThreshold

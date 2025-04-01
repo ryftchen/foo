@@ -442,20 +442,24 @@ Node* deleteNode(AVLTree tree, const Node* const z)
     if (z->key < tree->key)
     {
         tree->left = deleteNode(tree->left, z);
-        if (2 == (getHeight(tree->right) - getHeight(tree->left)))
+        if ((getHeight(tree->right) - getHeight(tree->left)) != 2)
         {
-            const Node* const r = tree->right;
-            tree = (getHeight(r->left) > getHeight(r->right)) ? rightLeftRotation(tree) : rightRightRotation(tree);
+            return tree;
         }
+
+        const Node* const r = tree->right;
+        tree = (getHeight(r->left) > getHeight(r->right)) ? rightLeftRotation(tree) : rightRightRotation(tree);
     }
     else if (z->key > tree->key)
     {
         tree->right = deleteNode(tree->right, z);
-        if (2 == (getHeight(tree->left) - getHeight(tree->right)))
+        if ((getHeight(tree->left) - getHeight(tree->right)) != 2)
         {
-            const Node* const l = tree->left;
-            tree = (getHeight(l->right) > getHeight(l->left)) ? leftRightRotation(tree) : leftLeftRotation(tree);
+            return tree;
         }
+
+        const Node* const l = tree->left;
+        tree = (getHeight(l->right) > getHeight(l->left)) ? leftRightRotation(tree) : leftLeftRotation(tree);
     }
     else if (tree->left && tree->right)
     {
@@ -512,7 +516,7 @@ Node* avlTreeInsert(AVLTree tree, const Type key)
     else if (key < tree->key)
     {
         tree->left = avlTreeInsert(tree->left, key);
-        if (2 == (getHeight(tree->left) - getHeight(tree->right)))
+        if ((getHeight(tree->left) - getHeight(tree->right)) == 2)
         {
             tree = (key < tree->left->key) ? leftLeftRotation(tree) : leftRightRotation(tree);
         }
@@ -520,7 +524,7 @@ Node* avlTreeInsert(AVLTree tree, const Type key)
     else if (key > tree->key)
     {
         tree->right = avlTreeInsert(tree->right, key);
-        if (2 == (getHeight(tree->right) - getHeight(tree->left)))
+        if ((getHeight(tree->right) - getHeight(tree->left)) == 2)
         {
             tree = (key > tree->right->key) ? rightRightRotation(tree) : rightLeftRotation(tree);
         }
@@ -750,24 +754,23 @@ Node* splayTreeSplay(SplayTree tree, const Type key)
     }
 
     Node n{}, *l = nullptr, *r = nullptr;
-    for (n.left = n.right = nullptr, l = r = &n;;)
+    n.left = n.right = nullptr;
+    l = r = &n;
+    while (key != tree->key)
     {
         if (key < tree->key)
         {
-            if (nullptr == tree->left)
-            {
-                break;
-            }
-            else if (key < tree->left->key)
+            if ((nullptr != tree->left) && (key < tree->left->key))
             {
                 Node* c = tree->left;
                 tree->left = c->right;
                 c->right = tree;
                 tree = c;
-                if (nullptr == tree->left)
-                {
-                    break;
-                }
+            }
+
+            if (nullptr == tree->left)
+            {
+                break;
             }
             r->left = tree;
             r = tree;
@@ -775,28 +778,21 @@ Node* splayTreeSplay(SplayTree tree, const Type key)
         }
         else if (key > tree->key)
         {
-            if (nullptr == tree->right)
-            {
-                break;
-            }
-            else if (key > tree->right->key)
+            if ((nullptr != tree->right) && (key > tree->right->key))
             {
                 Node* c = tree->right;
                 tree->right = c->left;
                 c->left = tree;
                 tree = c;
-                if (nullptr == tree->right)
-                {
-                    break;
-                }
+            }
+
+            if (nullptr == tree->right)
+            {
+                break;
             }
             l->right = tree;
             l = tree;
             tree = tree->right;
-        }
-        else
-        {
-            break;
         }
     }
 
