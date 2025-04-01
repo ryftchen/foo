@@ -172,8 +172,8 @@ private:
     void frontEndHandler(const int argc, const char* const argv[]);
     //! @brief Back-end handler for performing the specific tasks.
     void backEndHandler();
-    //! @brief Pre-check the native type or extra type task.
-    void preCheck();
+    //! @brief Precheck the native type or extra type task.
+    void precheck();
     //! @brief Check whether any type tasks exist.
     //! @return any type tasks exist or do not exist
     bool anySelected() const;
