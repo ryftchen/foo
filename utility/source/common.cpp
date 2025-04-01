@@ -142,11 +142,11 @@ std::string base64Decode(const std::string_view data)
 }
 // NOLINTEND(readability-magic-numbers)
 
-//! @brief Format as a string.
+//! @brief Format as a string (printf style).
 //! @param fmt - null-terminated multibyte string specifying how to interpret the data
 //! @param ... - arguments
 //! @return string after formatting
-std::string formatString(const char* const fmt, ...)
+std::string printfString(const char* const fmt, ...)
 {
     std::va_list list{};
     ::va_start(list, fmt);

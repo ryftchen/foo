@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <condition_variable>
 #include <cstring>
+#include <format>
 #include <shared_mutex>
 
 //! @brief Do stringify for internal use.
@@ -83,7 +84,18 @@ inline constexpr std::size_t operator""_bkdrHash(const char* str) noexcept
 
 extern std::string base64Encode(const std::string_view data);
 extern std::string base64Decode(const std::string_view data);
-extern std::string formatString(const char* const fmt, ...);
+
+extern std::string printfString(const char* const fmt, ...);
+//! @brief Format as a string (format style).
+//! @tparam Args - type of arguments
+//! @param fmt - null-terminated multibyte string specifying how to interpret the data
+//! @param args - arguments
+//! @return string after formatting
+template <typename... Args>
+inline std::string formatString(const std::string_view fmt, Args&&... args)
+{
+    return std::vformat(fmt, std::make_format_args(args...));
+}
 
 //! @brief Compare whether two strings are equal.
 //! @param str1 - string 1
