@@ -52,6 +52,7 @@ words:
   - optmulti
   - PDEATHSIG
   - pgrep
+  - precheck
   - profdata
   - profraw
   - pylintrc

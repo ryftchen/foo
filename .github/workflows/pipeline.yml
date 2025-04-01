@@ -32,7 +32,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.1.0
 
-      - name: Pre-check
+      - name: Precheck
         run: |
           ./script/build.sh --hook --spell --statistics
           git status
