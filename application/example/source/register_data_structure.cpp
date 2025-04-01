@@ -40,17 +40,17 @@ template <>
 void updateChoice<LinearInstance>(const std::string_view target)
 {
     constexpr auto category = Category::linear;
-    auto& bits = getCategoryOpts<category>();
+    auto& bits = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.data()))
     {
-        case abbrVal(LinearInstance::linkedList):
+        case abbrValue(LinearInstance::linkedList):
             bits.set(LinearInstance::linkedList);
             break;
-        case abbrVal(LinearInstance::stack):
+        case abbrValue(LinearInstance::stack):
             bits.set(LinearInstance::stack);
             break;
-        case abbrVal(LinearInstance::queue):
+        case abbrValue(LinearInstance::queue):
             bits.set(LinearInstance::queue);
             break;
         default:
@@ -82,17 +82,17 @@ template <>
 void updateChoice<TreeInstance>(const std::string_view target)
 {
     constexpr auto category = Category::tree;
-    auto& bits = getCategoryOpts<category>();
+    auto& bits = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.data()))
     {
-        case abbrVal(TreeInstance::binarySearch):
+        case abbrValue(TreeInstance::binarySearch):
             bits.set(TreeInstance::binarySearch);
             break;
-        case abbrVal(TreeInstance::adelsonVelskyLandis):
+        case abbrValue(TreeInstance::adelsonVelskyLandis):
             bits.set(TreeInstance::adelsonVelskyLandis);
             break;
-        case abbrVal(TreeInstance::splay):
+        case abbrValue(TreeInstance::splay):
             bits.set(TreeInstance::splay);
             break;
         default:

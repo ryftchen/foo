@@ -810,7 +810,7 @@ void View::segmentedOutput(const std::string_view buffer)
 
 std::string View::logContentsPreview()
 {
-    utility::common::ReadWriteGuard guard(log::info::loggerFileLock(), LockMode::read);
+    utility::common::LockGuard guard(log::info::loggerFileLock(), LockMode::read);
     constexpr std::uint16_t maxRows = 24 * 100;
     auto contents = utility::io::getFileContents(log::info::loggerFilePath(), false, true, maxRows);
     std::for_each(contents.begin(), contents.end(), [](auto& line) { return log::changeToLogStyle(line); });

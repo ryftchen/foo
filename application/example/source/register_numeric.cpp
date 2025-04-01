@@ -40,20 +40,20 @@ template <>
 void updateChoice<ArithmeticMethod>(const std::string_view target)
 {
     constexpr auto category = Category::arithmetic;
-    auto& bits = getCategoryOpts<category>();
+    auto& bits = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.data()))
     {
-        case abbrVal(ArithmeticMethod::addition):
+        case abbrValue(ArithmeticMethod::addition):
             bits.set(ArithmeticMethod::addition);
             break;
-        case abbrVal(ArithmeticMethod::subtraction):
+        case abbrValue(ArithmeticMethod::subtraction):
             bits.set(ArithmeticMethod::subtraction);
             break;
-        case abbrVal(ArithmeticMethod::multiplication):
+        case abbrValue(ArithmeticMethod::multiplication):
             bits.set(ArithmeticMethod::multiplication);
             break;
-        case abbrVal(ArithmeticMethod::division):
+        case abbrValue(ArithmeticMethod::division):
             bits.set(ArithmeticMethod::division);
             break;
         default:
@@ -85,14 +85,14 @@ template <>
 void updateChoice<DivisorMethod>(const std::string_view target)
 {
     constexpr auto category = Category::divisor;
-    auto& bits = getCategoryOpts<category>();
+    auto& bits = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.data()))
     {
-        case abbrVal(DivisorMethod::euclidean):
+        case abbrValue(DivisorMethod::euclidean):
             bits.set(DivisorMethod::euclidean);
             break;
-        case abbrVal(DivisorMethod::stein):
+        case abbrValue(DivisorMethod::stein):
             bits.set(DivisorMethod::stein);
             break;
         default:
@@ -124,23 +124,23 @@ template <>
 void updateChoice<IntegralMethod>(const std::string_view target)
 {
     constexpr auto category = Category::integral;
-    auto& bits = getCategoryOpts<category>();
+    auto& bits = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.data()))
     {
-        case abbrVal(IntegralMethod::trapezoidal):
+        case abbrValue(IntegralMethod::trapezoidal):
             bits.set(IntegralMethod::trapezoidal);
             break;
-        case abbrVal(IntegralMethod::simpson):
+        case abbrValue(IntegralMethod::simpson):
             bits.set(IntegralMethod::simpson);
             break;
-        case abbrVal(IntegralMethod::romberg):
+        case abbrValue(IntegralMethod::romberg):
             bits.set(IntegralMethod::romberg);
             break;
-        case abbrVal(IntegralMethod::gauss):
+        case abbrValue(IntegralMethod::gauss):
             bits.set(IntegralMethod::gauss);
             break;
-        case abbrVal(IntegralMethod::monteCarlo):
+        case abbrValue(IntegralMethod::monteCarlo):
             bits.set(IntegralMethod::monteCarlo);
             break;
         default:
@@ -172,14 +172,14 @@ template <>
 void updateChoice<PrimeMethod>(const std::string_view target)
 {
     constexpr auto category = Category::prime;
-    auto& bits = getCategoryOpts<category>();
+    auto& bits = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.data()))
     {
-        case abbrVal(PrimeMethod::eratosthenes):
+        case abbrValue(PrimeMethod::eratosthenes):
             bits.set(PrimeMethod::eratosthenes);
             break;
-        case abbrVal(PrimeMethod::euler):
+        case abbrValue(PrimeMethod::euler):
             bits.set(PrimeMethod::euler);
             break;
         default:
