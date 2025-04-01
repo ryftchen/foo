@@ -29,7 +29,6 @@ thread_local constinit Console* currentSession = nullptr;
 Console::Console(const std::string_view greeting) : terminal{std::make_unique<Terminal>(greeting)}
 {
     ::rl_attempted_completion_function = &Console::getOptionCompleter;
-
     setDefaultOptions();
 }
 
@@ -82,6 +81,7 @@ Console::RetCode Console::fileExecutor(const std::string_view filename)
 
     std::string input{};
     std::uint32_t counter = 0;
+    std::ostringstream out{};
     while (std::getline(batch, input))
     {
         if (input.empty() || ('#' == input.front()))
@@ -90,9 +90,10 @@ Console::RetCode Console::fileExecutor(const std::string_view filename)
         }
 
         ++counter;
-        std::ostringstream out{};
         out << '#' << counter << ' ' << input << '\n';
         std::cout << out.str() << std::flush;
+        out.str("");
+        out.clear();
         if (const auto result = optionExecutor(input); RetCode::success != result)
         {
             return result;
@@ -147,7 +148,6 @@ void Console::setDefaultOptions()
                     .first.length();
 
             std::ostringstream out{};
-            out << "console option:\n\n";
             for (const auto& [option, help] : pairs)
             {
                 out << std::setiosflags(std::ios_base::left) << std::setw(align) << option << "    " << help

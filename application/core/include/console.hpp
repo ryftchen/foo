@@ -100,10 +100,10 @@ private:
         //! @return reference of the Terminal object
         Terminal& operator=(Terminal&&) = delete;
 
-        //! @brief Alias for the map of option and callback in console.
-        using RegisteredOption = std::unordered_map<std::string, std::pair<std::string, Callback>>;
         //! @brief Greeting information.
         std::string greeting{};
+        //! @brief Alias for the map of option and callback in console.
+        using RegisteredOption = std::unordered_map<std::string, std::pair<std::string, Callback>>;
         //! @brief Mapping table of all registered options.
         RegisteredOption regTable{};
         //! @brief Register order.

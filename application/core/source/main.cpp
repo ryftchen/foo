@@ -27,19 +27,6 @@ volatile std::sig_atomic_t alarmInterrupted = 0;
 volatile std::sig_atomic_t childInterrupted = 0;
 } // namespace
 
-//! @brief Parent process signal handler for the SIGALRM signal.
-//! @param sig - signal type
-static void setAlarmInterrupted(const int sig)
-{
-    alarmInterrupted = sig;
-}
-//! @brief Parent process signal handler for the SIGCHLD signal.
-//! @param sig - signal type
-static void setChildInterrupted(const int sig)
-{
-    childInterrupted = sig;
-}
-
 //! @brief The run function.
 //! @param argc - argument count
 //! @param argv - argument vector
@@ -73,8 +60,8 @@ catch (const std::exception& err)
 //! @return 0 if successful, otherwise 1
 static int watchdog(const ::pid_t pid)
 {
-    std::signal(SIGALRM, application::setAlarmInterrupted);
-    std::signal(SIGCHLD, application::setChildInterrupted);
+    std::signal(SIGALRM, [](const int sig) { application::alarmInterrupted = sig; });
+    std::signal(SIGCHLD, [](const int sig) { application::childInterrupted = sig; });
 
     constexpr std::uint8_t timeout = 60;
     ::alarm(timeout);
@@ -84,7 +71,8 @@ static int watchdog(const ::pid_t pid)
         if (::waitpid(pid, nullptr, WNOHANG) == 0)
         {
             ::kill(pid, SIGKILL);
-            std::cerr << application::executableName() << ": Kill the child process due to timeout." << std::endl;
+            std::cerr << application::executableName() << ": Kill the child process (" << pid << ") due to timeout."
+                      << std::endl;
         }
         return EXIT_FAILURE;
     }
