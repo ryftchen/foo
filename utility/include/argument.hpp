@@ -817,6 +817,14 @@ private:
     //! @brief Parse all input arguments for internal.
     //! @param rawArguments - container of all raw arguments
     void parseArgsInternal(const std::vector<std::string>& rawArguments);
+    //! @brief Process the registered argument.
+    //! @tparam Iterator - type of argument iterator
+    //! @param current - current argument iterator
+    //! @param end - end argument iterator
+    //! @param argName - target argument name
+    //! @return argument iterator between current and end
+    template <typename Iterator>
+    Iterator processRegisteredArgument(Iterator current, Iterator end, const std::string_view argName) const;
     //! @brief Get the length of the longest argument.
     //! @return length of the longest argument
     [[nodiscard]] std::size_t getLengthOfLongestArgument() const;
@@ -882,6 +890,38 @@ inline auto Argument::isSubCommandUsed(const std::string_view subCommandName) co
 inline auto Argument::isSubCommandUsed(const Argument& subParser) const
 {
     return isSubCommandUsed(subParser.titleName);
+}
+
+template <typename Iterator>
+Iterator Argument::processRegisteredArgument(Iterator current, Iterator end, const std::string_view argName) const
+{
+    if (const auto argMapIter = argumentMap.find(argName); argumentMap.cend() != argMapIter)
+    {
+        const auto argument = argMapIter->second;
+        current = argument->consume(std::next(current), end, argMapIter->first);
+    }
+    else if (const auto& compoundArg = argName; (compoundArg.length() > 1) && isValidPrefixChar(compoundArg.at(0))
+             && !isValidPrefixChar(compoundArg.at(1)))
+    {
+        ++current;
+        for (std::size_t i = 1; i < compoundArg.length(); ++i)
+        {
+            const auto hypotheticalArg = std::string{'-', compoundArg.at(i)};
+            if (const auto argMapIter2 = argumentMap.find(hypotheticalArg); argumentMap.cend() != argMapIter2)
+            {
+                auto argument = argMapIter2->second;
+                current = argument->consume(current, end, argMapIter2->first);
+                continue;
+            }
+            throw std::runtime_error{"Unknown argument: " + std::string{argName} + '.'};
+        }
+    }
+    else
+    {
+        throw std::runtime_error{"Unknown argument: " + std::string{argName} + '.'};
+    }
+
+    return current;
 }
 } // namespace argument
 } // namespace utility

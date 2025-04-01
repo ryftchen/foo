@@ -518,52 +518,25 @@ void Argument::parseArgsInternal(const std::vector<std::string>& rawArguments)
         const auto& currentArg = *iterator;
         if (Register::checkIfPositional(currentArg, prefixChars))
         {
-            if (positionalArgs.cend() == positionalArgIter)
+            if (positionalArgs.cend() != positionalArgIter)
             {
-                const std::string_view maybeCommand = currentArg;
-                if (const auto subParserIter = subParserMap.find(maybeCommand); subParserMap.cend() != subParserIter)
-                {
-                    const auto unprocessedArguments = std::vector<std::string>(iterator, ending);
-                    isParsed = true;
-                    subParserUsed[maybeCommand] = true;
-                    return subParserIter->second->get().parseArgs(unprocessedArguments);
-                }
-
-                throw std::runtime_error{"Maximum number of positional arguments exceeded."};
+                const auto argument = positionalArgIter++;
+                iterator = argument->consume(iterator, ending);
+                continue;
             }
 
-            const auto argument = positionalArgIter++;
-            iterator = argument->consume(iterator, ending);
-            continue;
+            const std::string_view maybeCommand = currentArg;
+            if (const auto subParserIter = subParserMap.find(maybeCommand); subParserMap.cend() != subParserIter)
+            {
+                const auto unprocessedArgs = std::vector<std::string>(iterator, ending);
+                isParsed = true;
+                subParserUsed[maybeCommand] = true;
+                return subParserIter->second->get().parseArgs(unprocessedArgs);
+            }
+            throw std::runtime_error{"Maximum number of positional arguments exceeded."};
         }
 
-        if (const auto argMapIter = argumentMap.find(currentArg); argumentMap.cend() != argMapIter)
-        {
-            const auto argument = argMapIter->second;
-            iterator = argument->consume(std::next(iterator), ending, argMapIter->first);
-        }
-        else if (const auto& compoundArg = currentArg; (compoundArg.length() > 1)
-                 && isValidPrefixChar(compoundArg.at(0)) && !isValidPrefixChar(compoundArg.at(1)))
-        {
-            ++iterator;
-            for (std::size_t i = 1; i < compoundArg.length(); ++i)
-            {
-                const auto hypotheticalArg = std::string{'-', compoundArg.at(i)};
-                if (const auto argMapIter2 = argumentMap.find(hypotheticalArg); argumentMap.cend() != argMapIter2)
-                {
-                    auto argument = argMapIter2->second;
-                    iterator = argument->consume(iterator, ending, argMapIter2->first);
-                }
-                else
-                {
-                    throw std::runtime_error{"Unknown argument: " + currentArg + '.'};
-                }
-            }
-        }
-        else
-        {
-            throw std::runtime_error{"Unknown argument: " + currentArg + '.'};
-        }
+        iterator = processRegisteredArgument(iterator, ending, currentArg);
     }
     isParsed = true;
 }

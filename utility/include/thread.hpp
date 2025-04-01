@@ -51,6 +51,9 @@ private:
     std::condition_variable producer{};
     //! @brief Flag for ready release.
     std::atomic<bool> releaseReady{false};
+
+    //! @brief The work loop.
+    void workLoop();
 };
 
 template <typename Func, typename... Args>

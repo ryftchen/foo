@@ -167,6 +167,14 @@ static JSON parseArray(const std::string_view fmt, std::size_t& offset)
     return array;
 }
 
+//! @brief Check whether it is a hexadecimal character.
+//! @param c - character
+//! @return be a hexadecimal character or not
+static bool isHexCharacter(const char c)
+{
+    return ((c >= '0') && (c <= '9')) || ((c >= 'a') && (c <= 'f')) || ((c >= 'A') && (c <= 'F'));
+}
+
 //! @brief Parse string in JSON.
 //! @param fmt - formatted string
 //! @param offset - data offset
@@ -209,16 +217,13 @@ static JSON parseString(const std::string_view fmt, std::size_t& offset)
                     for (std::uint8_t i = 1; i <= 4; ++i)
                     {
                         c = fmt.at(offset + i);
-                        if (((c >= '0') && (c <= '9')) || ((c >= 'a') && (c <= 'f')) || ((c >= 'A') && (c <= 'F')))
-                        {
-                            val += c;
-                        }
-                        else
+                        if (!isHexCharacter(c))
                         {
                             throw std::runtime_error{
                                 "JSON string: Expected hex character in unicode escape, found '" + std::string{c}
                                 + "'."};
                         }
+                        val += c;
                     }
                     offset += 4;
                     break;
