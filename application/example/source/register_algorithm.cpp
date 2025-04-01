@@ -40,23 +40,23 @@ template <>
 void updateChoice<MatchMethod>(const std::string_view target)
 {
     constexpr auto category = Category::match;
-    auto& bits = getCategoryOpts<category>();
+    auto& bits = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.data()))
     {
-        case abbrVal(MatchMethod::rabinKarp):
+        case abbrValue(MatchMethod::rabinKarp):
             bits.set(MatchMethod::rabinKarp);
             break;
-        case abbrVal(MatchMethod::knuthMorrisPratt):
+        case abbrValue(MatchMethod::knuthMorrisPratt):
             bits.set(MatchMethod::knuthMorrisPratt);
             break;
-        case abbrVal(MatchMethod::boyerMoore):
+        case abbrValue(MatchMethod::boyerMoore):
             bits.set(MatchMethod::boyerMoore);
             break;
-        case abbrVal(MatchMethod::horspool):
+        case abbrValue(MatchMethod::horspool):
             bits.set(MatchMethod::horspool);
             break;
-        case abbrVal(MatchMethod::sunday):
+        case abbrValue(MatchMethod::sunday):
             bits.set(MatchMethod::sunday);
             break;
         default:
@@ -88,14 +88,14 @@ template <>
 void updateChoice<NotationMethod>(const std::string_view target)
 {
     constexpr auto category = Category::notation;
-    auto& bits = getCategoryOpts<category>();
+    auto& bits = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.data()))
     {
-        case abbrVal(NotationMethod::prefix):
+        case abbrValue(NotationMethod::prefix):
             bits.set(NotationMethod::prefix);
             break;
-        case abbrVal(NotationMethod::postfix):
+        case abbrValue(NotationMethod::postfix):
             bits.set(NotationMethod::postfix);
             break;
         default:
@@ -127,26 +127,26 @@ template <>
 void updateChoice<OptimalMethod>(const std::string_view target)
 {
     constexpr auto category = Category::optimal;
-    auto& bits = getCategoryOpts<category>();
+    auto& bits = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.data()))
     {
-        case abbrVal(OptimalMethod::gradient):
+        case abbrValue(OptimalMethod::gradient):
             bits.set(OptimalMethod::gradient);
             break;
-        case abbrVal(OptimalMethod::tabu):
+        case abbrValue(OptimalMethod::tabu):
             bits.set(OptimalMethod::tabu);
             break;
-        case abbrVal(OptimalMethod::annealing):
+        case abbrValue(OptimalMethod::annealing):
             bits.set(OptimalMethod::annealing);
             break;
-        case abbrVal(OptimalMethod::particle):
+        case abbrValue(OptimalMethod::particle):
             bits.set(OptimalMethod::particle);
             break;
-        case abbrVal(OptimalMethod::ant):
+        case abbrValue(OptimalMethod::ant):
             bits.set(OptimalMethod::ant);
             break;
-        case abbrVal(OptimalMethod::genetic):
+        case abbrValue(OptimalMethod::genetic):
             bits.set(OptimalMethod::genetic);
             break;
         default:
@@ -178,17 +178,17 @@ template <>
 void updateChoice<SearchMethod>(const std::string_view target)
 {
     constexpr auto category = Category::search;
-    auto& bits = getCategoryOpts<category>();
+    auto& bits = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.data()))
     {
-        case abbrVal(SearchMethod::binary):
+        case abbrValue(SearchMethod::binary):
             bits.set(SearchMethod::binary);
             break;
-        case abbrVal(SearchMethod::interpolation):
+        case abbrValue(SearchMethod::interpolation):
             bits.set(SearchMethod::interpolation);
             break;
-        case abbrVal(SearchMethod::fibonacci):
+        case abbrValue(SearchMethod::fibonacci):
             bits.set(SearchMethod::fibonacci);
             break;
         default:
@@ -220,38 +220,38 @@ template <>
 void updateChoice<SortMethod>(const std::string_view target)
 {
     constexpr auto category = Category::sort;
-    auto& bits = getCategoryOpts<category>();
+    auto& bits = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.data()))
     {
-        case abbrVal(SortMethod::bubble):
+        case abbrValue(SortMethod::bubble):
             bits.set(SortMethod::bubble);
             break;
-        case abbrVal(SortMethod::selection):
+        case abbrValue(SortMethod::selection):
             bits.set(SortMethod::selection);
             break;
-        case abbrVal(SortMethod::insertion):
+        case abbrValue(SortMethod::insertion):
             bits.set(SortMethod::insertion);
             break;
-        case abbrVal(SortMethod::shell):
+        case abbrValue(SortMethod::shell):
             bits.set(SortMethod::shell);
             break;
-        case abbrVal(SortMethod::merge):
+        case abbrValue(SortMethod::merge):
             bits.set(SortMethod::merge);
             break;
-        case abbrVal(SortMethod::quick):
+        case abbrValue(SortMethod::quick):
             bits.set(SortMethod::quick);
             break;
-        case abbrVal(SortMethod::heap):
+        case abbrValue(SortMethod::heap):
             bits.set(SortMethod::heap);
             break;
-        case abbrVal(SortMethod::counting):
+        case abbrValue(SortMethod::counting):
             bits.set(SortMethod::counting);
             break;
-        case abbrVal(SortMethod::bucket):
+        case abbrValue(SortMethod::bucket):
             bits.set(SortMethod::bucket);
             break;
-        case abbrVal(SortMethod::radix):
+        case abbrValue(SortMethod::radix):
             bits.set(SortMethod::radix);
             break;
         default:

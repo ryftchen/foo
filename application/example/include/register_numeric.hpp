@@ -411,7 +411,7 @@ inline consteval std::string_view toString()
 //! @tparam Cat - the specific value of Category enum
 //! @return reference of the category bit flags
 template <Category Cat>
-inline constexpr auto& getCategoryOpts()
+inline constexpr auto& categoryOpts()
 {
     return std::invoke(TypeInfo<ApplyNumeric>::fields.find(REFLECTION_STR(toString<Cat>())).value, manager());
 }
@@ -420,7 +420,7 @@ inline constexpr auto& getCategoryOpts()
 //! @param method - target method
 //! @return abbreviation value
 template <typename T>
-inline consteval std::size_t abbrVal(const T method)
+inline consteval std::size_t abbrValue(const T method)
 {
     static_assert(Bottom<T>::value == TypeInfo<T>::fields.size);
     std::size_t value = 0;

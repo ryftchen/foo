@@ -276,7 +276,7 @@ inline consteval std::string_view toString()
 //! @tparam Cat - the specific value of Category enum
 //! @return reference of the category bit flags
 template <Category Cat>
-inline constexpr auto& getCategoryOpts()
+inline constexpr auto& categoryOpts()
 {
     return std::invoke(TypeInfo<ApplyDataStructure>::fields.find(REFLECTION_STR(toString<Cat>())).value, manager());
 }
@@ -285,7 +285,7 @@ inline constexpr auto& getCategoryOpts()
 //! @param instance - target instance
 //! @return abbreviation value
 template <typename T>
-inline consteval std::size_t abbrVal(const T instance)
+inline consteval std::size_t abbrValue(const T instance)
 {
     static_assert(Bottom<T>::value == TypeInfo<T>::fields.size);
     std::size_t value = 0;

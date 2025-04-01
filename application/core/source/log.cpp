@@ -362,7 +362,7 @@ void Log::backUpLogFileIfNeeded() const
 
 void Log::openLogFile()
 {
-    utility::common::ReadWriteGuard guard(fileLock, LockMode::write);
+    utility::common::LockGuard guard(fileLock, LockMode::write);
     tryCreateLogFolder();
     backUpLogFileIfNeeded();
     switch (writeMode)
@@ -380,7 +380,7 @@ void Log::openLogFile()
 
 void Log::closeLogFile()
 {
-    utility::common::ReadWriteGuard guard(fileLock, LockMode::write);
+    utility::common::LockGuard guard(fileLock, LockMode::write);
     logWriter.unlock();
     logWriter.close();
 }
@@ -475,7 +475,7 @@ void Log::awaitNotification2Log()
             break;
         }
 
-        utility::common::ReadWriteGuard guard(fileLock, LockMode::write);
+        utility::common::LockGuard guard(fileLock, LockMode::write);
         while (!logQueue.empty())
         {
             switch (targetType)

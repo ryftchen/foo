@@ -37,12 +37,12 @@ namespace application::app_num
 {
 using namespace reg_num; // NOLINT(google-build-using-namespace)
 
-//! @brief Get the title of a particular method in numeric choices.
+//! @brief Make the title of a particular method in numeric choices.
 //! @tparam T - type of target method
 //! @param method - target method
 //! @return initial capitalized title
 template <typename T>
-static std::string getTitle(const T method)
+static std::string makeTitle(const T method)
 {
     std::string title(toString(method));
     title.at(0) = std::toupper(title.at(0));
@@ -50,9 +50,9 @@ static std::string getTitle(const T method)
     return title;
 }
 
-//! @brief Get the task name curried.
-//! @return task name curried
-static const auto& taskNameCurried()
+//! @brief Get the curried task name.
+//! @return curried task name
+static const auto& curriedTaskName()
 {
     static const auto curried = utility::currying::curry(configure::task::presetName, TypeInfo<ApplyNumeric>::name);
     return curried;
@@ -62,7 +62,7 @@ static const auto& taskNameCurried()
 //! @tparam Cat - the specific value of Category enum
 //! @return alias of the category name
 template <Category Cat>
-static consteval std::string_view getCategoryAlias()
+static consteval std::string_view categoryAlias()
 {
     constexpr auto attr =
         TypeInfo<ApplyNumeric>::fields.find(REFLECTION_STR(toString<Cat>())).attrs.find(REFLECTION_STR("alias"));
@@ -81,7 +81,7 @@ namespace arithmetic
 static void showResult(
     const ArithmeticMethod method, const std::int32_t result, const std::int32_t a, const std::int32_t b, const char op)
 {
-    std::printf("\n==> %-14s Method <==\n(%d) %c (%d) = %d\n", getTitle(method).c_str(), a, op, b, result);
+    std::printf("\n==> %-14s Method <==\n(%d) %c (%d) = %d\n", makeTitle(method).c_str(), a, op, b, result);
 }
 
 void ArithmeticSolution::additionMethod(const std::int32_t augend, const std::int32_t addend)
@@ -133,7 +133,7 @@ catch (const std::exception& err)
 void applyingArithmetic(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::arithmetic;
-    const auto& bits = getCategoryOpts<category>();
+    const auto& bits = categoryOpts<category>();
     if (bits.none())
     {
         return;
@@ -145,7 +145,7 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
-    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+    const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
         [threads, &inputs, &taskNamer](
             const std::string_view subTask, void (*targetMethod)(const std::int32_t, const std::int32_t))
@@ -158,16 +158,16 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using arithmetic::ArithmeticSolution;
-            case abbrVal(ArithmeticMethod::addition):
+            case abbrValue(ArithmeticMethod::addition):
                 addTask(target, &ArithmeticSolution::additionMethod);
                 break;
-            case abbrVal(ArithmeticMethod::subtraction):
+            case abbrValue(ArithmeticMethod::subtraction):
                 addTask(target, &ArithmeticSolution::subtractionMethod);
                 break;
-            case abbrVal(ArithmeticMethod::multiplication):
+            case abbrValue(ArithmeticMethod::multiplication):
                 addTask(target, &ArithmeticSolution::multiplicationMethod);
                 break;
-            case abbrVal(ArithmeticMethod::division):
+            case abbrValue(ArithmeticMethod::division):
                 addTask(target, &ArithmeticSolution::divisionMethod);
                 break;
             default:
@@ -191,7 +191,7 @@ static void showResult(const DivisorMethod method, const std::set<std::int32_t>&
     std::vector<char> arrayBuffer(arrayBufferSize + 1);
     std::printf(
         "\n==> %-9s Method <==\n%s\nrun time: %8.5f ms\n",
-        getTitle(method).c_str(),
+        makeTitle(method).c_str(),
         InputBuilder::template spliceAllIntegers<std::int32_t>(result, arrayBuffer.data(), arrayBufferSize + 1),
         interval);
 }
@@ -225,7 +225,7 @@ catch (const std::exception& err)
 void applyingDivisor(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::divisor;
-    const auto& bits = getCategoryOpts<category>();
+    const auto& bits = categoryOpts<category>();
     if (bits.none())
     {
         return;
@@ -237,7 +237,7 @@ void applyingDivisor(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
-    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+    const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
         [threads, &inputs, &taskNamer](const std::string_view subTask, void (*targetMethod)(std::int32_t, std::int32_t))
     { threads->enqueue(taskNamer(subTask), targetMethod, inputs->getIntegers().first, inputs->getIntegers().second); };
@@ -249,10 +249,10 @@ void applyingDivisor(const std::vector<std::string>& candidates)
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using divisor::DivisorSolution;
-            case abbrVal(DivisorMethod::euclidean):
+            case abbrValue(DivisorMethod::euclidean):
                 addTask(target, &DivisorSolution::euclideanMethod);
                 break;
-            case abbrVal(DivisorMethod::stein):
+            case abbrValue(DivisorMethod::stein):
                 addTask(target, &DivisorSolution::steinMethod);
                 break;
             default:
@@ -273,7 +273,7 @@ namespace integral
 static void showResult(const IntegralMethod method, const double result, const double interval)
 {
     std::printf(
-        "\n==> %-11s Method <==\nI(def)=%+.5f, run time: %8.5f ms\n", getTitle(method).c_str(), result, interval);
+        "\n==> %-11s Method <==\nI(def)=%+.5f, run time: %8.5f ms\n", makeTitle(method).c_str(), result, interval);
 }
 
 void IntegralSolution::trapezoidalMethod(const Expression& expr, const double lower, const double upper)
@@ -341,7 +341,7 @@ catch (const std::exception& err)
 void applyingIntegral(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::integral;
-    const auto& bits = getCategoryOpts<category>();
+    const auto& bits = categoryOpts<category>();
     if (bits.none())
     {
         return;
@@ -355,7 +355,7 @@ void applyingIntegral(const std::vector<std::string>& candidates)
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs =
         std::make_shared<InputBuilder>(Griewank{}, Griewank::range1, Griewank::range2, Griewank::exprDescr);
-    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+    const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
         [threads, &inputs, &taskNamer](
             const std::string_view subTask, void (*targetMethod)(const Expression&, const double, const double))
@@ -375,19 +375,19 @@ void applyingIntegral(const std::vector<std::string>& candidates)
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using integral::IntegralSolution;
-            case abbrVal(IntegralMethod::trapezoidal):
+            case abbrValue(IntegralMethod::trapezoidal):
                 addTask(target, &IntegralSolution::trapezoidalMethod);
                 break;
-            case abbrVal(IntegralMethod::simpson):
+            case abbrValue(IntegralMethod::simpson):
                 addTask(target, &IntegralSolution::adaptiveSimpsonMethod);
                 break;
-            case abbrVal(IntegralMethod::romberg):
+            case abbrValue(IntegralMethod::romberg):
                 addTask(target, &IntegralSolution::rombergMethod);
                 break;
-            case abbrVal(IntegralMethod::gauss):
+            case abbrValue(IntegralMethod::gauss):
                 addTask(target, &IntegralSolution::gaussLegendreMethod);
                 break;
-            case abbrVal(IntegralMethod::monteCarlo):
+            case abbrValue(IntegralMethod::monteCarlo):
                 addTask(target, &IntegralSolution::monteCarloMethod);
                 break;
             default:
@@ -411,7 +411,7 @@ static void showResult(const PrimeMethod method, const std::vector<std::uint32_t
     std::vector<char> arrayBuffer(arrayBufferSize + 1);
     std::printf(
         "\n==> %-9s Method <==\n%s\nrun time: %8.5f ms\n",
-        getTitle(method).c_str(),
+        makeTitle(method).c_str(),
         InputBuilder::template spliceAllIntegers<std::uint32_t>(result, arrayBuffer.data(), arrayBufferSize + 1),
         interval);
 }
@@ -445,7 +445,7 @@ catch (const std::exception& err)
 void applyingPrime(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::prime;
-    const auto& bits = getCategoryOpts<category>();
+    const auto& bits = categoryOpts<category>();
     if (bits.none())
     {
         return;
@@ -457,7 +457,7 @@ void applyingPrime(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(maxPositiveInteger);
-    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+    const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
         [threads, &inputs, &taskNamer](const std::string_view subTask, void (*targetMethod)(const std::uint32_t))
     { threads->enqueue(taskNamer(subTask), targetMethod, inputs->getMaxPositiveInteger()); };
@@ -469,10 +469,10 @@ void applyingPrime(const std::vector<std::string>& candidates)
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using prime::PrimeSolution;
-            case abbrVal(PrimeMethod::eratosthenes):
+            case abbrValue(PrimeMethod::eratosthenes):
                 addTask(target, &PrimeSolution::eratosthenesMethod);
                 break;
-            case abbrVal(PrimeMethod::euler):
+            case abbrValue(PrimeMethod::euler):
                 addTask(target, &PrimeSolution::eulerMethod);
                 break;
             default:

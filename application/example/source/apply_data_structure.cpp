@@ -37,12 +37,12 @@ namespace application::app_ds
 {
 using namespace reg_ds; // NOLINT(google-build-using-namespace)
 
-//! @brief Get the title of a particular instance in data structure choices.
+//! @brief Make the title of a particular instance in data structure choices.
 //! @tparam T - type of target instance
 //! @param instance - target instance
 //! @return initial capitalized title
 template <typename T>
-static std::string getTitle(const T instance)
+static std::string makeTitle(const T instance)
 {
     std::string title(toString(instance));
     title.at(0) = std::toupper(title.at(0));
@@ -50,9 +50,9 @@ static std::string getTitle(const T instance)
     return title;
 }
 
-//! @brief Get the task name curried.
-//! @return task name curried
-static const auto& taskNameCurried()
+//! @brief Get the curried task name.
+//! @return curried task name
+static const auto& curriedTaskName()
 {
     static const auto curried =
         utility::currying::curry(configure::task::presetName, TypeInfo<ApplyDataStructure>::name);
@@ -63,7 +63,7 @@ static const auto& taskNameCurried()
 //! @tparam Cat - the specific value of Category enum
 //! @return alias of the category name
 template <Category Cat>
-static consteval std::string_view getCategoryAlias()
+static consteval std::string_view categoryAlias()
 {
     constexpr auto attr =
         TypeInfo<ApplyDataStructure>::fields.find(REFLECTION_STR(toString<Cat>())).attrs.find(REFLECTION_STR("alias"));
@@ -78,7 +78,7 @@ namespace linear
 //! @param result - linear result
 static void showResult(const LinearInstance instance, const std::string_view result)
 {
-    std::printf("\n==> %-10s Instance <==\n%s", getTitle(instance).c_str(), result.data());
+    std::printf("\n==> %-10s Instance <==\n%s", makeTitle(instance).c_str(), result.data());
 }
 
 void LinearStructure::linkedListInstance()
@@ -119,7 +119,7 @@ catch (const std::exception& err)
 void applyingLinear(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::linear;
-    const auto& bits = getCategoryOpts<category>();
+    const auto& bits = categoryOpts<category>();
     if (bits.none())
     {
         return;
@@ -129,7 +129,7 @@ void applyingLinear(const std::vector<std::string>& candidates)
     APP_DS_PRINT_TASK_BEGIN_TITLE(category);
     auto& pooling = configure::task::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
-    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+    const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [threads, &taskNamer](const std::string_view subTask, void (*targetInstance)())
     { threads->enqueue(taskNamer(subTask), targetInstance); };
 
@@ -141,13 +141,13 @@ void applyingLinear(const std::vector<std::string>& candidates)
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using linear::LinearStructure;
-            case abbrVal(LinearInstance::linkedList):
+            case abbrValue(LinearInstance::linkedList):
                 addTask(target, &LinearStructure::linkedListInstance);
                 break;
-            case abbrVal(LinearInstance::stack):
+            case abbrValue(LinearInstance::stack):
                 addTask(target, &LinearStructure::stackInstance);
                 break;
-            case abbrVal(LinearInstance::queue):
+            case abbrValue(LinearInstance::queue):
                 addTask(target, &LinearStructure::queueInstance);
                 break;
             default:
@@ -166,7 +166,7 @@ namespace tree
 //! @param result - tree result
 static void showResult(const TreeInstance instance, const std::string_view result)
 {
-    std::printf("\n==> %-19s Instance <==\n%s", getTitle(instance).c_str(), result.data());
+    std::printf("\n==> %-19s Instance <==\n%s", makeTitle(instance).c_str(), result.data());
 }
 
 void TreeStructure::bsInstance()
@@ -207,7 +207,7 @@ catch (const std::exception& err)
 void applyingTree(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::tree;
-    const auto& bits = getCategoryOpts<category>();
+    const auto& bits = categoryOpts<category>();
     if (bits.none())
     {
         return;
@@ -217,7 +217,7 @@ void applyingTree(const std::vector<std::string>& candidates)
     APP_DS_PRINT_TASK_BEGIN_TITLE(category);
     auto& pooling = configure::task::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
-    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+    const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [threads, &taskNamer](const std::string_view subTask, void (*targetInstance)())
     { threads->enqueue(taskNamer(subTask), targetInstance); };
 
@@ -229,13 +229,13 @@ void applyingTree(const std::vector<std::string>& candidates)
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using tree::TreeStructure;
-            case abbrVal(TreeInstance::binarySearch):
+            case abbrValue(TreeInstance::binarySearch):
                 addTask(target, &TreeStructure::bsInstance);
                 break;
-            case abbrVal(TreeInstance::adelsonVelskyLandis):
+            case abbrValue(TreeInstance::adelsonVelskyLandis):
                 addTask(target, &TreeStructure::avlInstance);
                 break;
-            case abbrVal(TreeInstance::splay):
+            case abbrValue(TreeInstance::splay):
                 addTask(target, &TreeStructure::splayInstance);
                 break;
             default:

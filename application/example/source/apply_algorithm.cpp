@@ -37,12 +37,12 @@ namespace application::app_algo
 {
 using namespace reg_algo; // NOLINT(google-build-using-namespace)
 
-//! @brief Get the title of a particular method in algorithm choices.
+//! @brief Make the title of a particular method in algorithm choices.
 //! @tparam T - type of target method
 //! @param method - target method
 //! @return initial capitalized title
 template <typename T>
-static std::string getTitle(const T method)
+static std::string makeTitle(const T method)
 {
     std::string title(toString(method));
     title.at(0) = std::toupper(title.at(0));
@@ -50,9 +50,9 @@ static std::string getTitle(const T method)
     return title;
 }
 
-//! @brief Get the task name curried.
-//! @return task name curried
-static const auto& taskNameCurried()
+//! @brief Get the curried task name.
+//! @return curried task name
+static const auto& curriedTaskName()
 {
     static const auto curried = utility::currying::curry(configure::task::presetName, TypeInfo<ApplyAlgorithm>::name);
     return curried;
@@ -62,7 +62,7 @@ static const auto& taskNameCurried()
 //! @tparam Cat - the specific value of Category enum
 //! @return alias of the category name
 template <Category Cat>
-static consteval std::string_view getCategoryAlias()
+static consteval std::string_view categoryAlias()
 {
     constexpr auto attr =
         TypeInfo<ApplyAlgorithm>::fields.find(REFLECTION_STR(toString<Cat>())).attrs.find(REFLECTION_STR("alias"));
@@ -84,7 +84,7 @@ static void showResult(
     {
         std::printf(
             "\n==> %-16s Method <==\npattern \"%s\" found starting (1st) at index %ld, run time: %8.5f ms\n",
-            getTitle(method).c_str(),
+            makeTitle(method).c_str(),
             pattern,
             result,
             interval);
@@ -93,7 +93,7 @@ static void showResult(
     {
         std::printf(
             "\n==> %-16s Method <==\npattern \"%s\" could not be found, run time: %8.5f ms\n",
-            getTitle(method).c_str(),
+            makeTitle(method).c_str(),
             pattern,
             interval);
     }
@@ -184,7 +184,7 @@ catch (const std::exception& err)
 void applyingMatch(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::match;
-    const auto& bits = getCategoryOpts<category>();
+    const auto& bits = categoryOpts<category>();
     if (bits.none())
     {
         return;
@@ -197,7 +197,7 @@ void applyingMatch(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(patternString);
-    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+    const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
         [threads, &inputs, &taskNamer](
             const std::string_view subTask,
@@ -220,19 +220,19 @@ void applyingMatch(const std::vector<std::string>& candidates)
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using match::MatchSolution;
-            case abbrVal(MatchMethod::rabinKarp):
+            case abbrValue(MatchMethod::rabinKarp):
                 addTask(target, &MatchSolution::rkMethod);
                 break;
-            case abbrVal(MatchMethod::knuthMorrisPratt):
+            case abbrValue(MatchMethod::knuthMorrisPratt):
                 addTask(target, &MatchSolution::kmpMethod);
                 break;
-            case abbrVal(MatchMethod::boyerMoore):
+            case abbrValue(MatchMethod::boyerMoore):
                 addTask(target, &MatchSolution::bmMethod);
                 break;
-            case abbrVal(MatchMethod::horspool):
+            case abbrValue(MatchMethod::horspool):
                 addTask(target, &MatchSolution::horspoolMethod);
                 break;
-            case abbrVal(MatchMethod::sunday):
+            case abbrValue(MatchMethod::sunday):
                 addTask(target, &MatchSolution::sundayMethod);
                 break;
             default:
@@ -252,7 +252,7 @@ namespace notation
 //! @param descr - notation description
 static void showResult(const NotationMethod method, const std::string_view result, const char* const descr)
 {
-    std::printf("\n==> %-7s Method <==\n%s: %s\n", getTitle(method).c_str(), descr, result.data());
+    std::printf("\n==> %-7s Method <==\n%s: %s\n", makeTitle(method).c_str(), descr, result.data());
 }
 
 void NotationSolution::prefixMethod(const std::string_view infix)
@@ -282,7 +282,7 @@ catch (const std::exception& err)
 void applyingNotation(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::notation;
-    const auto& bits = getCategoryOpts<category>();
+    const auto& bits = categoryOpts<category>();
     if (bits.none())
     {
         return;
@@ -294,7 +294,7 @@ void applyingNotation(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(infixString);
-    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+    const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
         [threads, &inputs, &taskNamer](const std::string_view subTask, void (*targetMethod)(const std::string_view))
     { threads->enqueue(taskNamer(subTask), targetMethod, inputs->getInfixNotation()); };
@@ -306,10 +306,10 @@ void applyingNotation(const std::vector<std::string>& candidates)
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using notation::NotationSolution;
-            case abbrVal(NotationMethod::prefix):
+            case abbrValue(NotationMethod::prefix):
                 addTask(target, &NotationSolution::prefixMethod);
                 break;
-            case abbrVal(NotationMethod::postfix):
+            case abbrValue(NotationMethod::postfix):
                 addTask(target, &NotationSolution::postfixMethod);
                 break;
             default:
@@ -334,7 +334,7 @@ static void showResult(
     {
         std::printf(
             "\n==> %-9s Method <==\nF(min)=%+.5f X=%+.5f, run time: %8.5f ms\n",
-            getTitle(method).c_str(),
+            makeTitle(method).c_str(),
             std::get<0>(result.value()),
             std::get<1>(result.value()),
             interval);
@@ -343,7 +343,7 @@ static void showResult(
     {
         std::printf(
             "\n==> %-9s Method <==\nF(min) could not be found, run time: %8.5f ms\n",
-            getTitle(method).c_str(),
+            makeTitle(method).c_str(),
             interval);
     }
 }
@@ -425,7 +425,7 @@ catch (const std::exception& err)
 void applyingOptimal(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::optimal;
-    const auto& bits = getCategoryOpts<category>();
+    const auto& bits = categoryOpts<category>();
     if (bits.none())
     {
         return;
@@ -439,7 +439,7 @@ void applyingOptimal(const std::vector<std::string>& candidates)
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs =
         std::make_shared<InputBuilder>(Rastrigin{}, Rastrigin::range1, Rastrigin::range2, Rastrigin::funcDescr);
-    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+    const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
         [threads, &inputs, &taskNamer](
             const std::string_view subTask, void (*targetMethod)(const Function&, const double, const double))
@@ -459,22 +459,22 @@ void applyingOptimal(const std::vector<std::string>& candidates)
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using optimal::OptimalSolution;
-            case abbrVal(OptimalMethod::gradient):
+            case abbrValue(OptimalMethod::gradient):
                 addTask(target, &OptimalSolution::gradientDescentMethod);
                 break;
-            case abbrVal(OptimalMethod::tabu):
+            case abbrValue(OptimalMethod::tabu):
                 addTask(target, &OptimalSolution::tabuMethod);
                 break;
-            case abbrVal(OptimalMethod::annealing):
+            case abbrValue(OptimalMethod::annealing):
                 addTask(target, &OptimalSolution::simulatedAnnealingMethod);
                 break;
-            case abbrVal(OptimalMethod::particle):
+            case abbrValue(OptimalMethod::particle):
                 addTask(target, &OptimalSolution::particleSwarmMethod);
                 break;
-            case abbrVal(OptimalMethod::ant):
+            case abbrValue(OptimalMethod::ant):
                 addTask(target, &OptimalSolution::antColonyMethod);
                 break;
-            case abbrVal(OptimalMethod::genetic):
+            case abbrValue(OptimalMethod::genetic):
                 addTask(target, &OptimalSolution::geneticMethod);
                 break;
             default:
@@ -499,7 +499,7 @@ static void showResult(const SearchMethod method, const std::int64_t result, con
     {
         std::printf(
             "\n==> %-13s Method <==\nfound the key \"%.5f\" that appears in the index %ld, run time: %8.5f ms\n",
-            getTitle(method).c_str(),
+            makeTitle(method).c_str(),
             key,
             result,
             interval);
@@ -508,7 +508,7 @@ static void showResult(const SearchMethod method, const std::int64_t result, con
     {
         std::printf(
             "\n==> %-13s Method <==\ncould not find the key \"%.5f\", run time: %8.5f ms\n",
-            getTitle(method).c_str(),
+            makeTitle(method).c_str(),
             key,
             interval);
     }
@@ -555,7 +555,7 @@ catch (const std::exception& err)
 void applyingSearch(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::search;
-    const auto& bits = getCategoryOpts<category>();
+    const auto& bits = categoryOpts<category>();
     if (bits.none())
     {
         return;
@@ -568,7 +568,7 @@ void applyingSearch(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder<float>>(arrayLength, arrayRangeMin, arrayRangeMax);
-    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+    const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
         [threads, &inputs, &taskNamer](
             const std::string_view subTask, void (*targetMethod)(const float* const, const std::uint32_t, const float))
@@ -588,13 +588,13 @@ void applyingSearch(const std::vector<std::string>& candidates)
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using search::SearchSolution;
-            case abbrVal(SearchMethod::binary):
+            case abbrValue(SearchMethod::binary):
                 addTask(target, &SearchSolution::binaryMethod);
                 break;
-            case abbrVal(SearchMethod::interpolation):
+            case abbrValue(SearchMethod::interpolation):
                 addTask(target, &SearchSolution::interpolationMethod);
                 break;
-            case abbrVal(SearchMethod::fibonacci):
+            case abbrValue(SearchMethod::fibonacci):
                 addTask(target, &SearchSolution::fibonacciMethod);
                 break;
             default:
@@ -618,7 +618,7 @@ static void showResult(const SortMethod method, const std::vector<std::int32_t>&
     std::vector<char> arrayBuffer(arrayBufferSize + 1);
     std::printf(
         "\n==> %-9s Method <==\n%s\n(asc) run time: %8.5f ms\n",
-        getTitle(method).c_str(),
+        makeTitle(method).c_str(),
         InputBuilder<std::int32_t>::template spliceAll<std::int32_t>(
             result.data(), result.size(), arrayBuffer.data(), arrayBufferSize + 1),
         interval);
@@ -749,7 +749,7 @@ catch (const std::exception& err)
 void applyingSort(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::sort;
-    const auto& bits = getCategoryOpts<category>();
+    const auto& bits = categoryOpts<category>();
     if (bits.none())
     {
         return;
@@ -762,7 +762,7 @@ void applyingSort(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder<std::int32_t>>(arrayLength, arrayRangeMin, arrayRangeMax);
-    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+    const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
         [threads, &inputs, &taskNamer](
             const std::string_view subTask, void (*targetMethod)(const std::int32_t* const, const std::uint32_t))
@@ -775,34 +775,34 @@ void applyingSort(const std::vector<std::string>& candidates)
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using sort::SortSolution;
-            case abbrVal(SortMethod::bubble):
+            case abbrValue(SortMethod::bubble):
                 addTask(target, &SortSolution::bubbleMethod);
                 break;
-            case abbrVal(SortMethod::selection):
+            case abbrValue(SortMethod::selection):
                 addTask(target, &SortSolution::selectionMethod);
                 break;
-            case abbrVal(SortMethod::insertion):
+            case abbrValue(SortMethod::insertion):
                 addTask(target, &SortSolution::insertionMethod);
                 break;
-            case abbrVal(SortMethod::shell):
+            case abbrValue(SortMethod::shell):
                 addTask(target, &SortSolution::shellMethod);
                 break;
-            case abbrVal(SortMethod::merge):
+            case abbrValue(SortMethod::merge):
                 addTask(target, &SortSolution::mergeMethod);
                 break;
-            case abbrVal(SortMethod::quick):
+            case abbrValue(SortMethod::quick):
                 addTask(target, &SortSolution::quickMethod);
                 break;
-            case abbrVal(SortMethod::heap):
+            case abbrValue(SortMethod::heap):
                 addTask(target, &SortSolution::heapMethod);
                 break;
-            case abbrVal(SortMethod::counting):
+            case abbrValue(SortMethod::counting):
                 addTask(target, &SortSolution::countingMethod);
                 break;
-            case abbrVal(SortMethod::bucket):
+            case abbrValue(SortMethod::bucket):
                 addTask(target, &SortSolution::bucketMethod);
                 break;
-            case abbrVal(SortMethod::radix):
+            case abbrValue(SortMethod::radix):
                 addTask(target, &SortSolution::radixMethod);
                 break;
             default:

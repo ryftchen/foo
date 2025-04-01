@@ -40,41 +40,41 @@ template <>
 void updateChoice<BehavioralInstance>(const std::string_view target)
 {
     constexpr auto category = Category::behavioral;
-    auto& bits = getCategoryOpts<category>();
+    auto& bits = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.data()))
     {
-        case abbrVal(BehavioralInstance::chainOfResponsibility):
+        case abbrValue(BehavioralInstance::chainOfResponsibility):
             bits.set(BehavioralInstance::chainOfResponsibility);
             break;
-        case abbrVal(BehavioralInstance::command):
+        case abbrValue(BehavioralInstance::command):
             bits.set(BehavioralInstance::command);
             break;
-        case abbrVal(BehavioralInstance::interpreter):
+        case abbrValue(BehavioralInstance::interpreter):
             bits.set(BehavioralInstance::interpreter);
             break;
-        case abbrVal(BehavioralInstance::iterator):
+        case abbrValue(BehavioralInstance::iterator):
             bits.set(BehavioralInstance::iterator);
             break;
-        case abbrVal(BehavioralInstance::mediator):
+        case abbrValue(BehavioralInstance::mediator):
             bits.set(BehavioralInstance::mediator);
             break;
-        case abbrVal(BehavioralInstance::memento):
+        case abbrValue(BehavioralInstance::memento):
             bits.set(BehavioralInstance::memento);
             break;
-        case abbrVal(BehavioralInstance::observer):
+        case abbrValue(BehavioralInstance::observer):
             bits.set(BehavioralInstance::observer);
             break;
-        case abbrVal(BehavioralInstance::state):
+        case abbrValue(BehavioralInstance::state):
             bits.set(BehavioralInstance::state);
             break;
-        case abbrVal(BehavioralInstance::strategy):
+        case abbrValue(BehavioralInstance::strategy):
             bits.set(BehavioralInstance::strategy);
             break;
-        case abbrVal(BehavioralInstance::templateMethod):
+        case abbrValue(BehavioralInstance::templateMethod):
             bits.set(BehavioralInstance::templateMethod);
             break;
-        case abbrVal(BehavioralInstance::visitor):
+        case abbrValue(BehavioralInstance::visitor):
             bits.set(BehavioralInstance::visitor);
             break;
         default:
@@ -106,23 +106,23 @@ template <>
 void updateChoice<CreationalInstance>(const std::string_view target)
 {
     constexpr auto category = Category::creational;
-    auto& bits = getCategoryOpts<category>();
+    auto& bits = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.data()))
     {
-        case abbrVal(CreationalInstance::abstractFactory):
+        case abbrValue(CreationalInstance::abstractFactory):
             bits.set(CreationalInstance::abstractFactory);
             break;
-        case abbrVal(CreationalInstance::builder):
+        case abbrValue(CreationalInstance::builder):
             bits.set(CreationalInstance::builder);
             break;
-        case abbrVal(CreationalInstance::factoryMethod):
+        case abbrValue(CreationalInstance::factoryMethod):
             bits.set(CreationalInstance::factoryMethod);
             break;
-        case abbrVal(CreationalInstance::prototype):
+        case abbrValue(CreationalInstance::prototype):
             bits.set(CreationalInstance::prototype);
             break;
-        case abbrVal(CreationalInstance::singleton):
+        case abbrValue(CreationalInstance::singleton):
             bits.set(CreationalInstance::singleton);
             break;
         default:
@@ -154,29 +154,29 @@ template <>
 void updateChoice<StructuralInstance>(const std::string_view target)
 {
     constexpr auto category = Category::structural;
-    auto& bits = getCategoryOpts<category>();
+    auto& bits = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(target.data()))
     {
-        case abbrVal(StructuralInstance::adapter):
+        case abbrValue(StructuralInstance::adapter):
             bits.set(StructuralInstance::adapter);
             break;
-        case abbrVal(StructuralInstance::bridge):
+        case abbrValue(StructuralInstance::bridge):
             bits.set(StructuralInstance::bridge);
             break;
-        case abbrVal(StructuralInstance::composite):
+        case abbrValue(StructuralInstance::composite):
             bits.set(StructuralInstance::composite);
             break;
-        case abbrVal(StructuralInstance::decorator):
+        case abbrValue(StructuralInstance::decorator):
             bits.set(StructuralInstance::decorator);
             break;
-        case abbrVal(StructuralInstance::facade):
+        case abbrValue(StructuralInstance::facade):
             bits.set(StructuralInstance::facade);
             break;
-        case abbrVal(StructuralInstance::flyweight):
+        case abbrValue(StructuralInstance::flyweight):
             bits.set(StructuralInstance::flyweight);
             break;
-        case abbrVal(StructuralInstance::proxy):
+        case abbrValue(StructuralInstance::proxy):
             bits.set(StructuralInstance::proxy);
             break;
         default:

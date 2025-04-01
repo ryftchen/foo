@@ -236,17 +236,17 @@ private:
 };
 
 //! @brief Manage the lifetime of a lock under control.
-class ReadWriteGuard
+class LockGuard
 {
 public:
     //! @brief Alias for the lock mode.
     using LockMode = ReadWriteLock::LockMode;
-    //! @brief Construct a new ReadWriteGuard object.
+    //! @brief Construct a new LockGuard object.
     //! @param lock - object managed by the guard
     //! @param mode - lock mode
-    ReadWriteGuard(ReadWriteLock& lock, const LockMode mode);
-    //! @brief Destroy the ReadWriteGuard object.
-    virtual ~ReadWriteGuard();
+    LockGuard(ReadWriteLock& lock, const LockMode mode);
+    //! @brief Destroy the LockGuard object.
+    virtual ~LockGuard();
 
 private:
     //! @brief Object managed by the guard.

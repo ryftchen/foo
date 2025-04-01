@@ -37,12 +37,12 @@ namespace application::app_dp
 {
 using namespace reg_dp; // NOLINT(google-build-using-namespace)
 
-//! @brief Get the title of a particular instance in design pattern choices.
+//! @brief Make the title of a particular instance in design pattern choices.
 //! @tparam T - type of target instance
 //! @param instance - target instance
 //! @return initial capitalized title
 template <typename T>
-static std::string getTitle(const T instance)
+static std::string makeTitle(const T instance)
 {
     std::string title(toString(instance));
     title.at(0) = std::toupper(title.at(0));
@@ -50,9 +50,9 @@ static std::string getTitle(const T instance)
     return title;
 }
 
-//! @brief Get the task name curried.
-//! @return task name curried
-static const auto& taskNameCurried()
+//! @brief Get the curried task name.
+//! @return curried task name
+static const auto& curriedTaskName()
 {
     static const auto curried =
         utility::currying::curry(configure::task::presetName, TypeInfo<ApplyDesignPattern>::name);
@@ -63,7 +63,7 @@ static const auto& taskNameCurried()
 //! @tparam Cat - the specific value of Category enum
 //! @return alias of the category name
 template <Category Cat>
-static consteval std::string_view getCategoryAlias()
+static consteval std::string_view categoryAlias()
 {
     constexpr auto attr =
         TypeInfo<ApplyDesignPattern>::fields.find(REFLECTION_STR(toString<Cat>())).attrs.find(REFLECTION_STR("alias"));
@@ -78,7 +78,7 @@ namespace behavioral
 //! @param result - behavioral result
 static void showResult(const BehavioralInstance instance, const std::string_view result)
 {
-    std::printf("\n==> %-21s Instance <==\n%s", getTitle(instance).c_str(), result.data());
+    std::printf("\n==> %-21s Instance <==\n%s", makeTitle(instance).c_str(), result.data());
 }
 
 void BehavioralPattern::chainOfResponsibilityInstance()
@@ -207,7 +207,7 @@ catch (const std::exception& err)
 void applyingBehavioral(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::behavioral;
-    const auto& bits = getCategoryOpts<category>();
+    const auto& bits = categoryOpts<category>();
     if (bits.none())
     {
         return;
@@ -217,7 +217,7 @@ void applyingBehavioral(const std::vector<std::string>& candidates)
     APP_DP_PRINT_TASK_BEGIN_TITLE(category);
     auto& pooling = configure::task::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
-    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+    const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [threads, &taskNamer](const std::string_view subTask, void (*targetInstance)())
     { threads->enqueue(taskNamer(subTask), targetInstance); };
 
@@ -229,37 +229,37 @@ void applyingBehavioral(const std::vector<std::string>& candidates)
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using behavioral::BehavioralPattern;
-            case abbrVal(BehavioralInstance::chainOfResponsibility):
+            case abbrValue(BehavioralInstance::chainOfResponsibility):
                 addTask(target, &BehavioralPattern::chainOfResponsibilityInstance);
                 break;
-            case abbrVal(BehavioralInstance::command):
+            case abbrValue(BehavioralInstance::command):
                 addTask(target, &BehavioralPattern::commandInstance);
                 break;
-            case abbrVal(BehavioralInstance::interpreter):
+            case abbrValue(BehavioralInstance::interpreter):
                 addTask(target, &BehavioralPattern::interpreterInstance);
                 break;
-            case abbrVal(BehavioralInstance::iterator):
+            case abbrValue(BehavioralInstance::iterator):
                 addTask(target, &BehavioralPattern::iteratorInstance);
                 break;
-            case abbrVal(BehavioralInstance::mediator):
+            case abbrValue(BehavioralInstance::mediator):
                 addTask(target, &BehavioralPattern::mediatorInstance);
                 break;
-            case abbrVal(BehavioralInstance::memento):
+            case abbrValue(BehavioralInstance::memento):
                 addTask(target, &BehavioralPattern::mementoInstance);
                 break;
-            case abbrVal(BehavioralInstance::observer):
+            case abbrValue(BehavioralInstance::observer):
                 addTask(target, &BehavioralPattern::observerInstance);
                 break;
-            case abbrVal(BehavioralInstance::state):
+            case abbrValue(BehavioralInstance::state):
                 addTask(target, &BehavioralPattern::stateInstance);
                 break;
-            case abbrVal(BehavioralInstance::strategy):
+            case abbrValue(BehavioralInstance::strategy):
                 addTask(target, &BehavioralPattern::strategyInstance);
                 break;
-            case abbrVal(BehavioralInstance::templateMethod):
+            case abbrValue(BehavioralInstance::templateMethod):
                 addTask(target, &BehavioralPattern::templateMethodInstance);
                 break;
-            case abbrVal(BehavioralInstance::visitor):
+            case abbrValue(BehavioralInstance::visitor):
                 addTask(target, &BehavioralPattern::visitorInstance);
                 break;
             default:
@@ -278,7 +278,7 @@ namespace creational
 //! @param result - creational result
 static void showResult(const CreationalInstance instance, const std::string_view result)
 {
-    std::printf("\n==> %-15s Instance <==\n%s", getTitle(instance).c_str(), result.data());
+    std::printf("\n==> %-15s Instance <==\n%s", makeTitle(instance).c_str(), result.data());
 }
 
 void CreationalPattern::abstractFactoryInstance()
@@ -341,7 +341,7 @@ catch (const std::exception& err)
 void applyingCreational(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::creational;
-    const auto& bits = getCategoryOpts<category>();
+    const auto& bits = categoryOpts<category>();
     if (bits.none())
     {
         return;
@@ -351,7 +351,7 @@ void applyingCreational(const std::vector<std::string>& candidates)
     APP_DP_PRINT_TASK_BEGIN_TITLE(category);
     auto& pooling = configure::task::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
-    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+    const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [threads, &taskNamer](const std::string_view subTask, void (*targetInstance)())
     { threads->enqueue(taskNamer(subTask), targetInstance); };
 
@@ -363,19 +363,19 @@ void applyingCreational(const std::vector<std::string>& candidates)
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using creational::CreationalPattern;
-            case abbrVal(CreationalInstance::abstractFactory):
+            case abbrValue(CreationalInstance::abstractFactory):
                 addTask(target, &CreationalPattern::abstractFactoryInstance);
                 break;
-            case abbrVal(CreationalInstance::builder):
+            case abbrValue(CreationalInstance::builder):
                 addTask(target, &CreationalPattern::builderInstance);
                 break;
-            case abbrVal(CreationalInstance::factoryMethod):
+            case abbrValue(CreationalInstance::factoryMethod):
                 addTask(target, &CreationalPattern::factoryMethodInstance);
                 break;
-            case abbrVal(CreationalInstance::prototype):
+            case abbrValue(CreationalInstance::prototype):
                 addTask(target, &CreationalPattern::prototypeInstance);
                 break;
-            case abbrVal(CreationalInstance::singleton):
+            case abbrValue(CreationalInstance::singleton):
                 addTask(target, &CreationalPattern::singletonInstance);
                 break;
             default:
@@ -394,7 +394,7 @@ namespace structural
 //! @param result - structural result
 static void showResult(const StructuralInstance instance, const std::string_view result)
 {
-    std::printf("\n==> %-9s Instance <==\n%s", getTitle(instance).c_str(), result.data());
+    std::printf("\n==> %-9s Instance <==\n%s", makeTitle(instance).c_str(), result.data());
 }
 
 void StructuralPattern::adapterInstance()
@@ -479,7 +479,7 @@ catch (const std::exception& err)
 void applyingStructural(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::structural;
-    const auto& bits = getCategoryOpts<category>();
+    const auto& bits = categoryOpts<category>();
     if (bits.none())
     {
         return;
@@ -489,7 +489,7 @@ void applyingStructural(const std::vector<std::string>& candidates)
     APP_DP_PRINT_TASK_BEGIN_TITLE(category);
     auto& pooling = configure::task::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
-    const auto taskNamer = utility::currying::curry(taskNameCurried(), getCategoryAlias<category>());
+    const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [threads, &taskNamer](const std::string_view subTask, void (*targetInstance)())
     { threads->enqueue(taskNamer(subTask), targetInstance); };
 
@@ -501,25 +501,25 @@ void applyingStructural(const std::vector<std::string>& candidates)
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using structural::StructuralPattern;
-            case abbrVal(StructuralInstance::adapter):
+            case abbrValue(StructuralInstance::adapter):
                 addTask(target, &StructuralPattern::adapterInstance);
                 break;
-            case abbrVal(StructuralInstance::bridge):
+            case abbrValue(StructuralInstance::bridge):
                 addTask(target, &StructuralPattern::bridgeInstance);
                 break;
-            case abbrVal(StructuralInstance::composite):
+            case abbrValue(StructuralInstance::composite):
                 addTask(target, &StructuralPattern::compositeInstance);
                 break;
-            case abbrVal(StructuralInstance::decorator):
+            case abbrValue(StructuralInstance::decorator):
                 addTask(target, &StructuralPattern::decoratorInstance);
                 break;
-            case abbrVal(StructuralInstance::facade):
+            case abbrValue(StructuralInstance::facade):
                 addTask(target, &StructuralPattern::facadeInstance);
                 break;
-            case abbrVal(StructuralInstance::flyweight):
+            case abbrValue(StructuralInstance::flyweight):
                 addTask(target, &StructuralPattern::flyweightInstance);
                 break;
-            case abbrVal(StructuralInstance::proxy):
+            case abbrValue(StructuralInstance::proxy):
                 addTask(target, &StructuralPattern::proxyInstance);
                 break;
             default:
