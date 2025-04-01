@@ -1074,11 +1074,11 @@ void Command::validateDependenciesVersion() const
 constexpr std::string_view Command::createIconBanner()
 {
     // clang-format off
-    return R"(  ______   ______     ______    )""\n"
-           R"( /\  ___\ /\  __ \   /\  __ \   )""\n"
-           R"( \ \  __\ \ \ \/\ \  \ \ \/\ \  )""\n"
-           R"(  \ \_\    \ \_____\  \ \_____\ )""\n"
-           R"(   \/_/     \/_____/   \/_____/ )""\n";
+    return R"(  ______   ______     ______    )" "\n"
+           R"( /\  ___\ /\  __ \   /\  __ \   )" "\n"
+           R"( \ \  __\ \ \ \/\ \  \ \ \/\ \  )" "\n"
+           R"(  \ \_\    \ \_____\  \ \_____\ )" "\n"
+           R"(   \/_/     \/_____/   \/_____/ )" "\n";
     // clang-format on
 }
 } // namespace application::command

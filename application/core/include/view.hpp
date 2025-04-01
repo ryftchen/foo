@@ -116,7 +116,7 @@ public:
 private:
     //! @brief Construct a new View object.
     //! @param initState - initialization value of state
-    explicit View(const StateType initState = State::init) noexcept :
+    explicit View(const StateType initState = State::init) :
         FSM(initState),
         tcpHost{configure::detail::tcpHost4Viewer()},
         tcpPort{static_cast<std::uint16_t>(configure::detail::tcpPort4Viewer())},

@@ -302,7 +302,7 @@ public:
 private:
     //! @brief Construct a new Log object.
     //! @param initState - initialization value of state
-    explicit Log(const StateType initState = State::init) noexcept :
+    explicit Log(const StateType initState = State::init) :
         FSM(initState),
         filePath{getFullLogPath(configure::detail::filePath4Logger())},
         priorityLevel{OutputLevel(configure::detail::priorityLevel4Logger())},
