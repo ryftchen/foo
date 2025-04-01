@@ -177,11 +177,7 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-void Log::flush(
-    const OutputLevel severity,
-    const std::string_view srcFile,
-    const std::uint32_t srcLine,
-    const std::string_view formatted)
+void Log::flush(const OutputLevel severity, const std::string_view labelTpl, const std::string_view formatted)
 {
     if (severity < priorityLevel)
     {
@@ -191,17 +187,12 @@ void Log::flush(
     std::unique_lock<std::mutex> daemonLock(daemonMtx, std::defer_lock);
     try
     {
-        auto rows = reformatContents(
-            std::format(
-                "[{}] {} [{}#{}] ",
-                utility::time::getCurrentSystemTime(),
-                isInServingState(State::work) ? (daemonLock.lock(), getPrefix(severity)) : traceLevelPrefix,
-                (std::string_view::npos != srcFile.rfind(sourceDirectory))
-                    ? srcFile.substr(srcFile.rfind(sourceDirectory) + sourceDirectory.length(), srcFile.length())
-                    : srcFile,
-                srcLine),
-            formatted);
-        if (daemonLock.owns_lock())
+        if (auto rows = reformatContents(
+                utility::common::formatString(
+                    labelTpl,
+                    isInServingState(State::work) ? (daemonLock.lock(), getPrefix(severity)) : traceLevelPrefix),
+                formatted);
+            daemonLock.owns_lock())
         {
             std::for_each(rows.begin(), rows.end(), [this](auto& output) { logQueue.push(std::move(output)); });
             daemonLock.unlock();
@@ -228,6 +219,17 @@ void Log::flush(
         }
         throw;
     }
+}
+
+std::string Log::createLabelTemplate(const std::string_view srcFile, const std::uint32_t srcLine)
+{
+    return std::format(
+        "[{}] {{}} [{}#{}] ",
+        utility::time::getCurrentSystemTime(),
+        (std::string_view::npos != srcFile.rfind(sourceDirectory))
+            ? srcFile.substr(srcFile.rfind(sourceDirectory) + sourceDirectory.length(), srcFile.length())
+            : srcFile,
+        srcLine);
 }
 
 std::string_view Log::getPrefix(const OutputLevel level)

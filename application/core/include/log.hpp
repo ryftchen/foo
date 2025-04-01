@@ -9,7 +9,6 @@
 #include "configure.hpp"
 
 #ifndef __PRECOMPILED_HEADER
-#include <format>
 #include <forward_list>
 #include <iostream>
 #include <source_location>
@@ -346,14 +345,14 @@ private:
     using LockMode = utility::common::ReadWriteLock::LockMode;
     //! @brief Flush log to queue.
     //! @param severity - level of severity
+    //! @param labelTpl - label template
+    //! @param formatted - formatted body
+    void flush(const OutputLevel severity, const std::string_view labelTpl, const std::string_view formatted);
+    //! @brief Create the dynamic label template.
     //! @param srcFile - current code file
     //! @param srcLine - current code line
-    //! @param formatted - formatted body
-    void flush(
-        const OutputLevel severity,
-        const std::string_view srcFile,
-        const std::uint32_t srcLine,
-        const std::string_view formatted);
+    //! @return dynamic label template
+    static std::string createLabelTemplate(const std::string_view srcFile, const std::uint32_t srcLine);
     //! @brief Get the prefix corresponding to the level.
     //! @param level - output level
     //! @return output prefix
@@ -470,13 +469,15 @@ void Log::printfStyle(
     if (configure::detail::activateHelper())
     {
         getInstance().flush(
-            severity, srcFile, srcLine, utility::common::formatString(format.data(), std::forward<Args>(args)...));
+            severity,
+            createLabelTemplate(srcFile, srcLine),
+            utility::common::printfString(format.data(), std::forward<Args>(args)...));
         return;
     }
 
     const auto rows = reformatContents(
         std::string{sourceDirectory.substr(1, sourceDirectory.length() - 2)} + ": ",
-        utility::common::formatString(format.data(), std::forward<Args>(args)...));
+        utility::common::printfString(format.data(), std::forward<Args>(args)...));
     std::for_each(rows.cbegin(), rows.cend(), [](const auto& output) { std::clog << output << std::endl; });
 }
 
@@ -490,7 +491,10 @@ void Log::formatStyle(
 {
     if (configure::detail::activateHelper())
     {
-        getInstance().flush(severity, srcFile, srcLine, std::vformat(format.get(), std::make_format_args(args...)));
+        getInstance().flush(
+            severity,
+            createLabelTemplate(srcFile, srcLine),
+            std::vformat(format.get(), std::make_format_args(args...)));
         return;
     }
 
