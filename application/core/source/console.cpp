@@ -150,7 +150,7 @@ void Console::setDefaultOptions()
             std::ostringstream out{};
             for (const auto& [option, help] : pairs)
             {
-                out << std::setiosflags(std::ios_base::left) << std::setw(align) << option << "    " << help
+                out << "- " << std::setiosflags(std::ios_base::left) << std::setw(align) << option << "    " << help
                     << std::resetiosflags(std::ios_base::left) << '\n';
             }
             std::cout << out.str() << std::flush;
