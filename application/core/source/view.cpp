@@ -30,10 +30,10 @@ namespace application::view
 //! @brief Type-length-value scheme.
 namespace tlv
 {
-//! @brief Invalid shared memory id in TLV value.
+//! @brief Invalid shared memory id.
 constexpr int invalidShmId = -1;
-//! @brief Default information size in TLV value.
-constexpr std::uint16_t defaultInfoSize = 256;
+//! @brief Default detail size.
+constexpr std::uint16_t detailSize = 256;
 
 //! @brief Enumerate the types in TLV.
 enum TLVType : int
@@ -60,7 +60,7 @@ struct TLVValue
     //! @brief Flag for stopping the connection.
     bool stopTag{false};
     //! @brief Information about the runtime library.
-    char libInfo[defaultInfoSize]{'\0'};
+    char libDetail[detailSize]{'\0'};
     //! @brief Shared memory id of the bash outputs.
     int bashShmId{invalidShmId};
     //! @brief Shared memory id of the log contents.
@@ -68,7 +68,7 @@ struct TLVValue
     //! @brief Shared memory id of the status reports.
     int statusShmId{invalidShmId};
     //! @brief Information about the current configuration.
-    char configInfo[defaultInfoSize * 2]{'\0'};
+    char configDetail[detailSize * 2]{'\0'};
 };
 
 //! @brief TLV value serialization.
@@ -153,7 +153,7 @@ static int encodeTLV(char* buf, int& len, const TLVValue& val)
     enc.write<int>(TLVType::stop);
     sum += sizeof(int) + serialize(enc, val, &TLVValue::stopTag);
     enc.write<int>(TLVType::depend);
-    sum += sizeof(int) + serialize(enc, val, &TLVValue::libInfo);
+    sum += sizeof(int) + serialize(enc, val, &TLVValue::libDetail);
     enc.write<int>(TLVType::execute);
     sum += sizeof(int) + serialize(enc, val, &TLVValue::bashShmId);
     enc.write<int>(TLVType::journal);
@@ -161,7 +161,7 @@ static int encodeTLV(char* buf, int& len, const TLVValue& val)
     enc.write<int>(TLVType::monitor);
     sum += sizeof(int) + serialize(enc, val, &TLVValue::statusShmId);
     enc.write<int>(TLVType::profile);
-    sum += sizeof(int) + serialize(enc, val, &TLVValue::configInfo);
+    sum += sizeof(int) + serialize(enc, val, &TLVValue::configDetail);
 
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     *reinterpret_cast<int*>(buf + sizeof(int)) = ::htonl(sum);
@@ -201,7 +201,7 @@ static int decodeTLV(char* buf, const int len, TLVValue& val)
                 sum -= sizeof(int) + deserialize(dec, val, &TLVValue::stopTag);
                 break;
             case TLVType::depend:
-                sum -= sizeof(int) + deserialize(dec, val, &TLVValue::libInfo);
+                sum -= sizeof(int) + deserialize(dec, val, &TLVValue::libDetail);
                 break;
             case TLVType::execute:
                 sum -= sizeof(int) + deserialize(dec, val, &TLVValue::bashShmId);
@@ -213,7 +213,7 @@ static int decodeTLV(char* buf, const int len, TLVValue& val)
                 sum -= sizeof(int) + deserialize(dec, val, &TLVValue::statusShmId);
                 break;
             case TLVType::profile:
-                sum -= sizeof(int) + deserialize(dec, val, &TLVValue::configInfo);
+                sum -= sizeof(int) + deserialize(dec, val, &TLVValue::configDetail);
                 break;
             default:
                 sum -= sizeof(int);
@@ -366,9 +366,9 @@ bool View::Access::onParsing(char* buffer, const int length) const
         throw std::runtime_error{"Invalid message content."};
     }
 
-    if (std::strlen(value.libInfo) != 0)
+    if (std::strlen(value.libDetail) != 0)
     {
-        std::cout << value.libInfo << std::endl;
+        std::cout << value.libDetail << std::endl;
     }
     if (tlv::invalidShmId != value.bashShmId)
     {
@@ -382,10 +382,10 @@ bool View::Access::onParsing(char* buffer, const int length) const
     {
         printSharedMemory(value.statusShmId);
     }
-    if (std::strlen(value.configInfo) != 0)
+    if (std::strlen(value.configDetail) != 0)
     {
         using utility::json::JSON;
-        std::cout << JSON::load(value.configInfo) << std::endl;
+        std::cout << JSON::load(value.configDetail) << std::endl;
     }
 
     return value.stopTag;
@@ -550,8 +550,8 @@ int View::buildTLVPacket4Depend(const std::vector<std::string>& args, char* buf)
 #else
 #error Could not find the OpenSSL library version.
 #endif // defined(OPENSSL_VERSION_STR)
-    std::strncpy(val.libInfo, extLibraries.c_str(), sizeof(val.libInfo) - 1);
-    val.libInfo[sizeof(val.libInfo) - 1] = '\0';
+    std::strncpy(val.libDetail, extLibraries.c_str(), sizeof(val.libDetail) - 1);
+    val.libDetail[sizeof(val.libDetail) - 1] = '\0';
     if (tlv::encodeTLV(buf, len, val) < 0)
     {
         throw std::runtime_error{"Failed to build packet for the depend option."};
@@ -645,8 +645,9 @@ int View::buildTLVPacket4Profile(const std::vector<std::string>& args, char* buf
 
     int len = 0;
     tlv::TLVValue val{};
-    std::strncpy(val.configInfo, configure::retrieveDataRepo().toUnescapedString().c_str(), sizeof(val.configInfo) - 1);
-    val.configInfo[sizeof(val.configInfo) - 1] = '\0';
+    std::strncpy(
+        val.configDetail, configure::retrieveDataRepo().toUnescapedString().c_str(), sizeof(val.configDetail) - 1);
+    val.configDetail[sizeof(val.configDetail) - 1] = '\0';
     if (tlv::encodeTLV(buf, len, val) < 0)
     {
         throw std::runtime_error{"Failed to build packet for the profile option."};
@@ -828,7 +829,7 @@ std::string View::statusReportsPreview(const std::uint16_t frame)
     }
 
     const int pid = ::getpid();
-    constexpr std::uint16_t totalLen = 512;
+    constexpr std::uint16_t totalLen = 1024;
     char cmd[totalLen] = {'\0'};
     std::snprintf(cmd, totalLen, "ps -T -p %d | awk 'NR>1 {split($0, a, \" \"); print a[2]}'", pid);
 
@@ -892,7 +893,6 @@ void View::renewServer<utility::socket::TCPServer>()
             {
                 return;
             }
-
             auto newSocket = weakSock.lock();
             if (!newSocket)
             {
