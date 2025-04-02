@@ -621,12 +621,12 @@ int View::buildTLVPacket4Monitor(const std::vector<std::string>& args, char* buf
     {
         if (const auto& input = args.front(); (input.length() != 1) || !std::isdigit(input.front()))
         {
-            throw std::runtime_error{"Only decimal bases are supported for the specified number of stack frames."};
+            throw std::runtime_error{"Only 0 through 9 are supported for the specified number of stack frames."};
         }
     }
 
     int len = 0;
-    if (const int shmId = fillSharedMemory(statusReportsPreview(!args.empty() ? std::stoul(args.front()) : 1));
+    if (const int shmId = fillSharedMemory(statusReportsPreview(args.empty() ? 0 : std::stoul(args.front())));
         tlv::encodeTLV(buf, len, tlv::TLVValue{.statusShmId = shmId}) < 0)
     {
         throw std::runtime_error{"Failed to build packet for the monitor option."};
@@ -822,16 +822,21 @@ std::string View::logContentsPreview()
 
 std::string View::statusReportsPreview(const std::uint16_t frame)
 {
+    if ((frame > 0) && (::system("which eu-stack >/dev/null 2>&1") != EXIT_SUCCESS))
+    {
+        throw std::runtime_error{"No eu-stack program. Please install it."};
+    }
+
     const int pid = ::getpid();
     constexpr std::uint16_t totalLen = 512;
     char cmd[totalLen] = {'\0'};
     std::snprintf(cmd, totalLen, "ps -T -p %d | awk 'NR>1 {split($0, a, \" \"); print a[2]}'", pid);
-    const auto queryResult = utility::io::executeCommand(cmd);
 
+    constexpr std::string_view focusField = "Name|State|Tgid|Pid|PPid|TracerPid|Uid|Gid|VmSize|VmRSS|CoreDumping|"
+                                            "Threads|SigQ|voluntary_ctxt_switches|nonvoluntary_ctxt_switches";
     std::vector<std::string> cmdColl{};
     std::size_t pos = 0, prev = 0;
-    const int currTid = ::gettid();
-    const bool showStack = (::system("which eu-stack >/dev/null 2>&1") == EXIT_SUCCESS);
+    const auto queryResult = utility::io::executeCommand(cmd);
     while (std::string::npos != (pos = queryResult.find('\n', prev)))
     {
         const int tid = std::stoi(queryResult.substr(prev, pos - prev + 1));
@@ -839,33 +844,26 @@ std::string View::statusReportsPreview(const std::uint16_t frame)
         if (const int usedLen = std::snprintf(
                 cmd,
                 totalLen,
-                "if [ -f /proc/%d/task/%d/status ] ; then head -n 10 /proc/%d/task/%d/status ",
+                "if [ -f /proc/%d/task/%d/status ] ; then cat /proc/%d/task/%d/status | grep -E '^(%s):'",
                 pid,
                 tid,
                 pid,
-                tid);
-            showStack)
+                tid,
+                focusField.data());
+            0 == frame)
         {
-            if (currTid != tid)
-            {
-                std::snprintf(
-                    cmd + usedLen,
-                    totalLen - usedLen,
-                    "&& echo 'Stack:' "
-                    "&& (timeout --preserve-status --signal=2 0.%d stdbuf -o0 eu-stack -1v -n %d -p %d 2>&1 | grep '#' "
-                    "|| exit 0) ; fi",
-                    frame,
-                    frame,
-                    tid);
-            }
-            else
-            {
-                std::strncpy(cmd + usedLen, "&& echo 'Stack:' && echo 'N/A' ; fi", totalLen - usedLen);
-            }
+            std::strncpy(cmd + usedLen, "; fi", totalLen - usedLen);
         }
         else
         {
-            std::strncpy(cmd + usedLen, "; fi", totalLen - usedLen);
+            std::snprintf(
+                cmd + usedLen,
+                totalLen - usedLen,
+                "&& echo 'Stack:' "
+                "&& (timeout --preserve-status --signal=2 1 stdbuf -o0 eu-stack -1v -n %d -p %d 2>&1 | grep '#' "
+                "|| exit 0) ; fi",
+                frame,
+                tid);
         }
         cmdColl.emplace_back(cmd);
         prev += pos - prev + 1;
