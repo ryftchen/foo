@@ -835,9 +835,9 @@ std::string View::statusReportsPreview(const std::uint16_t frame)
 
     constexpr std::string_view focusField = "Name|State|Tgid|Pid|PPid|TracerPid|Uid|Gid|VmSize|VmRSS|CoreDumping|"
                                             "Threads|SigQ|voluntary_ctxt_switches|nonvoluntary_ctxt_switches";
+    const auto queryResult = utility::io::executeCommand(cmd);
     std::vector<std::string> cmdColl{};
     std::size_t pos = 0, prev = 0;
-    const auto queryResult = utility::io::executeCommand(cmd);
     while (std::string::npos != (pos = queryResult.find('\n', prev)))
     {
         const int tid = std::stoi(queryResult.substr(prev, pos - prev + 1));
