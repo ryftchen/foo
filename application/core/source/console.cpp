@@ -146,7 +146,6 @@ void Console::setDefaultOptions()
             const std::size_t align =
                 std::ranges::max(pairs, std::less<std::size_t>{}, [](const auto& pair) { return pair.first.length(); })
                     .first.length();
-
             std::ostringstream out{};
             for (const auto& [option, help] : pairs)
             {
@@ -198,7 +197,6 @@ void Console::reserveConsole()
         currentSession->saveState();
     }
     ::history_set_history_state((nullptr != terminal->history) ? terminal->history : emptyHistory);
-
     currentSession = this;
 }
 
