@@ -649,7 +649,7 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
             run_stat = {
                 "Passed": str(len(finish_indices) - len(fail_res)),
                 "Failed": str(len(fail_res)),
-                "Duration": f"{self.duration}s" if not self.analyze_only else f"{dur_time}s",
+                "Duration": f"{self.duration} s" if not self.analyze_only else f"{dur_time} s",
             }
             prompt = " (UNIT TEST)" if tags["tst"] else ""
             run_stat_rep = (
