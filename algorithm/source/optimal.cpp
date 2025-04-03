@@ -212,12 +212,14 @@ std::optional<std::tuple<double, double>> Particle::operator()(const double left
 
 Particle::Swarm Particle::swarmInit(const double left, const double right)
 {
-    std::uniform_real_distribution<double> candidate(left, right), velocity(vMin, vMax);
-    Swarm swarm(swarmSize, Individual{});
-    std::generate(
-        swarm.begin(),
-        swarm.end(),
-        [this, &candidate, &velocity]()
+    Swarm swarm{};
+    swarm.reserve(swarmSize);
+    std::generate_n(
+        std::back_inserter(swarm),
+        swarmSize,
+        [this,
+         candidate = std::uniform_real_distribution<double>(left, right),
+         velocity = std::uniform_real_distribution<double>(vMin, vMax)]() mutable
         {
             const double x = candidate(engine);
             return Individual{x, velocity(engine), x, func(x), func(x)};
@@ -302,12 +304,12 @@ std::optional<std::tuple<double, double>> Ant::operator()(const double left, con
 
 Ant::Colony Ant::colonyInit(const double left, const double right)
 {
-    std::uniform_real_distribution<double> candidate(left, right);
-    Colony colony(numOfAnts, State{});
-    std::generate(
-        colony.begin(),
-        colony.end(),
-        [this, &candidate]()
+    Colony colony{};
+    colony.reserve(numOfAnts);
+    std::generate_n(
+        std::back_inserter(colony),
+        numOfAnts,
+        [this, candidate = std::uniform_real_distribution<double>(left, right)]() mutable
         {
             const double x = candidate(engine);
             return State{x, func(x), 0.0};
@@ -377,13 +379,13 @@ void Genetic::updateSpecies(const double left, const double right, const double 
     property.upper = right;
     property.prec = eps;
 
-    std::uint32_t num = 0;
-    const double max = (property.upper - property.lower) * (1.0 / property.prec);
-    while ((max <= std::pow(2, num)) || (max >= std::pow(2, num + 1)))
+    const double stateNum = (property.upper - property.lower) * (1.0 / property.prec);
+    std::uint32_t bitCount = 0;
+    while ((stateNum <= std::pow(2, bitCount)) || (stateNum >= std::pow(2, bitCount + 1)))
     {
-        ++num;
+        ++bitCount;
     }
-    chromosomeLength = num + 1;
+    chromosomeLength = bitCount + 1;
 
     if (chromosomeLength < minChrLen)
     {
@@ -393,28 +395,32 @@ void Genetic::updateSpecies(const double left, const double right, const double 
 
 double Genetic::geneticDecode(const Chromosome& chr) const
 {
-    const double max = std::pow(2, chromosomeLength) - 1.0;
-    double convert = 0.0;
-    std::for_each(
-        chr.cbegin(),
-        chr.cend(),
-        [&convert, index = 0](const auto bit) mutable
-        {
-            convert += bit * std::pow(2, index);
-            ++index;
-        });
-
-    return property.lower + (property.upper - property.lower) * convert / max;
+    const double currDecoded = std::accumulate(
+                     chr.cbegin(),
+                     chr.cend(),
+                     0.0,
+                     [index = 0](const auto sum, const auto bit) mutable { return sum + bit * std::pow(2, index++); }),
+                 maxDecoded = std::pow(2, chromosomeLength) - 1.0;
+    return property.lower + (property.upper - property.lower) * currDecoded / maxDecoded;
 }
 
 Genetic::Population Genetic::populationInit()
 {
-    Population pop(popSize, Chromosome(chromosomeLength, 0));
-    std::for_each(
-        pop.begin(),
-        pop.end(),
-        [this, bit = std::uniform_int_distribution<std::uint8_t>(0, 1)](auto& chr) mutable
-        { std::generate(chr.begin(), chr.end(), [this, &bit]() { return bit(engine); }); });
+    Population pop{};
+    pop.reserve(popSize);
+    std::generate_n(
+        std::back_inserter(pop),
+        popSize,
+        [this]()
+        {
+            Chromosome chr{};
+            chr.reserve(chromosomeLength);
+            std::generate_n(
+                std::back_inserter(chr),
+                chromosomeLength,
+                [this, bit = std::uniform_int_distribution<std::uint8_t>(0, 1)]() mutable { return bit(engine); });
+            return chr;
+        });
 
     return pop;
 }
@@ -525,33 +531,25 @@ void Genetic::select(Population& pop)
         pop.cend(),
         std::back_inserter(fitness),
         [this](const auto& ind) { return calculateFitness(ind); });
-    if (const double fitMin = *std::min_element(fitness.cbegin(), fitness.cend()); fitMin <= 0.0)
+    if (const double min = *std::min_element(fitness.cbegin(), fitness.cend()); min <= 0.0)
     {
-        std::for_each(
-            fitness.begin(), fitness.end(), [fitMin, eps = property.prec](auto& fit) { fit = fit - fitMin + eps; });
+        std::for_each(fitness.begin(), fitness.end(), [min, eps = property.prec](auto& fit) { fit = fit - min + eps; });
     }
 
-    double sum = 0.0;
     const auto coeff =
         goldbergLinearScaling(fitness, property.prec).value_or(std::pair<double, double>(0.0, 1.0 / popSize));
-    std::for_each(
+    const double sum = std::accumulate(
         fitness.begin(),
         fitness.end(),
-        [alpha = coeff.first, beta = coeff.second, &sum](auto& fit)
+        0.0,
+        [alpha = coeff.first, beta = coeff.second](const auto acc, auto& fit)
         {
             fit = alpha * fit + beta;
-            sum += fit;
+            return acc + fit;
         });
+    std::for_each(fitness.begin(), fitness.end(), [sum](auto& fit) { fit /= sum; });
+    std::partial_sum(fitness.begin(), fitness.end(), fitness.begin());
 
-    std::for_each(
-        fitness.begin(),
-        fitness.end(),
-        [sum, prev = 0.0](auto& cum) mutable
-        {
-            cum /= sum;
-            cum += prev;
-            prev = cum;
-        });
     stochasticTournamentSelection(pop, fitness);
 }
 
