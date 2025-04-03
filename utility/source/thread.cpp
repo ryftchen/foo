@@ -19,10 +19,7 @@ const char* version() noexcept
 Thread::Thread(const std::size_t size)
 {
     thdColl.reserve(size);
-    for (std::size_t i = 0; i < size; ++i)
-    {
-        thdColl.emplace_back([this]() { workLoop(); });
-    }
+    std::generate_n(std::back_inserter(thdColl), size, [this]() { return std::thread{[this]() { workLoop(); }}; });
 }
 
 void Thread::workLoop()
@@ -46,6 +43,7 @@ void Thread::workLoop()
                 producer.notify_one();
             }
         }
+
         if (!thdName.empty())
         {
             ::pthread_setname_np(::pthread_self(), thdName.c_str());
@@ -63,12 +61,15 @@ Thread::~Thread()
     }
 
     cond.notify_all();
-    for (auto& thd : thdColl)
-    {
-        if (thd.joinable())
+    std::for_each(
+        thdColl.begin(),
+        thdColl.end(),
+        [](auto& thd)
         {
-            thd.join();
-        }
-    }
+            if (thd.joinable())
+            {
+                thd.join();
+            }
+        });
 }
 } // namespace utility::thread

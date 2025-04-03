@@ -9,6 +9,7 @@
 #ifndef __PRECOMPILED_HEADER
 #include <cmath>
 #include <iostream>
+#include <numeric>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
@@ -165,13 +166,12 @@ public:
     requires std::is_integral_v<T>
     static char* spliceAllIntegers(const std::set<T>& container, char* const buffer, const std::uint32_t bufferSize)
     {
-        std::uint32_t align = 0;
-        std::for_each(
+        const std::uint32_t align = std::reduce(
             container.cbegin(),
             container.cend(),
-            [&align](const auto elem)
-            { align = std::max(static_cast<std::uint32_t>(std::to_string(elem).length()), align); });
-
+            0,
+            [](const auto max, const auto elem)
+            { return std::max<std::uint32_t>(std::to_string(elem).length(), max); });
         int formatSize = 0;
         std::uint32_t completeSize = 0;
         for (auto iterator = container.cbegin(); container.cend() != iterator; ++iterator)
@@ -183,8 +183,8 @@ public:
             }
             completeSize += formatSize;
 
-            const std::uint32_t nextIdx = std::distance(container.cbegin(), iterator) + 1;
-            if ((0 == (nextIdx % maxColumnOfPrint)) && (nextIdx != container.size()))
+            if (const std::uint32_t nextIdx = std::distance(container.cbegin(), iterator) + 1;
+                (0 == (nextIdx % maxColumnOfPrint)) && (nextIdx != container.size()))
             {
                 formatSize = std::snprintf(buffer + completeSize, bufferSize - completeSize, "\n");
                 if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))
@@ -390,13 +390,12 @@ public:
     requires std::is_integral_v<T>
     static char* spliceAllIntegers(const std::vector<T>& container, char* const buffer, const std::uint32_t bufferSize)
     {
-        std::uint32_t align = 0;
-        std::for_each(
+        const std::uint32_t align = std::reduce(
             container.cbegin(),
             container.cend(),
-            [&align](const auto elem)
-            { align = std::max(static_cast<std::uint32_t>(std::to_string(elem).length()), align); });
-
+            0,
+            [](const auto max, const auto elem)
+            { return std::max<std::uint32_t>(std::to_string(elem).length(), max); });
         int formatSize = 0;
         std::uint32_t completeSize = 0;
         for (std::uint32_t i = 0; i < container.size(); ++i)
