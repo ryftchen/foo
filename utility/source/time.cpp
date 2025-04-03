@@ -28,7 +28,7 @@ void Time::reset()
 
 //! @brief Get the current system time, like "1970-01-01 00:00:00.000000 UTC".
 //! @return current system time
-std::string getCurrentSystemTime()
+std::string currentSystemTime()
 {
     constexpr std::uint16_t dateLen = 32, sinceWhen = 1900;
     char date[dateLen] = {'\0'};

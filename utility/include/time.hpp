@@ -53,7 +53,7 @@ inline void millisecondLevelSleep(const std::size_t duration)
     std::this_thread::sleep_for(std::chrono::operator""ms(duration));
 }
 
-extern std::string getCurrentSystemTime();
+extern std::string currentSystemTime();
 extern int blockingTimer(const std::function<bool()>& termination, const int timeout = -1);
 } // namespace time
 } // namespace utility
