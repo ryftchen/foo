@@ -365,10 +365,10 @@ private:
     static constexpr std::uint32_t numOfGenerations{20};
     //! @brief The linear scaling coefficient.
     static constexpr double cMult{1.01};
-    //! @brief Minimum number of chromosomes.
-    static constexpr std::uint32_t minChrNum{2};
-    //! @brief Number of chromosomes.
-    std::uint32_t chromosomeNumber{0};
+    //! @brief Minimum length of chromosome.
+    static constexpr std::uint32_t minChrLen{2};
+    //! @brief Length of chromosome.
+    std::uint32_t chromosomeLength{0};
     //! @brief Properties of species.
     struct Property
     {

@@ -383,9 +383,9 @@ void Genetic::updateSpecies(const double left, const double right, const double 
     {
         ++num;
     }
-    chromosomeNumber = num + 1;
+    chromosomeLength = num + 1;
 
-    if (chromosomeNumber < minChrNum)
+    if (chromosomeLength < minChrLen)
     {
         throw std::logic_error{"A precision of " + std::to_string(eps) + " is not sufficient."};
     }
@@ -393,7 +393,7 @@ void Genetic::updateSpecies(const double left, const double right, const double 
 
 double Genetic::geneticDecode(const Chromosome& chr) const
 {
-    const double max = std::pow(2, chromosomeNumber) - 1.0;
+    const double max = std::pow(2, chromosomeLength) - 1.0;
     double convert = 0.0;
     std::for_each(
         chr.cbegin(),
@@ -409,7 +409,7 @@ double Genetic::geneticDecode(const Chromosome& chr) const
 
 Genetic::Population Genetic::populationInit()
 {
-    Population pop(popSize, Chromosome(chromosomeNumber, 0));
+    Population pop(popSize, Chromosome(chromosomeLength, 0));
     std::for_each(
         pop.begin(),
         pop.end(),
@@ -422,7 +422,7 @@ Genetic::Population Genetic::populationInit()
 void Genetic::geneticCross(Chromosome& chr1, Chromosome& chr2)
 {
     std::uint32_t pmxBegin = 0, pmxEnd = 0;
-    std::uniform_int_distribution<std::uint32_t> randomPos(0, chromosomeNumber - 1);
+    std::uniform_int_distribution<std::uint32_t> randomPos(0, chromosomeLength - 1);
     do
     {
         pmxBegin = randomPos(engine);
@@ -432,7 +432,7 @@ void Genetic::geneticCross(Chromosome& chr1, Chromosome& chr2)
             std::swap(pmxBegin, pmxEnd);
         }
     }
-    while ((pmxBegin == pmxEnd) || ((pmxEnd - pmxBegin) == (chromosomeNumber - 1)));
+    while ((pmxBegin == pmxEnd) || ((pmxEnd - pmxBegin) == (chromosomeLength - 1)));
 
     auto chrTemp{chr1};
     std::copy_n(chr2.cbegin() + pmxBegin, pmxEnd - pmxBegin, chr1.begin() + pmxBegin);
