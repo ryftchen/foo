@@ -356,9 +356,9 @@ private:
     //! @brief The probability of a possible event (from 0 to 1).
     std::uniform_real_distribution<double> probability{0.0, 1.0};
     //! @brief Crossover probability.
-    static constexpr double crossPr{0.7};
+    static constexpr double crossPr{0.75};
     //! @brief Mutation probability.
-    static constexpr double mutatePr{0.01};
+    static constexpr double mutatePr{0.015};
     //! @brief Population size.
     static constexpr std::uint32_t popSize{500};
     //! @brief Number of generations.
