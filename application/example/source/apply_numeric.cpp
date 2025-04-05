@@ -9,7 +9,6 @@
 
 #ifndef __PRECOMPILED_HEADER
 #include <cassert>
-#include <iomanip>
 #include <ranges>
 #include <syncstream>
 #else
