@@ -418,6 +418,7 @@ void View::buildResponse(const std::string_view reqPlaintext, char* respBuffer)
 {
     std::visit(
         OptionVisitor{
+            [](const OptBase& /*opt*/) {},
             [&respBuffer](const OptDepend& opt) { buildTLVPacket4Depend(opt.args, respBuffer); },
             [&respBuffer](const OptExecute& opt) { buildTLVPacket4Execute(opt.args, respBuffer); },
             [&respBuffer](const OptJournal& opt) { buildTLVPacket4Journal(opt.args, respBuffer); },
@@ -429,7 +430,8 @@ void View::buildResponse(const std::string_view reqPlaintext, char* respBuffer)
                 if (auto* optPtr = const_cast<std::remove_const_t<std::remove_reference_t<decltype(opt)>>*>(&opt);
                     nullptr != dynamic_cast<OptBase*>(optPtr))
                 {
-                    throw std::runtime_error{"Unknown option type (" + std::string{typeid(opt).name()} + ")."};
+                    throw std::runtime_error{
+                        "Unprocessed option type (detail: " + std::string{typeid(opt).name()} + ")."};
                 }
             }},
         extractOption(reqPlaintext));
@@ -664,12 +666,12 @@ int View::fillSharedMemory(const std::string_view contents)
         0, sizeof(SharedMemory), IPC_CREAT | IPC_EXCL | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
     if (-1 == shmId)
     {
-        throw std::runtime_error{"Failed to create shared memory."};
+        throw std::runtime_error{"Failed to create shared memory (" + std::to_string(shmId) + ")."};
     }
     void* const shm = ::shmat(shmId, nullptr, 0);
     if (nullptr == shm)
     {
-        throw std::runtime_error{"Failed to attach shared memory."};
+        throw std::runtime_error{"Failed to attach shared memory (" + std::to_string(shmId) + ")."};
     }
 
     auto* const shrMem = reinterpret_cast<SharedMemory*>(shm);
@@ -701,7 +703,7 @@ void View::fetchSharedMemory(const int shmId, std::string& contents)
     void* const shm = ::shmat(shmId, nullptr, 0);
     if (nullptr == shm)
     {
-        throw std::runtime_error{"Failed to attach shared memory."};
+        throw std::runtime_error{"Failed to attach shared memory (" + std::to_string(shmId) + ")."};
     }
 
     auto* const shrMem = reinterpret_cast<SharedMemory*>(shm);
