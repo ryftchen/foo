@@ -158,6 +158,7 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using arithmetic::ArithmeticSolution;
+            static_assert(utility::common::isStatelessClass<ArithmeticSolution>());
             case abbrValue(ArithmeticMethod::addition):
                 addTask(target, &ArithmeticSolution::additionMethod);
                 break;
@@ -249,6 +250,7 @@ void applyingDivisor(const std::vector<std::string>& candidates)
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using divisor::DivisorSolution;
+            static_assert(utility::common::isStatelessClass<DivisorSolution>());
             case abbrValue(DivisorMethod::euclidean):
                 addTask(target, &DivisorSolution::euclideanMethod);
                 break;
@@ -375,6 +377,7 @@ void applyingIntegral(const std::vector<std::string>& candidates)
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using integral::IntegralSolution;
+            static_assert(utility::common::isStatelessClass<IntegralSolution>());
             case abbrValue(IntegralMethod::trapezoidal):
                 addTask(target, &IntegralSolution::trapezoidalMethod);
                 break;
@@ -469,6 +472,7 @@ void applyingPrime(const std::vector<std::string>& candidates)
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using prime::PrimeSolution;
+            static_assert(utility::common::isStatelessClass<PrimeSolution>());
             case abbrValue(PrimeMethod::eratosthenes):
                 addTask(target, &PrimeSolution::eratosthenesMethod);
                 break;
