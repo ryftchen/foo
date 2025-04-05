@@ -84,13 +84,13 @@ public:
 
     // NOLINTBEGIN(google-explicit-constructor)
     //! @brief Construct a new JSON object.
-    JSON(std::nullptr_t /*n*/) : data{}, type{Type::null} {}
+    JSON(std::nullptr_t /*n*/) : data{} {}
     //! @brief Construct a new JSON object.
     //! @tparam T - type of string value
     //! @param s - string value
     template <typename T>
     JSON(const T s, typename std::enable_if<std::is_convertible_v<T, std::string>>::type* /*type*/ = nullptr) :
-        data{String{s}}, type{Type::string}
+        data{String{s}}
     {
     }
     //! @brief Construct a new JSON object.
@@ -98,7 +98,7 @@ public:
     //! @param f - floating value
     template <typename T>
     JSON(const T f, typename std::enable_if<std::is_floating_point_v<T>>::type* /*type*/ = 0) :
-        data{static_cast<Floating>(f)}, type{Type::floating}
+        data{static_cast<Floating>(f)}
     {
     }
     //! @brief Construct a new JSON object.
@@ -106,7 +106,7 @@ public:
     //! @param i - integral value
     template <typename T>
     JSON(const T i, typename std::enable_if<std::is_integral_v<T> && !std::is_same_v<T, bool>>::type* /*type*/ = 0) :
-        data{static_cast<Integral>(i)}, type{Type::integral}
+        data{static_cast<Integral>(i)}
     {
     }
     //! @brief Construct a new JSON object.
@@ -114,7 +114,7 @@ public:
     //! @param b - boolean value
     template <typename T>
     JSON(const T b, typename std::enable_if<std::is_same_v<T, bool>>::type* /*type*/ = 0) :
-        data{static_cast<Boolean>(b)}, type{Type::boolean}
+        data{static_cast<Boolean>(b)}
     {
     }
     // NOLINTEND(google-explicit-constructor)
@@ -264,9 +264,6 @@ public:
     //! @param key - target key
     //! @return exist or not exist
     [[nodiscard]] bool hasKey(const std::string_view key) const;
-    //! @brief Get the data type.
-    //! @return data type
-    [[nodiscard]] Type getType() const;
     //! @brief Check whether the type is null.
     //! @return be null type or not
     [[nodiscard]] bool isNullType() const;
@@ -324,6 +321,17 @@ public:
     //! @return minified formatted string
     [[nodiscard]] std::string dumpMinified() const;
 
+    //! @brief Data type object's helper type for the visitor.
+    //! @tparam Ts - type of visitors
+    template <typename... Ts>
+    struct DataVisitor : Ts...
+    {
+        using Ts::operator()...;
+    };
+    //! @brief Explicit deduction guide for DataVisitor.
+    //! @tparam Ts - type of visitors
+    template <typename... Ts>
+    DataVisitor(Ts...) -> DataVisitor<Ts...>;
     //! @brief Alias for the value in the data.
     using Value = std::variant<std::monostate, Null, Object, Array, String, Floating, Integral, Boolean>;
     //! @brief The data that stores JSON information.
@@ -356,11 +364,9 @@ public:
 
 private:
     //! @brief Set the data type.
-    //! @param t - target data type
-    void setType(const Type t);
-
-    //! @brief Data type.
-    Type type{Type::null};
+    //! @tparam T - type of data
+    template <typename T>
+    void setType();
 
 protected:
     friend std::ostream& operator<<(std::ostream& os, const JSON& json);
@@ -370,7 +376,7 @@ protected:
 template <typename T>
 typename std::enable_if<std::is_convertible_v<T, std::string>, JSON&>::type JSON::operator=(const T s)
 {
-    setType(Type::string);
+    setType<String>();
     data.value = String{s};
 
     return *this;
@@ -379,7 +385,7 @@ typename std::enable_if<std::is_convertible_v<T, std::string>, JSON&>::type JSON
 template <typename T>
 typename std::enable_if<std::is_floating_point_v<T>, JSON&>::type JSON::operator=(const T f)
 {
-    setType(Type::floating);
+    setType<Floating>();
     data.value = static_cast<Floating>(f);
 
     return *this;
@@ -388,7 +394,7 @@ typename std::enable_if<std::is_floating_point_v<T>, JSON&>::type JSON::operator
 template <typename T>
 typename std::enable_if<std::is_integral_v<T> && !std::is_same_v<T, bool>, JSON&>::type JSON::operator=(const T i)
 {
-    setType(Type::integral);
+    setType<Integral>();
     data.value = static_cast<Integral>(i);
 
     return *this;
@@ -397,7 +403,7 @@ typename std::enable_if<std::is_integral_v<T> && !std::is_same_v<T, bool>, JSON&
 template <typename T>
 typename std::enable_if<std::is_same_v<T, bool>, JSON&>::type JSON::operator=(const T b)
 {
-    setType(Type::boolean);
+    setType<Boolean>();
     data.value = static_cast<Boolean>(b);
 
     return *this;
@@ -407,7 +413,7 @@ typename std::enable_if<std::is_same_v<T, bool>, JSON&>::type JSON::operator=(co
 template <typename T>
 void JSON::append(const T arg)
 {
-    setType(Type::array);
+    setType<Array>();
     std::get<Array>(data.value).emplace_back(arg);
 }
 
@@ -416,6 +422,44 @@ void JSON::append(const T arg, const U... args)
 {
     append(arg);
     append(args...);
+}
+
+template <typename T>
+void JSON::setType()
+{
+    if (std::holds_alternative<T>(data.value))
+    {
+        return;
+    }
+
+    if constexpr (std::is_same_v<T, Null>)
+    {
+        data = Data{};
+    }
+    else if constexpr (std::is_same_v<T, Object>)
+    {
+        data.value = Object{};
+    }
+    else if constexpr (std::is_same_v<T, Array>)
+    {
+        data.value = Array{};
+    }
+    else if constexpr (std::is_same_v<T, String>)
+    {
+        data.value = String{};
+    }
+    else if constexpr (std::is_same_v<T, Floating>)
+    {
+        data.value = static_cast<Floating>(0.0);
+    }
+    else if constexpr (std::is_same_v<T, Integral>)
+    {
+        data.value = static_cast<Integral>(0);
+    }
+    else if constexpr (std::is_same_v<T, Boolean>)
+    {
+        data.value = static_cast<Boolean>(false);
+    }
 }
 
 extern JSON array();
