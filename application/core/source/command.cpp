@@ -64,14 +64,14 @@ static void triggerHelper(const ExtEvent event)
     {
         case ExtEvent::startup:
             typename Helper::Access().startup();
-            break;
+            return;
         case ExtEvent::shutdown:
             typename Helper::Access().shutdown();
-            break;
+            return;
         case ExtEvent::reload:
             typename Helper::Access().reload();
-            break;
-        default:
+            return;
+        [[unlikely]] default:
             break;
     }
 }
