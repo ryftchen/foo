@@ -378,7 +378,7 @@ struct ElemList
             nullptr,
             [&name](const auto ret, const auto elem)
             {
-                if constexpr (std::is_same_v<decltype(elem.value), T>)
+                if constexpr (std::is_same_v<T, decltype(elem.value)>)
                 {
                     return (elem.name == name) ? &elem.value : ret;
                 }
