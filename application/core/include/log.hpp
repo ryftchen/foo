@@ -12,7 +12,6 @@
 #include <forward_list>
 #include <iostream>
 #include <source_location>
-#include <sstream>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER

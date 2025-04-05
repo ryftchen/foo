@@ -6,8 +6,8 @@
 
 #pragma once
 
+#include <chrono>
 #include <functional>
-#include <thread>
 
 //! @brief The utility module.
 namespace utility // NOLINT(modernize-concat-nested-namespaces)
@@ -46,14 +46,8 @@ Rep Time::elapsedTime() const
     return std::chrono::duration<Rep, Period>(std::chrono::high_resolution_clock::now() - beginTime).count();
 }
 
-//! @brief Perform millisecond-level sleep.
-//! @param duration - sleep duration
-inline void millisecondLevelSleep(const std::size_t duration)
-{
-    std::this_thread::sleep_for(std::chrono::operator""ms(duration));
-}
-
-extern std::string currentSystemTime();
 extern int blockingTimer(const std::function<bool()>& termination, const int timeout = -1);
+extern void millisecondLevelSleep(const std::size_t duration);
+extern std::string currentSystemTime();
 } // namespace time
 } // namespace utility

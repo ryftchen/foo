@@ -13,6 +13,7 @@
 #include <latch>
 #include <numeric>
 #include <ranges>
+#include <thread>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER

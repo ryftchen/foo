@@ -6,6 +6,8 @@
 
 #include "time.hpp"
 
+#include <thread>
+
 namespace utility::time
 {
 //! @brief Function version number.
@@ -24,6 +26,31 @@ Time::Time()
 void Time::reset()
 {
     beginTime = std::chrono::high_resolution_clock::now();
+}
+
+//! @brief Create a one-shot timer with blocking.
+//! @param termination - termination condition
+//! @param timeout - timeout period (ms)
+//! @return 0 if the termination condition is met, otherwise -1 on timeout
+int blockingTimer(const std::function<bool()>& termination, const int timeout)
+{
+    for (const Time timer{}; (timeout < 0) || (timer.elapsedTime() <= timeout);)
+    {
+        if (termination())
+        {
+            return 0;
+        }
+        std::this_thread::yield();
+    }
+
+    return -1;
+}
+
+//! @brief Perform millisecond-level sleep.
+//! @param duration - sleep duration
+void millisecondLevelSleep(const std::size_t duration)
+{
+    std::this_thread::sleep_for(std::chrono::operator""ms(duration));
 }
 
 //! @brief Get the current system time, like "1970-01-01 00:00:00.000000 UTC".
@@ -53,23 +80,5 @@ std::string currentSystemTime()
         tm.tm_zone);
 
     return std::string{date};
-}
-
-//! @brief Create a one-shot timer with blocking.
-//! @param termination - termination condition
-//! @param timeout - timeout period (ms)
-//! @return 0 if the termination condition is met, otherwise -1 on timeout
-int blockingTimer(const std::function<bool()>& termination, const int timeout)
-{
-    for (const Time timer{}; (timeout < 0) || (timer.elapsedTime() <= timeout);)
-    {
-        if (termination())
-        {
-            return 0;
-        }
-        std::this_thread::yield();
-    }
-
-    return -1;
 }
 } // namespace utility::time
