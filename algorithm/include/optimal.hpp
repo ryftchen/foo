@@ -358,7 +358,7 @@ private:
     //! @brief Crossover probability.
     static constexpr double crossPr{0.75};
     //! @brief Mutation probability.
-    static constexpr double mutatePr{0.015};
+    static constexpr double mutatePr{0.01};
     //! @brief Population size.
     static constexpr std::uint32_t popSize{500};
     //! @brief Number of generations.
