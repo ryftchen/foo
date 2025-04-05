@@ -144,6 +144,15 @@ public:
 template <const std::string_view&... Strings>
 static constexpr auto concatString = ConcatString<Strings...>::value;
 
+//! @brief Check whether the target class is stateless.
+//! @tparam T - type of target class
+//! @return be stateless or not
+template <typename T>
+inline consteval bool isStatelessClass()
+{
+    return std::is_empty_v<T> || ((sizeof(T) == sizeof(void*) && std::is_polymorphic_v<T>));
+}
+
 //! @brief Check whether the target value is part of the enumeration.
 //! @tparam EnumType - type of enumeration
 //! @tparam Values - arguments of enumeration

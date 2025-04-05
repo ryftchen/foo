@@ -141,6 +141,7 @@ void applyingLinear(const std::vector<std::string>& candidates)
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using linear::LinearStructure;
+            static_assert(utility::common::isStatelessClass<LinearStructure>());
             case abbrValue(LinearInstance::linkedList):
                 addTask(target, &LinearStructure::linkedListInstance);
                 break;
@@ -229,6 +230,7 @@ void applyingTree(const std::vector<std::string>& candidates)
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using tree::TreeStructure;
+            static_assert(utility::common::isStatelessClass<TreeStructure>());
             case abbrValue(TreeInstance::binarySearch):
                 addTask(target, &TreeStructure::bsInstance);
                 break;

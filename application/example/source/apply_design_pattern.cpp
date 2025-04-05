@@ -229,6 +229,7 @@ void applyingBehavioral(const std::vector<std::string>& candidates)
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using behavioral::BehavioralPattern;
+            static_assert(utility::common::isStatelessClass<BehavioralPattern>());
             case abbrValue(BehavioralInstance::chainOfResponsibility):
                 addTask(target, &BehavioralPattern::chainOfResponsibilityInstance);
                 break;
@@ -363,6 +364,7 @@ void applyingCreational(const std::vector<std::string>& candidates)
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using creational::CreationalPattern;
+            static_assert(utility::common::isStatelessClass<CreationalPattern>());
             case abbrValue(CreationalInstance::abstractFactory):
                 addTask(target, &CreationalPattern::abstractFactoryInstance);
                 break;
@@ -501,6 +503,7 @@ void applyingStructural(const std::vector<std::string>& candidates)
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using structural::StructuralPattern;
+            static_assert(utility::common::isStatelessClass<StructuralPattern>());
             case abbrValue(StructuralInstance::adapter):
                 addTask(target, &StructuralPattern::adapterInstance);
                 break;

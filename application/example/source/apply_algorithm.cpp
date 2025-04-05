@@ -220,6 +220,7 @@ void applyingMatch(const std::vector<std::string>& candidates)
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using match::MatchSolution;
+            static_assert(utility::common::isStatelessClass<MatchSolution>());
             case abbrValue(MatchMethod::rabinKarp):
                 addTask(target, &MatchSolution::rkMethod);
                 break;
@@ -306,6 +307,7 @@ void applyingNotation(const std::vector<std::string>& candidates)
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using notation::NotationSolution;
+            static_assert(utility::common::isStatelessClass<NotationSolution>());
             case abbrValue(NotationMethod::prefix):
                 addTask(target, &NotationSolution::prefixMethod);
                 break;
@@ -459,6 +461,7 @@ void applyingOptimal(const std::vector<std::string>& candidates)
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using optimal::OptimalSolution;
+            static_assert(utility::common::isStatelessClass<OptimalSolution>());
             case abbrValue(OptimalMethod::gradient):
                 addTask(target, &OptimalSolution::gradientDescentMethod);
                 break;
@@ -588,6 +591,7 @@ void applyingSearch(const std::vector<std::string>& candidates)
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using search::SearchSolution;
+            static_assert(utility::common::isStatelessClass<SearchSolution>());
             case abbrValue(SearchMethod::binary):
                 addTask(target, &SearchSolution::binaryMethod);
                 break;
@@ -775,6 +779,7 @@ void applyingSort(const std::vector<std::string>& candidates)
         switch (utility::common::bkdrHash(target.c_str()))
         {
             using sort::SortSolution;
+            static_assert(utility::common::isStatelessClass<SortSolution>());
             case abbrValue(SortMethod::bubble):
                 addTask(target, &SortSolution::bubbleMethod);
                 break;
