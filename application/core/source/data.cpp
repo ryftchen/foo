@@ -23,7 +23,7 @@ bool Packet::write(const void* const dst, const int offset)
     std::memcpy(writer, dst, offset);
     writer += offset;
 
-    return (writer < tail) ? true : false;
+    return writer < tail;
 }
 
 bool Packet::read(void* const dst, const int offset)
@@ -31,7 +31,7 @@ bool Packet::read(void* const dst, const int offset)
     std::memcpy(dst, reader, offset);
     reader += offset;
 
-    return (reader < tail) ? true : false;
+    return reader < tail;
 }
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
