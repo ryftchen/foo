@@ -103,7 +103,7 @@ static JSON parseObject(const std::string_view fmt, std::size_t& offset)
         consumeWhitespace(fmt, offset);
         if (':' != fmt.at(offset))
         {
-            throw std::runtime_error{"JSON object: Expected ':', found '" + std::string{fmt.at(offset)} + "'."};
+            throw std::runtime_error{"For JSON object, expected ':', found '" + std::string{fmt.at(offset)} + "'."};
         }
         consumeWhitespace(fmt, ++offset);
         const auto val = parseNext(fmt, offset);
@@ -122,7 +122,8 @@ static JSON parseObject(const std::string_view fmt, std::size_t& offset)
         }
         else
         {
-            throw std::runtime_error{"JSON object: Expected ',' or '}', found '" + std::string{fmt.at(offset)} + "'."};
+            throw std::runtime_error{
+                "For JSON object, expected ',' or '}', found '" + std::string{fmt.at(offset)} + "'."};
         }
     }
 
@@ -160,16 +161,17 @@ static JSON parseArray(const std::string_view fmt, std::size_t& offset)
         }
         else
         {
-            throw std::runtime_error{"JSON array: Expected ',' or ']', found '" + std::string{fmt.at(offset)} + "'."};
+            throw std::runtime_error{
+                "For JSON array, expected ',' or ']', found '" + std::string{fmt.at(offset)} + "'."};
         }
     }
 
     return array;
 }
 
-//! @brief Check whether it is a hexadecimal character.
-//! @param c - character
-//! @return be a hexadecimal character or not
+//! @brief Check whether the target character is hexadecimal.
+//! @param c - target character
+//! @return be hexadecimal or not
 static bool isHexCharacter(const char c)
 {
     return ((c >= '0') && (c <= '9')) || ((c >= 'a') && (c <= 'f')) || ((c >= 'A') && (c <= 'F'));
@@ -220,7 +222,7 @@ static JSON parseString(const std::string_view fmt, std::size_t& offset)
                         if (!isHexCharacter(c))
                         {
                             throw std::runtime_error{
-                                "JSON string: Expected hex character in unicode escape, found '" + std::string{c}
+                                "For JSON string, expected hex character in unicode escape, found '" + std::string{c}
                                 + "'."};
                         }
                         val += c;
@@ -274,7 +276,8 @@ static std::string extractExponent(const std::string_view fmt, std::size_t& offs
         }
         else if (!std::isspace(c) && (',' != c) && (']' != c) && ('}' != c))
         {
-            throw std::runtime_error{"JSON number: Expected a number for exponent, found '" + std::string{c} + "'."};
+            throw std::runtime_error{
+                "For JSON number, expected a number for exponent, found '" + std::string{c} + "'."};
         }
         else
         {
@@ -321,7 +324,7 @@ static JSON parseNumber(const std::string_view fmt, std::size_t& offset)
     }
     else if (!std::isspace(c) && (',' != c) && (']' != c) && ('}' != c))
     {
-        throw std::runtime_error{"JSON number: Unexpected character '" + std::string{c} + "'."};
+        throw std::runtime_error{"For JSON number, unexpected character '" + std::string{c} + "'."};
     }
     --offset;
 
@@ -361,7 +364,7 @@ static JSON parseBoolean(const std::string_view fmt, std::size_t& offset)
     else
     {
         throw std::runtime_error{
-            "JSON boolean: Expected \"" + std::string{trueLit} + "\" or \"" + std::string{falseLit} + "\", found \""
+            "For JSON boolean, expected \"" + std::string{trueLit} + "\" or \"" + std::string{falseLit} + "\", found \""
             + std::string{fmt.substr(offset, falseLit.length())} + "\"."};
     }
     offset += (boolean.toBoolean() ? trueLit.length() : falseLit.length());
@@ -379,7 +382,7 @@ static JSON parseNull(const std::string_view fmt, std::size_t& offset)
     if (fmt.substr(offset, nullLit.length()) != nullLit)
     {
         throw std::runtime_error{
-            "JSON null: Expected \"" + std::string{nullLit} + "\", found \""
+            "For JSON null, expected \"" + std::string{nullLit} + "\", found \""
             + std::string{fmt.substr(offset, nullLit.length())} + "\"."};
     }
     offset += nullLit.length();
@@ -416,14 +419,39 @@ static JSON parseNext(const std::string_view fmt, std::size_t& offset)
     throw std::runtime_error{"JSON syntax error, unknown starting character '" + std::string{c} + "'."};
 }
 
-JSON::JSON(const JSON::Type type)
+JSON::JSON(const Type type)
 {
-    setType(type);
+    switch (type)
+    {
+        case Type::null:
+            setType<Null>();
+            break;
+        case Type::object:
+            setType<Object>();
+            break;
+        case Type::array:
+            setType<Array>();
+            break;
+        case Type::string:
+            setType<String>();
+            break;
+        case Type::floating:
+            setType<Floating>();
+            break;
+        case Type::integral:
+            setType<Integral>();
+            break;
+        case Type::boolean:
+            setType<Boolean>();
+            break;
+        default:
+            break;
+    }
 }
 
 JSON::JSON(const std::initializer_list<JSON>& list)
 {
-    setType(Type::object);
+    setType<Object>();
     for (const auto* iterator = list.begin(); list.end() != iterator; std::advance(iterator, 2))
     {
         operator[](iterator->toString()) = *std::next(iterator);
@@ -433,9 +461,7 @@ JSON::JSON(const std::initializer_list<JSON>& list)
 JSON::JSON(JSON&& json) noexcept
 {
     data = std::move(json.data);
-    type = json.type;
     json.data = Data{};
-    json.type = Type::null;
 }
 
 JSON& JSON::operator=(JSON&& json) noexcept
@@ -443,15 +469,13 @@ JSON& JSON::operator=(JSON&& json) noexcept
     if (this != &json)
     {
         data = std::move(json.data);
-        type = json.type;
         json.data = Data{};
-        json.type = Type::null;
     }
 
     return *this;
 }
 
-JSON JSON::make(const JSON::Type type)
+JSON JSON::make(const Type type)
 {
     return JSON(type);
 }
@@ -470,13 +494,13 @@ JSON JSON::load(const std::string_view fmt)
 
 JSON& JSON::operator[](const std::string_view key)
 {
-    setType(Type::object);
+    setType<Object>();
     return std::get<Object>(data.value).operator[](key.data());
 }
 
 JSON& JSON::operator[](std::size_t index)
 {
-    setType(Type::array);
+    setType<Array>();
     auto& arrayVal = std::get<Array>(data.value);
     if (index >= arrayVal.size())
     {
@@ -508,379 +532,280 @@ const JSON& JSON::at(std::size_t index) const
 
 int JSON::length() const
 {
-    return (Type::array == type) ? static_cast<int>(std::get<Array>(data.value).size()) : -1;
+    return std::holds_alternative<Array>(data.value) ? static_cast<int>(std::get<Array>(data.value).size()) : -1;
 }
 
 int JSON::size() const
 {
-    switch (type)
-    {
-        case Type::object:
-            return static_cast<int>(std::get<Object>(data.value).size());
-        case Type::array:
-            return static_cast<int>(std::get<Array>(data.value).size());
-        default:
-            break;
-    }
-
-    return -1;
+    return std::visit(
+        DataVisitor{
+            [](const Object& val) { return static_cast<int>(val.size()); },
+            [](const Array& val) { return static_cast<int>(val.size()); },
+            [](const auto& /*val*/) { return -1; }},
+        data.value);
 }
 
 bool JSON::hasKey(const std::string_view key) const
 {
-    return (Type::object == type) ? std::get<Object>(data.value).contains(key.data()) : false;
-}
-
-JSON::Type JSON::getType() const
-{
-    return type;
+    return std::holds_alternative<Object>(data.value) ? std::get<Object>(data.value).contains(key.data()) : false;
 }
 
 bool JSON::isNullType() const
 {
-    return Type::null == type;
+    return std::holds_alternative<Null>(data.value);
 }
 
 bool JSON::isObjectType() const
 {
-    return Type::object == type;
+    return std::holds_alternative<Object>(data.value);
 }
 
 bool JSON::isArrayType() const
 {
-    return Type::array == type;
+    return std::holds_alternative<Array>(data.value);
 }
 
 bool JSON::isStringType() const
 {
-    return Type::string == type;
+    return std::holds_alternative<String>(data.value);
 }
 
 bool JSON::isFloatingType() const
 {
-    return Type::floating == type;
+    return std::holds_alternative<Floating>(data.value);
 }
 
 bool JSON::isIntegralType() const
 {
-    return Type::integral == type;
+    return std::holds_alternative<Integral>(data.value);
 }
 
 bool JSON::isBooleanType() const
 {
-    return Type::boolean == type;
+    return std::holds_alternative<Boolean>(data.value);
 }
 
 JSON::String JSON::toString() const
 {
-    switch (type)
-    {
-        case Type::string:
-            return jsonEscape(std::get<String>(data.value));
-        case Type::object:
-            return dumpMinified();
-        case Type::array:
-            return dumpMinified();
-        case Type::floating:
-            return std::to_string(std::get<Floating>(data.value));
-        case Type::integral:
-            return std::to_string(std::get<Integral>(data.value));
-        case Type::boolean:
-            return std::get<Boolean>(data.value) ? "true" : "false";
-        case Type::null:
-            return "null";
-        default:
-            break;
-    }
-
-    return {};
+    return std::visit(
+        DataVisitor{
+            [](const String& val) -> String { return jsonEscape(val); },
+            [this](const Object& /*val*/) -> String { return dumpMinified(); },
+            [this](const Array& /*val*/) -> String { return dumpMinified(); },
+            [](const Floating& val) -> String { return std::to_string(val); },
+            [](const Integral& val) -> String { return std::to_string(val); },
+            [](const Boolean& val) -> String { return val ? "true" : "false"; },
+            [](const Null& /*val*/) -> String { return "null"; },
+            [](const auto& /*val*/) -> String { return {}; }},
+        data.value);
 }
 
 JSON::String JSON::toUnescapedString() const
 {
-    switch (type)
-    {
-        case Type::string:
-            return std::get<String>(data.value);
-        case Type::object:
-            return dumpMinified();
-        case Type::array:
-            return dumpMinified();
-        case Type::floating:
-            return std::to_string(std::get<Floating>(data.value));
-        case Type::integral:
-            return std::to_string(std::get<Integral>(data.value));
-        case Type::boolean:
-            return std::get<Boolean>(data.value) ? "true" : "false";
-        case Type::null:
-            return "null";
-        default:
-            break;
-    }
-
-    return {};
+    return std::visit(
+        DataVisitor{
+            [](const String& val) -> String { return val; },
+            [this](const Object& /*val*/) -> String { return dumpMinified(); },
+            [this](const Array& /*val*/) -> String { return dumpMinified(); },
+            [](const Floating& val) -> String { return std::to_string(val); },
+            [](const Integral& val) -> String { return std::to_string(val); },
+            [](const Boolean& val) -> String { return val ? "true" : "false"; },
+            [](const Null& /*val*/) -> String { return "null"; },
+            [](const auto& /*val*/) -> String { return {}; }},
+        data.value);
 }
 
 JSON::Floating JSON::toFloating() const
 {
-    switch (type)
-    {
-        case Type::floating:
-            return std::get<Floating>(data.value);
-        case Type::integral:
-            return std::get<Integral>(data.value);
-        case Type::boolean:
-            return std::get<Boolean>(data.value);
-        case Type::string:
-        {
-            double parsed = 0.0;
-            try
+    return std::visit(
+        DataVisitor{
+            [](const Floating& val) -> Floating { return val; },
+            [](const Integral& val) -> Floating { return val; },
+            [](const Boolean& val) -> Floating { return val; },
+            [](const String& val) -> Floating
             {
-                parsed = std::stod(std::get<String>(data.value));
-            }
-            catch (const std::exception& err)
-            {
-                throw std::logic_error{
-                    "Failed to convert the string value to floating in JSON, " + std::string{err.what()} + '.'};
-            }
-            return parsed;
-        }
-        default:
-            throw std::logic_error{"Failed to convert the value to floating in JSON."};
-    }
-
-    return 0.0;
+                double parsed = 0.0;
+                try
+                {
+                    parsed = std::stod(val);
+                }
+                catch (const std::exception& err)
+                {
+                    throw std::logic_error{
+                        "Failed to convert the string value to floating in JSON, " + std::string{err.what()} + '.'};
+                }
+                return parsed;
+            },
+            [](const auto& /*val*/) -> Floating
+            { throw std::logic_error{"Failed to convert the value to floating in JSON."}; }},
+        data.value);
 }
 
 JSON::Integral JSON::toIntegral() const
 {
-    switch (type)
-    {
-        case Type::integral:
-            return std::get<Integral>(data.value);
-        case Type::boolean:
-            return std::get<Boolean>(data.value);
-        case Type::floating:
-            return std::get<Floating>(data.value);
-        case Type::string:
-        {
-            long long parsed = 0;
-            const std::from_chars_result result = std::from_chars(
-                std::get<String>(data.value).c_str(),
-                std::get<String>(data.value).c_str() + std::get<String>(data.value).size(),
-                parsed);
-            if (!static_cast<bool>(result.ec))
+    return std::visit(
+        DataVisitor{
+            [](const Integral& val) -> Integral { return val; },
+            [](const Boolean& val) -> Integral { return val; },
+            [](const Floating& val) -> Integral { return val; },
+            [](const String& val) -> Integral
             {
-                return parsed;
-            }
-            throw std::logic_error{"Failed to convert the string value to integral in JSON."};
-        }
-        default:
-            throw std::logic_error{"Failed to convert the value to integral in JSON."};
-    }
-
-    return 0;
+                long long parsed = 0;
+                const auto result = std::from_chars(val.c_str(), val.c_str() + val.size(), parsed);
+                if (!static_cast<bool>(result.ec))
+                {
+                    return parsed;
+                }
+                throw std::logic_error{"Failed to convert the string value to integral in JSON."};
+            },
+            [](const auto& /*val*/) -> Integral
+            { throw std::logic_error{"Failed to convert the value to integral in JSON."}; }},
+        data.value);
 }
 
 JSON::Boolean JSON::toBoolean() const
 {
-    switch (type)
-    {
-        case Type::boolean:
-            return std::get<Boolean>(data.value);
-        case Type::floating:
-            return std::get<Floating>(data.value);
-        case Type::integral:
-            return std::get<Integral>(data.value);
-        case Type::string:
-        {
-            const auto& stringVal = std::get<String>(data.value);
-            if (stringVal.find("true") != std::string::npos)
+    return std::visit(
+        DataVisitor{
+            [](const Boolean& val) -> Boolean { return val; },
+            [](const Floating& val) -> Boolean { return val; },
+            [](const Integral& val) -> Boolean { return val; },
+            [](const String& val) -> Boolean
             {
-                return true;
-            }
-            if (stringVal.find("false") != std::string::npos)
-            {
-                return false;
-            }
-            int parsed = 0;
-            const std::from_chars_result result =
-                std::from_chars(stringVal.c_str(), stringVal.c_str() + stringVal.size(), parsed);
-            if (!static_cast<bool>(result.ec))
-            {
-                return parsed;
-            }
-            throw std::logic_error{"Failed to convert the string value to boolean in JSON."};
-        }
-        default:
-            throw std::logic_error{"Failed to convert the value to boolean in JSON."};
-    }
-
-    return false;
+                if (val.find("true") != std::string::npos)
+                {
+                    return true;
+                }
+                if (val.find("false") != std::string::npos)
+                {
+                    return false;
+                }
+                int parsed = 0;
+                const auto result = std::from_chars(val.c_str(), val.c_str() + val.size(), parsed);
+                if (!static_cast<bool>(result.ec))
+                {
+                    return parsed;
+                }
+                throw std::logic_error{"Failed to convert the string value to boolean in JSON."};
+            },
+            [](const auto& /*val*/) -> Boolean
+            { throw std::logic_error{"Failed to convert the value to boolean in JSON."}; }},
+        data.value);
 }
 
 JSON::JSONWrapper<JSON::Object> JSON::objectRange()
 {
-    return (Type::object == type) ? JSONWrapper<Object>{&std::get<Object>(data.value)} : JSONWrapper<Object>{nullptr};
+    return std::holds_alternative<Object>(data.value) ? JSONWrapper<Object>{&std::get<Object>(data.value)}
+                                                      : JSONWrapper<Object>{nullptr};
 }
 
 JSON::JSONWrapper<JSON::Array> JSON::arrayRange()
 {
-    return (Type::array == type) ? JSONWrapper<Array>{&std::get<Array>(data.value)} : JSONWrapper<Array>{nullptr};
+    return std::holds_alternative<Array>(data.value) ? JSONWrapper<Array>{&std::get<Array>(data.value)}
+                                                     : JSONWrapper<Array>{nullptr};
 }
 
 JSON::JSONConstWrapper<JSON::Object> JSON::objectRange() const
 {
-    return (Type::object == type) ? JSONConstWrapper<Object>{&std::get<Object>(data.value)}
-                                  : JSONConstWrapper<Object>{nullptr};
+    return std::holds_alternative<Object>(data.value) ? JSONConstWrapper<Object>{&std::get<Object>(data.value)}
+                                                      : JSONConstWrapper<Object>{nullptr};
 }
 
 JSON::JSONConstWrapper<JSON::Array> JSON::arrayRange() const
 {
-    return (Type::array == type) ? JSONConstWrapper<Array>{&std::get<Array>(data.value)}
-                                 : JSONConstWrapper<Array>{nullptr};
+    return std::holds_alternative<Array>(data.value) ? JSONConstWrapper<Array>{&std::get<Array>(data.value)}
+                                                     : JSONConstWrapper<Array>{nullptr};
 }
 
 std::string JSON::dump(const std::uint32_t depth, const std::string_view tab) const
 {
-    switch (type)
-    {
-        case Type::null:
-            return "null";
-        case Type::object:
-        {
-            std::string pad{};
-            for (std::uint32_t i = 0; i < depth; ++i)
+    return std::visit(
+        DataVisitor{
+            [](const Null& /*val*/) -> std::string { return "null"; },
+            [depth, &tab](const Object& val) -> std::string
             {
-                pad += tab;
-            }
-            std::string s("{\n");
-            for (bool skip = true; const auto& p : std::get<Object>(data.value))
-            {
-                if (!skip)
+                std::string pad{};
+                for (std::uint32_t i = 0; i < depth; ++i)
                 {
-                    s += ",\n";
+                    pad += tab;
                 }
-                s += (pad + '\"' + p.first + "\": " + p.second.dump(depth + 1, tab));
-                skip = false;
-            }
-            s += ('\n' + pad.erase(0, tab.length()) + '}');
-            return s;
-        }
-        case Type::array:
-        {
-            std::string s("[");
-            for (bool skip = true; const auto& p : std::get<Array>(data.value))
-            {
-                if (!skip)
+                std::string s("{\n");
+                for (bool skip = true; const auto& p : val)
                 {
-                    s += ", ";
+                    if (!skip)
+                    {
+                        s += ",\n";
+                    }
+                    s += (pad + '\"' + p.first + "\": " + p.second.dump(depth + 1, tab));
+                    skip = false;
                 }
-                s += p.dump(depth + 1, tab);
-                skip = false;
-            }
-            s += ']';
-            return s;
-        }
-        case Type::string:
-            return '\"' + jsonEscape(std::get<String>(data.value)) + '\"';
-        case Type::floating:
-            return std::to_string(std::get<Floating>(data.value));
-        case Type::integral:
-            return std::to_string(std::get<Integral>(data.value));
-        case Type::boolean:
-            return std::get<Boolean>(data.value) ? "true" : "false";
-        default:
-            break;
-    }
-
-    return {};
+                s += ('\n' + pad.erase(0, tab.length()) + '}');
+                return s;
+            },
+            [depth, &tab](const Array& val) -> std::string
+            {
+                std::string s("[");
+                for (bool skip = true; const auto& p : val)
+                {
+                    if (!skip)
+                    {
+                        s += ", ";
+                    }
+                    s += p.dump(depth + 1, tab);
+                    skip = false;
+                }
+                s += ']';
+                return s;
+            },
+            [](const String& val) -> std::string { return '\"' + jsonEscape(val) + '\"'; },
+            [](const Floating& val) -> std::string { return std::to_string(val); },
+            [](const Integral& val) -> std::string { return std::to_string(val); },
+            [](const Boolean& val) -> std::string { return val ? "true" : "false"; },
+            [](const auto& /*val*/) -> std::string { return {}; }},
+        data.value);
 }
 
 std::string JSON::dumpMinified() const
 {
-    switch (type)
-    {
-        case Type::null:
-            return "null";
-        case Type::object:
-        {
-            std::string s("{");
-            for (bool skip = true; const auto& p : std::get<Object>(data.value))
+    return std::visit(
+        DataVisitor{
+            [](const Null& /*val*/) -> std::string { return "null"; },
+            [](const Object& val) -> std::string
             {
-                if (!skip)
+                std::string s("{");
+                for (bool skip = true; const auto& p : val)
                 {
-                    s += ',';
+                    if (!skip)
+                    {
+                        s += ',';
+                    }
+                    s += ('\"' + p.first + "\":" + p.second.dumpMinified());
+                    skip = false;
                 }
-                s += ('\"' + p.first + "\":" + p.second.dumpMinified());
-                skip = false;
-            }
-            s += '}';
-            return s;
-        }
-        case Type::array:
-        {
-            std::string s("[");
-            for (bool skip = true; const auto& p : std::get<Array>(data.value))
+                s += '}';
+                return s;
+            },
+            [](const Array& val) -> std::string
             {
-                if (!skip)
+                std::string s("[");
+                for (bool skip = true; const auto& p : val)
                 {
-                    s += ',';
+                    if (!skip)
+                    {
+                        s += ',';
+                    }
+                    s += p.dumpMinified();
+                    skip = false;
                 }
-                s += p.dumpMinified();
-                skip = false;
-            }
-            s += ']';
-            return s;
-        }
-        case Type::string:
-            return '\"' + jsonEscape(std::get<String>(data.value)) + '\"';
-        case Type::floating:
-            return std::to_string(std::get<Floating>(data.value));
-        case Type::integral:
-            return std::to_string(std::get<Integral>(data.value));
-        case Type::boolean:
-            return std::get<Boolean>(data.value) ? "true" : "false";
-        default:
-            break;
-    }
-
-    return {};
-}
-
-void JSON::setType(const JSON::Type t)
-{
-    if (t == type)
-    {
-        return;
-    }
-
-    switch (t)
-    {
-        case Type::null:
-            data = Data{};
-            break;
-        case Type::object:
-            data.value = Object{};
-            break;
-        case Type::array:
-            data.value = Array{};
-            break;
-        case Type::string:
-            data.value = String{};
-            break;
-        case Type::floating:
-            data.value = static_cast<Floating>(0.0);
-            break;
-        case Type::integral:
-            data.value = static_cast<Integral>(0);
-            break;
-        case Type::boolean:
-            data.value = static_cast<Boolean>(false);
-            break;
-    }
-
-    type = t;
+                s += ']';
+                return s;
+            },
+            [](const String& val) -> std::string { return '\"' + jsonEscape(val) + '\"'; },
+            [](const Floating& val) -> std::string { return std::to_string(val); },
+            [](const Integral& val) -> std::string { return std::to_string(val); },
+            [](const Boolean& val) -> std::string { return val ? "true" : "false"; },
+            [](const auto& /*val*/) -> std::string { return {}; }},
+        data.value);
 }
 
 //! @brief The operator (<<) overloading of the JSON class.
