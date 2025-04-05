@@ -5,10 +5,12 @@ SHELL ["/bin/bash", "-c"]
 RUN apt-get update \
 && DEBIAN_FRONTEND=noninteractive apt-get install --assume-yes --no-install-recommends sudo tzdata ca-certificates \
 && sudo apt-get update \
-&& sudo apt-get install --assume-yes --no-install-recommends git python3 python3-pip build-essential cmake ninja-build gcc-13 g++-13 binutils-common \
-clang-16 clang++-16 lld-16 libstdc++-13-dev libgtest-dev libssl-dev liblz4-dev libreadline-dev libmpfrc++-dev llvm-16-dev libclang-16-dev libclang-rt-16-dev \
-clang-format-16 clang-tidy-16 shfmt shellcheck black pylint rustc cargo rustfmt rust-clippy gdb ccache distcc \
-valgrind cloc pre-commit doxygen doxygen-awesome-css graphviz docker.io docker-compose-v2 npm elfutils psmisc net-tools curl rsync zip bash-completion \
+&& sudo apt-get install --assume-yes --no-install-recommends coreutils sed mawk \
+build-essential binutils gcc-13 g++-13 clang-16 clang++-16 lld-16 cmake ninja-build \
+libstdc++-13-dev libgtest-dev libssl-dev liblz4-dev libreadline-dev libmpfrc++-dev llvm-16-dev libclang-16-dev libclang-rt-16-dev \
+clang-format-16 clang-tidy-16 shfmt shellcheck black pylint rustc cargo rustfmt rust-clippy gdb ccache distcc valgrind \
+cloc pre-commit doxygen doxygen-awesome-css graphviz git python3 python3-pip docker.io docker-compose-v2 npm \
+elfutils psmisc net-tools curl rsync zip bash-completion \
 && sudo apt-get clean \
 && sudo rm -rf /var/lib/apt/lists/* \
 && sudo pip3 install --no-cache-dir --break-system-packages compdb==0.2.0 ValgrindCI==0.3.0 sarif-tools==2.0.0 \
