@@ -224,8 +224,7 @@ Node* bsTreeInsert(BSTree tree, const Type key)
 //! @return root node after deleting
 Node* bsTreeDelete(BSTree tree, const Type key)
 {
-    Node* const z = bsTreeSearch(tree, key);
-    if (nullptr != z)
+    if (Node* const z = bsTreeSearch(tree, key); nullptr != z)
     {
         tree = deleteNode(tree, z);
     }
