@@ -50,7 +50,7 @@ void Console::setGreeting(const std::string_view greeting)
     terminal->greeting = greeting;
 }
 
-Console::RetCode Console::optionExecutor(const std::string_view option)
+Console::RetCode Console::optionExecutor(const std::string_view option) const
 {
     std::vector<std::string> inputs{};
     std::istringstream transfer(option.data());
@@ -71,7 +71,7 @@ Console::RetCode Console::optionExecutor(const std::string_view option)
     return regIter->second.second(inputs);
 }
 
-Console::RetCode Console::fileExecutor(const std::string_view filename)
+Console::RetCode Console::fileExecutor(const std::string_view filename) const
 {
     std::ifstream batch(filename.data());
     if (!batch)

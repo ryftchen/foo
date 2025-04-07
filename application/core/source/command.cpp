@@ -782,11 +782,22 @@ void Command::executeInConsole() const
     launchClient(udpClient);
     const auto session = std::make_shared<console::Console>(" > ");
     registerOnConsole(*session, udpClient);
-    for (const auto& option : pendingInputs)
-    {
-        session->optionExecutor(option);
-    }
 
+    try
+    {
+        using RetCode = console::Console::RetCode;
+        for (const auto& option : pendingInputs)
+        {
+            if (const auto retCode = session->optionExecutor(option); RetCode::quit == retCode)
+            {
+                break;
+            }
+        }
+    }
+    catch (const std::exception& err)
+    {
+        LOG_WRN << err.what();
+    }
     udpClient->toSend(buildExitRequest4Client());
     udpClient->waitIfAlive();
     interactionLatency();
