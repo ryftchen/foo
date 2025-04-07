@@ -226,7 +226,8 @@ private:
     //! @brief Build the response message.
     //! @param reqPlaintext - plaintext of the request
     //! @param respBuffer - buffer to store the response
-    static void buildResponse(const std::string_view reqPlaintext, char* respBuffer);
+    //! @return length of the response message
+    static int buildResponse(const std::string_view reqPlaintext, char* respBuffer);
     //! @brief Extract the option from the request.
     //! @param reqPlaintext - plaintext of the request
     //! @return option type

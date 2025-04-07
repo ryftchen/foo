@@ -363,7 +363,17 @@ bool View::Access::onParsing(char* buffer, const int length) const
     tlv::TLVValue value{};
     if (tlv::decodeTLV(buffer, length, value) < 0)
     {
-        throw std::runtime_error{"Invalid message content."};
+        std::ostringstream body{};
+        for (int i = 0; i < length; ++i)
+        {
+            body << "0x" << std::setfill('0') << std::setw(2) << std::hex
+                 << static_cast<int>(static_cast<unsigned char>(buffer[i]));
+            if ((i + 1) != length)
+            {
+                body << ' ';
+            }
+        }
+        throw std::runtime_error{"Invalid message content (" + body.str() + ")."};
     }
 
     if (std::strlen(value.libDetail) != 0)
@@ -414,16 +424,16 @@ void View::Access::disableWait() const
     inst.outputCond.notify_one();
 }
 
-void View::buildResponse(const std::string_view reqPlaintext, char* respBuffer)
+int View::buildResponse(const std::string_view reqPlaintext, char* respBuffer)
 {
-    std::visit(
+    return std::visit(
         OptionVisitor{
-            [](const OptBase& /*opt*/) {},
-            [&respBuffer](const OptDepend& opt) { buildTLVPacket4Depend(opt.args, respBuffer); },
-            [&respBuffer](const OptExecute& opt) { buildTLVPacket4Execute(opt.args, respBuffer); },
-            [&respBuffer](const OptJournal& opt) { buildTLVPacket4Journal(opt.args, respBuffer); },
-            [&respBuffer](const OptMonitor& opt) { buildTLVPacket4Monitor(opt.args, respBuffer); },
-            [&respBuffer](const OptProfile& opt) { buildTLVPacket4Profile(opt.args, respBuffer); },
+            [](const OptBase& /*opt*/) { return 0; },
+            [&respBuffer](const OptDepend& opt) { return buildTLVPacket4Depend(opt.args, respBuffer); },
+            [&respBuffer](const OptExecute& opt) { return buildTLVPacket4Execute(opt.args, respBuffer); },
+            [&respBuffer](const OptJournal& opt) { return buildTLVPacket4Journal(opt.args, respBuffer); },
+            [&respBuffer](const OptMonitor& opt) { return buildTLVPacket4Monitor(opt.args, respBuffer); },
+            [&respBuffer](const OptProfile& opt) { return buildTLVPacket4Profile(opt.args, respBuffer); },
             [](const auto& opt)
             {
                 // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
@@ -433,6 +443,7 @@ void View::buildResponse(const std::string_view reqPlaintext, char* respBuffer)
                     throw std::runtime_error{
                         "Unprocessed option type (detail: " + std::string{typeid(opt).name()} + ")."};
                 }
+                return 0;
             }},
         extractOption(reqPlaintext));
 }
@@ -907,20 +918,17 @@ void View::renewServer<utility::socket::TCPServer>()
                 const auto reqPlaintext = utility::common::base64Decode(message);
                 if (reqPlaintext == exitSymbol)
                 {
-                    buildTLVPacket4Stop(respBuffer);
-                    newSocket->toSend(respBuffer, sizeof(respBuffer));
+                    newSocket->toSend(respBuffer, buildTLVPacket4Stop(respBuffer));
                     newSocket->asyncExit();
                     return;
                 }
 
-                buildResponse(reqPlaintext, respBuffer);
-                newSocket->toSend(respBuffer, sizeof(respBuffer));
+                newSocket->toSend(respBuffer, buildResponse(reqPlaintext, respBuffer));
             }
             catch (const std::exception& err)
             {
                 LOG_WRN << err.what();
-                buildAckTLVPacket(respBuffer);
-                newSocket->toSend(respBuffer, sizeof(respBuffer));
+                newSocket->toSend(respBuffer, buildAckTLVPacket(respBuffer));
             }
         };
     };
@@ -945,19 +953,16 @@ void View::renewServer<utility::socket::UDPServer>()
             const auto reqPlaintext = utility::common::base64Decode(message);
             if (reqPlaintext == exitSymbol)
             {
-                buildTLVPacket4Stop(respBuffer);
-                udpServer->toSendTo(respBuffer, sizeof(respBuffer), ip, port);
+                udpServer->toSendTo(respBuffer, buildTLVPacket4Stop(respBuffer), ip, port);
                 return;
             }
 
-            buildResponse(reqPlaintext, respBuffer);
-            udpServer->toSendTo(respBuffer, sizeof(respBuffer), ip, port);
+            udpServer->toSendTo(respBuffer, buildResponse(reqPlaintext, respBuffer), ip, port);
         }
         catch (const std::exception& err)
         {
             LOG_WRN << err.what();
-            buildAckTLVPacket(respBuffer);
-            udpServer->toSendTo(respBuffer, sizeof(respBuffer), ip, port);
+            udpServer->toSendTo(respBuffer, buildAckTLVPacket(respBuffer), ip, port);
         }
     };
 }
