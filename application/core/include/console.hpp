@@ -66,11 +66,11 @@ public:
     //! @brief Execute the target console option.
     //! @param option - option to be executed
     //! @return value of RetCode
-    RetCode optionExecutor(const std::string_view option);
+    [[nodiscard]] RetCode optionExecutor(const std::string_view option) const;
     //! @brief Execute all console options in the target file.
     //! @param filename - file path to be executed
     //! @return value of RetCode
-    RetCode fileExecutor(const std::string_view filename);
+    [[nodiscard]] RetCode fileExecutor(const std::string_view filename) const;
     //! @brief Read console option line.
     //! @return value of RetCode
     RetCode readLine();
