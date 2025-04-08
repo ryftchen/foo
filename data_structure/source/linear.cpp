@@ -24,7 +24,7 @@ namespace doubly_linked_list
 static Node* createNode(void* const val)
 {
     Node* const node = ::new (std::nothrow) Node;
-    if (nullptr == node)
+    if (!node)
     {
         return nullptr;
     }
@@ -82,13 +82,7 @@ static Node* getNode(DLL head, const int index)
 //! @return 0 if successful, otherwise -1
 int createDll(DLL* const dll)
 {
-    *dll = createNode(nullptr);
-    if (nullptr == *dll)
-    {
-        return -1;
-    }
-
-    return 0;
+    return (nullptr != (*dll = createNode(nullptr))) ? 0 : -1;
 }
 
 //! @brief Destroy a doubly linked list.
@@ -96,7 +90,7 @@ int createDll(DLL* const dll)
 //! @return 0 if successful, otherwise -1
 int destroyDll(DLL* const dll)
 {
-    if (nullptr == *dll)
+    if (!*dll)
     {
         return -1;
     }
@@ -146,12 +140,7 @@ bool dllIsEmpty(DLL head)
 void* dllGet(DLL head, const int index)
 {
     const Node* const node = getNode(head, index);
-    if (nullptr == node)
-    {
-        return nullptr;
-    }
-
-    return node->p;
+    return node ? node->p : nullptr;
 }
 
 //! @brief Get the first node of the doubly linked list.
@@ -183,13 +172,13 @@ int dllInsert(DLL head, const int index, void* const val)
     }
 
     Node* const node = getNode(head, index);
-    if (nullptr == node)
+    if (!node)
     {
         return -1;
     }
 
     Node* const newNode = createNode(val);
-    if (nullptr == newNode)
+    if (!newNode)
     {
         return -1;
     }
@@ -209,7 +198,7 @@ int dllInsert(DLL head, const int index, void* const val)
 int dllInsertFirst(DLL head, void* const val)
 {
     Node* const node = createNode(val);
-    if (nullptr == node)
+    if (!node)
     {
         return -1;
     }
@@ -229,7 +218,7 @@ int dllInsertFirst(DLL head, void* const val)
 int dllInsertLast(DLL head, void* const val)
 {
     Node* const node = createNode(val);
-    if (nullptr == node)
+    if (!node)
     {
         return -1;
     }
@@ -249,7 +238,7 @@ int dllInsertLast(DLL head, void* const val)
 int dllDelete(DLL head, const int index)
 {
     const Node* const node = getNode(head, index);
-    if (nullptr == node)
+    if (!node)
     {
         return -1;
     }

@@ -122,7 +122,7 @@ template <typename T, std::size_t BlockSize>
 Memory<T, BlockSize>::~Memory()
 {
     Slot* curr = currentBlock;
-    while (nullptr != curr)
+    while (curr)
     {
         Slot* const prev = curr->next;
         operator delete(reinterpret_cast<void*>(curr));
@@ -169,7 +169,7 @@ inline const T* Memory<T, BlockSize>::address(const T& obj) const noexcept
 template <typename T, std::size_t BlockSize>
 inline T* Memory<T, BlockSize>::allocate(const std::size_t /*size*/, const T* const /*hint*/)
 {
-    if (nullptr != freeSlots)
+    if (freeSlots)
     {
         T* const result = reinterpret_cast<T*>(freeSlots);
         freeSlots = freeSlots->next;
@@ -188,7 +188,7 @@ inline T* Memory<T, BlockSize>::allocate(const std::size_t /*size*/, const T* co
 template <typename T, std::size_t BlockSize>
 inline void Memory<T, BlockSize>::deallocate(T* const obj, const std::size_t /*size*/)
 {
-    if (nullptr != obj)
+    if (obj)
     {
         reinterpret_cast<Slot*>(obj)->next = freeSlots;
         freeSlots = reinterpret_cast<Slot*>(obj);
@@ -229,7 +229,7 @@ inline T* Memory<T, BlockSize>::newElement(Args&&... args)
 template <typename T, std::size_t BlockSize>
 inline void Memory<T, BlockSize>::deleteElement(T* const obj)
 {
-    if (nullptr != obj)
+    if (obj)
     {
         obj->~T();
         deallocate(obj);

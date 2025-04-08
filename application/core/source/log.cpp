@@ -320,7 +320,7 @@ bool Log::isInServingState(const State state) const
 std::string Log::getFullLogPath(const std::string_view filename)
 {
     const char* const processHome = std::getenv("FOO_HOME");
-    if (nullptr == processHome)
+    if (!processHome)
     {
         throw std::runtime_error{"The environment variable FOO_HOME is not set."};
     }

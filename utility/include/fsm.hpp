@@ -442,7 +442,7 @@ protected:
         //! @param event - event to be processed
         static inline void processEvent(Derived& self, const Event& event)
         {
-            if (nullptr != action)
+            if (action)
             {
                 RowBase<Source, Event, Target>::processEvent(action, self, event);
             }
@@ -453,11 +453,7 @@ protected:
         //! @return pass or not pass
         static inline bool checkGuard(const Derived& self, const Event& event)
         {
-            if (nullptr == guard)
-            {
-                return true;
-            }
-            RowBase<Source, Event, Target>::checkGuard(guard, self, event);
+            return guard ? RowBase<Source, Event, Target>::checkGuard(guard, self, event) : true;
         }
     };
 

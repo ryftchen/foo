@@ -109,7 +109,7 @@ Console::RetCode Console::readLine()
     reserveConsole();
 
     char* const buffer = ::readline(terminal->greeting.c_str());
-    if (nullptr == buffer)
+    if (!buffer)
     {
         std::cout << std::endl;
         return RetCode::quit;
@@ -192,11 +192,11 @@ void Console::reserveConsole()
         return;
     }
 
-    if (nullptr != currentSession)
+    if (currentSession)
     {
         currentSession->saveState();
     }
-    ::history_set_history_state((nullptr != terminal->history) ? terminal->history : emptyHistory);
+    ::history_set_history_state(terminal->history ? terminal->history : emptyHistory);
     currentSession = this;
 }
 
@@ -208,7 +208,7 @@ char** Console::getOptionCompleter(const char* text, int start, int /*end*/)
 char* Console::getOptionIterator(const char* text, int state)
 {
     static thread_local Terminal::RegisteredOption::iterator iterator{};
-    if (nullptr == currentSession)
+    if (!currentSession)
     {
         return nullptr;
     }

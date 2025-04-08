@@ -28,7 +28,7 @@ const char* version() noexcept
 std::string executeCommand(const std::string_view command)
 {
     auto* const pipe = ::popen(command.data(), "r");
-    if (nullptr == pipe)
+    if (!pipe)
     {
         throw std::runtime_error{"Could not open pipe when trying to execute command."};
     }
