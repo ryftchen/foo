@@ -893,7 +893,7 @@ try
     auto tcpClient = std::make_shared<utility::socket::TCPSocket>();
     launchClient(tcpClient);
     const char* const userEnv = std::getenv("USER");
-    const std::string user = (nullptr != userEnv) ? userEnv : "USER";
+    const std::string user = userEnv ? userEnv : "USER";
     char hostName[HOST_NAME_MAX] = {'\0'};
     if (::gethostname(hostName, HOST_NAME_MAX))
     {

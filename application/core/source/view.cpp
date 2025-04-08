@@ -140,7 +140,7 @@ static int deserialize(data::Packet& pkt, TLVValue& val, char (TLVValue::*pl)[])
 //! @return 0 if successful, otherwise -1
 static int encodeTLV(char* buf, int& len, const TLVValue& val)
 {
-    if (nullptr == buf)
+    if (!buf)
     {
         return -1;
     }
@@ -177,7 +177,7 @@ static int encodeTLV(char* buf, int& len, const TLVValue& val)
 //! @return 0 if successful, otherwise -1
 static int decodeTLV(char* buf, const int len, TLVValue& val)
 {
-    if (nullptr == buf)
+    if (!buf)
     {
         return -1;
     }
@@ -438,7 +438,7 @@ int View::buildResponse(const std::string_view reqPlaintext, char* respBuffer)
             {
                 // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
                 if (auto* optPtr = const_cast<std::remove_const_t<std::remove_reference_t<decltype(opt)>>*>(&opt);
-                    nullptr != dynamic_cast<OptBase*>(optPtr))
+                    dynamic_cast<OptBase*>(optPtr))
                 {
                     throw std::runtime_error{
                         "Unprocessed option type (detail: " + std::string{typeid(opt).name()} + ")."};
@@ -680,7 +680,7 @@ int View::fillSharedMemory(const std::string_view contents)
         throw std::runtime_error{"Failed to create shared memory (" + std::to_string(shmId) + ")."};
     }
     void* const shm = ::shmat(shmId, nullptr, 0);
-    if (nullptr == shm)
+    if (!shm)
     {
         throw std::runtime_error{"Failed to attach shared memory (" + std::to_string(shmId) + ")."};
     }
@@ -712,7 +712,7 @@ int View::fillSharedMemory(const std::string_view contents)
 void View::fetchSharedMemory(const int shmId, std::string& contents)
 {
     void* const shm = ::shmat(shmId, nullptr, 0);
-    if (nullptr == shm)
+    if (!shm)
     {
         throw std::runtime_error{"Failed to attach shared memory (" + std::to_string(shmId) + ")."};
     }

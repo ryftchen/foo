@@ -60,7 +60,7 @@ static void signalHandler(const int sig)
                 i,
                 static_cast<int>(2 + sizeof(void*) * 2),
                 callStack[i],
-                (0 == status) ? demangle : ((nullptr == info.dli_sname) ? symbols[i] : info.dli_sname),
+                (0 == status) ? demangle : (info.dli_sname ? info.dli_sname : symbols[i]),
                 static_cast<char*>(callStack[i]) - static_cast<char*>(info.dli_saddr));
             std::free(demangle); // NOLINT(cppcoreguidelines-no-malloc)
         }
@@ -107,7 +107,7 @@ static void signalHandler(const int sig)
     ::setenv("TERMINFO", "/etc/terminfo", true);
 
     const char* const homeEnv = std::getenv("HOME");
-    const std::string_view defaultHome = (nullptr != homeEnv) ? homeEnv : "/root";
+    const std::string_view defaultHome = homeEnv ? homeEnv : "/root";
     const auto homePath = std::filesystem::absolute(defaultHome);
     if (!std::filesystem::is_directory(homePath))
     {
