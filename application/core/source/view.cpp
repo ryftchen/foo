@@ -510,13 +510,8 @@ int View::buildTLVPacket4Stop(char* buf)
     return len;
 }
 
-int View::buildTLVPacket4Depend(const std::vector<std::string>& args, char* buf)
+int View::buildTLVPacket4Depend(const std::vector<std::string>& /*unused*/, char* buf)
 {
-    if (!args.empty())
-    {
-        throw std::runtime_error{"Excessive arguments."};
-    }
-
     int len = 0;
     tlv::TLVValue val{};
     std::string extLibraries{};
@@ -606,13 +601,8 @@ int View::buildTLVPacket4Execute(const std::vector<std::string>& args, char* buf
     return len;
 }
 
-int View::buildTLVPacket4Journal(const std::vector<std::string>& args, char* buf)
+int View::buildTLVPacket4Journal(const std::vector<std::string>& /*unused*/, char* buf)
 {
-    if (!args.empty())
-    {
-        throw std::runtime_error{"Excessive arguments."};
-    }
-
     int len = 0;
     if (const int shmId = fillSharedMemory(logContentsPreview());
         tlv::encodeTLV(buf, len, tlv::TLVValue{.logShmId = shmId}) < 0)
@@ -626,15 +616,11 @@ int View::buildTLVPacket4Journal(const std::vector<std::string>& args, char* buf
 
 int View::buildTLVPacket4Monitor(const std::vector<std::string>& args, char* buf)
 {
-    if (args.size() > 1)
-    {
-        throw std::runtime_error{"Please enter the \"monitor\" and append with or without NUM."};
-    }
-    else if (args.size() == 1)
+    if (args.size() == 1)
     {
         if (const auto& input = args.front(); (input.length() != 1) || !std::isdigit(input.front()))
         {
-            throw std::runtime_error{"Only 0 through 9 are supported for the specified number of stack frames."};
+            throw std::runtime_error{"Please enter the \"monitor\" and append with or without NUM (0 to 9)."};
         }
     }
 
@@ -649,13 +635,8 @@ int View::buildTLVPacket4Monitor(const std::vector<std::string>& args, char* buf
     return len;
 }
 
-int View::buildTLVPacket4Profile(const std::vector<std::string>& args, char* buf)
+int View::buildTLVPacket4Profile(const std::vector<std::string>& /*unused*/, char* buf)
 {
-    if (!args.empty())
-    {
-        throw std::runtime_error{"Excessive arguments."};
-    }
-
     int len = 0;
     tlv::TLVValue val{};
     std::strncpy(
@@ -859,7 +840,8 @@ std::string View::statusReportsPreview(const std::uint16_t frame)
         if (const int usedLen = std::snprintf(
                 cmd,
                 totalLen,
-                "if [ -f /proc/%d/task/%d/status ] ; then cat /proc/%d/task/%d/status | grep -E '^(%s):'",
+                "/bin/bash -c "
+                "\"if [[ -f /proc/%d/task/%d/status ]]; then cat /proc/%d/task/%d/status | grep -E '^(%s):'",
                 pid,
                 tid,
                 pid,
@@ -867,16 +849,16 @@ std::string View::statusReportsPreview(const std::uint16_t frame)
                 focusField.data());
             0 == frame)
         {
-            std::strncpy(cmd + usedLen, "; fi", totalLen - usedLen);
+            std::strncpy(cmd + usedLen, "; fi\"", totalLen - usedLen);
         }
         else
         {
             std::snprintf(
                 cmd + usedLen,
                 totalLen - usedLen,
-                "&& echo 'Stack:' "
+                " && echo 'Stack:' "
                 "&& (timeout --preserve-status --signal=2 1 stdbuf -o0 eu-stack -1v -n %d -p %d 2>&1 | grep '#' "
-                "|| exit 0) ; fi",
+                "|| exit 0); fi\"",
                 frame,
                 tid);
         }
