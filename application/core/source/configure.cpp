@@ -116,18 +116,18 @@ void Configure::checkObjectInHelperList<log::Log>(const utility::json::JSON& hel
                                  OutputLevel::debug,
                                  OutputLevel::info,
                                  OutputLevel::warning,
-                                 OutputLevel::error>::isValue(item.toIntegral());
+                                 OutputLevel::error>::has(item.toIntegral());
                 break;
             case operator""_bkdrHash(field::targetType.data()):
                 using OutputType = log::Log::OutputType;
                 isVerified &= item.isIntegralType()
-                    && EnumCheck<OutputType, OutputType::file, OutputType::terminal, OutputType::all>::isValue(
+                    && EnumCheck<OutputType, OutputType::file, OutputType::terminal, OutputType::all>::has(
                                   item.toIntegral());
                 break;
             case operator""_bkdrHash(field::writeMode.data()):
                 using OutputMode = log::Log::OutputMode;
                 isVerified &= item.isIntegralType()
-                    && EnumCheck<OutputMode, OutputMode::append, OutputMode::overwrite>::isValue(item.toIntegral());
+                    && EnumCheck<OutputMode, OutputMode::append, OutputMode::overwrite>::has(item.toIntegral());
                 break;
             default:
                 isVerified &= false;

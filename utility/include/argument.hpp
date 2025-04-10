@@ -385,14 +385,14 @@ private:
 
         //! @brief Check whether the number of arguments is within the range.
         //! @param value - number of arguments
-        //! @return be contain or not contain
-        [[nodiscard]] bool isContain(const std::size_t value) const { return (value >= min) && (value <= max); }
+        //! @return within or not within
+        [[nodiscard]] bool within(const std::size_t value) const { return (value >= min) && (value <= max); }
         //! @brief Check whether the number of arguments is exact.
         //! @return be exact or not exact
         [[nodiscard]] bool isExact() const { return min == max; }
-        //! @brief Check whether the range's maximum is not greater than the type's maximum.
-        //! @return be not greater or greater
-        [[nodiscard]] bool isRightBounded() const { return max < std::numeric_limits<std::size_t>::max(); }
+        //! @brief Check whether the maximum of the range is set.
+        //! @return exist or not exist
+        [[nodiscard]] bool existRightBound() const { return max < std::numeric_limits<std::size_t>::max(); }
         //! @brief Get the minimum of the range.
         //! @return minimum of range
         [[nodiscard]] std::size_t getMin() const { return min; }

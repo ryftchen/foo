@@ -109,7 +109,7 @@ void Register::validate() const
             throwRequiredArgNoValueProvidedException();
         }
     }
-    else if (!argsNumRange.isContain(values.size()) && !defaultVal.has_value())
+    else if (!argsNumRange.within(values.size()) && !defaultVal.has_value())
     {
         throwArgsNumRangeValidationException();
     }
@@ -172,7 +172,7 @@ void Register::throwArgsNumRangeValidationException() const
     out << (!usedName.empty() ? usedName : names.at(0)) << ": " << argsNumRange.getMin();
     if (!argsNumRange.isExact())
     {
-        if (argsNumRange.isRightBounded())
+        if (argsNumRange.existRightBound())
         {
             out << " to " << argsNumRange.getMax();
         }

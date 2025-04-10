@@ -42,7 +42,7 @@ struct Meta
     //! @param os - output stream object
     //! @param meta - the specific value of Meta enum
     //! @return reference of the output stream object
-    friend inline std::ostream& operator<<(std::ostream& os, const Meta& meta)
+    friend std::ostream& operator<<(std::ostream& os, const Meta& meta)
     {
         os << '{' << meta.id << ", " << meta.name << '}';
         return os;
