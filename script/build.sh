@@ -439,8 +439,8 @@ function perform_uninstall_option()
     shell_command "rm -rf ~/.${FOLDER[proj]}"
     shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs ${SUDO}rm -rf \
 && ${SUDO}rm -rf /opt/${FOLDER[proj]}/${completion_file} /opt/${FOLDER[proj]}/man"
-    shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs -L1 dirname | \
-xargs ${SUDO}rmdir -p 2>/dev/null || true"
+    shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs -L1 dirname | xargs ${SUDO}rmdir -p 2>/dev/null \
+|| true"
     if [[ -f ~/${BASH_RC} ]]; then
         shell_command "sed -i '/export PATH=\/opt\/${FOLDER[proj]}\/bin:\$PATH/d' ~/${BASH_RC}"
         shell_command "sed -i '/\\\. \/opt\/${FOLDER[proj]}\/${completion_file}/d' ~/${BASH_RC}"
@@ -678,8 +678,8 @@ function perform_statistics_option()
         return
     fi
 
-    shell_command "printf \"C,C++,C/C++ Header\nBourne Shell\nPython\nRust\n\" | xargs -I {} -n 1 -P 1 \
-cloc --config ./.cloc --include-lang='{}'"
+    shell_command "printf \"C,C++,C/C++ Header\nBourne Shell\nPython\nRust\n\" \
+| xargs -I {} -n 1 -P 1 cloc --config ./.cloc --include-lang='{}'"
 }
 function perform_format_option()
 {
@@ -756,8 +756,8 @@ function perform_lint_option()
 -config-file=./.clang-tidy -p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet | tee -a ${clang_tidy_log}"
         shell_command "rm -rf ./${tst_comp_cmd} && mv ./${tst_comp_cmd}.bak ./${tst_comp_cmd}"
         if [[ -f ${clang_tidy_log} ]]; then
-            shell_command "cat ${clang_tidy_log} | sed 's/\x1b\[[0-9;]*m//g' | python3 -m clang_tidy_converter \
---project_root ./ html >${clang_tidy_output_path}/index.html"
+            shell_command "cat ${clang_tidy_log} | sed 's/\x1b\[[0-9;]*m//g' \
+| python3 -m clang_tidy_converter --project_root ./ html >${clang_tidy_output_path}/index.html"
         else
             die "Could not find log file in clang-tidy output."
         fi
