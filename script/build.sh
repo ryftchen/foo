@@ -334,6 +334,14 @@ export FOO_BLD_COMPILER FOO_BLD_PARALLEL FOO_BLD_PCH FOO_BLD_UNITY FOO_BLD_CCACH
 
 return 0
 EOF"
+    local gdb_config_folder=".config/gdb"
+    if [[ ! -d ~/${gdb_config_folder} ]]; then
+        shell_command "mkdir -p ~/${gdb_config_folder}"
+    fi
+    local gdb_load_cmd="set auto-load safe-path /"
+    if ! grep -Fxq "${gdb_load_cmd}" ~/"${gdb_config_folder}/gdbinit" 2>/dev/null; then
+        shell_command "echo '${gdb_load_cmd}' >>~/${gdb_config_folder}/gdbinit"
+    fi
     shell_command "echo 'core.%s.%e.%p' | ${SUDO}tee /proc/sys/kernel/core_pattern"
     shell_command "git config --local commit.template ./.gitcommit.template"
 

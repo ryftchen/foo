@@ -19,6 +19,7 @@
 .css text eol=lf
 .dockerignore text eol=lf
 .editorconfig text eol=lf
+.gdbinit text eol=lf
 .gitattributes text eol=lf
 .gitcommit.template text eol=lf
 .gitignore text eol=lf
