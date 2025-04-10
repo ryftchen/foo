@@ -7,10 +7,11 @@ declare -r COMP_CMD="compile_commands.json"
 declare -r BASH_RC=".bashrc"
 declare SUDO=""
 declare STATUS=0
+declare -r GIT_CHANGED="git status --porcelain -z | cut -z -c4- | tr '\0' '\n'"
 declare -rA ESC_COLOR=([exec]="\033[0;33;40m\033[1m\033[49m" [succ]="\033[0;32;40m\033[1m\033[49m"
     [fail]="\033[0;31;40m\033[1m\033[49m" [time]="\033[0;39;40m\033[1m\033[2m\033[49m")
 declare -r ESC_OFF="\033[0m"
-declare -A ARGS=([help]=false [assume]=false [dry]=false [initialize]=false [clean]=false [install]=false
+declare -A ARGS=([help]=false [assume]=false [quick]=false [dry]=false [initialize]=false [clean]=false [install]=false
     [uninstall]=false [container]=false [archive]=false [test]=false [release]=false [hook]=false [spell]=false
     [statistics]=false [format]=false [lint]=false [query]=false [doxygen]=false [browser]=false)
 declare -A DEV_OPT=([compiler]="clang" [parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]="localhost"
@@ -167,6 +168,9 @@ function parse_parameters()
                 ;;
             esac
             ;;
+        -Q | --quick)
+            ARGS[quick]=true
+            ;;
         -D | --dry)
             ARGS[dry]=true
             ;;
@@ -262,7 +266,7 @@ function perform_help_option()
         return
     fi
 
-    echo "usage: $(basename "${0}") [-h] [-A {y,n}] [-D] [-I] [-C] [-i] [-u] [-q] [-c] [-a] [-t [-r]] \
+    echo "usage: $(basename "${0}") [-h] [-A {y,n}] [-Q] [-D] [-I] [-C] [-i] [-u] [-q] [-c] [-a] [-t [-r]] \
 [[{-H,-c,-f [cpp,sh,py,rs],-l [cpp,sh,py,rs],-S,-b,-d} ...] [-r]]"
     echo
     echo "build script"
@@ -271,6 +275,7 @@ function perform_help_option()
     echo "  -h, --help            show help and exit"
     echo "  -A {y,n}, --assume {y,n}"
     echo "                        assume the confirmation is a yes or no"
+    echo "  -Q, --quick           quick check when support filter by type"
     echo "  -D, --dry             dry run for script"
     echo "  -I, --initialize      initialize environment and exit"
     echo "  -C, --clean           clean up project folder and exit"
@@ -681,6 +686,7 @@ function perform_statistics_option()
     shell_command "printf \"C,C++,C/C++ Header\nBourne Shell\nPython\nRust\n\" \
 | xargs -I {} -n 1 -P 1 cloc --config ./.cloc --include-lang='{}'"
 }
+
 function perform_format_option()
 {
     if [[ ${ARGS[format]} = false ]]; then
@@ -688,18 +694,58 @@ function perform_format_option()
     fi
 
     if [[ ${ARGS[format]} = true ]] || [[ ${ARGS[format]} = "cpp" ]]; then
-        shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
+        if [[ ${ARGS[quick]} = false ]]; then
+            shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
 ./${FOLDER[num]} ./${FOLDER[tst]} -name '*.cpp' -o -name '*.hpp' -o -name '*.tpp' | grep -v '/${FOLDER[bld]}/' \
 | xargs clang-format-16 --Werror -i --style=file:./.clang-format --verbose"
+        else
+            local format_changed_cpp="${GIT_CHANGED} | grep -E '\.(cpp|hpp|tpp)$'"
+            if eval "${format_changed_cpp}" >/dev/null; then
+                shell_command "${format_changed_cpp} \
+| xargs clang-format-16 --Werror -i --style=file:./.clang-format --verbose"
+            fi
+        fi
     fi
+
     if [[ ${ARGS[format]} = true ]] || [[ ${ARGS[format]} = "sh" ]]; then
-        shell_command "shfmt -l -w ./${FOLDER[scr]}/*.sh"
+        if [[ ${ARGS[quick]} = false ]]; then
+            shell_command "shfmt -l -w ./${FOLDER[scr]}/*.sh"
+        else
+            local format_changed_sh="${GIT_CHANGED} | grep -E '\.sh$'"
+            if eval "${format_changed_sh}" >/dev/null; then
+                shell_command "${format_changed_sh} | xargs shfmt -l -w"
+            fi
+        fi
     fi
+
     if [[ ${ARGS[format]} = true ]] || [[ ${ARGS[format]} = "py" ]]; then
-        shell_command "black --config ./.toml ./${FOLDER[scr]}/*.py"
+        if [[ ${ARGS[quick]} = false ]]; then
+            shell_command "black --config ./.toml ./${FOLDER[scr]}/*.py"
+        else
+            local format_changed_py="${GIT_CHANGED} | grep -E '\.py$'"
+            if eval "${format_changed_py}" >/dev/null; then
+                shell_command "${format_changed_py} | xargs black --config ./.toml"
+            fi
+        fi
     fi
+
     if [[ ${ARGS[format]} = true ]] || [[ ${ARGS[format]} = "rs" ]]; then
-        shell_command "cargo fmt --all --verbose --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
+        local cargo_toml="Cargo.toml"
+        local crate_path="./${FOLDER[doc]}/server/${cargo_toml}"
+        if [[ ${ARGS[quick]} = false ]]; then
+            shell_command "cargo fmt --all --verbose --manifest-path ${crate_path}"
+        else
+            local format_changed_rs="${GIT_CHANGED} | grep -E '\.rs$'"
+            if eval "${format_changed_rs}" >/dev/null; then
+                local split_crate="${format_changed_rs} | xargs -I {} dirname {} | while read path; \
+do while [[ ! -f \${path}/${cargo_toml} ]] && [[ \${path} != \"/\" ]]; do path=\$(dirname \"\${path}\"); done; \
+[[ -f \${path}/${cargo_toml} ]] && [[ \$(realpath \${path}/${cargo_toml}) == \$(realpath ${crate_path}) ]] \
+&& echo \"\${path}\"; done | sort -u"
+                if eval "${split_crate}" >/dev/null; then
+                    shell_command "cd \$(dirname ${crate_path}) && cargo fmt --verbose"
+                fi
+            fi
+        fi
     fi
 }
 
@@ -736,13 +782,31 @@ function perform_lint_option()
         elif [[ -f ${clang_tidy_log} ]]; then
             shell_command "rm -rf ${clang_tidy_log}"
         fi
-        shell_command "set -o pipefail && find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} \
-./${FOLDER[dp]} ./${FOLDER[num]} -name '*.cpp' -o -name '*.hpp' | xargs run-clang-tidy-16 -config-file=./.clang-tidy \
--p ./${FOLDER[bld]} -quiet | tee -a ${clang_tidy_log}"
-        if [[ ${exist_file_extention} = true ]]; then
+        if [[ ${ARGS[quick]} = false ]]; then
             shell_command "set -o pipefail && find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} \
-./${FOLDER[ds]} ./${FOLDER[dp]} ./${FOLDER[num]} -name '*.tpp' | xargs clang-tidy-16 --config-file=./.clang-tidy \
--p ./${FOLDER[bld]} --quiet | tee -a ${clang_tidy_log}"
+./${FOLDER[ds]} ./${FOLDER[dp]} ./${FOLDER[num]} -name '*.cpp' -o -name '*.hpp' \
+| xargs run-clang-tidy-16 -config-file=./.clang-tidy -p ./${FOLDER[bld]} -quiet | tee -a ${clang_tidy_log}"
+        else
+            local lint_changed_cpp_for_app="${GIT_CHANGED} \
+| grep -E '^(${FOLDER[app]}|${FOLDER[util]}|${FOLDER[algo]}|${FOLDER[ds]}|${FOLDER[dp]}|${FOLDER[num]})/.*\.(cpp|hpp)$'"
+            if eval "${lint_changed_cpp_for_app}" >/dev/null; then
+                shell_command "set -o pipefail && ${lint_changed_cpp_for_app} \
+| xargs run-clang-tidy-16 -config-file=./.clang-tidy -p ./${FOLDER[bld]} -quiet | tee -a ${clang_tidy_log}"
+            fi
+        fi
+        if [[ ${exist_file_extention} = true ]]; then
+            if [[ ${ARGS[quick]} = false ]]; then
+                shell_command "set -o pipefail && find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} \
+./${FOLDER[ds]} ./${FOLDER[dp]} ./${FOLDER[num]} -name '*.tpp' \
+| xargs clang-tidy-16 --config-file=./.clang-tidy -p ./${FOLDER[bld]} --quiet | tee -a ${clang_tidy_log}"
+            else
+                local lint_changed_cpp_for_app_ext="${GIT_CHANGED} \
+| grep -E '^(${FOLDER[app]}|${FOLDER[util]}|${FOLDER[algo]}|${FOLDER[ds]}|${FOLDER[dp]}|${FOLDER[num]})/.*\.tpp$'"
+                if eval "${lint_changed_cpp_for_app_ext}" >/dev/null; then
+                    shell_command "set -o pipefail && ${lint_changed_cpp_for_app_ext} \
+| xargs clang-tidy-16 --config-file=./.clang-tidy -p ./${FOLDER[bld]} --quiet | tee -a ${clang_tidy_log}"
+                fi
+            fi
         fi
         shell_command "rm -rf ./${app_comp_cmd} && mv ./${app_comp_cmd}.bak ./${app_comp_cmd}"
 
@@ -752,8 +816,18 @@ function perform_lint_option()
         fi
         shell_command "compdb -p ./${FOLDER[tst]}/${FOLDER[bld]} list >./${COMP_CMD} \
 && mv ./${tst_comp_cmd} ./${tst_comp_cmd}.bak && mv ./${COMP_CMD} ./${FOLDER[tst]}/${FOLDER[bld]}"
-        shell_command "set -o pipefail && find ./${FOLDER[tst]} -name '*.cpp' | xargs run-clang-tidy-16 \
--config-file=./.clang-tidy -p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet | tee -a ${clang_tidy_log}"
+        if [[ ${ARGS[quick]} = false ]]; then
+            shell_command "set -o pipefail && find ./${FOLDER[tst]} -name '*.cpp' \
+| xargs run-clang-tidy-16 -config-file=./.clang-tidy -p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet \
+| tee -a ${clang_tidy_log}"
+        else
+            local lint_changed_cpp_for_tst="${GIT_CHANGED} | grep -E '^${FOLDER[tst]}/.*\.cpp$'"
+            if eval "${lint_changed_cpp_for_tst}" >/dev/null; then
+                shell_command "set -o pipefail && ${lint_changed_cpp_for_tst} \
+| xargs run-clang-tidy-16 -config-file=./.clang-tidy -p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet \
+| tee -a ${clang_tidy_log}"
+            fi
+        fi
         shell_command "rm -rf ./${tst_comp_cmd} && mv ./${tst_comp_cmd}.bak ./${tst_comp_cmd}"
         if [[ -f ${clang_tidy_log} ]]; then
             shell_command "cat ${clang_tidy_log} | sed 's/\x1b\[[0-9;]*m//g' \
@@ -762,18 +836,50 @@ function perform_lint_option()
             die "Could not find log file in clang-tidy output."
         fi
     fi
+
     if [[ ${ARGS[lint]} = true ]] || [[ ${ARGS[lint]} = "sh" ]]; then
-        shell_command "shellcheck -a ./${FOLDER[scr]}/*.sh"
+        if [[ ${ARGS[quick]} = false ]]; then
+            shell_command "shellcheck -a ./${FOLDER[scr]}/*.sh"
+        else
+            local lint_changed_sh="${GIT_CHANGED} | grep -E '\.sh$'"
+            if eval "${lint_changed_sh}" >/dev/null; then
+                shell_command "${lint_changed_sh} | xargs shellcheck -a"
+            fi
+        fi
     fi
+
     if [[ ${ARGS[lint]} = true ]] || [[ ${ARGS[lint]} = "py" ]]; then
-        shell_command "pylint --rcfile=./.pylintrc ./${FOLDER[scr]}/*.py"
+        if [[ ${ARGS[quick]} = false ]]; then
+            shell_command "pylint --rcfile=./.pylintrc ./${FOLDER[scr]}/*.py"
+        else
+            local lint_changed_py="${GIT_CHANGED} | grep -E '\.py$'"
+            if eval "${lint_changed_py}" >/dev/null; then
+                shell_command "${lint_changed_py} | xargs pylint --rcfile=./.pylintrc"
+            fi
+        fi
     fi
+
     if [[ ${ARGS[lint]} = true ]] || [[ ${ARGS[lint]} = "rs" ]]; then
         local build_type
         if [[ ${BUILD_TYPE} = "Release" ]]; then
             build_type=" --release"
         fi
-        shell_command "cargo clippy --manifest-path ./${FOLDER[doc]}/server/Cargo.toml""${build_type}"
+        local cargo_toml="Cargo.toml"
+        local crate_path="./${FOLDER[doc]}/server/${cargo_toml}"
+        if [[ ${ARGS[quick]} = false ]]; then
+            shell_command "cargo clippy --manifest-path ${crate_path}""${build_type}"
+        else
+            local lint_changed_rs="${GIT_CHANGED} | grep -E '\.rs$'"
+            if eval "${lint_changed_rs}" >/dev/null; then
+                local split_crate="${lint_changed_rs} | xargs -I {} dirname {} | while read path; \
+do while [[ ! -f \${path}/${cargo_toml} ]] && [[ \${path} != \"/\" ]]; do path=\$(dirname \"\${path}\"); done; \
+[[ -f \${path}/${cargo_toml} ]] && [[ \$(realpath \${path}/${cargo_toml}) == \$(realpath ${crate_path}) ]] \
+&& echo \"\${path}\"; done | sort -u"
+                if eval "${split_crate}" >/dev/null; then
+                    shell_command "cd \$(dirname ${crate_path}) && cargo clippy""${build_type}"
+                fi
+            fi
+        fi
     fi
 }
 
