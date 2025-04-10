@@ -145,10 +145,12 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask =
+    const auto addTask = utility::common::wrapClosure(
         [threads, &inputs, &taskNamer](
-            const std::string_view subTask, void (*targetMethod)(const std::int32_t, const std::int32_t))
-    { threads->enqueue(taskNamer(subTask), targetMethod, inputs->getIntegers().first, inputs->getIntegers().second); };
+            const std::string_view subTask, void (*targetMethod)(const std::int32_t, const std::int32_t)) {
+            threads->enqueue(
+                taskNamer(subTask), targetMethod, inputs->getIntegers().first, inputs->getIntegers().second);
+        });
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
@@ -238,9 +240,12 @@ void applyingDivisor(const std::vector<std::string>& candidates)
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask =
+    const auto addTask = utility::common::wrapClosure(
         [threads, &inputs, &taskNamer](const std::string_view subTask, void (*targetMethod)(std::int32_t, std::int32_t))
-    { threads->enqueue(taskNamer(subTask), targetMethod, inputs->getIntegers().first, inputs->getIntegers().second); };
+        {
+            threads->enqueue(
+                taskNamer(subTask), targetMethod, inputs->getIntegers().first, inputs->getIntegers().second);
+        });
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
@@ -357,17 +362,17 @@ void applyingIntegral(const std::vector<std::string>& candidates)
     const auto inputs =
         std::make_shared<InputBuilder>(Griewank{}, Griewank::range1, Griewank::range2, Griewank::exprDescr);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask =
+    const auto addTask = utility::common::wrapClosure(
         [threads, &inputs, &taskNamer](
             const std::string_view subTask, void (*targetMethod)(const Expression&, const double, const double))
-    {
-        threads->enqueue(
-            taskNamer(subTask),
-            targetMethod,
-            inputs->getExpression(),
-            inputs->getRanges().first,
-            inputs->getRanges().second);
-    };
+        {
+            threads->enqueue(
+                taskNamer(subTask),
+                targetMethod,
+                inputs->getExpression(),
+                inputs->getRanges().first,
+                inputs->getRanges().second);
+        });
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
@@ -460,9 +465,9 @@ void applyingPrime(const std::vector<std::string>& candidates)
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(maxPositiveInteger);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask =
+    const auto addTask = utility::common::wrapClosure(
         [threads, &inputs, &taskNamer](const std::string_view subTask, void (*targetMethod)(const std::uint32_t))
-    { threads->enqueue(taskNamer(subTask), targetMethod, inputs->getMaxPositiveInteger()); };
+        { threads->enqueue(taskNamer(subTask), targetMethod, inputs->getMaxPositiveInteger()); });
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
