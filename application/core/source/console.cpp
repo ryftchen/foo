@@ -172,7 +172,7 @@ void Console::setDefaultOptions()
         {
             if (inputs.size() < 2)
             {
-                throw std::runtime_error{"Please enter the \"" + inputs.at(0) + "\" and append with FILE."};
+                throw std::runtime_error{"Please enter the \"" + inputs.at(0) + "\" and append with FILE (full path)."};
             }
             return fileExecutor(inputs.at(1));
         });
@@ -223,7 +223,8 @@ char* Console::getOptionIterator(const char* text, int state)
     {
         const auto& option = iterator->first;
         ++iterator;
-        if (option.find(text) != std::string::npos)
+        if (const std::string_view input = text;
+            (input.length() <= option.length()) && (option.compare(0, input.length(), input) == 0))
         {
             return ::strdup(option.c_str());
         }
