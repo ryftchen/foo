@@ -34,6 +34,7 @@ words:
   - EXTSUM
   - filedir
   - fuser
+  - gdbinit
   - Griewank
   - gtest
   - indexgenerator
