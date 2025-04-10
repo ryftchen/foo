@@ -197,20 +197,20 @@ void applyingMatch(const std::vector<std::string>& candidates)
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(patternString);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask =
+    const auto addTask = utility::common::wrapClosure(
         [threads, &inputs, &taskNamer](
             const std::string_view subTask,
             void (*targetMethod)(
                 const unsigned char* const, const unsigned char* const, const std::uint32_t, const std::uint32_t))
-    {
-        threads->enqueue(
-            taskNamer(subTask),
-            targetMethod,
-            inputs->getMatchingText().get(),
-            inputs->getSinglePattern().get(),
-            inputs->getTextLength(),
-            inputs->getPatternLength());
-    };
+        {
+            threads->enqueue(
+                taskNamer(subTask),
+                targetMethod,
+                inputs->getMatchingText().get(),
+                inputs->getSinglePattern().get(),
+                inputs->getTextLength(),
+                inputs->getPatternLength());
+        });
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
@@ -295,9 +295,9 @@ void applyingNotation(const std::vector<std::string>& candidates)
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder>(infixString);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask =
+    const auto addTask = utility::common::wrapClosure(
         [threads, &inputs, &taskNamer](const std::string_view subTask, void (*targetMethod)(const std::string_view))
-    { threads->enqueue(taskNamer(subTask), targetMethod, inputs->getInfixNotation()); };
+        { threads->enqueue(taskNamer(subTask), targetMethod, inputs->getInfixNotation()); });
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
@@ -441,17 +441,17 @@ void applyingOptimal(const std::vector<std::string>& candidates)
     const auto inputs =
         std::make_shared<InputBuilder>(Rastrigin{}, Rastrigin::range1, Rastrigin::range2, Rastrigin::funcDescr);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask =
+    const auto addTask = utility::common::wrapClosure(
         [threads, &inputs, &taskNamer](
             const std::string_view subTask, void (*targetMethod)(const Function&, const double, const double))
-    {
-        threads->enqueue(
-            taskNamer(subTask),
-            targetMethod,
-            inputs->getFunction(),
-            inputs->getRanges().first,
-            inputs->getRanges().second);
-    };
+        {
+            threads->enqueue(
+                taskNamer(subTask),
+                targetMethod,
+                inputs->getFunction(),
+                inputs->getRanges().first,
+                inputs->getRanges().second);
+        });
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
@@ -571,17 +571,17 @@ void applyingSearch(const std::vector<std::string>& candidates)
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder<float>>(arrayLength, arrayRangeMin, arrayRangeMax);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask =
+    const auto addTask = utility::common::wrapClosure(
         [threads, &inputs, &taskNamer](
             const std::string_view subTask, void (*targetMethod)(const float* const, const std::uint32_t, const float))
-    {
-        threads->enqueue(
-            taskNamer(subTask),
-            targetMethod,
-            inputs->getOrderedArray().get(),
-            inputs->getLength(),
-            inputs->getSearchKey());
-    };
+        {
+            threads->enqueue(
+                taskNamer(subTask),
+                targetMethod,
+                inputs->getOrderedArray().get(),
+                inputs->getLength(),
+                inputs->getSearchKey());
+        });
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
@@ -766,10 +766,10 @@ void applyingSort(const std::vector<std::string>& candidates)
     auto* const threads = pooling.newElement(bits.count());
     const auto inputs = std::make_shared<InputBuilder<std::int32_t>>(arrayLength, arrayRangeMin, arrayRangeMax);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask =
+    const auto addTask = utility::common::wrapClosure(
         [threads, &inputs, &taskNamer](
             const std::string_view subTask, void (*targetMethod)(const std::int32_t* const, const std::uint32_t))
-    { threads->enqueue(taskNamer(subTask), targetMethod, inputs->getRandomArray().get(), inputs->getLength()); };
+        { threads->enqueue(taskNamer(subTask), targetMethod, inputs->getRandomArray().get(), inputs->getLength()); });
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))

@@ -774,36 +774,37 @@ void View::segmentedOutput(const std::string_view buffer)
     bool moreRows = false, forcedCancel = false, withoutPaging = (lineNum <= terminalRows);
     std::string line{};
     std::size_t counter = 0;
-    const auto handling = [&](const std::string_view input)
-    {
-        std::cout << clearEscape << std::flush;
-        if (input.empty())
+    const auto handling = utility::common::wrapClosure(
+        [&](const std::string_view input)
         {
-            moreRows = true;
-            counter = 0;
-        }
-        else
-        {
-            moreRows = false;
-            switch (utility::common::bkdrHash(input.data()))
+            std::cout << clearEscape << std::flush;
+            if (input.empty())
             {
-                using utility::common::operator""_bkdrHash;
-                case "c"_bkdrHash:
-                    withoutPaging = true;
-                    break;
-                case "n"_bkdrHash:
-                    counter = 0;
-                    break;
-                case "q"_bkdrHash:
-                    forcedCancel = true;
-                    break;
-                default:
-                    std::cout << hint << std::flush;
-                    return false;
+                moreRows = true;
+                counter = 0;
             }
-        }
-        return true;
-    };
+            else
+            {
+                moreRows = false;
+                switch (utility::common::bkdrHash(input.data()))
+                {
+                    using utility::common::operator""_bkdrHash;
+                    case "c"_bkdrHash:
+                        withoutPaging = true;
+                        break;
+                    case "n"_bkdrHash:
+                        counter = 0;
+                        break;
+                    case "q"_bkdrHash:
+                        forcedCancel = true;
+                        break;
+                    default:
+                        std::cout << hint << std::flush;
+                        return false;
+                }
+            }
+            return true;
+        });
     while (std::getline(transfer, line) && !forcedCancel)
     {
         std::cout << line << '\n';

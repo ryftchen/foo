@@ -129,8 +129,9 @@ void applyingLinear(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = [threads, &taskNamer](const std::string_view subTask, void (*targetInstance)())
-    { threads->enqueue(taskNamer(subTask), targetInstance); };
+    const auto addTask =
+        utility::common::wrapClosure([threads, &taskNamer](const std::string_view subTask, void (*targetInstance)())
+                                     { threads->enqueue(taskNamer(subTask), targetInstance); });
 
     std::cout << "\nInstances of the " << toString<category>() << " structure:" << std::endl;
     for (const auto index :
@@ -218,8 +219,9 @@ void applyingTree(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const threads = pooling.newElement(bits.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = [threads, &taskNamer](const std::string_view subTask, void (*targetInstance)())
-    { threads->enqueue(taskNamer(subTask), targetInstance); };
+    const auto addTask =
+        utility::common::wrapClosure([threads, &taskNamer](const std::string_view subTask, void (*targetInstance)())
+                                     { threads->enqueue(taskNamer(subTask), targetInstance); });
 
     std::cout << "\nInstances of the " << toString<category>() << " structure:" << std::endl;
     for (const auto index :

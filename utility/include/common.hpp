@@ -195,6 +195,71 @@ public:
     }
 };
 
+//! @brief Closure wrapper.
+//! @tparam Func - type of callable function
+//! @tparam Op - type of call operator
+//! @tparam toWrap - flag to indicate that further wrapping is required
+template <typename Func, typename Op = decltype(&Func::operator()), bool toWrap = (sizeof(Func) > (sizeof(void*) * 2U))>
+struct WrapClosure
+{
+    //! @brief Wrap operation.
+    //! @tparam Clos - type of closure
+    //! @param closure - target closure
+    //! @return original closure
+    template <typename Clos>
+    static inline constexpr auto&& wrap(Clos&& closure) noexcept
+    {
+        return std::forward<Clos>(closure);
+    }
+};
+//! @brief Closure wrapper. For the non-const member function.
+//! @tparam Func - type of callable function
+//! @tparam Ret - type of return value
+//! @tparam Obj - type of object to which the member belongs
+//! @tparam Args - type of function arguments
+template <typename Func, typename Ret, typename Obj, typename... Args>
+struct WrapClosure<Func, Ret (Obj::*)(Args...), true>
+{
+    //! @brief Wrap operation.
+    //! @tparam Clos - type of closure
+    //! @param closure - target closure
+    //! @return wrapped closure
+    template <typename Clos>
+    static inline constexpr auto wrap(Clos&& closure)
+    {
+        return [sharedClosure = std::make_shared<Func>(std::forward<Clos>(closure))](Args&&... args) mutable
+        { return (*sharedClosure)(std::forward<Args>(args)...); };
+    }
+};
+//! @brief Closure wrapper. For the const member function.
+//! @tparam Func - type of callable function
+//! @tparam Ret - type of return value
+//! @tparam Obj - type of object to which the member belongs
+//! @tparam Args - type of function arguments
+template <typename Func, typename Ret, typename Obj, typename... Args>
+struct WrapClosure<Func, Ret (Obj::*)(Args...) const, true>
+{
+    //! @brief Wrap operation.
+    //! @tparam Clos - type of closure
+    //! @param closure - target closure
+    //! @return wrapped closure
+    template <typename Clos>
+    static inline constexpr auto wrap(Clos&& closure)
+    {
+        return [sharedClosure = std::make_shared<Func>(std::forward<Clos>(closure))](Args&&... args)
+        { return (*sharedClosure)(std::forward<Args>(args)...); };
+    }
+};
+//! @brief Wrap closure further.
+//! @tparam Clos - type of closure
+//! @param closure - target closure
+//! @return wrapped closure
+template <typename Clos>
+inline constexpr auto wrapClosure(Clos&& closure)
+{
+    return WrapClosure<std::decay_t<Clos>>::wrap(std::forward<Clos>(closure));
+}
+
 //! @brief Simple spin lock.
 class SpinLock
 {

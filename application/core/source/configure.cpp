@@ -320,23 +320,24 @@ static bool handleConfigurationException(const std::string_view filePath)
     bool keepThrowing = true;
     constexpr std::uint16_t timeoutPeriod = 5000;
     utility::io::waitForUserInput(
-        [&](const std::string_view input)
-        {
-            switch (utility::common::bkdrHash(input.data()))
+        utility::common::wrapClosure(
+            [&](const std::string_view input)
             {
-                using utility::common::operator""_bkdrHash;
-                case "y"_bkdrHash:
-                    forcedConfigurationUpdateByDefault(filePath);
-                    [[fallthrough]];
-                case "n"_bkdrHash:
-                    keepThrowing = false;
-                    break;
-                default:
-                    std::cout << clearEscape << hint << std::flush;
-                    return false;
-            }
-            return true;
-        },
+                switch (utility::common::bkdrHash(input.data()))
+                {
+                    using utility::common::operator""_bkdrHash;
+                    case "y"_bkdrHash:
+                        forcedConfigurationUpdateByDefault(filePath);
+                        [[fallthrough]];
+                    case "n"_bkdrHash:
+                        keepThrowing = false;
+                        break;
+                    default:
+                        std::cout << clearEscape << hint << std::flush;
+                        return false;
+                }
+                return true;
+            }),
         timeoutPeriod);
 
     return keepThrowing;
