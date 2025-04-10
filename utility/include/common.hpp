@@ -166,11 +166,11 @@ requires std::is_enum_v<EnumType>
 class EnumCheck<EnumType>
 {
 public:
-    //! @brief Check whether it is an enumeration value.
+    //! @brief Check whether it contains the value as an enumeration.
     //! @tparam IntType - type of integral
-    //! @return be an enumeration value or not
+    //! @return has or not has
     template <typename IntType>
-    static inline constexpr bool isValue(const IntType /*val*/)
+    static inline constexpr bool has(const IntType /*val*/)
     {
         return false;
     }
@@ -184,14 +184,14 @@ requires std::is_enum_v<EnumType>
 class EnumCheck<EnumType, Value, Next...> : private EnumCheck<EnumType, Next...>
 {
 public:
-    //! @brief Check whether it is an enumeration value.
+    //! @brief Check whether it contains the value as an enumeration.
     //! @tparam IntType - type of integral
     //! @param val - target value
-    //! @return be an enumeration value or not
+    //! @return has or not has
     template <typename IntType>
-    static inline constexpr bool isValue(const IntType val)
+    static inline constexpr bool has(const IntType val)
     {
-        return (static_cast<IntType>(Value) == val) || EnumCheck<EnumType, Next...>::isValue(val);
+        return (static_cast<IntType>(Value) == val) || EnumCheck<EnumType, Next...>::has(val);
     }
 };
 

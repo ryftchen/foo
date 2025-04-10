@@ -267,30 +267,30 @@ inline auto curry(Ret (*func)(FullArgs...), Args&&... args)
 
 //! @brief To curry.
 //! @tparam Ret - type of return value
-//! @tparam T - type of class to which the member belongs
+//! @tparam Obj - type of object to which the member belongs
 //! @tparam FullArgs - type of full function arguments
 //! @param func - original function
 //! @return curried result
-template <typename Ret, typename T, typename... FullArgs>
-inline auto curry(Ret (T::*func)(FullArgs...))
+template <typename Ret, typename Obj, typename... FullArgs>
+inline auto curry(Ret (Obj::*func)(FullArgs...))
 {
-    std::function<Ret(T*, FullArgs...)> call = func;
+    std::function<Ret(Obj*, FullArgs...)> call = func;
     return curry(std::move(call));
 }
 
 //! @brief To curry.
 //! @tparam Ret - type of return value
-//! @tparam T - type of object to which the member belongs
+//! @tparam Obj - type of object to which the member belongs
 //! @tparam FullArgs - type of full function arguments
 //! @tparam Args - type of function arguments
 //! @param func - original function
 //! @param caller - object to which the member belongs
 //! @param args - function arguments
 //! @return curried result
-template <typename Ret, typename T, typename... FullArgs, typename... Args>
-inline auto curry(Ret (T::*func)(FullArgs...), T* caller, Args&&... args)
+template <typename Ret, typename Obj, typename... FullArgs, typename... Args>
+inline auto curry(Ret (Obj::*func)(FullArgs...), Obj* caller, Args&&... args)
 {
-    std::function<Ret(T*, FullArgs...)> call = func;
+    std::function<Ret(Obj*, FullArgs...)> call = func;
     return curry(std::move(call), caller, std::forward<Args>(args)...);
 }
 
