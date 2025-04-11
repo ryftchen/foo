@@ -11,13 +11,14 @@ pub async fn do_service(addr: std::net::SocketAddr, root_dir: &str, sub_dir: Opt
     let listener = TcpListener::bind(addr)
         .await
         .unwrap_or_else(|_| die!("Could not create TCP listener for {} directory.", root_dir));
+
     loop {
         let (stream, _) = listener
             .accept()
             .await
             .unwrap_or_else(|_| die!("Could not accept TCP connection for {} directory.", root_dir));
-
         let serving = serving.clone();
+
         tokio::spawn(async move {
             if let Err(err) = http1::Builder::new()
                 .serve_connection(

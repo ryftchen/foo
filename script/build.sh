@@ -5,8 +5,6 @@ declare -rA FOLDER=([proj]="foo" [app]="application" [util]="utility" [algo]="al
     [rep]="report" [cac]=".cache")
 declare -r COMP_CMD="compile_commands.json"
 declare -r BASH_RC=".bashrc"
-declare SUDO=""
-declare STATUS=0
 declare -r GIT_CHANGED="git status --porcelain -z | cut -z -c4- | tr '\0' '\n'"
 declare -rA ESC_COLOR=([exec]="\033[0;33;40m\033[1m\033[49m" [succ]="\033[0;32;40m\033[1m\033[49m"
     [fail]="\033[0;31;40m\033[1m\033[49m" [time]="\033[0;39;40m\033[1m\033[2m\033[49m")
@@ -16,6 +14,8 @@ declare -A ARGS=([help]=false [assume]=false [quick]=false [dry]=false [initiali
     [statistics]=false [format]=false [lint]=false [query]=false [doxygen]=false [browser]=false)
 declare -A DEV_OPT=([compiler]="clang" [parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]="localhost"
     [tmpfs]=false)
+declare SUDO=""
+declare STATUS=0
 declare CMAKE_CACHE_ENTRY=""
 declare CMAKE_BUILD_OPTION=""
 declare BUILD_TYPE="Debug"
@@ -275,7 +275,7 @@ function perform_help_option()
     echo "  -h, --help            show help and exit"
     echo "  -A {y,n}, --assume {y,n}"
     echo "                        assume the confirmation is a yes or no"
-    echo "  -Q, --quick           quick check when support filter by type"
+    echo "  -Q, --quick           quick process if support filter by type"
     echo "  -D, --dry             dry run for script"
     echo "  -I, --initialize      initialize environment and exit"
     echo "  -C, --clean           clean up project folder and exit"
