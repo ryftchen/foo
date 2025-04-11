@@ -551,10 +551,10 @@ std::string& changeToLogStyle(std::string& line)
     if (const auto segIter = std::find_if(
             style.predefinedLevelPrefixes.cbegin(),
             style.predefinedLevelPrefixes.cend(),
-            [&line](const auto& predefined) { return std::regex_search(line, predefined.first); });
+            [&line](const auto& predefined) { return std::regex_search(line, std::get<std::regex>(predefined)); });
         style.predefinedLevelPrefixes.cend() != segIter)
     {
-        line = std::regex_replace(line, segIter->first, segIter->second);
+        line = std::regex_replace(line, std::get<std::regex>(*segIter), std::get<std::string>(*segIter));
     }
 
     for (std::smatch match{}; [[maybe_unused]] const auto& [segment, scheme] : style.identitySegments)
