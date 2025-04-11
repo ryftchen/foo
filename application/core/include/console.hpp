@@ -126,12 +126,12 @@ private:
 
     //! @brief Alias for the functor of option completer.
     using OptionCompleterFunctor = char**(const char*, int, int);
-    //! @brief Alias for the functor of option iterator.
-    using OptionIteratorFunctor = char*(const char*, int);
+    //! @brief Alias for the functor of option compentry.
+    using OptionCompentryFunctor = char*(const char*, int);
     //! @brief Get the option completer. Wrap the interface.
-    static OptionCompleterFunctor getOptionCompleter;
-    //! @brief Get the option iterator. Wrap the interface.
-    static OptionIteratorFunctor getOptionIterator;
+    static OptionCompleterFunctor customCompleter;
+    //! @brief Get the option compentry. Wrap the interface.
+    static OptionCompentryFunctor customCompentry;
 };
 } // namespace console
 } // namespace application

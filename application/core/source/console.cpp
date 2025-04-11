@@ -28,7 +28,7 @@ thread_local constinit Console* currentSession = nullptr;
 
 Console::Console(const std::string_view greeting) : terminal{std::make_unique<Terminal>(greeting)}
 {
-    ::rl_attempted_completion_function = &Console::getOptionCompleter;
+    ::rl_attempted_completion_function = &Console::customCompleter;
     setDefaultOptions();
 }
 
@@ -68,7 +68,7 @@ Console::RetCode Console::optionExecutor(const std::string_view option) const
             "The console option (" + inputs.front() + ") could not be found. Enter the \"usage\" for help."};
     }
 
-    return regIter->second.second(inputs);
+    return std::get<Callback>(regIter->second)(inputs);
 }
 
 Console::RetCode Console::fileExecutor(const std::string_view filename) const
@@ -127,9 +127,11 @@ Console::RetCode Console::readLine()
 
 auto Console::getOptionHelpPairs() const
 {
-    const auto transformed = terminal->orderList
-        | std::views::transform([this](const auto& option)
-                                { return std::make_pair(option, terminal->regTable.at(option).first); });
+    const auto transformed =
+        terminal->orderList
+        | std::views::transform(
+            [this](const auto& option)
+            { return std::make_pair(option, std::get<std::string>(terminal->regTable.at(option))); });
     return std::vector<std::ranges::range_value_t<decltype(transformed)>>{transformed.begin(), transformed.end()};
 }
 
@@ -200,14 +202,14 @@ void Console::reserveConsole()
     currentSession = this;
 }
 
-char** Console::getOptionCompleter(const char* text, int start, int /*end*/)
+char** Console::customCompleter(const char* text, int start, int /*end*/)
 {
-    return (0 == start) ? ::rl_completion_matches(text, &Console::getOptionIterator) : nullptr;
+    return (0 == start) ? ::rl_completion_matches(text, &Console::customCompentry) : nullptr;
 }
 
-char* Console::getOptionIterator(const char* text, int state)
+char* Console::customCompentry(const char* text, int state)
 {
-    static thread_local Terminal::RegisteredOption::iterator iterator{};
+    static thread_local Terminal::RegisteredOption::iterator optionIterator{};
     if (!currentSession)
     {
         return nullptr;
@@ -216,15 +218,14 @@ char* Console::getOptionIterator(const char* text, int state)
     auto& regTable = currentSession->terminal->regTable;
     if (0 == state)
     {
-        iterator = regTable.begin();
+        optionIterator = regTable.begin();
     }
 
-    while (regTable.end() != iterator)
+    while (regTable.end() != optionIterator)
     {
-        const auto& option = iterator->first;
-        ++iterator;
-        if (const std::string_view input = text;
-            (input.length() <= option.length()) && (option.compare(0, input.length(), input) == 0))
+        const auto& option = optionIterator->first;
+        ++optionIterator;
+        if (const std::string_view input = text; option.compare(0, input.length(), input) == 0)
         {
             return ::strdup(option.c_str());
         }
