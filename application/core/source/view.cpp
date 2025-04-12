@@ -576,18 +576,10 @@ int View::buildTLVPacket4Execute(const std::vector<std::string>& args, char* buf
         args.cend(),
         std::string{},
         [](const auto& acc, const auto& arg) { return acc.empty() ? arg : (acc + ' ' + arg); });
-    if (((cmd.length() == 2)
-         && (std::all_of(cmd.cbegin(), cmd.cend(), [](const auto c) { return '\'' == c; })
-             || std::all_of(cmd.cbegin(), cmd.cend(), [](const auto c) { return '"' == c; })))
-        || cmd.empty())
+    if (((cmd.find_first_not_of('\'') == 0) || (cmd.find_last_not_of('\'') == (cmd.length() - 1)))
+        && ((cmd.find_first_not_of('"') == 0) || (cmd.find_last_not_of('"') == (cmd.length() - 1))))
     {
         throw std::runtime_error{"Please enter the \"execute\" and append with 'CMD' (include quotes)."};
-    }
-    if ((cmd.length() <= 1)
-        || (((cmd.find_first_not_of('\'') == 0) || (cmd.find_last_not_of('\'') == (cmd.length() - 1)))
-            && ((cmd.find_first_not_of('"') == 0) || (cmd.find_last_not_of('"') == (cmd.length() - 1)))))
-    {
-        throw std::runtime_error{"Missing full quotes around the pending command."};
     }
 
     int len = 0;
@@ -616,7 +608,7 @@ int View::buildTLVPacket4Journal(const std::vector<std::string>& /*unused*/, cha
 
 int View::buildTLVPacket4Monitor(const std::vector<std::string>& args, char* buf)
 {
-    if (args.size() == 1)
+    if (args.size() > 1)
     {
         if (const auto& input = args.front(); (input.length() != 1) || !std::isdigit(input.front()))
         {
