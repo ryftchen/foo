@@ -24,7 +24,7 @@ extern std::string executeCommand(const std::string_view command);
 extern void waitForUserInput(const std::function<bool(const std::string_view)>& operation, const int timeout = -1);
 extern std::list<std::string> getFileContents(
     const std::string_view filename,
-    const bool toLock,
+    const bool toLock = false,
     const bool toReverse = false,
     const std::size_t totalRows = std::numeric_limits<std::size_t>::max());
 
@@ -68,7 +68,7 @@ protected:
     //! @brief Write data from the output buffer.
     //! @param c - character to write to the buffer
     //! @return character written
-    int_type overflow(int_type c) override;
+    int_type overflow(const int_type c) override;
     //! @brief Synchronize the output buffer with the file descriptor.
     //! @return 0 if successful, otherwise -1
     int sync() override;
@@ -77,12 +77,13 @@ protected:
     //! @param way - direction to move the position indicator
     //! @param mode - mode for seeking
     //! @return new position if successful, otherwise -1
-    std::streampos seekoff(std::streamoff off, std::ios_base::seekdir way, std::ios_base::openmode mode) override;
+    std::streampos seekoff(
+        const std::streamoff off, const std::ios_base::seekdir way, const std::ios_base::openmode mode) override;
     //! @brief Set the position indicator to an absolute position.
     //! @param sp - absolute position to set
     //! @param mode - mode for seeking
     //! @return new position if successful, otherwise -1
-    std::streampos seekpos(std::streampos sp, std::ios_base::openmode mode) override;
+    std::streampos seekpos(const std::streampos sp, const std::ios_base::openmode mode) override;
     //! @brief Get the number of characters available for reading.
     //! @return number of characters available in the input buffer
     std::streamsize showmanyc() override;

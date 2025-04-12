@@ -250,7 +250,7 @@ FDStreamBuffer::int_type FDStreamBuffer::underflow()
     return traits_type::to_int_type(*gptr());
 }
 
-FDStreamBuffer::int_type FDStreamBuffer::overflow(int_type c)
+FDStreamBuffer::int_type FDStreamBuffer::overflow(const int_type c)
 {
     if (pptr() != epptr())
     {
@@ -284,40 +284,29 @@ int FDStreamBuffer::sync()
     return flush();
 }
 
-std::streampos FDStreamBuffer::seekoff(std::streamoff off, std::ios_base::seekdir way, std::ios_base::openmode mode)
+std::streampos FDStreamBuffer::seekoff(
+    const std::streamoff off, const std::ios_base::seekdir way, const std::ios_base::openmode mode)
 {
-    if (fileDescriptor < 0)
+    if ((fileDescriptor < 0) || ((mode & std::ios_base::out) && (sync() == -1)))
     {
         return -1;
-    }
-    if (mode & std::ios_base::out)
-    {
-        if (sync() == -1)
-        {
-            return -1;
-        }
     }
 
     ::off_t newOffset = 0;
-    if (std::ios_base::beg == way)
+    switch (way)
     {
-        newOffset = off;
-    }
-    else if (std::ios_base::cur == way)
-    {
-        if ((mode & std::ios_base::in) && gptr())
-        {
-            off -= (egptr() - gptr());
-        }
-        newOffset = ::lseek(fileDescriptor, 0, SEEK_CUR) + off;
-    }
-    else if (std::ios_base::end == way)
-    {
-        newOffset = ::lseek(fileDescriptor, 0, SEEK_END) + off;
-    }
-    else
-    {
-        return -1;
+        case std::ios_base::beg:
+            newOffset = off;
+            break;
+        case std::ios_base::cur:
+            newOffset = (((mode & std::ios_base::in) && gptr()) ? (off - (egptr() - gptr())) : off)
+                + ::lseek(fileDescriptor, 0, SEEK_CUR);
+            break;
+        case std::ios_base::end:
+            newOffset = off + ::lseek(fileDescriptor, 0, SEEK_END);
+            break;
+        default:
+            return -1;
     }
 
     if (::lseek(fileDescriptor, newOffset, SEEK_SET) == -1)
@@ -329,7 +318,7 @@ std::streampos FDStreamBuffer::seekoff(std::streamoff off, std::ios_base::seekdi
     return newOffset;
 }
 
-std::streampos FDStreamBuffer::seekpos(std::streampos sp, std::ios_base::openmode mode)
+std::streampos FDStreamBuffer::seekpos(const std::streampos sp, const std::ios_base::openmode mode)
 {
     return seekoff(sp, std::ios_base::beg, mode);
 }
