@@ -9,6 +9,7 @@ async fn run(args: arg::Args) {
 
     for (i, root_dir) in root_dirs.iter().enumerate() {
         let addr = std::net::SocketAddr::new(args.host, args.port + i as u16);
+
         srv_vec.push(async move {
             srv::do_service(addr, root_dir, None).await;
         });
