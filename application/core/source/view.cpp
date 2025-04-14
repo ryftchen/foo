@@ -608,7 +608,7 @@ int View::buildTLVPacket4Journal(const std::vector<std::string>& /*unused*/, cha
 
 int View::buildTLVPacket4Monitor(const std::vector<std::string>& args, char* buf)
 {
-    if (args.size() > 1)
+    if (!args.empty())
     {
         if (const auto& input = args.front(); (input.length() != 1) || !std::isdigit(input.front()))
         {
