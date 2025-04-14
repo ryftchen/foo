@@ -91,6 +91,8 @@ class Task:
         self.repeat_count = 1
         self.duration = 0
 
+        os.environ["TERM"] = "linux"
+        os.environ["TERMINFO"] = "/etc/terminfo"
         script_path = os.path.split(os.path.realpath(__file__))[0]
         if not fnmatch.fnmatch(script_path, "*foo/script"):
             Output.exit_with_error("Illegal path to current script.")
@@ -816,13 +818,23 @@ class Output:
         return "\n".join(rows)
 
 
-if __name__ == "__main__":
+def main():
+    task = None
     try:
-        os.environ["TERM"] = "linux"
-        os.environ["TERMINFO"] = "/etc/terminfo"
         task = Task()
         task.run()
     except Exception:  # pylint: disable=broad-except
-        task.stop(traceback.format_exc())
+        if task is not None:
+            task.stop(traceback.format_exc())
+        else:
+            raise
     except KeyboardInterrupt:
-        task.stop()
+        if task is not None:
+            task.stop()
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception:  # pylint: disable=broad-except
+        Output.exit_with_error(traceback.format_exc())
