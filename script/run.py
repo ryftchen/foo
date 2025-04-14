@@ -145,8 +145,7 @@ class Task:
         parser.add_argument("-a", "--analyze", action="store_true", default=False, help="analyze run log only")
         parser.add_argument("-d", "--dump", action="store_true", default=False, help="dump run task dictionary only")
 
-        args = parser.parse_args()
-        self.apply_arguments(args)
+        self.apply_arguments(parser.parse_args())
 
     def apply_arguments(self, args):
         if args.analyze:
@@ -205,6 +204,7 @@ class Task:
                 Output.exit_with_error(f"No shell script {self.build_script} file.")
 
     def run(self):
+        self.parse_arguments()
         self.prepare()
         start_time = datetime.now()
 
@@ -821,7 +821,6 @@ if __name__ == "__main__":
         os.environ["TERM"] = "linux"
         os.environ["TERMINFO"] = "/etc/terminfo"
         task = Task()
-        task.parse_arguments()
         task.run()
     except Exception:  # pylint: disable=broad-except
         task.stop(traceback.format_exc())
