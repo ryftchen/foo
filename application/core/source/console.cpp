@@ -107,7 +107,6 @@ Console::RetCode Console::fileExecutor(const std::string_view filename) const
 Console::RetCode Console::readLine()
 {
     reserveConsole();
-
     char* const buffer = ::readline(terminal->greeting.c_str());
     if (!buffer)
     {
@@ -141,19 +140,20 @@ void Console::setDefaultOptions()
     auto& orderList = terminal->orderList;
 
     regTable["usage"] = std::make_pair(
-        "how to use the console",
+        "show help message",
         [this](const Args& /*inputs*/)
         {
             const auto pairs = getOptionHelpPairs();
-            const std::size_t align =
+            const auto align =
                 std::ranges::max(pairs, std::less<std::size_t>{}, [](const auto& pair) { return pair.first.length(); })
                     .first.length();
             std::ostringstream out{};
+            out << std::setiosflags(std::ios_base::left);
             for (const auto& [option, help] : pairs)
             {
-                out << "- " << std::setiosflags(std::ios_base::left) << std::setw(align) << option << "    " << help
-                    << std::resetiosflags(std::ios_base::left) << '\n';
+                out << "- " << std::setw(align) << option << "    " << help << '\n';
             }
+            out << std::resetiosflags(std::ios_base::left);
             std::cout << out.str() << std::flush;
             return RetCode::success;
         });
@@ -167,6 +167,41 @@ void Console::setDefaultOptions()
             return RetCode::quit;
         });
     orderList.emplace_back("quit");
+
+    regTable["trace"] = std::make_pair(
+        "get history of applied options",
+        [](const Args& /*inputs*/)
+        {
+            if (const auto* const* const historyList = ::history_list())
+            {
+                const auto align = std::to_string(::history_length).length() + 1;
+                std::ostringstream out{};
+                out << std::setiosflags(std::ios_base::right);
+                for (std::uint32_t index = 0;
+                     const auto& history : std::span{historyList, static_cast<std::size_t>(::history_length)})
+                {
+                    out << std::setw(align) << (index++) + ::history_base << "  " << history->line << '\n';
+                }
+                out << std::resetiosflags(std::ios_base::right);
+                std::cout << out.str() << std::flush;
+            }
+            else
+            {
+                std::cout << ' ' << ::history_length << std::endl;
+            }
+            return RetCode::success;
+        });
+    orderList.emplace_back("trace");
+
+    regTable["clean"] = std::make_pair(
+        "clear full screen",
+        [](const Args& /*inputs*/)
+        {
+            std::cout << "\033[2J\033[1;1H" << std::flush;
+            std::cout << "---" << std::endl;
+            return RetCode::success;
+        });
+    orderList.emplace_back("clean");
 
     regTable["batch"] = std::make_pair(
         "run lines from the file [inputs: FILE]",
