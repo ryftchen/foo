@@ -2,22 +2,24 @@ mod arg;
 mod srv;
 mod util;
 
+use std::net::SocketAddr;
+
 async fn run(args: arg::Args) {
     let root_dirs = &args.root_dirs;
-    let mut srv_vec = vec![];
+    let mut srv_group = vec![];
     let mut prompt = String::new();
 
-    for (i, root_dir) in root_dirs.iter().enumerate() {
-        let addr = std::net::SocketAddr::new(args.host, args.port + i as u16);
+    for (offset, root_dir) in root_dirs.iter().enumerate() {
+        let addr = SocketAddr::new(args.host, args.port + offset as u16);
 
-        srv_vec.push(async move {
-            srv::do_service(addr, root_dir, None).await;
+        srv_group.push(async move {
+            srv::run_service(addr, root_dir, None).await;
         });
         prompt += format!("=> http://{}/ for directory {}\n", addr, abs_path!(root_dir)).as_str();
     }
     print!("The archive server starts listening ...\n{}", prompt);
 
-    let _ret = futures_util::future::join_all(srv_vec).await;
+    let _ret = futures_util::future::join_all(srv_group).await;
 }
 
 #[tokio::main]
