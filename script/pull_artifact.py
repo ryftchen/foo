@@ -91,10 +91,10 @@ class Documentation:
             response.raise_for_status()
 
             download_url = ""
-            json_info = json.loads(response.text)
-            for index in range(json_info["total_count"]):
-                if json_info["artifacts"][index]["name"] == self.artifact_name:
-                    download_url = json_info["artifacts"][index]["archive_download_url"]
+            json_detail = json.loads(response.text)
+            for index in range(json_detail["total_count"]):
+                if json_detail["artifacts"][index]["name"] == self.artifact_name:
+                    download_url = json_detail["artifacts"][index]["archive_download_url"]
                     break
 
             response = requests.get(download_url, timeout=60, allow_redirects=False)
@@ -111,7 +111,7 @@ class Documentation:
             response.raise_for_status()
             with open(f"{self.target_dir}/{self.artifact_name}.zip", "wb") as output_file:
                 output_file.write(response.content)
-        except requests.exceptions.HTTPError as error:
+        except requests.exceptions.RequestException as error:
             execute(f"rm -rf {self.target_dir}/{self.artifact_name}.zip")
             execute(f"git -C {self.project_path} reset --hard {local_commit_id}")
             interrupt(error)
@@ -132,12 +132,12 @@ class Documentation:
 
 
 def execute(cmd):
-    print(f"[ {datetime.now()} ] EXECUTE: {cmd}")
+    print(f"[ {datetime.now()} ] {execute.__name__.upper()}: {cmd}")
     return common.execute_command(cmd)
 
 
 def interrupt(msg):
-    print(f"[ {datetime.now()} ] INTERRUPT: {msg}")
+    print(f"[ {datetime.now()} ] {interrupt.__name__.upper()}: {msg}")
     sys.exit(1)
 
 
