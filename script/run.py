@@ -40,6 +40,8 @@ class Task:
         "--console": [
             r"usage",
             r"quit",
+            r"trace",
+            r"clean",
             f"batch {console_file}",
             r"refresh",
             r"reconnect",
@@ -600,7 +602,7 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
             fcntl.flock(run_log.fileno(), fcntl.LOCK_EX)
             old_content = run_log.read()
             fcntl.flock(run_log.fileno(), fcntl.LOCK_UN)
-        new_content = re.sub(Output.esc_regex_pattern, "", old_content)
+        new_content = Output.ansi_escape.sub("", old_content)
         with open(self.log_file, "wt", encoding="utf-8") as run_log:
             fcntl.flock(run_log.fileno(), fcntl.LOCK_EX)
             run_log.write(new_content)
@@ -758,7 +760,7 @@ class Output:
     esc_bg_color = "\033[49m"
     esc_font_bold = "\033[1m"
     esc_off = "\033[0m"
-    esc_regex_pattern = r"((\033\[.*?(m|s|u|A|J))|(\007|\017))"
+    ansi_escape = re.compile(r"\x1B(?:\[[0-?]*[ -/]*[@-~]|[PX^_].*?\x1B\\|.)")
     stat_min_cont_len = 55
     stat_cont_len_excl_cmd = 15
     tbl_min_key_width = 15
