@@ -19,6 +19,7 @@ words:
   - Adelson
   - asan
   - BKDR
+  - chrono
   - codebrowser
   - codescanning
   - compdb
