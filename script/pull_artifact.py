@@ -58,16 +58,20 @@ class Documentation:
         self.logger = Logger(self.log_file, "at")
         sys.stdout = self.logger
 
+    def __del__(self):
+        sys.stdout = STDOUT
+        del self.logger
+
     def pull_artifact(self):
-        print(f"\n[ {datetime.now()} ] ################# PULL ARTIFACT #################")
+        print(f"[ {datetime.now()} ] ################# PULL ARTIFACT #################")
         if not os.path.exists(self.target_dir):
             abort(f"Please create a {self.target_dir} folder for storing pages.")
         if not os.path.exists(self.netrc_file):
             abort(f"Please create a {self.netrc_file} file for authentication.")
         self.download_artifact()
         self.update_document()
-        sys.stdout = STDOUT
-        del self.logger
+        print(f"[ {datetime.now()} ] ################# PULL ARTIFACT #################")
+        print()
 
     def download_artifact(self):
         print(f"[ {datetime.now()} ] +++++++++++++++ DOWNLOAD ARTIFACT +++++++++++++++")

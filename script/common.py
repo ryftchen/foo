@@ -38,6 +38,10 @@ class Log:
         self.log = open(filename, mode, encoding="utf-8")  # pylint: disable=consider-using-with
         fcntl.flock(self.log.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
 
+    def __del__(self):
+        fcntl.flock(self.log.fileno(), fcntl.LOCK_UN)
+        self.log.close()
+
     def write(self, message):
         self.terminal.write(message)
         try:
@@ -48,10 +52,6 @@ class Log:
 
     def flush(self):
         pass
-
-    def __del__(self):
-        fcntl.flock(self.log.fileno(), fcntl.LOCK_UN)
-        self.log.close()
 
 
 class ProgressBar:
