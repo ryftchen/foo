@@ -3,7 +3,7 @@
 declare -rA FOLDER=([proj]="foo" [app]="application" [util]="utility" [algo]="algorithm" [ds]="data_structure"
     [dp]="design_pattern" [num]="numeric" [tst]="test" [scr]="script" [doc]="document" [dock]="docker" [bld]="build"
     [rep]="report" [cac]=".cache")
-declare -r COMP_CMD="compile_commands.json"
+declare -r COMP_DB="compile_commands.json"
 declare -r BASH_RC=".bashrc"
 declare -r GIT_CHANGED="git status --porcelain -z | cut -z -c4- | tr '\0' '\n'"
 declare -rA ESC_COLOR=([exec]="\033[0;33;40m\033[1m\033[49m" [succ]="\033[0;32;40m\033[1m\033[49m"
@@ -14,7 +14,7 @@ declare -A ARGS=([help]=false [assume]=false [quick]=false [dry]=false [initiali
     [statistics]=false [format]=false [lint]=false [query]=false [doxygen]=false [browser]=false)
 declare -A DEV_OPT=([compiler]="clang" [parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]="localhost"
     [tmpfs]=false)
-declare SUDO=""
+declare SUDO_PREFIX=""
 declare STATUS=0
 declare CMAKE_CACHE_ENTRY=""
 declare CMAKE_BUILD_OPTION=""
@@ -347,7 +347,7 @@ EOF"
     if ! grep -Fxq "${gdb_load_cmd}" ~/"${gdb_config_folder}/gdbinit" 2>/dev/null; then
         shell_command "echo '${gdb_load_cmd}' >>~/${gdb_config_folder}/gdbinit"
     fi
-    shell_command "echo 'core.%s.%e.%p' | ${SUDO}tee /proc/sys/kernel/core_pattern"
+    shell_command "echo 'core.%s.%e.%p' | ${SUDO_PREFIX}tee /proc/sys/kernel/core_pattern"
     shell_command "git config --local commit.template ./.gitcommit.template"
 
     echo "To initialize for effect, type \"exec bash\" manually."
@@ -362,10 +362,10 @@ function perform_clean_option()
     fi
 
     if df -h -t tmpfs | grep -q "${FOLDER[proj]}/${FOLDER[bld]}" 2>/dev/null; then
-        shell_command "${SUDO}umount ./${FOLDER[bld]}"
+        shell_command "${SUDO_PREFIX}umount ./${FOLDER[bld]}"
     fi
     if df -h -t tmpfs | grep -q "${FOLDER[proj]}/${FOLDER[tst]}/${FOLDER[bld]}" 2>/dev/null; then
-        shell_command "${SUDO}umount ./${FOLDER[tst]}/${FOLDER[bld]}"
+        shell_command "${SUDO_PREFIX}umount ./${FOLDER[tst]}/${FOLDER[bld]}"
     fi
 
     if [[ -f ~/${BASH_RC} ]]; then
@@ -398,7 +398,7 @@ function perform_install_option()
         die "There is no binary file in the ${FOLDER[bld]} folder. Please finish compiling first."
     fi
 
-    shell_command "${SUDO}cmake --install ./${FOLDER[bld]}"
+    shell_command "${SUDO_PREFIX}cmake --install ./${FOLDER[bld]}"
     local install_path=/opt/${FOLDER[proj]}
     if [[ -d ${install_path} ]]; then
         local bin_path=${install_path}/bin
@@ -410,15 +410,15 @@ function perform_install_option()
         local completion_file="bash_completion"
         export_cmd="[ \"\${BASH_COMPLETION_VERSINFO}\" != \"\" ] && [ -s ${install_path}/${completion_file} ] \
 && \. ${install_path}/${completion_file}"
-        shell_command "${SUDO}cp ./${FOLDER[scr]}/${completion_file}.sh ${install_path}/${completion_file}"
+        shell_command "${SUDO_PREFIX}cp ./${FOLDER[scr]}/${completion_file}.sh ${install_path}/${completion_file}"
         if ! grep -Fxq "${export_cmd}" ~/"${BASH_RC}" 2>/dev/null; then
             shell_command "echo '${export_cmd}' >>~/${BASH_RC}"
         fi
 
         local man_path=${install_path}/man
         export_cmd="MANDATORY_MANPATH ${man_path}"
-        shell_command "${SUDO}mkdir -p ${man_path}/man1 \
-&& ${SUDO}cp ./${FOLDER[doc]}/man.1 ${man_path}/man1/${FOLDER[proj]}.1"
+        shell_command "${SUDO_PREFIX}mkdir -p ${man_path}/man1 \
+&& ${SUDO_PREFIX}cp ./${FOLDER[doc]}/man.1 ${man_path}/man1/${FOLDER[proj]}.1"
         if ! grep -Fxq "${export_cmd}" ~/.manpath 2>/dev/null; then
             shell_command "echo '${export_cmd}' >>~/.manpath"
         fi
@@ -442,10 +442,10 @@ function perform_uninstall_option()
 
     local completion_file="bash_completion"
     shell_command "rm -rf ~/.${FOLDER[proj]}"
-    shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs ${SUDO}rm -rf \
-&& ${SUDO}rm -rf /opt/${FOLDER[proj]}/${completion_file} /opt/${FOLDER[proj]}/man"
-    shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs -L1 dirname | xargs ${SUDO}rmdir -p 2>/dev/null \
-|| true"
+    shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs ${SUDO_PREFIX}rm -rf \
+&& ${SUDO_PREFIX}rm -rf /opt/${FOLDER[proj]}/${completion_file} /opt/${FOLDER[proj]}/man"
+    shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs -L1 dirname \
+| xargs ${SUDO_PREFIX}rmdir -p 2>/dev/null || true"
     if [[ -f ~/${BASH_RC} ]]; then
         shell_command "sed -i '/export PATH=\/opt\/${FOLDER[proj]}\/bin:\$PATH/d' ~/${BASH_RC}"
         shell_command "sed -i '/\\\. \/opt\/${FOLDER[proj]}\/${completion_file}/d' ~/${BASH_RC}"
@@ -629,7 +629,7 @@ function check_extra_dependencies()
 or clippy program. Please install it."
         fi
         if [[ ${DEV_OPT[pch]} = true ]] || [[ ${DEV_OPT[unity]} = true ]]; then
-            die "Due to the unconventional ${COMP_CMD} file, the --lint option cannot run if the FOO_BLD_PCH or \
+            die "Due to the unconventional ${COMP_DB} file, the --lint option cannot run if the FOO_BLD_PCH or \
 FOO_BLD_UNITY is turned on."
         fi
     fi
@@ -652,7 +652,7 @@ FOO_BLD_UNITY is turned on."
             die "No codebrowser_generator or codebrowser_indexgenerator program. Please install it."
         fi
         if [[ ${DEV_OPT[pch]} = true ]] || [[ ${DEV_OPT[unity]} = true ]]; then
-            die "Due to the unconventional ${COMP_CMD} file, the --browser option cannot run if the FOO_BLD_PCH or \
+            die "Due to the unconventional ${COMP_DB} file, the --browser option cannot run if the FOO_BLD_PCH or \
 FOO_BLD_UNITY is turned on."
         fi
     fi
@@ -756,22 +756,22 @@ function perform_lint_option()
     fi
 
     if [[ ${ARGS[lint]} = true ]] || [[ ${ARGS[lint]} = "cpp" ]]; then
-        local app_comp_cmd=${FOLDER[bld]}/${COMP_CMD}
-        if [[ ! -f ./${app_comp_cmd} ]]; then
-            die "There is no ${COMP_CMD} file in the ${FOLDER[bld]} folder. Please generate it."
+        local app_comp_db=${FOLDER[bld]}/${COMP_DB}
+        if [[ ! -f ./${app_comp_db} ]]; then
+            die "There is no ${COMP_DB} file in the ${FOLDER[bld]} folder. Please generate it."
         fi
-        shell_command "compdb -p ./${FOLDER[bld]} list >./${COMP_CMD} && mv ./${app_comp_cmd} ./${app_comp_cmd}.bak \
-&& mv ./${COMP_CMD} ./${FOLDER[bld]}"
+        shell_command "compdb -p ./${FOLDER[bld]} list >./${COMP_DB} && mv ./${app_comp_db} ./${app_comp_db}.bak \
+&& mv ./${COMP_DB} ./${FOLDER[bld]}"
         local exist_file_extention=false
         while true; do
             local line
-            line=$(grep -n '.tpp' "./${app_comp_cmd}" | head -n 1 | cut -d : -f 1)
+            line=$(grep -n '.tpp' "./${app_comp_db}" | head -n 1 | cut -d : -f 1)
             if ! [[ ${line} =~ ^[0-9]+$ ]]; then
                 break
             fi
             exist_file_extention=true
-            if ! sed -i $((line - 2)),$((line + 3))d ./"${app_comp_cmd}" >/dev/null 2>&1; then
-                die "Failed to remove redundant implementation file objects from the ${app_comp_cmd} file."
+            if ! sed -i $((line - 2)),$((line + 3))d ./"${app_comp_db}" >/dev/null 2>&1; then
+                die "Failed to remove redundant implementation file objects from the ${app_comp_db} file."
             fi
         done
 
@@ -808,14 +808,14 @@ function perform_lint_option()
                 fi
             fi
         fi
-        shell_command "rm -rf ./${app_comp_cmd} && mv ./${app_comp_cmd}.bak ./${app_comp_cmd}"
+        shell_command "rm -rf ./${app_comp_db} && mv ./${app_comp_db}.bak ./${app_comp_db}"
 
-        local tst_comp_cmd=${FOLDER[tst]}/${FOLDER[bld]}/${COMP_CMD}
-        if [[ ! -f ./${tst_comp_cmd} ]]; then
-            die "There is no ${COMP_CMD} file in the ${FOLDER[tst]}/${FOLDER[bld]} folder. Please generate it."
+        local tst_comp_db=${FOLDER[tst]}/${FOLDER[bld]}/${COMP_DB}
+        if [[ ! -f ./${tst_comp_db} ]]; then
+            die "There is no ${COMP_DB} file in the ${FOLDER[tst]}/${FOLDER[bld]} folder. Please generate it."
         fi
-        shell_command "compdb -p ./${FOLDER[tst]}/${FOLDER[bld]} list >./${COMP_CMD} \
-&& mv ./${tst_comp_cmd} ./${tst_comp_cmd}.bak && mv ./${COMP_CMD} ./${FOLDER[tst]}/${FOLDER[bld]}"
+        shell_command "compdb -p ./${FOLDER[tst]}/${FOLDER[bld]} list >./${COMP_DB} \
+&& mv ./${tst_comp_db} ./${tst_comp_db}.bak && mv ./${COMP_DB} ./${FOLDER[tst]}/${FOLDER[bld]}"
         if [[ ${ARGS[quick]} = false ]]; then
             shell_command "set -o pipefail && find ./${FOLDER[tst]} -name '*.cpp' \
 | xargs run-clang-tidy-16 -config-file=./.clang-tidy -p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet \
@@ -828,7 +828,7 @@ function perform_lint_option()
 | tee -a ${clang_tidy_log}"
             fi
         fi
-        shell_command "rm -rf ./${tst_comp_cmd} && mv ./${tst_comp_cmd}.bak ./${tst_comp_cmd}"
+        shell_command "rm -rf ./${tst_comp_db} && mv ./${tst_comp_db}.bak ./${tst_comp_db}"
         if [[ -f ${clang_tidy_log} ]]; then
             shell_command "cat ${clang_tidy_log} | sed 's/\x1b\[[0-9;]*m//g' \
 | python3 -m clang_tidy_converter --project_root ./ html >${clang_tidy_output_path}/index.html"
@@ -918,12 +918,12 @@ to improve accuracy. (y or n)"
         echo "No"
     fi
 
-    local codeql_db=./${FOLDER[rep]}/sca/query
-    shell_command "rm -rf ${codeql_db} && mkdir -p ${codeql_db}"
-    shell_command "codeql database create ${codeql_db} --codescanning-config=./.codeql --language=cpp --source-root=./ \
---command='${build_script}${other_option}' --command='${build_script} --test${other_option}'"
-    local codeql_sarif=${codeql_db}/codeql.sarif
-    shell_command "codeql database analyze ${codeql_db} --format=sarif-latest --output=${codeql_sarif}"
+    local codeql_db_path=./${FOLDER[rep]}/sca/query
+    shell_command "rm -rf ${codeql_db_path} && mkdir -p ${codeql_db_path}"
+    shell_command "codeql database create ${codeql_db_path} --codescanning-config=./.codeql --language=cpp \
+--source-root=./ --command='${build_script}${other_option}' --command='${build_script} --test${other_option}'"
+    local codeql_sarif=${codeql_db_path}/codeql.sarif
+    shell_command "codeql database analyze ${codeql_db_path} --format=sarif-latest --output=${codeql_sarif}"
     if echo "${input}" | grep -iq '^y'; then
         build_script=./${FOLDER[scr]}/$(basename "$0")
         shell_command "${build_script}${other_option} >/dev/null && ${build_script} --test${other_option} >/dev/null"
@@ -943,7 +943,7 @@ to improve accuracy. (y or n)"
         else
             shell_command "! ${sarif_sum}"
         fi
-        shell_command "sarif html ${codeql_sarif} --output ${codeql_db}/index.html"
+        shell_command "sarif html ${codeql_sarif} --output ${codeql_db_path}/index.html"
     else
         die "Could not find sarif file in codeql database."
     fi
@@ -999,8 +999,8 @@ function package_for_browser()
 {
     local commit_id=$1
 
-    if [[ ! -f ./${FOLDER[bld]}/${COMP_CMD} ]]; then
-        die "There is no ${COMP_CMD} file in the ${FOLDER[bld]} folder. Please generate it."
+    if [[ ! -f ./${FOLDER[bld]}/${COMP_DB} ]]; then
+        die "There is no ${COMP_DB} file in the ${FOLDER[bld]} folder. Please generate it."
     fi
     local browser_folder="browser"
     local tar_file="${FOLDER[proj]}_${browser_folder}_${commit_id}.tar.bz2"
@@ -1010,9 +1010,9 @@ function package_for_browser()
     shell_command "cp -rf /usr/local/share/woboq/data ./${FOLDER[doc]}/${browser_folder}/"
     shell_command "sed -i \"s|'><img src='|'><img src='https://web.archive.org/web/20220224111803/|g\" \
 ./${FOLDER[doc]}/${browser_folder}/data/codebrowser.js"
-    shell_command "codebrowser_generator -color -a -b ./${FOLDER[bld]}/${COMP_CMD} \
+    shell_command "codebrowser_generator -color -a -b ./${FOLDER[bld]}/${COMP_DB} \
 -o ./${FOLDER[doc]}/${browser_folder} -p ${FOLDER[proj]}:.:${commit_id} -d ./data"
-    shell_command "codebrowser_generator -color -a -b ./${FOLDER[tst]}/${FOLDER[bld]}/${COMP_CMD} \
+    shell_command "codebrowser_generator -color -a -b ./${FOLDER[tst]}/${FOLDER[bld]}/${COMP_DB} \
 -o ./${FOLDER[doc]}/${browser_folder} -p ${FOLDER[proj]}:.:${commit_id} -d ./data"
     shell_command "codebrowser_indexgenerator ./${FOLDER[doc]}/${browser_folder} -d ./data"
 
@@ -1208,10 +1208,10 @@ e.g. with \"distccd --daemon --allow ${local_client}\"."
             shell_command "mkdir -p ./${tmpfs_subfolder}"
         fi
         if ! df -h -t tmpfs | grep -q "${FOLDER[proj]}/${tmpfs_subfolder}" 2>/dev/null; then
-            shell_command "${SUDO}mount -t tmpfs -o size=${tmpfs_size} tmpfs ./${tmpfs_subfolder}"
+            shell_command "${SUDO_PREFIX}mount -t tmpfs -o size=${tmpfs_size} tmpfs ./${tmpfs_subfolder}"
         fi
     elif df -h -t tmpfs | grep -q "${FOLDER[proj]}/${tmpfs_subfolder}" 2>/dev/null; then
-        shell_command "${SUDO}umount ./${tmpfs_subfolder}"
+        shell_command "${SUDO_PREFIX}umount ./${tmpfs_subfolder}"
     fi
 }
 
@@ -1262,13 +1262,13 @@ function build_native()
 
 function clean_up_temporary_files()
 {
-    local app_comp_cmd=${FOLDER[bld]}/${COMP_CMD}
-    if [[ -f ./${app_comp_cmd}.bak ]]; then
-        shell_command "rm -rf ./${app_comp_cmd} && mv ./${app_comp_cmd}.bak ./${app_comp_cmd}"
+    local app_comp_db=${FOLDER[bld]}/${COMP_DB}
+    if [[ -f ./${app_comp_db}.bak ]]; then
+        shell_command "rm -rf ./${app_comp_db} && mv ./${app_comp_db}.bak ./${app_comp_db}"
     fi
-    local tst_comp_cmd=${FOLDER[tst]}/${FOLDER[bld]}/${COMP_CMD}
-    if [[ -f ./${tst_comp_cmd}.bak ]]; then
-        shell_command "rm -rf ./${tst_comp_cmd} && mv ./${tst_comp_cmd}.bak ./${tst_comp_cmd}"
+    local tst_comp_db=${FOLDER[tst]}/${FOLDER[bld]}/${COMP_DB}
+    if [[ -f ./${tst_comp_db}.bak ]]; then
+        shell_command "rm -rf ./${tst_comp_db} && mv ./${tst_comp_db}.bak ./${tst_comp_db}"
     fi
 }
 
@@ -1291,7 +1291,7 @@ function main()
 
     export TERM=linux TERMINFO=/etc/terminfo
     if [[ ${EUID} -ne 0 ]]; then
-        SUDO="sudo "
+        SUDO_PREFIX="sudo "
     fi
     trap signal_handler SIGINT SIGTERM
     clean_up_temporary_files

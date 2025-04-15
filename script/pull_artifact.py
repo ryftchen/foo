@@ -9,7 +9,7 @@ try:
     import sys
     import traceback
     from datetime import datetime
-    import common
+    from common import execute_command as executor, Log as Logger
 except ImportError as err:
     raise ImportError(err) from err
 
@@ -31,12 +31,12 @@ class Documentation:
         env = os.getenv("FOO_ENV")
         if env is not None:
             if env != "foo_doc":
-                interrupt("The environment variable FOO_ENV must be foo_doc.")
+                abort("The environment variable FOO_ENV must be foo_doc.")
         else:
-            interrupt("Please export the environment variable FOO_ENV.")
+            abort("Please export the environment variable FOO_ENV.")
         script_path = os.path.split(os.path.realpath(__file__))[0]
         if not fnmatch.fnmatch(script_path, "*foo/script"):
-            interrupt("Illegal path to current script.")
+            abort("Illegal path to current script.")
         parser = argparse.ArgumentParser(description="pull artifact script")
         parser.add_argument("-f", "--force", action="store_true", default=False, help="forced pull")
         parser.add_argument(
@@ -55,15 +55,15 @@ class Documentation:
             self.proxy_port = args.port
 
         self.project_path = os.path.dirname(script_path)
-        self.logger = common.Log(self.log_file, "at")
+        self.logger = Logger(self.log_file, "at")
         sys.stdout = self.logger
 
     def pull_artifact(self):
         print(f"\n[ {datetime.now()} ] ################# PULL ARTIFACT #################")
         if not os.path.exists(self.target_dir):
-            interrupt(f"Please create a {self.target_dir} folder for storing pages.")
+            abort(f"Please create a {self.target_dir} folder for storing pages.")
         if not os.path.exists(self.netrc_file):
-            interrupt(f"Please create a {self.netrc_file} file for authentication.")
+            abort(f"Please create a {self.netrc_file} file for authentication.")
         self.download_artifact()
         self.update_document()
         sys.stdout = STDOUT
@@ -71,20 +71,20 @@ class Documentation:
 
     def download_artifact(self):
         print(f"[ {datetime.now()} ] +++++++++++++++ DOWNLOAD ARTIFACT +++++++++++++++")
-        local_commit_id, _, _ = execute(f"git -C {self.project_path} rev-parse HEAD")
-        remote_commit_id, _, _ = execute(
+        local_commit_id, _, _ = executor(f"git -C {self.project_path} rev-parse HEAD")
+        remote_commit_id, _, _ = executor(
             f"git -C {self.project_path} ls-remote {self.repo_url} refs/heads/master | cut -f 1"
         )
         if not remote_commit_id:
-            interrupt("Could not get the latest commit id.")
+            abort("Could not get the latest commit id.")
         if local_commit_id != remote_commit_id:
-            execute(f"git -C {self.project_path} pull origin master")
+            executor(f"git -C {self.project_path} pull origin master")
         elif (
             not self.forced_pull
             and os.path.exists(f"{self.target_dir}/doxygen")
             and os.path.exists(f"{self.target_dir}/browser")
         ):
-            interrupt("No commit change.")
+            abort("No commit change.")
 
         try:
             response = requests.get(self.api_url, timeout=60)
@@ -112,32 +112,27 @@ class Documentation:
             with open(f"{self.target_dir}/{self.artifact_name}.zip", "wb") as output_file:
                 output_file.write(response.content)
         except requests.exceptions.RequestException as error:
-            execute(f"rm -rf {self.target_dir}/{self.artifact_name}.zip")
-            execute(f"git -C {self.project_path} reset --hard {local_commit_id}")
-            interrupt(error)
+            executor(f"rm -rf {self.target_dir}/{self.artifact_name}.zip")
+            executor(f"git -C {self.project_path} reset --hard {local_commit_id}")
+            abort(error)
 
-        validation, _, _ = execute(f"zip -T {self.target_dir}/{self.artifact_name}.zip")
+        validation, _, _ = executor(f"zip -T {self.target_dir}/{self.artifact_name}.zip")
         if "zip error" in validation:
-            execute(f"rm -rf {self.target_dir}/{self.artifact_name}.zip")
-            execute(f"git -C {self.project_path} reset --hard {local_commit_id}")
-            interrupt(f"The {self.artifact_name}.zip file in the {self.target_dir} folder is corrupted.")
+            executor(f"rm -rf {self.target_dir}/{self.artifact_name}.zip")
+            executor(f"git -C {self.project_path} reset --hard {local_commit_id}")
+            abort(f"The {self.artifact_name}.zip file in the {self.target_dir} folder is corrupted.")
 
     def update_document(self):
         print(f"[ {datetime.now()} ] ++++++++++++++++ UPDATE DOCUMENT ++++++++++++++++")
-        execute(f"rm -rf {self.target_dir}/doxygen {self.target_dir}/browser")
-        execute(f"unzip {self.target_dir}/{self.artifact_name}.zip -d {self.target_dir}")
-        execute(f"tar -jxvf {self.target_dir}/foo_doxygen_*.tar.bz2 -C {self.target_dir} >/dev/null")
-        execute(f"tar -jxvf {self.target_dir}/foo_browser_*.tar.bz2 -C {self.target_dir} >/dev/null")
-        execute(f"rm -rf {self.target_dir}/*.zip {self.target_dir}/*.tar.bz2")
+        executor(f"rm -rf {self.target_dir}/doxygen {self.target_dir}/browser")
+        executor(f"unzip {self.target_dir}/{self.artifact_name}.zip -d {self.target_dir}")
+        executor(f"tar -jxvf {self.target_dir}/foo_doxygen_*.tar.bz2 -C {self.target_dir} >/dev/null")
+        executor(f"tar -jxvf {self.target_dir}/foo_browser_*.tar.bz2 -C {self.target_dir} >/dev/null")
+        executor(f"rm -rf {self.target_dir}/*.zip {self.target_dir}/*.tar.bz2")
 
 
-def execute(cmd):
-    print(f"[ {datetime.now()} ] {execute.__name__.upper()}: {cmd}")
-    return common.execute_command(cmd)
-
-
-def interrupt(msg):
-    print(f"[ {datetime.now()} ] {interrupt.__name__.upper()}: {msg}")
+def abort(msg):
+    print(f"[ {datetime.now()} ] {msg}")
     sys.exit(1)
 
 
@@ -145,4 +140,4 @@ if __name__ == "__main__":
     try:
         Documentation().pull_artifact()
     except Exception:  # pylint: disable=broad-except
-        interrupt(traceback.format_exc())
+        abort(traceback.format_exc())
