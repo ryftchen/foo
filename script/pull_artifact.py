@@ -16,7 +16,7 @@ except ImportError as err:
 STDOUT = sys.stdout
 
 
-class Documentation:
+class Schedule:
     repo_url = "https://github.com/ryftchen/foo.git"
     api_url = "https://api.github.com/repos/ryftchen/foo/actions/artifacts?per_page=5"
     artifact_name = "foo_artifact"
@@ -25,6 +25,7 @@ class Documentation:
     log_file = "/tmp/foo_pull_artifact.log"
 
     def __init__(self):
+        self.logger = sys.stdout
         self.forced_pull = False
         self.proxy_port = ""
 
@@ -37,6 +38,13 @@ class Documentation:
         script_path = os.path.split(os.path.realpath(__file__))[0]
         if not fnmatch.fnmatch(script_path, "*foo/script"):
             abort("Illegal path to current script.")
+        self.project_path = os.path.dirname(script_path)
+
+    def __del__(self):
+        sys.stdout = STDOUT
+        del self.logger
+
+    def parse(self):
         parser = argparse.ArgumentParser(description="pull artifact script")
         parser.add_argument("-f", "--force", action="store_true", default=False, help="forced pull")
         parser.add_argument(
@@ -48,33 +56,30 @@ class Documentation:
             help="proxy port",
             metavar="[0-65535]",
         )
+
         args = parser.parse_args()
         if args.force:
             self.forced_pull = True
         if args.port is not None:
             self.proxy_port = args.port
 
-        self.project_path = os.path.dirname(script_path)
+    def pull_artifact(self):
+        self.parse()
         self.logger = Logger(self.log_file, "at")
         sys.stdout = self.logger
+        print()
 
-    def __del__(self):
-        sys.stdout = STDOUT
-        del self.logger
-
-    def pull_artifact(self):
-        print(f"[ {datetime.now()} ] ################# PULL ARTIFACT #################")
+        print(f"[ {datetime.now()} ] >>>>>>>>>>>>>>>>> PULL ARTIFACT >>>>>>>>>>>>>>>>>")
         if not os.path.exists(self.target_dir):
             abort(f"Please create a {self.target_dir} folder for storing pages.")
         if not os.path.exists(self.netrc_file):
             abort(f"Please create a {self.netrc_file} file for authentication.")
         self.download_artifact()
         self.update_document()
-        print(f"[ {datetime.now()} ] ################# PULL ARTIFACT #################")
-        print()
+        print(f"[ {datetime.now()} ] <<<<<<<<<<<<<<<<< PULL ARTIFACT <<<<<<<<<<<<<<<<<")
 
     def download_artifact(self):
-        print(f"[ {datetime.now()} ] +++++++++++++++ DOWNLOAD ARTIFACT +++++++++++++++")
+        print(f"[ {datetime.now()} ] ############### DOWNLOAD ARTIFACT ###############")
         local_commit_id, _, _ = executor(f"git -C {self.project_path} rev-parse HEAD")
         remote_commit_id, _, _ = executor(
             f"git -C {self.project_path} ls-remote {self.repo_url} refs/heads/master | cut -f 1"
@@ -127,7 +132,7 @@ class Documentation:
             abort(f"The {self.artifact_name}.zip file in the {self.target_dir} folder is corrupted.")
 
     def update_document(self):
-        print(f"[ {datetime.now()} ] ++++++++++++++++ UPDATE DOCUMENT ++++++++++++++++")
+        print(f"[ {datetime.now()} ] ################ UPDATE DOCUMENT ################")
         executor(f"rm -rf {self.target_dir}/doxygen {self.target_dir}/browser")
         executor(f"unzip {self.target_dir}/{self.artifact_name}.zip -d {self.target_dir}")
         executor(f"tar -jxvf {self.target_dir}/foo_doxygen_*.tar.bz2 -C {self.target_dir} >/dev/null")
@@ -142,6 +147,6 @@ def abort(msg):
 
 if __name__ == "__main__":
     try:
-        Documentation().pull_artifact()
+        Schedule().pull_artifact()
     except Exception:  # pylint: disable=broad-except
         abort(traceback.format_exc())
