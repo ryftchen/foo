@@ -45,14 +45,19 @@ class Schedule:
         del self.logger
 
     def parse(self):
+        def check_port_range(value):
+            value = int(value)
+            if 0 <= value <= 65535:
+                return value
+            raise argparse.ArgumentTypeError("Must be in the range of 0-65535.")
+
         parser = argparse.ArgumentParser(description="pull artifact script")
         parser.add_argument("-f", "--force", action="store_true", default=False, help="forced pull")
         parser.add_argument(
             "-p",
             "--port",
             nargs="?",
-            type=int,
-            choices=range(0, 65535 + 1),
+            type=check_port_range,
             help="proxy port",
             metavar="[0-65535]",
         )

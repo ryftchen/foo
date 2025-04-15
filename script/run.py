@@ -109,17 +109,16 @@ class Task:
         self.task_queue = queue.Queue()
 
     def parse_arguments(self):
-        def check_positive(value):
+        def check_positive_integer(value):
             value = int(value)
-            if value <= 0:
-                raise argparse.ArgumentTypeError(f"\"{value}\" is an invalid positive int value.")
-
-            return value
+            if value > 0:
+                return value
+            raise argparse.ArgumentTypeError("Must be a positive integer.")
 
         parser = argparse.ArgumentParser(description="run script", formatter_class=argparse.RawTextHelpFormatter)
         parser.add_argument("-t", "--test", action="store_true", default=False, help="run unit test only")
         parser.add_argument(
-            "-r", "--repeat", nargs="?", const=1, type=check_positive, help="run repeatedly", metavar="TIMES"
+            "-r", "--repeat", nargs="?", const=1, type=check_positive_integer, help="run repeatedly", metavar="TIMES"
         )
         parser.add_argument(
             "-c",
