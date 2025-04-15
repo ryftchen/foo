@@ -34,8 +34,10 @@ Console::Console(const std::string_view greeting) : terminal{std::make_unique<Te
 
 Console::~Console()
 {
+    ::rl_attempted_completion_function = nullptr;
     ::rl_free(emptyHistory);
     ::rl_clear_history();
+    ::rl_set_prompt(nullptr);
     ::rl_restore_prompt();
 }
 
@@ -55,7 +57,7 @@ Console::RetCode Console::optionExecutor(const std::string_view option) const
     std::vector<std::string> inputs{};
     std::istringstream transfer(option.data());
     std::copy(
-        std::istream_iterator<std::string>(transfer), std::istream_iterator<std::string>{}, std::back_inserter(inputs));
+        std::istream_iterator<std::string>{transfer}, std::istream_iterator<std::string>{}, std::back_inserter(inputs));
     if (inputs.empty())
     {
         return RetCode::success;
@@ -118,7 +120,7 @@ Console::RetCode Console::readLine()
     {
         ::add_history(buffer);
     }
-    std::string input(buffer);
+    const auto input = std::string{buffer};
     ::rl_free(buffer);
 
     return optionExecutor(input);
