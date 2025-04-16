@@ -88,9 +88,9 @@ static void helperDaemon()
 }
 
 //! @brief Coroutine for managing the lifecycle of helper components.
-//! @tparam Helpers - type of arguments of helper
+//! @tparam Hs - type of helpers
 //! @return object that represents the execution of the coroutine
-template <HelperType... Helpers>
+template <typename... Hs>
 static action::Awaitable helperLifecycle()
 {
     if (!configure::detail::activateHelper())
@@ -98,24 +98,25 @@ static action::Awaitable helperLifecycle()
         co_return;
     }
 
-    std::latch awaitDaemon(1);
+    std::latch waitPoint(1);
     const std::jthread daemon(
-        [&awaitDaemon]()
+        [&waitPoint]()
         {
-            helperDaemon<Helpers...>();
-            awaitDaemon.count_down();
+            helperDaemon<Hs...>();
+            waitPoint.count_down();
         });
-    std::barrier awaitPublish(sizeof...(Helpers) + 1);
-    const auto publish = [&awaitPublish](const ExtEvent event)
+    std::barrier syncPoint(sizeof...(Hs) + 1);
+    static const auto publish = [&syncPoint](const ExtEvent event)
     {
-        std::vector<std::jthread> senders(sizeof...(Helpers));
-        (senders.emplace_back(std::jthread{[&awaitPublish, event]()
+        std::vector<std::jthread> senders{};
+        senders.reserve(sizeof...(Hs));
+        (senders.emplace_back(std::jthread{[&syncPoint, event]()
                                            {
-                                               triggerHelper<Helpers>(event);
-                                               awaitPublish.arrive_and_wait();
+                                               triggerHelper<Hs>(event);
+                                               syncPoint.arrive_and_wait();
                                            }}),
          ...);
-        awaitPublish.arrive_and_wait();
+        syncPoint.arrive_and_wait();
     };
 
     co_await std::suspend_always{};
@@ -123,7 +124,7 @@ static action::Awaitable helperLifecycle()
     co_await std::suspend_always{};
     publish(ExtEvent::shutdown);
 
-    awaitDaemon.wait();
+    waitPoint.wait();
 }
 
 // clang-format off
