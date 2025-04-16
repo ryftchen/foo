@@ -146,7 +146,7 @@ jobs:
       - name: Enhanced environment
         run: |
           ./script/build.sh --initialize
-          sed -i 's/FOO_BLD_COMPILER=.*/FOO_BLD_COMPILER=gcc/' ./script/.build_env
+          sed -i 's/FOO_BLD_COMPILER=.*/FOO_BLD_COMPILER=clang/' ./script/.build_env
           sed -i 's/FOO_BLD_PARALLEL=.*/FOO_BLD_PARALLEL=2/' ./script/.build_env
           sed -i 's/FOO_BLD_CCACHE=.*/FOO_BLD_CCACHE=on/' ./script/.build_env
           sed -i 's/FOO_BLD_TMPFS=.*/FOO_BLD_TMPFS=on/' ./script/.build_env
