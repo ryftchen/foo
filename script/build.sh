@@ -12,7 +12,7 @@ declare -r ESC_OFF="\033[0m"
 declare -A ARGS=([help]=false [assume]=false [quick]=false [dry]=false [initialize]=false [clean]=false [install]=false
     [uninstall]=false [container]=false [archive]=false [test]=false [release]=false [hook]=false [spell]=false
     [statistics]=false [format]=false [lint]=false [query]=false [doxygen]=false [browser]=false)
-declare -A DEV_OPT=([compiler]="clang" [parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]="localhost"
+declare -A DEV_OPT=([compiler]="gcc" [parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]="localhost"
     [tmpfs]=false)
 declare SUDO_PREFIX=""
 declare STATUS=0
@@ -327,7 +327,7 @@ function perform_initialize_option()
     shell_command "cat <<EOF >./${FOLDER[scr]}/.build_env
 #!/bin/false
 
-FOO_BLD_COMPILER=clang # clang / gcc
+FOO_BLD_COMPILER=gcc # gcc / clang
 FOO_BLD_PARALLEL=0 # NUMBER
 FOO_BLD_PCH=off # on / off
 FOO_BLD_UNITY=off # on / off
@@ -1077,8 +1077,8 @@ function set_compile_condition()
         # shellcheck source=/dev/null
         source "./${FOLDER[scr]}/.build_env"
         if [[ -n ${FOO_BLD_COMPILER} ]]; then
-            if [[ ! ${FOO_BLD_COMPILER} =~ ^(clang|gcc)$ ]]; then
-                die "The FOO_BLD_COMPILER must be clang or gcc."
+            if [[ ! ${FOO_BLD_COMPILER} =~ ^(gcc|clang)$ ]]; then
+                die "The FOO_BLD_COMPILER must be gcc or clang."
             fi
             if {
                 [[ -n ${FOO_BLD_COV} ]] && [[ ${FOO_BLD_COV} = "llvm-cov" ]]
@@ -1128,17 +1128,17 @@ function set_compile_condition()
     fi
 
     CMAKE_CACHE_ENTRY=" -D CMAKE_BUILD_TYPE=${BUILD_TYPE}"
-    if [[ ${DEV_OPT[compiler]} = "clang" ]]; then
-        local ver=16
-        CC=clang-${ver} CXX=clang++-${ver}
+    if [[ ${DEV_OPT[compiler]} = "gcc" ]]; then
+        local ver=13
+        CC=gcc-${ver} CXX=g++-${ver}
         if ! command -v "${CC}" >/dev/null 2>&1 || ! command -v "${CXX}" >/dev/null 2>&1; then
             die "No ${CC} or ${CXX} program. Please install it."
         fi
         export CC CXX
         CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D CMAKE_C_COMPILER=${CC} -D CMAKE_CXX_COMPILER=${CXX}"
-    elif [[ ${DEV_OPT[compiler]} = "gcc" ]]; then
-        local ver=13
-        CC=gcc-${ver} CXX=g++-${ver}
+    elif [[ ${DEV_OPT[compiler]} = "clang" ]]; then
+        local ver=16
+        CC=clang-${ver} CXX=clang++-${ver}
         if ! command -v "${CC}" >/dev/null 2>&1 || ! command -v "${CXX}" >/dev/null 2>&1; then
             die "No ${CC} or ${CXX} program. Please install it."
         fi
