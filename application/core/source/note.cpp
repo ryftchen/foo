@@ -23,7 +23,7 @@ std::string compiler()
 #else
 #pragma message("Unknown compiler at compile time.")
     return "unknown compiler";
-#endif // __clang__
+#endif // __clang__ / __GNUC__
 }
 
 //! @brief Target processor.
