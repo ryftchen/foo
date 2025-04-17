@@ -46,7 +46,7 @@ class Task:
             r"refresh",
             r"reconnect",
             r"depend",
-            r'''execute "ps -eww -o size,pid,user,command --sort -size | awk '{ hr=\$1/1024 ; printf(\"%6.2fMB \", hr) } { for (x=4 ; x<=NF ; x++) { printf(\"%s \", \$x) } print \"\" }' | cut -d '' -f 2 | sed '1d'"''',  # pylint: disable=line-too-long
+            r'''execute "ps -eww -o size,pid,user,command --sort -size | awk '{ hr=\$1/1024; printf(\"%6.2fMB \", hr) } { for (x=4; x<=NF; x++) { printf(\"%s \", \$x) } print \"\" }' | cut -d '' -f 2 | sed '1d'"''',  # pylint: disable=line-too-long
             r"journal",
             r"monitor 0",
             r"profile",
@@ -560,8 +560,8 @@ class Task:
 mv {xml_filename}.xml {xml_filename}_inst_2.xml"
             )
             common.execute_command(
-                f"a=$(sed -n '/<\\/status>/!d;=;Q' {xml_filename}_inst_1.xml) ; \
-b=$(sed -n '/<\\/valgrindoutput>/!d;=;Q' {xml_filename}_inst_1.xml) ; \
+                f"a=$(sed -n '/<\\/status>/!d;=;Q' {xml_filename}_inst_1.xml); \
+b=$(sed -n '/<\\/valgrindoutput>/!d;=;Q' {xml_filename}_inst_1.xml); \
 sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
             )
             common.execute_command(f"sed -i '/<\\/valgrindoutput>/q' {xml_filename}_inst_2.xml")
