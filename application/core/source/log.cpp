@@ -342,24 +342,24 @@ void Log::tryCreateLogFolder() const
 void Log::backUpLogFileIfNeeded() const
 {
     if (constexpr std::uint32_t maxFileSize = 512 * 1024;
-        std::filesystem::is_regular_file(filePath) && (std::filesystem::file_size(filePath) >= maxFileSize))
+        !std::filesystem::is_regular_file(filePath) || (std::filesystem::file_size(filePath) < maxFileSize))
     {
-        const std::regex pattern(
-            std::regex_replace(
-                std::filesystem::path(filePath).filename().string(), std::regex(R"([-[\]{}()*+?.,\^$|#\s])"), R"(\$&)")
-            + R"(\.(\d+))");
-        const auto transformed =
-            std::filesystem::directory_iterator(std::filesystem::absolute(filePath).parent_path())
-            | std::views::transform(
-                [&pattern](const auto& entry)
-                {
-                    const auto filename = entry.path().filename().string();
-                    std::smatch match{};
-                    return std::regex_match(filename, match, pattern) ? std::stoi(match[1].str()) : 0;
-                });
-        const int index = std::ranges::max(transformed, std::less<int>{}, [](const auto value) { return value; });
-        std::filesystem::rename(filePath, filePath + '.' + std::to_string(index + 1));
+        return;
     }
+
+    const std::regex pattern(
+        std::regex_replace(
+            std::filesystem::path(filePath).filename().string(), std::regex(R"([-[\]{}()*+?.,\^$|#\s])"), R"(\$&)")
+        + R"(\.(\d+))");
+    auto transformed = std::filesystem::directory_iterator(std::filesystem::absolute(filePath).parent_path())
+        | std::views::transform(
+                           [&pattern, match = std::smatch{}](const auto& entry) mutable
+                           {
+                               const auto& filename = entry.path().filename().string();
+                               return std::regex_match(filename, match, pattern) ? std::stoi(match[1].str()) : 0;
+                           });
+    const int index = std::ranges::max(transformed, std::less<int>{}, [](const auto value) { return value; });
+    std::filesystem::rename(filePath, filePath + '.' + std::to_string(index + 1));
 }
 
 void Log::openLogFile()
