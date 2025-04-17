@@ -22,7 +22,7 @@ jobs:
     container:
       image: ryftchen/foo:latest
       options: --privileged
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
       - name: Prepare
@@ -64,7 +64,7 @@ jobs:
     container:
       image: ryftchen/foo:latest
       options: --privileged
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
       - name: Prepare
@@ -123,7 +123,7 @@ jobs:
     container:
       image: ryftchen/foo:latest
       options: --privileged
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
       - name: Prepare
@@ -198,7 +198,7 @@ jobs:
     container:
       image: ryftchen/foo:latest
       options: --privileged
-    timeout-minutes: 20
+    timeout-minutes: 30
     permissions: write-all
     environment:
       name: github-pages
