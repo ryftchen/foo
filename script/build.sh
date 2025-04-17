@@ -1130,21 +1130,18 @@ function set_compile_condition()
     CMAKE_CACHE_ENTRY=" -D CMAKE_BUILD_TYPE=${BUILD_TYPE}"
     if [[ ${DEV_OPT[compiler]} = "gcc" ]]; then
         local ver=13
-        CC=gcc-${ver} CXX=g++-${ver}
+        export CC=gcc-${ver} CXX=g++-${ver}
         if ! command -v "${CC}" >/dev/null 2>&1 || ! command -v "${CXX}" >/dev/null 2>&1; then
             die "No ${CC} or ${CXX} program. Please install it."
         fi
-        export CC CXX
-        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D CMAKE_C_COMPILER=${CC} -D CMAKE_CXX_COMPILER=${CXX}"
     elif [[ ${DEV_OPT[compiler]} = "clang" ]]; then
         local ver=16
-        CC=clang-${ver} CXX=clang++-${ver}
+        export CC=clang-${ver} CXX=clang++-${ver}
         if ! command -v "${CC}" >/dev/null 2>&1 || ! command -v "${CXX}" >/dev/null 2>&1; then
             die "No ${CC} or ${CXX} program. Please install it."
         fi
-        export CC CXX
-        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D CMAKE_C_COMPILER=${CC} -D CMAKE_CXX_COMPILER=${CXX}"
     fi
+    CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D CMAKE_C_COMPILER=${CC} -D CMAKE_CXX_COMPILER=${CXX}"
     if command -v gcc >/dev/null 2>&1 && command -v g++ >/dev/null 2>&1; then
         local gcc_processor gxx_processor
         gcc_processor=$(gcc -dumpmachine)
