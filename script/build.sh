@@ -1080,13 +1080,6 @@ function set_compile_condition()
             if [[ ! ${FOO_BLD_COMPILER} =~ ^(gcc|clang)$ ]]; then
                 die "The FOO_BLD_COMPILER must be gcc or clang."
             fi
-            if {
-                [[ -n ${FOO_BLD_COV} ]] && [[ ${FOO_BLD_COV} = "llvm-cov" ]]
-            } || {
-                [[ -n ${FOO_BLD_SAN} ]] && [[ ${FOO_BLD_SAN} =~ ^(asan|tsan|ubsan)$ ]]
-            }; then
-                FOO_BLD_COMPILER="clang"
-            fi
             DEV_OPT[compiler]=${FOO_BLD_COMPILER}
         fi
         if [[ -n ${FOO_BLD_PARALLEL} ]]; then
@@ -1125,6 +1118,13 @@ function set_compile_condition()
             fi
             DEV_OPT[tmpfs]=$([[ ${FOO_BLD_TMPFS} = "on" ]] && echo true || echo false)
         fi
+    fi
+    if {
+        [[ -n ${FOO_BLD_COV} ]] && [[ ${FOO_BLD_COV} = "llvm-cov" ]]
+    } || {
+        [[ -n ${FOO_BLD_SAN} ]] && [[ ${FOO_BLD_SAN} =~ ^(asan|tsan|ubsan)$ ]]
+    }; then
+        DEV_OPT[compiler]="clang"
     fi
 
     CMAKE_CACHE_ENTRY=" -D CMAKE_BUILD_TYPE=${BUILD_TYPE}"
