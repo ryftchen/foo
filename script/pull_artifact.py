@@ -104,7 +104,7 @@ class Schedule:
             abort("No commit change.")
 
         try:
-            if self.proxy_port:
+            if self.proxy_port is not None:
                 proxy = {
                     "http": f"http://localhost:{self.proxy_port}",
                     "https": f"https://localhost:{self.proxy_port}",
@@ -120,7 +120,7 @@ class Schedule:
             if access_token:
                 headers = {"Authorization": f"token {access_token}", "User-Agent": "ryftchen/foo"}
 
-            download_url = None
+            download_url = ""
             request = urllib.request.Request(self.api_url, headers=headers)
             with urllib.request.urlopen(request, timeout=60) as response:
                 if response.status != http.HTTPStatus.OK:
@@ -164,7 +164,7 @@ class Schedule:
             def redirect_request(self, *args, **kwargs):  # pylint: disable=unused-argument
                 return None
 
-        location = None
+        location = ""
         try:
             request = urllib.request.Request(url, headers=headers)
             opener = urllib.request.build_opener(NoRedirectHandler)
