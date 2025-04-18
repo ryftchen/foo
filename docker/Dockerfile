@@ -6,7 +6,7 @@ RUN apt-get update \
 && DEBIAN_FRONTEND=noninteractive apt-get install --assume-yes --no-install-recommends sudo tzdata ca-certificates \
 && sudo apt-get update \
 && sudo apt-get install --assume-yes --no-install-recommends bash coreutils sed mawk \
-build-essential binutils gcc-13 g++-13 clang-16 clang++-16 lld-16 cmake ninja-build \
+build-essential binutils gcc-13 g++-13 binutils-gold clang-16 clang++-16 lld-16 ninja-build make cmake \
 libstdc++-13-dev libgtest-dev libssl-dev liblz4-dev libreadline-dev libmpfrc++-dev llvm-16-dev libclang-16-dev libclang-rt-16-dev \
 clang-format-16 clang-tidy-16 shfmt shellcheck black pylint rustc cargo rustfmt rust-clippy gdb ccache distcc valgrind \
 cloc pre-commit doxygen doxygen-awesome-css graphviz git python3 python3-pip docker.io docker-compose-v2 npm \
