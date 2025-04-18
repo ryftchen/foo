@@ -3,11 +3,16 @@
 try:
     import argparse
     import fnmatch
+    import http
     import json
+    import netrc
     import os
-    import requests
     import sys
     import traceback
+    import urllib.error
+    import urllib.parse
+    import urllib.request
+    import zipfile
     from datetime import datetime
     from common import execute_command as executor, Log as Logger
 except ImportError as err:
@@ -21,13 +26,13 @@ class Schedule:
     api_url = "https://api.github.com/repos/ryftchen/foo/actions/artifacts?per_page=5"
     artifact_name = "foo_artifact"
     target_dir = "/var/www/foo_doc"
-    netrc_file = os.path.expanduser("~/.netrc")
+    netrc_file = "~/.netrc"
     log_file = "/tmp/foo_pull_artifact.log"
 
     def __init__(self):
         self.logger = sys.stdout
         self.forced_pull = False
-        self.proxy_port = ""
+        self.proxy_port = None
 
         env = os.getenv("FOO_ENV")
         if env is not None:
@@ -77,8 +82,6 @@ class Schedule:
         print(f"[ {datetime.now()} ] >>>>>>>>>>>>>>>>> PULL ARTIFACT >>>>>>>>>>>>>>>>>")
         if not os.path.exists(self.target_dir):
             abort(f"Please create a {self.target_dir} folder for storing pages.")
-        if not os.path.exists(self.netrc_file):
-            abort(f"Please create a {self.netrc_file} file for authentication.")
         self.download_artifact()
         self.update_document()
         print(f"[ {datetime.now()} ] <<<<<<<<<<<<<<<<< PULL ARTIFACT <<<<<<<<<<<<<<<<<")
@@ -101,40 +104,52 @@ class Schedule:
             abort("No commit change.")
 
         try:
-            response = requests.get(self.api_url, timeout=60)
-            response.raise_for_status()
-
-            download_url = ""
-            json_detail = json.loads(response.text)
-            for index in range(json_detail["total_count"]):
-                if json_detail["artifacts"][index]["name"] == self.artifact_name:
-                    download_url = json_detail["artifacts"][index]["archive_download_url"]
-                    break
-
-            response = requests.get(download_url, timeout=60, allow_redirects=False)
-            response.raise_for_status()
-            location_url = response.headers["location"]
-            proxy = {}
-            if len(str(self.proxy_port)) != 0:
+            if self.proxy_port:
                 proxy = {
                     "http": f"http://localhost:{self.proxy_port}",
                     "https": f"https://localhost:{self.proxy_port}",
                     "ftp": f"ftp://localhost:{self.proxy_port}",
                 }
-            response = requests.get(location_url, timeout=60, proxies=proxy)
-            response.raise_for_status()
-            with open(f"{self.target_dir}/{self.artifact_name}.zip", "wb") as output_file:
-                output_file.write(response.content)
-        except requests.exceptions.RequestException as error:
-            executor(f"rm -rf {self.target_dir}/{self.artifact_name}.zip")
-            executor(f"git -C {self.project_path} reset --hard {local_commit_id}")
-            abort(error)
+                handler = urllib.request.ProxyHandler(proxy)
+                opener = urllib.request.build_opener(handler)
+                urllib.request.install_opener(opener)
 
-        validation, _, _ = executor(f"zip -T {self.target_dir}/{self.artifact_name}.zip")
-        if "zip error" in validation:
+            headers = {}
+            netrc_info = netrc.netrc(os.path.expanduser(self.netrc_file))
+            _, _, access_token = netrc_info.authenticators(urllib.parse.urlparse(self.api_url).hostname)
+            if access_token:
+                headers = {"Authorization": f"token {access_token}", "User-Agent": "ryftchen/foo"}
+
+            download_url = None
+            request = urllib.request.Request(self.api_url, headers=headers)
+            with urllib.request.urlopen(request, timeout=60) as response:
+                if response.status != http.HTTPStatus.OK:
+                    raise urllib.error.HTTPError(
+                        self.api_url, response.status, "HTTP request failed.", response.headers, None
+                    ) from None
+                json_detail = json.loads(response.read().decode("utf-8"))
+                for index in range(json_detail["total_count"]):
+                    if json_detail["artifacts"][index]["name"] == self.artifact_name:
+                        download_url = json_detail["artifacts"][index]["archive_download_url"]
+                        break
+
+            redirect_location = self.get_redirect_location(download_url, headers)
+            request = urllib.request.Request(redirect_location)
+            with urllib.request.urlopen(request, timeout=60) as response:
+                if response.status != http.HTTPStatus.OK:
+                    raise urllib.error.HTTPError(
+                        redirect_location, response.status, "File download failed.", response.headers, None
+                    ) from None
+                with open(f"{self.target_dir}/{self.artifact_name}.zip", "wb") as output_file:
+                    output_file.write(response.read())
+
+            with zipfile.ZipFile(f"{self.target_dir}/{self.artifact_name}.zip", "r") as zip_file:
+                if zip_file.testzip() is not None:
+                    raise zipfile.BadZipFile("Corrupted zip file.") from None
+        except Exception:  # pylint: disable=broad-except
             executor(f"rm -rf {self.target_dir}/{self.artifact_name}.zip")
             executor(f"git -C {self.project_path} reset --hard {local_commit_id}")
-            abort(f"The {self.artifact_name}.zip file in the {self.target_dir} folder is corrupted.")
+            raise
 
     def update_document(self):
         print(f"[ {datetime.now()} ] ################ UPDATE DOCUMENT ################")
@@ -143,6 +158,24 @@ class Schedule:
         executor(f"tar -jxvf {self.target_dir}/foo_doxygen_*.tar.bz2 -C {self.target_dir} >/dev/null")
         executor(f"tar -jxvf {self.target_dir}/foo_browser_*.tar.bz2 -C {self.target_dir} >/dev/null")
         executor(f"rm -rf {self.target_dir}/*.zip {self.target_dir}/*.tar.bz2")
+
+    def get_redirect_location(self, url, headers):
+        class NoRedirectHandler(urllib.request.HTTPRedirectHandler):
+            def redirect_request(self, *args, **kwargs):  # pylint: disable=unused-argument
+                return None
+
+        location = None
+        try:
+            request = urllib.request.Request(url, headers=headers)
+            opener = urllib.request.build_opener(NoRedirectHandler)
+            with opener.open(request, timeout=60):
+                pass
+        except urllib.error.HTTPError as error:
+            if error.status != http.HTTPStatus.FOUND:
+                raise urllib.error.HTTPError(url, error.status, "URL redirect expected.", error.headers, None) from None
+            location = error.headers["location"]
+
+        return location
 
 
 def abort(msg):
