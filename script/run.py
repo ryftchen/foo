@@ -3,18 +3,21 @@
 try:
     import argparse
     import ast
+    import errno
     import fcntl
     import fnmatch
     import importlib
     import os
+    import pathlib
+    import pty
     import queue
     import re
+    import select
     import subprocess
     import sys
     import threading
     import traceback
     from datetime import datetime
-    from pathlib import Path
     import common
 except ImportError as err:
     raise ImportError(err) from err
@@ -222,7 +225,7 @@ class Task:
         else:
             self.total_steps = self.repeat_count
             command = self.tst_bin_cmd
-            if len(self.tst_task_filt) != 0:
+            if self.tst_task_filt:
                 command = f"{self.tst_bin_cmd} {' '.join(self.tst_task_filt)}"
             while self.repeat_count:
                 self.run_single_task(command)
@@ -279,23 +282,43 @@ class Task:
             fcntl.flock(run_dict_content.fileno(), fcntl.LOCK_UN)
 
     def build_executable(self, build_cmd):
+        master_fd, slave_fd = pty.openpty()
         with subprocess.Popen(
             build_cmd,
             executable="/bin/bash",
-            stdout=subprocess.PIPE,
+            stdin=slave_fd,
+            stdout=slave_fd,
+            stderr=slave_fd,
+            close_fds=True,
             shell=True,
-            universal_newlines=True,
+            universal_newlines=False,
             encoding="utf-8",
         ) as process:
+            os.close(slave_fd)
+            buffer = b""
             while True:
-                output = process.stdout.readline()
-                if len(output) == 0 and process.poll() is not None:
-                    break
-                if output:
-                    print(output.strip())
-            return_code = process.poll()
-            if return_code != 0:
-                Output.exit_with_error(f"Failed to run shell script {self.build_script} file.")
+                rlist, _, _ = select.select([master_fd], [], [], 0.1)
+                if master_fd in rlist:
+                    try:
+                        chunk = os.read(master_fd, 1024)
+                    except OSError as error:
+                        if error.errno == errno.EIO:
+                            break
+                        raise
+                    if not chunk:
+                        break
+                    buffer += chunk
+                    lines = buffer.split(b"\n")
+                    buffer = lines.pop()
+                    for raw in lines:
+                        print(raw.decode("utf-8", errors="ignore"))
+
+                if process.poll() is not None:
+                    continue
+
+            return_code = process.wait()
+            if return_code:
+                Output.exit_with_error(f"Failed to run shell script {self.build_script}.")
 
     def prepare(self):
         if not self.stored_options["tst"] and not os.path.isfile(f"{self.app_bin_path}/{self.app_bin_cmd}"):
@@ -306,7 +329,7 @@ class Task:
         if not os.path.exists(self.report_path):
             os.makedirs(self.report_path)
         if not os.path.isfile(self.console_file):
-            Path(self.console_file).write_text("# console option\n\nusage\nquit\n", encoding="utf-8")
+            pathlib.Path(self.console_file).write_text("# console option\n\nusage\nquit\n", encoding="utf-8")
 
         self.logger = common.Log(self.log_file)
         self.progress_bar.setup_progress_bar()
@@ -377,21 +400,21 @@ class Task:
         if self.stored_options["chk"]["cov"]:
             full_cmd = f"LLVM_PROFILE_FILE=\
 \"{self.report_path}/dca/chk_cov/foo_chk_cov_{str(self.complete_steps + 1)}.profraw\" {full_cmd}"
-        if len(enter) != 0:
+        if enter:
             command += " > " + enter.replace("\nquit", "")
         align_len = max(
             len(command) + Output.stat_cont_len_excl_cmd,
             Output.stat_min_cont_len,
             len(str(self.total_steps)) * 2 + len(" / ") + Output.stat_cont_len_excl_cmd,
         )
-        Output.refresh_status(
+        Output.hint_with_highlight(
             Output.esc_color["blue"], f"CASE: {f'{command}':<{align_len - Output.stat_cont_len_excl_cmd}} # START "
         )
 
         stdout, stderr, return_code = common.execute_command(full_cmd, enter)
-        if len(stdout.strip()) == 0 or stderr or return_code != 0:
+        if not stdout or stderr or return_code:
             print(f"\n[STDOUT]\n{stdout}\n[STDERR]\n{stderr}\n[RETURN CODE]\n{return_code}")
-            Output.refresh_status(
+            Output.hint_with_highlight(
                 Output.esc_color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
             )
         else:
@@ -400,14 +423,14 @@ class Task:
             self.passed_steps += 1
             if any(sub in stdout for sub in self.suspicious_output):
                 self.passed_steps -= 1
-                Output.refresh_status(
+                Output.hint_with_highlight(
                     Output.esc_color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
                 )
             elif self.stored_options["chk"]["mem"]:
                 self.convert_valgrind_output(command, align_len)
 
         self.complete_steps += 1
-        Output.refresh_status(
+        Output.hint_with_highlight(
             Output.esc_color["blue"], f"CASE: {f'{command}':<{align_len - Output.stat_cont_len_excl_cmd}} # FINISH"
         )
 
@@ -417,7 +440,7 @@ class Task:
             if stat != "SUCCESS" or self.complete_steps != self.total_steps
             else Output.esc_color["green"]
         )
-        Output.refresh_status(
+        Output.hint_with_highlight(
             stat_color,
             f"""\
 {f"STAT: {stat} {f'{str(self.passed_steps)}':>{len(str(self.total_steps))}} / {str(self.total_steps)}":<{align_len}}""",
@@ -493,7 +516,7 @@ class Task:
         case_folders_with_ctime.sort(key=lambda pair: pair[1])
         sorted_case_folders = [os.path.basename(folder[0]) for folder in case_folders_with_ctime]
         case_names = [
-            Path(f"{folder[0]}/case_name")
+            pathlib.Path(f"{folder[0]}/case_name")
             .read_text(encoding="utf-8")
             .replace(f"{self.app_bin_cmd} > ", f"{self.app_bin_cmd} &gt; ")
             for folder in case_folders_with_ctime
@@ -515,7 +538,6 @@ class Task:
             f"cp -rf {pkg_loc}/{{index.html,valgrind.css,valgrind.js}} {self.report_path}/dca/chk_mem/"
         )
 
-        index_content = ""
         with open(f"{self.report_path}/dca/chk_mem/index.html", "rt", encoding="utf-8") as index_content:
             fcntl.flock(index_content.fileno(), fcntl.LOCK_EX)
             old_content = index_content.read()
@@ -546,7 +568,6 @@ class Task:
             fcntl.flock(index_content.fileno(), fcntl.LOCK_UN)
 
     def convert_valgrind_output(self, command, align_len):
-        inst_num = 0
         xml_filename = f"{self.report_path}/dca/chk_mem/foo_chk_mem_{str(self.complete_steps + 1)}"
         with open(f"{xml_filename}.xml", "rt", encoding="utf-8") as mem_xml:
             inst_num = mem_xml.read().count("</valgrindoutput>")
@@ -576,29 +597,28 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
             case_path = f"{self.report_path}/dca/chk_mem/memory/case_{str(self.complete_steps + 1)}"
             if inst_num == 1:
                 common.execute_command(f"valgrind-ci {xml_filename}.xml --source-dir=./ --output-dir={case_path}")
-                Path(f"{case_path}/case_name").write_text(command, encoding="utf-8")
+                pathlib.Path(f"{case_path}/case_name").write_text(command, encoding="utf-8")
             elif inst_num == 2:
                 common.execute_command(
                     f"valgrind-ci {xml_filename}_inst_1.xml --source-dir=./ --output-dir={case_path}_inst_1"
                 )
-                Path(f"{case_path}_inst_1/case_name").write_text(command, encoding="utf-8")
+                pathlib.Path(f"{case_path}_inst_1/case_name").write_text(command, encoding="utf-8")
                 common.execute_command(
                     f"valgrind-ci {xml_filename}_inst_2.xml --source-dir=./ --output-dir={case_path}_inst_2"
                 )
-                Path(f"{case_path}_inst_2/case_name").write_text(command, encoding="utf-8")
+                pathlib.Path(f"{case_path}_inst_2/case_name").write_text(command, encoding="utf-8")
             self.passed_steps -= 1
-            Output.refresh_status(
+            Output.hint_with_highlight(
                 Output.esc_color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
             )
-        elif inst_num == 0 or inst_num > 2 or len(stderr) != 0:
+        elif inst_num not in (1, 2) or stderr:
             self.passed_steps -= 1
             print("\n[CHECK MEMORY]\nUnsupported valgrind output xml file content.")
-            Output.refresh_status(
+            Output.hint_with_highlight(
                 Output.esc_color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
             )
 
     def format_run_log(self):
-        run_log = ""
         with open(self.log_file, "rt", encoding="utf-8") as run_log:
             fcntl.flock(run_log.fileno(), fcntl.LOCK_EX)
             old_content = run_log.read()
@@ -611,7 +631,6 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
 
     def summarize_run_log(self):
         tags = {"tst": False, "chk": {"cov": False, "mem": False}}
-        readlines = []
         with open(self.log_file, "rt", encoding="utf-8") as run_log:
             fcntl.flock(run_log.fileno(), fcntl.LOCK_EX)
             readlines = run_log.readlines()
@@ -654,28 +673,28 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
                 "Failed": str(len(fail_res)),
                 "Duration": f"{self.duration} s" if not self.analyze_only else f"{dur_time} s",
             }
-            prompt = " (UNIT TEST)" if tags["tst"] else ""
+            hint = " (UNIT TEST)" if tags["tst"] else ""
             run_stat_rep = (
                 "REPORT FOR RUN STATISTICS:\n"
-                + Output().format_as_table(run_stat, "STATUS", f"RUN STATISTICS{prompt}")
+                + Output.format_as_table(run_stat, "STATUS", f"RUN STATISTICS{hint}")
                 + "\n"
             )
             fail_res_rep = (
-                ("\nREPORT FOR FAILURE RESULT:\n" + Output().format_as_table(fail_res, "CASE", "FAILURE RESULT") + "\n")
+                ("\nREPORT FOR FAILURE RESULT:\n" + Output.format_as_table(fail_res, "CASE", "FAILURE RESULT") + "\n")
                 if fail_res
                 else ""
             )
             cov_per_rep = (
                 (
                     "\nREPORT FOR COVERAGE PERCENT:\n"
-                    + Output().format_as_table(cov_per, "CATEGORY", "COVERAGE PERCENT")
+                    + Output.format_as_table(cov_per, "CATEGORY", "COVERAGE PERCENT")
                     + "\n"
                 )
                 if cov_per
                 else ""
             )
             mem_err_rep = (
-                ("\nREPORT FOR MEMORY ERROR:\n" + Output().format_as_table(mem_err, "CASE", "MEMORY ERROR") + "\n")
+                ("\nREPORT FOR MEMORY ERROR:\n" + Output.format_as_table(mem_err, "CASE", "MEMORY ERROR") + "\n")
                 if mem_err
                 else ""
             )
@@ -720,7 +739,7 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
                         if "[ RUN      ]" in line:
                             ut_case = line[line.find("]") + 2 : line.find("\n")]
                             ut_run_index = index
-                        elif len(ut_case) != 0 and f"[  FAILED  ] {ut_case}" in line:
+                        elif ut_case and f"[  FAILED  ] {ut_case}" in line:
                             ut_run_indices.append(ut_run_index)
                             ut_fail_indices.append(index)
                             ut_case = ""
@@ -749,7 +768,7 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
                         for index, per in enumerate(percentages):
                             cov_per[category[index]] = f"{per:.2f}%"
                     break
-            if len(cov_per) == 0:
+            if not cov_per:
                 for cat in category:
                     cov_per[cat] = "-"
 
@@ -773,17 +792,17 @@ class Output:
         sys.exit(1)
 
     @classmethod
-    def refresh_status(cls, esc_fg_color, content):
+    def hint_with_highlight(cls, esc_fg_color, content):
         print(
             f"""{esc_fg_color}{cls.esc_font_bold}{cls.esc_bg_color}\
 [ {datetime.strftime(datetime.now(), "%b %d %H:%M:%S")} # {content} ]{cls.esc_off}"""
         )
 
     @classmethod
-    def format_as_table(cls, data: dict, key_name="", value_name=""):
+    def format_as_table(cls, data, key_title, value_title):
         rows = []
         rows.append("=" * (cls.tbl_min_key_width + 2 + cls.tbl_min_value_width + 1))
-        rows.append(f"{key_name.ljust(cls.tbl_min_key_width)} | {value_name.ljust(cls.tbl_min_value_width)}")
+        rows.append(f"{key_title.ljust(cls.tbl_min_key_width)} | {value_title.ljust(cls.tbl_min_value_width)}")
         rows.append("=" * (cls.tbl_min_key_width + 2 + cls.tbl_min_value_width + 1))
 
         for key, value in data.items():
