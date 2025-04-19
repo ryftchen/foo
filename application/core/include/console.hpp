@@ -57,9 +57,9 @@ public:
     using Callback = std::function<RetCode(const Args&)>;
     //! @brief Register console option.
     //! @param name - option name
-    //! @param prompt - help prompt
-    //! @param func - callable function
-    void registerOption(const std::string_view name, const std::string_view prompt, Callback func);
+    //! @param description - option description
+    //! @param callable - callable function
+    void registerOption(const std::string_view name, const std::string_view description, Callback callable);
     //! @brief Set greeting information.
     //! @param greeting - greeting information
     void setGreeting(const std::string_view greeting);
@@ -114,8 +114,8 @@ private:
     //! @brief Internal terminal.
     const std::unique_ptr<Terminal> terminal{};
 
-    //! @brief Get all registered options with help prompts.
-    //! @return all registered options with help prompts
+    //! @brief Get all registered options with help information.
+    //! @return all registered options with help information
     [[nodiscard]] auto getOptionHelpPairs() const;
     //! @brief Set the default options.
     void setDefaultOptions();

@@ -18,7 +18,7 @@ namespace memory
 extern const char* version() noexcept;
 
 //! @brief Memory pool.
-//! @tparam T - type of object to allocate
+//! @tparam T - type of resource to allocate
 //! @tparam BlockSize - size of the chunk's memory pool allocates
 template <typename T, std::size_t BlockSize = 4096>
 class Memory
@@ -31,7 +31,7 @@ public:
     //! @brief Construct a new Memory object.
     Memory(const Memory&) = delete;
     //! @brief Construct a new Memory object.
-    //! @tparam U - type of object to allocate
+    //! @tparam U - type of resource to allocate
     template <typename U>
     Memory(const Memory<U>&) = delete;
     //! @brief Construct a new Memory object.
@@ -45,53 +45,53 @@ public:
     //! @return reference of the Memory object
     Memory& operator=(Memory&& memory) noexcept;
 
-    //! @brief Get the pointer of the allocated object.
-    //! @param obj - reference of the allocated object
-    //! @return pointer of the allocated object
-    inline T* address(T& obj) const noexcept;
-    //! @brief Get the const pointer of the allocated object.
-    //! @param obj - const reference of the allocated object
-    //! @return const pointer of the allocated object
-    inline const T* address(const T& obj) const noexcept;
+    //! @brief Get the pointer of the allocated resource.
+    //! @param res - reference of the allocated resource
+    //! @return pointer of the allocated resource
+    inline T* address(T& res) const noexcept;
+    //! @brief Get the const pointer of the allocated resource.
+    //! @param res - const reference of the allocated resource
+    //! @return const pointer of the allocated resource
+    inline const T* address(const T& res) const noexcept;
     //! @brief Allocate resource.
     //! @param size - resource size
-    //! @param hint - const pointer of the allocated object
-    //! @return pointer of the allocated object
-    inline T* allocate(const std::size_t size = 1, const T* const hint = 0);
+    //! @param hint - address hint to suggest where allocation could occur
+    //! @return pointer of the allocated resource
+    inline T* allocate(const std::size_t size = 1, const T* hint = nullptr);
     //! @brief Deallocate resource.
-    //! @param obj - pointer of the allocated object
+    //! @param res - pointer of the allocated resource
     //! @param size - resource size
-    inline void deallocate(T* const obj, const std::size_t size = 1);
+    inline void deallocate(T* const res, const std::size_t size = 1);
     [[nodiscard]] inline std::size_t maxSize() const noexcept;
 
-    //! @brief Construct object.
-    //! @tparam U - type of allocated object
-    //! @tparam Args - type of arguments for constructing the object
-    //! @param obj - pointer of the allocated object
-    //! @param args - arguments for constructing the object
+    //! @brief Construct the resource.
+    //! @tparam U - type of allocated resource
+    //! @tparam Args - type of arguments for constructing the resource
+    //! @param res - pointer of the allocated resource
+    //! @param args - arguments for constructing the resource
     template <typename U, typename... Args>
-    inline void construct(U* const obj, Args&&... args);
-    //! @brief Destroy object.
-    //! @tparam U - type of allocated object
-    //! @param obj - pointer of the allocated object
+    inline void construct(U* const res, Args&&... args);
+    //! @brief Destroy the resource.
+    //! @tparam U - type of allocated resource
+    //! @param res - pointer of the allocated resource
     template <typename U>
-    inline void destroy(const U* const obj);
+    inline void destroy(const U* const res);
 
     //! @brief New an element.
-    //! @tparam Args - type of arguments for constructing the object
-    //! @param args - arguments for constructing the object
-    //! @return pointer of the allocated object
+    //! @tparam Args - type of arguments for constructing the resource
+    //! @param args - arguments for constructing the resource
+    //! @return pointer of the allocated resource
     template <typename... Args>
     inline T* newElement(Args&&... args);
     //! @brief Delete an element.
-    //! @param obj - pointer of the allocated object
-    inline void deleteElement(T* const obj);
+    //! @param res - pointer of the allocated resource
+    inline void deleteElement(T* const res);
 
 private:
     //! @brief Union for the slot that stores element information.
     union Slot
     {
-        //! @brief Allocated object.
+        //! @brief Allocated resource.
         T element;
         //! @brief Next pointer of the slot.
         Slot* next;
@@ -155,19 +155,19 @@ Memory<T, BlockSize>& Memory<T, BlockSize>::operator=(Memory&& memory) noexcept
 }
 
 template <typename T, std::size_t BlockSize>
-inline T* Memory<T, BlockSize>::address(T& obj) const noexcept
+inline T* Memory<T, BlockSize>::address(T& res) const noexcept
 {
-    return &obj;
+    return &res;
 }
 
 template <typename T, std::size_t BlockSize>
-inline const T* Memory<T, BlockSize>::address(const T& obj) const noexcept
+inline const T* Memory<T, BlockSize>::address(const T& res) const noexcept
 {
-    return &obj;
+    return &res;
 }
 
 template <typename T, std::size_t BlockSize>
-inline T* Memory<T, BlockSize>::allocate(const std::size_t /*size*/, const T* const /*hint*/)
+inline T* Memory<T, BlockSize>::allocate(const std::size_t /*size*/, const T* /*hint*/)
 {
     if (freeSlots)
     {
@@ -186,12 +186,12 @@ inline T* Memory<T, BlockSize>::allocate(const std::size_t /*size*/, const T* co
 }
 
 template <typename T, std::size_t BlockSize>
-inline void Memory<T, BlockSize>::deallocate(T* const obj, const std::size_t /*size*/)
+inline void Memory<T, BlockSize>::deallocate(T* const res, const std::size_t /*size*/)
 {
-    if (obj)
+    if (res)
     {
-        reinterpret_cast<Slot*>(obj)->next = freeSlots;
-        freeSlots = reinterpret_cast<Slot*>(obj);
+        reinterpret_cast<Slot*>(res)->next = freeSlots;
+        freeSlots = reinterpret_cast<Slot*>(res);
     }
 }
 
@@ -204,16 +204,16 @@ inline std::size_t Memory<T, BlockSize>::maxSize() const noexcept
 
 template <typename T, std::size_t BlockSize>
 template <typename U, typename... Args>
-inline void Memory<T, BlockSize>::construct(U* const obj, Args&&... args)
+inline void Memory<T, BlockSize>::construct(U* const res, Args&&... args)
 {
-    new (obj) U(std::forward<Args>(args)...);
+    new (res) U(std::forward<Args>(args)...);
 }
 
 template <typename T, std::size_t BlockSize>
 template <typename U>
-inline void Memory<T, BlockSize>::destroy(const U* const obj)
+inline void Memory<T, BlockSize>::destroy(const U* const res)
 {
-    obj->~U();
+    res->~U();
 }
 
 template <typename T, std::size_t BlockSize>
@@ -227,12 +227,12 @@ inline T* Memory<T, BlockSize>::newElement(Args&&... args)
 }
 
 template <typename T, std::size_t BlockSize>
-inline void Memory<T, BlockSize>::deleteElement(T* const obj)
+inline void Memory<T, BlockSize>::deleteElement(T* const res)
 {
-    if (obj)
+    if (res)
     {
-        obj->~T();
-        deallocate(obj);
+        res->~T();
+        deallocate(res);
     }
 }
 

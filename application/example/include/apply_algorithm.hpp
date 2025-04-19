@@ -176,19 +176,19 @@ private:
             piText[textLen] = '\0';
             std::memcpy(text, piText, textLen * sizeof(unsigned char));
 #ifdef __RUNTIME_PRINTING
-            std::string out(text, text + textLen);
+            std::string brief(text, text + textLen);
             if (textLen > 1)
             {
-                out = std::string{out.at(0)} + '.' + out.substr(1, out.length());
+                brief = std::string{brief.at(0)} + '.' + brief.substr(1, brief.length());
             }
             std::cout << "\nπ " << textLen << " digits:\n"
-                      << out.substr(0, std::min(textLen, maxNumPerLineOfPrint)) << std::endl;
+                      << brief.substr(0, std::min(textLen, maxNumPerLineOfPrint)) << std::endl;
             if (textLen > maxNumPerLineOfPrint)
             {
                 std::cout << "...\n...\n...\n"
                           << ((textLen > (maxNumPerLineOfPrint * 2))
-                                  ? out.substr(out.length() - maxNumPerLineOfPrint, out.length())
-                                  : out.substr(maxNumPerLineOfPrint + 1, out.length()))
+                                  ? brief.substr(brief.length() - maxNumPerLineOfPrint, brief.length())
+                                  : brief.substr(maxNumPerLineOfPrint + 1, brief.length()))
                           << std::endl;
             }
 #endif // __RUNTIME_PRINTING

@@ -510,7 +510,7 @@ int View::buildTLVPacket4Stop(char* buf)
     return len;
 }
 
-int View::buildTLVPacket4Depend(const std::vector<std::string>& /*unused*/, char* buf)
+int View::buildTLVPacket4Depend([[maybe_unused]] const std::vector<std::string>& args, char* buf)
 {
     int len = 0;
     tlv::TLVValue val{};
@@ -593,7 +593,7 @@ int View::buildTLVPacket4Execute(const std::vector<std::string>& args, char* buf
     return len;
 }
 
-int View::buildTLVPacket4Journal(const std::vector<std::string>& /*unused*/, char* buf)
+int View::buildTLVPacket4Journal([[maybe_unused]] const std::vector<std::string>& args, char* buf)
 {
     int len = 0;
     if (const int shmId = fillSharedMemory(logContentsPreview());
@@ -627,7 +627,7 @@ int View::buildTLVPacket4Monitor(const std::vector<std::string>& args, char* buf
     return len;
 }
 
-int View::buildTLVPacket4Profile(const std::vector<std::string>& /*unused*/, char* buf)
+int View::buildTLVPacket4Profile([[maybe_unused]] const std::vector<std::string>& args, char* buf)
 {
     int len = 0;
     tlv::TLVValue val{};
@@ -670,6 +670,7 @@ int View::fillSharedMemory(const std::string_view contents)
         std::vector<char> processed(contents.data(), contents.data() + contents.length());
         data::compressData(processed);
         data::encryptMessage(processed.data(), processed.size());
+        std::memset(shrMem->buffer, 0, sizeof(shrMem->buffer));
         *reinterpret_cast<int*>(shrMem->buffer) = processed.size();
         std::memcpy(
             shrMem->buffer + sizeof(int), processed.data(), std::min(maxShmSize, processed.size()) * sizeof(char));
@@ -702,6 +703,7 @@ void View::fetchSharedMemory(const int shmId, std::string& contents)
         std::vector<char> processed(*reinterpret_cast<int*>(shrMem->buffer));
         std::memcpy(
             processed.data(), shrMem->buffer + sizeof(int), std::min(maxShmSize, processed.size()) * sizeof(char));
+        std::memset(shrMem->buffer, 0, sizeof(shrMem->buffer));
         data::decryptMessage(processed.data(), processed.size());
         data::decompressData(processed);
         contents = std::string{processed.data(), processed.data() + processed.size()};
@@ -737,8 +739,8 @@ void View::printSharedMemory(const int shmId, const bool withoutPaging)
 void View::segmentedOutput(const std::string_view buffer)
 {
     constexpr std::uint8_t terminalRows = 24;
-    constexpr std::string_view hint = "--- Type <CR> for more, c to continue, n to show next page, q to quit ---: ",
-                               clearEscape = "\x1b[1A\x1b[2K\r";
+    constexpr std::string_view prompt = "--- Type <CR> for more, c to continue, n to show next page, q to quit ---: ",
+                               escapeClear = "\x1b[1A\x1b[2K\r";
     std::istringstream transfer(buffer.data());
     const std::size_t lineNum =
         std::count(std::istreambuf_iterator<char>(transfer), std::istreambuf_iterator<char>{}, '\n');
@@ -750,7 +752,7 @@ void View::segmentedOutput(const std::string_view buffer)
     const auto handling = utility::common::wrapClosure(
         [&](const std::string_view input)
         {
-            std::cout << clearEscape << std::flush;
+            std::cout << escapeClear << std::flush;
             if (input.empty())
             {
                 moreRows = true;
@@ -772,7 +774,7 @@ void View::segmentedOutput(const std::string_view buffer)
                         forcedCancel = true;
                         break;
                     default:
-                        std::cout << hint << std::flush;
+                        std::cout << prompt << std::flush;
                         return false;
                 }
             }
@@ -784,7 +786,7 @@ void View::segmentedOutput(const std::string_view buffer)
         ++counter;
         if (!withoutPaging && (moreRows || (terminalRows == counter)))
         {
-            std::cout << hint << "\n\x1b[1A\x1b[" << hint.length() << 'C' << std::flush;
+            std::cout << prompt << "\n\x1b[1A\x1b[" << prompt.length() << 'C' << std::flush;
             utility::io::waitForUserInput(handling);
         }
     }

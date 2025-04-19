@@ -138,40 +138,40 @@ private:
     {
         //! @brief The option name.
         static constexpr std::string_view name{"depend"};
-        //! @brief The option prompt.
-        static constexpr std::string_view prompt{"list all associated libraries"};
+        //! @brief The option description.
+        static constexpr std::string_view description{"list all associated libraries"};
     };
     //! @brief Option attribute for the execute option.
     struct OptExecute : public OptBase
     {
         //! @brief The option name.
         static constexpr std::string_view name{"execute"};
-        //! @brief The option prompt.
-        static constexpr std::string_view prompt{"enter bash commands in quotes [inputs: 'CMD']"};
+        //! @brief The option description.
+        static constexpr std::string_view description{"enter bash commands in quotes [inputs: 'CMD']"};
     };
     //! @brief Option attribute for the journal option.
     struct OptJournal : public OptBase
     {
         //! @brief The option name.
         static constexpr std::string_view name{"journal"};
-        //! @brief The option prompt.
-        static constexpr std::string_view prompt{"view the log with highlights"};
+        //! @brief The option description.
+        static constexpr std::string_view description{"view the log with highlights"};
     };
     //! @brief Option attribute for the monitor option.
     struct OptMonitor : public OptBase
     {
         //! @brief The option name.
         static constexpr std::string_view name{"monitor"};
-        //! @brief The option prompt.
-        static constexpr std::string_view prompt{"query process status and stacks [inputs: NUM]"};
+        //! @brief The option description.
+        static constexpr std::string_view description{"query process status and stacks [inputs: NUM]"};
     };
     //! @brief Option attribute for the profile option.
     struct OptProfile : public OptBase
     {
         //! @brief The option name.
         static constexpr std::string_view name{"profile"};
-        //! @brief The option prompt.
-        static constexpr std::string_view prompt{"display current configuration"};
+        //! @brief The option description.
+        static constexpr std::string_view description{"display current configuration"};
     };
     //! @brief Option type object's helper type for the visitor.
     //! @tparam Ts - type of visitors
@@ -192,14 +192,14 @@ private:
     //! @brief Mapping table of all viewer options.
     const OptionMap supportedOptions
     {
-        // ---- Option ----+-------- Help --------
-        // ----------------+----------------------
-        { OptDepend::name  , OptDepend::prompt  },
-        { OptExecute::name , OptExecute::prompt },
-        { OptJournal::name , OptJournal::prompt },
-        { OptMonitor::name , OptMonitor::prompt },
-        { OptProfile::name , OptProfile::prompt }
-        // ----------------+----------------------
+        // ---- Option ----+---------- Help ----------
+        // ----------------+--------------------------
+        { OptDepend::name  , OptDepend::description  },
+        { OptExecute::name , OptExecute::description },
+        { OptJournal::name , OptJournal::description },
+        { OptMonitor::name , OptMonitor::description },
+        { OptProfile::name , OptProfile::description }
+        // ----------------+--------------------------
     };
     // clang-format on
     //! @brief Maximum size of the shared memory.
