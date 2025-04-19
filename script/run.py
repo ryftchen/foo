@@ -311,7 +311,7 @@ class Task:
                     lines = buffer.split(b"\n")
                     buffer = lines.pop()
                     for raw in lines:
-                        print(raw.decode("utf-8", errors="ignore"))
+                        print(raw.decode("utf-8", "ignore"))
 
                 if process.poll() is not None:
                     continue
@@ -329,7 +329,7 @@ class Task:
         if not os.path.exists(self.report_path):
             os.makedirs(self.report_path)
         if not os.path.isfile(self.console_file):
-            pathlib.Path(self.console_file).write_text("# console option\n\nusage\nquit\n", encoding="utf-8")
+            pathlib.Path(self.console_file).write_text("# console option\n\nusage\nquit\n", "utf-8")
 
         self.logger = common.Log(self.log_file)
         self.progress_bar.setup_progress_bar()
@@ -517,7 +517,7 @@ class Task:
         sorted_case_folders = [os.path.basename(folder[0]) for folder in case_folders_with_ctime]
         case_names = [
             pathlib.Path(f"{folder[0]}/case_name")
-            .read_text(encoding="utf-8")
+            .read_text("utf-8")
             .replace(f"{self.app_bin_cmd} > ", f"{self.app_bin_cmd} &gt; ")
             for folder in case_folders_with_ctime
         ]
@@ -597,16 +597,16 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
             case_path = f"{self.report_path}/dca/chk_mem/memory/case_{str(self.complete_steps + 1)}"
             if inst_num == 1:
                 common.execute_command(f"valgrind-ci {xml_filename}.xml --source-dir=./ --output-dir={case_path}")
-                pathlib.Path(f"{case_path}/case_name").write_text(command, encoding="utf-8")
+                pathlib.Path(f"{case_path}/case_name").write_text(command, "utf-8")
             elif inst_num == 2:
                 common.execute_command(
                     f"valgrind-ci {xml_filename}_inst_1.xml --source-dir=./ --output-dir={case_path}_inst_1"
                 )
-                pathlib.Path(f"{case_path}_inst_1/case_name").write_text(command, encoding="utf-8")
+                pathlib.Path(f"{case_path}_inst_1/case_name").write_text(command, "utf-8")
                 common.execute_command(
                     f"valgrind-ci {xml_filename}_inst_2.xml --source-dir=./ --output-dir={case_path}_inst_2"
                 )
-                pathlib.Path(f"{case_path}_inst_2/case_name").write_text(command, encoding="utf-8")
+                pathlib.Path(f"{case_path}_inst_2/case_name").write_text(command, "utf-8")
             self.passed_steps -= 1
             Output.hint_with_highlight(
                 Output.esc_color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
