@@ -121,27 +121,26 @@ int TCPSocket::toSend(const std::string_view message)
 
 void TCPSocket::toConnect(const std::string_view ip, const std::uint16_t port, const std::function<void()>& onConnected)
 {
-    ::addrinfo hints{}, *res = nullptr;
-    std::memset(&hints, 0, sizeof(hints));
+    ::addrinfo hints{}, *addrInfo = nullptr;
     hints.ai_family = AF_INET;
     hints.ai_socktype = ::SOCK_STREAM;
 
-    if (const int status = ::getaddrinfo(ip.data(), nullptr, &hints, &res); 0 != status)
+    if (const int status = ::getaddrinfo(ip.data(), nullptr, &hints, &addrInfo); 0 != status)
     {
         throw std::runtime_error{
             "Invalid address, status: " + std::string{::gai_strerror(status)}
             + ", errno: " + std::string{std::strerror(errno)} + '.'};
     }
 
-    for (::addrinfo* it = res; nullptr != it; it = it->ai_next)
+    for (const ::addrinfo* entry = addrInfo; nullptr != entry; entry = entry->ai_next)
     {
-        if (AF_INET == it->ai_family)
+        if (AF_INET == entry->ai_family)
         {
-            std::memcpy(static_cast<void*>(&sockAddr), static_cast<void*>(it->ai_addr), sizeof(::sockaddr_in));
+            std::memcpy(static_cast<void*>(&sockAddr), static_cast<void*>(entry->ai_addr), sizeof(::sockaddr_in));
             break;
         }
     }
-    ::freeaddrinfo(res);
+    ::freeaddrinfo(addrInfo);
 
     sockAddr.sin_family = AF_INET;
     sockAddr.sin_port = ::htons(port);
@@ -317,27 +316,26 @@ int UDPSocket::toSendTo(
     const char* const bytes, const std::size_t length, const std::string_view ip, const std::uint16_t port)
 {
     ::sockaddr_in addr{};
-    ::addrinfo hints{}, *res = nullptr;
-    std::memset(&hints, 0, sizeof(hints));
+    ::addrinfo hints{}, *addrInfo = nullptr;
     hints.ai_family = AF_INET;
     hints.ai_socktype = ::SOCK_DGRAM;
 
-    if (const int status = ::getaddrinfo(ip.data(), nullptr, &hints, &res); 0 != status)
+    if (const int status = ::getaddrinfo(ip.data(), nullptr, &hints, &addrInfo); 0 != status)
     {
         throw std::runtime_error{
             "Invalid address, status: " + std::string{::gai_strerror(status)}
             + ", errno: " + std::string{std::strerror(errno)} + '.'};
     }
 
-    for (::addrinfo* it = res; nullptr != it; it = it->ai_next)
+    for (const ::addrinfo* entry = addrInfo; nullptr != entry; entry = entry->ai_next)
     {
-        if (AF_INET == it->ai_family)
+        if (AF_INET == entry->ai_family)
         {
-            std::memcpy(static_cast<void*>(&addr), static_cast<void*>(it->ai_addr), sizeof(::sockaddr_in));
+            std::memcpy(static_cast<void*>(&addr), static_cast<void*>(entry->ai_addr), sizeof(::sockaddr_in));
             break;
         }
     }
-    ::freeaddrinfo(res);
+    ::freeaddrinfo(addrInfo);
 
     addr.sin_port = ::htons(port);
     addr.sin_family = AF_INET;
@@ -368,27 +366,26 @@ int UDPSocket::toSend(const std::string_view message)
 
 void UDPSocket::toConnect(const std::string_view ip, const std::uint16_t port)
 {
-    ::addrinfo hints{}, *res = nullptr;
-    std::memset(&hints, 0, sizeof(hints));
+    ::addrinfo hints{}, *addrInfo = nullptr;
     hints.ai_family = AF_INET;
     hints.ai_socktype = ::SOCK_DGRAM;
 
-    if (const int status = ::getaddrinfo(ip.data(), nullptr, &hints, &res); 0 != status)
+    if (const int status = ::getaddrinfo(ip.data(), nullptr, &hints, &addrInfo); 0 != status)
     {
         throw std::runtime_error{
             "Invalid address, status: " + std::string{::gai_strerror(status)}
             + ", errno: " + std::string{std::strerror(errno)} + '.'};
     }
 
-    for (::addrinfo* it = res; nullptr != it; it = it->ai_next)
+    for (const ::addrinfo* entry = addrInfo; nullptr != entry; entry = entry->ai_next)
     {
-        if (AF_INET == it->ai_family)
+        if (AF_INET == entry->ai_family)
         {
-            std::memcpy(static_cast<void*>(&sockAddr), static_cast<void*>(it->ai_addr), sizeof(::sockaddr_in));
+            std::memcpy(static_cast<void*>(&sockAddr), static_cast<void*>(entry->ai_addr), sizeof(::sockaddr_in));
             break;
         }
     }
-    ::freeaddrinfo(res);
+    ::freeaddrinfo(addrInfo);
 
     sockAddr.sin_family = AF_INET;
     sockAddr.sin_port = ::htons(port);

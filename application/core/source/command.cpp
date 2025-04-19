@@ -787,13 +787,10 @@ void Command::executeInConsole() const
     try
     {
         using RetCode = console::Console::RetCode;
-        for (const auto& option : pendingInputs)
-        {
-            if (const auto retCode = session->optionExecutor(option); RetCode::quit == retCode)
-            {
-                break;
-            }
-        }
+        std::any_of(
+            pendingInputs.cbegin(),
+            pendingInputs.cend(),
+            [&session](const auto& option) { return session->optionExecutor(option) == RetCode::quit; });
     }
     catch (const std::exception& err)
     {
@@ -972,7 +969,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
             auto retCode = RetCode::success;
             try
             {
-                gracefulReset.template operator()<log::Log>();
+                utility::common::invokeTemplateCallable<log::Log>(gracefulReset);
 
                 LOG_INF_F("Refreshed the {} outputs.", log::Log::name);
             }
@@ -997,7 +994,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
                 client->waitIfAlive();
                 interactionLatency();
                 client.reset();
-                gracefulReset.template operator()<view::View>();
+                utility::common::invokeTemplateCallable<view::View>(gracefulReset);
 
                 client = std::make_shared<T>();
                 launchClient(client);
@@ -1011,9 +1008,9 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
             interactionLatency();
             return retCode;
         });
-    for (const auto& [name, prompt] : view::info::viewerSupportedOptions())
+    for (const auto& [name, description] : view::info::viewerSupportedOptions())
     {
-        session.registerOption(name, prompt, asyncReqSender);
+        session.registerOption(name, description, asyncReqSender);
     }
 }
 

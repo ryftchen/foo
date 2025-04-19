@@ -41,9 +41,9 @@ Console::~Console()
     ::rl_restore_prompt();
 }
 
-void Console::registerOption(const std::string_view name, const std::string_view prompt, Callback func)
+void Console::registerOption(const std::string_view name, const std::string_view description, Callback callable)
 {
-    terminal->regTable[name.data()] = std::make_pair(prompt, std::move(func));
+    terminal->regTable[name.data()] = std::make_pair(description, std::move(callable));
     terminal->orderList.emplace_back(name);
 }
 

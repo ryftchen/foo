@@ -7,7 +7,7 @@ use std::net::SocketAddr;
 async fn run(args: arg::Args) {
     let root_dirs = &args.root_dirs;
     let mut srv_group = vec![];
-    let mut prompt = String::new();
+    let mut hint = String::new();
 
     for (offset, root_dir) in root_dirs.iter().enumerate() {
         let addr = SocketAddr::new(args.host, args.port + offset as u16);
@@ -15,9 +15,9 @@ async fn run(args: arg::Args) {
         srv_group.push(async move {
             srv::run_service(addr, root_dir, None).await;
         });
-        prompt += format!("=> http://{}/ for directory {}\n", addr, abs_path!(root_dir)).as_str();
+        hint += format!("=> http://{}/ for directory {}\n", addr, abs_path!(root_dir)).as_str();
     }
-    print!("The archive server starts listening ...\n{}", prompt);
+    print!("The archive server starts listening ...\n{}", hint);
 
     let _ret = futures_util::future::join_all(srv_group).await;
 }

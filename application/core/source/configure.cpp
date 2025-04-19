@@ -313,9 +313,9 @@ static void initializeConfiguration(const std::string_view filePath)
 //! @return whether to continue throwing exception
 static bool handleConfigurationException(const std::string_view filePath)
 {
-    constexpr std::string_view hint = "Type y to force an update to the default configuration, n to exit: ",
-                               clearEscape = "\x1b[1A\x1b[2K\r";
-    std::cout << hint << "\n\x1b[1A\x1b[" << hint.length() << 'C' << std::flush;
+    constexpr std::string_view prompt = "Type y to force an update to the default configuration, n to exit: ",
+                               escapeClear = "\x1b[1A\x1b[2K\r";
+    std::cout << prompt << "\n\x1b[1A\x1b[" << prompt.length() << 'C' << std::flush;
 
     bool keepThrowing = true;
     constexpr std::uint16_t timeoutPeriod = 5000;
@@ -333,7 +333,7 @@ static bool handleConfigurationException(const std::string_view filePath)
                         keepThrowing = false;
                         break;
                     default:
-                        std::cout << clearEscape << hint << std::flush;
+                        std::cout << escapeClear << prompt << std::flush;
                         return false;
                 }
                 return true;
