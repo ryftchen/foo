@@ -5,6 +5,7 @@
 //! @copyright Copyright (c) 2022-2025 ryftchen. All rights reserved.
 
 #include "console.hpp"
+#include "note.hpp"
 
 #ifndef __PRECOMPILED_HEADER
 #include <readline/readline.h>
@@ -189,7 +190,7 @@ void Console::setDefaultOptions()
             }
             else
             {
-                std::cout << ' ' << ::history_length << std::endl;
+                std::cout << "no history" << std::endl;
             }
             return RetCode::success;
         });
@@ -200,7 +201,7 @@ void Console::setDefaultOptions()
         [](const Args& /*inputs*/)
         {
             std::cout << "\033[2J\033[1;1H" << std::flush;
-            std::cout << "---" << std::endl;
+            std::cout << note::icon() << std::endl;
             return RetCode::success;
         });
     orderList.emplace_back("clean");
