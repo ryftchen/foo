@@ -256,7 +256,7 @@ private:
     {
     public:
         //! @brief Wrap interfaces to check for existing and reset extra choices.
-        struct IntfWrap
+        struct WrapIntf
         {
             //! @brief Check the existence status of the extra choice.
             const std::function<bool()> present{};
@@ -266,7 +266,7 @@ private:
         //! @brief Flag for help only.
         bool extraHelpOnly{false};
         //! @brief Existence status and reset control of the sub-cli to which the extra choices belong.
-        std::map<std::string, IntfWrap> extraChecklist{};
+        std::map<std::string, WrapIntf> extraChecklist{};
 
         //! @brief Check whether any extra choices do not exist.
         //! @return any extra choices do not exist or exist

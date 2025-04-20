@@ -293,7 +293,7 @@ void Command::initializeExtraCLI()
     auto& algoTable = extraChoices[subCLIAppAlgo.title()];
     checklist.emplace(
         subCLIAppAlgo.title(),
-        ExtraManager::IntfWrap{[]() { return !reg_algo::manager().empty(); }, []() { reg_algo::manager().reset(); }});
+        ExtraManager::WrapIntf{[]() { return !reg_algo::manager().empty(); }, []() { reg_algo::manager().reset(); }});
     subCLIAppAlgo.addDescription(descr<reg_algo::ApplyAlgorithm>());
     subCLIAppAlgo.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
     candidates = extractChoices<reg_algo::MatchMethod>();
@@ -384,7 +384,7 @@ void Command::initializeExtraCLI()
     auto& dpTable = extraChoices[subCLIAppDp.title()];
     checklist.emplace(
         subCLIAppDp.title(),
-        ExtraManager::IntfWrap{[]() { return !reg_dp::manager().empty(); }, []() { reg_dp::manager().reset(); }});
+        ExtraManager::WrapIntf{[]() { return !reg_dp::manager().empty(); }, []() { reg_dp::manager().reset(); }});
     subCLIAppDp.addDescription(descr<reg_dp::ApplyDesignPattern>());
     subCLIAppDp.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
     candidates = extractChoices<reg_dp::BehavioralInstance>();
@@ -446,7 +446,7 @@ void Command::initializeExtraCLI()
     auto& dsTable = extraChoices[subCLIAppDs.title()];
     checklist.emplace(
         subCLIAppDs.title(),
-        ExtraManager::IntfWrap{[]() { return !reg_ds::manager().empty(); }, []() { reg_ds::manager().reset(); }});
+        ExtraManager::WrapIntf{[]() { return !reg_ds::manager().empty(); }, []() { reg_ds::manager().reset(); }});
     subCLIAppDs.addDescription(descr<reg_ds::ApplyDataStructure>());
     subCLIAppDs.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
     candidates = extractChoices<reg_ds::LinearInstance>();
@@ -487,7 +487,7 @@ void Command::initializeExtraCLI()
     auto& numTable = extraChoices[subCLIAppNum.title()];
     checklist.emplace(
         subCLIAppNum.title(),
-        ExtraManager::IntfWrap{[]() { return !reg_num::manager().empty(); }, []() { reg_num::manager().reset(); }});
+        ExtraManager::WrapIntf{[]() { return !reg_num::manager().empty(); }, []() { reg_num::manager().reset(); }});
     subCLIAppNum.addDescription(descr<reg_num::ApplyNumeric>());
     subCLIAppNum.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
     candidates = extractChoices<reg_num::ArithmeticMethod>();
@@ -781,7 +781,7 @@ void Command::executeInConsole() const
 
     auto udpClient = std::make_shared<utility::socket::UDPSocket>();
     launchClient(udpClient);
-    const auto session = std::make_shared<console::Console>(" > ");
+    const auto session = std::make_unique<console::Console>(" > ");
     registerOnConsole(*session, udpClient);
 
     try
@@ -815,7 +815,7 @@ void Command::displayVersionInfo() const
 {
     validateDependenciesVersion();
 
-    const auto version = std::format(
+    const auto basicInfo = std::format(
 #ifndef NDEBUG
                    "{}{}{}            DEBUG VERSION {} {}\n",
 #else
@@ -826,13 +826,13 @@ void Command::displayVersionInfo() const
                    note::icon(),
                    mainCLI.version(),
                    utility::common::escOff),
-               copyright = std::format(
+               additionalInfo = std::format(
                    "{}\nBuilt with {} for {} on {}.\n",
                    note::copyright(),
                    note::compiler(),
                    note::processor(),
                    note::buildDate());
-    std::cout << version << copyright << std::flush;
+    std::cout << basicInfo << additionalInfo << std::flush;
 }
 
 void Command::checkForExcessiveArguments()
@@ -898,7 +898,7 @@ try
         hostName[HOST_NAME_MAX - 1] = '\0';
     }
     const auto greeting = user + '@' + std::string{hostName} + " foo > ";
-    const auto session = std::make_shared<console::Console>(greeting);
+    const auto session = std::make_unique<console::Console>(greeting);
     registerOnConsole(*session, tcpClient);
 
     std::cout << note::icon() << std::endl;
