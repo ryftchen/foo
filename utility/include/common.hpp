@@ -196,16 +196,16 @@ public:
 };
 
 //! @brief Invoke a template callable.
-//! @tparam T - type of instantiation with template callable
+//! @tparam Ts - type of instantiations with template callable
 //! @tparam Func - type of callable function
 //! @tparam Args - type of function arguments
 //! @param func - callable function
 //! @param args - function arguments
 //! @return function execution
-template <typename T, typename Func, typename... Args>
-inline constexpr decltype(auto) invokeTemplateCallable(Func&& func, Args&&... args)
+template <typename... Ts, typename Func, typename... Args>
+inline constexpr decltype(auto) invokeCallableWith(Func&& func, Args&&... args)
 {
-    return std::forward<Func>(func).template operator()<T>(std::forward<Args>(args)...);
+    return std::forward<Func>(func).template operator()<Ts...>(std::forward<Args>(args)...);
 }
 
 //! @brief Closure wrapper.
