@@ -20,6 +20,7 @@ words:
   - asan
   - BKDR
   - chrono
+  - CLICOLOR
   - codebrowser
   - codescanning
   - compdb
