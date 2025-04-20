@@ -1229,7 +1229,7 @@ function build_native()
         fi
         shell_command "cmake -S ./${FOLDER[tst]} -B ./${FOLDER[tst]}/${FOLDER[bld]} -G Ninja""${CMAKE_CACHE_ENTRY}"
         NINJA_STATUS=$(echo -e "\e[92m[\e[92m%f/\e[92m%t\e[92m]\e[39m\e[49m ")
-        export NINJA_STATUS
+        export NINJA_STATUS CLICOLOR_FORCE=1 TERM=dumb
         shell_command "cmake --build ./${FOLDER[tst]}/${FOLDER[bld]}""${CMAKE_BUILD_OPTION}"
 
         exit "${STATUS}"
@@ -1248,7 +1248,7 @@ function build_native()
         [[ valid_param_num -eq 1 ]] && [[ ${ARGS[release]} != false ]]
     }; then
         NINJA_STATUS=$(echo -e "\e[92m[\e[92m%f/\e[92m%t\e[92m]\e[39m\e[49m ")
-        export NINJA_STATUS
+        export NINJA_STATUS CLICOLOR_FORCE=1 TERM=dumb
         shell_command "cmake --build ./${FOLDER[bld]}""${CMAKE_BUILD_OPTION}"
 
         exit "${STATUS}"
