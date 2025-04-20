@@ -823,7 +823,7 @@ void Command::displayVersionInfo() const
 #endif // NDEBUG
                    utility::common::escFontInverse,
                    utility::common::escBgColor,
-                   createIconBanner(),
+                   note::icon(),
                    mainCLI.version(),
                    utility::common::escOff),
                copyright = std::format(
@@ -887,7 +887,6 @@ try
     LOG_DBG << "Enter console mode.";
 
     interactionLatency();
-    std::cout << createIconBanner() << std::endl;
     auto tcpClient = std::make_shared<utility::socket::TCPSocket>();
     launchClient(tcpClient);
     const char* const userEnv = std::getenv("USER");
@@ -902,6 +901,7 @@ try
     const auto session = std::make_shared<console::Console>(greeting);
     registerOnConsole(*session, tcpClient);
 
+    std::cout << note::icon() << std::endl;
     using RetCode = console::Console::RetCode;
     auto retCode = RetCode::success;
     do
@@ -1079,16 +1079,5 @@ void Command::validateDependenciesVersion() const
             subCLIAppNum.title(),
             subCLIAppNum.version())};
     }
-}
-
-constexpr std::string_view Command::createIconBanner()
-{
-    // clang-format off
-    return R"(  ______   ______     ______    )" "\n"
-           R"( /\  ___\ /\  __ \   /\  __ \   )" "\n"
-           R"( \ \  __\ \ \ \/\ \  \ \ \/\ \  )" "\n"
-           R"(  \ \_\    \ \_____\  \ \_____\ )" "\n"
-           R"(   \/_/     \/_____/   \/_____/ )" "\n";
-    // clang-format on
 }
 } // namespace application::command

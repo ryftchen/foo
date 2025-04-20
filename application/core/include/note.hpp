@@ -32,6 +32,19 @@ inline constexpr std::string_view copyright()
     return "Copyright (c) 2022-2025 ryftchen. All rights reserved.";
 }
 
+//! @brief ASCII icon banner.
+//! @return ASCII icon
+inline constexpr std::string_view icon()
+{
+    // clang-format off
+    return R"(  ______   ______     ______    )" "\n"
+           R"( /\  ___\ /\  __ \   /\  __ \   )" "\n"
+           R"( \ \  __\ \ \ \/\ \  \ \ \/\ \  )" "\n"
+           R"(  \ \_\    \ \_____\  \ \_____\ )" "\n"
+           R"(   \/_/     \/_____/   \/_____/ )" "\n";
+    // clang-format on
+}
+
 extern std::string compiler();
 extern std::string processor();
 extern std::string buildDate();
