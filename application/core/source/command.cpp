@@ -969,7 +969,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
             auto retCode = RetCode::success;
             try
             {
-                utility::common::invokeTemplateCallable<log::Log>(gracefulReset);
+                utility::common::invokeCallableWith<log::Log>(gracefulReset);
 
                 LOG_INF_F("Refreshed the {} outputs.", log::Log::name);
             }
@@ -994,7 +994,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
                 client->waitIfAlive();
                 interactionLatency();
                 client.reset();
-                utility::common::invokeTemplateCallable<view::View>(gracefulReset);
+                utility::common::invokeCallableWith<view::View>(gracefulReset);
 
                 client = std::make_shared<T>();
                 launchClient(client);
