@@ -85,11 +85,12 @@ class Task:
     report_path = "./report"
     run_log_file = f"{report_path}/foo_run.log"
     run_report_file = f"{report_path}/foo_run.report"
-    table_key_width = 15
-    table_value_width = 60
-    suspicious_output = [" \033[0;31;40m\033[1m\033[49m[ERR]\033[0m ", " \033[0;33;40m\033[1m\033[49m[WRN]\033[0m "]
-    state_default_len = 55
-    state_at_least_len = 15
+    suspicious_trait = [" \033[0;31;40m\033[1m\033[49m[ERR]\033[0m ", " \033[0;33;40m\033[1m\033[49m[WRN]\033[0m "]
+    stat_default_len = 55
+    stat_at_least_len = 15
+    esc_color = {"red": "\033[0;31;40m", "green": "\033[0;32;40m", "yellow": "\033[0;33;40m", "blue": "\033[0;34;40m"}
+    tbl_key_width = 15
+    tbl_value_width = 60
 
     def __init__(self):
         self.args = None
@@ -372,44 +373,44 @@ class Task:
         if enter:
             command += " > " + enter.replace("\nquit", "")
         align_len = max(
-            len(command) + self.state_at_least_len,
-            self.state_default_len,
-            len(str(self.total_steps)) * 2 + len(" / ") + self.state_at_least_len,
+            len(command) + self.stat_at_least_len,
+            self.stat_default_len,
+            len(str(self.total_steps)) * 2 + len(" / ") + self.stat_at_least_len,
         )
-        TermUtil.hint_with_highlight(
-            TermUtil.esc_color["blue"], f"CASE: {f'{command}':<{align_len - self.state_at_least_len}} # START "
+        self.hint_with_highlight(
+            self.esc_color["blue"], f"CASE: {f'{command}':<{align_len - self.stat_at_least_len}} # START "
         )
 
         stdout, stderr, return_code = common.execute_command(full_cmd, enter)
         if not stdout or stderr or return_code:
             print(f"\n[STDOUT]\n{stdout}\n[STDERR]\n{stderr}\n[RETURN CODE]\n{return_code}")
-            TermUtil.hint_with_highlight(
-                TermUtil.esc_color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
+            self.hint_with_highlight(
+                self.esc_color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
             )
         else:
             stdout = stdout.expandtabs()
             print(stdout)
             self.passed_steps += 1
-            if any(sub in stdout for sub in self.suspicious_output):
+            if any(sus in stdout for sus in self.suspicious_trait):
                 self.passed_steps -= 1
-                TermUtil.hint_with_highlight(
-                    TermUtil.esc_color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
+                self.hint_with_highlight(
+                    self.esc_color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
                 )
             elif self.marked_options["chk"]["mem"]:
                 self.convert_valgrind_output(command, align_len)
 
         self.complete_steps += 1
-        TermUtil.hint_with_highlight(
-            TermUtil.esc_color["blue"], f"CASE: {f'{command}':<{align_len - self.state_at_least_len}} # FINISH"
+        self.hint_with_highlight(
+            self.esc_color["blue"], f"CASE: {f'{command}':<{align_len - self.stat_at_least_len}} # FINISH"
         )
 
         stat = "SUCCESS" if self.passed_steps == self.complete_steps else "PARTIAL"
         stat_color = (
-            TermUtil.esc_color["yellow"]
+            self.esc_color["yellow"]
             if stat != "SUCCESS" or self.complete_steps != self.total_steps
-            else TermUtil.esc_color["green"]
+            else self.esc_color["green"]
         )
-        TermUtil.hint_with_highlight(
+        self.hint_with_highlight(
             stat_color,
             f"""\
 {f"STAT: {stat} {f'{str(self.passed_steps)}':>{len(str(self.total_steps))}} / {str(self.total_steps)}":<{align_len}}""",
@@ -420,6 +421,11 @@ class Task:
         sys.stdout = STDOUT
         self.progress_bar.draw_progress_bar(int(self.complete_steps / self.total_steps * 100))
         sys.stdout = self.logger
+
+    def hint_with_highlight(self, esc_color, hint):
+        print(
+            f"""{esc_color}\033[1m\033[49m[ {datetime.strftime(datetime.now(), "%b %d %H:%M:%S")} # {hint} ]\033[0m"""
+        )
 
     def initialize_for_check_coverage(self):
         stdout, _, _ = common.execute_command("command -v llvm-profdata-16 llvm-cov-16 2>&1")
@@ -577,14 +583,14 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
                 )
                 pathlib.Path(f"{case_path}_inst_2/case_name").write_text(command, "utf-8")
             self.passed_steps -= 1
-            TermUtil.hint_with_highlight(
-                TermUtil.esc_color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
+            self.hint_with_highlight(
+                self.esc_color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
             )
         elif inst_num not in (1, 2) or stderr:
             self.passed_steps -= 1
             print("\n[CHECK MEMORY]\nUnsupported valgrind output xml file content.")
-            TermUtil.hint_with_highlight(
-                TermUtil.esc_color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
+            self.hint_with_highlight(
+                self.esc_color["red"], f"{f'STAT: FAILURE NO.{str(self.complete_steps + 1)}':<{align_len}}"
             )
 
     def format_run_log(self):
@@ -592,7 +598,7 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
             fcntl.flock(run_log.fileno(), fcntl.LOCK_EX)
             old_content = run_log.read()
             fcntl.flock(run_log.fileno(), fcntl.LOCK_UN)
-        new_content = TermUtil.ansi_escape.sub("", old_content)
+        new_content = re.compile(r"\x1B(?:\[[0-?]*[ -/]*[@-~]|[PX^_].*?\x1B\\|.)").sub("", old_content)
         with open(self.run_log_file, "wt", encoding="utf-8") as run_log:
             fcntl.flock(run_log.fileno(), fcntl.LOCK_EX)
             run_log.write(new_content)
@@ -698,7 +704,15 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
                 fail_line = readlines[finish_index - 1]
                 number = fail_line[fail_line.find("NO.") : fail_line.find("]")].strip()
                 cmd_line = readlines[start_index]
-                case_task = number + ": " + cmd_line[cmd_line.find(self.app_bin_cmd) : cmd_line.find("# START")].strip()
+                case_task = (
+                    number
+                    + ": "
+                    + cmd_line[
+                        cmd_line.find(self.app_bin_cmd if not tags["tst"] else self.tst_bin_cmd) : cmd_line.find(
+                            "# START"
+                        )
+                    ].strip()
+                )
 
                 if tags["tst"] and "FAILED TEST" in "".join(readlines[start_index + 1 : finish_index]):
                     ut_case = ""
@@ -747,22 +761,22 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
 
     def format_as_table(self, data, key_title, value_title):
         rows = []
-        rows.append("=" * (self.table_key_width + 2 + self.table_value_width + 1))
-        rows.append(f"{key_title.ljust(self.table_key_width)} | {value_title.ljust(self.table_value_width)}")
-        rows.append("=" * (self.table_key_width + 2 + self.table_value_width + 1))
+        rows.append("=" * (self.tbl_key_width + 2 + self.tbl_value_width + 1))
+        rows.append(f"{key_title.ljust(self.tbl_key_width)} | {value_title.ljust(self.tbl_value_width)}")
+        rows.append("=" * (self.tbl_key_width + 2 + self.tbl_value_width + 1))
 
         for key, value in data.items():
             key_lines = []
             for line in key.split("\n"):
                 line_len = len(line)
-                for index in range(0, line_len, self.table_key_width):
-                    key_lines.append(line[index : index + self.table_key_width].ljust(self.table_key_width))
+                for index in range(0, line_len, self.tbl_key_width):
+                    key_lines.append(line[index : index + self.tbl_key_width].ljust(self.tbl_key_width))
 
             value_lines = []
             for line in value.split("\n"):
                 line_len = len(line)
-                for index in range(0, line_len, self.table_value_width):
-                    value_lines.append(line[index : index + self.table_value_width].ljust(self.table_value_width))
+                for index in range(0, line_len, self.tbl_value_width):
+                    value_lines.append(line[index : index + self.tbl_value_width].ljust(self.tbl_value_width))
 
             line_count = max(len(key_lines), len(value_lines))
             for index in range(line_count):
@@ -770,39 +784,26 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
                 if index < len(key_lines):
                     new_line = f"{key_lines[index]} | "
                 else:
-                    new_line = f"{' ' * self.table_key_width} | "
+                    new_line = f"{' ' * self.tbl_key_width} | "
                 if index < len(value_lines):
                     new_line += value_lines[index]
                 else:
-                    new_line += " " * self.table_value_width
+                    new_line += " " * self.tbl_value_width
                 rows.append(new_line)
 
-            rows.append("-" * (self.table_key_width + 2 + self.table_value_width + 1))
+            rows.append("-" * (self.tbl_key_width + 2 + self.tbl_value_width + 1))
 
         return "\n".join(rows)
 
 
 class TermUtil:
-    ansi_escape = re.compile(r"\x1B(?:\[[0-?]*[ -/]*[@-~]|[PX^_].*?\x1B\\|.)")
-    esc_color = {"red": "\033[0;31;40m", "green": "\033[0;32;40m", "yellow": "\033[0;33;40m", "blue": "\033[0;34;40m"}
-    esc_bg_color = "\033[49m"
-    esc_font_bold = "\033[1m"
-    esc_off = "\033[0m"
-
-    @classmethod
-    def exit_with_error(cls, message):
+    @staticmethod
+    def exit_with_error(message):
         print(f"{os.path.basename(__file__)}: {message}", file=sys.stderr)
         sys.exit(1)
 
-    @classmethod
-    def hint_with_highlight(cls, esc_fg_color, content):
-        print(
-            f"""{esc_fg_color}{cls.esc_font_bold}{cls.esc_bg_color}\
-[ {datetime.strftime(datetime.now(), "%b %d %H:%M:%S")} # {content} ]{cls.esc_off}"""
-        )
-
-    @classmethod
-    def execute_in_pty(cls, command):
+    @staticmethod
+    def execute_in_pty(command):
         master_fd, slave_fd = pty.openpty()
         with subprocess.Popen(
             command,
