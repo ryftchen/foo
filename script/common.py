@@ -19,11 +19,11 @@ def execute_command(command, set_input="", set_timeout=300):
             executable="/bin/bash",
             shell=True,
             universal_newlines=True,
+            capture_output=True,
+            check=True,
             encoding="utf-8",
             input=set_input,
-            capture_output=True,
             timeout=set_timeout,
-            check=True,
         )
         return process.stdout.strip(), process.stderr.strip(), process.returncode
     except subprocess.CalledProcessError as error:
@@ -71,7 +71,6 @@ class ProgressBar:
 
     def setup_progress_bar(self):
         curses.setupterm()
-
         self.trap_due_to_interrupt()
 
         self.current_lines = self.tput_lines()
@@ -111,14 +110,6 @@ class ProgressBar:
         if self.set_trap:
             signal.signal(signal.SIGINT, self.default_signal)
 
-    def clear_progress_bar(self):
-        lines = self.tput_lines()
-        self.print_progress(self.save_cursor)
-        self.print_progress(f"\033[{str(lines)};0f")
-
-        self.tput()
-        self.print_progress(self.restore_cursor)
-
     def trap_due_to_interrupt(self):
         self.set_trap = True
         self.default_signal = signal.getsignal(signal.SIGINT)
@@ -129,16 +120,26 @@ class ProgressBar:
         self.destroy_progress_bar()
         raise KeyboardInterrupt
 
-    def print_bar(self, percentage):
-        cols = self.tput_cols()
-        bar_size = cols - self.placeholder_length
-        color = f"{self.fore_color}{self.back_color}"
-        default_color = f"{self.default_fore_color}{self.default_back_color}"
+    @classmethod
+    def clear_progress_bar(cls):
+        lines = cls.tput_lines()
+        cls.print_progress(cls.save_cursor)
+        cls.print_progress(f"\033[{str(lines)};0f")
 
-        complete_size = int((bar_size * percentage) / 100)
-        remainder_size = bar_size - complete_size
-        progress_bar = f"[{color}{'#' * int(complete_size)}{default_color}{'.' * int(remainder_size)}]"
-        self.print_progress(f" Progress {percentage:>3}% {progress_bar}\r")
+        cls.tput()
+        cls.print_progress(cls.restore_cursor)
+
+    @classmethod
+    def print_bar(cls, percentage):
+        cols = cls.tput_cols()
+        bar_size = cols - cls.placeholder_length
+        color = f"{cls.fore_color}{cls.back_color}"
+        default_color = f"{cls.default_fore_color}{cls.default_back_color}"
+
+        completed_size = int((bar_size * percentage) / 100)
+        remaining_size = bar_size - completed_size
+        progress_bar = f"[{color}{'#' * int(completed_size)}{default_color}{'.' * int(remaining_size)}]"
+        cls.print_progress(f" Progress {percentage:>3}% {progress_bar}\r")
 
     @staticmethod
     def print_progress(text):
