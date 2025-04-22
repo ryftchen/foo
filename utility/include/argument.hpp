@@ -378,11 +378,6 @@ private:
         //! @return be not equal or equal
         bool operator!=(const ArgsNumRange& rhs) const { return !(*this == rhs); }
 
-        //! @brief Minimum of range.
-        std::size_t min{0};
-        //! @brief Maximum of range.
-        std::size_t max{0};
-
         //! @brief Check whether the number of arguments is within the range.
         //! @param value - number of arguments
         //! @return within or not within
@@ -399,6 +394,14 @@ private:
         //! @brief Get the maximum of the range.
         //! @return maximum of range
         [[nodiscard]] std::size_t getMax() const { return max; }
+
+    private:
+        //! @brief Minimum of range.
+        std::size_t min{0};
+        //! @brief Maximum of range.
+        std::size_t max{0};
+
+    protected:
         //! @brief The operator (<<) overloading of the ArgsNumRange class.
         //! @param os - output stream object
         //! @param range - specific ArgsNumRange object
@@ -412,16 +415,13 @@ private:
                     os << "[args: " << range.min << "] ";
                 }
             }
+            else if (std::numeric_limits<std::size_t>::max() == range.max)
+            {
+                os << "[args: " << range.min << " or more] ";
+            }
             else
             {
-                if (std::numeric_limits<std::size_t>::max() == range.max)
-                {
-                    os << "[args: " << range.min << " or more] ";
-                }
-                else
-                {
-                    os << "[args=" << range.min << ".." << range.max << "] ";
-                }
+                os << "[args=" << range.min << ".." << range.max << "] ";
             }
 
             return os;
@@ -430,10 +430,6 @@ private:
 
     //! @brief Throw an exception when ArgsNumRange is invalid.
     [[noreturn]] void throwArgsNumRangeValidationException() const;
-    //! @brief Throw an exception when the required argument is not used.
-    [[noreturn]] void throwRequiredArgNotUsedException() const;
-    //! @brief Throw an exception when the required argument has no value provided.
-    [[noreturn]] void throwRequiredArgNoValueProvidedException() const;
     //! @brief Find the character in the argument.
     //! @param name - name of argument
     //! @return character
@@ -558,16 +554,15 @@ Iterator Register::consume(Iterator start, Iterator end, const std::string_view 
     isUsed = true;
     usedName = argName;
     const auto numMax = argsNumRange.getMax(), numMin = argsNumRange.getMin();
-    std::size_t dist = 0;
     if (0 == numMax)
     {
         values.emplace_back(implicitVal);
         std::visit([](const auto& func) { func({}); }, actions);
         return start;
     }
-    if ((dist = static_cast<std::size_t>(std::distance(start, end))) >= numMin)
+    if (auto dist = static_cast<std::size_t>(std::distance(start, end)); dist >= numMin)
     {
-        if (numMax < dist)
+        if (dist > numMax)
         {
             end = std::next(start, static_cast<typename Iterator::difference_type>(numMax));
         }
@@ -581,7 +576,7 @@ Iterator Register::consume(Iterator start, Iterator end, const std::string_view 
             }
         }
 
-        struct ActionApply
+        struct ApplyAction
         {
             const Iterator first{};
             const Iterator last{};
@@ -600,7 +595,7 @@ Iterator Register::consume(Iterator start, Iterator end, const std::string_view 
                 }
             }
         };
-        std::visit(ActionApply{start, end, *this}, actions);
+        std::visit(ApplyAction{start, end, *this}, actions);
 
         return end;
     }
