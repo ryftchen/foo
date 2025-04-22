@@ -102,11 +102,11 @@ void Register::validate() const
     {
         if (!isUsed && !defaultVal.has_value() && isRequired)
         {
-            throwRequiredArgNotUsedException();
+            throw std::runtime_error{names.at(0) + ": required."};
         }
         if (isUsed && isRequired && values.empty())
         {
-            throwRequiredArgNoValueProvidedException();
+            throw std::runtime_error{usedName + ": no value provided."};
         }
     }
     else if (!argsNumRange.within(values.size()) && !defaultVal.has_value())
@@ -184,16 +184,6 @@ void Register::throwArgsNumRangeValidationException() const
     out << " argument(s) expected. " << values.size() << " provided.";
 
     throw std::runtime_error{out.str()};
-}
-
-void Register::throwRequiredArgNotUsedException() const
-{
-    throw std::runtime_error{names.at(0) + ": required."};
-}
-
-void Register::throwRequiredArgNoValueProvidedException() const
-{
-    throw std::runtime_error{usedName + ": no value provided."};
 }
 
 int Register::lookAhead(const std::string_view name)
