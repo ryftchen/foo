@@ -12,15 +12,6 @@
 #include <format>
 #include <shared_mutex>
 
-//! @brief Do stringify for internal use.
-#define COMMON_INTERNAL_STRINGIFY(x) #x
-//! @brief Do stringify.
-#define COMMON_STRINGIFY(x) COMMON_INTERNAL_STRINGIFY(x)
-//! @brief Do concatenation for internal use.
-#define COMMON_INTERNAL_CONCAT(x, y) x##y
-//! @brief Do concatenation.
-#define COMMON_CONCAT(x, y) COMMON_INTERNAL_CONCAT(x, y)
-
 //! @brief The utility module.
 namespace utility // NOLINT(modernize-concat-nested-namespaces)
 {

@@ -25,6 +25,8 @@
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
 
+#include "utility/include/macro.hpp"
+
 namespace application::view
 {
 //! @brief Type-length-value scheme.
@@ -516,19 +518,19 @@ int View::buildTLVPacket4Depend([[maybe_unused]] const std::vector<std::string>&
     tlv::TLVValue val{};
     std::string extLibraries{};
 #if defined(__GLIBC__) && defined(__GLIBC_MINOR__)
-    extLibraries += "GNU C Library " COMMON_STRINGIFY(__GLIBC__) "." COMMON_STRINGIFY(__GLIBC_MINOR__) "\n";
+    extLibraries += "GNU C Library " MACRO_STRINGIFY(__GLIBC__) "." MACRO_STRINGIFY(__GLIBC_MINOR__) "\n";
 #else
 #error Could not find the GNU C library version.
 #endif // defined(__GLIBC__) && defined(__GLIBC_MINOR__)
 #if defined(_GLIBCXX_RELEASE) && defined(__GLIBCXX__)
     extLibraries +=
-        "GNU C++ Standard Library " COMMON_STRINGIFY(_GLIBCXX_RELEASE) " (" COMMON_STRINGIFY(__GLIBCXX__) ")\n";
+        "GNU C++ Standard Library " MACRO_STRINGIFY(_GLIBCXX_RELEASE) " (" MACRO_STRINGIFY(__GLIBCXX__) ")\n";
 #else
 #error Could not find the GNU C++ Standard library version.
 #endif // defined(_GLIBCXX_RELEASE) && defined(__GLIBCXX__)
 #if defined(__GNU_MP_VERSION) && defined(__GNU_MP_VERSION_MINOR) && defined(__GNU_MP_VERSION_PATCHLEVEL)
-    extLibraries += "GNU MP Library " COMMON_STRINGIFY(__GNU_MP_VERSION) "." COMMON_STRINGIFY(
-        __GNU_MP_VERSION_MINOR) "." COMMON_STRINGIFY(__GNU_MP_VERSION_PATCHLEVEL) "\n";
+    extLibraries += "GNU MP Library " MACRO_STRINGIFY(__GNU_MP_VERSION) "." MACRO_STRINGIFY(
+        __GNU_MP_VERSION_MINOR) "." MACRO_STRINGIFY(__GNU_MP_VERSION_PATCHLEVEL) "\n";
 #else
 #error Could not find the GNU MP library version.
 #endif // defined(__GNU_MP_VERSION) && defined(__GNU_MP_VERSION_MINOR) && defined(__GNU_MP_VERSION_PATCHLEVEL)
@@ -539,7 +541,7 @@ int View::buildTLVPacket4Depend([[maybe_unused]] const std::vector<std::string>&
 #endif // defined(MPFR_VERSION_STRING)
 #if defined(RL_VERSION_MAJOR) && defined(RL_VERSION_MINOR)
     extLibraries +=
-        "GNU Readline Library " COMMON_STRINGIFY(RL_VERSION_MAJOR) "." COMMON_STRINGIFY(RL_VERSION_MINOR) "\n";
+        "GNU Readline Library " MACRO_STRINGIFY(RL_VERSION_MAJOR) "." MACRO_STRINGIFY(RL_VERSION_MINOR) "\n";
 #else
 #error Could not find the GNU Readline library version.
 #endif // defined(RL_VERSION_MAJOR) && defined(RL_VERSION_MINOR)

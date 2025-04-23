@@ -1050,6 +1050,7 @@ void Command::validateDependenciesVersion() const
                    utility::fsm::version(),
                    utility::io::version(),
                    utility::json::version(),
+                   utility::macro::version(),
                    utility::memory::version(),
                    utility::reflection::version(),
                    utility::socket::version(),

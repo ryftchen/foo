@@ -14,6 +14,7 @@
 #endif // __PRECOMPILED_HEADER
 
 #include "utility/include/common.hpp"
+#include "utility/include/macro.hpp"
 #include "utility/include/reflection.hpp"
 
 //! @brief The application module.
@@ -219,28 +220,28 @@ void runChoices<StructuralInstance>(const std::vector<std::string>& candidates);
 } // namespace application
 
 //! @brief Reflect the design pattern category name and alias name to the field in the mapping.
-#define REG_DP_REFLECT_FIRST_LEVEL_FIELD(category, alias)                                          \
-    Field                                                                                          \
-    {                                                                                              \
-        REFLECTION_STR(COMMON_STRINGIFY(category)), &Type::COMMON_CONCAT(category, Opts), AttrList \
-        {                                                                                          \
-            Attr                                                                                   \
-            {                                                                                      \
-                REFLECTION_STR("alias"), COMMON_STRINGIFY(alias)                                   \
-            }                                                                                      \
-        }                                                                                          \
+#define REG_DP_REFLECT_FIRST_LEVEL_FIELD(category, alias)                                        \
+    Field                                                                                        \
+    {                                                                                            \
+        REFLECTION_STR(MACRO_STRINGIFY(category)), &Type::MACRO_CONCAT(category, Opts), AttrList \
+        {                                                                                        \
+            Attr                                                                                 \
+            {                                                                                    \
+                REFLECTION_STR("alias"), MACRO_STRINGIFY(alias)                                  \
+            }                                                                                    \
+        }                                                                                        \
     }
 //! @brief Reflect the entry under the design pattern category and choice name to the field in the mapping.
-#define REG_DP_REFLECT_SECOND_LEVEL_FIELD(entry, choice)               \
-    Field                                                              \
-    {                                                                  \
-        REFLECTION_STR(COMMON_STRINGIFY(entry)), Type::entry, AttrList \
-        {                                                              \
-            Attr                                                       \
-            {                                                          \
-                REFLECTION_STR("choice"), COMMON_STRINGIFY(choice)     \
-            }                                                          \
-        }                                                              \
+#define REG_DP_REFLECT_SECOND_LEVEL_FIELD(entry, choice)              \
+    Field                                                             \
+    {                                                                 \
+        REFLECTION_STR(MACRO_STRINGIFY(entry)), Type::entry, AttrList \
+        {                                                             \
+            Attr                                                      \
+            {                                                         \
+                REFLECTION_STR("choice"), MACRO_STRINGIFY(choice)     \
+            }                                                         \
+        }                                                             \
     }
 //! @brief Static reflection for ApplyDesignPattern. Used to map command line arguments.
 template <>

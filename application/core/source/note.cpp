@@ -6,7 +6,7 @@
 
 #include "note.hpp"
 
-#include "utility/include/common.hpp"
+#include "utility/include/macro.hpp"
 
 namespace application::note
 {
@@ -15,10 +15,10 @@ namespace application::note
 std::string compiler()
 {
 #ifdef __clang__
-    return "clang " COMMON_STRINGIFY(__clang_major__) "." COMMON_STRINGIFY(__clang_minor__) "." COMMON_STRINGIFY(
+    return "clang " MACRO_STRINGIFY(__clang_major__) "." MACRO_STRINGIFY(__clang_minor__) "." MACRO_STRINGIFY(
         __clang_patchlevel__) "";
 #elif __GNUC__
-    return "gcc " COMMON_STRINGIFY(__GNUC__) "." COMMON_STRINGIFY(__GNUC_MINOR__) "." COMMON_STRINGIFY(
+    return "gcc " MACRO_STRINGIFY(__GNUC__) "." MACRO_STRINGIFY(__GNUC_MINOR__) "." MACRO_STRINGIFY(
         __GNUC_PATCHLEVEL__) "";
 #else
 #pragma message("Unknown compiler at compile time.")
