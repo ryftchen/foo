@@ -14,6 +14,7 @@
 #endif // __PRECOMPILED_HEADER
 
 #include "utility/include/common.hpp"
+#include "utility/include/macro.hpp"
 #include "utility/include/reflection.hpp"
 
 //! @brief The application module.
@@ -229,28 +230,28 @@ void runChoices<PrimeMethod>(const std::vector<std::string>& candidates);
 } // namespace application
 
 //! @brief Reflect the numeric category name and alias name to the field in the mapping.
-#define REG_NUM_REFLECT_FIRST_LEVEL_FIELD(category, alias)                                         \
-    Field                                                                                          \
-    {                                                                                              \
-        REFLECTION_STR(COMMON_STRINGIFY(category)), &Type::COMMON_CONCAT(category, Opts), AttrList \
-        {                                                                                          \
-            Attr                                                                                   \
-            {                                                                                      \
-                REFLECTION_STR("alias"), COMMON_STRINGIFY(alias)                                   \
-            }                                                                                      \
-        }                                                                                          \
+#define REG_NUM_REFLECT_FIRST_LEVEL_FIELD(category, alias)                                       \
+    Field                                                                                        \
+    {                                                                                            \
+        REFLECTION_STR(MACRO_STRINGIFY(category)), &Type::MACRO_CONCAT(category, Opts), AttrList \
+        {                                                                                        \
+            Attr                                                                                 \
+            {                                                                                    \
+                REFLECTION_STR("alias"), MACRO_STRINGIFY(alias)                                  \
+            }                                                                                    \
+        }                                                                                        \
     }
 //! @brief Reflect the entry under the numeric category and choice name to the field in the mapping.
-#define REG_NUM_REFLECT_SECOND_LEVEL_FIELD(entry, choice)              \
-    Field                                                              \
-    {                                                                  \
-        REFLECTION_STR(COMMON_STRINGIFY(entry)), Type::entry, AttrList \
-        {                                                              \
-            Attr                                                       \
-            {                                                          \
-                REFLECTION_STR("choice"), COMMON_STRINGIFY(choice)     \
-            }                                                          \
-        }                                                              \
+#define REG_NUM_REFLECT_SECOND_LEVEL_FIELD(entry, choice)             \
+    Field                                                             \
+    {                                                                 \
+        REFLECTION_STR(MACRO_STRINGIFY(entry)), Type::entry, AttrList \
+        {                                                             \
+            Attr                                                      \
+            {                                                         \
+                REFLECTION_STR("choice"), MACRO_STRINGIFY(choice)     \
+            }                                                         \
+        }                                                             \
     }
 //! @brief Static reflection for ApplyNumeric. Used to map command line arguments.
 template <>
