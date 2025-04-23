@@ -101,7 +101,7 @@ inline std::string formatString(const std::string_view fmt, Args&&... args)
 //! @param str1 - string 1
 //! @param str2 - string 2
 //! @return be equal or not equal
-inline bool allStrEqual(const char* const str1, const char* const str2)
+inline bool areStringsEqual(const char* const str1, const char* const str2)
 {
     return std::strcmp(str1, str2) == 0;
 }
@@ -112,9 +112,9 @@ inline bool allStrEqual(const char* const str1, const char* const str2)
 //! @param others - arguments of string
 //! @return be equal or not equal
 template <typename... Others>
-inline bool allStrEqual(const char* const str1, const char* const str2, Others const&... others)
+inline bool areStringsEqual(const char* const str1, const char* const str2, Others&&... others)
 {
-    return allStrEqual(str1, str2) && allStrEqual(str2, others...);
+    return areStringsEqual(str1, str2) && areStringsEqual(str2, std::forward<Others>(others)...);
 }
 
 //! @brief Splice strings into constexpr type.

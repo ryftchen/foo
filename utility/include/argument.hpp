@@ -143,7 +143,7 @@ std::string represent(const T& val)
 //! @tparam I - number of sequence which converted from bound arguments tuple
 //! @return wrapping of calls
 template <typename Func, typename Tuple, typename Extra, std::size_t... I>
-constexpr decltype(auto) applyScopedOneImpl(
+inline constexpr decltype(auto) applyScopedOneImpl(
     Func&& func, Tuple&& tup, Extra&& ext, const std::index_sequence<I...>& /*sequence*/)
 {
     return std::invoke(std::forward<Func>(func), std::get<I>(std::forward<Tuple>(tup))..., std::forward<Extra>(ext));
@@ -158,7 +158,7 @@ constexpr decltype(auto) applyScopedOneImpl(
 //! @param ext - extra option
 //! @return wrapping of calls
 template <typename Func, typename Tuple, typename Extra>
-constexpr decltype(auto) applyScopedOne(Func&& func, Tuple&& tup, Extra&& ext)
+inline constexpr decltype(auto) applyScopedOne(Func&& func, Tuple&& tup, Extra&& ext)
 {
     return applyScopedOneImpl(
         std::forward<Func>(func),
@@ -206,38 +206,38 @@ enum class ArgsNumPattern : std::uint8_t
 
 class Argument;
 
-//! @brief Argument register.
-class Register
+//! @brief Argument trait.
+class Trait
 {
 public:
-    //! @brief Construct a new Register object.
+    //! @brief Construct a new Trait object.
     //! @tparam N - number of arguments
     //! @tparam I - index of sequences related to arguments
     //! @param prefix - prefix characters
-    //! @param array - array of arguments to be registered
+    //! @param collection - collection of arguments to be registered
     //! @param sequence - sequences related to arguments
     template <std::size_t N, std::size_t... I>
-    explicit Register(
+    explicit Trait(
         const std::string_view prefix,
-        std::array<std::string_view, N>&& array,
+        std::array<std::string_view, N>&& collection,
         const std::index_sequence<I...>& sequence);
-    //! @brief Construct a new Register object.
+    //! @brief Construct a new Trait object.
     //! @tparam N - number of arguments
     //! @param prefix - prefix characters
-    //! @param array - array of arguments to be registered
+    //! @param collection - collection of arguments to be registered
     template <std::size_t N>
-    explicit Register(const std::string_view prefix, std::array<std::string_view, N>&& array) :
-        Register(prefix, std::move(array), std::make_index_sequence<N>{})
+    explicit Trait(const std::string_view prefix, std::array<std::string_view, N>&& collection) :
+        Trait(prefix, std::move(collection), std::make_index_sequence<N>{})
     {
     }
 
-    //! @brief The operator (==) overloading of Register class.
+    //! @brief The operator (==) overloading of Trait class.
     //! @tparam T - type of right-hand side
     //! @param rhs - right-hand side
     //! @return be equal or not equal
     template <typename T>
     bool operator==(const T& rhs) const;
-    //! @brief The operator (!=) overloading of Register class.
+    //! @brief The operator (!=) overloading of Trait class.
     //! @tparam T - type of right-hand side
     //! @param rhs - right-hand side
     //! @return be not equal or equal
@@ -246,57 +246,57 @@ public:
 
     //! @brief Set help message.
     //! @param content - help message content
-    //! @return reference of the Register object
-    Register& help(const std::string_view content);
+    //! @return reference of the Trait object
+    Trait& help(const std::string_view content);
     //! @brief Set metavar message.
     //! @param content - metavar message content
-    //! @return reference of the Register object
-    Register& metavar(const std::string_view content);
+    //! @return reference of the Trait object
+    Trait& metavar(const std::string_view content);
     //! @brief Set default value.
     //! @tparam T - type of default value
     //! @param value - default value
-    //! @return reference of the Register object
+    //! @return reference of the Trait object
     template <typename T>
-    Register& defaultValue(T&& value);
+    Trait& defaultValue(T&& value);
     //! @brief Set default value.
     //! @param value - default value
-    //! @return reference of the Register object
-    Register& defaultValue(const std::string_view value);
+    //! @return reference of the Trait object
+    Trait& defaultValue(const std::string_view value);
     //! @brief Set implicit value.
     //! @param value - implicit value
-    //! @return reference of the Register object
-    Register& implicitValue(std::any value);
+    //! @return reference of the Trait object
+    Trait& implicitValue(std::any value);
     //! @brief Set the argument property to be required.
-    //! @return reference of the Register object
-    Register& required();
+    //! @return reference of the Trait object
+    Trait& required();
     //! @brief Set the argument property to be appending.
-    //! @return reference of the Register object
-    Register& appending();
+    //! @return reference of the Trait object
+    Trait& appending();
     //! @brief Set the argument property to be remaining.
-    //! @return reference of the Register object
-    Register& remaining();
+    //! @return reference of the Trait object
+    Trait& remaining();
     //! @brief The action of specific arguments.
     //! @tparam Func - type of callable function
     //! @tparam Args - type of bound arguments
     //! @param callable - callable function
     //! @param boundArgs - bound arguments
-    //! @return reference of the Register object
+    //! @return reference of the Trait object
     template <typename Func, typename... Args>
     auto action(Func&& callable, Args&&... boundArgs)
-        -> std::enable_if_t<std::is_invocable_v<Func, Args..., const std::string&>, Register&>;
+        -> std::enable_if_t<std::is_invocable_v<Func, Args..., const std::string&>, Trait&>;
     //! @brief Set number of arguments.
     //! @param num - number of arguments
-    //! @return reference of the Register object
-    Register& argsNum(const std::size_t num);
+    //! @return reference of the Trait object
+    Trait& argsNum(const std::size_t num);
     //! @brief Set minimum number and maximum number of arguments.
     //! @param numMin - minimum number
     //! @param numMax - maximum number
-    //! @return reference of the Register object
-    Register& argsNum(const std::size_t numMin, const std::size_t numMax);
+    //! @return reference of the Trait object
+    Trait& argsNum(const std::size_t numMin, const std::size_t numMax);
     //! @brief Set number of arguments with pattern.
     //! @param pattern - argument pattern
-    //! @return reference of the Register object
-    Register& argsNum(const ArgsNumPattern pattern);
+    //! @return reference of the Trait object
+    Trait& argsNum(const ArgsNumPattern pattern);
     //! @brief Consume arguments.
     //! @tparam Iterator - type of argument iterator
     //! @param start - start argument iterator
@@ -369,11 +369,11 @@ private:
             }
         }
 
-        //! @brief The operator (==) overloading of Register class.
+        //! @brief The operator (==) overloading of Trait class.
         //! @param rhs - right-hand side
         //! @return be equal or not equal
         bool operator==(const ArgsNumRange& rhs) const { return std::tie(rhs.min, rhs.max) == std::tie(min, max); }
-        //! @brief The operator (!=) overloading of Register class.
+        //! @brief The operator (!=) overloading of Trait class.
         //! @param rhs - right-hand side
         //! @return be not equal or equal
         bool operator!=(const ArgsNumRange& rhs) const { return !(*this == rhs); }
@@ -462,23 +462,23 @@ private:
     static T anyCastContainer(const std::vector<std::any>& operand);
 
 protected:
-    friend std::ostream& operator<<(std::ostream& os, const Register& reg);
+    friend std::ostream& operator<<(std::ostream& os, const Trait& tra);
     friend std::ostream& operator<<(std::ostream& os, const Argument& arg);
 };
 
 template <std::size_t N, std::size_t... I>
-Register::Register(
+Trait::Trait(
     const std::string_view prefix,
-    std::array<std::string_view, N>&& array,
+    std::array<std::string_view, N>&& collection,
     const std::index_sequence<I...>& /*sequence*/) :
     optionalAsValue{false},
-    isOptional{(checkIfOptional(array[I], prefix) || ...)},
+    isOptional{(checkIfOptional(collection.at(I), prefix) || ...)},
     isRequired{false},
     isRepeatable{false},
     isUsed{false},
     prefixChars{prefix}
 {
-    (names.emplace_back(array[I]), ...);
+    (names.emplace_back(collection.at(I)), ...);
     std::sort(
         names.begin(),
         names.end(),
@@ -487,7 +487,7 @@ Register::Register(
 }
 
 template <typename T>
-bool Register::operator==(const T& rhs) const
+bool Trait::operator==(const T& rhs) const
 {
     if constexpr (!isContainer<T>)
     {
@@ -495,25 +495,24 @@ bool Register::operator==(const T& rhs) const
     }
     else
     {
-        using ValueType = typename T::value_type;
         const auto& lhs = get<T>();
         return std::equal(
             std::cbegin(lhs),
             std::cend(lhs),
             std::cbegin(rhs),
             std::cend(rhs),
-            [](const auto& lhs, const auto& rhs) { return rhs == std::any_cast<const ValueType&>(lhs); });
+            [](const auto& lhs, const auto& rhs) { return rhs == std::any_cast<const typename T::value_type&>(lhs); });
     }
 }
 
 template <typename T>
-bool Register::operator!=(const T& rhs) const
+bool Trait::operator!=(const T& rhs) const
 {
     return !(*this == rhs);
 }
 
 template <typename T>
-Register& Register::defaultValue(T&& value)
+Trait& Trait::defaultValue(T&& value)
 {
     representedDefVal = represent(value);
     defaultVal = std::forward<T>(value);
@@ -522,8 +521,8 @@ Register& Register::defaultValue(T&& value)
 }
 
 template <typename Func, typename... Args>
-auto Register::action(Func&& callable, Args&&... boundArgs)
-    -> std::enable_if_t<std::is_invocable_v<Func, Args..., const std::string&>, Register&>
+auto Trait::action(Func&& callable, Args&&... boundArgs)
+    -> std::enable_if_t<std::is_invocable_v<Func, Args..., const std::string&>, Trait&>
 {
     using ActionType = std::conditional_t<
         std::is_void_v<std::invoke_result_t<Func, Args..., const std::string&>>,
@@ -544,7 +543,7 @@ auto Register::action(Func&& callable, Args&&... boundArgs)
 }
 
 template <typename Iterator>
-Iterator Register::consume(Iterator start, Iterator end, const std::string_view argName)
+Iterator Trait::consume(Iterator start, Iterator end, const std::string_view argName)
 {
     if (!isRepeatable && isUsed)
     {
@@ -580,7 +579,7 @@ Iterator Register::consume(Iterator start, Iterator end, const std::string_view 
         {
             const Iterator first{};
             const Iterator last{};
-            Register& self;
+            Trait& self;
 
             void operator()(const ValuedAction& func) const
             {
@@ -608,7 +607,7 @@ Iterator Register::consume(Iterator start, Iterator end, const std::string_view 
 }
 
 template <typename T>
-T Register::get() const
+T Trait::get() const
 {
     if (!values.empty())
     {
@@ -637,7 +636,7 @@ T Register::get() const
 }
 
 template <typename T>
-std::optional<T> Register::present() const
+std::optional<T> Trait::present() const
 {
     if (defaultVal.has_value())
     {
@@ -656,15 +655,14 @@ std::optional<T> Register::present() const
 }
 
 template <typename T>
-T Register::anyCastContainer(const std::vector<std::any>& operand)
+T Trait::anyCastContainer(const std::vector<std::any>& operand)
 {
-    using ValueType = typename T::value_type;
     T result{};
     std::transform(
         operand.cbegin(),
         operand.cend(),
         std::back_inserter(result),
-        [](const auto& value) { return std::any_cast<ValueType>(value); });
+        [](const auto& value) { return std::any_cast<typename T::value_type>(value); });
 
     return result;
 }
@@ -697,26 +695,26 @@ public:
 
     //! @brief The operator (bool) overloading of Argument class.
     explicit operator bool() const;
-    //! @brief The operator ([]) overloading of Register class.
+    //! @brief The operator ([]) overloading of Trait class.
     //! @param argName - target argument name
-    //! @return reference of the Register object
-    Register& operator[](const std::string_view argName) const;
+    //! @return reference of the Trait object
+    Trait& operator[](const std::string_view argName) const;
 
     //! @brief Add a single argument.
     //! @tparam ArgsType - type of arguments
     //! @param fewArgs - argument name
-    //! @return reference of the Register object
+    //! @return reference of the Trait object
     template <typename... ArgsType>
-    Register& addArgument(ArgsType... fewArgs);
+    Trait& addArgument(ArgsType... fewArgs);
     //! @brief Add a descrText.
     //! @param text - descrText text
-    //! @return reference of the Register object
+    //! @return reference of the Trait object
     Argument& addDescription(const std::string_view text);
-    //! @brief Get the Register or Argument instance by name.
+    //! @brief Get the Trait or Argument instance by name.
     //! @tparam T - type of instance
     //! @param name - instance name
-    //! @return Register or Argument instance
-    template <typename T = Register>
+    //! @return Trait or Argument instance
+    template <typename T = Trait>
     T& at(const std::string_view name);
     //! @brief Parse all input arguments.
     //! @param arguments - container of all arguments
@@ -771,8 +769,8 @@ private:
     //! @brief Version number.
     std::string versionNumber{};
 
-    //! @brief Alias for iterator in all Register instance.
-    using RegisterIter = std::list<Register>::iterator;
+    //! @brief Alias for iterator in all Trait instance.
+    using TraitIter = std::list<Trait>::iterator;
     //! @brief Alias for iterator in all Argument instance.
     using ArgumentIter = std::list<std::reference_wrapper<Argument>>::iterator;
     //! @brief Description text.
@@ -784,11 +782,11 @@ private:
     //! @brief Flag to indicate whether to be parsed.
     bool isParsed{false};
     //! @brief List of optional arguments.
-    std::list<Register> optionalArgs{};
+    std::list<Trait> optionalArgs{};
     //! @brief List of positional arguments.
-    std::list<Register> positionalArgs{};
+    std::list<Trait> positionalArgs{};
     //! @brief Mapping table of argument.
-    std::unordered_map<std::string_view, RegisterIter> argumentMap{};
+    std::unordered_map<std::string_view, TraitIter> argumentMap{};
     //! @brief Current parser path.
     std::string parserPath{};
     //! @brief List of sub-parsers.
@@ -824,15 +822,15 @@ private:
     //! @return length of the longest argument
     [[nodiscard]] std::size_t getLengthOfLongestArgument() const;
     //! @brief Make index for argumentMap.
-    //! @param iterator - iterator in all argument registers
-    void indexArgument(const RegisterIter& iterator);
+    //! @param iterator - iterator in all argument traits
+    void indexArgument(const TraitIter& iterator);
 
 protected:
     friend std::ostream& operator<<(std::ostream& os, const Argument& arg);
 };
 
 template <typename... ArgsType>
-Register& Argument::addArgument(ArgsType... fewArgs)
+Trait& Argument::addArgument(ArgsType... fewArgs)
 {
     const auto argument = optionalArgs.emplace(
         optionalArgs.cend(), prefixChars, std::array<std::string_view, sizeof...(ArgsType)>{fewArgs...});
@@ -848,7 +846,7 @@ Register& Argument::addArgument(ArgsType... fewArgs)
 template <typename T>
 T& Argument::at(const std::string_view name)
 {
-    if constexpr (std::is_same_v<T, Register>)
+    if constexpr (std::is_same_v<T, Trait>)
     {
         return (*this)[name];
     }

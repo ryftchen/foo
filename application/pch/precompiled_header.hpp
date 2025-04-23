@@ -52,7 +52,6 @@
 #include <string>
 #include <syncstream>
 #include <thread>
-#include <variant>
 #include <vector>
 
 #endif // APPLICATION_PCH_H
