@@ -21,24 +21,24 @@ const char* version() noexcept
     return ver;
 }
 
-Register& Register::help(const std::string_view content)
+Trait& Trait::help(const std::string_view content)
 {
     helpCont = content;
     return *this;
 }
 
-Register& Register::metavar(const std::string_view content)
+Trait& Trait::metavar(const std::string_view content)
 {
     metavarCont = content;
     return *this;
 }
 
-Register& Register::defaultValue(const std::string_view value)
+Trait& Trait::defaultValue(const std::string_view value)
 {
     return defaultValue(std::string{value});
 }
 
-Register& Register::implicitValue(std::any value)
+Trait& Trait::implicitValue(std::any value)
 {
     implicitVal = std::move(value);
     argsNumRange = ArgsNumRange{0, 0};
@@ -46,37 +46,37 @@ Register& Register::implicitValue(std::any value)
     return *this;
 }
 
-Register& Register::required()
+Trait& Trait::required()
 {
     isRequired = true;
     return *this;
 }
 
-Register& Register::appending()
+Trait& Trait::appending()
 {
     isRepeatable = true;
     return *this;
 }
 
-Register& Register::remaining()
+Trait& Trait::remaining()
 {
     optionalAsValue = true;
     return argsNum(ArgsNumPattern::any);
 }
 
-Register& Register::argsNum(const std::size_t num)
+Trait& Trait::argsNum(const std::size_t num)
 {
     argsNumRange = ArgsNumRange{num, num};
     return *this;
 }
 
-Register& Register::argsNum(const std::size_t numMin, const std::size_t numMax)
+Trait& Trait::argsNum(const std::size_t numMin, const std::size_t numMax)
 {
     argsNumRange = ArgsNumRange{numMin, numMax};
     return *this;
 }
 
-Register& Register::argsNum(const ArgsNumPattern pattern)
+Trait& Trait::argsNum(const ArgsNumPattern pattern)
 {
     switch (pattern)
     {
@@ -96,7 +96,7 @@ Register& Register::argsNum(const ArgsNumPattern pattern)
     return *this;
 }
 
-void Register::validate() const
+void Trait::validate() const
 {
     if (isOptional)
     {
@@ -115,7 +115,7 @@ void Register::validate() const
     }
 }
 
-std::string Register::getInlineUsage() const
+std::string Trait::getInlineUsage() const
 {
     std::string longestName(names.at(0));
     for (const auto& str : names)
@@ -148,7 +148,7 @@ std::string Register::getInlineUsage() const
     return std::move(out).str();
 }
 
-std::size_t Register::getArgumentsLength() const
+std::size_t Trait::getArgumentsLength() const
 {
     const std::size_t namesSize = std::accumulate(
         names.cbegin(), names.cend(), 0, [](const auto sum, const auto& str) { return sum + str.length(); });
@@ -166,7 +166,7 @@ std::size_t Register::getArgumentsLength() const
     return size;
 }
 
-void Register::throwArgsNumRangeValidationException() const
+void Trait::throwArgsNumRangeValidationException() const
 {
     std::ostringstream out{};
     out << (!usedName.empty() ? usedName : names.at(0)) << ": " << argsNumRange.getMin();
@@ -186,17 +186,17 @@ void Register::throwArgsNumRangeValidationException() const
     throw std::runtime_error{out.str()};
 }
 
-int Register::lookAhead(const std::string_view name)
+int Trait::lookAhead(const std::string_view name)
 {
     return name.empty() ? eof : static_cast<int>(static_cast<unsigned char>(name.front()));
 }
 
-bool Register::checkIfOptional(const std::string_view name, const std::string_view prefix)
+bool Trait::checkIfOptional(const std::string_view name, const std::string_view prefix)
 {
     return !checkIfPositional(name, prefix);
 }
 
-bool Register::checkIfPositional(const std::string_view name, const std::string_view prefix)
+bool Trait::checkIfPositional(const std::string_view name, const std::string_view prefix)
 {
     const int first = lookAhead(name);
     if (eof == first)
@@ -213,23 +213,23 @@ bool Register::checkIfPositional(const std::string_view name, const std::string_
     return true;
 }
 
-//! @brief The operator (<<) overloading of the Register class.
+//! @brief The operator (<<) overloading of the Trait class.
 //! @param os - output stream object
-//! @param reg - specific Register object
+//! @param tra - specific Trait object
 //! @return reference of the output stream object
-std::ostream& operator<<(std::ostream& os, const Register& reg)
+std::ostream& operator<<(std::ostream& os, const Trait& tra)
 {
     std::ostringstream out{};
-    if (reg.checkIfPositional(reg.names.at(0), reg.prefixChars))
+    if (tra.checkIfPositional(tra.names.at(0), tra.prefixChars))
     {
-        out << (!reg.metavarCont.empty() ? reg.metavarCont : join(reg.names.cbegin(), reg.names.cend(), " "));
+        out << (!tra.metavarCont.empty() ? tra.metavarCont : join(tra.names.cbegin(), tra.names.cend(), " "));
     }
     else
     {
-        out << join(reg.names.cbegin(), reg.names.cend(), ", ");
-        if (!reg.metavarCont.empty() && (Register::ArgsNumRange{1, 1} == reg.argsNumRange))
+        out << join(tra.names.cbegin(), tra.names.cend(), ", ");
+        if (!tra.metavarCont.empty() && (Trait::ArgsNumRange{1, 1} == tra.argsNumRange))
         {
-            out << ' ' << reg.metavarCont;
+            out << ' ' << tra.metavarCont;
         }
     }
 
@@ -239,9 +239,9 @@ std::ostream& operator<<(std::ostream& os, const Register& reg)
 
     std::size_t pos = 0, prev = 0;
     bool firstLine = true;
-    const std::string_view helpView = reg.helpCont;
+    const std::string_view helpView = tra.helpCont;
     const char* tabSpace = "    ";
-    while (std::string::npos != (pos = reg.helpCont.find('\n', prev)))
+    while (std::string::npos != (pos = tra.helpCont.find('\n', prev)))
     {
         const auto line = helpView.substr(prev, pos - prev + 1);
         if (firstLine)
@@ -259,11 +259,11 @@ std::ostream& operator<<(std::ostream& os, const Register& reg)
 
     if (firstLine)
     {
-        os << tabSpace << reg.helpCont;
+        os << tabSpace << tra.helpCont;
     }
     else
     {
-        const auto remain = helpView.substr(prev, reg.helpCont.length() - prev);
+        const auto remain = helpView.substr(prev, tra.helpCont.length() - prev);
         if (!remain.empty())
         {
             os.width(streamWidth);
@@ -271,17 +271,17 @@ std::ostream& operator<<(std::ostream& os, const Register& reg)
         }
     }
 
-    if (!reg.helpCont.empty())
+    if (!tra.helpCont.empty())
     {
         os << ' ';
     }
-    os << reg.argsNumRange;
+    os << tra.argsNumRange;
 
-    if (reg.defaultVal.has_value() && (Register::ArgsNumRange{0, 0} != reg.argsNumRange))
+    if (tra.defaultVal.has_value() && (Trait::ArgsNumRange{0, 0} != tra.argsNumRange))
     {
-        os << "[default: " << reg.representedDefVal << ']';
+        os << "[default: " << tra.representedDefVal << ']';
     }
-    else if (reg.isRequired)
+    else if (tra.isRequired)
     {
         os << "[required]";
     }
@@ -337,7 +337,7 @@ Argument::operator bool() const
     return isParsed && (isArgUsed || isSubParserUsed);
 }
 
-Register& Argument::operator[](const std::string_view argName) const
+Trait& Argument::operator[](const std::string_view argName) const
 {
     auto iterator = argumentMap.find(argName);
     if (argumentMap.cend() != iterator)
@@ -465,18 +465,14 @@ char Argument::getAnyValidPrefixChar() const
 std::vector<std::string> Argument::preprocessArguments(const std::vector<std::string>& rawArguments) const
 {
     std::vector<std::string> arguments{};
+    const auto startWithPrefixChars = [this](const std::string_view str)
+    {
+        const auto legalPrefix = [this](const char c) { return prefixChars.find(c) != std::string::npos; };
+        return (str.length() > 1) ? (legalPrefix(str.at(0)) && legalPrefix(str.at(1))) : false;
+    };
+
     for (const auto& arg : rawArguments)
     {
-        const auto startWithPrefixChars = [this](const std::string_view str)
-        {
-            if (str.length() > 1)
-            {
-                const auto legalPrefix = [this](const char c) { return prefixChars.find(c) != std::string::npos; };
-                return legalPrefix(str.at(0)) && legalPrefix(str.at(1));
-            }
-            return false;
-        };
-
         if (const auto assignCharPos = arg.find_first_of(assignChars); (argumentMap.cend() == argumentMap.find(arg))
             && startWithPrefixChars(arg) && (std::string::npos != assignCharPos))
         {
@@ -506,7 +502,7 @@ void Argument::parseArgsInternal(const std::vector<std::string>& rawArguments)
     for (auto iterator = std::next(arguments.begin()); ending != iterator;)
     {
         const auto& currentArg = *iterator;
-        if (Register::checkIfPositional(currentArg, prefixChars))
+        if (Trait::checkIfPositional(currentArg, prefixChars))
         {
             if (positionalArgs.cend() != positionalArgIter)
             {
@@ -551,7 +547,7 @@ std::size_t Argument::getLengthOfLongestArgument() const
     return maxSize;
 }
 
-void Argument::indexArgument(const RegisterIter& iterator)
+void Argument::indexArgument(const TraitIter& iterator)
 {
     for (const auto& name : std::as_const(iterator->names))
     {
@@ -566,8 +562,6 @@ void Argument::indexArgument(const RegisterIter& iterator)
 std::ostream& operator<<(std::ostream& os, const Argument& arg)
 {
     os.setf(std::ios_base::left);
-    const auto longestArgLen = arg.getLengthOfLongestArgument();
-
     os << arg.usage() << "\n\n";
 
     if (!arg.descrText.empty())
@@ -579,6 +573,7 @@ std::ostream& operator<<(std::ostream& os, const Argument& arg)
     {
         os << "optional:\n";
     }
+    const auto longestArgLen = arg.getLengthOfLongestArgument();
     for (const auto& argument : arg.optionalArgs)
     {
         os.width(static_cast<std::streamsize>(longestArgLen));

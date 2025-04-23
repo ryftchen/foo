@@ -226,7 +226,7 @@ std::string Log::createLabelTemplate(const std::string_view srcFile, const std::
     return std::format(
         "[{}] {{}} [{}#{}] ",
         utility::time::currentSystemTime(),
-        (std::string_view::npos != srcFile.rfind(sourceDirectory))
+        (srcFile.rfind(sourceDirectory) != std::string_view::npos)
             ? srcFile.substr(srcFile.rfind(sourceDirectory) + sourceDirectory.length(), srcFile.length())
             : srcFile,
         srcLine);

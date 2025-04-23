@@ -442,10 +442,10 @@ inline consteval std::size_t abbrValue(const T method)
 // clang-format off
 //! @brief Mapping table for enum and string about arithmetic methods. X macro.
 #define REG_NUM_ARITHMETIC_METHOD_TABLE    \
-    ELEM(addition      , "addition"      ) \
-    ELEM(subtraction   , "subtraction"   ) \
-    ELEM(multiplication, "multiplication") \
-    ELEM(division      , "division"      )
+    X(addition      , "addition"      ) \
+    X(subtraction   , "subtraction"   ) \
+    X(multiplication, "multiplication") \
+    X(division      , "division"      )
 // clang-format on
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of ArithmeticMethod enum
@@ -453,20 +453,20 @@ inline consteval std::size_t abbrValue(const T method)
 inline constexpr std::string_view toString(const ArithmeticMethod method)
 {
 //! @cond
-#define ELEM(val, str) str,
+#define X(enum, name) name,
     constexpr std::string_view table[] = {REG_NUM_ARITHMETIC_METHOD_TABLE};
     static_assert((sizeof(table) / sizeof(table[0])) == Bottom<ArithmeticMethod>::value);
     return table[method];
 //! @endcond
-#undef ELEM
+#undef X
 }
 #undef REG_NUM_ARITHMETIC_METHOD_TABLE
 
 // clang-format off
 //! @brief Mapping table for enum and string about divisor methods. X macro.
 #define REG_NUM_DIVISOR_METHOD_TABLE \
-    ELEM(euclidean, "euclidean")     \
-    ELEM(stein    , "stein"    )
+    X(euclidean, "euclidean")     \
+    X(stein    , "stein"    )
 // clang-format on
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of DivisorMethod enum
@@ -474,23 +474,23 @@ inline constexpr std::string_view toString(const ArithmeticMethod method)
 inline constexpr std::string_view toString(const DivisorMethod method)
 {
 //! @cond
-#define ELEM(val, str) str,
+#define X(enum, name) name,
     constexpr std::string_view table[] = {REG_NUM_DIVISOR_METHOD_TABLE};
     static_assert((sizeof(table) / sizeof(table[0])) == Bottom<DivisorMethod>::value);
     return table[method];
 //! @endcond
-#undef ELEM
+#undef X
 }
 #undef REG_NUM_DIVISOR_METHOD_TABLE
 
 // clang-format off
 //! @brief Mapping table for enum and string about integral methods. X macro.
 #define REG_NUM_INTEGRAL_METHOD_TABLE \
-    ELEM(trapezoidal, "trapezoidal")  \
-    ELEM(simpson    , "simpson"    )  \
-    ELEM(romberg    , "romberg"    )  \
-    ELEM(gauss      , "gauss"      )  \
-    ELEM(monteCarlo , "monteCarlo" )
+    X(trapezoidal, "trapezoidal")  \
+    X(simpson    , "simpson"    )  \
+    X(romberg    , "romberg"    )  \
+    X(gauss      , "gauss"      )  \
+    X(monteCarlo , "monteCarlo" )
 // clang-format on
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of IntegralMethod enum
@@ -498,20 +498,20 @@ inline constexpr std::string_view toString(const DivisorMethod method)
 inline constexpr std::string_view toString(const IntegralMethod method)
 {
 //! @cond
-#define ELEM(val, str) str,
+#define X(enum, name) name,
     constexpr std::string_view table[] = {REG_NUM_INTEGRAL_METHOD_TABLE};
     static_assert((sizeof(table) / sizeof(table[0])) == Bottom<IntegralMethod>::value);
     return table[method];
 //! @endcond
-#undef ELEM
+#undef X
 }
 #undef REG_NUM_INTEGRAL_METHOD_TABLE
 
 // clang-format off
 //! @brief Mapping table for enum and string about prime methods. X macro.
 #define REG_NUM_PRIME_METHOD_TABLE     \
-    ELEM(eratosthenes, "eratosthenes") \
-    ELEM(euler       , "euler"       )
+    X(eratosthenes, "eratosthenes") \
+    X(euler       , "euler"       )
 // clang-format on
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of PrimeMethod enum
@@ -519,12 +519,12 @@ inline constexpr std::string_view toString(const IntegralMethod method)
 inline constexpr std::string_view toString(const PrimeMethod method)
 {
 //! @cond
-#define ELEM(val, str) str,
+#define X(enum, name) name,
     constexpr std::string_view table[] = {REG_NUM_PRIME_METHOD_TABLE};
     static_assert((sizeof(table) / sizeof(table[0])) == Bottom<PrimeMethod>::value);
     return table[method];
 //! @endcond
-#undef ELEM
+#undef X
 }
 #undef REG_NUM_PRIME_METHOD_TABLE
 } // namespace application::reg_num

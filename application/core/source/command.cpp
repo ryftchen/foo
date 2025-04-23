@@ -130,10 +130,10 @@ static action::Awaitable helperLifecycle()
 // clang-format off
 //! @brief Mapping table for enum and string about command categories. X macro.
 #define COMMAND_CATEGORY_TABLE \
-    ELEM(console, "console")   \
-    ELEM(dump   , "dump"   )   \
-    ELEM(help   , "help"   )   \
-    ELEM(version, "version")
+    X(console, "console")   \
+    X(dump   , "dump"   )   \
+    X(help   , "help"   )   \
+    X(version, "version")
 // clang-format on
 //! @brief Convert category enumeration to string.
 //! @param cat - the specific value of Category enum
@@ -141,43 +141,43 @@ static action::Awaitable helperLifecycle()
 static constexpr std::string_view toString(const Category cat)
 {
 //! @cond
-#define ELEM(val, str) str,
+#define X(enum, name) name,
     constexpr std::string_view table[] = {COMMAND_CATEGORY_TABLE};
     static_assert((sizeof(table) / sizeof(table[0])) == Bottom<Category>::value);
     return table[cat];
 //! @endcond
-#undef ELEM
+#undef X
 }
 #undef COMMAND_CATEGORY_TABLE
 
 // clang-format off
 //! @brief Mapping table for enum and attribute about command categories. X macro.
 #define COMMAND_CATEGORY_TABLE_ATTR                                                  \
-    ELEM(console, "run options in console mode and exit\nseparate with quotes", "c") \
-    ELEM(dump   , "dump default configuration and exit"                       , "d") \
-    ELEM(help   , "show help and exit"                                        , "h") \
-    ELEM(version, "show version and exit"                                     , "v")
+    X(console, "run options in console mode and exit\nseparate with quotes", "c") \
+    X(dump   , "dump default configuration and exit"                       , "d") \
+    X(help   , "show help and exit"                                        , "h") \
+    X(version, "show version and exit"                                     , "v")
 // clang-format on
 consteval std::string_view Command::getDescr(const Category cat)
 {
 //! @cond
-#define ELEM(val, str1, str2) {str1, str2},
+#define X(enum, descr, alias) {descr, alias},
     constexpr std::string_view table[][2] = {COMMAND_CATEGORY_TABLE_ATTR};
     static_assert((sizeof(table) / sizeof(table[0])) == Bottom<Category>::value);
     return table[cat][0];
 //! @endcond
-#undef ELEM
+#undef X
 }
 
 consteval std::string_view Command::getAlias(const Category cat)
 {
 //! @cond
-#define ELEM(val, str1, str2) {str1, str2},
+#define X(enum, descr, alias) {descr, alias},
     constexpr std::string_view table[][2] = {COMMAND_CATEGORY_TABLE_ATTR};
     static_assert((sizeof(table) / sizeof(table[0])) == Bottom<Category>::value);
     return table[cat][1];
 //! @endcond
-#undef ELEM
+#undef X
 }
 #undef COMMAND_CATEGORY_TABLE_ATTR
 
@@ -1042,7 +1042,7 @@ void Command::interactionLatency()
 
 void Command::validateDependenciesVersion() const
 {
-    const bool isNativeMatched = utility::common::allStrEqual(
+    const bool isNativeMatched = utility::common::areStringsEqual(
                    mainCLI.version().data(),
                    utility::argument::version(),
                    utility::common::version(),

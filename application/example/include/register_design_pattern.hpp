@@ -430,17 +430,17 @@ inline consteval std::size_t abbrValue(const T instance)
 // clang-format off
 //! @brief Mapping table for enum and string about behavioral instances. X macro.
 #define REG_DP_BEHAVIORAL_INSTANCE_TABLE                 \
-    ELEM(chainOfResponsibility, "chainOfResponsibility") \
-    ELEM(command              , "command"              ) \
-    ELEM(interpreter          , "interpreter"          ) \
-    ELEM(iterator             , "iterator"             ) \
-    ELEM(mediator             , "mediator"             ) \
-    ELEM(memento              , "memento"              ) \
-    ELEM(observer             , "observer"             ) \
-    ELEM(state                , "state"                ) \
-    ELEM(strategy             , "strategy"             ) \
-    ELEM(templateMethod       , "templateMethod"       ) \
-    ELEM(visitor              , "visitor"              )
+    X(chainOfResponsibility, "chainOfResponsibility") \
+    X(command              , "command"              ) \
+    X(interpreter          , "interpreter"          ) \
+    X(iterator             , "iterator"             ) \
+    X(mediator             , "mediator"             ) \
+    X(memento              , "memento"              ) \
+    X(observer             , "observer"             ) \
+    X(state                , "state"                ) \
+    X(strategy             , "strategy"             ) \
+    X(templateMethod       , "templateMethod"       ) \
+    X(visitor              , "visitor"              )
 // clang-format on
 //! @brief Convert instance enumeration to string.
 //! @param instance - the specific value of BehavioralInstance enum
@@ -448,23 +448,23 @@ inline consteval std::size_t abbrValue(const T instance)
 inline constexpr std::string_view toString(const BehavioralInstance instance)
 {
 //! @cond
-#define ELEM(val, str) str,
+#define X(enum, name) name,
     constexpr std::string_view table[] = {REG_DP_BEHAVIORAL_INSTANCE_TABLE};
     static_assert((sizeof(table) / sizeof(table[0])) == Bottom<BehavioralInstance>::value);
     return table[instance];
 //! @endcond
-#undef ELEM
+#undef X
 }
 #undef REG_DP_BEHAVIORAL_INSTANCE_TABLE
 
 // clang-format off
 //! @brief Mapping table for enum and string about creational instances. X macro.
 #define REG_DP_CREATIONAL_INSTANCE_TABLE     \
-    ELEM(abstractFactory, "abstractFactory") \
-    ELEM(builder        , "builder"        ) \
-    ELEM(factoryMethod  , "factoryMethod"  ) \
-    ELEM(prototype      , "prototype"      ) \
-    ELEM(singleton      , "singleton"      )
+    X(abstractFactory, "abstractFactory") \
+    X(builder        , "builder"        ) \
+    X(factoryMethod  , "factoryMethod"  ) \
+    X(prototype      , "prototype"      ) \
+    X(singleton      , "singleton"      )
 // clang-format on
 //! @brief Convert instance enumeration to string.
 //! @param instance - the specific value of CreationalInstance enum
@@ -472,25 +472,25 @@ inline constexpr std::string_view toString(const BehavioralInstance instance)
 inline constexpr std::string_view toString(const CreationalInstance instance)
 {
 //! @cond
-#define ELEM(val, str) str,
+#define X(enum, name) name,
     constexpr std::string_view table[] = {REG_DP_CREATIONAL_INSTANCE_TABLE};
     static_assert((sizeof(table) / sizeof(table[0])) == Bottom<CreationalInstance>::value);
     return table[instance];
 //! @endcond
-#undef ELEM
+#undef X
 }
 #undef REG_DP_CREATIONAL_INSTANCE_TABLE
 
 // clang-format off
 //! @brief Mapping table for enum and string about structural instances. X macro.
 #define REG_DP_STRUCTURAL_INSTANCE_TABLE \
-    ELEM(adapter  , "adapter"  )         \
-    ELEM(bridge   , "bridge"   )         \
-    ELEM(composite, "composite")         \
-    ELEM(decorator, "decorator")         \
-    ELEM(facade   , "facade"   )         \
-    ELEM(flyweight, "flyweight")         \
-    ELEM(proxy    , "proxy"    )
+    X(adapter  , "adapter"  )         \
+    X(bridge   , "bridge"   )         \
+    X(composite, "composite")         \
+    X(decorator, "decorator")         \
+    X(facade   , "facade"   )         \
+    X(flyweight, "flyweight")         \
+    X(proxy    , "proxy"    )
 // clang-format on
 //! @brief Convert instance enumeration to string.
 //! @param instance - the specific value of StructuralInstance enum
@@ -498,12 +498,12 @@ inline constexpr std::string_view toString(const CreationalInstance instance)
 inline constexpr std::string_view toString(const StructuralInstance instance)
 {
 //! @cond
-#define ELEM(val, str) str,
+#define X(enum, name) name,
     constexpr std::string_view table[] = {REG_DP_STRUCTURAL_INSTANCE_TABLE};
     static_assert((sizeof(table) / sizeof(table[0])) == Bottom<StructuralInstance>::value);
     return table[instance];
 //! @endcond
-#undef ELEM
+#undef X
 }
 #undef REG_DP_STRUCTURAL_INSTANCE_TABLE
 } // namespace application::reg_dp

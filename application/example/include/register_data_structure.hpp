@@ -307,9 +307,9 @@ inline consteval std::size_t abbrValue(const T instance)
 // clang-format off
 //! @brief Mapping table for enum and string about linear instances. X macro.
 #define REG_DS_LINEAR_INSTANCE_TABLE \
-    ELEM(linkedList, "linkedList")   \
-    ELEM(stack     , "stack"     )   \
-    ELEM(queue     , "queue"     )
+    X(linkedList, "linkedList")   \
+    X(stack     , "stack"     )   \
+    X(queue     , "queue"     )
 // clang-format on
 //! @brief Convert instance enumeration to string.
 //! @param instance - the specific value of LinearInstance enum
@@ -317,21 +317,21 @@ inline consteval std::size_t abbrValue(const T instance)
 inline constexpr std::string_view toString(const LinearInstance instance)
 {
 //! @cond
-#define ELEM(val, str) str,
+#define X(enum, name) name,
     constexpr std::string_view table[] = {REG_DS_LINEAR_INSTANCE_TABLE};
     static_assert((sizeof(table) / sizeof(table[0])) == Bottom<LinearInstance>::value);
     return table[instance];
 //! @endcond
-#undef ELEM
+#undef X
 }
 #undef REG_DS_LINEAR_INSTANCE_TABLE
 
 // clang-format off
 //! @brief Mapping table for enum and string about tree instances. X macro.
 #define REG_DS_TREE_INSTANCE_TABLE                   \
-    ELEM(binarySearch       , "binarySearch"       ) \
-    ELEM(adelsonVelskyLandis, "adelsonVelskyLandis") \
-    ELEM(splay              , "splay"              )
+    X(binarySearch       , "binarySearch"       ) \
+    X(adelsonVelskyLandis, "adelsonVelskyLandis") \
+    X(splay              , "splay"              )
 // clang-format on
 //! @brief Convert instance enumeration to string.
 //! @param instance - the specific value of TreeInstance enum
@@ -339,12 +339,12 @@ inline constexpr std::string_view toString(const LinearInstance instance)
 inline constexpr std::string_view toString(const TreeInstance instance)
 {
 //! @cond
-#define ELEM(val, str) str,
+#define X(enum, name) name,
     constexpr std::string_view table[] = {REG_DS_TREE_INSTANCE_TABLE};
     static_assert((sizeof(table) / sizeof(table[0])) == Bottom<TreeInstance>::value);
     return table[instance];
 //! @endcond
-#undef ELEM
+#undef X
 }
 #undef REG_DS_TREE_INSTANCE_TABLE
 } // namespace application::reg_ds
