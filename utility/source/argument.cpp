@@ -213,6 +213,32 @@ bool Trait::checkIfPositional(const std::string_view name, const std::string_vie
     return true;
 }
 
+//! @brief Join a series of strings into a single string using a separator.
+//! @tparam StrIter - type of iterator
+//! @param first - iterator pointing to the beginning of the range
+//! @param last - iterator pointing to the end of the range
+//! @param separator - separator to be used between strings
+//! @return joined string
+template <typename StrIter>
+static std::string join(StrIter first, StrIter last, const std::string_view separator)
+{
+    if (first == last)
+    {
+        return {};
+    }
+
+    std::ostringstream out{};
+    out << *first;
+    ++first;
+    while (first != last)
+    {
+        out << separator << *first;
+        ++first;
+    }
+
+    return std::move(out).str();
+}
+
 //! @brief The operator (<<) overloading of the Trait class.
 //! @param os - output stream object
 //! @param tra - specific Trait object

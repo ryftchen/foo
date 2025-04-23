@@ -75,124 +75,6 @@ struct HasStreamableTraits<T, std::void_t<decltype(std::declval<std::ostream&>()
 template <typename T>
 static constexpr bool isStreamable = HasStreamableTraits<T>::value;
 
-//! @brief Maximum container size for representing.
-constexpr std::size_t representMaxContainerSize = 5;
-
-//! @brief Represent target value.
-//! @tparam T - type of target value
-//! @param val - target value
-//! @return content to be represented
-template <typename T>
-std::string represent(const T& val)
-{
-    if constexpr (std::is_same_v<T, bool>)
-    {
-        return val ? "true" : "false";
-    }
-    else if constexpr (std::is_convertible_v<T, std::string_view>)
-    {
-        return '"' + val + '"';
-    }
-    else if constexpr (isContainer<T>)
-    {
-        std::ostringstream out{};
-        out << '{';
-        const auto size = val.size();
-        if (size > 1)
-        {
-            out << represent(*std::cbegin(val));
-            std::for_each(
-                std::next(std::cbegin(val)),
-                std::next(
-                    std::cbegin(val),
-                    static_cast<typename T::iterator::difference_type>(
-                        std::min<std::size_t>(size, representMaxContainerSize) - 1)),
-                [&out](const auto& v) { out << ' ' << represent(v); });
-            if (size <= representMaxContainerSize)
-            {
-                out << ' ';
-            }
-            else
-            {
-                out << " ... ";
-            }
-        }
-        if (size > 0)
-        {
-            out << represent(*std::prev(std::cend(val)));
-        }
-        out << '}';
-        return std::move(out).str();
-    }
-    else if constexpr (isStreamable<T>)
-    {
-        std::ostringstream out{};
-        out << val;
-        return std::move(out).str();
-    }
-    else
-    {
-        return " not representable ";
-    }
-}
-
-//! @brief Implementation of wrapping function calls that have scope.
-//! @tparam Func - type of callable function
-//! @tparam Tuple - type of bound arguments tuple
-//! @tparam Extra - type of extra option
-//! @tparam I - number of sequence which converted from bound arguments tuple
-//! @return wrapping of calls
-template <typename Func, typename Tuple, typename Extra, std::size_t... I>
-inline constexpr decltype(auto) applyScopedOneImpl(
-    Func&& func, Tuple&& tup, Extra&& ext, const std::index_sequence<I...>& /*sequence*/)
-{
-    return std::invoke(std::forward<Func>(func), std::get<I>(std::forward<Tuple>(tup))..., std::forward<Extra>(ext));
-}
-
-//! @brief Wrap function calls that have scope.
-//! @tparam Func - type of callable function
-//! @tparam Tuple - type of bound arguments tuple
-//! @tparam Extra - type of extra option
-//! @param func - callable function
-//! @param tup - bound arguments tuple
-//! @param ext - extra option
-//! @return wrapping of calls
-template <typename Func, typename Tuple, typename Extra>
-inline constexpr decltype(auto) applyScopedOne(Func&& func, Tuple&& tup, Extra&& ext)
-{
-    return applyScopedOneImpl(
-        std::forward<Func>(func),
-        std::forward<Tuple>(tup),
-        std::forward<Extra>(ext),
-        std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<Tuple>>>{});
-}
-
-//! @brief Join a series of strings into a single string using a separator.
-//! @tparam StrIter - type of iterator
-//! @param first - iterator pointing to the beginning of the range
-//! @param last - iterator pointing to the end of the range
-//! @param separator - separator to be used between strings
-//! @return joined string
-template <typename StrIter>
-std::string join(StrIter first, StrIter last, const std::string_view separator)
-{
-    if (first == last)
-    {
-        return {};
-    }
-
-    std::ostringstream out{};
-    out << *first;
-    ++first;
-    while (first != last)
-    {
-        out << separator << *first;
-        ++first;
-    }
-
-    return std::move(out).str();
-}
-
 //! @brief Enumerate specific argument patterns.
 enum class ArgsNumPattern : std::uint8_t
 {
@@ -353,6 +235,8 @@ private:
     static constexpr int eof{std::char_traits<char>::eof()};
     //! @brief Prefix characters.
     std::string prefixChars{};
+    //! @brief Maximum size for representing.
+    static constexpr std::size_t maxRepresentSize{5};
 
     //! @brief Indicate the range for the number of arguments.
     class ArgsNumRange
@@ -428,6 +312,35 @@ private:
         }
     } /** @brief The range for the number of arguments. */ argsNumRange{1, 1};
 
+    //! @brief Represent target value.
+    //! @tparam T - type of target value
+    //! @param val - target value
+    //! @return content to be represented
+    template <typename T>
+    static std::string represent(const T& val);
+    //! @brief Implementation of wrapping function calls that have scope.
+    //! @tparam Func - type of callable function
+    //! @tparam Tuple - type of bound arguments tuple
+    //! @tparam Extra - type of extra option
+    //! @tparam I - number of sequence which converted from bound arguments tuple
+    //! @param func - callable function
+    //! @param tup - bound arguments tuple
+    //! @param ext - extra option
+    //! @param seq - sequence which converted from bound arguments tuple
+    //! @return wrapping of calls
+    template <typename Func, typename Tuple, typename Extra, std::size_t... I>
+    static inline constexpr decltype(auto) applyScopedOneImpl(
+        Func&& func, Tuple&& tup, Extra&& ext, const std::index_sequence<I...>& seq);
+    //! @brief Wrap function calls that have scope.
+    //! @tparam Func - type of callable function
+    //! @tparam Tuple - type of bound arguments tuple
+    //! @tparam Extra - type of extra option
+    //! @param func - callable function
+    //! @param tup - bound arguments tuple
+    //! @param ext - extra option
+    //! @return wrapping of calls
+    template <typename Func, typename Tuple, typename Extra>
+    static inline constexpr decltype(auto) applyScopedOne(Func&& func, Tuple&& tup, Extra&& ext);
     //! @brief Throw an exception when ArgsNumRange is invalid.
     [[noreturn]] void throwArgsNumRangeValidationException() const;
     //! @brief Find the character in the argument.
@@ -604,6 +517,77 @@ Iterator Trait::consume(Iterator start, Iterator end, const std::string_view arg
     }
 
     throw std::runtime_error{"Too few arguments for '" + usedName + "'."};
+}
+
+template <typename T>
+std::string Trait::represent(const T& val)
+{
+    if constexpr (std::is_same_v<T, bool>)
+    {
+        return val ? "true" : "false";
+    }
+    else if constexpr (std::is_convertible_v<T, std::string_view>)
+    {
+        return '"' + val + '"';
+    }
+    else if constexpr (isContainer<T>)
+    {
+        std::ostringstream out{};
+        out << '{';
+        const auto size = val.size();
+        if (size > 1)
+        {
+            out << represent(*std::cbegin(val));
+            std::for_each(
+                std::next(std::cbegin(val)),
+                std::next(
+                    std::cbegin(val),
+                    static_cast<typename T::iterator::difference_type>(
+                        std::min<std::size_t>(size, maxRepresentSize) - 1)),
+                [&out](const auto& v) { out << ' ' << represent(v); });
+            if (size <= maxRepresentSize)
+            {
+                out << ' ';
+            }
+            else
+            {
+                out << " ... ";
+            }
+        }
+        if (size > 0)
+        {
+            out << represent(*std::prev(std::cend(val)));
+        }
+        out << '}';
+        return std::move(out).str();
+    }
+    else if constexpr (isStreamable<T>)
+    {
+        std::ostringstream out{};
+        out << val;
+        return std::move(out).str();
+    }
+    else
+    {
+        return " not representable ";
+    }
+}
+
+template <typename Func, typename Tuple, typename Extra, std::size_t... I>
+inline constexpr decltype(auto) Trait::applyScopedOneImpl(
+    Func&& func, Tuple&& tup, Extra&& ext, const std::index_sequence<I...>& /*seq*/)
+{
+    return std::invoke(std::forward<Func>(func), std::get<I>(std::forward<Tuple>(tup))..., std::forward<Extra>(ext));
+}
+
+template <typename Func, typename Tuple, typename Extra>
+inline constexpr decltype(auto) Trait::applyScopedOne(Func&& func, Tuple&& tup, Extra&& ext)
+{
+    return applyScopedOneImpl(
+        std::forward<Func>(func),
+        std::forward<Tuple>(tup),
+        std::forward<Extra>(ext),
+        std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<Tuple>>>{});
 }
 
 template <typename T>
