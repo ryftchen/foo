@@ -9,28 +9,28 @@
 #include <cstdio>
 #include <cstdlib>
 
-//! @brief Mark as unused.
-#define MACRO_UNUSED(param)       \
-    do                            \
-    {                             \
-        static_cast<void>(param); \
-    }                             \
+//! @brief Mark to ignore.
+#define MACRO_IGNORE(...)                       \
+    do                                          \
+    {                                           \
+        utility::macro::ignoreAll(__VA_ARGS__); \
+    }                                           \
     while (0)
+
+//! @brief Do stringification.
+#define MACRO_STRINGIFY(x) MACRO_STRINGIFY_OP(x)
+//! @brief The stringification operator.
+#define MACRO_STRINGIFY_OP(x) #x
+
+//! @brief Do concatenation.
+#define MACRO_CONCAT(x, y) MACRO_CONCAT_OP(x, y)
+//! @brief The concatenation operator.
+#define MACRO_CONCAT_OP(x, y) x##y
 
 //! @brief Always assert.
 #define MACRO_ASSERT(cond)                          \
     (static_cast<bool>(cond) ? static_cast<void>(0) \
                              : utility::macro::assertFailure(#cond, __FILE__, __LINE__, __func__))
-
-//! @brief Do stringify.
-#define MACRO_STRINGIFY(x) MACRO_INTERNAL_STRINGIFY(x)
-//! @brief Do stringify for internal use.
-#define MACRO_INTERNAL_STRINGIFY(x) #x
-
-//! @brief Do concatenation.
-#define MACRO_CONCAT(x, y) MACRO_INTERNAL_CONCAT(x, y)
-//! @brief Do concatenation for internal use.
-#define MACRO_INTERNAL_CONCAT(x, y) x##y
 
 //! @brief The utility module.
 namespace utility // NOLINT(modernize-concat-nested-namespaces)
@@ -39,6 +39,15 @@ namespace utility // NOLINT(modernize-concat-nested-namespaces)
 namespace macro
 {
 extern const char* version() noexcept;
+
+//! @brief Safely ignore all provided arguments.
+//! @tparam Args - type of all provided arguments
+//! @param args - all provided arguments
+template <typename... Args>
+[[gnu::always_inline]] inline constexpr void ignoreAll(Args&&... args)
+{
+    (static_cast<void>(args), ...);
+}
 
 //! @brief Assertion failed.
 //! @param expr - condition expression
