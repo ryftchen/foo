@@ -364,10 +364,10 @@ public:
     InputBuilder(const Function& function, const double range1, const double range2, const std::string_view funcDescr) :
         function{function}, range1{range1}, range2{range2}
     {
-        static_cast<void>(funcDescr);
 #ifdef __RUNTIME_PRINTING
         std::cout << "\nOptimal function:\n" << funcDescr << std::endl;
 #endif // __RUNTIME_PRINTING
+        static_cast<void>(funcDescr);
     }
     //! @brief Destroy the InputBuilder object.
     virtual ~InputBuilder() = default;
