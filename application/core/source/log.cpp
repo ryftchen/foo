@@ -16,8 +16,6 @@
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
 
-#include "utility/include/macro.hpp"
-
 namespace application::log
 {
 //! @brief Anonymous namespace.
@@ -62,7 +60,7 @@ void Log::service()
 retry:
     try
     {
-        MACRO_UNUSED(logStyle());
+        logStyle();
         assert(safeCurrentState() == State::init);
         safeProcessEvent(OpenFile{});
 

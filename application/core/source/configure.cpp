@@ -9,13 +9,12 @@
 #include "view.hpp"
 
 #ifndef __PRECOMPILED_HEADER
+#include <cassert>
 #include <filesystem>
 #include <iterator>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // __PRECOMPILED_HEADER
-
-#include "utility/include/macro.hpp"
 
 namespace application::configure
 {
@@ -252,7 +251,7 @@ utility::json::JSON getDefaultConfiguration()
     auto loggerRequired = utility::json::array();
     loggerRequired.append(
         field::filePath.data(), field::priorityLevel.data(), field::targetType.data(), field::writeMode.data());
-    MACRO_ASSERT(loggerProperties.size() == loggerRequired.length());
+    assert(loggerProperties.size() == loggerRequired.length());
 
     auto viewerProperties = utility::json::object();
     viewerProperties.at(field::tcpHost) = "localhost";
@@ -261,7 +260,7 @@ utility::json::JSON getDefaultConfiguration()
     viewerProperties.at(field::udpPort) = 61502;
     auto viewerRequired = utility::json::array();
     viewerRequired.append(field::tcpHost.data(), field::tcpPort.data(), field::udpHost.data(), field::udpPort.data());
-    MACRO_ASSERT(viewerProperties.size() == viewerRequired.length());
+    assert(viewerProperties.size() == viewerRequired.length());
 
     // clang-format off
     return utility::json::JSON
@@ -356,7 +355,7 @@ bool loadConfiguration(const std::string_view filename)
         {
             initializeConfiguration(filePath);
         }
-        MACRO_UNUSED(Configure::getInstance(filename));
+        Configure::getInstance(filename);
 
         return true;
     }
