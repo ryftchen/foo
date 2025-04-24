@@ -9,14 +9,6 @@
 #include <cstdio>
 #include <cstdlib>
 
-//! @brief Mark to ignore.
-#define MACRO_IGNORE(...)                       \
-    do                                          \
-    {                                           \
-        utility::macro::ignoreAll(__VA_ARGS__); \
-    }                                           \
-    while (0)
-
 //! @brief Do stringification.
 #define MACRO_STRINGIFY(x) MACRO_STRINGIFY_OP(x)
 //! @brief The stringification operator.
@@ -26,6 +18,14 @@
 #define MACRO_CONCAT(x, y) MACRO_CONCAT_OP(x, y)
 //! @brief The concatenation operator.
 #define MACRO_CONCAT_OP(x, y) x##y
+
+//! @brief Mark to ignore.
+#define MACRO_IGNORE(...)                       \
+    do                                          \
+    {                                           \
+        utility::macro::ignoreAll(__VA_ARGS__); \
+    }                                           \
+    while (0)
 
 //! @brief Always assert.
 #define MACRO_ASSERT(cond)                          \
@@ -44,7 +44,7 @@ extern const char* version() noexcept;
 //! @tparam Args - type of all provided arguments
 //! @param args - all provided arguments
 template <typename... Args>
-[[gnu::always_inline]] inline constexpr void ignoreAll(Args&&... args)
+inline constexpr void ignoreAll(Args&&... args)
 {
     (static_cast<void>(args), ...);
 }
@@ -54,8 +54,7 @@ template <typename... Args>
 //! @param file - file path
 //! @param line - line number
 //! @param func - function name
-[[gnu::always_inline]] inline void assertFailure(
-    const char* const expr, const char* const file, const int line, const char* const func)
+inline void assertFailure(const char* const expr, const char* const file, const int line, const char* const func)
 {
     std::fprintf(::stderr, "%s:%d: %s: Assertion '%s' failed.\n", file, line, func, expr);
     std::abort();
