@@ -303,10 +303,10 @@ public:
         const Expression& expression, const double range1, const double range2, const std::string_view exprDescr) :
         expression{expression}, range1{range1}, range2{range2}
     {
-        static_cast<void>(exprDescr);
 #ifdef __RUNTIME_PRINTING
         std::cout << "\nIntegral expression:\n" << exprDescr << std::endl;
 #endif // __RUNTIME_PRINTING
+        static_cast<void>(exprDescr);
     }
     //! @brief Destroy the InputBuilder object.
     virtual ~InputBuilder() = default;
