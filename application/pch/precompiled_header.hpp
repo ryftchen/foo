@@ -20,9 +20,9 @@
 #include <execinfo.h>
 #include <lz4.h>
 #include <mpfr.h>
-#if defined(__has_include) && __has_include(<ncurses.h>)
+#if __has_include(<ncurses.h>)
 #include <ncurses.h>
-#endif // defined(__has_include) && __has_include(<ncurses.h>)
+#endif // __has_include(<ncurses.h>)
 #include <algorithm>
 #include <array>
 #include <barrier>
