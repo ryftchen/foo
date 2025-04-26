@@ -8,7 +8,7 @@
 #include "data.hpp"
 #include "log.hpp"
 
-#ifndef __PRECOMPILED_HEADER
+#ifndef _PRECOMPILED_HEADER
 #include <openssl/evp.h>
 #include <readline/readline.h>
 #include <sys/shm.h>
@@ -23,7 +23,7 @@
 #include <numeric>
 #else
 #include "application/pch/precompiled_header.hpp"
-#endif // __PRECOMPILED_HEADER
+#endif // _PRECOMPILED_HEADER
 
 #include "utility/include/macro.hpp"
 

@@ -6,13 +6,13 @@
 
 #pragma once
 
-#ifndef __PRECOMPILED_HEADER
+#ifndef _PRECOMPILED_HEADER
 #include <netinet/in.h>
 #include <cstdint>
 #include <vector>
 #else
 #include "application/pch/precompiled_header.hpp"
-#endif // __PRECOMPILED_HEADER
+#endif // _PRECOMPILED_HEADER
 
 //! @brief The application module.
 namespace application // NOLINT(modernize-concat-nested-namespaces)

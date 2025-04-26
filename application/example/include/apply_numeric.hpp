@@ -6,13 +6,13 @@
 
 #pragma once
 
-#ifndef __PRECOMPILED_HEADER
+#ifndef _PRECOMPILED_HEADER
 #include <cmath>
 #include <iostream>
 #include <numeric>
 #else
 #include "application/pch/precompiled_header.hpp"
-#endif // __PRECOMPILED_HEADER
+#endif // _PRECOMPILED_HEADER
 
 #include "numeric/include/arithmetic.hpp"
 #include "numeric/include/divisor.hpp"
@@ -74,9 +74,9 @@ public:
     //! @param integer2 - second integer for elementary arithmetic
     InputBuilder(const std::int32_t integer1, const std::int32_t integer2) : integer1{integer1}, integer2{integer2}
     {
-#ifdef __RUNTIME_PRINTING
+#ifdef _RUNTIME_PRINTING
         std::cout << "\nElementary arithmetic of " << integer1 << " and " << integer2 << ':' << std::endl;
-#endif // __RUNTIME_PRINTING
+#endif // _RUNTIME_PRINTING
     }
     //! @brief Destroy the InputBuilder object.
     virtual ~InputBuilder() = default;
@@ -143,9 +143,9 @@ public:
     //! @param integer2 - second integer
     InputBuilder(const std::int32_t integer1, const std::int32_t integer2) : integer1{integer1}, integer2{integer2}
     {
-#ifdef __RUNTIME_PRINTING
+#ifdef _RUNTIME_PRINTING
         std::cout << "\nAll common divisors of " << integer1 << " and " << integer2 << ':' << std::endl;
-#endif // __RUNTIME_PRINTING
+#endif // _RUNTIME_PRINTING
     }
     //! @brief Destroy the InputBuilder object.
     virtual ~InputBuilder() = default;
@@ -303,9 +303,9 @@ public:
         const Expression& expression, const double range1, const double range2, const std::string_view exprDescr) :
         expression{expression}, range1{range1}, range2{range2}
     {
-#ifdef __RUNTIME_PRINTING
+#ifdef _RUNTIME_PRINTING
         std::cout << "\nIntegral expression:\n" << exprDescr << std::endl;
-#endif // __RUNTIME_PRINTING
+#endif // _RUNTIME_PRINTING
         static_cast<void>(exprDescr);
     }
     //! @brief Destroy the InputBuilder object.
@@ -370,9 +370,9 @@ public:
     //! @param maxPositiveInteger - maximum positive integer
     explicit InputBuilder(const std::uint32_t maxPositiveInteger) : maxPositiveInteger{maxPositiveInteger}
     {
-#ifdef __RUNTIME_PRINTING
+#ifdef _RUNTIME_PRINTING
         std::cout << "\nAll prime numbers smaller than " << maxPositiveInteger << ':' << std::endl;
-#endif // __RUNTIME_PRINTING
+#endif // _RUNTIME_PRINTING
     }
     //! @brief Destroy the InputBuilder object.
     virtual ~InputBuilder() = default;

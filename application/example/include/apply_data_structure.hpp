@@ -6,14 +6,14 @@
 
 #pragma once
 
-#ifndef __PRECOMPILED_HEADER
+#ifndef _PRECOMPILED_HEADER
 #include <algorithm>
 #include <cstdint>
 #include <span>
 #include <vector>
 #else
 #include "application/pch/precompiled_header.hpp"
-#endif // __PRECOMPILED_HEADER
+#endif // _PRECOMPILED_HEADER
 
 #include "data_structure/include/linear.hpp"
 #include "data_structure/include/tree.hpp"

@@ -8,13 +8,13 @@
 #include "command.hpp"
 #include "configure.hpp"
 
-#ifndef __PRECOMPILED_HEADER
+#ifndef _PRECOMPILED_HEADER
 #include <sys/prctl.h>
 #include <sys/wait.h>
 #include <iostream>
 #else
 #include "application/pch/precompiled_header.hpp"
-#endif // __PRECOMPILED_HEADER
+#endif // _PRECOMPILED_HEADER
 
 namespace application
 {

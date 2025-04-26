@@ -8,13 +8,13 @@
 
 #include "configure.hpp"
 
-#ifndef __PRECOMPILED_HEADER
+#ifndef _PRECOMPILED_HEADER
 #include <forward_list>
 #include <iostream>
 #include <source_location>
 #else
 #include "application/pch/precompiled_header.hpp"
-#endif // __PRECOMPILED_HEADER
+#endif // _PRECOMPILED_HEADER
 
 #include "utility/include/common.hpp"
 #include "utility/include/fsm.hpp"
