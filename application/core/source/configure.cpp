@@ -8,13 +8,13 @@
 #include "log.hpp"
 #include "view.hpp"
 
-#ifndef __PRECOMPILED_HEADER
+#ifndef _PRECOMPILED_HEADER
 #include <cassert>
 #include <filesystem>
 #include <iterator>
 #else
 #include "application/pch/precompiled_header.hpp"
-#endif // __PRECOMPILED_HEADER
+#endif // _PRECOMPILED_HEADER
 
 namespace application::configure
 {

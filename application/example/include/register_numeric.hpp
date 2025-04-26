@@ -6,12 +6,12 @@
 
 #pragma once
 
-#ifndef __PRECOMPILED_HEADER
+#ifndef _PRECOMPILED_HEADER
 #include <bitset>
 #include <functional>
 #else
 #include "application/pch/precompiled_header.hpp"
-#endif // __PRECOMPILED_HEADER
+#endif // _PRECOMPILED_HEADER
 
 #include "utility/include/common.hpp"
 #include "utility/include/macro.hpp"

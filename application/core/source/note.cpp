@@ -30,12 +30,12 @@ std::string compiler()
 //! @return processor
 std::string processor()
 {
-#ifdef __TARGET_PROCESSOR
-    return __TARGET_PROCESSOR;
+#ifdef _TARGET_PROCESSOR
+    return _TARGET_PROCESSOR;
 #else
 #pragma message("Unknown processor at compile time.")
     return "unknown processor";
-#endif // __TARGET_PROCESSOR
+#endif // _TARGET_PROCESSOR
 }
 
 //! @brief Build date of compiling.

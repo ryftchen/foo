@@ -6,7 +6,7 @@
 
 #include "log.hpp"
 
-#ifndef __PRECOMPILED_HEADER
+#ifndef _PRECOMPILED_HEADER
 #include <cassert>
 #include <filesystem>
 #include <fstream>
@@ -14,7 +14,7 @@
 #include <regex>
 #else
 #include "application/pch/precompiled_header.hpp"
-#endif // __PRECOMPILED_HEADER
+#endif // _PRECOMPILED_HEADER
 
 namespace application::log
 {

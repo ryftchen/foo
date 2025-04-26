@@ -6,7 +6,7 @@
 
 #include "data.hpp"
 
-#ifndef __PRECOMPILED_HEADER
+#ifndef _PRECOMPILED_HEADER
 #include <openssl/evp.h>
 #include <lz4.h>
 #include <array>
@@ -14,7 +14,7 @@
 #include <stdexcept>
 #else
 #include "application/pch/precompiled_header.hpp"
-#endif // __PRECOMPILED_HEADER
+#endif // _PRECOMPILED_HEADER
 
 namespace application::data
 {

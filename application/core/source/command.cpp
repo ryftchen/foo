@@ -8,7 +8,7 @@
 #include "log.hpp"
 #include "view.hpp"
 
-#ifndef __PRECOMPILED_HEADER
+#ifndef _PRECOMPILED_HEADER
 #include <barrier>
 #include <latch>
 #include <numeric>
@@ -16,7 +16,7 @@
 #include <thread>
 #else
 #include "application/pch/precompiled_header.hpp"
-#endif // __PRECOMPILED_HEADER
+#endif // _PRECOMPILED_HEADER
 
 #include "utility/include/currying.hpp"
 

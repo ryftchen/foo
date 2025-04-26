@@ -6,14 +6,14 @@
 
 #pragma once
 
-#ifndef __PRECOMPILED_HEADER
+#ifndef _PRECOMPILED_HEADER
 #include <mpfr.h>
 #include <cstring>
 #include <iostream>
 #include <memory>
 #else
 #include "application/pch/precompiled_header.hpp"
-#endif // __PRECOMPILED_HEADER
+#endif // _PRECOMPILED_HEADER
 
 #include "algorithm/include/match.hpp"
 #include "algorithm/include/notation.hpp"
@@ -175,7 +175,7 @@ private:
         {
             piText[textLen] = '\0';
             std::memcpy(text, piText, textLen * sizeof(unsigned char));
-#ifdef __RUNTIME_PRINTING
+#ifdef _RUNTIME_PRINTING
             std::string brief(text, text + textLen);
             if (textLen > 1)
             {
@@ -191,7 +191,7 @@ private:
                                   : brief.substr(maxNumPerLineOfPrint + 1, brief.length()))
                           << std::endl;
             }
-#endif // __RUNTIME_PRINTING
+#endif // _RUNTIME_PRINTING
         }
         ::mpfr_clear(operand);
         ::mpfr_free_str(piText);
@@ -243,9 +243,9 @@ public:
     //! @param infixNotation - infix notation
     explicit InputBuilder(const std::string_view infixNotation) : infixNotation{infixNotation}
     {
-#ifdef __RUNTIME_PRINTING
+#ifdef _RUNTIME_PRINTING
         std::cout << "\nInfix notation: " << infixNotation << std::endl;
-#endif // __RUNTIME_PRINTING
+#endif // _RUNTIME_PRINTING
     }
     //! @brief Destroy the InputBuilder object.
     virtual ~InputBuilder() = default;
@@ -364,9 +364,9 @@ public:
     InputBuilder(const Function& function, const double range1, const double range2, const std::string_view funcDescr) :
         function{function}, range1{range1}, range2{range2}
     {
-#ifdef __RUNTIME_PRINTING
+#ifdef _RUNTIME_PRINTING
         std::cout << "\nOptimal function:\n" << funcDescr << std::endl;
-#endif // __RUNTIME_PRINTING
+#endif // _RUNTIME_PRINTING
         static_cast<void>(funcDescr);
     }
     //! @brief Destroy the InputBuilder object.
@@ -568,12 +568,12 @@ private:
             array[i] = dist(engine);
         }
         std::sort(array, array + length);
-#ifdef __RUNTIME_PRINTING
+#ifdef _RUNTIME_PRINTING
         const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;
         std::vector<char> arrayBuffer(arrayBufferSize + 1);
         std::cout << "\nGenerate " << length << " ordered integral numbers from " << left << " to " << right << ":\n"
                   << spliceAll<T>(array, length, arrayBuffer.data(), arrayBufferSize + 1) << std::endl;
-#endif // __RUNTIME_PRINTING
+#endif // _RUNTIME_PRINTING
     }
     //! @brief Set the ordered array.
     //! @tparam N - the specific type of floating point
@@ -592,13 +592,13 @@ private:
             array[i] = dist(engine);
         }
         std::sort(array, array + length);
-#ifdef __RUNTIME_PRINTING
+#ifdef _RUNTIME_PRINTING
         const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;
         std::vector<char> arrayBuffer(arrayBufferSize + 1);
         std::cout << "\nGenerate " << length << " ordered floating point numbers from " << left << " to " << right
                   << ":\n"
                   << spliceAll<T>(array, length, arrayBuffer.data(), arrayBufferSize + 1) << std::endl;
-#endif // __RUNTIME_PRINTING
+#endif // _RUNTIME_PRINTING
     }
 };
 } // namespace search
@@ -803,12 +803,12 @@ private:
         {
             array[i] = dist(engine);
         }
-#ifdef __RUNTIME_PRINTING
+#ifdef _RUNTIME_PRINTING
         const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;
         std::vector<char> arrayBuffer(arrayBufferSize + 1);
         std::cout << "\nGenerate " << length << " random integral numbers from " << left << " to " << right << ":\n"
                   << spliceAll<T>(array, length, arrayBuffer.data(), arrayBufferSize + 1) << std::endl;
-#endif // __RUNTIME_PRINTING
+#endif // _RUNTIME_PRINTING
     }
     //! @brief Set the random array.
     //! @tparam N - the specific type of floating point
@@ -826,13 +826,13 @@ private:
         {
             array[i] = dist(engine);
         }
-#ifdef __RUNTIME_PRINTING
+#ifdef _RUNTIME_PRINTING
         const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;
         std::vector<char> arrayBuffer(arrayBufferSize + 1);
         std::cout << "\nGenerate " << length << " random floating point numbers from " << left << " to " << right
                   << ":\n"
                   << spliceAll<T>(array, length, arrayBuffer.data(), arrayBufferSize + 1) << std::endl;
-#endif // __RUNTIME_PRINTING
+#endif // _RUNTIME_PRINTING
     }
 };
 } // namespace sort

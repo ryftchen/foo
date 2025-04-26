@@ -7,7 +7,7 @@
 #include "console.hpp"
 #include "note.hpp"
 
-#ifndef __PRECOMPILED_HEADER
+#ifndef _PRECOMPILED_HEADER
 #include <readline/readline.h>
 #include <algorithm>
 #include <fstream>
@@ -16,7 +16,7 @@
 #include <ranges>
 #else
 #include "application/pch/precompiled_header.hpp"
-#endif // __PRECOMPILED_HEADER
+#endif // _PRECOMPILED_HEADER
 
 namespace application::console
 {

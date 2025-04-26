@@ -7,13 +7,13 @@
 #include "apply_design_pattern.hpp"
 #include "register_design_pattern.hpp"
 
-#ifndef __PRECOMPILED_HEADER
+#ifndef _PRECOMPILED_HEADER
 #include <cassert>
 #include <ranges>
 #include <syncstream>
 #else
 #include "application/pch/precompiled_header.hpp"
-#endif // __PRECOMPILED_HEADER
+#endif // _PRECOMPILED_HEADER
 
 #include "application/core/include/log.hpp"
 #include "utility/include/currying.hpp"

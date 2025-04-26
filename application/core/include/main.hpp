@@ -6,7 +6,7 @@
 
 #pragma once
 
-#ifndef __PRECOMPILED_HEADER
+#ifndef _PRECOMPILED_HEADER
 #include <cxxabi.h>
 #include <dlfcn.h>
 #include <execinfo.h>
@@ -14,7 +14,7 @@
 #include <filesystem>
 #else
 #include "application/pch/precompiled_header.hpp"
-#endif // __PRECOMPILED_HEADER
+#endif // _PRECOMPILED_HEADER
 
 //! @brief The application module.
 namespace application
