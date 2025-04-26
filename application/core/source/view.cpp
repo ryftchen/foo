@@ -15,9 +15,9 @@
 #include <sys/stat.h>
 #include <lz4.h>
 #include <mpfr.h>
-#if defined(__has_include) && __has_include(<ncurses.h>)
+#if __has_include(<ncurses.h>)
 #include <ncurses.h>
-#endif // defined(__has_include) && __has_include(<ncurses.h>)
+#endif // __has_include(<ncurses.h>)
 #include <cassert>
 #include <iterator>
 #include <numeric>
@@ -505,7 +505,7 @@ int View::buildTLVPacket4Stop(char* buf)
     int len = 0;
     if (tlv::encodeTLV(buf, len, tlv::TLVValue{.stopTag = true}) < 0)
     {
-        throw std::runtime_error{"Failed to build packet to stop"};
+        throw std::runtime_error{"Failed to build packet to stop."};
     }
     data::encryptMessage(buf, len);
 
