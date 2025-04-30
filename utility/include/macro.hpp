@@ -26,7 +26,7 @@
     {                                           \
         utility::macro::ignoreAll(__VA_ARGS__); \
     }                                           \
-    while (0)
+    while (false)
 
 //! @brief Always assert.
 #define MACRO_ASSERT(expr) \

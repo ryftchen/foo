@@ -239,7 +239,7 @@ private:
         virtual inline void reset() = 0;
     };
     //! @brief Manage native categories.
-    class NativeManager : virtual public TaskManager // NOLINT(fuchsia-virtual-inheritance)
+    class NativeManager : virtual public TaskManager
     {
     public:
         //! @brief Bit flags for managing native categories.
@@ -252,7 +252,7 @@ private:
         inline void reset() override { nativeCategories.reset(); }
     };
     //! @brief Manage extra choices of sub-cli.
-    class ExtraManager : virtual public TaskManager // NOLINT(fuchsia-virtual-inheritance)
+    class ExtraManager : virtual public TaskManager
     {
     public:
         //! @brief Wrap interfaces to check for existing and reset extra choices.

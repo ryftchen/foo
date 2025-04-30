@@ -133,6 +133,7 @@ bool Context::get(const std::string_view expr)
     return vars[expr.data()];
 }
 
+// NOLINTNEXTLINE(performance-unnecessary-value-param)
 bool AbstractExpression::interpret(const std::shared_ptr<Context> /*context*/)
 {
     return false;
@@ -165,11 +166,10 @@ std::ostringstream& output()
 
 namespace iterator
 {
-ConcreteAggregate::ConcreteAggregate(const std::uint32_t size)
+ConcreteAggregate::ConcreteAggregate(const std::uint32_t size) : count{size}
 {
     list = std::make_unique<int[]>(size);
     std::fill(list.get(), list.get() + size, 1);
-    count = size;
 }
 
 ConcreteAggregate::~ConcreteAggregate()
@@ -301,7 +301,7 @@ int Originator::getState() const
     return state;
 }
 
-void Originator::setMemento(const std::shared_ptr<Memento> memento)
+void Originator::setMemento(const std::shared_ptr<Memento>& memento)
 {
     state = memento->getState();
 }

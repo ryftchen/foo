@@ -361,8 +361,8 @@ public:
     //! @param range1 - left endpoint
     //! @param range2 - right endpoint
     //! @param funcDescr - function description
-    InputBuilder(const Function& function, const double range1, const double range2, const std::string_view funcDescr) :
-        function{function}, range1{range1}, range2{range2}
+    InputBuilder(Function function, const double range1, const double range2, const std::string_view funcDescr) :
+        function{std::move(function)}, range1{range1}, range2{range2}
     {
 #ifdef _RUNTIME_PRINTING
         std::cout << "\nOptimal function:\n" << funcDescr << std::endl;

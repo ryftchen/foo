@@ -14,7 +14,6 @@
 
 namespace utility::socket
 {
-// NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
 //! @brief Function version number.
 //! @return version number (major.minor.patch)
 const char* version() noexcept
@@ -23,6 +22,15 @@ const char* version() noexcept
     return ver;
 }
 
+//! @brief Get the errno string safely.
+//! @return errno string
+static std::string errnoString()
+{
+    char buffer[64] = {'\0'};
+    return !::strerror_r(errno, buffer, sizeof(buffer)) ? std::string{buffer} : "Unknown error";
+}
+
+// NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
 Socket::Socket(const Type socketType, const int socketId)
 {
     ::pthread_spin_init(&sockLock, ::PTHREAD_PROCESS_PRIVATE);
@@ -33,7 +41,7 @@ Socket::Socket(const Type socketType, const int socketId)
         spinUnlock();
         if (-1 == sock)
         {
-            throw std::runtime_error{"Socket creation error, errno: " + std::string{std::strerror(errno)} + '.'};
+            throw std::runtime_error{"Socket creation error, errno: " + errnoString() + '.'};
         }
     }
     else
@@ -128,8 +136,7 @@ void TCPSocket::toConnect(const std::string_view ip, const std::uint16_t port, c
     if (const int status = ::getaddrinfo(ip.data(), nullptr, &hints, &addrInfo); 0 != status)
     {
         throw std::runtime_error{
-            "Invalid address, status: " + std::string{::gai_strerror(status)}
-            + ", errno: " + std::string{std::strerror(errno)} + '.'};
+            "Invalid address, status: " + std::string{::gai_strerror(status)} + ", errno: " + errnoString() + '.'};
     }
 
     for (const ::addrinfo* entry = addrInfo; nullptr != entry; entry = entry->ai_next)
@@ -150,7 +157,7 @@ void TCPSocket::toConnect(const std::string_view ip, const std::uint16_t port, c
     spinUnlock();
     if (-1 == status)
     {
-        throw std::runtime_error{"Failed to connect to the socket, errno: " + std::string{std::strerror(errno)} + '.'};
+        throw std::runtime_error{"Failed to connect to the socket, errno: " + errnoString() + '.'};
     }
 
     onConnected();
@@ -169,7 +176,7 @@ void TCPSocket::toReceive(const bool toDetach)
     }
 }
 
-void TCPSocket::toRecv(const std::shared_ptr<TCPSocket> socket)
+void TCPSocket::toRecv(const std::shared_ptr<TCPSocket> socket) // NOLINT(performance-unnecessary-value-param)
 {
     char tempBuffer[bufferSize];
     tempBuffer[0] = '\0';
@@ -178,12 +185,12 @@ void TCPSocket::toRecv(const std::shared_ptr<TCPSocket> socket)
     pollFDs.at(0).events = POLLIN;
     for (constexpr int timeout = 10; !socket->shouldExit();)
     {
-        if (const int status = ::poll(pollFDs.data(), pollFDs.size(), timeout); -1 == status)
+        const int status = ::poll(pollFDs.data(), pollFDs.size(), timeout);
+        if (-1 == status)
         {
-            throw std::runtime_error{
-                "Not the expected wait result for poll, errno: " + std::string{std::strerror(errno)} + '.'};
+            throw std::runtime_error{"Not the expected wait result for poll, errno: " + errnoString() + '.'};
         }
-        else if (0 == status)
+        if (0 == status)
         {
             continue;
         }
@@ -228,15 +235,14 @@ void TCPServer::toBind(const std::string_view ip, const std::uint16_t port)
 {
     if (::inet_pton(AF_INET, ip.data(), &sockAddr.sin_addr) == -1)
     {
-        throw std::runtime_error{
-            "Invalid address, address type is not supported, errno: " + std::string{std::strerror(errno)} + '.'};
+        throw std::runtime_error{"Invalid address, address type is not supported, errno: " + errnoString() + '.'};
     }
 
     sockAddr.sin_family = AF_INET;
     sockAddr.sin_port = ::htons(port);
     if (::bind(sock, reinterpret_cast<const ::sockaddr*>(&sockAddr), sizeof(sockAddr)) == -1)
     {
-        throw std::runtime_error{"Failed to bind the socket, errno: " + std::string{std::strerror(errno)} + '.'};
+        throw std::runtime_error{"Failed to bind the socket, errno: " + errnoString() + '.'};
     }
 }
 
@@ -249,8 +255,7 @@ void TCPServer::toListen()
 {
     if (constexpr int retryTimes = 10; ::listen(sock, retryTimes) == -1)
     {
-        throw std::runtime_error{
-            "Server could not listen on the socket, errno: " + std::string{std::strerror(errno)} + '.'};
+        throw std::runtime_error{"Server could not listen on the socket, errno: " + errnoString() + '.'};
     }
 }
 
@@ -282,7 +287,7 @@ void TCPServer::toAccept(const bool toDetach)
     }
 }
 
-void TCPServer::toAccept(const std::shared_ptr<TCPServer> server)
+void TCPServer::toAccept(const std::shared_ptr<TCPServer> server) // NOLINT(performance-unnecessary-value-param)
 {
     ::sockaddr_in newSockAddr{};
     ::socklen_t newSockAddrLen = sizeof(newSockAddr);
@@ -299,8 +304,7 @@ void TCPServer::toAccept(const std::shared_ptr<TCPServer> server)
                 return;
             }
 
-            throw std::runtime_error{
-                "Error while accepting a new connection, errno: " + std::string{std::strerror(errno)} + '.'};
+            throw std::runtime_error{"Error while accepting a new connection, errno: " + errnoString() + '.'};
         }
 
         auto newSocket = std::make_shared<TCPSocket>(newSock);
@@ -323,8 +327,7 @@ int UDPSocket::toSendTo(
     if (const int status = ::getaddrinfo(ip.data(), nullptr, &hints, &addrInfo); 0 != status)
     {
         throw std::runtime_error{
-            "Invalid address, status: " + std::string{::gai_strerror(status)}
-            + ", errno: " + std::string{std::strerror(errno)} + '.'};
+            "Invalid address, status: " + std::string{::gai_strerror(status)} + ", errno: " + errnoString() + '.'};
     }
 
     for (const ::addrinfo* entry = addrInfo; nullptr != entry; entry = entry->ai_next)
@@ -342,8 +345,7 @@ int UDPSocket::toSendTo(
     const int sent = ::sendto(sock, bytes, length, 0, reinterpret_cast<::sockaddr*>(&addr), sizeof(addr));
     if (-1 == sent)
     {
-        throw std::runtime_error{
-            "Unable to send message to address, errno: " + std::string{std::strerror(errno)} + '.'};
+        throw std::runtime_error{"Unable to send message to address, errno: " + errnoString() + '.'};
     }
 
     return sent;
@@ -373,8 +375,7 @@ void UDPSocket::toConnect(const std::string_view ip, const std::uint16_t port)
     if (const int status = ::getaddrinfo(ip.data(), nullptr, &hints, &addrInfo); 0 != status)
     {
         throw std::runtime_error{
-            "Invalid address, status: " + std::string{::gai_strerror(status)}
-            + ", errno: " + std::string{std::strerror(errno)} + '.'};
+            "Invalid address, status: " + std::string{::gai_strerror(status)} + ", errno: " + errnoString() + '.'};
     }
 
     for (const ::addrinfo* entry = addrInfo; nullptr != entry; entry = entry->ai_next)
@@ -395,7 +396,7 @@ void UDPSocket::toConnect(const std::string_view ip, const std::uint16_t port)
     spinUnlock();
     if (-1 == status)
     {
-        throw std::runtime_error{"Failed to connect to the socket, errno: " + std::string{std::strerror(errno)} + '.'};
+        throw std::runtime_error{"Failed to connect to the socket, errno: " + errnoString() + '.'};
     }
 }
 
@@ -424,7 +425,7 @@ void UDPSocket::toReceiveFrom(const bool toDetach)
     }
 }
 
-void UDPSocket::toRecv(const std::shared_ptr<UDPSocket> socket)
+void UDPSocket::toRecv(const std::shared_ptr<UDPSocket> socket) // NOLINT(performance-unnecessary-value-param)
 {
     char tempBuffer[bufferSize];
     tempBuffer[0] = '\0';
@@ -433,12 +434,12 @@ void UDPSocket::toRecv(const std::shared_ptr<UDPSocket> socket)
     pollFDs.at(0).events = POLLIN;
     for (constexpr int timeout = 10; !socket->shouldExit();)
     {
-        if (const int status = ::poll(pollFDs.data(), pollFDs.size(), timeout); -1 == status)
+        const int status = ::poll(pollFDs.data(), pollFDs.size(), timeout);
+        if (-1 == status)
         {
-            throw std::runtime_error{
-                "Not the expected wait result for poll, errno: " + std::string{std::strerror(errno)} + '.'};
+            throw std::runtime_error{"Not the expected wait result for poll, errno: " + errnoString() + '.'};
         }
-        else if (0 == status)
+        if (0 == status)
         {
             continue;
         }
@@ -467,7 +468,7 @@ void UDPSocket::toRecv(const std::shared_ptr<UDPSocket> socket)
     }
 }
 
-void UDPSocket::toRecvFrom(const std::shared_ptr<UDPSocket> socket)
+void UDPSocket::toRecvFrom(const std::shared_ptr<UDPSocket> socket) // NOLINT(performance-unnecessary-value-param)
 {
     ::sockaddr_in addr{};
     ::socklen_t hostAddrSize = sizeof(addr);
@@ -479,12 +480,12 @@ void UDPSocket::toRecvFrom(const std::shared_ptr<UDPSocket> socket)
     pollFDs.at(0).events = POLLIN;
     for (constexpr int timeout = 10; !socket->shouldExit();)
     {
-        if (const int status = ::poll(pollFDs.data(), pollFDs.size(), timeout); -1 == status)
+        const int status = ::poll(pollFDs.data(), pollFDs.size(), timeout);
+        if (-1 == status)
         {
-            throw std::runtime_error{
-                "Not the expected wait result for poll, errno: " + std::string{std::strerror(errno)} + '.'};
+            throw std::runtime_error{"Not the expected wait result for poll, errno: " + errnoString() + '.'};
         }
-        else if (0 == status)
+        if (0 == status)
         {
             continue;
         }
@@ -517,15 +518,14 @@ void UDPServer::toBind(const std::string_view ip, const std::uint16_t port)
 {
     if (::inet_pton(AF_INET, ip.data(), &sockAddr.sin_addr) == -1)
     {
-        throw std::runtime_error{
-            "Invalid address, address type is not supported, errno: " + std::string{std::strerror(errno)} + '.'};
+        throw std::runtime_error{"Invalid address, address type is not supported, errno: " + errnoString() + '.'};
     }
 
     sockAddr.sin_family = AF_INET;
     sockAddr.sin_port = ::htons(port);
     if (::bind(sock, reinterpret_cast<const ::sockaddr*>(&sockAddr), sizeof(sockAddr)) == -1)
     {
-        throw std::runtime_error{"Failed to bind the socket, errno: " + std::string{std::strerror(errno)} + '.'};
+        throw std::runtime_error{"Failed to bind the socket, errno: " + errnoString() + '.'};
     }
 }
 

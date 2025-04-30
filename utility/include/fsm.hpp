@@ -491,7 +491,7 @@ inline void FSM<Derived, State>::processEvent(const Event& event)
     using Rows = typename ByEventType<Event, typename Derived::TransitionTable>::Type;
     ProcedureLock lock(*this);
     static_assert(std::is_base_of_v<FSM, Derived>);
-    Derived& self = static_cast<Derived&>(*this);
+    auto& self = static_cast<Derived&>(*this);
     state = handleEvent<Event, Rows>::execute(self, event, state);
 }
 

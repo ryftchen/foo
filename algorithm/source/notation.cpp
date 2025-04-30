@@ -23,15 +23,15 @@ std::string Notation::prefix(const std::string_view infix)
 {
     std::string preprocess(infix);
     std::reverse(preprocess.begin(), preprocess.end());
-    for (std::uint32_t i = 0; i < preprocess.length(); ++i)
+    for (auto& c : preprocess)
     {
-        if ('(' == preprocess[i])
+        if ('(' == c)
         {
-            preprocess[i] = ')';
+            c = ')';
         }
-        else if (')' == preprocess[i])
+        else if (')' == c)
         {
-            preprocess[i] = '(';
+            c = '(';
         }
     }
     std::string notation(infixToPostfix(preprocess));
@@ -50,17 +50,17 @@ std::string Notation::infixToPostfix(const std::string_view infix)
     std::string postfix{};
     std::stack<char> charStack{};
 
-    for (std::uint32_t i = 0; i < infix.length(); ++i)
+    for (auto c : infix)
     {
-        if (!isOperator(infix[i]))
+        if (!isOperator(c))
         {
-            postfix += infix[i];
+            postfix += c;
         }
-        else if ('(' == infix[i])
+        else if ('(' == c)
         {
             charStack.push('(');
         }
-        else if (')' == infix[i])
+        else if (')' == c)
         {
             while ('(' != charStack.top())
             {
@@ -71,12 +71,12 @@ std::string Notation::infixToPostfix(const std::string_view infix)
         }
         else
         {
-            while (!charStack.empty() && (getPriority(infix[i]) <= getPriority(charStack.top())))
+            while (!charStack.empty() && (getPriority(c) <= getPriority(charStack.top())))
             {
                 postfix += charStack.top();
                 charStack.pop();
             }
-            charStack.push(infix[i]);
+            charStack.push(c);
         }
     }
 

@@ -55,6 +55,7 @@ Log& Log::getInstance()
     throw std::logic_error{"The " + std::string{name} + " is disabled."};
 }
 
+// NOLINTBEGIN(cppcoreguidelines-avoid-goto)
 void Log::service()
 {
 retry:
@@ -73,7 +74,7 @@ retry:
         if (toReset.load())
         {
             safeProcessEvent(Relaunch{});
-            goto retry; // NOLINT(cppcoreguidelines-avoid-goto,hicpp-avoid-goto)
+            goto retry;
         }
         safeProcessEvent(CloseFile{});
 
@@ -90,10 +91,11 @@ retry:
         if (awaitNotification2Retry())
         {
             safeProcessEvent(Relaunch{});
-            goto retry; // NOLINT(cppcoreguidelines-avoid-goto,hicpp-avoid-goto)
+            goto retry;
         }
     }
 }
+// NOLINTEND(cppcoreguidelines-avoid-goto)
 
 void Log::Access::startup() const
 try
@@ -319,7 +321,7 @@ bool Log::isInServingState(const State state) const
 
 std::string Log::getFullLogPath(const std::string_view filename)
 {
-    const char* const processHome = std::getenv("FOO_HOME");
+    const char* const processHome = std::getenv("FOO_HOME"); // NOLINT(concurrency-mt-unsafe)
     if (!processHome)
     {
         throw std::runtime_error{"The environment variable FOO_HOME is not set."};
@@ -364,7 +366,7 @@ void Log::backUpLogFileIfNeeded() const
 
 void Log::openLogFile()
 {
-    utility::common::LockGuard guard(fileLock, LockMode::write);
+    const utility::common::LockGuard guard(fileLock, LockMode::write);
     tryCreateLogFolder();
     backUpLogFileIfNeeded();
     switch (writeMode)
@@ -382,7 +384,7 @@ void Log::openLogFile()
 
 void Log::closeLogFile()
 {
-    utility::common::LockGuard guard(fileLock, LockMode::write);
+    const utility::common::LockGuard guard(fileLock, LockMode::write);
     logWriter.unlock();
     logWriter.close();
 }
@@ -477,7 +479,7 @@ void Log::awaitNotification2Log()
             break;
         }
 
-        utility::common::LockGuard guard(fileLock, LockMode::write);
+        const utility::common::LockGuard guard(fileLock, LockMode::write);
         while (!logQueue.empty())
         {
             switch (targetType)

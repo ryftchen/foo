@@ -21,14 +21,14 @@
 //! @brief Title of printing when algorithm tasks are beginning.
 #define APP_ALGO_PRINT_TASK_BEGIN_TITLE(category)                                                                     \
     std::osyncstream(std::cout) << "\nALGORITHM TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
-                                << std::setw(50) << category << "BEGIN" << std::resetiosflags(std::ios_base::left)    \
+                                << std::setw(50) << (category) << "BEGIN" << std::resetiosflags(std::ios_base::left)  \
                                 << std::setfill(' ') << std::endl;                                                    \
     {
 //! @brief Title of printing when algorithm tasks are ending.
 #define APP_ALGO_PRINT_TASK_END_TITLE(category)                                                                       \
     }                                                                                                                 \
     std::osyncstream(std::cout) << "\nALGORITHM TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
-                                << std::setw(50) << category << "END" << std::resetiosflags(std::ios_base::left)      \
+                                << std::setw(50) << (category) << "END" << std::resetiosflags(std::ios_base::left)    \
                                 << std::setfill(' ') << '\n'                                                          \
                                 << std::endl;
 

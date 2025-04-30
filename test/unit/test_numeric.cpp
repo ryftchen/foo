@@ -10,9 +10,9 @@
 #include "application/example/include/apply_numeric.hpp"
 
 //! @brief Title of printing for numeric task tests.
-#define TST_NUM_PRINT_TASK_TITLE(category, state)                                                                 \
-    std::osyncstream(std::cout) << "TEST NUMERIC: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
-                                << std::setw(50) << category << state << std::resetiosflags(std::ios_base::left)  \
+#define TST_NUM_PRINT_TASK_TITLE(category, state)                                                                    \
+    std::osyncstream(std::cout) << "TEST NUMERIC: " << std::setiosflags(std::ios_base::left) << std::setfill('.')    \
+                                << std::setw(50) << (category) << (state) << std::resetiosflags(std::ios_base::left) \
                                 << std::setfill(' ') << std::endl;
 
 //! @brief The test module.
@@ -33,13 +33,13 @@ public:
     ~ArithmeticTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase()
+    static void SetUpTestSuite()
     {
         TST_NUM_PRINT_TASK_TITLE("ARITHMETIC", "BEGIN");
         inputs = std::make_shared<arithmetic::InputBuilder>(arithmetic::input::integerA, arithmetic::input::integerB);
     }
     //! @brief Tear down the test case.
-    static void TearDownTestCase()
+    static void TearDownTestSuite()
     {
         TST_NUM_PRINT_TASK_TITLE("ARITHMETIC", "END");
         inputs.reset();
@@ -90,13 +90,13 @@ public:
     ~DivisorTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase()
+    static void SetUpTestSuite()
     {
         TST_NUM_PRINT_TASK_TITLE("DIVISOR", "BEGIN");
         inputs = std::make_shared<divisor::InputBuilder>(divisor::input::integerA, divisor::input::integerB);
     }
     //! @brief Tear down the test case.
-    static void TearDownTestCase()
+    static void TearDownTestSuite()
     {
         TST_NUM_PRINT_TASK_TITLE("DIVISOR", "END");
         inputs.reset();
@@ -137,7 +137,7 @@ public:
     ~IntegralTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase()
+    static void SetUpTestSuite()
     {
         TST_NUM_PRINT_TASK_TITLE("INTEGRAL", "BEGIN");
         using Griewank = integral::input::Griewank;
@@ -145,7 +145,7 @@ public:
             Griewank{}, Griewank::range1, Griewank::range2, Griewank::exprDescr);
     }
     //! @brief Tear down the test case.
-    static void TearDownTestCase()
+    static void TearDownTestSuite()
     {
         TST_NUM_PRINT_TASK_TITLE("INTEGRAL", "END");
         inputs.reset();
@@ -237,13 +237,13 @@ public:
     ~PrimeTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase()
+    static void SetUpTestSuite()
     {
         TST_NUM_PRINT_TASK_TITLE("PRIME", "BEGIN");
         inputs = std::make_shared<prime::InputBuilder>(prime::input::maxPositiveInteger);
     }
     //! @brief Tear down the test case.
-    static void TearDownTestCase()
+    static void TearDownTestSuite()
     {
         TST_NUM_PRINT_TASK_TITLE("PRIME", "END");
         inputs.reset();

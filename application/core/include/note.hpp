@@ -33,8 +33,8 @@ inline constexpr std::string_view copyright()
 }
 
 //! @brief ASCII icon banner.
-//! @return ASCII icon
-inline constexpr std::string_view icon()
+//! @return icon banner
+inline constexpr std::string_view iconBanner()
 {
     // clang-format off
     return R"(  ______   ______     ______    )" "\n"

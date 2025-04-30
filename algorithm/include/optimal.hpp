@@ -50,7 +50,7 @@ class Gradient : public Optimal
 public:
     //! @brief Construct a new Gradient object.
     //! @param func - target function
-    explicit Gradient(const Function& func) : func{func} {}
+    explicit Gradient(Function func) : func{std::move(func)} {}
 
     //! @brief The operator (()) overloading of Gradient class.
     //! @param left - left endpoint
@@ -88,7 +88,7 @@ class Tabu : public Optimal
 public:
     //! @brief Construct a new Tabu object.
     //! @param func - target function
-    explicit Tabu(const Function& func) : func{func} {}
+    explicit Tabu(Function func) : func{std::move(func)} {}
 
     //! @brief The operator (()) overloading of Tabu class.
     //! @param left - left endpoint
@@ -139,7 +139,7 @@ class Annealing : public Optimal
 public:
     //! @brief Construct a new Annealing object.
     //! @param func - target function
-    explicit Annealing(const Function& func) : func{func} {}
+    explicit Annealing(Function func) : func{std::move(func)} {}
 
     //! @brief The operator (()) overloading of Annealing class.
     //! @param left - left endpoint
@@ -184,7 +184,7 @@ class Particle : public Optimal
 public:
     //! @brief Construct a new Particle object.
     //! @param func - target function
-    explicit Particle(const Function& func) : func{func} {}
+    explicit Particle(Function func) : func{std::move(func)} {}
 
     //! @brief The operator (()) overloading of Particle class.
     //! @param left - left endpoint
@@ -270,7 +270,7 @@ class Ant : public Optimal
 public:
     //! @brief Construct a new Ant object.
     //! @param func - target function
-    explicit Ant(const Function& func) : func{func} {}
+    explicit Ant(Function func) : func{std::move(func)} {}
 
     //! @brief The operator (()) overloading of Ant class.
     //! @param left - left endpoint
@@ -338,7 +338,7 @@ class Genetic : public Optimal
 public:
     //! @brief Construct a new Genetic object.
     //! @param func - target function
-    explicit Genetic(const Function& func) : func{func} {}
+    explicit Genetic(Function func) : func{std::move(func)} {}
 
     //! @brief The operator (()) overloading of Genetic class.
     //! @param left - left endpoint
@@ -358,7 +358,7 @@ private:
     //! @brief Crossover probability.
     static constexpr double crossPr{0.7};
     //! @brief Mutation probability.
-    static constexpr double mutatePr{0.01};
+    static constexpr double mutatePr{0.001};
     //! @brief Population size.
     static constexpr std::uint32_t popSize{500};
     //! @brief Number of generations.

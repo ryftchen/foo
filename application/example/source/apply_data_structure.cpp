@@ -21,14 +21,14 @@
 //! @brief Title of printing when data structure tasks are beginning.
 #define APP_DS_PRINT_TASK_BEGIN_TITLE(category)                                                               \
     std::osyncstream(std::cout) << "\nDATA STRUCTURE TASK: " << std::setiosflags(std::ios_base::left)         \
-                                << std::setfill('.') << std::setw(50) << category << "BEGIN"                  \
+                                << std::setfill('.') << std::setw(50) << (category) << "BEGIN"                \
                                 << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl; \
     {
 //! @brief Title of printing when data structure tasks are ending.
 #define APP_DS_PRINT_TASK_END_TITLE(category)                                                           \
     }                                                                                                   \
     std::osyncstream(std::cout) << "\nDATA STRUCTURE TASK: " << std::setiosflags(std::ios_base::left)   \
-                                << std::setfill('.') << std::setw(50) << category << "END"              \
+                                << std::setfill('.') << std::setw(50) << (category) << "END"            \
                                 << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << '\n' \
                                 << std::endl;
 

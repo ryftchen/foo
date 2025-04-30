@@ -29,6 +29,7 @@ static volatile std::sig_atomic_t signalStatus = 0;
     return std::filesystem::canonical(std::filesystem::path{"/proc/self/exe"}).filename().string();
 }
 
+// NOLINTBEGIN(cppcoreguidelines-no-malloc, cppcoreguidelines-owning-memory)
 //! @brief Signal handler for SIGSEGV signal, etc.
 //! @param sig - signal type
 static void signalHandler(const int sig)
@@ -62,7 +63,7 @@ static void signalHandler(const int sig)
                 callStack[i],
                 (0 == status) ? demangle : (info.dli_sname ? info.dli_sname : symbols[i]),
                 static_cast<char*>(callStack[i]) - static_cast<char*>(info.dli_saddr));
-            std::free(demangle); // NOLINT(cppcoreguidelines-no-malloc)
+            std::free(demangle);
         }
         else
         {
@@ -77,7 +78,7 @@ static void signalHandler(const int sig)
         }
         detailedTrace << buffer;
     }
-    std::free(symbols); // NOLINT(cppcoreguidelines-no-malloc)
+    std::free(symbols);
 
     if (maxFrame == numOfFrame)
     {
@@ -97,7 +98,9 @@ static void signalHandler(const int sig)
         std::raise(sig);
     }
 }
+// NOLINTEND(cppcoreguidelines-no-malloc, cppcoreguidelines-owning-memory)
 
+// NOLINTBEGIN(concurrency-mt-unsafe)
 //! @brief The constructor function before starting the main function. Switch to the target path.
 [[using gnu: constructor, noinline]] static void onInitial()
 {
@@ -124,6 +127,7 @@ static void signalHandler(const int sig)
     }
     ::setenv("FOO_HOME", processPath.string().c_str(), true);
 }
+// NOLINTEND(concurrency-mt-unsafe)
 
 //! @brief The destructor function before finishing the main function. Check the signal status.
 [[using gnu: destructor, noinline]] static void onFinal()

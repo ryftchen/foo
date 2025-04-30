@@ -67,7 +67,7 @@ void encryptMessage(char* buffer, const int length)
             break;
         }
     }
-    while (0);
+    while (false);
     ::EVP_CIPHER_CTX_free(ctx);
 }
 
@@ -103,7 +103,7 @@ void decryptMessage(char* buffer, const int length)
             break;
         }
     }
-    while (0);
+    while (false);
     ::EVP_CIPHER_CTX_free(ctx);
 }
 // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)

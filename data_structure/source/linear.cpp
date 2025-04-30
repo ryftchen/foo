@@ -16,6 +16,7 @@ const char* version() noexcept
     return ver;
 }
 
+// NOLINTBEGIN(cppcoreguidelines-owning-memory)
 namespace doubly_linked_list
 {
 //! @brief Create a node of the doubly linked list.
@@ -23,7 +24,7 @@ namespace doubly_linked_list
 //! @return node
 static Node* createNode(void* const val)
 {
-    Node* const node = ::new (std::nothrow) Node;
+    auto* const node = ::new (std::nothrow) Node;
     if (!node)
     {
         return nullptr;
@@ -395,4 +396,5 @@ std::ostringstream& Output::output()
 {
     return process;
 }
+// NOLINTEND(cppcoreguidelines-owning-memory)
 } // namespace date_structure::linear

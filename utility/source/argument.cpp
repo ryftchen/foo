@@ -203,7 +203,7 @@ bool Trait::checkIfPositional(const std::string_view name, const std::string_vie
     {
         return true;
     }
-    else if (prefix.find(static_cast<char>(first)) != std::string_view::npos)
+    if (prefix.find(static_cast<char>(first)) != std::string_view::npos)
     {
         std::string_view remain(name);
         remain.remove_prefix(1);
@@ -373,19 +373,17 @@ Trait& Argument::operator[](const std::string_view argName) const
 
     if (!isValidPrefixChar(argName.at(0)))
     {
-        std::string name(argName);
         const char legalPrefixChar = getAnyValidPrefixChar();
         const auto prefix = std::string(1, legalPrefixChar);
 
-        name = prefix + name;
+        const auto name = prefix + argName.data();
         iterator = argumentMap.find(name);
         if (argumentMap.cend() != iterator)
         {
             return *(iterator->second);
         }
 
-        name = prefix + name;
-        iterator = argumentMap.find(name);
+        iterator = argumentMap.find(prefix + name);
         if (argumentMap.cend() != iterator)
         {
             return *(iterator->second);

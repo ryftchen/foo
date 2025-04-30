@@ -384,7 +384,6 @@ Trait::Trait(
     const std::string_view prefix,
     std::array<std::string_view, N>&& collection,
     const std::index_sequence<I...>& /*sequence*/) :
-    optionalAsValue{false},
     isOptional{(checkIfOptional(collection.at(I), prefix) || ...)},
     isRequired{false},
     isRepeatable{false},

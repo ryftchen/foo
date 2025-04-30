@@ -83,7 +83,7 @@ public:
         constexpr std::uint32_t size = 5;
         const std::shared_ptr<ConcreteAggregate> list = std::make_shared<ConcreteAggregate>(size);
 
-        for (std::shared_ptr<Iterator> iter = list->createIterator(); !iter->isDone(); iter->next())
+        for (const std::shared_ptr<Iterator> iter = list->createIterator(); !iter->isDone(); iter->next())
         {
             output() << "item value: " << iter->currentItem() << '\n';
         }

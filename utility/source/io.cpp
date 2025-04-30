@@ -27,7 +27,7 @@ const char* version() noexcept
 //! @return command line output
 std::string executeCommand(const std::string_view command)
 {
-    auto* const pipe = ::popen(command.data(), "r");
+    auto* const pipe = ::popen(command.data(), "r"); // NOLINT(cert-env33-c)
     if (!pipe)
     {
         throw std::runtime_error{"Could not open pipe when trying to execute command."};
@@ -79,13 +79,16 @@ void waitForUserInput(const std::function<bool(const std::string_view)>& operati
 
     for (;;)
     {
-        if (const int status = ::epoll_wait(epollFD, &event, 1, timeout); -1 == status)
+        const int status = ::epoll_wait(epollFD, &event, 1, timeout);
+        if (-1 == status)
         {
             ::close(epollFD);
+            char buffer[64] = {'\0'};
             throw std::runtime_error{
-                "Failed to wait epoll when waiting for user input, errno: " + std::string{std::strerror(errno)} + '.'};
+                "Failed to wait epoll when waiting for user input, errno: "
+                + (!::strerror_r(errno, buffer, sizeof(buffer)) ? std::string{buffer} : "Unknown error") + '.'};
         }
-        else if (0 == status)
+        if (0 == status)
         {
             break;
         }

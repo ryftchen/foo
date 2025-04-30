@@ -279,8 +279,7 @@ void Command::initializeNativeCLI()
     defaultNotifier.attach(Category::console, std::make_shared<LocalNotifier::Handler<Category::console>>(*this));
 }
 
-// NOLINTNEXTLINE(readability-function-size)
-void Command::initializeExtraCLI()
+void Command::initializeExtraCLI() // NOLINT(readability-function-size)
 {
     using action::name, action::descr, action::alias;
     const std::string prefix1 = "-", prefix2 = "--", helpArg1 = prefix1 + std::string{getAlias(Category::help)},
@@ -781,16 +780,20 @@ void Command::executeInConsole() const
 
     auto udpClient = std::make_shared<utility::socket::UDPSocket>();
     launchClient(udpClient);
-    const auto session = std::make_unique<console::Console>(" > ");
+    const auto session = std::make_unique<console::Console>("> ");
     registerOnConsole(*session, udpClient);
 
     try
     {
-        using RetCode = console::Console::RetCode;
         std::any_of(
             pendingInputs.cbegin(),
             pendingInputs.cend(),
-            [&session](const auto& option) { return session->optionExecutor(option) == RetCode::quit; });
+            [&session](const auto& opt)
+            {
+                using RetCode = console::Console::RetCode;
+                std::cout << "> " << opt << std::endl;
+                return session->optionExecutor(opt) == RetCode::quit;
+            });
     }
     catch (const std::exception& err)
     {
@@ -823,7 +826,7 @@ void Command::displayVersionInfo() const
 #endif // NDEBUG
                    utility::common::escFontInverse,
                    utility::common::escBgColor,
-                   note::icon(),
+                   note::iconBanner(),
                    mainCLI.version(),
                    utility::common::escOff),
                additionalInfo = std::format(
@@ -889,7 +892,7 @@ try
     interactionLatency();
     auto tcpClient = std::make_shared<utility::socket::TCPSocket>();
     launchClient(tcpClient);
-    const char* const userEnv = std::getenv("USER");
+    const char* const userEnv = std::getenv("USER"); // NOLINT(concurrency-mt-unsafe)
     const std::string user = userEnv ? userEnv : "USER";
     char hostName[HOST_NAME_MAX] = {'\0'};
     if (::gethostname(hostName, HOST_NAME_MAX))
@@ -901,7 +904,7 @@ try
     const auto session = std::make_unique<console::Console>(greeting);
     registerOnConsole(*session, tcpClient);
 
-    std::cout << note::icon() << std::endl;
+    std::cout << note::iconBanner() << std::endl;
     using RetCode = console::Console::RetCode;
     auto retCode = RetCode::success;
     do

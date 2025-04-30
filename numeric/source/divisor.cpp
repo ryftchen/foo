@@ -26,7 +26,7 @@ std::set<std::int32_t> Divisor::euclidean(std::int32_t a, std::int32_t b)
 
     while (b)
     {
-        std::int32_t temp = a % b;
+        const std::int32_t temp = a % b;
         a = b;
         b = temp;
     }
@@ -79,11 +79,9 @@ std::int32_t Divisor::steinRecursive(std::int32_t a, std::int32_t b)
         b = (b - a) >> 1;
         return steinRecursive(b, a);
     }
-    else
-    {
-        a = (a - b) >> 1;
-        return steinRecursive(a, b);
-    }
+    a = (a - b) >> 1;
+
+    return steinRecursive(a, b);
 }
 
 std::set<std::int32_t> Divisor::getAllDivisors(const std::int32_t gcd)

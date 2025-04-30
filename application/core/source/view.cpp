@@ -237,6 +237,7 @@ View& View::getInstance()
     throw std::logic_error{"The " + std::string{name} + " is disabled."};
 }
 
+// NOLINTBEGIN(cppcoreguidelines-avoid-goto)
 void View::service()
 {
 retry:
@@ -254,7 +255,7 @@ retry:
         if (toReset.load())
         {
             safeProcessEvent(Relaunch{});
-            goto retry; // NOLINT(cppcoreguidelines-avoid-goto,hicpp-avoid-goto)
+            goto retry;
         }
         safeProcessEvent(DestroyServer{});
 
@@ -271,10 +272,11 @@ retry:
         if (awaitNotification2Retry())
         {
             safeProcessEvent(Relaunch{});
-            goto retry; // NOLINT(cppcoreguidelines-avoid-goto,hicpp-avoid-goto)
+            goto retry;
         }
     }
 }
+// NOLINTEND(cppcoreguidelines-avoid-goto)
 
 void View::Access::startup() const
 try
@@ -802,7 +804,7 @@ void View::segmentedOutput(const std::string_view buffer)
 
 std::string View::logContentsPreview()
 {
-    utility::common::LockGuard guard(log::info::loggerFileLock(), LockMode::read);
+    const utility::common::LockGuard guard(log::info::loggerFileLock(), LockMode::read);
     constexpr std::uint16_t maxRows = 24 * 100;
     auto contents = utility::io::getFileContents(log::info::loggerFilePath(), false, true, maxRows);
     std::for_each(contents.begin(), contents.end(), [](auto& line) { log::changeToLogStyle(line); });
@@ -814,6 +816,7 @@ std::string View::logContentsPreview()
 
 std::string View::statusReportsPreview(const std::uint16_t frame)
 {
+    // NOLINTNEXTLINE(cert-env33-c, concurrency-mt-unsafe)
     if ((frame > 0) && (::system("which eu-stack >/dev/null 2>&1") != EXIT_SUCCESS))
     {
         throw std::runtime_error{"No eu-stack program. Please install it."};
@@ -876,9 +879,10 @@ template <>
 void View::renewServer<utility::socket::TCPServer>()
 {
     tcpServer = std::make_shared<utility::socket::TCPServer>();
+    // NOLINTNEXTLINE(performance-unnecessary-value-param)
     tcpServer->onNewConnection = [](const std::shared_ptr<utility::socket::TCPSocket> newSocket)
     {
-        std::weak_ptr<utility::socket::TCPSocket> weakSock = newSocket;
+        const std::weak_ptr<utility::socket::TCPSocket> weakSock = newSocket;
         newSocket->onMessageReceived = [weakSock](const std::string_view message)
         {
             if (message.empty())

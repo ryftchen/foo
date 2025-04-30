@@ -16,6 +16,7 @@ const char* version() noexcept
     return ver;
 }
 
+// NOLINTBEGIN(cppcoreguidelines-owning-memory)
 namespace bs
 {
 //! @brief Get the node where the minimum key is located in the binary search tree.
@@ -104,7 +105,7 @@ Node* getSuccessor(const Node* x)
 //! @return new node after creating
 Node* createNode(const Type key, Node* const parent, Node* const left, Node* const right)
 {
-    Node* const node = ::new (std::nothrow) Node;
+    auto* const node = ::new (std::nothrow) Node;
     if (!node)
     {
         return nullptr;
@@ -287,7 +288,7 @@ void Output::printBSTree(BSTree tree, const Type key, const int direction)
 {
     if (tree)
     {
-        int currInd = indent;
+        const int currInd = indent;
         if (0 == direction)
         {
             indent = 0;
@@ -408,7 +409,7 @@ Node* rightLeftRotation(AVLTree k1)
 //! @return new node after creating
 Node* createNode(const Type key, Node* const left, Node* const right)
 {
-    Node* const node = ::new (std::nothrow) Node;
+    auto* const node = ::new (std::nothrow) Node;
     if (!node)
     {
         return nullptr;
@@ -502,7 +503,8 @@ Node* avlTreeInsert(AVLTree tree, const Type key)
 {
     if (!tree)
     {
-        if (nullptr == (tree = createNode(key, nullptr, nullptr)))
+        tree = createNode(key, nullptr, nullptr);
+        if (!tree)
         {
             return nullptr;
         }
@@ -603,7 +605,7 @@ void Output::printAVLTree(AVLTree tree, const Type key, const int direction)
 {
     if (tree)
     {
-        int currInd = indent;
+        const int currInd = indent;
         if (0 == direction)
         {
             indent = 0;
@@ -668,7 +670,7 @@ Node* getMaximum(SplayTree tree)
 //! @return new node after creating
 Node* createNode(const Type key, Node* const left, Node* const right)
 {
-    Node* const node = ::new (std::nothrow) Node;
+    auto* const node = ::new (std::nothrow) Node;
     if (!node)
     {
         return nullptr;
@@ -908,7 +910,7 @@ void Output::printSplayTree(SplayTree tree, const Type key, const int direction)
 {
     if (tree)
     {
-        int currInd = indent;
+        const int currInd = indent;
         if (0 == direction)
         {
             indent = 0;
@@ -927,4 +929,5 @@ void Output::printSplayTree(SplayTree tree, const Type key, const int direction)
     }
 }
 } // namespace splay
+// NOLINTEND(cppcoreguidelines-owning-memory)
 } // namespace date_structure::tree
