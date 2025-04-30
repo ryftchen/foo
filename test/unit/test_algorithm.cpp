@@ -10,9 +10,9 @@
 #include "application/example/include/apply_algorithm.hpp"
 
 //! @brief Title of printing for algorithm task tests.
-#define TST_ALGO_PRINT_TASK_TITLE(category, state)                                                                  \
-    std::osyncstream(std::cout) << "TEST ALGORITHM: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
-                                << std::setw(50) << category << state << std::resetiosflags(std::ios_base::left)    \
+#define TST_ALGO_PRINT_TASK_TITLE(category, state)                                                                   \
+    std::osyncstream(std::cout) << "TEST ALGORITHM: " << std::setiosflags(std::ios_base::left) << std::setfill('.')  \
+                                << std::setw(50) << (category) << (state) << std::resetiosflags(std::ios_base::left) \
                                 << std::setfill(' ') << std::endl;
 
 //! @brief The test module.
@@ -33,13 +33,13 @@ public:
     ~MatchTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase()
+    static void SetUpTestSuite()
     {
         TST_ALGO_PRINT_TASK_TITLE("MATCH", "BEGIN");
         inputs = std::make_shared<match::InputBuilder>(match::input::patternString);
     }
     //! @brief Tear down the test case.
-    static void TearDownTestCase()
+    static void TearDownTestSuite()
     {
         TST_ALGO_PRINT_TASK_TITLE("MATCH", "END");
         inputs.reset();
@@ -126,13 +126,13 @@ public:
     ~NotationTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase()
+    static void SetUpTestSuite()
     {
         TST_ALGO_PRINT_TASK_TITLE("NOTATION", "BEGIN");
         inputs = std::make_shared<notation::InputBuilder>(notation::input::infixString);
     }
     //! @brief Tear down the test case.
-    static void TearDownTestCase()
+    static void TearDownTestSuite()
     {
         TST_ALGO_PRINT_TASK_TITLE("NOTATION", "END");
         inputs.reset();
@@ -171,7 +171,7 @@ public:
     ~OptimalTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase()
+    static void SetUpTestSuite()
     {
         TST_ALGO_PRINT_TASK_TITLE("OPTIMAL", "BEGIN");
         using Rastrigin = optimal::input::Rastrigin;
@@ -179,7 +179,7 @@ public:
             Rastrigin{}, Rastrigin::range1, Rastrigin::range2, Rastrigin::funcDescr);
     }
     //! @brief Tear down the test case.
-    static void TearDownTestCase()
+    static void TearDownTestSuite()
     {
         TST_ALGO_PRINT_TASK_TITLE("OPTIMAL", "END");
         inputs.reset();
@@ -290,7 +290,7 @@ public:
     ~SearchTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase()
+    static void SetUpTestSuite()
     {
         TST_ALGO_PRINT_TASK_TITLE("SEARCH", "BEGIN");
         inputs = std::make_shared<search::InputBuilder<float>>(
@@ -298,7 +298,7 @@ public:
         updateExpColl();
     }
     //! @brief Tear down the test case.
-    static void TearDownTestCase()
+    static void TearDownTestSuite()
     {
         TST_ALGO_PRINT_TASK_TITLE("SEARCH", "END");
         inputs.reset();
@@ -369,7 +369,7 @@ public:
     ~SortTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase()
+    static void SetUpTestSuite()
     {
         TST_ALGO_PRINT_TASK_TITLE("SORT", "BEGIN");
         inputs = std::make_shared<sort::InputBuilder<std::int32_t>>(
@@ -377,7 +377,7 @@ public:
         updateExpColl();
     }
     //! @brief Tear down the test case.
-    static void TearDownTestCase()
+    static void TearDownTestSuite()
     {
         TST_ALGO_PRINT_TASK_TITLE("SORT", "END");
         inputs.reset();

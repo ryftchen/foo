@@ -71,7 +71,7 @@ public:
         const Meta* val = nullptr;
         DLL dll = nullptr;
         createDll(&dll);
-        dllInsert(dll, 0, &nodes[0]);
+        dllInsert(dll, 0, nodes.data());
         process << "insert (0): " << nodes[0] << '\n';
         dllInsert(dll, 0, &nodes[1]);
         process << "insert (0): " << nodes[1] << '\n';
@@ -92,7 +92,7 @@ public:
         process << "delete first\n";
         dllDeleteLast(dll);
         process << "delete last\n";
-        dllInsert(dll, 1, &nodes[0]);
+        dllInsert(dll, 1, nodes.data());
         process << "insert (1): " << nodes[0] << '\n';
 
         process << "whether it is empty: " << dllIsEmpty(dll) << '\n';

@@ -254,6 +254,8 @@ template <>
 class Dispatcher<>
 {
 public:
+    //! @brief Destroy the Dispatcher object.
+    virtual ~Dispatcher() = default;
     //! @brief Register the handler.
     void registerHandler() {}
 };
@@ -290,6 +292,8 @@ template <>
 class Receiver<>
 {
 public:
+    //! @brief Destroy the Receiver object.
+    virtual ~Receiver() = default;
     //! @brief Action on message.
     void onMessage() {}
 };

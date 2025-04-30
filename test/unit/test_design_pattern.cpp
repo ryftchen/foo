@@ -12,7 +12,7 @@
 //! @brief Title of printing for design pattern task tests.
 #define TST_DP_PRINT_TASK_TITLE(category, state)                                                    \
     std::osyncstream(std::cout) << "TEST DESIGN PATTERN: " << std::setiosflags(std::ios_base::left) \
-                                << std::setfill('.') << std::setw(50) << category << state          \
+                                << std::setfill('.') << std::setw(50) << (category) << (state)      \
                                 << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
 
 //! @brief The test module.
@@ -33,9 +33,9 @@ public:
     ~BehavioralTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase() { TST_DP_PRINT_TASK_TITLE("BEHAVIORAL", "BEGIN"); }
+    static void SetUpTestSuite() { TST_DP_PRINT_TASK_TITLE("BEHAVIORAL", "BEGIN"); }
     //! @brief Tear down the test case.
-    static void TearDownTestCase() { TST_DP_PRINT_TASK_TITLE("BEHAVIORAL", "END"); }
+    static void TearDownTestSuite() { TST_DP_PRINT_TASK_TITLE("BEHAVIORAL", "END"); }
     //! @brief Set up.
     void SetUp() override {}
     //! @brief Tear down.
@@ -140,9 +140,9 @@ public:
     ~CreationalTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase() { TST_DP_PRINT_TASK_TITLE("CREATIONAL", "BEGIN"); }
+    static void SetUpTestSuite() { TST_DP_PRINT_TASK_TITLE("CREATIONAL", "BEGIN"); }
     //! @brief Tear down the test case.
-    static void TearDownTestCase() { TST_DP_PRINT_TASK_TITLE("CREATIONAL", "END"); }
+    static void TearDownTestSuite() { TST_DP_PRINT_TASK_TITLE("CREATIONAL", "END"); }
     //! @brief Set up.
     void SetUp() override {}
     //! @brief Tear down.
@@ -199,9 +199,9 @@ public:
     ~StructuralTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase() { TST_DP_PRINT_TASK_TITLE("STRUCTURAL", "BEGIN"); }
+    static void SetUpTestSuite() { TST_DP_PRINT_TASK_TITLE("STRUCTURAL", "BEGIN"); }
     //! @brief Tear down the test case.
-    static void TearDownTestCase() { TST_DP_PRINT_TASK_TITLE("STRUCTURAL", "END"); }
+    static void TearDownTestSuite() { TST_DP_PRINT_TASK_TITLE("STRUCTURAL", "END"); }
     //! @brief Set up.
     void SetUp() override {}
     //! @brief Tear down.

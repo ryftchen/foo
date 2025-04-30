@@ -12,7 +12,7 @@
 //! @brief Title of printing for data structure task tests.
 #define TST_DS_PRINT_TASK_TITLE(category, state)                                                    \
     std::osyncstream(std::cout) << "TEST DATA STRUCTURE: " << std::setiosflags(std::ios_base::left) \
-                                << std::setfill('.') << std::setw(50) << category << state          \
+                                << std::setfill('.') << std::setw(50) << (category) << (state)      \
                                 << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
 
 //! @brief The test module.
@@ -33,9 +33,9 @@ public:
     ~LinearTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase() { TST_DS_PRINT_TASK_TITLE("LINEAR", "BEGIN"); }
+    static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE("LINEAR", "BEGIN"); }
     //! @brief Tear down the test case.
-    static void TearDownTestCase() { TST_DS_PRINT_TASK_TITLE("LINEAR", "END"); }
+    static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE("LINEAR", "END"); }
     //! @brief Set up.
     void SetUp() override {}
     //! @brief Tear down.
@@ -70,9 +70,9 @@ public:
     ~TreeTestBase() override = default;
 
     //! @brief Set up the test case.
-    static void SetUpTestCase() { TST_DS_PRINT_TASK_TITLE("TREE", "BEGIN"); }
+    static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE("TREE", "BEGIN"); }
     //! @brief Tear down the test case.
-    static void TearDownTestCase() { TST_DS_PRINT_TASK_TITLE("TREE", "END"); }
+    static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE("TREE", "END"); }
     //! @brief Set up.
     void SetUp() override {}
     //! @brief Tear down.

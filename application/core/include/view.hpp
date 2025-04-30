@@ -203,7 +203,7 @@ private:
     };
     // clang-format on
     //! @brief Maximum size of the shared memory.
-    static constexpr std::uint64_t maxShmSize{65536 * 10};
+    static constexpr std::uint64_t maxShmSize{static_cast<std::uint64_t>(65536) * 10};
     //! @brief Memory that can be accessed by multiple programs simultaneously.
     struct alignas(64) SharedMemory
     {

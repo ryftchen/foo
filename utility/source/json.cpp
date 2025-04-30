@@ -32,9 +32,9 @@ static JSON parseNext(const std::string_view fmt, std::size_t& offset);
 static std::string jsonEscape(const std::string_view fmt)
 {
     std::string output{};
-    for (std::size_t i = 0; i < fmt.length(); ++i)
+    for (const auto c : fmt)
     {
-        switch (fmt.at(i))
+        switch (c)
         {
             case '\"':
                 output += "\\\"";
@@ -58,7 +58,7 @@ static std::string jsonEscape(const std::string_view fmt)
                 output += "\\t";
                 break;
             default:
-                output += fmt.at(i);
+                output += c;
                 break;
         }
     }
@@ -115,16 +115,13 @@ static JSON parseObject(const std::string_view fmt, std::size_t& offset)
             ++offset;
             continue;
         }
-        else if ('}' == fmt.at(offset))
+        if ('}' == fmt.at(offset))
         {
             ++offset;
             break;
         }
-        else
-        {
-            throw std::runtime_error{
-                "For JSON object, expected ',' or '}', found '" + std::string{fmt.at(offset)} + "'."};
-        }
+
+        throw std::runtime_error{"For JSON object, expected ',' or '}', found '" + std::string{fmt.at(offset)} + "'."};
     }
 
     return object;
@@ -154,16 +151,13 @@ static JSON parseArray(const std::string_view fmt, std::size_t& offset)
             ++offset;
             continue;
         }
-        else if (']' == fmt.at(offset))
+        if (']' == fmt.at(offset))
         {
             ++offset;
             break;
         }
-        else
-        {
-            throw std::runtime_error{
-                "For JSON array, expected ',' or ']', found '" + std::string{fmt.at(offset)} + "'."};
-        }
+
+        throw std::runtime_error{"For JSON array, expected ',' or ']', found '" + std::string{fmt.at(offset)} + "'."};
     }
 
     return array;
@@ -458,13 +452,12 @@ JSON::JSON(const std::initializer_list<JSON>& list)
     }
 }
 
-JSON::JSON(JSON&& json) noexcept
+JSON::JSON(JSON&& json) noexcept : data{std::move(json.data)} // NOLINT(bugprone-exception-escape)
 {
-    data = std::move(json.data);
     json.data = Data{};
 }
 
-JSON& JSON::operator=(JSON&& json) noexcept
+JSON& JSON::operator=(JSON&& json) noexcept // NOLINT(bugprone-exception-escape)
 {
     if (this != &json)
     {

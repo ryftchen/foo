@@ -19,16 +19,16 @@
 #include "utility/include/currying.hpp"
 
 //! @brief Title of printing when numeric tasks are beginning.
-#define APP_NUM_PRINT_TASK_BEGIN_TITLE(category)                                                                    \
-    std::osyncstream(std::cout) << "\nNUMERIC TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
-                                << std::setw(50) << category << "BEGIN" << std::resetiosflags(std::ios_base::left)  \
-                                << std::setfill(' ') << std::endl;                                                  \
+#define APP_NUM_PRINT_TASK_BEGIN_TITLE(category)                                                                     \
+    std::osyncstream(std::cout) << "\nNUMERIC TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.')  \
+                                << std::setw(50) << (category) << "BEGIN" << std::resetiosflags(std::ios_base::left) \
+                                << std::setfill(' ') << std::endl;                                                   \
     {
 //! @brief Title of printing when numeric tasks are ending.
 #define APP_NUM_PRINT_TASK_END_TITLE(category)                                                                      \
     }                                                                                                               \
     std::osyncstream(std::cout) << "\nNUMERIC TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
-                                << std::setw(50) << category << "END" << std::resetiosflags(std::ios_base::left)    \
+                                << std::setw(50) << (category) << "END" << std::resetiosflags(std::ios_base::left)  \
                                 << std::setfill(' ') << '\n'                                                        \
                                 << std::endl;
 

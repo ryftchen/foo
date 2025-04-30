@@ -66,7 +66,7 @@ protected:
     //! @param socketId - socket id
     explicit Socket(const Type socketType = Type::tcp, const int socketId = -1);
     //! @brief Destroy the Socket object.
-    virtual ~Socket();
+    ~Socket();
 
     //! @brief Get the ip address from transport information.
     //! @param addr - transport information

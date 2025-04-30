@@ -25,7 +25,7 @@ class Memory
 {
 public:
     //! @brief Construct a new Memory object.
-    Memory() : currentBlock{nullptr}, currentSlot{nullptr}, lastSlot{nullptr}, freeSlots{nullptr} {}
+    Memory() = default;
     //! @brief Destroy the Memory object.
     virtual ~Memory();
     //! @brief Construct a new Memory object.
@@ -175,14 +175,13 @@ inline T* Memory<T, BlockSize>::allocate(const std::size_t /*size*/, const T* /*
         freeSlots = freeSlots->next;
         return result;
     }
-    else
+
+    if (currentSlot >= lastSlot)
     {
-        if (currentSlot >= lastSlot)
-        {
-            allocateBlock();
-        }
-        return reinterpret_cast<T*>(currentSlot++);
+        allocateBlock();
     }
+
+    return reinterpret_cast<T*>(currentSlot++);
 }
 
 template <typename T, std::size_t BlockSize>

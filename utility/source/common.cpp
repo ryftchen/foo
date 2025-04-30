@@ -146,7 +146,7 @@ std::string base64Decode(const std::string_view data)
 //! @param fmt - null-terminated multibyte string specifying how to interpret the data
 //! @param ... - arguments
 //! @return string after formatting
-std::string printfString(const char* const fmt, ...)
+std::string printfString(const char* const fmt, ...) // NOLINT(cert-dcl50-cpp)
 {
     std::va_list list{};
     ::va_start(list, fmt);

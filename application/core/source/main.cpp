@@ -76,7 +76,7 @@ static int watchdog(const ::pid_t pid)
         }
         return EXIT_FAILURE;
     }
-    else if (application::childInterrupted)
+    if (application::childInterrupted)
     {
         int status = 0;
         ::wait(&status);
@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
     {
         return EXIT_FAILURE;
     }
-    else if (0 == pid)
+    if (0 == pid)
     {
         ::prctl(PR_SET_PDEATHSIG, SIGTERM);
         return (::getppid() == ppidBeforeFork) ? application::run(argc, argv) : EXIT_FAILURE;

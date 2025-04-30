@@ -195,7 +195,7 @@ public:
     //! @param left - target left operation
     //! @param right - target right operation
     NonTerminalExpression(std::shared_ptr<AbstractExpression> left, std::shared_ptr<AbstractExpression> right) :
-        leftOp{left}, rightOp{right}
+        leftOp{std::move(left)}, rightOp{std::move(right)}
     {
     }
     //! @brief Destroy the NonTerminalExpression object.
@@ -284,7 +284,7 @@ class ConcreteIterator : public Iterator
 public:
     //! @brief Construct a new ConcreteIterator object.
     //! @param list - target collection of items
-    explicit ConcreteIterator(std::shared_ptr<ConcreteAggregate> list) : list{list} {}
+    explicit ConcreteIterator(std::shared_ptr<ConcreteAggregate> list) : list{std::move(list)} {}
     //! @brief Destroy the ConcreteIterator object.
     ~ConcreteIterator() override = default;
 
@@ -362,7 +362,7 @@ public:
     //! @brief Construct a new Colleague object.
     //! @param mediator - target mediator
     //! @param id - target id
-    Colleague(const std::shared_ptr<Mediator> mediator, const std::uint32_t id) : mediator{mediator}, id{id} {}
+    Colleague(const std::shared_ptr<Mediator>& mediator, const std::uint32_t id) : mediator{mediator}, id{id} {}
     //! @brief Destroy the Colleague object.
     virtual ~Colleague() = default;
 
@@ -440,7 +440,7 @@ public:
     [[nodiscard]] int getState() const;
     //! @brief Set the state of originator by memento.
     //! @param memento - target memento
-    void setMemento(const std::shared_ptr<Memento> memento);
+    void setMemento(const std::shared_ptr<Memento>& memento);
     //! @brief Create a memento.
     //! @return memento
     [[nodiscard]] std::shared_ptr<Memento> createMemento() const;
@@ -456,7 +456,7 @@ class CareTaker
 public:
     //! @brief Construct a new CareTaker object.
     //! @param originator - target originator
-    explicit CareTaker(const std::shared_ptr<Originator> originator) : originator{originator} {}
+    explicit CareTaker(const std::shared_ptr<Originator>& originator) : originator{originator} {}
     //! @brief Destroy the CareTaker object.
     virtual ~CareTaker();
 
