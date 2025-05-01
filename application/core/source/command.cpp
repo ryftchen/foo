@@ -780,7 +780,8 @@ void Command::executeInConsole() const
 
     auto udpClient = std::make_shared<utility::socket::UDPSocket>();
     launchClient(udpClient);
-    const auto session = std::make_unique<console::Console>("> ");
+    constexpr std::string_view greeting = "> ";
+    const auto session = std::make_unique<console::Console>(greeting);
     registerOnConsole(*session, udpClient);
 
     try
@@ -788,10 +789,10 @@ void Command::executeInConsole() const
         std::any_of(
             pendingInputs.cbegin(),
             pendingInputs.cend(),
-            [&session](const auto& opt)
+            [&greeting, &session](const auto& opt)
             {
                 using RetCode = console::Console::RetCode;
-                std::cout << "> " << opt << std::endl;
+                std::cout << greeting << opt << std::endl;
                 return session->optionExecutor(opt) == RetCode::quit;
             });
     }
