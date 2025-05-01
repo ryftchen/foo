@@ -18,22 +18,22 @@ const char* version() noexcept
 
 namespace abstract_factory
 {
-std::string ConcreteProductAX::getName()
+std::string ConcreteProductAX::getName() const
 {
     return "A-X";
 }
 
-std::string ConcreteProductAY::getName()
+std::string ConcreteProductAY::getName() const
 {
     return "A-Y";
 }
 
-std::string ConcreteProductBX::getName()
+std::string ConcreteProductBX::getName() const
 {
     return "B-X";
 }
 
-std::string ConcreteProductBY::getName()
+std::string ConcreteProductBY::getName() const
 {
     return "B-Y";
 }
@@ -84,12 +84,12 @@ void Product::makeC(const std::string_view part)
     partC = part;
 }
 
-std::string Product::get()
+std::string Product::get() const
 {
     return partA + ' ' + partB + ' ' + partC;
 }
 
-Product Builder::get()
+Product Builder::get() const
 {
     return product;
 }
@@ -141,7 +141,7 @@ void Director::set(std::unique_ptr<Builder> b)
     builder = std::move(b);
 }
 
-Product Director::get()
+Product Director::get() const
 {
     return builder->get();
 }
@@ -164,12 +164,12 @@ std::ostringstream& output()
 
 namespace factory_method
 {
-std::string ConcreteProductA::getName()
+std::string ConcreteProductA::getName() const
 {
     return "type A";
 }
 
-std::string ConcreteProductB::getName()
+std::string ConcreteProductB::getName() const
 {
     return "type B";
 }
@@ -200,15 +200,15 @@ std::ostringstream& output()
 
 namespace prototype
 {
-std::unique_ptr<Prototype> Client::types[2];
-int Client::nTypes = 2;
+std::unique_ptr<Prototype> Client::types[2] = {nullptr, nullptr};
+const int Client::nTypes = 2;
 
 std::unique_ptr<Prototype> ConcretePrototypeA::clone()
 {
     return std::make_unique<ConcretePrototypeA>();
 }
 
-std::string ConcretePrototypeA::type()
+std::string ConcretePrototypeA::type() const
 {
     return "type A";
 }
@@ -218,7 +218,7 @@ std::unique_ptr<Prototype> ConcretePrototypeB::clone()
     return std::make_unique<ConcretePrototypeB>();
 }
 
-std::string ConcretePrototypeB::type()
+std::string ConcretePrototypeB::type() const
 {
     return "type B";
 }

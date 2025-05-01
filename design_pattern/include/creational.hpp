@@ -29,7 +29,7 @@ public:
 
     //! @brief Get the product name.
     //! @return product name
-    virtual std::string getName() = 0;
+    [[nodiscard]] virtual std::string getName() const = 0;
 };
 
 //! @brief The concrete product.
@@ -41,7 +41,7 @@ public:
 
     //! @brief Get the product name.
     //! @return product name
-    std::string getName() override;
+    [[nodiscard]] std::string getName() const override;
 };
 
 //! @brief The concrete product.
@@ -53,7 +53,7 @@ public:
 
     //! @brief Get the product name.
     //! @return product name
-    std::string getName() override;
+    [[nodiscard]] std::string getName() const override;
 };
 
 //! @brief Implement the same interface. The others can refer to the interface not the concrete product.
@@ -65,7 +65,7 @@ public:
 
     //! @brief Get the product name.
     //! @return product name
-    virtual std::string getName() = 0;
+    [[nodiscard]] virtual std::string getName() const = 0;
 };
 
 //! @brief The concrete product.
@@ -77,7 +77,7 @@ public:
 
     //! @brief Get the product name.
     //! @return product name
-    std::string getName() override;
+    [[nodiscard]] std::string getName() const override;
 };
 
 //! @brief The concrete product.
@@ -89,7 +89,7 @@ public:
 
     //! @brief Get the product name.
     //! @return product name
-    std::string getName() override;
+    [[nodiscard]] std::string getName() const override;
 };
 
 //! @brief Provide the abstract interface for creating the family of products.
@@ -159,7 +159,7 @@ public:
     void makeC(const std::string_view part);
     //! @brief Get all parts.
     //! @return all parts
-    std::string get();
+    [[nodiscard]] std::string get() const;
 
 private:
     //! @brief Part A.
@@ -179,7 +179,7 @@ public:
 
     //! @brief Get the product.
     //! @return product
-    Product get();
+    [[nodiscard]] Product get() const;
     //! @brief Build part A.
     virtual void buildPartA() = 0;
     //! @brief Build part B.
@@ -228,7 +228,7 @@ public:
     void set(std::unique_ptr<Builder> b);
     //! @brief Get the product from the builder.
     //! @return product
-    Product get();
+    [[nodiscard]] Product get() const;
     //! @brief Construct products by the builder.
     void construct();
 
@@ -252,7 +252,7 @@ public:
 
     //! @brief Get the product name.
     //! @return product name
-    virtual std::string getName() = 0;
+    [[nodiscard]] virtual std::string getName() const = 0;
 };
 
 //! @brief The concrete product.
@@ -264,7 +264,7 @@ public:
 
     //! @brief Get the product name.
     //! @return product name
-    std::string getName() override;
+    [[nodiscard]] std::string getName() const override;
 };
 
 //! @brief The concrete product.
@@ -276,7 +276,7 @@ public:
 
     //! @brief Get the product name.
     //! @return product name
-    std::string getName() override;
+    [[nodiscard]] std::string getName() const override;
 };
 
 //! @brief Contain the implementation for all methods to manipulate products except for the factory method.
@@ -332,7 +332,7 @@ public:
     virtual std::unique_ptr<Prototype> clone() = 0;
     //! @brief Get the type.
     //! @return type
-    virtual std::string type() = 0;
+    [[nodiscard]] virtual std::string type() const = 0;
 };
 
 //! @brief The concrete prototype.
@@ -347,7 +347,7 @@ public:
     std::unique_ptr<Prototype> clone() override;
     //! @brief Get the type.
     //! @return type
-    std::string type() override;
+    [[nodiscard]] std::string type() const override;
 };
 
 //! @brief The concrete prototype.
@@ -362,7 +362,7 @@ public:
     std::unique_ptr<Prototype> clone() override;
     //! @brief Get the type.
     //! @return type
-    std::string type() override;
+    [[nodiscard]] std::string type() const override;
 };
 
 //! @brief Create by asking the prototype to clone itself.
@@ -382,7 +382,7 @@ private:
     //! @brief Collection of prototypes.
     static std::unique_ptr<Prototype> types[2];
     //! @brief Number of types.
-    static int nTypes;
+    static const int nTypes;
 };
 
 extern std::ostringstream& output();

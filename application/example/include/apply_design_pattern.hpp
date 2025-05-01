@@ -301,12 +301,12 @@ public:
         Director director{};
         director.set(std::make_unique<ConcreteBuilderX>());
         director.construct();
-        Product product1 = director.get();
+        const Product product1 = director.get();
         output() << "1st product parts: " << product1.get() << '\n';
 
         director.set(std::make_unique<ConcreteBuilderY>());
         director.construct();
-        Product product2 = director.get();
+        const Product product2 = director.get();
         output() << "2nd product parts: " << product2.get() << '\n';
 
         return transferOutputs(output());
@@ -412,9 +412,9 @@ public:
     static std::ostringstream adapter()
     {
         using namespace design_pattern::structural::adapter;
-        const std::shared_ptr<Target> t = std::make_shared<Adapter>();
+        const std::shared_ptr<Target> adp = std::make_shared<Adapter>();
 
-        t->request();
+        adp->request();
 
         return transferOutputs(output());
     }
