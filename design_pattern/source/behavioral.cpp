@@ -133,13 +133,12 @@ bool Context::get(const std::string_view expr)
     return vars[expr.data()];
 }
 
-// NOLINTNEXTLINE(performance-unnecessary-value-param)
-bool AbstractExpression::interpret(const std::shared_ptr<Context> /*context*/)
+bool AbstractExpression::interpret(const std::shared_ptr<Context>& /*context*/)
 {
     return false;
 }
 
-bool TerminalExpression::interpret(const std::shared_ptr<Context> context)
+bool TerminalExpression::interpret(const std::shared_ptr<Context>& context)
 {
     return context->get(value);
 }
@@ -150,7 +149,7 @@ NonTerminalExpression::~NonTerminalExpression()
     rightOp.reset();
 }
 
-bool NonTerminalExpression::interpret(const std::shared_ptr<Context> context)
+bool NonTerminalExpression::interpret(const std::shared_ptr<Context>& context)
 {
     return leftOp->interpret(context) && rightOp->interpret(context);
 }
@@ -187,7 +186,7 @@ std::uint32_t ConcreteAggregate::size() const
     return count;
 }
 
-int ConcreteAggregate::at(std::uint32_t index)
+int ConcreteAggregate::at(const std::uint32_t index)
 {
     return list[index];
 }
@@ -204,17 +203,12 @@ void ConcreteIterator::next()
 
 bool ConcreteIterator::isDone() const
 {
-    return index >= list->size();
+    return index >= aggregate->size();
 }
 
 int ConcreteIterator::currentItem() const
 {
-    if (isDone())
-    {
-        return -1;
-    }
-
-    return list->at(index);
+    return isDone() ? -1 : aggregate->at(index);
 }
 
 //! @brief Output stream for the iterator pattern. Need to be cleared manually.

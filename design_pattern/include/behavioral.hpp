@@ -112,7 +112,7 @@ public:
 
 private:
     //! @brief The receiver.
-    std::weak_ptr<Receiver> receiver{};
+    const std::weak_ptr<Receiver> receiver{};
 };
 
 //! @brief Invoke the corresponding operation.
@@ -163,8 +163,8 @@ public:
 
     //! @brief The interpret that is common to all nodes in the abstract syntax tree.
     //! @param context - global context
-    //! @return value
-    virtual bool interpret(const std::shared_ptr<Context> context);
+    //! @return resulting value
+    virtual bool interpret(const std::shared_ptr<Context>& context);
 };
 
 //! @brief The terminal interpret operation. An instance is required for every terminal symbol in a sentence.
@@ -179,12 +179,12 @@ public:
 
     //! @brief The interpret that associated with terminal symbols in the grammar.
     //! @param context - global context
-    //! @return value
-    bool interpret(const std::shared_ptr<Context> context) override;
+    //! @return resulting value
+    bool interpret(const std::shared_ptr<Context>& context) override;
 
 private:
     //! @brief The value of the terminal expression.
-    std::string value{};
+    const std::string value{};
 };
 
 //! @brief The non-terminal interpret operation. One such class is required for every rule in grammar.
@@ -203,8 +203,8 @@ public:
 
     //! @brief The interpret that associated with non-terminal symbols in the grammar.
     //! @param context - global context
-    //! @return value
-    bool interpret(const std::shared_ptr<Context> context) override;
+    //! @return resulting value
+    bool interpret(const std::shared_ptr<Context>& context) override;
 
 private:
     //! @brief The left operation of the non-terminal expression.
@@ -255,7 +255,7 @@ class ConcreteAggregate : public Aggregate, public std::enable_shared_from_this<
 {
 public:
     //! @brief Construct a new ConcreteAggregate object.
-    //! @param size - size of the concrete aggregate
+    //! @param size - size of items
     explicit ConcreteAggregate(const std::uint32_t size);
     //! @brief Destroy the ConcreteAggregate object.
     ~ConcreteAggregate() override;
@@ -263,19 +263,19 @@ public:
     //! @brief Create an iterator.
     //! @return iterator
     std::shared_ptr<Iterator> createIterator() override;
-    //! @brief Get the size of the concrete aggregate.
-    //! @return size of the concrete aggregate
+    //! @brief Get the size of items.
+    //! @return size of items
     [[nodiscard]] std::uint32_t size() const;
     //! @brief Get the item by index.
     //! @param index - index of item
     //! @return item
-    int at(std::uint32_t index);
+    int at(const std::uint32_t index);
 
 private:
     //! @brief Collection of items.
     std::unique_ptr<int[]> list{};
-    //! @brief Size of the concrete aggregate.
-    std::uint32_t count{0};
+    //! @brief Size of items.
+    const std::uint32_t count{0};
 };
 
 //! @brief The concrete iterator.
@@ -283,8 +283,8 @@ class ConcreteIterator : public Iterator
 {
 public:
     //! @brief Construct a new ConcreteIterator object.
-    //! @param list - target collection of items
-    explicit ConcreteIterator(std::shared_ptr<ConcreteAggregate> list) : list{std::move(list)} {}
+    //! @param aggregate - target aggregate
+    explicit ConcreteIterator(std::shared_ptr<ConcreteAggregate> aggregate) : aggregate{std::move(aggregate)} {}
     //! @brief Destroy the ConcreteIterator object.
     ~ConcreteIterator() override = default;
 
@@ -300,9 +300,9 @@ public:
     [[nodiscard]] int currentItem() const override;
 
 private:
-    //! @brief Collection of items.
-    std::shared_ptr<ConcreteAggregate> list{};
-    //! @brief Current Index.
+    //! @brief Aggregate to be iterated.
+    const std::shared_ptr<ConcreteAggregate> aggregate{};
+    //! @brief Current index.
     std::uint32_t index{0};
 };
 
@@ -378,9 +378,9 @@ public:
 
 protected:
     //! @brief Mediator of the colleague.
-    std::weak_ptr<Mediator> mediator{};
+    const std::weak_ptr<Mediator> mediator{};
     //! @brief Id of the colleague.
-    std::uint32_t id{0};
+    const std::uint32_t id{0};
 };
 
 //! @brief The concrete colleague.
@@ -467,7 +467,7 @@ public:
 
 private:
     //! @brief Specific originator.
-    std::shared_ptr<Originator> originator{};
+    const std::shared_ptr<Originator> originator{};
     //! @brief State history.
     std::vector<std::shared_ptr<Memento>> history{};
 };

@@ -123,7 +123,7 @@ public:
 
 private:
     //! @brief The implementor.
-    std::unique_ptr<Implementor> implementor{};
+    const std::unique_ptr<Implementor> implementor{};
 };
 
 extern std::ostringstream& output();
@@ -192,7 +192,7 @@ public:
 
 private:
     //! @brief Leaf node id.
-    int id{0};
+    const int id{0};
 };
 
 extern std::ostringstream& output();
@@ -238,7 +238,7 @@ public:
 
 private:
     //! @brief The component.
-    std::shared_ptr<Component> component{};
+    const std::shared_ptr<Component> component{};
 };
 
 //! @brief The concrete decorator.
@@ -309,11 +309,11 @@ public:
 
 private:
     //! @brief Subsystem A.
-    std::shared_ptr<SubsystemA> subsystemA{};
+    const std::shared_ptr<SubsystemA> subsystemA{};
     //! @brief Subsystem B.
-    std::shared_ptr<SubsystemB> subsystemB{};
+    const std::shared_ptr<SubsystemB> subsystemB{};
     //! @brief Subsystem C.
-    std::shared_ptr<SubsystemC> subsystemC{};
+    const std::shared_ptr<SubsystemC> subsystemC{};
 };
 
 extern std::ostringstream& output();
@@ -348,7 +348,7 @@ public:
 
 private:
     //! @brief Intrinsic state.
-    int state{0};
+    const int state{0};
 };
 
 //! @brief The concrete flyweight.
@@ -366,7 +366,7 @@ public:
 
 private:
     //! @brief Intrinsic state.
-    int state{0};
+    const int state{0};
 };
 
 //! @brief Manage flyweights and ensure that flyweights are appropriately shared.
