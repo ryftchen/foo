@@ -143,14 +143,14 @@ jobs:
           ./script/build.sh --uninstall
           ./script/build.sh --clean
 
-      - name: Enhanced environment
+      - name: Enhanced environment (part 1)
         run: |
           ./script/build.sh --initialize
-          sed -i 's/FOO_BLD_COMPILER=.*/FOO_BLD_COMPILER=clang/' ./script/.build_env
           sed -i 's/FOO_BLD_PARALLEL=.*/FOO_BLD_PARALLEL=2/' ./script/.build_env
           sed -i 's/FOO_BLD_CCACHE=.*/FOO_BLD_CCACHE=on/' ./script/.build_env
           sed -i 's/FOO_BLD_TMPFS=.*/FOO_BLD_TMPFS=on/' ./script/.build_env
           ./script/run.py --dump
+          sed -i 's/FOO_BLD_COMPILER=.*/FOO_BLD_COMPILER=clang/' ./script/.build_env
           ./script/run.py --test --build dbg --repeat 1
           ./script/run.py --analyze
           ./script/run.py --build dbg --repeat 1
@@ -159,6 +159,48 @@ jobs:
           ./script/run.py --analyze
           ./script/run.py --build rls --repeat 1
           ./script/run.py --analyze
+          sed -i 's/FOO_BLD_COMPILER=.*/FOO_BLD_COMPILER=gcc/' ./script/.build_env
+
+      - name: Enhanced environment (part 2)
+        run: |
+          sed -i 's/FOO_BLD_PCH=.*/FOO_BLD_PCH=on/' ./script/.build_env
+          ./script/run.py --test --build dbg --repeat 1
+          ./script/run.py --analyze
+          ./script/run.py --build dbg --repeat 1
+          ./script/run.py --analyze
+          ./script/run.py --test --build rls --repeat 1
+          ./script/run.py --analyze
+          ./script/run.py --build rls --repeat 1
+          ./script/run.py --analyze
+          sed -i 's/FOO_BLD_PCH=.*/FOO_BLD_PCH=off/' ./script/.build_env
+
+      - name: Enhanced environment (part 3)
+        run: |
+          sed -i 's/FOO_BLD_UNITY=.*/FOO_BLD_UNITY=on/' ./script/.build_env
+          ./script/run.py --test --build dbg --repeat 1
+          ./script/run.py --analyze
+          ./script/run.py --build dbg --repeat 1
+          ./script/run.py --analyze
+          ./script/run.py --test --build rls --repeat 1
+          ./script/run.py --analyze
+          ./script/run.py --build rls --repeat 1
+          ./script/run.py --analyze
+          sed -i 's/FOO_BLD_UNITY=.*/FOO_BLD_UNITY=off/' ./script/.build_env
+
+      - name: Enhanced environment (part 4)
+        run: |
+          distccd --daemon --allow 127.0.0.1/32
+          sed -i 's/FOO_BLD_DISTCC=.*/FOO_BLD_DISTCC="127.0.0.1,lzo"/' ./script/.build_env
+          ./script/run.py --test --build dbg --repeat 1
+          ./script/run.py --analyze
+          ./script/run.py --build dbg --repeat 1
+          ./script/run.py --analyze
+          ./script/run.py --test --build rls --repeat 1
+          ./script/run.py --analyze
+          ./script/run.py --build rls --repeat 1
+          ./script/run.py --analyze
+          sed -i 's/FOO_BLD_DISTCC=.*/FOO_BLD_DISTCC=localhost/' ./script/.build_env
+          pkill distccd
           ./script/build.sh --clean
 
       - name: Run sanitizer (debug)
