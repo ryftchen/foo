@@ -33,8 +33,8 @@
     (static_cast<bool>(expr) ? static_cast<void>(0) : utility::macro::assertFail(#expr, __FILE__, __LINE__, __func__))
 
 //! @brief Defer process.
-#define MACRO_DEFER(lambda) \
-    [[maybe_unused]] const auto MACRO_CONCAT(_deferGuard, __LINE__) = utility::macro::makeDeferral(lambda)
+#define MACRO_DEFER(call) \
+    [[maybe_unused]] const auto MACRO_CONCAT(_deferGuard, __LINE__) = utility::macro::makeDeferral(call)
 
 //! @brief The utility module.
 namespace utility // NOLINT(modernize-concat-nested-namespaces)
