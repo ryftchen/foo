@@ -143,7 +143,7 @@ jobs:
           ./script/build.sh --uninstall
           ./script/build.sh --clean
 
-      - name: Enhanced environment (part 1)
+      - name: Enhanced environment
         run: |
           ./script/build.sh --initialize
           sed -i 's/FOO_BLD_PARALLEL=.*/FOO_BLD_PARALLEL=2/' ./script/.build_env
@@ -161,7 +161,7 @@ jobs:
           ./script/run.py --analyze
           sed -i 's/FOO_BLD_COMPILER=.*/FOO_BLD_COMPILER=gcc/' ./script/.build_env
 
-      - name: Enhanced environment (part 2)
+      - name: Apply toolchain (part 1)
         run: |
           sed -i 's/FOO_BLD_PCH=.*/FOO_BLD_PCH=on/' ./script/.build_env
           ./script/run.py --test --build dbg --repeat 1
@@ -174,7 +174,7 @@ jobs:
           ./script/run.py --analyze
           sed -i 's/FOO_BLD_PCH=.*/FOO_BLD_PCH=off/' ./script/.build_env
 
-      - name: Enhanced environment (part 3)
+      - name: Apply toolchain (part 2)
         run: |
           sed -i 's/FOO_BLD_UNITY=.*/FOO_BLD_UNITY=on/' ./script/.build_env
           ./script/run.py --test --build dbg --repeat 1
@@ -187,7 +187,7 @@ jobs:
           ./script/run.py --analyze
           sed -i 's/FOO_BLD_UNITY=.*/FOO_BLD_UNITY=off/' ./script/.build_env
 
-      - name: Enhanced environment (part 4)
+      - name: Apply toolchain (part 3)
         run: |
           distccd --daemon --allow 127.0.0.1/32
           sed -i 's/FOO_BLD_DISTCC=.*/FOO_BLD_DISTCC="127.0.0.1,lzo"/' ./script/.build_env
