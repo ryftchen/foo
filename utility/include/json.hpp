@@ -97,7 +97,7 @@ public:
     //! @tparam T - type of floating value
     //! @param f - floating value
     template <typename T>
-    JSON(const T f, typename std::enable_if<std::is_floating_point_v<T>>::type* /*type*/ = 0) :
+    JSON(const T f, typename std::enable_if<std::is_floating_point_v<T>>::type* /*type*/ = nullptr) :
         data{static_cast<Floating>(f)}
     {
     }
@@ -105,7 +105,9 @@ public:
     //! @tparam T - type of integral value
     //! @param i - integral value
     template <typename T>
-    JSON(const T i, typename std::enable_if<std::is_integral_v<T> && !std::is_same_v<T, bool>>::type* /*type*/ = 0) :
+    JSON(
+        const T i,
+        typename std::enable_if<std::is_integral_v<T> && !std::is_same_v<T, bool>>::type* /*type*/ = nullptr) :
         data{static_cast<Integral>(i)}
     {
     }
@@ -113,7 +115,7 @@ public:
     //! @tparam T - type of boolean value
     //! @param b - boolean value
     template <typename T>
-    JSON(const T b, typename std::enable_if<std::is_same_v<T, bool>>::type* /*type*/ = 0) :
+    JSON(const T b, typename std::enable_if<std::is_same_v<T, bool>>::type* /*type*/ = nullptr) :
         data{static_cast<Boolean>(b)}
     {
     }
