@@ -1141,11 +1141,11 @@ function set_compile_condition()
         fi
     fi
     CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D CMAKE_C_COMPILER=${CC} -D CMAKE_CXX_COMPILER=${CXX}"
-    if command -v gcc >/dev/null 2>&1 && command -v g++ >/dev/null 2>&1; then
+    local gnu_lib_ver=13
+    if command -v "gcc-${gnu_lib_ver}" >/dev/null 2>&1 && command -v "g++-${gnu_lib_ver}" >/dev/null 2>&1; then
         local gcc_processor gxx_processor
-        gcc_processor=$(gcc -dumpmachine)
-        gxx_processor=$(g++ -dumpmachine)
-        local gnu_lib_ver=13
+        gcc_processor=$("gcc-${gnu_lib_ver}" -dumpmachine)
+        gxx_processor=$("g++-${gnu_lib_ver}" -dumpmachine)
         export C_INCLUDE_PATH=/usr/include:/usr/lib/gcc/${gcc_processor}/${gnu_lib_ver}/include \
             CPLUS_INCLUDE_PATH=/usr/include/c++/${gnu_lib_ver}:/usr/include/${gxx_processor}/c++/${gnu_lib_ver}
     fi
