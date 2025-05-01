@@ -62,64 +62,35 @@ Checks: >
   -readability-isolate-declaration,
   -readability-static-accessed-through-instance
 CheckOptions:
-  - key: readability-function-cognitive-complexity.Threshold
-    value: '20'
-  - key: readability-function-cognitive-complexity.IgnoreMacros
-    value: 'true'
-  - key: readability-function-size.BranchThreshold
-    value: '10'
-  - key: readability-function-size.LineThreshold
-    value: '100'
-  - key: readability-function-size.ParameterThreshold
-    value: '7'
-  - key: readability-function-size.StatementThreshold
-    value: '60'
-  - key: readability-identifier-naming.ClassCase
-    value: CamelCase
-  - key: readability-identifier-naming.ConstantCase
-    value: camelBack
-  - key: readability-identifier-naming.EnumCase
-    value: CamelCase
-  - key: readability-identifier-naming.FunctionCase
-    value: camelBack
-  - key: readability-identifier-naming.MacroDefinitionCase
-    value: UPPER_CASE
-  - key: readability-identifier-naming.MemberCase
-    value: camelBack
-  - key: readability-identifier-naming.MemberPrefix
-    value: ''
-  - key: readability-identifier-naming.MemberSuffix
-    value: ''
-  - key: readability-identifier-naming.MethodCase
-    value: camelBack
-  - key: readability-identifier-naming.NamespaceCase
-    value: lower_case
-  - key: readability-identifier-naming.ParameterCase
-    value: camelBack
-  - key: readability-identifier-naming.StructCase
-    value: CamelCase
-  - key: readability-identifier-naming.TypedefCase
-    value: CamelCase
-  - key: readability-identifier-naming.TypeAliasCase
-    value: CamelCase
-  - key: readability-identifier-naming.TypeTemplateParameterCase
-    value: CamelCase
-  - key: readability-identifier-naming.TypeTemplateParameterIgnoredRegexp
-    value: expr-type
-  - key: readability-identifier-naming.UnionCase
-    value: CamelCase
-  - key: readability-identifier-naming.VariableCase
-    value: camelBack
-  - key: readability-magic-numbers.IgnoreAllFloatingPointValues
-    value: 'true'
-  - key: readability-magic-numbers.IgnoreBitFieldsWidths
-    value: 'true'
-  - key: readability-magic-numbers.IgnorePowersOf2IntegerValues
-    value: 'true'
-  - key: readability-simplify-boolean-expr.ChainedConditionalAssignment
-    value: 'true'
-  - key: readability-simplify-boolean-expr.ChainedConditionalReturn
-    value: 'true'
+  readability-function-cognitive-complexity.Threshold: 20
+  readability-function-cognitive-complexity.IgnoreMacros: true
+  readability-function-size.BranchThreshold: 10
+  readability-function-size.LineThreshold: 100
+  readability-function-size.ParameterThreshold: 7
+  readability-function-size.StatementThreshold: 60
+  readability-identifier-naming.ClassCase: CamelCase
+  readability-identifier-naming.ConstantCase: camelBack
+  readability-identifier-naming.EnumCase: CamelCase
+  readability-identifier-naming.FunctionCase: camelBack
+  readability-identifier-naming.MacroDefinitionCase: UPPER_CASE
+  readability-identifier-naming.MemberCase: camelBack
+  readability-identifier-naming.MemberPrefix: ''
+  readability-identifier-naming.MemberSuffix: ''
+  readability-identifier-naming.MethodCase: camelBack
+  readability-identifier-naming.NamespaceCase: lower_case
+  readability-identifier-naming.ParameterCase: camelBack
+  readability-identifier-naming.StructCase: CamelCase
+  readability-identifier-naming.TypedefCase: CamelCase
+  readability-identifier-naming.TypeAliasCase: CamelCase
+  readability-identifier-naming.TypeTemplateParameterCase: CamelCase
+  readability-identifier-naming.TypeTemplateParameterIgnoredRegexp: expr-type
+  readability-identifier-naming.UnionCase: CamelCase
+  readability-identifier-naming.VariableCase: camelBack
+  readability-magic-numbers.IgnoreAllFloatingPointValues: true
+  readability-magic-numbers.IgnoreBitFieldsWidths: true
+  readability-magic-numbers.IgnorePowersOf2IntegerValues: true
+  readability-simplify-boolean-expr.ChainedConditionalAssignment: true
+  readability-simplify-boolean-expr.ChainedConditionalReturn: true
 UseColor: true
 WarningsAsErrors: '*'
 ...
