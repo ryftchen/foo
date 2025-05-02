@@ -32,6 +32,7 @@ public:
     //! @brief Destroy the ArithmeticTestBase object.
     ~ArithmeticTestBase() override = default;
 
+protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
@@ -89,6 +90,7 @@ public:
     //! @brief Destroy the DivisorTestBase object.
     ~DivisorTestBase() override = default;
 
+protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
@@ -136,6 +138,7 @@ public:
     //! @brief Destroy the IntegralTestBase object.
     ~IntegralTestBase() override = default;
 
+protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
@@ -236,6 +239,7 @@ public:
     //! @brief Destroy the PrimeTestBase object.
     ~PrimeTestBase() override = default;
 
+protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {

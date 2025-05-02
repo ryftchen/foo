@@ -32,6 +32,7 @@ public:
     //! @brief Destroy the LinearTestBase object.
     ~LinearTestBase() override = default;
 
+protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE("LINEAR", "BEGIN"); }
     //! @brief Tear down the test case.
@@ -69,6 +70,7 @@ public:
     //! @brief Destroy the TreeTestBase object.
     ~TreeTestBase() override = default;
 
+protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE("TREE", "BEGIN"); }
     //! @brief Tear down the test case.
