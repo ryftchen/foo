@@ -32,6 +32,7 @@ public:
     //! @brief Destroy the BehavioralTestBase object.
     ~BehavioralTestBase() override = default;
 
+protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite() { TST_DP_PRINT_TASK_TITLE("BEHAVIORAL", "BEGIN"); }
     //! @brief Tear down the test case.
@@ -139,6 +140,7 @@ public:
     //! @brief Destroy the CreationalTestBase object.
     ~CreationalTestBase() override = default;
 
+protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite() { TST_DP_PRINT_TASK_TITLE("CREATIONAL", "BEGIN"); }
     //! @brief Tear down the test case.
@@ -198,6 +200,7 @@ public:
     //! @brief Destroy the StructuralTestBase object.
     ~StructuralTestBase() override = default;
 
+protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite() { TST_DP_PRINT_TASK_TITLE("STRUCTURAL", "BEGIN"); }
     //! @brief Tear down the test case.

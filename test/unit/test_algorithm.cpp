@@ -32,6 +32,7 @@ public:
     //! @brief Destroy the MatchTestBase object.
     ~MatchTestBase() override = default;
 
+protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
@@ -125,6 +126,7 @@ public:
     //! @brief Destroy the NotationTestBase object.
     ~NotationTestBase() override = default;
 
+protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
@@ -170,6 +172,7 @@ public:
     //! @brief Destroy the OptimalTestBase object.
     ~OptimalTestBase() override = default;
 
+protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
@@ -289,13 +292,34 @@ public:
     //! @brief Destroy the SearchTestBase object.
     ~SearchTestBase() override = default;
 
+private:
+    //! @brief Update expected result.
+    static void updateExpectation()
+    {
+        if (!inputs)
+        {
+            return;
+        }
+        const auto* const orderedArray = inputs->getOrderedArray().get();
+        const auto length = inputs->getLength();
+        const auto searchKey = inputs->getSearchKey();
+        for (std::uint32_t i = 0; i < length; ++i)
+        {
+            if (searchKey == orderedArray[i])
+            {
+                expColl.emplace(i);
+            }
+        }
+    }
+
+protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
         TST_ALGO_PRINT_TASK_TITLE("SEARCH", "BEGIN");
         inputs = std::make_shared<search::InputBuilder<float>>(
             search::input::arrayLength, search::input::arrayRangeMin, search::input::arrayRangeMax);
-        updateExpColl();
+        updateExpectation();
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
@@ -314,26 +338,6 @@ public:
     static std::shared_ptr<search::InputBuilder<float>> inputs;
     //! @brief Expected result.
     static std::set<std::int64_t> expColl;
-
-private:
-    //! @brief Update expected result.
-    static void updateExpColl()
-    {
-        if (!inputs)
-        {
-            return;
-        }
-        const auto* const orderedArray = inputs->getOrderedArray().get();
-        const auto length = inputs->getLength();
-        const auto searchKey = inputs->getSearchKey();
-        for (std::uint32_t i = 0; i < length; ++i)
-        {
-            if (searchKey == orderedArray[i])
-            {
-                expColl.emplace(i);
-            }
-        }
-    }
 };
 std::shared_ptr<search::InputBuilder<float>> SearchTestBase::inputs = nullptr;
 std::set<std::int64_t> SearchTestBase::expColl = {};
@@ -368,13 +372,27 @@ public:
     //! @brief Destroy the SortTestBase object.
     ~SortTestBase() override = default;
 
+private:
+    //! @brief Update expected result.
+    static void updateExpectation()
+    {
+        if (!inputs)
+        {
+            return;
+        }
+        expColl = std::vector<std::int32_t>(
+            inputs->getRandomArray().get(), inputs->getRandomArray().get() + inputs->getLength());
+        std::sort(expColl.begin(), expColl.end());
+    }
+
+protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
         TST_ALGO_PRINT_TASK_TITLE("SORT", "BEGIN");
         inputs = std::make_shared<sort::InputBuilder<std::int32_t>>(
             sort::input::arrayLength, sort::input::arrayRangeMin, sort::input::arrayRangeMax);
-        updateExpColl();
+        updateExpectation();
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
@@ -393,19 +411,6 @@ public:
     static std::shared_ptr<sort::InputBuilder<std::int32_t>> inputs;
     //! @brief Expected result.
     static std::vector<std::int32_t> expColl;
-
-private:
-    //! @brief Update expected result.
-    static void updateExpColl()
-    {
-        if (!inputs)
-        {
-            return;
-        }
-        expColl = std::vector<std::int32_t>(
-            inputs->getRandomArray().get(), inputs->getRandomArray().get() + inputs->getLength());
-        std::sort(expColl.begin(), expColl.end());
-    }
 };
 std::shared_ptr<sort::InputBuilder<std::int32_t>> SortTestBase::inputs = nullptr;
 std::vector<std::int32_t> SortTestBase::expColl = {};
