@@ -55,7 +55,7 @@ protected:
     //! @brief Input builder.
     static std::shared_ptr<match::InputBuilder> inputs;
 };
-std::shared_ptr<match::InputBuilder> MatchTestBase::inputs = nullptr;
+std::shared_ptr<match::InputBuilder> MatchTestBase::inputs = {};
 
 //! @brief Test for the Rabin-Karp method in the solution of match.
 TEST_F(MatchTestBase, rkMethod)
@@ -149,7 +149,7 @@ protected:
     //! @brief Input builder.
     static std::shared_ptr<notation::InputBuilder> inputs;
 };
-std::shared_ptr<notation::InputBuilder> NotationTestBase::inputs = nullptr;
+std::shared_ptr<notation::InputBuilder> NotationTestBase::inputs = {};
 
 //! @brief Test for the prefix method in the solution of notation.
 TEST_F(NotationTestBase, prefixMethod)
@@ -197,7 +197,7 @@ protected:
     //! @brief Allowable error.
     static constexpr double error{1e-3};
 };
-std::shared_ptr<optimal::InputBuilder> OptimalTestBase::inputs = nullptr;
+std::shared_ptr<optimal::InputBuilder> OptimalTestBase::inputs = {};
 
 //! @brief Test for the gradient descent method in the solution of optimal.
 TEST_F(OptimalTestBase, gradientDescentMethod)
@@ -339,7 +339,7 @@ protected:
     //! @brief Expected result.
     static std::set<std::int64_t> expColl;
 };
-std::shared_ptr<search::InputBuilder<float>> SearchTestBase::inputs = nullptr;
+std::shared_ptr<search::InputBuilder<float>> SearchTestBase::inputs = {};
 std::set<std::int64_t> SearchTestBase::expColl = {};
 
 //! @brief Test for the binary method in the solution of search.
@@ -412,7 +412,7 @@ protected:
     //! @brief Expected result.
     static std::vector<std::int32_t> expColl;
 };
-std::shared_ptr<sort::InputBuilder<std::int32_t>> SortTestBase::inputs = nullptr;
+std::shared_ptr<sort::InputBuilder<std::int32_t>> SortTestBase::inputs = {};
 std::vector<std::int32_t> SortTestBase::expColl = {};
 
 //! @brief Test for the bubble method in the solution of sort.

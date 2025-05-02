@@ -55,7 +55,7 @@ protected:
     //! @brief Input builder.
     static std::shared_ptr<arithmetic::InputBuilder> inputs;
 };
-std::shared_ptr<arithmetic::InputBuilder> ArithmeticTestBase::inputs = nullptr;
+std::shared_ptr<arithmetic::InputBuilder> ArithmeticTestBase::inputs = {};
 
 //! @brief Test for the addition method in the solution of arithmetic.
 TEST_F(ArithmeticTestBase, additionMethod)
@@ -115,7 +115,7 @@ protected:
     //! @brief Expected result.
     const std::set<std::int32_t> expColl{1, 2, 3, 5, 6, 7, 10, 14, 15, 21, 30, 35, 42, 70, 105, 210};
 };
-std::shared_ptr<divisor::InputBuilder> DivisorTestBase::inputs = nullptr;
+std::shared_ptr<divisor::InputBuilder> DivisorTestBase::inputs = {};
 
 //! @brief Test for the Euclidean method in the solution of divisor.
 TEST_F(DivisorTestBase, euclideanMethod)
@@ -163,7 +163,7 @@ protected:
     //! @brief Allowable error.
     static constexpr double error{1e3};
 };
-std::shared_ptr<integral::InputBuilder> IntegralTestBase::inputs = nullptr;
+std::shared_ptr<integral::InputBuilder> IntegralTestBase::inputs = {};
 
 //! @brief Test for the trapezoidal method in the solution of integral.
 TEST_F(IntegralTestBase, trapezoidalMethod)
@@ -277,7 +277,7 @@ protected:
         // NOLINTEND(readability-magic-numbers)
     }
 };
-std::shared_ptr<prime::InputBuilder> PrimeTestBase::inputs = nullptr;
+std::shared_ptr<prime::InputBuilder> PrimeTestBase::inputs = {};
 
 //! @brief Test for the Eratosthenes method in the solution of prime.
 TEST_F(PrimeTestBase, eratosthenesMethod)
