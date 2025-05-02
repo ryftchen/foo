@@ -22,3 +22,12 @@ define fc
     set follow-fork-mode child
     echo set follow-fork-mode child\n
 end
+
+define sl
+    set scheduler-locking on
+    echo set scheduler-locking on\n
+end
+define su
+    set scheduler-locking off
+    echo set scheduler-locking off\n
+end
