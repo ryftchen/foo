@@ -200,7 +200,7 @@ std::ostringstream& output()
 
 namespace prototype
 {
-std::unique_ptr<Prototype> Client::types[2] = {nullptr, nullptr};
+std::unique_ptr<Prototype> Client::types[2] = {};
 const int Client::nTypes = 2;
 
 std::unique_ptr<Prototype> ConcretePrototypeA::clone()
@@ -251,7 +251,7 @@ std::ostringstream& output()
 
 namespace singleton
 {
-std::shared_ptr<Singleton> Singleton::instance = nullptr;
+std::shared_ptr<Singleton> Singleton::instance = {};
 
 std::shared_ptr<Singleton>& Singleton::get()
 {
