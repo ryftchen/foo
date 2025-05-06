@@ -19,7 +19,7 @@ const char* version() noexcept
 
 //! @brief Get the algorithm choice manager.
 //! @return reference of the ApplyAlgorithm object
-ApplyAlgorithm& manager()
+ApplyAlgorithm& manager() noexcept
 {
     static ApplyAlgorithm manager{};
     return manager;

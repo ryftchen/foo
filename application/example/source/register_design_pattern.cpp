@@ -19,7 +19,7 @@ const char* version() noexcept
 
 //! @brief Get the design pattern choice manager.
 //! @return reference of the ApplyDesignPattern object
-ApplyDesignPattern& manager()
+ApplyDesignPattern& manager() noexcept
 {
     static ApplyDesignPattern manager{};
     return manager;

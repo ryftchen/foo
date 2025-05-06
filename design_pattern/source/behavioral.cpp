@@ -72,7 +72,7 @@ void ConcreteHandler2::handleRequest()
 
 //! @brief Output stream for the chain of responsibility pattern. Need to be cleared manually.
 //! @return reference of the output stream object, which is on string based
-std::ostringstream& output()
+std::ostringstream& output() noexcept
 {
     static std::ostringstream process{};
     return process;
@@ -114,7 +114,7 @@ void Invoker::confirm()
 
 //! @brief Output stream for the command pattern. Need to be cleared manually.
 //! @return reference of the output stream object, which is on string based
-std::ostringstream& output()
+std::ostringstream& output() noexcept
 {
     static std::ostringstream process{};
     return process;
@@ -156,7 +156,7 @@ bool NonTerminalExpression::interpret(const std::shared_ptr<Context>& context)
 
 //! @brief Output stream for the interpreter pattern. Need to be cleared manually.
 //! @return reference of the output stream object, which is on string based
-std::ostringstream& output()
+std::ostringstream& output() noexcept
 {
     static std::ostringstream process{};
     return process;
@@ -213,7 +213,7 @@ int ConcreteIterator::currentItem() const
 
 //! @brief Output stream for the iterator pattern. Need to be cleared manually.
 //! @return reference of the output stream object, which is on string based
-std::ostringstream& output()
+std::ostringstream& output() noexcept
 {
     static std::ostringstream process{};
     return process;
@@ -265,7 +265,7 @@ void ConcreteColleague::receive(const std::string_view msg)
 
 //! @brief Output stream for the mediator pattern. Need to be cleared manually.
 //! @return reference of the output stream object, which is on string based
-std::ostringstream& output()
+std::ostringstream& output() noexcept
 {
     static std::ostringstream process{};
     return process;
@@ -335,7 +335,7 @@ void CareTaker::undo()
 
 //! @brief Output stream for the memento pattern. Need to be cleared manually.
 //! @return reference of the output stream object, which is on string based
-std::ostringstream& output()
+std::ostringstream& output() noexcept
 {
     static std::ostringstream process{};
     return process;
@@ -394,7 +394,7 @@ void ConcreteSubject::setState(const int s)
 
 //! @brief Output stream for the observer pattern. Need to be cleared manually.
 //! @return reference of the output stream object, which is on string based
-std::ostringstream& output()
+std::ostringstream& output() noexcept
 {
     static std::ostringstream process{};
     return process;
@@ -434,7 +434,7 @@ void Context::request()
 
 //! @brief Output stream for the state pattern. Need to be cleared manually.
 //! @return reference of the output stream object, which is on string based
-std::ostringstream& output()
+std::ostringstream& output() noexcept
 {
     static std::ostringstream process{};
     return process;
@@ -465,7 +465,7 @@ void Context::contextInterface()
 
 //! @brief Output stream for the strategy pattern. Need to be cleared manually.
 //! @return reference of the output stream object, which is on string based
-std::ostringstream& output()
+std::ostringstream& output() noexcept
 {
     static std::ostringstream process{};
     return process;
@@ -492,7 +492,7 @@ void ConcreteClass::primitiveOperation2()
 
 //! @brief Output stream for the template method pattern. Need to be cleared manually.
 //! @return reference of the output stream object, which is on string based
-std::ostringstream& output()
+std::ostringstream& output() noexcept
 {
     static std::ostringstream process{};
     return process;
@@ -533,7 +533,7 @@ void ConcreteElementB::accept(Visitor& visitor)
 
 //! @brief Output stream for the visitor pattern. Need to be cleared manually.
 //! @return reference of the output stream object, which is on string based
-std::ostringstream& output()
+std::ostringstream& output() noexcept
 {
     static std::ostringstream process{};
     return process;

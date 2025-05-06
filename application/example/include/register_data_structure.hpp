@@ -117,7 +117,7 @@ protected:
         return os;
     }
 };
-extern ApplyDataStructure& manager();
+extern ApplyDataStructure& manager() noexcept;
 
 //! @brief Update choice.
 //! @tparam T - type of target instance

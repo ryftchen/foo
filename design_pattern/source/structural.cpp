@@ -37,7 +37,7 @@ void Adapter::request()
 
 //! @brief Output stream for the adapter pattern. Need to be cleared manually.
 //! @return reference of the output stream object, which is on string based
-std::ostringstream& output()
+std::ostringstream& output() noexcept
 {
     static std::ostringstream process{};
     return process;
@@ -63,7 +63,7 @@ void RefinedAbstraction::operation()
 
 //! @brief Output stream for the bridge pattern. Need to be cleared manually.
 //! @return reference of the output stream object, which is on string based
-std::ostringstream& output()
+std::ostringstream& output() noexcept
 {
     static std::ostringstream process{};
     return process;
@@ -119,7 +119,7 @@ void Leaf::operation()
 
 //! @brief Output stream for the composite pattern. Need to be cleared manually.
 //! @return reference of the output stream object, which is on string based
-std::ostringstream& output()
+std::ostringstream& output() noexcept
 {
     static std::ostringstream process{};
     return process;
@@ -153,7 +153,7 @@ void ConcreteDecoratorB::operation()
 
 //! @brief Output stream for the decorator pattern. Need to be cleared manually.
 //! @return reference of the output stream object, which is on string based
-std::ostringstream& output()
+std::ostringstream& output() noexcept
 {
     static std::ostringstream process{};
     return process;
@@ -190,7 +190,7 @@ void Facade::operation2()
 
 //! @brief Output stream for the facade pattern. Need to be cleared manually.
 //! @return reference of the output stream object, which is on string based
-std::ostringstream& output()
+std::ostringstream& output() noexcept
 {
     static std::ostringstream process{};
     return process;
@@ -230,7 +230,7 @@ std::unique_ptr<Flyweight>& FlyweightFactory::getFlyweight(const int key)
 
 //! @brief Output stream for the flyweight pattern. Need to be cleared manually.
 //! @return reference of the output stream object, which is on string based
-std::ostringstream& output()
+std::ostringstream& output() noexcept
 {
     static std::ostringstream process{};
     return process;
@@ -269,7 +269,7 @@ RealSubject& Proxy::realSubject()
 
 //! @brief Output stream for the proxy pattern. Need to be cleared manually.
 //! @return reference of the output stream object, which is on string based
-std::ostringstream& output()
+std::ostringstream& output() noexcept
 {
     static std::ostringstream process{};
     return process;

@@ -68,7 +68,7 @@ public:
     void handleRequest() override;
 };
 
-extern std::ostringstream& output();
+extern std::ostringstream& output() noexcept;
 } // namespace chain_of_responsibility
 
 //! @brief The command pattern.
@@ -130,7 +130,7 @@ private:
     std::weak_ptr<Command> command{};
 };
 
-extern std::ostringstream& output();
+extern std::ostringstream& output() noexcept;
 } // namespace command
 
 //! @brief The interpreter pattern.
@@ -213,7 +213,7 @@ private:
     std::shared_ptr<AbstractExpression> rightOp{};
 };
 
-extern std::ostringstream& output();
+extern std::ostringstream& output() noexcept;
 } // namespace interpreter
 
 //! @brief The iterator pattern.
@@ -306,7 +306,7 @@ private:
     std::uint32_t index{0};
 };
 
-extern std::ostringstream& output();
+extern std::ostringstream& output() noexcept;
 } // namespace iterator
 
 //! @brief The mediator pattern.
@@ -402,7 +402,7 @@ public:
     void receive(const std::string_view msg) override;
 };
 
-extern std::ostringstream& output();
+extern std::ostringstream& output() noexcept;
 } // namespace mediator
 
 //! @brief The memento pattern.
@@ -472,7 +472,7 @@ private:
     std::vector<std::shared_ptr<Memento>> history{};
 };
 
-extern std::ostringstream& output();
+extern std::ostringstream& output() noexcept;
 } // namespace memento
 
 //! @brief The observer pattern.
@@ -565,7 +565,7 @@ private:
     int subjectState{0};
 };
 
-extern std::ostringstream& output();
+extern std::ostringstream& output() noexcept;
 } // namespace observer
 
 //! @brief The state pattern.
@@ -622,7 +622,7 @@ private:
     std::unique_ptr<State> state{};
 };
 
-extern std::ostringstream& output();
+extern std::ostringstream& output() noexcept;
 } // namespace state
 
 //! @brief The strategy pattern.
@@ -679,7 +679,7 @@ private:
     std::unique_ptr<Strategy> strategy{};
 };
 
-extern std::ostringstream& output();
+extern std::ostringstream& output() noexcept;
 } // namespace strategy
 
 //! @brief The template method pattern.
@@ -713,7 +713,7 @@ public:
     void primitiveOperation2() override;
 };
 
-extern std::ostringstream& output();
+extern std::ostringstream& output() noexcept;
 } // namespace template_method
 
 //! @brief The visitor pattern.
@@ -803,7 +803,7 @@ public:
     void accept(Visitor& visitor) override;
 };
 
-extern std::ostringstream& output();
+extern std::ostringstream& output() noexcept;
 } // namespace visitor
 } // namespace behavioral
 } // namespace design_pattern

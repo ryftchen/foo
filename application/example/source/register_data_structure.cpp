@@ -19,7 +19,7 @@ const char* version() noexcept
 
 //! @brief Get the data structure choice manager.
 //! @return reference of the ApplyDataStructure object
-ApplyDataStructure& manager()
+ApplyDataStructure& manager() noexcept
 {
     static ApplyDataStructure manager{};
     return manager;
