@@ -138,7 +138,7 @@ public:
     std::unique_ptr<ProductB> createProductB() override;
 };
 
-extern std::ostringstream& output();
+extern std::ostringstream& output() noexcept;
 } // namespace abstract_factory
 
 //! @brief The builder pattern.
@@ -237,7 +237,7 @@ private:
     std::unique_ptr<Builder> builder{};
 };
 
-extern std::ostringstream& output();
+extern std::ostringstream& output() noexcept;
 } // namespace builder
 
 //! @brief The factory method pattern.
@@ -314,7 +314,7 @@ public:
     void removeProduct(std::unique_ptr<Product>& product) override;
 };
 
-extern std::ostringstream& output();
+extern std::ostringstream& output() noexcept;
 } // namespace factory_method
 
 //! @brief The prototype pattern.
@@ -385,7 +385,7 @@ private:
     static const int nTypes;
 };
 
-extern std::ostringstream& output();
+extern std::ostringstream& output() noexcept;
 } // namespace prototype
 
 //! @brief The singleton factory pattern.
@@ -418,7 +418,7 @@ private:
     static std::shared_ptr<Singleton> instance;
 };
 
-extern std::ostringstream& output();
+extern std::ostringstream& output() noexcept;
 } // namespace singleton
 } // namespace creational
 } // namespace design_pattern

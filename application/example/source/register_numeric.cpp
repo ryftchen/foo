@@ -19,7 +19,7 @@ const char* version() noexcept
 
 //! @brief Get the numeric choice manager.
 //! @return reference of the ApplyNumeric object
-ApplyNumeric& manager()
+ApplyNumeric& manager() noexcept
 {
     static ApplyNumeric manager{};
     return manager;

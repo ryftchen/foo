@@ -249,7 +249,7 @@ void destroyBSTree(BSTree tree)
     ::delete tree;
 }
 
-std::ostringstream& Output::output()
+std::ostringstream& Output::output() noexcept
 {
     return process;
 }
@@ -566,7 +566,7 @@ void destroyAVLTree(AVLTree tree)
     ::delete tree;
 }
 
-std::ostringstream& Output::output()
+std::ostringstream& Output::output() noexcept
 {
     return process;
 }
@@ -871,7 +871,7 @@ void destroySplayTree(SplayTree tree)
     ::delete tree;
 }
 
-std::ostringstream& Output::output()
+std::ostringstream& Output::output() noexcept
 {
     return process;
 }

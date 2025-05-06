@@ -65,7 +65,7 @@ public:
 
     //! @brief Flush the output stream.
     //! @return reference of the output stream object, which is on string based
-    std::ostringstream& output();
+    std::ostringstream& output() noexcept;
     //! @brief The pre-order traversal of the binary search tree.
     //! @param tree - tree root, the target binary search tree has this node as the root node
     void preorderBSTree(BSTree tree);
@@ -140,7 +140,7 @@ public:
 
     //! @brief Flush the output stream.
     //! @return reference of the output stream object, which is on string based
-    std::ostringstream& output();
+    std::ostringstream& output() noexcept;
     //! @brief The pre-order traversal of the AVL tree.
     //! @param tree - tree root, the target AVL tree has this node as the root node
     void preorderAVLTree(AVLTree tree);
@@ -209,7 +209,7 @@ public:
 
     //! @brief Flush the output stream.
     //! @return reference of the output stream object, which is on string based
-    std::ostringstream& output();
+    std::ostringstream& output() noexcept;
     //! @brief The pre-order traversal of the splay tree.
     //! @param tree - tree root, the target splay tree has this node as the root node
     void preorderSplayTree(SplayTree tree);

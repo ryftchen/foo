@@ -392,7 +392,7 @@ bool queueIsEmpty(Queue head)
 }
 } // namespace queue
 
-std::ostringstream& Output::output()
+std::ostringstream& Output::output() noexcept
 {
     return process;
 }

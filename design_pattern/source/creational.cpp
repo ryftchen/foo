@@ -60,7 +60,7 @@ std::unique_ptr<ProductB> ConcreteFactoryY::createProductB()
 
 //! @brief Output stream for the abstract factory pattern. Need to be cleared manually.
 //! @return reference of the output stream object, which is on string based
-std::ostringstream& output()
+std::ostringstream& output() noexcept
 {
     static std::ostringstream process{};
     return process;
@@ -155,7 +155,7 @@ void Director::construct()
 
 //! @brief Output stream for the builder pattern. Need to be cleared manually.
 //! @return reference of the output stream object, which is on string based
-std::ostringstream& output()
+std::ostringstream& output() noexcept
 {
     static std::ostringstream process{};
     return process;
@@ -191,7 +191,7 @@ void ConcreteCreator::removeProduct(std::unique_ptr<Product>& product)
 
 //! @brief Output stream for the factory method pattern. Need to be cleared manually.
 //! @return reference of the output stream object, which is on string based
-std::ostringstream& output()
+std::ostringstream& output() noexcept
 {
     static std::ostringstream process{};
     return process;
@@ -242,7 +242,7 @@ std::unique_ptr<Prototype> Client::make(const int index)
 
 //! @brief Output stream for the prototype pattern. Need to be cleared manually.
 //! @return reference of the output stream object, which is on string based
-std::ostringstream& output()
+std::ostringstream& output() noexcept
 {
     static std::ostringstream process{};
     return process;
@@ -278,7 +278,7 @@ void Singleton::tell()
 
 //! @brief Output stream for the singleton pattern. Need to be cleared manually.
 //! @return reference of the output stream object, which is on string based
-std::ostringstream& output()
+std::ostringstream& output() noexcept
 {
     static std::ostringstream process{};
     return process;

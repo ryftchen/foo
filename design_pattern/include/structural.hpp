@@ -58,7 +58,7 @@ private:
     std::unique_ptr<Adaptee> adaptee{};
 };
 
-extern std::ostringstream& output();
+extern std::ostringstream& output() noexcept;
 } // namespace adapter
 
 //! @brief The bridge pattern.
@@ -126,7 +126,7 @@ private:
     const std::unique_ptr<Implementor> implementor{};
 };
 
-extern std::ostringstream& output();
+extern std::ostringstream& output() noexcept;
 } // namespace bridge
 
 //! @brief The composite pattern.
@@ -195,7 +195,7 @@ private:
     const int id{0};
 };
 
-extern std::ostringstream& output();
+extern std::ostringstream& output() noexcept;
 } // namespace composite
 
 //! @brief The decorator pattern.
@@ -265,7 +265,7 @@ public:
     void operation() override;
 };
 
-extern std::ostringstream& output();
+extern std::ostringstream& output() noexcept;
 } // namespace decorator
 
 //! @brief The facade pattern.
@@ -316,7 +316,7 @@ private:
     const std::shared_ptr<SubsystemC> subsystemC{};
 };
 
-extern std::ostringstream& output();
+extern std::ostringstream& output() noexcept;
 } // namespace facade
 
 //! @brief The flyweight pattern.
@@ -386,7 +386,7 @@ private:
     std::map<int, std::unique_ptr<Flyweight>> flies{};
 };
 
-extern std::ostringstream& output();
+extern std::ostringstream& output() noexcept;
 } // namespace flyweight
 
 //! @brief The proxy pattern.
@@ -431,7 +431,7 @@ protected:
     RealSubject& realSubject();
 };
 
-extern std::ostringstream& output();
+extern std::ostringstream& output() noexcept;
 } // namespace proxy
 } // namespace structural
 } // namespace design_pattern

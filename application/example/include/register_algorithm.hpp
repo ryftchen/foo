@@ -219,7 +219,7 @@ protected:
         return os;
     }
 };
-extern ApplyAlgorithm& manager();
+extern ApplyAlgorithm& manager() noexcept;
 
 //! @brief Update choice.
 //! @tparam T - type of target method

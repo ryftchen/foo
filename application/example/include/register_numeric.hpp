@@ -174,7 +174,7 @@ protected:
         return os;
     }
 };
-extern ApplyNumeric& manager();
+extern ApplyNumeric& manager() noexcept;
 
 //! @brief Update choice.
 //! @tparam T - type of target method

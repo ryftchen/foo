@@ -174,7 +174,7 @@ protected:
         return os;
     }
 };
-extern ApplyDesignPattern& manager();
+extern ApplyDesignPattern& manager() noexcept;
 
 //! @brief Update choice.
 //! @tparam T - type of target instance

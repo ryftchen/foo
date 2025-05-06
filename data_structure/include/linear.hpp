@@ -93,7 +93,7 @@ public:
 
     //! @brief Flush the output stream.
     //! @return reference of the output stream object, which is on string based
-    std::ostringstream& output();
+    std::ostringstream& output() noexcept;
 
 private:
     //! @brief Output stream of the data structure.
