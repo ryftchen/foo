@@ -93,7 +93,7 @@ public:
 };
 
 //! @brief Provide the abstract interface for creating the family of products.
-//!        It never has to instantiate a product object
+//!        It never has to instantiate a product object.
 class AbstractFactory
 {
 public:
