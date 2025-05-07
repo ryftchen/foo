@@ -27,7 +27,11 @@ const char* version() noexcept
 static std::string errnoString()
 {
     char buffer[64] = {'\0'};
-    return !::strerror_r(errno, buffer, sizeof(buffer)) ? std::string{buffer} : "Unknown error";
+#ifdef _GNU_SOURCE
+    return ::strerror_r(errno, buffer, sizeof(buffer));
+#else
+    return (::strerror_r(errno, buffer, sizeof(buffer)) == 0) ? buffer : "Unknown error";
+#endif // _GNU_SOURCE
 }
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
