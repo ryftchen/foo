@@ -545,7 +545,7 @@ inline consteval std::size_t abbrValue(const T method)
 
 // clang-format off
 //! @brief Mapping table for enum and string about match methods. X macro.
-#define REG_ALGO_MATCH_METHOD_TABLE            \
+#define REG_ALGO_MATCH_METHOD_TABLE         \
     X(rabinKarp       , "rabinKarp"       ) \
     X(knuthMorrisPratt, "knuthMorrisPratt") \
     X(boyerMoore      , "boyerMoore"      ) \
@@ -570,7 +570,7 @@ inline constexpr std::string_view toString(const MatchMethod method)
 // clang-format off
 //! @brief Mapping table for enum and string about notation methods. X macro.
 #define REG_ALGO_NOTATION_METHOD_TABLE \
-    X(prefix , "prefix" )           \
+    X(prefix , "prefix" )              \
     X(postfix, "postfix")
 // clang-format on
 //! @brief Convert method enumeration to string.
@@ -591,11 +591,11 @@ inline constexpr std::string_view toString(const NotationMethod method)
 // clang-format off
 //! @brief Mapping table for enum and string about optimal methods. X macro.
 #define REG_ALGO_OPTIMAL_METHOD_TABLE \
-    X(gradient , "gradient" )      \
-    X(tabu     , "tabu"     )      \
-    X(annealing, "annealing")      \
-    X(particle , "particle" )      \
-    X(ant      , "ant"      )      \
+    X(gradient , "gradient" )         \
+    X(tabu     , "tabu"     )         \
+    X(annealing, "annealing")         \
+    X(particle , "particle" )         \
+    X(ant      , "ant"      )         \
     X(genetic  , "genetic"  )
 // clang-format on
 //! @brief Convert method enumeration to string.
@@ -615,7 +615,7 @@ inline constexpr std::string_view toString(const OptimalMethod method)
 
 // clang-format off
 //! @brief Mapping table for enum and string about search methods. X macro.
-#define REG_ALGO_SEARCH_METHOD_TABLE     \
+#define REG_ALGO_SEARCH_METHOD_TABLE  \
     X(binary       , "binary"       ) \
     X(interpolation, "interpolation") \
     X(fibonacci    , "fibonacci"    )
@@ -638,15 +638,15 @@ inline constexpr std::string_view toString(const SearchMethod method)
 // clang-format off
 //! @brief Mapping table for enum and string about sort methods. X macro.
 #define REG_ALGO_SORT_METHOD_TABLE \
-    X(bubble   , "bubble"   )   \
-    X(selection, "selection")   \
-    X(insertion, "insertion")   \
-    X(shell    , "shell"    )   \
-    X(merge    , "merge"    )   \
-    X(quick    , "quick"    )   \
-    X(heap     , "heap"     )   \
-    X(counting , "counting" )   \
-    X(bucket   , "bucket"   )   \
+    X(bubble   , "bubble"   )      \
+    X(selection, "selection")      \
+    X(insertion, "insertion")      \
+    X(shell    , "shell"    )      \
+    X(merge    , "merge"    )      \
+    X(quick    , "quick"    )      \
+    X(heap     , "heap"     )      \
+    X(counting , "counting" )      \
+    X(bucket   , "bucket"   )      \
     X(radix    , "radix"    )
 // clang-format on
 //! @brief Convert method enumeration to string.
