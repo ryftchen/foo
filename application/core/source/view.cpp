@@ -243,35 +243,35 @@ void View::service()
 retry:
     try
     {
-        assert(safeCurrentState() == State::init);
-        safeProcessEvent(CreateServer{});
+        assert(currentState() == State::init);
+        processEvent(CreateServer{});
 
-        assert(safeCurrentState() == State::idle);
+        assert(currentState() == State::idle);
         awaitNotification2Ongoing();
-        safeProcessEvent(GoViewing{});
+        processEvent(GoViewing{});
 
-        assert(safeCurrentState() == State::work);
+        assert(currentState() == State::work);
         awaitNotification2View();
         if (toReset.load())
         {
-            safeProcessEvent(Relaunch{});
+            processEvent(Relaunch{});
             goto retry;
         }
-        safeProcessEvent(DestroyServer{});
+        processEvent(DestroyServer{});
 
-        assert(safeCurrentState() == State::idle);
-        safeProcessEvent(NoViewing{});
+        assert(currentState() == State::idle);
+        processEvent(NoViewing{});
 
-        assert(safeCurrentState() == State::done);
+        assert(currentState() == State::done);
     }
     catch (const std::exception& err)
     {
-        LOG_ERR << "Suspend the " << name << " during " << safeCurrentState() << " state. " << err.what();
+        LOG_ERR << "Suspend the " << name << " during " << State(currentState()) << " state. " << err.what();
 
-        safeProcessEvent(Standby{});
+        processEvent(Standby{});
         if (awaitNotification2Retry())
         {
-            safeProcessEvent(Relaunch{});
+            processEvent(Relaunch{});
             goto retry;
         }
     }
@@ -950,34 +950,9 @@ void View::renewServer<utility::socket::UDPServer>()
     };
 }
 
-View::State View::safeCurrentState() const
-{
-    stateLock.lock();
-    const auto state = State(currentState());
-    stateLock.unlock();
-
-    return state;
-}
-
-template <typename T>
-void View::safeProcessEvent(const T& event)
-{
-    stateLock.lock();
-    try
-    {
-        processEvent(event);
-    }
-    catch (...)
-    {
-        stateLock.unlock();
-        throw;
-    }
-    stateLock.unlock();
-}
-
 bool View::isInServingState(const State state) const
 {
-    return (safeCurrentState() == state) && !toReset.load();
+    return (currentState() == state) && !toReset.load();
 }
 
 void View::createViewServer()

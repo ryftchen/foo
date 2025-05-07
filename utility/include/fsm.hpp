@@ -6,8 +6,7 @@
 
 #pragma once
 
-#include <atomic>
-#include <stdexcept>
+#include <mutex>
 
 //! @brief The utility module.
 namespace utility // NOLINT(modernize-concat-nested-namespaces)
@@ -29,7 +28,7 @@ using InvokeResultType = std::invoke_result_t<Func, Args...>;
 //! @param args - function arguments
 //! @return result from calls
 template <typename Func, typename... Args>
-inline InvokeResultType<Func, Args...> invokeCallable(Func&& func, Args&&... args)
+inline constexpr InvokeResultType<Func, Args...> invokeCallable(Func&& func, Args&&... args)
 {
     return func(args...);
 }
@@ -43,7 +42,7 @@ inline InvokeResultType<Func, Args...> invokeCallable(Func&& func, Args&&... arg
 //! @param args - function arguments
 //! @return result from calls
 template <typename Ret, typename T1, typename T2, typename... Args>
-inline InvokeResultType<Ret T1::*, T2, Args...> invokeCallable(Ret T1::*func, T2&& obj, Args&&... args)
+inline constexpr InvokeResultType<Ret T1::*, T2, Args...> invokeCallable(Ret T1::*func, T2&& obj, Args&&... args)
 {
     return (obj.*func)(args...);
 }
@@ -77,7 +76,10 @@ struct FlexInvokeHelper<Func, Arg1, Arg2, true, false, false, false>
     //! @brief Invoke operation.
     //! @param func - callable function
     //! @return invoke result
-    static inline ReturnType invoke(Func&& func, Arg1&& /*arg1*/, Arg2&& /*arg2*/) { return invokeCallable(func); }
+    static inline constexpr ReturnType invoke(Func&& func, Arg1&& /*arg1*/, Arg2&& /*arg2*/)
+    {
+        return invokeCallable(func);
+    }
 };
 //! @brief Flexible invoke helper. Include only Arg1.
 //! @tparam Func - type of callable function
@@ -92,7 +94,10 @@ struct FlexInvokeHelper<Func, Arg1, Arg2, false, true, false, false>
     //! @param func - callable function
     //! @param arg1 - function argument
     //! @return invoke result
-    static inline ReturnType invoke(Func&& func, Arg1&& arg1, Arg2&& /*arg2*/) { return invokeCallable(func, arg1); }
+    static inline constexpr ReturnType invoke(Func&& func, Arg1&& arg1, Arg2&& /*arg2*/)
+    {
+        return invokeCallable(func, arg1);
+    }
 };
 //! @brief Flexible invoke helper. Include only Arg2.
 //! @tparam Func - type of callable function
@@ -107,7 +112,10 @@ struct FlexInvokeHelper<Func, Arg1, Arg2, false, false, true, false>
     //! @param func - callable function
     //! @param arg2 - function arguments
     //! @return invoke result
-    static inline ReturnType invoke(Func&& func, Arg1&& /*arg1*/, Arg2&& arg2) { return invokeCallable(func, arg2); }
+    static inline constexpr ReturnType invoke(Func&& func, Arg1&& /*arg1*/, Arg2&& arg2)
+    {
+        return invokeCallable(func, arg2);
+    }
 };
 //! @brief Flexible invoke helper. Include both Arg1 and Arg2.
 //! @tparam Func - type of callable function
@@ -123,7 +131,10 @@ struct FlexInvokeHelper<Func, Arg1, Arg2, false, false, false, true>
     //! @param arg1 - function arguments
     //! @param arg2 - function arguments
     //! @return invoke result
-    static inline ReturnType invoke(Func&& func, Arg1&& arg1, Arg2&& arg2) { return invokeCallable(func, arg1, arg2); }
+    static inline constexpr ReturnType invoke(Func&& func, Arg1&& arg1, Arg2&& arg2)
+    {
+        return invokeCallable(func, arg1, arg2);
+    }
 };
 
 //! @brief Alias for adaptive invoke result type.
@@ -141,7 +152,7 @@ using AdaptInvokeResultType = typename FlexInvokeHelper<Func, Arg1, Arg2>::Retur
 //! @param arg2 - function arguments
 //! @return result from calls
 template <typename Func, typename Arg1, typename Arg2>
-inline AdaptInvokeResultType<Func, Arg1, Arg2> adaptiveInvoke(Func&& func, Arg1&& arg1, Arg2&& arg2)
+inline constexpr AdaptInvokeResultType<Func, Arg1, Arg2> adaptiveInvoke(Func&& func, Arg1&& arg1, Arg2&& arg2)
 {
     return FlexInvokeHelper<Func, Arg1, Arg2>::invoke(
         std::forward<Func>(func), std::forward<Arg1>(arg1), std::forward<Arg2>(arg2));
@@ -251,7 +262,7 @@ private:
         //! @param self - derived object
         //! @param event - event to be processed
         template <typename Action>
-        static inline void processEvent(Action&& action, Derived& self, const Event& event)
+        static inline constexpr void processEvent(Action&& action, Derived& self, const Event& event)
         {
             adaptiveInvoke(action, self, event);
         }
@@ -268,7 +279,7 @@ private:
         //! @param event - event to be processed
         //! @return pass or not pass
         template <typename Guard>
-        static inline bool checkGuard(Guard&& guard, const Derived& self, const Event& event)
+        static inline constexpr bool checkGuard(Guard&& guard, const Derived& self, const Event& event)
         {
             return adaptiveInvoke(guard, self, event);
         }
@@ -325,7 +336,7 @@ private:
         //! @param event - event to be processed
         //! @param state - source state
         //! @return state after execute
-        static inline State execute(Derived& self, const Event& event, const State state)
+        static inline constexpr State execute(Derived& self, const Event& event, const State state)
         {
             return ((T::sourceValue() == state) && T::checkGuard(self, event))
                 ? (T::processEvent(self, event), T::targetValue())
@@ -341,40 +352,16 @@ private:
         //! @param self - derived object
         //! @param event - event to be processed
         //! @return state after execute
-        static inline State execute(Derived& self, const Event& event, const State /*state*/)
+        static inline constexpr State execute(Derived& self, const Event& event, const State /*state*/)
         {
             return self.noTransition(event);
         }
     };
 
-    //! @brief Lock of FSM procedure.
-    class ProcedureLock
-    {
-    public:
-        //! @brief Construct a new ProcedureLock object.
-        //! @param fsm - FSM object
-        explicit ProcedureLock(FSM& fsm) : isProcessing{fsm.isProcessing}
-        {
-            if (isProcessing.load())
-            {
-                throw std::logic_error{"Call process event recursively."};
-            }
-            isProcessing.store(true);
-        }
-        //! @brief Construct a new ProcedureLock object.
-        ProcedureLock() = delete;
-        //! @brief Destroy the ProcedureLock object.
-        virtual ~ProcedureLock() { isProcessing.store(false); }
-
-    private:
-        //! @brief Flag to indicate whether the FSM is processing.
-        std::atomic<bool>& isProcessing;
-    };
-
     //! @brief FSM state.
     State state{};
-    //! @brief Flag to indicate whether the FSM is processing.
-    std::atomic<bool> isProcessing{false};
+    //! @brief Mutex for controlling state.
+    mutable std::recursive_mutex mtx{};
 
 protected:
     //! @brief Alias for transition table.
@@ -409,7 +396,7 @@ protected:
         //! @brief Process the specific event.
         //! @param self - derived object
         //! @param event - event to be processed
-        static inline void processEvent(Derived& self, const Event& event)
+        static inline constexpr void processEvent(Derived& self, const Event& event)
         {
             RowBase<Source, Event, Target>::processEvent(action, self, event);
         }
@@ -417,7 +404,7 @@ protected:
         //! @param self - derived object
         //! @param event - event to be processed
         //! @return pass or not pass
-        static inline bool checkGuard(const Derived& self, const Event& event)
+        static inline constexpr bool checkGuard(const Derived& self, const Event& event)
         {
             return RowBase<Source, Event, Target>::checkGuard(guard, self, event);
         }
@@ -440,7 +427,7 @@ protected:
         //! @brief Process the specific event.
         //! @param self - derived object
         //! @param event - event to be processed
-        static inline void processEvent(Derived& self, const Event& event)
+        static inline constexpr void processEvent(Derived& self, const Event& event)
         {
             if (action)
             {
@@ -451,7 +438,7 @@ protected:
         //! @param self - derived object
         //! @param event - event to be processed
         //! @return pass or not pass
-        static inline bool checkGuard(const Derived& self, const Event& event)
+        static inline constexpr bool checkGuard(const Derived& self, const Event& event)
         {
             return guard ? RowBase<Source, Event, Target>::checkGuard(guard, self, event) : true;
         }
@@ -469,7 +456,7 @@ protected:
         //! @brief Process the specific event.
         //! @param self - derived object
         //! @param event - event to be processed
-        static inline void processEvent(Derived& self, const Event& event)
+        static inline constexpr void processEvent(Derived& self, const Event& event)
         {
             RowBase<Source, Event, Target>::processEvent(action, self, event);
         }
@@ -477,7 +464,7 @@ protected:
         //! @param self - derived object
         //! @param event - event to be processed
         //! @return pass or not pass
-        static inline bool checkGuard(const Derived& self, const Event& event)
+        static inline constexpr bool checkGuard(const Derived& self, const Event& event)
         {
             return RowBase<Source, Event, Target>::checkGuard(guard, self, event);
         }
@@ -488,16 +475,24 @@ template <typename Derived, typename State>
 template <typename Event>
 inline void FSM<Derived, State>::processEvent(const Event& event)
 {
-    using Rows = typename ByEventType<Event, typename Derived::TransitionTable>::Type;
-    ProcedureLock lock(*this);
-    static_assert(std::is_base_of_v<FSM, Derived>);
-    auto& self = static_cast<Derived&>(*this);
-    state = handleEvent<Event, Rows>::execute(self, event, state);
+    try
+    {
+        const std::lock_guard<std::recursive_mutex> lock(mtx);
+        using Rows = typename ByEventType<Event, typename Derived::TransitionTable>::Type;
+        static_assert(std::is_base_of_v<FSM, Derived>);
+        auto& self = static_cast<Derived&>(*this);
+        state = handleEvent<Event, Rows>::execute(self, event, state);
+    }
+    catch (...)
+    {
+        throw;
+    }
 }
 
 template <typename Derived, typename State>
 inline State FSM<Derived, State>::currentState() const
 {
+    const std::lock_guard<std::recursive_mutex> lock(mtx);
     return state;
 }
 
@@ -505,6 +500,7 @@ template <typename Derived, typename State>
 template <typename Event>
 inline State FSM<Derived, State>::noTransition(const Event& /*event*/)
 {
+    const std::lock_guard<std::recursive_mutex> lock(mtx);
     return state;
 }
 } // namespace fsm
