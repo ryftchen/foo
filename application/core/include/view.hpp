@@ -310,21 +310,11 @@ private:
     std::condition_variable outputCond{};
     //! @brief Flag to indicate whether the output is complete.
     std::atomic<bool> outputCompleted{false};
-    //! @brief Spin lock for controlling state.
-    mutable utility::common::SpinLock stateLock{};
     //! @brief Renew the server.
     //! @tparam T - type of server
     template <typename T>
     void renewServer();
 
-    //! @brief Safely retrieve the current state.
-    //! @return current state
-    State safeCurrentState() const;
-    //! @brief Safely process an event.
-    //! @tparam T - type of target event
-    //! @param event - target event
-    template <typename T>
-    void safeProcessEvent(const T& event);
     //! @brief Check whether it is in the uninterrupted serving state.
     //! @param state - target state
     //! @return in the uninterrupted serving state or not

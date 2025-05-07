@@ -62,35 +62,35 @@ retry:
     try
     {
         logStyle();
-        assert(safeCurrentState() == State::init);
-        safeProcessEvent(OpenFile{});
+        assert(currentState() == State::init);
+        processEvent(OpenFile{});
 
-        assert(safeCurrentState() == State::idle);
+        assert(currentState() == State::idle);
         awaitNotification2Ongoing();
-        safeProcessEvent(GoLogging{});
+        processEvent(GoLogging{});
 
-        assert(safeCurrentState() == State::work);
+        assert(currentState() == State::work);
         awaitNotification2Log();
         if (toReset.load())
         {
-            safeProcessEvent(Relaunch{});
+            processEvent(Relaunch{});
             goto retry;
         }
-        safeProcessEvent(CloseFile{});
+        processEvent(CloseFile{});
 
-        assert(safeCurrentState() == State::idle);
-        safeProcessEvent(NoLogging{});
+        assert(currentState() == State::idle);
+        processEvent(NoLogging{});
 
-        assert(safeCurrentState() == State::done);
+        assert(currentState() == State::done);
     }
     catch (const std::exception& err)
     {
-        LOG_ERR << "Suspend the " << name << " during " << safeCurrentState() << " state. " << err.what();
+        LOG_ERR << "Suspend the " << name << " during " << State(currentState()) << " state. " << err.what();
 
-        safeProcessEvent(Standby{});
+        processEvent(Standby{});
         if (awaitNotification2Retry())
         {
-            safeProcessEvent(Relaunch{});
+            processEvent(Relaunch{});
             goto retry;
         }
     }
@@ -202,7 +202,7 @@ void Log::flush(const OutputLevel severity, const std::string_view labelTpl, con
         }
         else
         {
-            const std::lock_guard<std::recursive_mutex> cacheLock(cacheMtx);
+            cacheSwitch.lock();
             std::for_each(
                 rows.begin(),
                 rows.end(),
@@ -211,6 +211,7 @@ void Log::flush(const OutputLevel severity, const std::string_view labelTpl, con
                     unprocessedCache.emplace_front(output);
                     std::cerr << changeToLogStyle(output) << std::endl;
                 });
+            cacheSwitch.unlock();
         }
     }
     catch (...)
@@ -289,34 +290,9 @@ std::vector<std::string> Log::reformatContents(const std::string_view label, con
     return std::vector<std::string>{std::ranges::begin(reformatted), std::ranges::end(reformatted)};
 }
 
-Log::State Log::safeCurrentState() const
-{
-    stateLock.lock();
-    const auto state = State(currentState());
-    stateLock.unlock();
-
-    return state;
-}
-
-template <typename T>
-void Log::safeProcessEvent(const T& event)
-{
-    stateLock.lock();
-    try
-    {
-        processEvent(event);
-    }
-    catch (...)
-    {
-        stateLock.unlock();
-        throw;
-    }
-    stateLock.unlock();
-}
-
 bool Log::isInServingState(const State state) const
 {
-    return (safeCurrentState() == state) && !toReset.load();
+    return (currentState() == state) && !toReset.load();
 }
 
 std::string Log::getFullLogPath(const std::string_view filename)
@@ -393,13 +369,14 @@ void Log::startLogging()
 {
     logWriter.lock();
 
-    const std::lock_guard<std::recursive_mutex> cacheLock(cacheMtx);
+    cacheSwitch.lock();
     while (!unprocessedCache.empty())
     {
         std::cout << historyCacheBaseColor.data() + unprocessedCache.front() + utility::common::escOff.data()
                   << std::endl;
         unprocessedCache.pop_front();
     }
+    cacheSwitch.unlock();
 }
 
 void Log::stopLogging()

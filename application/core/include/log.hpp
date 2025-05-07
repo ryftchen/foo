@@ -333,12 +333,10 @@ private:
     utility::io::FileWriter logWriter{filePath};
     //! @brief Operation lock for the log file.
     utility::common::ReadWriteLock fileLock{};
-    //! @brief Spin lock for controlling state.
-    mutable utility::common::SpinLock stateLock{};
     //! @brief The cache logs that could not be processed properly.
     std::forward_list<std::string> unprocessedCache{};
-    //! @brief Mutex for controlling cache.
-    std::recursive_mutex cacheMtx{};
+    //! @brief Spin lock for controlling cache.
+    mutable utility::common::SpinLock cacheSwitch{};
 
     //! @brief Alias for the lock mode.
     using LockMode = utility::common::ReadWriteLock::LockMode;
@@ -362,14 +360,6 @@ private:
     //! @return log contents
     static std::vector<std::string> reformatContents(const std::string_view label, const std::string_view formatted);
 
-    //! @brief Safely retrieve the current state.
-    //! @return current state
-    State safeCurrentState() const;
-    //! @brief Safely process an event.
-    //! @tparam T - type of target event
-    //! @param event - target event
-    template <typename T>
-    void safeProcessEvent(const T& event);
     //! @brief Check whether it is in the uninterrupted serving state.
     //! @param state - target state
     //! @return in the uninterrupted serving state or not
