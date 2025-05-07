@@ -68,15 +68,13 @@ public:
     //! @brief Destroy the JSON object.
     virtual ~JSON() = default;
     //! @brief Construct a new JSON object.
-    //! @param json - the object for copy constructor
-    JSON(const JSON& json) = default;
+    JSON(const JSON&) = default;
     //! @brief Construct a new JSON object.
     //! @param json - the object for move constructor
     JSON(JSON&& json) noexcept;
     //! @brief The operator (=) overloading of JSON class.
-    //! @param json - the object for copy assignment operator
     //! @return reference of the JSON object
-    JSON& operator=(const JSON& json) = default;
+    JSON& operator=(const JSON&) = default;
     //! @brief The operator (=) overloading of JSON class.
     //! @param json - the object for move assignment operator
     //! @return reference of the JSON object

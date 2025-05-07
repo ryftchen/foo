@@ -83,10 +83,7 @@ void waitForUserInput(const std::function<bool(const std::string_view)>& operati
         if (-1 == status)
         {
             ::close(epollFD);
-            char buffer[64] = {'\0'};
-            throw std::runtime_error{
-                "Failed to wait epoll when waiting for user input, errno: "
-                + (!::strerror_r(errno, buffer, sizeof(buffer)) ? std::string{buffer} : "Unknown error") + '.'};
+            throw std::runtime_error{"Failed to wait epoll when waiting for user input."};
         }
         if (0 == status)
         {
