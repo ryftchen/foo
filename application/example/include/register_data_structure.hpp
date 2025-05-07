@@ -308,8 +308,8 @@ inline consteval std::size_t abbrValue(const T instance)
 // clang-format off
 //! @brief Mapping table for enum and string about linear instances. X macro.
 #define REG_DS_LINEAR_INSTANCE_TABLE \
-    X(linkedList, "linkedList")   \
-    X(stack     , "stack"     )   \
+    X(linkedList, "linkedList")      \
+    X(stack     , "stack"     )      \
     X(queue     , "queue"     )
 // clang-format on
 //! @brief Convert instance enumeration to string.
@@ -329,7 +329,7 @@ inline constexpr std::string_view toString(const LinearInstance instance)
 
 // clang-format off
 //! @brief Mapping table for enum and string about tree instances. X macro.
-#define REG_DS_TREE_INSTANCE_TABLE                   \
+#define REG_DS_TREE_INSTANCE_TABLE                \
     X(binarySearch       , "binarySearch"       ) \
     X(adelsonVelskyLandis, "adelsonVelskyLandis") \
     X(splay              , "splay"              )

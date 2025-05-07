@@ -442,7 +442,7 @@ inline consteval std::size_t abbrValue(const T method)
 
 // clang-format off
 //! @brief Mapping table for enum and string about arithmetic methods. X macro.
-#define REG_NUM_ARITHMETIC_METHOD_TABLE    \
+#define REG_NUM_ARITHMETIC_METHOD_TABLE \
     X(addition      , "addition"      ) \
     X(subtraction   , "subtraction"   ) \
     X(multiplication, "multiplication") \
@@ -466,7 +466,7 @@ inline constexpr std::string_view toString(const ArithmeticMethod method)
 // clang-format off
 //! @brief Mapping table for enum and string about divisor methods. X macro.
 #define REG_NUM_DIVISOR_METHOD_TABLE \
-    X(euclidean, "euclidean")     \
+    X(euclidean, "euclidean")        \
     X(stein    , "stein"    )
 // clang-format on
 //! @brief Convert method enumeration to string.
@@ -487,10 +487,10 @@ inline constexpr std::string_view toString(const DivisorMethod method)
 // clang-format off
 //! @brief Mapping table for enum and string about integral methods. X macro.
 #define REG_NUM_INTEGRAL_METHOD_TABLE \
-    X(trapezoidal, "trapezoidal")  \
-    X(simpson    , "simpson"    )  \
-    X(romberg    , "romberg"    )  \
-    X(gauss      , "gauss"      )  \
+    X(trapezoidal, "trapezoidal")     \
+    X(simpson    , "simpson"    )     \
+    X(romberg    , "romberg"    )     \
+    X(gauss      , "gauss"      )     \
     X(monteCarlo , "monteCarlo" )
 // clang-format on
 //! @brief Convert method enumeration to string.
@@ -510,7 +510,7 @@ inline constexpr std::string_view toString(const IntegralMethod method)
 
 // clang-format off
 //! @brief Mapping table for enum and string about prime methods. X macro.
-#define REG_NUM_PRIME_METHOD_TABLE     \
+#define REG_NUM_PRIME_METHOD_TABLE  \
     X(eratosthenes, "eratosthenes") \
     X(euler       , "euler"       )
 // clang-format on

@@ -127,32 +127,19 @@ static action::Awaitable helperLifecycle()
     waitPoint.wait();
 }
 
-// clang-format off
-//! @brief Mapping table for enum and string about command categories. X macro.
-#define COMMAND_CATEGORY_TABLE \
-    X(console, "console")   \
-    X(dump   , "dump"   )   \
-    X(help   , "help"   )   \
-    X(version, "version")
-// clang-format on
 //! @brief Convert category enumeration to string.
 //! @param cat - the specific value of Category enum
 //! @return category name
 static constexpr std::string_view toString(const Category cat)
 {
-//! @cond
-#define X(enum, name) name,
-    constexpr std::string_view table[] = {COMMAND_CATEGORY_TABLE};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<Category>::value);
-    return table[cat];
-//! @endcond
-#undef X
+    constexpr std::array<std::string_view, Bottom<Category>::value> enumeration = {
+        MACRO_STRINGIFY(console), MACRO_STRINGIFY(dump), MACRO_STRINGIFY(help), MACRO_STRINGIFY(version)};
+    return enumeration[cat];
 }
-#undef COMMAND_CATEGORY_TABLE
 
 // clang-format off
 //! @brief Mapping table for enum and attribute about command categories. X macro.
-#define COMMAND_CATEGORY_TABLE_ATTR                                                  \
+#define COMMAND_CATEGORY_TABLE                                                    \
     X(console, "run options in console mode and exit\nseparate with quotes", "c") \
     X(dump   , "dump default configuration and exit"                       , "d") \
     X(help   , "show help and exit"                                        , "h") \
@@ -162,7 +149,7 @@ consteval std::string_view Command::getDescr(const Category cat)
 {
 //! @cond
 #define X(enum, descr, alias) {descr, alias},
-    constexpr std::string_view table[][2] = {COMMAND_CATEGORY_TABLE_ATTR};
+    constexpr std::string_view table[][2] = {COMMAND_CATEGORY_TABLE};
     static_assert((sizeof(table) / sizeof(table[0])) == Bottom<Category>::value);
     return table[cat][0];
 //! @endcond
@@ -173,13 +160,13 @@ consteval std::string_view Command::getAlias(const Category cat)
 {
 //! @cond
 #define X(enum, descr, alias) {descr, alias},
-    constexpr std::string_view table[][2] = {COMMAND_CATEGORY_TABLE_ATTR};
+    constexpr std::string_view table[][2] = {COMMAND_CATEGORY_TABLE};
     static_assert((sizeof(table) / sizeof(table[0])) == Bottom<Category>::value);
     return table[cat][1];
 //! @endcond
 #undef X
 }
-#undef COMMAND_CATEGORY_TABLE_ATTR
+#undef COMMAND_CATEGORY_TABLE
 
 Command::Command()
 {
@@ -784,22 +771,24 @@ void Command::executeInConsole() const
     const auto session = std::make_unique<console::Console>(greeting);
     registerOnConsole(*session, udpClient);
 
-    try
-    {
-        std::any_of(
-            pendingInputs.cbegin(),
-            pendingInputs.cend(),
-            [&greeting, &session](const auto& opt)
+    std::any_of(
+        pendingInputs.cbegin(),
+        pendingInputs.cend(),
+        [&greeting, &session](const auto& opt)
+        {
+            try
             {
                 using RetCode = console::Console::RetCode;
                 std::cout << greeting << opt << std::endl;
                 return session->optionExecutor(opt) == RetCode::quit;
-            });
-    }
-    catch (const std::exception& err)
-    {
-        LOG_WRN << err.what();
-    }
+            }
+            catch (const std::exception& err)
+            {
+                LOG_WRN << err.what();
+                interactionLatency();
+            }
+            return false;
+        });
     udpClient->toSend(buildExitRequest4Client());
     udpClient->waitIfAlive();
     interactionLatency();

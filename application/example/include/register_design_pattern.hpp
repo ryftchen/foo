@@ -430,7 +430,7 @@ inline consteval std::size_t abbrValue(const T instance)
 
 // clang-format off
 //! @brief Mapping table for enum and string about behavioral instances. X macro.
-#define REG_DP_BEHAVIORAL_INSTANCE_TABLE                 \
+#define REG_DP_BEHAVIORAL_INSTANCE_TABLE              \
     X(chainOfResponsibility, "chainOfResponsibility") \
     X(command              , "command"              ) \
     X(interpreter          , "interpreter"          ) \
@@ -460,7 +460,7 @@ inline constexpr std::string_view toString(const BehavioralInstance instance)
 
 // clang-format off
 //! @brief Mapping table for enum and string about creational instances. X macro.
-#define REG_DP_CREATIONAL_INSTANCE_TABLE     \
+#define REG_DP_CREATIONAL_INSTANCE_TABLE  \
     X(abstractFactory, "abstractFactory") \
     X(builder        , "builder"        ) \
     X(factoryMethod  , "factoryMethod"  ) \
@@ -485,12 +485,12 @@ inline constexpr std::string_view toString(const CreationalInstance instance)
 // clang-format off
 //! @brief Mapping table for enum and string about structural instances. X macro.
 #define REG_DP_STRUCTURAL_INSTANCE_TABLE \
-    X(adapter  , "adapter"  )         \
-    X(bridge   , "bridge"   )         \
-    X(composite, "composite")         \
-    X(decorator, "decorator")         \
-    X(facade   , "facade"   )         \
-    X(flyweight, "flyweight")         \
+    X(adapter  , "adapter"  )            \
+    X(bridge   , "bridge"   )            \
+    X(composite, "composite")            \
+    X(decorator, "decorator")            \
+    X(facade   , "facade"   )            \
+    X(flyweight, "flyweight")            \
     X(proxy    , "proxy"    )
 // clang-format on
 //! @brief Convert instance enumeration to string.
