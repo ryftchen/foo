@@ -555,19 +555,16 @@ EOF
                 echo "No"
             fi
         else
-            local port1=${start_port}
-            local port2=$((port1 + 1))
-            echo "The archive server starts listening ..."
-            echo "=> http://${host_addr}:${port1}/ for directory $(realpath "./${FOLDER[doc]}")"
-            echo "=> http://${host_addr}:${port2}/ for directory $(realpath "./${FOLDER[rep]}")"
             echo "Please confirm whether continue stopping the archive server. (y or n)"
             local input
             input=$(wait_until_get_input)
             if echo "${input}" | grep -iq '^y'; then
                 echo "Yes"
+                local port1=${start_port}
                 if netstat -tuln | grep ":${port1} " >/dev/null 2>&1; then
                     shell_command "fuser -k ${port1}/tcp || true"
                 fi
+                local port2=$((port1 + 1))
                 if netstat -tuln | grep ":${port2} " >/dev/null 2>&1; then
                     shell_command "fuser -k ${port2}/tcp || true"
                 fi
@@ -1240,7 +1237,7 @@ function build_native()
         && ! grep -Fwq "${DEV_OPT[compiler]}" "./${FOLDER[bld]}/${cmake_cache}" 2>/dev/null; then
         shell_command "rm -rf ./${FOLDER[bld]}/${cmake_cache}"
     fi
-    shell_command "cmake -S . -B ./${FOLDER[bld]} -G Ninja""${CMAKE_CACHE_ENTRY}"
+    shell_command "cmake -S ./ -B ./${FOLDER[bld]} -G Ninja""${CMAKE_CACHE_ENTRY}"
 
     local valid_param_num
     valid_param_num=$(($(existing_single_choice_parameters) + $(existing_multiple_choice_parameters)))
