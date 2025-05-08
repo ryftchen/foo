@@ -106,7 +106,7 @@ class Task:
         if not fnmatch.fnmatch(script_path, "*foo/script"):
             TermUtil.exit_with_error("Illegal path to current script.")
         os.chdir(os.path.dirname(script_path))
-        sys.path.append(".")
+        sys.path.append("./")
         if not os.path.exists(self.report_path):
             os.mkdir(self.report_path)
         proc_path = os.path.expanduser("~/.foo")
