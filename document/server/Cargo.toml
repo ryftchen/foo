@@ -14,6 +14,7 @@ hyper-staticfile = "0.10"
 hyper-util = {version = "0.1", features = ["tokio"]}
 shellexpand = "3.1"
 tokio = {version = "1.13", features = ["macros", "rt-multi-thread", "net", "io-util"]}
+idna_adapter = "=1.2.0"
 litemap = "=0.7.4"
 zerofrom = "=0.1.5"
 
