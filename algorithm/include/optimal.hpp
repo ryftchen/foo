@@ -50,7 +50,14 @@ class Gradient : public Optimal
 public:
     //! @brief Construct a new Gradient object.
     //! @param func - target function
-    explicit Gradient(Function func) : func{std::move(func)} {}
+    //! @param initialLR - predefined initial learning rate
+    //! @param decay - predefined decay
+    //! @param loopTime - predefined loop time
+    explicit Gradient(
+        Function func, const double initialLR = 0.01, const double decay = 0.001, const std::uint32_t loopTime = 1000) :
+        func{std::move(func)}, initialLR{initialLR}, decay{decay}, loopTime{loopTime}
+    {
+    }
 
     //! @brief The operator (()) overloading of Gradient class.
     //! @param left - left endpoint
@@ -64,17 +71,17 @@ private:
     //! @brief Target function.
     const Function func{};
     //! @brief Initial learning rate.
-    static constexpr double initialLearningRate{0.01};
+    const double initialLR{0.01};
     //! @brief Decay.
-    static constexpr double decay{0.001};
+    const double decay{0.001};
     //! @brief Loop time.
-    static constexpr std::uint32_t loopTime{1000};
+    const std::uint32_t loopTime{1000};
 
     //! @brief Create climbers.
     //! @param left - left endpoint
     //! @param right - right endpoint
     //! @return collection of climbers
-    static std::unordered_multiset<double> createClimbers(const double left, const double right);
+    [[nodiscard]] std::unordered_multiset<double> createClimbers(const double left, const double right) const;
     //! @brief Calculate the first derivative.
     //! @param x - independent variable
     //! @param eps - precision of calculation
@@ -88,7 +95,26 @@ class Tabu : public Optimal
 public:
     //! @brief Construct a new Tabu object.
     //! @param func - target function
-    explicit Tabu(Function func) : func{std::move(func)} {}
+    //! @param tabuTenure - predefined tabu tenure
+    //! @param initialStep - predefined initial step length
+    //! @param expDecay - predefined exponential decay of step length
+    //! @param neighborSize - predefined neighborhood size
+    //! @param maxIterations - predefined maximum number of iterations
+    explicit Tabu(
+        Function func,
+        const std::uint32_t tabuTenure = 50,
+        const double initialStep = 1.0,
+        const double expDecay = 0.95,
+        const std::uint32_t neighborSize = 100,
+        const std::uint32_t maxIterations = 1000) :
+        func{std::move(func)},
+        tabuTenure{tabuTenure},
+        initialStep{initialStep},
+        expDecay{expDecay},
+        neighborSize{neighborSize},
+        maxIterations{maxIterations}
+    {
+    }
 
     //! @brief The operator (()) overloading of Tabu class.
     //! @param left - left endpoint
@@ -102,15 +128,15 @@ private:
     //! @brief Target function.
     const Function func{};
     //! @brief Tabu tenure.
-    static constexpr std::uint32_t tabuTenure{50};
+    const std::uint32_t tabuTenure{50};
     //! @brief Initial step length.
-    static constexpr double initialStep{1.0};
+    const double initialStep{1.0};
     //! @brief Exponential decay of step length.
-    static constexpr double expDecay{0.95};
-    //! @brief Size of the neighborhood.
-    static constexpr std::uint32_t neighborSize{100};
+    const double expDecay{0.95};
+    //! @brief Neighborhood size.
+    const std::uint32_t neighborSize{100};
     //! @brief Maximum number of iterations.
-    static constexpr std::uint32_t maxIterations{1000};
+    const std::uint32_t maxIterations{1000};
 
     //! @brief Update the neighborhood.
     //! @param neighborhood - neighborhood of solution
@@ -118,12 +144,12 @@ private:
     //! @param stepLen - step length
     //! @param left - left endpoint
     //! @param right - right endpoint
-    static void updateNeighborhood(
+    void updateNeighborhood(
         std::vector<double>& neighborhood,
         const double solution,
         const double stepLen,
         const double left,
-        const double right);
+        const double right) const;
     //! @brief Neighborhood search.
     //! @param neighborhood - neighborhood of solution
     //! @param solution - current solution
@@ -139,7 +165,23 @@ class Annealing : public Optimal
 public:
     //! @brief Construct a new Annealing object.
     //! @param func - target function
-    explicit Annealing(Function func) : func{std::move(func)} {}
+    //! @param initialT - predefined initial temperature
+    //! @param minimalT - predefined minimal temperature
+    //! @param coolingRate - predefined cooling rate
+    //! @param markovChainLength - predefined length of Markov chain
+    explicit Annealing(
+        Function func,
+        const double initialT = 100.0,
+        const double minimalT = 0.01,
+        const double coolingRate = 0.99,
+        const std::uint32_t markovChainLength = 200) :
+        func{std::move(func)},
+        initialT{initialT},
+        minimalT{minimalT},
+        coolingRate{coolingRate},
+        markovChainLength{markovChainLength}
+    {
+    }
 
     //! @brief The operator (()) overloading of Annealing class.
     //! @param left - left endpoint
@@ -153,13 +195,13 @@ private:
     //! @brief Target function.
     const Function func{};
     //! @brief Initial temperature.
-    static constexpr double initialT{100.0};
+    const double initialT{100.0};
     //! @brief Minimal temperature.
-    static constexpr double minimalT{0.01};
+    const double minimalT{0.01};
     //! @brief Cooling rate.
-    static constexpr double coolingRate{0.99};
+    const double coolingRate{0.99};
     //! @brief Length of Markov chain.
-    static constexpr std::uint32_t markovChainLength{200};
+    const std::uint32_t markovChainLength{200};
 
     //! @brief Temperature-dependent Cauchy-like distribution.
     //! @param prev - current model
@@ -184,7 +226,35 @@ class Particle : public Optimal
 public:
     //! @brief Construct a new Particle object.
     //! @param func - target function
-    explicit Particle(Function func) : func{std::move(func)} {}
+    //! @param c1 - predefined cognitive coefficient
+    //! @param c2 - predefined social coefficient
+    //! @param wBegin - predefined inertia weight beginning value
+    //! @param wEnd - predefined inertia weight ending value
+    //! @param vMax - predefined maximum velocity
+    //! @param vMin - predefined minimum velocity
+    //! @param swarmSize - predefined swarm size
+    //! @param maxIterations - predefined maximum number of iterations
+    explicit Particle(
+        Function func,
+        const double c1 = 1.5,
+        const double c2 = 1.5,
+        const double wBegin = 0.85,
+        const double wEnd = 0.35,
+        const double vMax = 0.5,
+        const double vMin = -0.5,
+        const std::uint32_t swarmSize = 100,
+        const std::uint32_t maxIterations = 100) :
+        func{std::move(func)},
+        c1{c1},
+        c2{c2},
+        wBegin{wBegin},
+        wEnd{wEnd},
+        vMax{vMax},
+        vMin{vMin},
+        swarmSize{swarmSize},
+        maxIterations{maxIterations}
+    {
+    }
 
     //! @brief The operator (()) overloading of Particle class.
     //! @param left - left endpoint
@@ -197,26 +267,26 @@ public:
 private:
     //! @brief Target function.
     const Function func{};
+    //! @brief Cognitive coefficient.
+    const double c1{1.5};
+    //! @brief Social coefficient.
+    const double c2{1.5};
+    //! @brief Inertia weight beginning value.
+    const double wBegin{0.85};
+    //! @brief Inertia weight ending value.
+    const double wEnd{0.35};
+    //! @brief Maximum velocity.
+    const double vMax{0.5};
+    //! @brief Minimum velocity.
+    const double vMin{-0.5};
+    //! @brief Swarm size.
+    const std::uint32_t swarmSize{100};
+    //! @brief Maximum number of iterations.
+    const std::uint32_t maxIterations{100};
     //! @brief Random engine.
     std::mt19937_64 engine{std::random_device{}()};
     //! @brief The perturbation for the coefficient (from 0 to 1).
     std::uniform_real_distribution<double> perturbation{0.0, 1.0};
-    //! @brief Cognitive coefficient.
-    static constexpr double c1{1.5};
-    //! @brief Social coefficient.
-    static constexpr double c2{1.5};
-    //! @brief Inertia weight beginning value.
-    static constexpr double wBegin{0.85};
-    //! @brief Inertia weight ending value.
-    static constexpr double wEnd{0.35};
-    //! @brief Maximum velocity.
-    static constexpr double vMax{0.5};
-    //! @brief Minimum velocity.
-    static constexpr double vMin{-0.5};
-    //! @brief Swarm size.
-    static constexpr std::uint32_t swarmSize{100};
-    //! @brief Maximum number of iterations.
-    static constexpr std::uint32_t maxIterations{100};
 
     //! @brief Individual information in the swarm.
     struct Individual
@@ -256,7 +326,7 @@ private:
     //! @brief Non-linear decreasing weight.
     //! @param iteration - current number of iterations
     //! @return inertia weight
-    static double nonlinearDecreasingWeight(const std::uint32_t iteration);
+    [[nodiscard]] double nonlinearDecreasingWeight(const std::uint32_t iteration) const;
     //! @brief Update the personal best position of each particle in the swarm and the global best position.
     //! @param swarm - particle swarm
     //! @param gloBest - global best position
@@ -270,7 +340,26 @@ class Ant : public Optimal
 public:
     //! @brief Construct a new Ant object.
     //! @param func - target function
-    explicit Ant(Function func) : func{std::move(func)} {}
+    //! @param rho - predefined pheromone evaporation rate
+    //! @param p0 - predefined exploration probability
+    //! @param initialStep - predefined initial step length
+    //! @param numOfAnts - predefined number of ants
+    //! @param maxIterations - predefined maximum number of iterations
+    explicit Ant(
+        Function func,
+        const double rho = 0.9,
+        const double p0 = 0.2,
+        const double initialStep = 1.0,
+        const std::uint32_t numOfAnts = 500,
+        const std::uint32_t maxIterations = 500) :
+        func{std::move(func)},
+        rho{rho},
+        p0{p0},
+        initialStep{initialStep},
+        numOfAnts{numOfAnts},
+        maxIterations{maxIterations}
+    {
+    }
 
     //! @brief The operator (()) overloading of Ant class.
     //! @param left - left endpoint
@@ -283,22 +372,22 @@ public:
 private:
     //! @brief Target function.
     const Function func{};
+    //! @brief Pheromone evaporation rate.
+    const double rho{0.9};
+    //! @brief Exploration probability.
+    const double p0{0.2};
+    //! @brief Initial step length.
+    const double initialStep{1.0};
+    //! @brief Number of ants.
+    const std::uint32_t numOfAnts{500};
+    //! @brief Maximum number of iterations.
+    const std::uint32_t maxIterations{500};
     //! @brief Random engine.
     std::mt19937_64 engine{std::random_device{}()};
     //! @brief Coefficient of the step length for the local search.
     std::uniform_real_distribution<double> localCoeff{-1.0, 1.0};
     //! @brief Coefficient of the range for the global search.
     std::uniform_real_distribution<double> globalCoeff{-0.5, 0.5};
-    //! @brief Pheromone evaporation rate.
-    static constexpr double rho{0.9};
-    //! @brief Exploration probability.
-    static constexpr double p0{0.2};
-    //! @brief Initial step length.
-    static constexpr double initialStep{1.0};
-    //! @brief Number of ants.
-    static constexpr std::uint32_t numOfAnts{500};
-    //! @brief Maximum number of iterations.
-    static constexpr std::uint32_t maxIterations{500};
 
     //! @brief State of the ant in the colony.
     struct State
@@ -338,7 +427,23 @@ class Genetic : public Optimal
 public:
     //! @brief Construct a new Genetic object.
     //! @param func - target function
-    explicit Genetic(Function func) : func{std::move(func)} {}
+    //! @param crossPr - predefined crossover probability
+    //! @param mutatePr - predefined mutation probability
+    //! @param popSize - predefined population size
+    //! @param numOfGenerations - predefined number of generations
+    explicit Genetic(
+        Function func,
+        const double crossPr = 0.7,
+        const double mutatePr = 0.001,
+        const std::uint32_t popSize = 500,
+        const std::uint32_t numOfGenerations = 30) :
+        func{std::move(func)},
+        crossPr{crossPr},
+        mutatePr{mutatePr},
+        popSize{popSize},
+        numOfGenerations{numOfGenerations}
+    {
+    }
 
     //! @brief The operator (()) overloading of Genetic class.
     //! @param left - left endpoint
@@ -351,18 +456,18 @@ public:
 private:
     //! @brief Target function.
     const Function func{};
+    //! @brief Crossover probability.
+    const double crossPr{0.7};
+    //! @brief Mutation probability.
+    const double mutatePr{0.001};
+    //! @brief Population size.
+    const std::uint32_t popSize{500};
+    //! @brief Number of generations.
+    const std::uint32_t numOfGenerations{30};
     //! @brief Random engine.
     std::mt19937_64 engine{std::random_device{}()};
     //! @brief The probability of a possible event (from 0 to 1).
     std::uniform_real_distribution<double> probability{0.0, 1.0};
-    //! @brief Crossover probability.
-    static constexpr double crossPr{0.7};
-    //! @brief Mutation probability.
-    static constexpr double mutatePr{0.001};
-    //! @brief Population size.
-    static constexpr std::uint32_t popSize{500};
-    //! @brief Number of generations.
-    static constexpr std::uint32_t numOfGenerations{20};
     //! @brief The linear scaling coefficient.
     static constexpr double cMult{1.01};
     //! @brief Minimum length of chromosome.
