@@ -26,13 +26,12 @@ std::optional<std::tuple<double, double>> Gradient::operator()(const double left
     for (std::uint32_t iteration = 0; auto x : climbing)
     {
         iteration = 0;
-        double learningRate = initialLearningRate, gradient = calculateFirstDerivative(x, eps),
-               dx = learningRate * gradient;
+        double learningRate = initialLR, gradient = calculateFirstDerivative(x, eps), dx = learningRate * gradient;
         while ((std::fabs(dx) > eps) && ((x - dx) >= left) && ((x - dx) <= right))
         {
             x -= dx;
             ++iteration;
-            learningRate = initialLearningRate * 1.0 / (1.0 + decay * iteration);
+            learningRate = initialLR * 1.0 / (1.0 + decay * iteration);
             gradient = calculateFirstDerivative(x, eps);
             dx = learningRate * gradient;
         }
@@ -47,7 +46,7 @@ std::optional<std::tuple<double, double>> Gradient::operator()(const double left
     return std::make_optional(std::make_tuple(yBest, xBest));
 }
 
-std::unordered_multiset<double> Gradient::createClimbers(const double left, const double right)
+std::unordered_multiset<double> Gradient::createClimbers(const double left, const double right) const
 {
     std::mt19937_64 engine(std::random_device{}());
     std::uniform_real_distribution<double> candidate(left, right);
@@ -109,7 +108,7 @@ void Tabu::updateNeighborhood(
     const double solution,
     const double stepLen,
     const double left,
-    const double right)
+    const double right) const
 {
     for (std::uint32_t i = 0; i < neighborSize / 2; ++i)
     {
@@ -250,7 +249,7 @@ void Particle::updateParticles(
     }
 }
 
-double Particle::nonlinearDecreasingWeight(const std::uint32_t iteration)
+double Particle::nonlinearDecreasingWeight(const std::uint32_t iteration) const
 {
     return wBegin - (wBegin - wEnd) * std::pow(static_cast<double>(iteration + 1) / maxIterations, 2);
 }
