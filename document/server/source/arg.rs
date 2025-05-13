@@ -1,4 +1,4 @@
-use crate::{die, exec_name, util};
+use crate::{exec_name, fatal, util};
 use std::net::{IpAddr, Ipv4Addr};
 use std::path::Path;
 
@@ -27,7 +27,7 @@ impl Parser {
     pub fn parse(&self, args: &[String]) -> getopts::Matches {
         match self.options.parse(&args[1..]) {
             Ok(m) => m,
-            Err(e) => die!("{}.", e),
+            Err(e) => fatal!("{}.", e),
         }
     }
 
@@ -55,7 +55,7 @@ pub fn parse_args() -> Args {
     let matches = parser.parse(&args);
 
     if !matches.free.is_empty() {
-        die!("Unknown argument.");
+        fatal!("Unknown argument.");
     }
     if matches.opt_present("h") || args.len() == 1 {
         parser.usage();
@@ -64,28 +64,28 @@ pub fn parse_args() -> Args {
 
     let root_dirs = matches.opt_strs("r");
     if root_dirs.is_empty() {
-        die!("At least one root directory must be specified.");
+        fatal!("At least one root directory must be specified.");
     }
     for root_dir in &root_dirs {
         if !Path::new(&root_dir).exists() {
-            die!("Illegal root directory: {}.", root_dir);
+            fatal!("Illegal root directory: {}.", root_dir);
         }
     }
 
     let host = match matches.opt_str("H") {
-        Some(h) => h.parse().unwrap_or_else(|_| die!("Invalid IP address.")),
+        Some(h) => h.parse().unwrap_or_else(|_| fatal!("Invalid IP address.")),
         _none => IpAddr::V4(Ipv4Addr::LOCALHOST),
     };
 
     let port = match matches.opt_str("p") {
         Some(p) => match p.parse() {
             Ok(p) if (0..=65535).contains(&p) => p,
-            _ => die!("Invalid port number."),
+            _ => fatal!("Invalid port number."),
         },
         _none => 61503,
     };
     if port as usize + root_dirs.len() - 1 > 65535 {
-        die!("Not enough available port numbers.");
+        fatal!("Not enough available port numbers.");
     }
 
     Args { root_dirs, port, host }

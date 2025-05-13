@@ -9,7 +9,7 @@ macro_rules! trace {
 }
 
 #[macro_export]
-macro_rules! die {
+macro_rules! fatal {
     ($($msg:tt)*) => {
         panic!("{}: {}", util::try_get_exec_name().unwrap(), format!($($msg)*))
     };
