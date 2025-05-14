@@ -83,8 +83,8 @@ template <HelperType... Helpers>
 requires (std::derived_from<Helpers, utility::fsm::FSM<Helpers>> && ...)
 static void helperDaemon()
 {
-    utility::thread::Thread extendingThd(sizeof...(Helpers));
-    (extendingThd.enqueue(Helpers::name, &Helpers::service, &Helpers::getInstance()), ...);
+    utility::thread::Thread extendedJob(sizeof...(Helpers));
+    (extendedJob.enqueue(Helpers::name, &Helpers::service, &Helpers::getInstance()), ...);
 }
 
 //! @brief Coroutine for managing the lifecycle of helper components.
@@ -201,9 +201,9 @@ try
     else
     {
         constexpr std::uint8_t endNum = 2;
-        utility::thread::Thread handlingThd(endNum);
-        handlingThd.enqueue(title + "(FE)", &Command::frontEndHandler, this, argc, argv);
-        handlingThd.enqueue(title + "(BE)", &Command::backEndHandler, this);
+        utility::thread::Thread scheduledJob(endNum);
+        scheduledJob.enqueue(title + "(FE)", &Command::frontEndHandler, this, argc, argv);
+        scheduledJob.enqueue(title + "(BE)", &Command::backEndHandler, this);
     }
 
     if (!launcher.done())
