@@ -7,6 +7,7 @@
 #pragma once
 
 #include "utility/include/json.hpp"
+#include "utility/include/macro.hpp"
 #include "utility/include/memory.hpp"
 #include "utility/include/thread.hpp"
 
@@ -20,35 +21,35 @@ namespace configure
 namespace field
 {
 //! @brief The literal string of the "activateHelper" field.
-constexpr std::string_view activateHelper = "activateHelper";
+constexpr std::string_view activateHelper = MACRO_STRINGIFY(activateHelper);
 //! @brief The literal string of the "helperList" field.
-constexpr std::string_view helperList = "helperList";
+constexpr std::string_view helperList = MACRO_STRINGIFY(helperList);
 //! @brief The literal string of the "properties" field in the object of "helpList".
-constexpr std::string_view properties = "properties";
+constexpr std::string_view properties = MACRO_STRINGIFY(properties);
 //! @brief The literal string of the "required" field in the object of "helpList".
-constexpr std::string_view required = "required";
+constexpr std::string_view required = MACRO_STRINGIFY(required);
 //! @brief The literal string of the "logger" field of "helpList".
-constexpr std::string_view logger = "logger";
+constexpr std::string_view logger = MACRO_STRINGIFY(logger);
 //! @brief The literal string of the "filePath" field in the properties of "logger" object of "helpList".
-constexpr std::string_view filePath = "filePath";
+constexpr std::string_view filePath = MACRO_STRINGIFY(filePath);
 //! @brief The literal string of the "priorityLevel" field in the properties of "logger" object of "helpList".
-constexpr std::string_view priorityLevel = "priorityLevel";
+constexpr std::string_view priorityLevel = MACRO_STRINGIFY(priorityLevel);
 //! @brief The literal string of the "targetType" field in the properties of "logger" object of "helpList".
-constexpr std::string_view targetType = "targetType";
+constexpr std::string_view targetType = MACRO_STRINGIFY(targetType);
 //! @brief The literal string of the "writeMode" field in the properties of "logger" object of "helpList".
-constexpr std::string_view writeMode = "writeMode";
+constexpr std::string_view writeMode = MACRO_STRINGIFY(writeMode);
 //! @brief The literal string of the "viewer" field of "helpList".
-constexpr std::string_view viewer = "viewer";
+constexpr std::string_view viewer = MACRO_STRINGIFY(viewer);
 //! @brief The literal string of the "tcpHost" field in the properties of "viewer" object of "helpList".
-constexpr std::string_view tcpHost = "tcpHost";
+constexpr std::string_view tcpHost = MACRO_STRINGIFY(tcpHost);
 //! @brief The literal string of the "tcpPort" field in the properties of "viewer" object of "helpList".
-constexpr std::string_view tcpPort = "tcpPort";
+constexpr std::string_view tcpPort = MACRO_STRINGIFY(tcpPort);
 //! @brief The literal string of the "udpHost" field in the properties of "viewer" object of "helpList".
-constexpr std::string_view udpHost = "udpHost";
+constexpr std::string_view udpHost = MACRO_STRINGIFY(udpHost);
 //! @brief The literal string of the "udpPort" field in the properties of "viewer" object of "helpList".
-constexpr std::string_view udpPort = "udpPort";
+constexpr std::string_view udpPort = MACRO_STRINGIFY(udpPort);
 //! @brief The literal string of the "helperTimeout" field.
-constexpr std::string_view helperTimeout = "helperTimeout";
+constexpr std::string_view helperTimeout = MACRO_STRINGIFY(helperTimeout);
 } // namespace field
 
 //! @brief Default configuration filename.

@@ -25,8 +25,6 @@
 #include "application/pch/precompiled_header.hpp"
 #endif // _PRECOMPILED_HEADER
 
-#include "utility/include/macro.hpp"
-
 namespace application::view
 {
 //! @brief Type-length-value scheme.
