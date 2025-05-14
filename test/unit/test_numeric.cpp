@@ -292,3 +292,5 @@ TEST_F(PrimeTestBase, eulerMethod)
 }
 } // namespace tst_num
 } // namespace test
+
+#undef TST_NUM_PRINT_TASK_TITLE

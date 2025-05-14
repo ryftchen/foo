@@ -268,3 +268,5 @@ TEST_F(StructuralTestBase, proxyInstance)
 }
 } // namespace tst_dp
 } // namespace test
+
+#undef TST_DP_PRINT_TASK_TITLE

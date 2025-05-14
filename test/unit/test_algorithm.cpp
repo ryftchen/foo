@@ -476,3 +476,5 @@ TEST_F(SortTestBase, radixMethod)
 }
 } // namespace tst_algo
 } // namespace test
+
+#undef TST_ALGO_PRINT_TASK_TITLE
