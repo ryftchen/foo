@@ -428,83 +428,53 @@ inline consteval std::size_t abbrValue(const T instance)
     return value;
 }
 
-// clang-format off
-//! @brief Mapping table for enum and string about behavioral instances. X macro.
-#define REG_DP_BEHAVIORAL_INSTANCE_TABLE              \
-    X(chainOfResponsibility, "chainOfResponsibility") \
-    X(command              , "command"              ) \
-    X(interpreter          , "interpreter"          ) \
-    X(iterator             , "iterator"             ) \
-    X(mediator             , "mediator"             ) \
-    X(memento              , "memento"              ) \
-    X(observer             , "observer"             ) \
-    X(state                , "state"                ) \
-    X(strategy             , "strategy"             ) \
-    X(templateMethod       , "templateMethod"       ) \
-    X(visitor              , "visitor"              )
-// clang-format on
 //! @brief Convert instance enumeration to string.
 //! @param instance - the specific value of BehavioralInstance enum
 //! @return instance name
 inline constexpr std::string_view toString(const BehavioralInstance instance)
 {
-//! @cond
-#define X(enum, name) name,
-    constexpr std::string_view table[] = {REG_DP_BEHAVIORAL_INSTANCE_TABLE};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<BehavioralInstance>::value);
-    return table[instance];
-//! @endcond
-#undef X
+    constexpr std::array<std::string_view, Bottom<BehavioralInstance>::value> stringify = {
+        MACRO_STRINGIFY(chainOfResponsibility),
+        MACRO_STRINGIFY(command),
+        MACRO_STRINGIFY(interpreter),
+        MACRO_STRINGIFY(iterator),
+        MACRO_STRINGIFY(mediator),
+        MACRO_STRINGIFY(memento),
+        MACRO_STRINGIFY(observer),
+        MACRO_STRINGIFY(state),
+        MACRO_STRINGIFY(strategy),
+        MACRO_STRINGIFY(templateMethod),
+        MACRO_STRINGIFY(visitor)};
+    return stringify.at(instance);
 }
-#undef REG_DP_BEHAVIORAL_INSTANCE_TABLE
 
-// clang-format off
-//! @brief Mapping table for enum and string about creational instances. X macro.
-#define REG_DP_CREATIONAL_INSTANCE_TABLE  \
-    X(abstractFactory, "abstractFactory") \
-    X(builder        , "builder"        ) \
-    X(factoryMethod  , "factoryMethod"  ) \
-    X(prototype      , "prototype"      ) \
-    X(singleton      , "singleton"      )
-// clang-format on
 //! @brief Convert instance enumeration to string.
 //! @param instance - the specific value of CreationalInstance enum
 //! @return instance name
 inline constexpr std::string_view toString(const CreationalInstance instance)
 {
-//! @cond
-#define X(enum, name) name,
-    constexpr std::string_view table[] = {REG_DP_CREATIONAL_INSTANCE_TABLE};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<CreationalInstance>::value);
-    return table[instance];
-//! @endcond
-#undef X
+    constexpr std::array<std::string_view, Bottom<CreationalInstance>::value> stringify = {
+        MACRO_STRINGIFY(abstractFactory),
+        MACRO_STRINGIFY(builder),
+        MACRO_STRINGIFY(factoryMethod),
+        MACRO_STRINGIFY(prototype),
+        MACRO_STRINGIFY(singleton)};
+    return stringify.at(instance);
 }
-#undef REG_DP_CREATIONAL_INSTANCE_TABLE
 
-// clang-format off
-//! @brief Mapping table for enum and string about structural instances. X macro.
-#define REG_DP_STRUCTURAL_INSTANCE_TABLE \
-    X(adapter  , "adapter"  )            \
-    X(bridge   , "bridge"   )            \
-    X(composite, "composite")            \
-    X(decorator, "decorator")            \
-    X(facade   , "facade"   )            \
-    X(flyweight, "flyweight")            \
-    X(proxy    , "proxy"    )
-// clang-format on
 //! @brief Convert instance enumeration to string.
 //! @param instance - the specific value of StructuralInstance enum
 //! @return instance name
 inline constexpr std::string_view toString(const StructuralInstance instance)
 {
-//! @cond
-#define X(enum, name) name,
-    constexpr std::string_view table[] = {REG_DP_STRUCTURAL_INSTANCE_TABLE};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<StructuralInstance>::value);
-    return table[instance];
-//! @endcond
-#undef X
+    constexpr std::array<std::string_view, Bottom<StructuralInstance>::value> stringify = {
+        MACRO_STRINGIFY(adapter),
+        MACRO_STRINGIFY(bridge),
+        MACRO_STRINGIFY(composite),
+        MACRO_STRINGIFY(decorator),
+        MACRO_STRINGIFY(facade),
+        MACRO_STRINGIFY(flyweight),
+        MACRO_STRINGIFY(proxy)};
+    return stringify.at(instance);
 }
-#undef REG_DP_STRUCTURAL_INSTANCE_TABLE
 } // namespace application::reg_dp

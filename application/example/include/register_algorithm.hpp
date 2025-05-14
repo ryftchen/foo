@@ -543,124 +543,71 @@ inline consteval std::size_t abbrValue(const T method)
     return value;
 }
 
-// clang-format off
-//! @brief Mapping table for enum and string about match methods. X macro.
-#define REG_ALGO_MATCH_METHOD_TABLE         \
-    X(rabinKarp       , "rabinKarp"       ) \
-    X(knuthMorrisPratt, "knuthMorrisPratt") \
-    X(boyerMoore      , "boyerMoore"      ) \
-    X(horspool        , "horspool"        ) \
-    X(sunday          , "sunday"          )
-// clang-format on
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of MatchMethod enum
 //! @return method name
 inline constexpr std::string_view toString(const MatchMethod method)
 {
-//! @cond
-#define X(enum, name) name,
-    constexpr std::string_view table[] = {REG_ALGO_MATCH_METHOD_TABLE};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<MatchMethod>::value);
-    return table[method];
-//! @endcond
-#undef X
+    constexpr std::array<std::string_view, Bottom<MatchMethod>::value> stringify = {
+        MACRO_STRINGIFY(rabinKarp),
+        MACRO_STRINGIFY(knuthMorrisPratt),
+        MACRO_STRINGIFY(boyerMoore),
+        MACRO_STRINGIFY(horspool),
+        MACRO_STRINGIFY(sunday)};
+    return stringify.at(method);
 }
-#undef REG_ALGO_MATCH_METHOD_TABLE
 
-// clang-format off
-//! @brief Mapping table for enum and string about notation methods. X macro.
-#define REG_ALGO_NOTATION_METHOD_TABLE \
-    X(prefix , "prefix" )              \
-    X(postfix, "postfix")
-// clang-format on
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of NotationMethod enum
 //! @return method name
 inline constexpr std::string_view toString(const NotationMethod method)
 {
-//! @cond
-#define X(enum, name) name,
-    constexpr std::string_view table[] = {REG_ALGO_NOTATION_METHOD_TABLE};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<NotationMethod>::value);
-    return table[method];
-//! @endcond
-#undef X
+    constexpr std::array<std::string_view, Bottom<NotationMethod>::value> stringify = {
+        MACRO_STRINGIFY(prefix), MACRO_STRINGIFY(postfix)};
+    return stringify.at(method);
 }
-#undef REG_ALGO_NOTATION_METHOD_TABLE
 
-// clang-format off
-//! @brief Mapping table for enum and string about optimal methods. X macro.
-#define REG_ALGO_OPTIMAL_METHOD_TABLE \
-    X(gradient , "gradient" )         \
-    X(tabu     , "tabu"     )         \
-    X(annealing, "annealing")         \
-    X(particle , "particle" )         \
-    X(ant      , "ant"      )         \
-    X(genetic  , "genetic"  )
-// clang-format on
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of OptimalMethod enum
 //! @return method name
 inline constexpr std::string_view toString(const OptimalMethod method)
 {
-//! @cond
-#define X(enum, name) name,
-    constexpr std::string_view table[] = {REG_ALGO_OPTIMAL_METHOD_TABLE};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<OptimalMethod>::value);
-    return table[method];
-//! @endcond
-#undef X
+    constexpr std::array<std::string_view, Bottom<OptimalMethod>::value> stringify = {
+        MACRO_STRINGIFY(gradient),
+        MACRO_STRINGIFY(tabu),
+        MACRO_STRINGIFY(annealing),
+        MACRO_STRINGIFY(particle),
+        MACRO_STRINGIFY(ant),
+        MACRO_STRINGIFY(genetic)};
+    return stringify.at(method);
 }
-#undef REG_ALGO_OPTIMAL_METHOD_TABLE
 
-// clang-format off
-//! @brief Mapping table for enum and string about search methods. X macro.
-#define REG_ALGO_SEARCH_METHOD_TABLE  \
-    X(binary       , "binary"       ) \
-    X(interpolation, "interpolation") \
-    X(fibonacci    , "fibonacci"    )
-// clang-format on
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of SearchMethod enum
 //! @return method name
 inline constexpr std::string_view toString(const SearchMethod method)
 {
-//! @cond
-#define X(enum, name) name,
-    constexpr std::string_view table[] = {REG_ALGO_SEARCH_METHOD_TABLE};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<SearchMethod>::value);
-    return table[method];
-//! @endcond
-#undef X
+    constexpr std::array<std::string_view, Bottom<SearchMethod>::value> stringify = {
+        MACRO_STRINGIFY(binary), MACRO_STRINGIFY(interpolation), MACRO_STRINGIFY(fibonacci)};
+    return stringify.at(method);
 }
-#undef REG_ALGO_SEARCH_METHOD_TABLE
 
-// clang-format off
-//! @brief Mapping table for enum and string about sort methods. X macro.
-#define REG_ALGO_SORT_METHOD_TABLE \
-    X(bubble   , "bubble"   )      \
-    X(selection, "selection")      \
-    X(insertion, "insertion")      \
-    X(shell    , "shell"    )      \
-    X(merge    , "merge"    )      \
-    X(quick    , "quick"    )      \
-    X(heap     , "heap"     )      \
-    X(counting , "counting" )      \
-    X(bucket   , "bucket"   )      \
-    X(radix    , "radix"    )
-// clang-format on
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of SortMethod enum
 //! @return method name
 inline constexpr std::string_view toString(const SortMethod method)
 {
-//! @cond
-#define X(enum, name) name,
-    constexpr std::string_view table[] = {REG_ALGO_SORT_METHOD_TABLE};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<SortMethod>::value);
-    return table[method];
-//! @endcond
-#undef X
+    constexpr std::array<std::string_view, Bottom<SortMethod>::value> stringify = {
+        MACRO_STRINGIFY(bubble),
+        MACRO_STRINGIFY(selection),
+        MACRO_STRINGIFY(insertion),
+        MACRO_STRINGIFY(shell),
+        MACRO_STRINGIFY(merge),
+        MACRO_STRINGIFY(quick),
+        MACRO_STRINGIFY(heap),
+        MACRO_STRINGIFY(counting),
+        MACRO_STRINGIFY(bucket),
+        MACRO_STRINGIFY(radix)};
+    return stringify.at(method);
 }
-#undef REG_ALGO_SORT_METHOD_TABLE
 } // namespace application::reg_algo

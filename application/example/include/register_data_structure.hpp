@@ -305,47 +305,23 @@ inline consteval std::size_t abbrValue(const T instance)
     return value;
 }
 
-// clang-format off
-//! @brief Mapping table for enum and string about linear instances. X macro.
-#define REG_DS_LINEAR_INSTANCE_TABLE \
-    X(linkedList, "linkedList")      \
-    X(stack     , "stack"     )      \
-    X(queue     , "queue"     )
-// clang-format on
 //! @brief Convert instance enumeration to string.
 //! @param instance - the specific value of LinearInstance enum
 //! @return instance name
 inline constexpr std::string_view toString(const LinearInstance instance)
 {
-//! @cond
-#define X(enum, name) name,
-    constexpr std::string_view table[] = {REG_DS_LINEAR_INSTANCE_TABLE};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<LinearInstance>::value);
-    return table[instance];
-//! @endcond
-#undef X
+    constexpr std::array<std::string_view, Bottom<LinearInstance>::value> stringify = {
+        MACRO_STRINGIFY(linkedList), MACRO_STRINGIFY(stack), MACRO_STRINGIFY(queue)};
+    return stringify.at(instance);
 }
-#undef REG_DS_LINEAR_INSTANCE_TABLE
 
-// clang-format off
-//! @brief Mapping table for enum and string about tree instances. X macro.
-#define REG_DS_TREE_INSTANCE_TABLE                \
-    X(binarySearch       , "binarySearch"       ) \
-    X(adelsonVelskyLandis, "adelsonVelskyLandis") \
-    X(splay              , "splay"              )
-// clang-format on
 //! @brief Convert instance enumeration to string.
 //! @param instance - the specific value of TreeInstance enum
 //! @return instance name
 inline constexpr std::string_view toString(const TreeInstance instance)
 {
-//! @cond
-#define X(enum, name) name,
-    constexpr std::string_view table[] = {REG_DS_TREE_INSTANCE_TABLE};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<TreeInstance>::value);
-    return table[instance];
-//! @endcond
-#undef X
+    constexpr std::array<std::string_view, Bottom<TreeInstance>::value> stringify = {
+        MACRO_STRINGIFY(binarySearch), MACRO_STRINGIFY(adelsonVelskyLandis), MACRO_STRINGIFY(splay)};
+    return stringify.at(instance);
 }
-#undef REG_DS_TREE_INSTANCE_TABLE
 } // namespace application::reg_ds

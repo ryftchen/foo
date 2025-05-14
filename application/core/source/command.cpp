@@ -132,14 +132,14 @@ static action::Awaitable helperLifecycle()
 //! @return category name
 static constexpr std::string_view toString(const Category cat)
 {
-    constexpr std::array<std::string_view, Bottom<Category>::value> enumeration = {
+    constexpr std::array<std::string_view, Bottom<Category>::value> stringify = {
         MACRO_STRINGIFY(console), MACRO_STRINGIFY(dump), MACRO_STRINGIFY(help), MACRO_STRINGIFY(version)};
-    return enumeration[cat];
+    return stringify.at(cat);
 }
 
 // clang-format off
 //! @brief Mapping table for enum and attribute about command categories. X macro.
-#define COMMAND_CATEGORY_TABLE                                                    \
+#define COMMAND_X_MACRO_CATEGORY_MAPPING                                          \
     X(console, "run options in console mode and exit\nseparate with quotes", "c") \
     X(dump   , "dump default configuration and exit"                       , "d") \
     X(help   , "show help and exit"                                        , "h") \
@@ -149,7 +149,7 @@ consteval std::string_view Command::getDescr(const Category cat)
 {
 //! @cond
 #define X(enum, descr, alias) {descr, alias},
-    constexpr std::string_view table[][2] = {COMMAND_CATEGORY_TABLE};
+    constexpr std::string_view table[][2] = {COMMAND_X_MACRO_CATEGORY_MAPPING};
     static_assert((sizeof(table) / sizeof(table[0])) == Bottom<Category>::value);
     return table[cat][0];
 //! @endcond
@@ -160,13 +160,13 @@ consteval std::string_view Command::getAlias(const Category cat)
 {
 //! @cond
 #define X(enum, descr, alias) {descr, alias},
-    constexpr std::string_view table[][2] = {COMMAND_CATEGORY_TABLE};
+    constexpr std::string_view table[][2] = {COMMAND_X_MACRO_CATEGORY_MAPPING};
     static_assert((sizeof(table) / sizeof(table[0])) == Bottom<Category>::value);
     return table[cat][1];
 //! @endcond
 #undef X
 }
-#undef COMMAND_CATEGORY_TABLE
+#undef COMMAND_X_MACRO_CATEGORY_MAPPING
 
 Command::Command()
 {

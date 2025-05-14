@@ -440,92 +440,50 @@ inline consteval std::size_t abbrValue(const T method)
     return value;
 }
 
-// clang-format off
-//! @brief Mapping table for enum and string about arithmetic methods. X macro.
-#define REG_NUM_ARITHMETIC_METHOD_TABLE \
-    X(addition      , "addition"      ) \
-    X(subtraction   , "subtraction"   ) \
-    X(multiplication, "multiplication") \
-    X(division      , "division"      )
-// clang-format on
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of ArithmeticMethod enum
 //! @return method name
 inline constexpr std::string_view toString(const ArithmeticMethod method)
 {
-//! @cond
-#define X(enum, name) name,
-    constexpr std::string_view table[] = {REG_NUM_ARITHMETIC_METHOD_TABLE};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<ArithmeticMethod>::value);
-    return table[method];
-//! @endcond
-#undef X
+    constexpr std::array<std::string_view, Bottom<ArithmeticMethod>::value> stringify = {
+        MACRO_STRINGIFY(addition),
+        MACRO_STRINGIFY(subtraction),
+        MACRO_STRINGIFY(multiplication),
+        MACRO_STRINGIFY(division)};
+    return stringify.at(method);
 }
-#undef REG_NUM_ARITHMETIC_METHOD_TABLE
 
-// clang-format off
-//! @brief Mapping table for enum and string about divisor methods. X macro.
-#define REG_NUM_DIVISOR_METHOD_TABLE \
-    X(euclidean, "euclidean")        \
-    X(stein    , "stein"    )
-// clang-format on
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of DivisorMethod enum
 //! @return method name
 inline constexpr std::string_view toString(const DivisorMethod method)
 {
-//! @cond
-#define X(enum, name) name,
-    constexpr std::string_view table[] = {REG_NUM_DIVISOR_METHOD_TABLE};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<DivisorMethod>::value);
-    return table[method];
-//! @endcond
-#undef X
+    constexpr std::array<std::string_view, Bottom<DivisorMethod>::value> stringify = {
+        MACRO_STRINGIFY(euclidean), MACRO_STRINGIFY(stein)};
+    return stringify.at(method);
 }
-#undef REG_NUM_DIVISOR_METHOD_TABLE
 
-// clang-format off
-//! @brief Mapping table for enum and string about integral methods. X macro.
-#define REG_NUM_INTEGRAL_METHOD_TABLE \
-    X(trapezoidal, "trapezoidal")     \
-    X(simpson    , "simpson"    )     \
-    X(romberg    , "romberg"    )     \
-    X(gauss      , "gauss"      )     \
-    X(monteCarlo , "monteCarlo" )
-// clang-format on
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of IntegralMethod enum
 //! @return method name
 inline constexpr std::string_view toString(const IntegralMethod method)
 {
-//! @cond
-#define X(enum, name) name,
-    constexpr std::string_view table[] = {REG_NUM_INTEGRAL_METHOD_TABLE};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<IntegralMethod>::value);
-    return table[method];
-//! @endcond
-#undef X
+    constexpr std::array<std::string_view, Bottom<IntegralMethod>::value> stringify = {
+        MACRO_STRINGIFY(trapezoidal),
+        MACRO_STRINGIFY(simpson),
+        MACRO_STRINGIFY(romberg),
+        MACRO_STRINGIFY(gauss),
+        MACRO_STRINGIFY(monteCarlo)};
+    return stringify.at(method);
 }
-#undef REG_NUM_INTEGRAL_METHOD_TABLE
 
-// clang-format off
-//! @brief Mapping table for enum and string about prime methods. X macro.
-#define REG_NUM_PRIME_METHOD_TABLE  \
-    X(eratosthenes, "eratosthenes") \
-    X(euler       , "euler"       )
-// clang-format on
 //! @brief Convert method enumeration to string.
 //! @param method - the specific value of PrimeMethod enum
 //! @return method name
 inline constexpr std::string_view toString(const PrimeMethod method)
 {
-//! @cond
-#define X(enum, name) name,
-    constexpr std::string_view table[] = {REG_NUM_PRIME_METHOD_TABLE};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<PrimeMethod>::value);
-    return table[method];
-//! @endcond
-#undef X
+    constexpr std::array<std::string_view, Bottom<PrimeMethod>::value> stringify = {
+        MACRO_STRINGIFY(eratosthenes), MACRO_STRINGIFY(euler)};
+    return stringify.at(method);
 }
-#undef REG_NUM_PRIME_METHOD_TABLE
 } // namespace application::reg_num
