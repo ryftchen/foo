@@ -212,14 +212,16 @@ void applyingBehavioral(const std::vector<std::string>& candidates)
         return;
     }
     assert(bits.size() == candidates.size());
+    auto& pooling = configure::task::resourcePool();
+    auto* const reservedJob = pooling.newElement(bits.count());
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(category);
-    auto& pooling = configure::task::resourcePool();
-    auto* const threads = pooling.newElement(bits.count());
+
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
-        utility::common::wrapClosure([threads, &taskNamer](const std::string_view subTask, void (*targetInstance)())
-                                     { threads->enqueue(taskNamer(subTask), targetInstance); });
+        utility::common::wrapClosure([reservedJob, &taskNamer](const std::string_view subTask, void (*targetInstance)())
+                                     { reservedJob->enqueue(taskNamer(subTask), targetInstance); });
+    MACRO_DEFER([&]() { pooling.deleteElement(reservedJob); });
 
     std::cout << "\nInstances of the " << toString<category>() << " pattern:" << std::endl;
     for (const auto index :
@@ -268,7 +270,6 @@ void applyingBehavioral(const std::vector<std::string>& candidates)
         }
     }
 
-    pooling.deleteElement(threads);
     APP_DP_PRINT_TASK_END_TITLE(category);
 }
 
@@ -348,14 +349,16 @@ void applyingCreational(const std::vector<std::string>& candidates)
         return;
     }
     assert(bits.size() == candidates.size());
+    auto& pooling = configure::task::resourcePool();
+    auto* const reservedJob = pooling.newElement(bits.count());
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(category);
-    auto& pooling = configure::task::resourcePool();
-    auto* const threads = pooling.newElement(bits.count());
+
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
-        utility::common::wrapClosure([threads, &taskNamer](const std::string_view subTask, void (*targetInstance)())
-                                     { threads->enqueue(taskNamer(subTask), targetInstance); });
+        utility::common::wrapClosure([reservedJob, &taskNamer](const std::string_view subTask, void (*targetInstance)())
+                                     { reservedJob->enqueue(taskNamer(subTask), targetInstance); });
+    MACRO_DEFER([&]() { pooling.deleteElement(reservedJob); });
 
     std::cout << "\nInstances of the " << toString<category>() << " pattern:" << std::endl;
     for (const auto index :
@@ -386,7 +389,6 @@ void applyingCreational(const std::vector<std::string>& candidates)
         }
     }
 
-    pooling.deleteElement(threads);
     APP_DP_PRINT_TASK_END_TITLE(category);
 }
 
@@ -488,14 +490,16 @@ void applyingStructural(const std::vector<std::string>& candidates)
         return;
     }
     assert(bits.size() == candidates.size());
+    auto& pooling = configure::task::resourcePool();
+    auto* const reservedJob = pooling.newElement(bits.count());
 
     APP_DP_PRINT_TASK_BEGIN_TITLE(category);
-    auto& pooling = configure::task::resourcePool();
-    auto* const threads = pooling.newElement(bits.count());
+
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
-        utility::common::wrapClosure([threads, &taskNamer](const std::string_view subTask, void (*targetInstance)())
-                                     { threads->enqueue(taskNamer(subTask), targetInstance); });
+        utility::common::wrapClosure([reservedJob, &taskNamer](const std::string_view subTask, void (*targetInstance)())
+                                     { reservedJob->enqueue(taskNamer(subTask), targetInstance); });
+    MACRO_DEFER([&]() { pooling.deleteElement(reservedJob); });
 
     std::cout << "\nInstances of the " << toString<category>() << " pattern:" << std::endl;
     for (const auto index :
@@ -532,7 +536,9 @@ void applyingStructural(const std::vector<std::string>& candidates)
         }
     }
 
-    pooling.deleteElement(threads);
     APP_DP_PRINT_TASK_END_TITLE(category);
 }
 } // namespace application::app_dp
+
+#undef APP_DP_PRINT_TASK_BEGIN_TITLE
+#undef APP_DP_PRINT_TASK_END_TITLE
