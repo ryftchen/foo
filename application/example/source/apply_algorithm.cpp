@@ -19,13 +19,13 @@
 #include "utility/include/currying.hpp"
 
 //! @brief Title of printing when algorithm tasks are beginning.
-#define APP_ALGO_PRINT_TASK_BEGIN_TITLE(category)                                                                     \
+#define APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(category)                                                               \
     std::osyncstream(std::cout) << "\nALGORITHM TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
                                 << std::setw(50) << (category) << "BEGIN" << std::resetiosflags(std::ios_base::left)  \
                                 << std::setfill(' ') << std::endl;                                                    \
     {
 //! @brief Title of printing when algorithm tasks are ending.
-#define APP_ALGO_PRINT_TASK_END_TITLE(category)                                                                       \
+#define APP_ALGO_PRINT_TASK_TITLE_SCOPE_END(category)                                                                 \
     }                                                                                                                 \
     std::osyncstream(std::cout) << "\nALGORITHM TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
                                 << std::setw(50) << (category) << "END" << std::resetiosflags(std::ios_base::left)    \
@@ -192,7 +192,7 @@ void applyingMatch(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const reservedJob = pooling.newElement(bits.count());
 
-    APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
+    APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
     using match::InputBuilder, match::input::patternString;
     static_assert(InputBuilder::maxDigit > patternString.length());
@@ -242,7 +242,7 @@ void applyingMatch(const std::vector<std::string>& candidates)
         }
     }
 
-    APP_ALGO_PRINT_TASK_END_TITLE(category);
+    APP_ALGO_PRINT_TASK_TITLE_SCOPE_END(category);
 }
 
 namespace notation
@@ -292,7 +292,7 @@ void applyingNotation(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const reservedJob = pooling.newElement(bits.count());
 
-    APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
+    APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
     using notation::InputBuilder, notation::input::infixString;
     const auto inputs = std::make_shared<InputBuilder>(infixString);
@@ -321,7 +321,7 @@ void applyingNotation(const std::vector<std::string>& candidates)
         }
     }
 
-    APP_ALGO_PRINT_TASK_END_TITLE(category);
+    APP_ALGO_PRINT_TASK_TITLE_SCOPE_END(category);
 }
 
 namespace optimal
@@ -437,7 +437,7 @@ void applyingOptimal(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const reservedJob = pooling.newElement(bits.count());
 
-    APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
+    APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
     using optimal::InputBuilder, optimal::input::Rastrigin, optimal::Function;
     static_assert(algorithm::optimal::epsilon >= std::numeric_limits<double>::epsilon());
@@ -488,7 +488,7 @@ void applyingOptimal(const std::vector<std::string>& candidates)
         }
     }
 
-    APP_ALGO_PRINT_TASK_END_TITLE(category);
+    APP_ALGO_PRINT_TASK_TITLE_SCOPE_END(category);
 }
 
 namespace search
@@ -569,7 +569,7 @@ void applyingSearch(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const reservedJob = pooling.newElement(bits.count());
 
-    APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
+    APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
     using search::InputBuilder, search::input::arrayLength, search::input::arrayRangeMin, search::input::arrayRangeMax;
     static_assert((arrayRangeMin < arrayRangeMax) && (arrayLength > 0));
@@ -610,7 +610,7 @@ void applyingSearch(const std::vector<std::string>& candidates)
         }
     }
 
-    APP_ALGO_PRINT_TASK_END_TITLE(category);
+    APP_ALGO_PRINT_TASK_TITLE_SCOPE_END(category);
 }
 
 namespace sort
@@ -765,7 +765,7 @@ void applyingSort(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const reservedJob = pooling.newElement(bits.count());
 
-    APP_ALGO_PRINT_TASK_BEGIN_TITLE(category);
+    APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
     using sort::InputBuilder, sort::input::arrayLength, sort::input::arrayRangeMin, sort::input::arrayRangeMax;
     static_assert((arrayRangeMin < arrayRangeMax) && (arrayLength > 0));
@@ -821,9 +821,9 @@ void applyingSort(const std::vector<std::string>& candidates)
         }
     }
 
-    APP_ALGO_PRINT_TASK_END_TITLE(category);
+    APP_ALGO_PRINT_TASK_TITLE_SCOPE_END(category);
 }
 } // namespace application::app_algo
 
-#undef APP_ALGO_PRINT_TASK_BEGIN_TITLE
-#undef APP_ALGO_PRINT_TASK_END_TITLE
+#undef APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN
+#undef APP_ALGO_PRINT_TASK_TITLE_SCOPE_END

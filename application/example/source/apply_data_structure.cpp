@@ -19,13 +19,13 @@
 #include "utility/include/currying.hpp"
 
 //! @brief Title of printing when data structure tasks are beginning.
-#define APP_DS_PRINT_TASK_BEGIN_TITLE(category)                                                               \
+#define APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(category)                                                         \
     std::osyncstream(std::cout) << "\nDATA STRUCTURE TASK: " << std::setiosflags(std::ios_base::left)         \
                                 << std::setfill('.') << std::setw(50) << (category) << "BEGIN"                \
                                 << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl; \
     {
 //! @brief Title of printing when data structure tasks are ending.
-#define APP_DS_PRINT_TASK_END_TITLE(category)                                                           \
+#define APP_DS_PRINT_TASK_TITLE_SCOPE_END(category)                                                     \
     }                                                                                                   \
     std::osyncstream(std::cout) << "\nDATA STRUCTURE TASK: " << std::setiosflags(std::ios_base::left)   \
                                 << std::setfill('.') << std::setw(50) << (category) << "END"            \
@@ -127,7 +127,7 @@ void applyingLinear(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const reservedJob = pooling.newElement(bits.count());
 
-    APP_DS_PRINT_TASK_BEGIN_TITLE(category);
+    APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
@@ -158,7 +158,7 @@ void applyingLinear(const std::vector<std::string>& candidates)
         }
     }
 
-    APP_DS_PRINT_TASK_END_TITLE(category);
+    APP_DS_PRINT_TASK_TITLE_SCOPE_END(category);
 }
 
 namespace tree
@@ -218,7 +218,7 @@ void applyingTree(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const reservedJob = pooling.newElement(bits.count());
 
-    APP_DS_PRINT_TASK_BEGIN_TITLE(category);
+    APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
@@ -249,9 +249,9 @@ void applyingTree(const std::vector<std::string>& candidates)
         }
     }
 
-    APP_DS_PRINT_TASK_END_TITLE(category);
+    APP_DS_PRINT_TASK_TITLE_SCOPE_END(category);
 }
 } // namespace application::app_ds
 
-#undef APP_DS_PRINT_TASK_BEGIN_TITLE
-#undef APP_DS_PRINT_TASK_END_TITLE
+#undef APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN
+#undef APP_DS_PRINT_TASK_TITLE_SCOPE_END

@@ -19,13 +19,13 @@
 #include "utility/include/currying.hpp"
 
 //! @brief Title of printing when numeric tasks are beginning.
-#define APP_NUM_PRINT_TASK_BEGIN_TITLE(category)                                                                     \
+#define APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(category)                                                               \
     std::osyncstream(std::cout) << "\nNUMERIC TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.')  \
                                 << std::setw(50) << (category) << "BEGIN" << std::resetiosflags(std::ios_base::left) \
                                 << std::setfill(' ') << std::endl;                                                   \
     {
 //! @brief Title of printing when numeric tasks are ending.
-#define APP_NUM_PRINT_TASK_END_TITLE(category)                                                                      \
+#define APP_NUM_PRINT_TASK_TITLE_SCOPE_END(category)                                                                \
     }                                                                                                               \
     std::osyncstream(std::cout) << "\nNUMERIC TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
                                 << std::setw(50) << (category) << "END" << std::resetiosflags(std::ios_base::left)  \
@@ -141,7 +141,7 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const reservedJob = pooling.newElement(bits.count());
 
-    APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
+    APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
     using arithmetic::InputBuilder, arithmetic::input::integerA, arithmetic::input::integerB;
     const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
@@ -179,7 +179,7 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
         }
     }
 
-    APP_NUM_PRINT_TASK_END_TITLE(category);
+    APP_NUM_PRINT_TASK_TITLE_SCOPE_END(category);
 }
 
 namespace divisor
@@ -237,7 +237,7 @@ void applyingDivisor(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const reservedJob = pooling.newElement(bits.count());
 
-    APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
+    APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
     using divisor::InputBuilder, divisor::input::integerA, divisor::input::integerB;
     const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
@@ -269,7 +269,7 @@ void applyingDivisor(const std::vector<std::string>& candidates)
         }
     }
 
-    APP_NUM_PRINT_TASK_END_TITLE(category);
+    APP_NUM_PRINT_TASK_TITLE_SCOPE_END(category);
 }
 
 namespace integral
@@ -358,7 +358,7 @@ void applyingIntegral(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const reservedJob = pooling.newElement(bits.count());
 
-    APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
+    APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
     using integral::InputBuilder, integral::input::Griewank, integral::Expression;
     static_assert(numeric::integral::epsilon >= std::numeric_limits<double>::epsilon());
@@ -406,7 +406,7 @@ void applyingIntegral(const std::vector<std::string>& candidates)
         }
     }
 
-    APP_NUM_PRINT_TASK_END_TITLE(category);
+    APP_NUM_PRINT_TASK_TITLE_SCOPE_END(category);
 }
 
 namespace prime
@@ -464,7 +464,7 @@ void applyingPrime(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const reservedJob = pooling.newElement(bits.count());
 
-    APP_NUM_PRINT_TASK_BEGIN_TITLE(category);
+    APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
     using prime::InputBuilder, prime::input::maxPositiveInteger;
     const auto inputs = std::make_shared<InputBuilder>(maxPositiveInteger);
@@ -493,9 +493,9 @@ void applyingPrime(const std::vector<std::string>& candidates)
         }
     }
 
-    APP_NUM_PRINT_TASK_END_TITLE(category);
+    APP_NUM_PRINT_TASK_TITLE_SCOPE_END(category);
 }
 } // namespace application::app_num
 
-#undef APP_NUM_PRINT_TASK_BEGIN_TITLE
-#undef APP_NUM_PRINT_TASK_END_TITLE
+#undef APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN
+#undef APP_NUM_PRINT_TASK_TITLE_SCOPE_END
