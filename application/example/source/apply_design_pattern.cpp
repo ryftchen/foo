@@ -19,13 +19,13 @@
 #include "utility/include/currying.hpp"
 
 //! @brief Title of printing when design pattern tasks are beginning.
-#define APP_DP_PRINT_TASK_BEGIN_TITLE(category)                                                               \
+#define APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(category)                                                         \
     std::osyncstream(std::cout) << "\nDESIGN PATTERN TASK: " << std::setiosflags(std::ios_base::left)         \
                                 << std::setfill('.') << std::setw(50) << (category) << "BEGIN"                \
                                 << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl; \
     {
 //! @brief Title of printing when design pattern tasks are ending.
-#define APP_DP_PRINT_TASK_END_TITLE(category)                                                           \
+#define APP_DP_PRINT_TASK_TITLE_SCOPE_END(category)                                                     \
     }                                                                                                   \
     std::osyncstream(std::cout) << "\nDESIGN PATTERN TASK: " << std::setiosflags(std::ios_base::left)   \
                                 << std::setfill('.') << std::setw(50) << (category) << "END"            \
@@ -215,7 +215,7 @@ void applyingBehavioral(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const reservedJob = pooling.newElement(bits.count());
 
-    APP_DP_PRINT_TASK_BEGIN_TITLE(category);
+    APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
@@ -270,7 +270,7 @@ void applyingBehavioral(const std::vector<std::string>& candidates)
         }
     }
 
-    APP_DP_PRINT_TASK_END_TITLE(category);
+    APP_DP_PRINT_TASK_TITLE_SCOPE_END(category);
 }
 
 namespace creational
@@ -352,7 +352,7 @@ void applyingCreational(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const reservedJob = pooling.newElement(bits.count());
 
-    APP_DP_PRINT_TASK_BEGIN_TITLE(category);
+    APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
@@ -389,7 +389,7 @@ void applyingCreational(const std::vector<std::string>& candidates)
         }
     }
 
-    APP_DP_PRINT_TASK_END_TITLE(category);
+    APP_DP_PRINT_TASK_TITLE_SCOPE_END(category);
 }
 
 namespace structural
@@ -493,7 +493,7 @@ void applyingStructural(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const reservedJob = pooling.newElement(bits.count());
 
-    APP_DP_PRINT_TASK_BEGIN_TITLE(category);
+    APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
@@ -536,9 +536,9 @@ void applyingStructural(const std::vector<std::string>& candidates)
         }
     }
 
-    APP_DP_PRINT_TASK_END_TITLE(category);
+    APP_DP_PRINT_TASK_TITLE_SCOPE_END(category);
 }
 } // namespace application::app_dp
 
-#undef APP_DP_PRINT_TASK_BEGIN_TITLE
-#undef APP_DP_PRINT_TASK_END_TITLE
+#undef APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN
+#undef APP_DP_PRINT_TASK_TITLE_SCOPE_END
