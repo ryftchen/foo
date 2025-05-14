@@ -106,3 +106,5 @@ TEST_F(TreeTestBase, splayInstance)
 }
 } // namespace tst_ds
 } // namespace test
+
+#undef TST_DS_PRINT_TASK_TITLE
