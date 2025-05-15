@@ -642,19 +642,18 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
         ):
             TermUtil.exit_with_error(f"The run log {self.run_log_file} file is incomplete. Please retry.")
 
-        dur_time, fail_res, cov_per, mem_err = self.analyze_for_report(readlines, start_indices, finish_indices, tags)
+        dur_time, fail_res, cov_per, mem_leak = self.analyze_for_report(readlines, start_indices, finish_indices, tags)
         with open(self.run_report_file, "wt", encoding="utf-8") as run_report:
             fcntl.flock(run_report.fileno(), fcntl.LOCK_EX)
             run_stat = {
+                "Summary": "Unstable" if fail_res else "Stable",
                 "Passed": str(len(finish_indices) - len(fail_res)),
                 "Failed": str(len(fail_res)),
                 "Duration": f"{self.duration} s" if not self.analyze_only else f"{dur_time} s",
             }
             hint = " (UNIT TEST)" if tags["tst"] else ""
             run_stat_rep = (
-                "REPORT FOR RUN STATISTICS:\n"
-                + self.format_as_table(run_stat, "STATUS", f"RUN STATISTICS{hint}")
-                + "\n"
+                "REPORT FOR RUN STATISTICS:\n" + self.format_as_table(run_stat, "ENTRY", f"RUN STATISTICS{hint}") + "\n"
             )
             fail_res_rep = (
                 ("\nREPORT FOR FAILURE RESULT:\n" + self.format_as_table(fail_res, "CASE", "FAILURE RESULT") + "\n")
@@ -662,17 +661,13 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
                 else ""
             )
             cov_per_rep = (
-                (
-                    "\nREPORT FOR COVERAGE PERCENT:\n"
-                    + self.format_as_table(cov_per, "CATEGORY", "COVERAGE PERCENT")
-                    + "\n"
-                )
+                ("\nREPORT FOR COVERAGE PERCENT:\n" + self.format_as_table(cov_per, "ENTRY", "COVERAGE PERCENT") + "\n")
                 if cov_per
                 else ""
             )
             mem_err_rep = (
-                ("\nREPORT FOR MEMORY ERROR:\n" + self.format_as_table(mem_err, "CASE", "MEMORY ERROR") + "\n")
-                if mem_err
+                ("\nREPORT FOR MEMORY LEAK:\n" + self.format_as_table(mem_leak, "CASE", "MEMORY LEAK") + "\n")
+                if mem_leak
                 else ""
             )
             summary = run_stat_rep + fail_res_rep + cov_per_rep + mem_err_rep
@@ -698,7 +693,7 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
 
         fail_res = {}
         cov_per = {}
-        mem_err = {}
+        mem_leak = {}
         for start_index, finish_index in zip(start_indices, finish_indices):
             if "# STAT: FAILURE" in readlines[finish_index - 1]:
                 fail_line = readlines[finish_index - 1]
@@ -739,7 +734,7 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
                     for index, line in enumerate(readlines[start_index + 1 : finish_index]):
                         if "[CHECK MEMORY]" in line:
                             index += start_index + 1
-                            mem_err[case_task] = "".join(readlines[index + 1 : finish_index - 1])
+                            mem_leak[case_task] = "".join(readlines[index + 1 : finish_index - 1])
                             last_index = index
                 fail_res[case_task] = "".join(readlines[start_index + 1 : last_index - 1])
 
@@ -757,7 +752,7 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
                 for cat in category:
                     cov_per[cat] = "-"
 
-        return dur_time, fail_res, cov_per, mem_err
+        return dur_time, fail_res, cov_per, mem_leak
 
     def format_as_table(self, data, key_title, value_title):
         rows = []
