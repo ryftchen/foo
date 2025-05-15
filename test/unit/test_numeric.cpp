@@ -37,48 +37,48 @@ protected:
     static void SetUpTestSuite()
     {
         TST_NUM_PRINT_TASK_TITLE("ARITHMETIC", "BEGIN");
-        inputs = std::make_shared<arithmetic::InputBuilder>(arithmetic::input::integerA, arithmetic::input::integerB);
+        fixture = std::make_shared<arithmetic::InputBuilder>(arithmetic::input::integerA, arithmetic::input::integerB);
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
         TST_NUM_PRINT_TASK_TITLE("ARITHMETIC", "END");
-        inputs.reset();
+        fixture.reset();
     }
     //! @brief Set up.
     void SetUp() override {}
     //! @brief Tear down.
     void TearDown() override {}
 
-    //! @brief Test suite.
+    //! @brief System under test.
     const numeric::arithmetic::Arithmetic sut{};
-    //! @brief Input builder.
-    static std::shared_ptr<arithmetic::InputBuilder> inputs;
+    //! @brief Fixture data.
+    static std::shared_ptr<arithmetic::InputBuilder> fixture;
 };
-std::shared_ptr<arithmetic::InputBuilder> ArithmeticTestBase::inputs = {};
+std::shared_ptr<arithmetic::InputBuilder> ArithmeticTestBase::fixture = {};
 
 //! @brief Test for the addition method in the solution of arithmetic.
 TEST_F(ArithmeticTestBase, additionMethod)
 {
-    ASSERT_EQ(0, sut.addition(inputs->getIntegers().first, inputs->getIntegers().second));
+    ASSERT_EQ(0, sut.addition(fixture->getIntegers().first, fixture->getIntegers().second));
 }
 
 //! @brief Test for the subtraction method in the solution of arithmetic.
 TEST_F(ArithmeticTestBase, subtractionMethod)
 {
-    ASSERT_EQ(92680, sut.subtraction(inputs->getIntegers().first, inputs->getIntegers().second));
+    ASSERT_EQ(92680, sut.subtraction(fixture->getIntegers().first, fixture->getIntegers().second));
 }
 
 //! @brief Test for the multiplication method in the solution of arithmetic.
 TEST_F(ArithmeticTestBase, multiplicationMethod)
 {
-    ASSERT_EQ(-2147395600, sut.multiplication(inputs->getIntegers().first, inputs->getIntegers().second));
+    ASSERT_EQ(-2147395600, sut.multiplication(fixture->getIntegers().first, fixture->getIntegers().second));
 }
 
 //! @brief Test for the division method in the solution of arithmetic.
 TEST_F(ArithmeticTestBase, divisionMethod)
 {
-    ASSERT_EQ(-1, sut.division(inputs->getIntegers().first, inputs->getIntegers().second));
+    ASSERT_EQ(-1, sut.division(fixture->getIntegers().first, fixture->getIntegers().second));
 }
 
 //! @brief Test base of divisor.
@@ -95,38 +95,38 @@ protected:
     static void SetUpTestSuite()
     {
         TST_NUM_PRINT_TASK_TITLE("DIVISOR", "BEGIN");
-        inputs = std::make_shared<divisor::InputBuilder>(divisor::input::integerA, divisor::input::integerB);
+        fixture = std::make_shared<divisor::InputBuilder>(divisor::input::integerA, divisor::input::integerB);
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
         TST_NUM_PRINT_TASK_TITLE("DIVISOR", "END");
-        inputs.reset();
+        fixture.reset();
     }
     //! @brief Set up.
     void SetUp() override {}
     //! @brief Tear down.
     void TearDown() override {}
 
-    //! @brief Test suite.
+    //! @brief System under test.
     const numeric::divisor::Divisor sut{};
-    //! @brief Input builder.
-    static std::shared_ptr<divisor::InputBuilder> inputs;
+    //! @brief Fixture data.
+    static std::shared_ptr<divisor::InputBuilder> fixture;
     //! @brief Expected result.
     const std::set<std::int32_t> expColl{1, 2, 3, 5, 6, 7, 10, 14, 15, 21, 30, 35, 42, 70, 105, 210};
 };
-std::shared_ptr<divisor::InputBuilder> DivisorTestBase::inputs = {};
+std::shared_ptr<divisor::InputBuilder> DivisorTestBase::fixture = {};
 
 //! @brief Test for the Euclidean method in the solution of divisor.
 TEST_F(DivisorTestBase, euclideanMethod)
 {
-    ASSERT_EQ(expColl, sut.euclidean(inputs->getIntegers().first, inputs->getIntegers().second));
+    ASSERT_EQ(expColl, sut.euclidean(fixture->getIntegers().first, fixture->getIntegers().second));
 }
 
 //! @brief Test for the Stein method in the solution of divisor.
 TEST_F(DivisorTestBase, steinMethod)
 {
-    ASSERT_EQ(expColl, sut.stein(inputs->getIntegers().first, inputs->getIntegers().second));
+    ASSERT_EQ(expColl, sut.stein(fixture->getIntegers().first, fixture->getIntegers().second));
 }
 
 //! @brief Test base of integral.
@@ -144,36 +144,36 @@ protected:
     {
         TST_NUM_PRINT_TASK_TITLE("INTEGRAL", "BEGIN");
         using Griewank = integral::input::Griewank;
-        inputs = std::make_shared<integral::InputBuilder>(
+        fixture = std::make_shared<integral::InputBuilder>(
             Griewank{}, Griewank::range1, Griewank::range2, Griewank::exprDescr);
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
         TST_NUM_PRINT_TASK_TITLE("INTEGRAL", "END");
-        inputs.reset();
+        fixture.reset();
     }
     //! @brief Set up.
     void SetUp() override {}
     //! @brief Tear down.
     void TearDown() override {}
 
-    //! @brief Input builder.
-    static std::shared_ptr<integral::InputBuilder> inputs;
+    //! @brief Fixture data.
+    static std::shared_ptr<integral::InputBuilder> fixture;
     //! @brief Allowable error.
     static constexpr double error{1e3};
 };
-std::shared_ptr<integral::InputBuilder> IntegralTestBase::inputs = {};
+std::shared_ptr<integral::InputBuilder> IntegralTestBase::fixture = {};
 
 //! @brief Test for the trapezoidal method in the solution of integral.
 TEST_F(IntegralTestBase, trapezoidalMethod)
 {
     const std::shared_ptr<numeric::integral::Integral> trapezoidal =
-        std::make_shared<numeric::integral::Trapezoidal>(inputs->getExpression());
+        std::make_shared<numeric::integral::Trapezoidal>(fixture->getExpression());
     double result = 0.0;
 
     ASSERT_NO_THROW(
-        result = (*trapezoidal)(inputs->getRanges().first, inputs->getRanges().second, numeric::integral::epsilon));
+        result = (*trapezoidal)(fixture->getRanges().first, fixture->getRanges().second, numeric::integral::epsilon));
     EXPECT_GT(result, +37199.91164 - error);
     EXPECT_LT(result, +37199.91164 + error);
 }
@@ -182,11 +182,11 @@ TEST_F(IntegralTestBase, trapezoidalMethod)
 TEST_F(IntegralTestBase, adaptiveSimpsonMethod)
 {
     const std::shared_ptr<numeric::integral::Integral> simpson =
-        std::make_shared<numeric::integral::Simpson>(inputs->getExpression());
+        std::make_shared<numeric::integral::Simpson>(fixture->getExpression());
     double result = 0.0;
 
     ASSERT_NO_THROW(
-        result = (*simpson)(inputs->getRanges().first, inputs->getRanges().second, numeric::integral::epsilon));
+        result = (*simpson)(fixture->getRanges().first, fixture->getRanges().second, numeric::integral::epsilon));
     EXPECT_GT(result, +37199.91164 - error);
     EXPECT_LT(result, +37199.91164 + error);
 }
@@ -195,11 +195,11 @@ TEST_F(IntegralTestBase, adaptiveSimpsonMethod)
 TEST_F(IntegralTestBase, rombergMethod)
 {
     const std::shared_ptr<numeric::integral::Integral> romberg =
-        std::make_shared<numeric::integral::Romberg>(inputs->getExpression());
+        std::make_shared<numeric::integral::Romberg>(fixture->getExpression());
     double result = 0.0;
 
     ASSERT_NO_THROW(
-        result = (*romberg)(inputs->getRanges().first, inputs->getRanges().second, numeric::integral::epsilon));
+        result = (*romberg)(fixture->getRanges().first, fixture->getRanges().second, numeric::integral::epsilon));
     EXPECT_GT(result, +37199.91164 - error);
     EXPECT_LT(result, +37199.91164 + error);
 }
@@ -208,11 +208,11 @@ TEST_F(IntegralTestBase, rombergMethod)
 TEST_F(IntegralTestBase, gaussLegendreMethod)
 {
     const std::shared_ptr<numeric::integral::Integral> gauss =
-        std::make_shared<numeric::integral::Gauss>(inputs->getExpression());
+        std::make_shared<numeric::integral::Gauss>(fixture->getExpression());
     double result = 0.0;
 
     ASSERT_NO_THROW(
-        result = (*gauss)(inputs->getRanges().first, inputs->getRanges().second, numeric::integral::epsilon));
+        result = (*gauss)(fixture->getRanges().first, fixture->getRanges().second, numeric::integral::epsilon));
     EXPECT_GT(result, +37199.91164 - error);
     EXPECT_LT(result, +37199.91164 + error);
 }
@@ -221,11 +221,11 @@ TEST_F(IntegralTestBase, gaussLegendreMethod)
 TEST_F(IntegralTestBase, monteCarloMethod)
 {
     const std::shared_ptr<numeric::integral::Integral> monteCarlo =
-        std::make_shared<numeric::integral::MonteCarlo>(inputs->getExpression());
+        std::make_shared<numeric::integral::MonteCarlo>(fixture->getExpression());
     double result = 0.0;
 
     ASSERT_NO_THROW(
-        result = (*monteCarlo)(inputs->getRanges().first, inputs->getRanges().second, numeric::integral::epsilon));
+        result = (*monteCarlo)(fixture->getRanges().first, fixture->getRanges().second, numeric::integral::epsilon));
     EXPECT_GT(result, +37199.91164 - error);
     EXPECT_LT(result, +37199.91164 + error);
 }
@@ -244,23 +244,23 @@ protected:
     static void SetUpTestSuite()
     {
         TST_NUM_PRINT_TASK_TITLE("PRIME", "BEGIN");
-        inputs = std::make_shared<prime::InputBuilder>(prime::input::maxPositiveInteger);
+        fixture = std::make_shared<prime::InputBuilder>(prime::input::maxPositiveInteger);
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
         TST_NUM_PRINT_TASK_TITLE("PRIME", "END");
-        inputs.reset();
+        fixture.reset();
     }
     //! @brief Set up.
     void SetUp() override {}
     //! @brief Tear down.
     void TearDown() override {}
 
-    //! @brief Test suite.
+    //! @brief System under test.
     const numeric::prime::Prime sut{};
-    //! @brief Input builder.
-    static std::shared_ptr<prime::InputBuilder> inputs;
+    //! @brief Fixture data.
+    static std::shared_ptr<prime::InputBuilder> fixture;
     //! @brief Expected result.
     static constexpr auto expColl()
     {
@@ -277,18 +277,18 @@ protected:
         // NOLINTEND(readability-magic-numbers)
     }
 };
-std::shared_ptr<prime::InputBuilder> PrimeTestBase::inputs = {};
+std::shared_ptr<prime::InputBuilder> PrimeTestBase::fixture = {};
 
 //! @brief Test for the Eratosthenes method in the solution of prime.
 TEST_F(PrimeTestBase, eratosthenesMethod)
 {
-    ASSERT_EQ(expColl(), sut.eratosthenes(inputs->getMaxPositiveInteger()));
+    ASSERT_EQ(expColl(), sut.eratosthenes(fixture->getMaxPositiveInteger()));
 }
 
 //! @brief Test for the Euler method in the solution of prime.
 TEST_F(PrimeTestBase, eulerMethod)
 {
-    ASSERT_EQ(expColl(), sut.euler(inputs->getMaxPositiveInteger()));
+    ASSERT_EQ(expColl(), sut.euler(fixture->getMaxPositiveInteger()));
 }
 } // namespace tst_num
 } // namespace test
