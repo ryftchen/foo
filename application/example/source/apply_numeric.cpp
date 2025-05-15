@@ -138,21 +138,22 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
         return;
     }
     assert(bits.size() == candidates.size());
-    auto& pooling = configure::task::resourcePool();
-    auto* const reservedJob = pooling.newElement(bits.count());
 
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
+    auto& pooling = configure::task::resourcePool();
+    auto* const allocatedJob = pooling.newElement(bits.count());
     using arithmetic::InputBuilder, arithmetic::input::integerA, arithmetic::input::integerB;
-    const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
+    const auto inputData = std::make_shared<InputBuilder>(integerA, integerB);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = utility::common::wrapClosure(
-        [reservedJob, &inputs, &taskNamer](
-            const std::string_view subTask, void (*targetMethod)(const std::int32_t, const std::int32_t)) {
-            reservedJob->enqueue(
-                taskNamer(subTask), targetMethod, inputs->getIntegers().first, inputs->getIntegers().second);
+        [allocatedJob, &inputData, &taskNamer](
+            const std::string_view subTask, void (*targetMethod)(const std::int32_t, const std::int32_t))
+        {
+            allocatedJob->enqueue(
+                taskNamer(subTask), targetMethod, inputData->getIntegers().first, inputData->getIntegers().second);
         });
-    MACRO_DEFER([&]() { pooling.deleteElement(reservedJob); });
+    MACRO_DEFER([&]() { pooling.deleteElement(allocatedJob); });
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
@@ -234,21 +235,22 @@ void applyingDivisor(const std::vector<std::string>& candidates)
         return;
     }
     assert(bits.size() == candidates.size());
-    auto& pooling = configure::task::resourcePool();
-    auto* const reservedJob = pooling.newElement(bits.count());
 
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
+    auto& pooling = configure::task::resourcePool();
+    auto* const allocatedJob = pooling.newElement(bits.count());
     using divisor::InputBuilder, divisor::input::integerA, divisor::input::integerB;
-    const auto inputs = std::make_shared<InputBuilder>(integerA, integerB);
+    const auto inputData = std::make_shared<InputBuilder>(integerA, integerB);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = utility::common::wrapClosure(
-        [reservedJob, &inputs, &taskNamer](
-            const std::string_view subTask, void (*targetMethod)(std::int32_t, std::int32_t)) {
-            reservedJob->enqueue(
-                taskNamer(subTask), targetMethod, inputs->getIntegers().first, inputs->getIntegers().second);
+        [allocatedJob, &inputData, &taskNamer](
+            const std::string_view subTask, void (*targetMethod)(std::int32_t, std::int32_t))
+        {
+            allocatedJob->enqueue(
+                taskNamer(subTask), targetMethod, inputData->getIntegers().first, inputData->getIntegers().second);
         });
-    MACRO_DEFER([&]() { pooling.deleteElement(reservedJob); });
+    MACRO_DEFER([&]() { pooling.deleteElement(allocatedJob); });
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
@@ -355,28 +357,28 @@ void applyingIntegral(const std::vector<std::string>& candidates)
         return;
     }
     assert(bits.size() == candidates.size());
-    auto& pooling = configure::task::resourcePool();
-    auto* const reservedJob = pooling.newElement(bits.count());
 
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
+    auto& pooling = configure::task::resourcePool();
+    auto* const allocatedJob = pooling.newElement(bits.count());
     using integral::InputBuilder, integral::input::Griewank, integral::Expression;
     static_assert(numeric::integral::epsilon >= std::numeric_limits<double>::epsilon());
-    const auto inputs =
+    const auto inputData =
         std::make_shared<InputBuilder>(Griewank{}, Griewank::range1, Griewank::range2, Griewank::exprDescr);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = utility::common::wrapClosure(
-        [reservedJob, &inputs, &taskNamer](
+        [allocatedJob, &inputData, &taskNamer](
             const std::string_view subTask, void (*targetMethod)(const Expression&, const double, const double))
         {
-            reservedJob->enqueue(
+            allocatedJob->enqueue(
                 taskNamer(subTask),
                 targetMethod,
-                inputs->getExpression(),
-                inputs->getRanges().first,
-                inputs->getRanges().second);
+                inputData->getExpression(),
+                inputData->getRanges().first,
+                inputData->getRanges().second);
         });
-    MACRO_DEFER([&]() { pooling.deleteElement(reservedJob); });
+    MACRO_DEFER([&]() { pooling.deleteElement(allocatedJob); });
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
@@ -461,18 +463,19 @@ void applyingPrime(const std::vector<std::string>& candidates)
         return;
     }
     assert(bits.size() == candidates.size());
-    auto& pooling = configure::task::resourcePool();
-    auto* const reservedJob = pooling.newElement(bits.count());
 
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
+    auto& pooling = configure::task::resourcePool();
+    auto* const allocatedJob = pooling.newElement(bits.count());
     using prime::InputBuilder, prime::input::maxPositiveInteger;
-    const auto inputs = std::make_shared<InputBuilder>(maxPositiveInteger);
+    const auto inputData = std::make_shared<InputBuilder>(maxPositiveInteger);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = utility::common::wrapClosure(
-        [reservedJob, &inputs, &taskNamer](const std::string_view subTask, void (*targetMethod)(const std::uint32_t))
-        { reservedJob->enqueue(taskNamer(subTask), targetMethod, inputs->getMaxPositiveInteger()); });
-    MACRO_DEFER([&]() { pooling.deleteElement(reservedJob); });
+        [allocatedJob, &inputData, &taskNamer](
+            const std::string_view subTask, void (*targetMethod)(const std::uint32_t))
+        { allocatedJob->enqueue(taskNamer(subTask), targetMethod, inputData->getMaxPositiveInteger()); });
+    MACRO_DEFER([&]() { pooling.deleteElement(allocatedJob); });
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
