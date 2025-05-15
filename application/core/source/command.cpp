@@ -231,20 +231,20 @@ void Command::initializeNativeCLI()
         .argsNum(0)
         .implicitValue(true)
         .help(getDescr(Category::help));
-    defaultNotifier.attach(Category::help, std::make_shared<LocalNotifier::Handler<Category::help>>(*this));
+    builtInNotifier.attach(Category::help, std::make_shared<LocalNotifier::Handler<Category::help>>(*this));
     mainCLI
         .addArgument(
             prefix1 + std::string{getAlias(Category::version)}, prefix2 + std::string{toString(Category::version)})
         .argsNum(0)
         .implicitValue(true)
         .help(getDescr(Category::version));
-    defaultNotifier.attach(Category::version, std::make_shared<LocalNotifier::Handler<Category::version>>(*this));
+    builtInNotifier.attach(Category::version, std::make_shared<LocalNotifier::Handler<Category::version>>(*this));
     mainCLI
         .addArgument(prefix1 + std::string{getAlias(Category::dump)}, prefix2 + std::string{toString(Category::dump)})
         .argsNum(0)
         .implicitValue(true)
         .help(getDescr(Category::dump));
-    defaultNotifier.attach(Category::dump, std::make_shared<LocalNotifier::Handler<Category::dump>>(*this));
+    builtInNotifier.attach(Category::dump, std::make_shared<LocalNotifier::Handler<Category::dump>>(*this));
     mainCLI
         .addArgument(
             prefix1 + std::string{getAlias(Category::console)}, prefix2 + std::string{toString(Category::console)})
@@ -263,7 +263,7 @@ void Command::initializeNativeCLI()
             })
         .metavar("CMD")
         .help(getDescr(Category::console));
-    defaultNotifier.attach(Category::console, std::make_shared<LocalNotifier::Handler<Category::console>>(*this));
+    builtInNotifier.attach(Category::console, std::make_shared<LocalNotifier::Handler<Category::console>>(*this));
 }
 
 void Command::initializeExtraCLI() // NOLINT(readability-function-size)
@@ -274,7 +274,6 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     constexpr std::string_view helpDescr = getDescr(Category::help), optMetavar = "OPT";
     auto& checklist = taskDispatcher.extraChecklist;
     std::vector<std::string> candidates{};
-    reserveChoices(candidates);
 
     auto& algoTable = extraChoices[subCLIAppAlgo.title()];
     checklist.emplace(
@@ -640,7 +639,7 @@ void Command::dispatch()
              const auto index :
              std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
         {
-            defaultNotifier.notify(Category(index));
+            builtInNotifier.notify(Category(index));
         }
     }
 
@@ -673,32 +672,13 @@ void Command::dispatch()
     }
 }
 
-void Command::reserveChoices(std::vector<std::string>& choices)
-{
-    choices.reserve(std::max(
-        {TypeInfo<reg_algo::MatchMethod>::fields.size,
-         TypeInfo<reg_algo::NotationMethod>::fields.size,
-         TypeInfo<reg_algo::OptimalMethod>::fields.size,
-         TypeInfo<reg_algo::SearchMethod>::fields.size,
-         TypeInfo<reg_algo::SortMethod>::fields.size,
-         TypeInfo<reg_dp::BehavioralInstance>::fields.size,
-         TypeInfo<reg_dp::CreationalInstance>::fields.size,
-         TypeInfo<reg_dp::StructuralInstance>::fields.size,
-         TypeInfo<reg_ds::LinearInstance>::fields.size,
-         TypeInfo<reg_ds::TreeInstance>::fields.size,
-         TypeInfo<reg_num::ArithmeticMethod>::fields.size,
-         TypeInfo<reg_num::DivisorMethod>::fields.size,
-         TypeInfo<reg_num::IntegralMethod>::fields.size,
-         TypeInfo<reg_num::PrimeMethod>::fields.size}));
-}
-
 template <typename T>
 std::vector<std::string> Command::extractChoices()
 {
     std::vector<std::string> choices{};
-    choices.reserve(TypeInfo<T>::fields.size);
-    TypeInfo<T>::fields.forEach([&choices](const auto field)
-                                { choices.emplace_back(field.attrs.find(REFLECTION_STR("choice")).value); });
+    choices.reserve(utility::reflection::TypeInfo<T>::fields.size);
+    utility::reflection::TypeInfo<T>::fields.forEach(
+        [&choices](const auto field) { choices.emplace_back(field.attrs.find(REFLECTION_STR("choice")).value); });
 
     return choices;
 }
@@ -765,10 +745,10 @@ void Command::executeInConsole() const
         return;
     }
 
-    auto udpClient = std::make_shared<utility::socket::UDPSocket>();
-    launchClient(udpClient);
     constexpr std::string_view greeting = "> ";
     const auto session = std::make_unique<console::Console>(greeting);
+    auto udpClient = std::make_shared<utility::socket::UDPSocket>();
+    launchClient(udpClient);
     registerOnConsole(*session, udpClient);
 
     std::any_of(
@@ -880,18 +860,18 @@ try
     LOG_DBG << "Enter console mode.";
 
     interactionLatency();
-    auto tcpClient = std::make_shared<utility::socket::TCPSocket>();
-    launchClient(tcpClient);
     const char* const userEnv = std::getenv("USER"); // NOLINT(concurrency-mt-unsafe)
-    const std::string user = userEnv ? userEnv : "USER";
+    const std::string userName = userEnv ? userEnv : "USER";
     char hostName[HOST_NAME_MAX] = {'\0'};
     if (::gethostname(hostName, HOST_NAME_MAX))
     {
         std::strncpy(hostName, "HOSTNAME", HOST_NAME_MAX - 1);
         hostName[HOST_NAME_MAX - 1] = '\0';
     }
-    const auto greeting = user + '@' + std::string{hostName} + " foo > ";
+    const auto greeting = userName + '@' + std::string{hostName} + " foo > ";
     const auto session = std::make_unique<console::Console>(greeting);
+    auto tcpClient = std::make_shared<utility::socket::TCPSocket>();
+    launchClient(tcpClient);
     registerOnConsole(*session, tcpClient);
 
     std::cout << note::iconBanner() << std::endl;
