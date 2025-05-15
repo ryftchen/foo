@@ -210,13 +210,6 @@ private:
     //! @param cat - the specific value of Category enum
     //! @return alias name
     static consteval std::string_view getAlias(const Category cat);
-    //! @brief Alias for the type information.
-    //! @tparam T - type of target object
-    template <typename T>
-    using TypeInfo = utility::reflection::TypeInfo<T>;
-    //! @brief Reserve choices based on the maximum size of the entry under the sub-cli's category.
-    //! @param choices - choices to be updated
-    static void reserveChoices(std::vector<std::string>& choices);
     //! @brief Extract all choices in the sub-cli's category.
     //! @tparam T - type of sub-cli's category
     //! @return all choices
@@ -305,7 +298,7 @@ private:
     //! @brief Alias for the local notifier.
     using LocalNotifier = Notifier<Category, Command>;
     //! @brief Local notification for native type tasks.
-    LocalNotifier defaultNotifier{};
+    LocalNotifier builtInNotifier{};
     //! @brief Forward messages for extra type tasks.
     action::MessageForwarder applyingForwarder{};
     //! @brief Alias for the pair of the sub-cli name and the sub-cli version.
