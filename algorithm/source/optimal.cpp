@@ -195,7 +195,7 @@ bool Annealing::metropolisAcceptanceCriterion(const double deltaE, const double 
 
 std::optional<std::tuple<double, double>> Particle::operator()(const double left, const double right, const double eps)
 {
-    auto swarm{swarmInit(left, right)};
+    auto swarm = swarmInit(left, right);
     const auto initialBest = std::min_element(
         swarm.cbegin(), swarm.cend(), [](const auto& min1, const auto& min2) { return min1.fitness < min2.fitness; });
     double gloBest = initialBest->x, gloBestFitness = initialBest->fitness;
@@ -273,7 +273,7 @@ void Particle::updateBests(Swarm& swarm, double& gloBest, double& gloBestFitness
 
 std::optional<std::tuple<double, double>> Ant::operator()(const double left, const double right, const double eps)
 {
-    auto colony{colonyInit(left, right)};
+    auto colony = colonyInit(left, right);
     double xBest = colony.front().position, yBest = func(xBest), stepLen = initialStep;
 
     for (std::uint32_t i = 0; i < maxIterations; ++i)
@@ -360,7 +360,7 @@ void Ant::updatePheromones(Colony& colony)
 std::optional<std::tuple<double, double>> Genetic::operator()(const double left, const double right, const double eps)
 {
     updateSpecies(left, right, eps);
-    auto pop{populationInit()};
+    auto pop = populationInit();
     for (std::uint32_t i = 0; i < numOfGenerations; ++i)
     {
         select(pop);
