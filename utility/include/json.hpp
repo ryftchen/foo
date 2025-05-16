@@ -82,7 +82,7 @@ public:
 
     // NOLINTBEGIN(google-explicit-constructor)
     //! @brief Construct a new JSON object.
-    JSON(const std::nullptr_t /*n*/) {}
+    JSON(const std::nullptr_t /*null*/) {}
     //! @brief Construct a new JSON object.
     //! @tparam T - type of string value
     //! @param s - string value
@@ -155,7 +155,7 @@ public:
         //! @param container - JSON object to be wrapped
         explicit JSONWrapper(Container* container) : object{container} {}
         //! @brief Construct a new JSONWrapper object.
-        explicit JSONWrapper(std::nullptr_t /*n*/) {}
+        explicit JSONWrapper(std::nullptr_t /*null*/) {}
 
         //! @brief Pointer to the JSON object.
         Container* object{nullptr};
@@ -192,7 +192,7 @@ public:
         //! @param container - JSON object to be wrapped
         explicit JSONConstWrapper(const Container* container) : object{container} {}
         //! @brief Construct a new JSONWrapper object.
-        explicit JSONConstWrapper(const std::nullptr_t /*n*/) {}
+        explicit JSONConstWrapper(const std::nullptr_t /*null*/) {}
 
         //! @brief Const pointer to the JSON object.
         const Container* object{nullptr};
