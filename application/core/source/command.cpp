@@ -139,17 +139,17 @@ static constexpr std::string_view toString(const Category cat)
 
 // clang-format off
 //! @brief Mapping table for enum and attribute about command categories. X macro.
-#define COMMAND_X_MACRO_CATEGORY_MAPPING                                          \
-    X(console, "run options in console mode and exit\nseparate with quotes", "c") \
-    X(dump   , "dump default configuration and exit"                       , "d") \
-    X(help   , "show help and exit"                                        , "h") \
-    X(version, "show version and exit"                                     , "v")
+#define COMMAND_CATEGORY_X_MACRO_MAPPING                                                    \
+    X(Category::console, "run options in console mode and exit\nseparate with quotes", "c") \
+    X(Category::dump   , "dump default configuration and exit"                       , "d") \
+    X(Category::help   , "show help and exit"                                        , "h") \
+    X(Category::version, "show version and exit"                                     , "v")
 // clang-format on
 consteval std::string_view Command::getDescr(const Category cat)
 {
 //! @cond
 #define X(enum, descr, alias) {descr, alias},
-    constexpr std::string_view table[][2] = {COMMAND_X_MACRO_CATEGORY_MAPPING};
+    constexpr std::string_view table[][2] = {COMMAND_CATEGORY_X_MACRO_MAPPING};
     static_assert((sizeof(table) / sizeof(table[0])) == Bottom<Category>::value);
     return table[cat][0];
 //! @endcond
@@ -160,13 +160,13 @@ consteval std::string_view Command::getAlias(const Category cat)
 {
 //! @cond
 #define X(enum, descr, alias) {descr, alias},
-    constexpr std::string_view table[][2] = {COMMAND_X_MACRO_CATEGORY_MAPPING};
+    constexpr std::string_view table[][2] = {COMMAND_CATEGORY_X_MACRO_MAPPING};
     static_assert((sizeof(table) / sizeof(table[0])) == Bottom<Category>::value);
     return table[cat][1];
 //! @endcond
 #undef X
 }
-#undef COMMAND_X_MACRO_CATEGORY_MAPPING
+#undef COMMAND_CATEGORY_X_MACRO_MAPPING
 
 Command::Command()
 {
@@ -678,7 +678,13 @@ std::vector<std::string> Command::extractChoices()
     std::vector<std::string> choices{};
     choices.reserve(utility::reflection::TypeInfo<T>::fields.size);
     utility::reflection::TypeInfo<T>::fields.forEach(
-        [&choices](const auto field) { choices.emplace_back(field.attrs.find(REFLECTION_STR("choice")).value); });
+        [&choices](const auto field)
+        {
+            static_assert(1 == field.attrs.size);
+            const auto attr = field.attrs.find(REFLECTION_STR("choice"));
+            static_assert(attr.hasValue);
+            choices.emplace_back(attr.value);
+        });
 
     return choices;
 }
@@ -943,7 +949,6 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
             try
             {
                 utility::common::invokeCallableWith<log::Log>(gracefulReset);
-
                 LOG_INF_F("Refreshed the {} outputs.", log::Log::name);
             }
             catch (const std::exception& err)
@@ -967,8 +972,8 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
                 client->waitIfAlive();
                 interactionLatency();
                 client.reset();
-                utility::common::invokeCallableWith<view::View>(gracefulReset);
 
+                utility::common::invokeCallableWith<view::View>(gracefulReset);
                 client = std::make_shared<T>();
                 launchClient(client);
                 LOG_INF_F("Reconnected to the {} servers.", view::View::name);

@@ -30,7 +30,7 @@ static std::string errnoString()
 #ifdef _GNU_SOURCE
     return ::strerror_r(errno, buffer, sizeof(buffer));
 #else
-    return (::strerror_r(errno, buffer, sizeof(buffer)) == 0) ? buffer : "Unknown error";
+    return (::strerror_r(errno, buffer, sizeof(buffer)) == 0) ? std::string{buffer} : "Unknown error";
 #endif // _GNU_SOURCE
 }
 
