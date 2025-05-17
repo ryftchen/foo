@@ -10,9 +10,9 @@ document/server/target/
 document/*.css
 document/*.html
 report/
+.build_afresh
 .build_env
-.build_wrap
-.console_batch
+.run_console_batch
 .run_dict
 core.*
 Cargo.lock
