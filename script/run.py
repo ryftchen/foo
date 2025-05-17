@@ -34,8 +34,8 @@ class Task:
     lib_path = "./build/lib"
     script_path = "./script"
     build_script = f"{script_path}/build.sh"
-    run_dict_file = f"{script_path}/.run_dict"
-    console_file = f"{script_path}/.console_batch"
+    run_dict = f"{script_path}/.run_dict"
+    run_console_batch = f"{script_path}/.run_console_batch"
     app_native_task_dict = {
         "--help": [],
         "--version": [],
@@ -45,7 +45,7 @@ class Task:
             r"quit",
             r"trace",
             r"clean",
-            f"batch {console_file}",
+            f"batch {run_console_batch}",
             r"refresh",
             r"reconnect",
             r"depend",
@@ -263,8 +263,8 @@ class Task:
             sys.exit(1)
 
     def load_run_dict(self):
-        if os.path.isfile(self.run_dict_file):
-            loader = importlib.machinery.SourceFileLoader("run_dict", self.run_dict_file)
+        if os.path.isfile(self.run_dict):
+            loader = importlib.machinery.SourceFileLoader("run_dict", self.run_dict)
             spec = importlib.util.spec_from_loader(loader.name, loader)
             module = importlib.util.module_from_spec(spec)
             loader.exec_module(module)
@@ -278,7 +278,7 @@ class Task:
         orig_content += f"app_extra_task_dict = {ast.literal_eval(str(self.app_extra_task_dict))}\n"
         orig_content += f"tst_task_filt = {ast.literal_eval(str(self.tst_task_filt))}\n"
 
-        with open(self.run_dict_file, "wt", encoding="utf-8") as run_dict_content:
+        with open(self.run_dict, "wt", encoding="utf-8") as run_dict_content:
             fcntl.flock(run_dict_content.fileno(), fcntl.LOCK_EX)
             try:
                 black = importlib.import_module("black")
@@ -298,8 +298,8 @@ class Task:
 
         if not os.path.exists(self.report_path):
             os.makedirs(self.report_path)
-        if not os.path.isfile(self.console_file):
-            pathlib.Path(self.console_file).write_text("# console option\n\nusage\nquit\n", "utf-8")
+        if not os.path.isfile(self.run_console_batch):
+            pathlib.Path(self.run_console_batch).write_text("# console option\n\nusage\nquit\n", "utf-8")
 
         self.logger = common.Log(self.run_log_file)
         self.progress_bar.setup_progress_bar()

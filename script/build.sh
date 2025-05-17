@@ -891,12 +891,13 @@ function perform_query_option()
     if [[ ${ARGS[release]} != false ]]; then
         other_option=" --release"
     fi
-    local rebuild_script=./${FOLDER[scr]}/.build_wrap
+    local rebuild_script=./${FOLDER[scr]}/.build_afresh
     if [[ ! -f ${rebuild_script} ]]; then
         shell_command "cat <<EOF >./${rebuild_script}
 #!/usr/bin/env bash
 
 set -e
+
 export FOO_BLD_FORCE=on
 $(realpath "$0") \"\\\$@\"
 EOF"
