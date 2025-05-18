@@ -126,7 +126,7 @@ class Schedule:
                 if response.status != http.HTTPStatus.OK:
                     raise urllib.error.HTTPError(
                         self.api_url, response.status, "HTTP request failed.", response.headers, None
-                    ) from None
+                    )
                 json_detail = json.loads(response.read().decode("utf-8"))
                 for index in range(json_detail["total_count"]):
                     if json_detail["artifacts"][index]["name"] == self.artifact_name:
@@ -139,13 +139,13 @@ class Schedule:
                 if response.status != http.HTTPStatus.OK:
                     raise urllib.error.HTTPError(
                         redirect_location, response.status, "File download failed.", response.headers, None
-                    ) from None
+                    )
                 with open(f"{self.target_dir}/{self.artifact_name}.zip", "wb") as output_file:
                     output_file.write(response.read())
 
             with zipfile.ZipFile(f"{self.target_dir}/{self.artifact_name}.zip", "r") as zip_file:
                 if zip_file.testzip() is not None:
-                    raise zipfile.BadZipFile("Corrupted zip file.") from None
+                    raise zipfile.BadZipFile("Corrupted zip file.")
         except Exception:  # pylint: disable=broad-except
             executor(f"rm -rf {self.target_dir}/{self.artifact_name}.zip")
             executor(f"git -C {self.project_path} reset --hard {local_commit_id}")
@@ -187,4 +187,4 @@ if __name__ == "__main__":
     try:
         Schedule().pull_artifact()
     except Exception:  # pylint: disable=broad-except
-        abort(traceback.format_exc())
+        abort(traceback.format_exc().replace("\n", "\\n"))
