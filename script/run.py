@@ -843,7 +843,7 @@ def main():
         task.run()
     except Exception:  # pylint: disable=broad-except
         if task is not None:
-            task.stop(traceback.format_exc())
+            task.stop(f"Raised exception.\n{traceback.format_exc()}")
         else:
             raise
     except KeyboardInterrupt:
@@ -855,4 +855,4 @@ if __name__ == "__main__":
     try:
         main()
     except Exception:  # pylint: disable=broad-except
-        TermUtil.exit_with_error(traceback.format_exc())
+        TermUtil.exit_with_error(f"Raised exception.\n{traceback.format_exc()}")
