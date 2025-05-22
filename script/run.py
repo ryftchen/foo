@@ -113,7 +113,7 @@ class Task:
         if os.path.exists(proc_path):
             common.execute_command(f"rm -rf {proc_path}")
 
-        self.logger = sys.stdout
+        self.stream_logger = sys.stdout
         self.progress_bar = common.ProgressBar()
         self.task_queue = queue.Queue()
 
@@ -253,7 +253,7 @@ class Task:
                 common.execute_command(f"rm -rf {self.report_path}/dca/chk_mem/*.xml")
             sys.stdout = STDOUT
             self.progress_bar.destroy_progress_bar()
-            del self.logger
+            del self.stream_logger
             self.format_run_log()
         except Exception:  # pylint: disable=broad-except
             pass
@@ -301,9 +301,9 @@ class Task:
         if not os.path.isfile(self.run_console_batch):
             pathlib.Path(self.run_console_batch).write_text("# console option\n\nusage\nquit\n", "utf-8")
 
-        self.logger = common.Log(self.run_log_file)
+        self.stream_logger = common.StreamLogger(self.run_log_file)
         self.progress_bar.setup_progress_bar()
-        sys.stdout = self.logger
+        sys.stdout = self.stream_logger
 
         self.load_run_dict()
         console_mode_arg = "--console"
@@ -327,7 +327,7 @@ class Task:
 
         sys.stdout = STDOUT
         self.progress_bar.destroy_progress_bar()
-        del self.logger
+        del self.stream_logger
 
     def generate_tasks(self):
         console_mode_arg = "--console"
@@ -420,7 +420,7 @@ class Task:
 
         sys.stdout = STDOUT
         self.progress_bar.draw_progress_bar(int(self.complete_steps / self.total_steps * 100))
-        sys.stdout = self.logger
+        sys.stdout = self.stream_logger
 
     def hint_with_highlight(self, esc_color, hint):
         print(
