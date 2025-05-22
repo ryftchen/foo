@@ -12,7 +12,7 @@ except ImportError as err:
     raise ImportError(err) from err
 
 
-def execute_command(command, set_input="", set_timeout=300):
+def execute_command(command, input="", timeout=300):  # pylint: disable=redefined-builtin
     try:
         process = subprocess.run(
             command,
@@ -22,18 +22,19 @@ def execute_command(command, set_input="", set_timeout=300):
             capture_output=True,
             check=True,
             encoding="utf-8",
-            input=set_input,
-            timeout=set_timeout,
+            input=input,
+            timeout=timeout,
         )
         return process.stdout.strip(), process.stderr.strip(), process.returncode
     except subprocess.CalledProcessError as error:
         return error.stdout.strip(), error.stderr.strip(), error.returncode
     except subprocess.TimeoutExpired as error:
-        return "", error, 124
+        return "", str(error), 124
 
 
-class Log:
-    def __init__(self, filename, mode="wt", stream=sys.stdout):
+class StreamLogger:
+    def __init__(self, filename, mode="wt", stream=sys.stdout, prefix=None):
+        self.prefix = prefix if callable(prefix) else (lambda: prefix or "")
         self.terminal = stream
         self.log = open(filename, mode, encoding="utf-8")  # pylint: disable=consider-using-with
         fcntl.flock(self.log.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -42,16 +43,20 @@ class Log:
         fcntl.flock(self.log.fileno(), fcntl.LOCK_UN)
         self.log.close()
 
-    def write(self, message):
-        self.terminal.write(message)
+    def write(self, string):
+        content = f"{self.prefix()}{string}"
         try:
-            self.log.write(message)
+            self.terminal.write(content)
+            self.log.write(content)
         except IOError:
-            fcntl.flock(self.log.fileno(), fcntl.LOCK_UN)
-            self.log.close()
+            pass
 
     def flush(self):
-        pass
+        try:
+            self.terminal.flush()
+            self.log.flush()
+        except IOError:
+            pass
 
 
 class ProgressBar:

@@ -14,7 +14,7 @@ try:
     import urllib.request
     import zipfile
     from datetime import datetime
-    from common import execute_command as executor, Log as Logger
+    from common import execute_command as executor, StreamLogger as Logger
 except ImportError as err:
     raise ImportError(err) from err
 
