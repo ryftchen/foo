@@ -20,5 +20,6 @@ disable=missing-class-docstring,
         missing-module-docstring,
         too-many-branches,
         too-many-instance-attributes,
+        too-many-lines,
         too-many-locals,
         too-many-public-methods

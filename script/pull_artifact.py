@@ -3,22 +3,20 @@
 try:
     import argparse
     import fnmatch
+    import logging
     import http
     import json
     import netrc
     import os
+    import subprocess
     import sys
     import traceback
     import urllib.error
     import urllib.parse
     import urllib.request
     import zipfile
-    from datetime import datetime
-    from common import execute_command as executor, StreamLogger as Logger
 except ImportError as err:
     raise ImportError(err) from err
-
-STDOUT = sys.stdout
 
 
 class Schedule:
@@ -27,29 +25,24 @@ class Schedule:
     artifact_name = "foo_artifact"
     target_dir = "/var/www/foo_doc"
     netrc_file = "~/.netrc"
-    log_file = "/tmp/foo_pull_artifact.log"
 
-    def __init__(self):
-        self.logger = sys.stdout
+    def __init__(self, logger):
+        self.logger = logger
         self.forced_pull = False
         self.proxy_port = None
 
         env = os.getenv("FOO_ENV")
         if env is not None:
             if env != "foo_doc":
-                abort("The environment variable FOO_ENV must be foo_doc.")
+                self.abort("The environment variable FOO_ENV must be foo_doc.")
         else:
-            abort("Please export the environment variable FOO_ENV.")
+            self.abort("Please export the environment variable FOO_ENV.")
         script_path = os.path.split(os.path.realpath(__file__))[0]
         if not fnmatch.fnmatch(script_path, "*foo/script"):
-            abort("Illegal path to current script.")
+            self.abort("Illegal path to current script.")
         self.project_path = os.path.dirname(script_path)
 
-    def __del__(self):
-        sys.stdout = STDOUT
-        del self.logger
-
-    def parse(self):
+    def configure_from_cli(self):
         def check_port_range(value):
             value = int(value)
             if 0 <= value <= 65535:
@@ -74,34 +67,31 @@ class Schedule:
             self.proxy_port = args.port
 
     def pull_artifact(self):
-        self.parse()
-        self.logger = Logger(self.log_file, "at")
-        sys.stdout = self.logger
-        print()
+        self.configure_from_cli()
 
-        print(f"[ {datetime.now()} ] >>>>>>>>>>>>>>>>> PULL ARTIFACT >>>>>>>>>>>>>>>>>")
+        self.notice(">>>>>>>>>>>>>>>> PULL ARTIFACT >>>>>>>>>>>>>>>>")
         if not os.path.exists(self.target_dir):
-            abort(f"Please create a {self.target_dir} folder for storing pages.")
+            self.abort(f"Please create a {self.target_dir} folder for storing pages.")
         self.download_artifact()
         self.update_document()
-        print(f"[ {datetime.now()} ] <<<<<<<<<<<<<<<<< PULL ARTIFACT <<<<<<<<<<<<<<<<<")
+        self.notice("<<<<<<<<<<<<<<<< PULL ARTIFACT <<<<<<<<<<<<<<<<")
 
     def download_artifact(self):
-        print(f"[ {datetime.now()} ] ############### DOWNLOAD ARTIFACT ###############")
-        local_commit_id, _, _ = executor(f"git -C {self.project_path} rev-parse HEAD")
-        remote_commit_id, _, _ = executor(
+        self.notice("############## DOWNLOAD ARTIFACT ##############")
+        local_commit_id, _, _ = self.executor(f"git -C {self.project_path} rev-parse HEAD")
+        remote_commit_id, _, _ = self.executor(
             f"git -C {self.project_path} ls-remote {self.repo_url} refs/heads/master | cut -f 1"
         )
         if not remote_commit_id:
-            abort("Could not get the latest commit id.")
+            self.abort("Could not get the latest commit id.")
         if local_commit_id != remote_commit_id:
-            executor(f"git -C {self.project_path} pull origin master")
+            self.executor(f"git -C {self.project_path} pull origin master")
         elif (
             not self.forced_pull
             and os.path.exists(f"{self.target_dir}/doxygen")
             and os.path.exists(f"{self.target_dir}/browser")
         ):
-            abort("No commit change.")
+            self.abort("No commit change.")
 
         try:
             if self.proxy_port is not None:
@@ -147,17 +137,24 @@ class Schedule:
                 if zip_file.testzip() is not None:
                     raise zipfile.BadZipFile("Corrupted zip file.")
         except Exception:  # pylint: disable=broad-except
-            executor(f"rm -rf {self.target_dir}/{self.artifact_name}.zip")
-            executor(f"git -C {self.project_path} reset --hard {local_commit_id}")
+            self.executor(f"rm -rf {self.target_dir}/{self.artifact_name}.zip")
+            self.executor(f"git -C {self.project_path} reset --hard {local_commit_id}")
             raise
 
     def update_document(self):
-        print(f"[ {datetime.now()} ] ################ UPDATE DOCUMENT ################")
-        executor(f"rm -rf {self.target_dir}/doxygen {self.target_dir}/browser")
-        executor(f"unzip {self.target_dir}/{self.artifact_name}.zip -d {self.target_dir}")
-        executor(f"tar -jxvf {self.target_dir}/foo_doxygen_*.tar.bz2 -C {self.target_dir} >/dev/null")
-        executor(f"tar -jxvf {self.target_dir}/foo_browser_*.tar.bz2 -C {self.target_dir} >/dev/null")
-        executor(f"rm -rf {self.target_dir}/*.zip {self.target_dir}/*.tar.bz2")
+        self.notice("############### UPDATE DOCUMENT ###############")
+        command_list = [
+            f"rm -rf {self.target_dir}/doxygen {self.target_dir}/browser",
+            f"unzip {self.target_dir}/{self.artifact_name}.zip -d {self.target_dir}",
+            f"tar -jxvf {self.target_dir}/foo_doxygen_*.tar.bz2 -C {self.target_dir} >/dev/null",
+            f"tar -jxvf {self.target_dir}/foo_browser_*.tar.bz2 -C {self.target_dir} >/dev/null",
+            f"rm -rf {self.target_dir}/*.zip {self.target_dir}/*.tar.bz2",
+        ]
+        for entry in command_list:
+            _, stderr, return_code = self.executor(entry)
+            if stderr or return_code:
+                self.executor(f"rm -rf {self.target_dir}/doxygen {self.target_dir}/browser")
+                self.abort(f"Interrupted due to a failure of the \"{entry}\" command.")
 
     def get_redirect_location(self, url, headers):
         class NoRedirectHandler(urllib.request.HTTPRedirectHandler):
@@ -177,14 +174,48 @@ class Schedule:
 
         return location
 
+    def executor(self, command):
+        self.logger.debug(command)
+        try:
+            process = subprocess.run(
+                command,
+                executable="/bin/bash",
+                shell=True,
+                universal_newlines=True,
+                capture_output=True,
+                check=True,
+                encoding="utf-8",
+                timeout=300,
+            )
+            return process.stdout.strip(), process.stderr.strip(), process.returncode
+        except subprocess.CalledProcessError as error:
+            return error.stdout.strip(), error.stderr.strip(), error.returncode
+        except subprocess.TimeoutExpired as error:
+            return "", str(error), 124
 
-def abort(msg):
-    print(f"[ {datetime.now()} ] {msg}")
-    sys.exit(1)
+    def notice(self, message):
+        self.logger.info(message)
+
+    def abort(self, message):
+        self.logger.warning(message)
+        sys.exit(1)
+
+
+def setup_logger(log_level, log_file):
+    logger = logging.getLogger(__name__)
+    logger.setLevel(log_level)
+
+    file_handler = logging.FileHandler(log_file, mode="at", encoding="utf-8")
+    formatter = logging.Formatter("%(asctime)s - %(levelname)-8s - %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+
+    return logger
 
 
 if __name__ == "__main__":
+    LOGGER = setup_logger(logging.INFO, f"/tmp/foo_{os.path.splitext(os.path.basename(__file__))[0]}.log")
     try:
-        Schedule().pull_artifact()
+        Schedule(LOGGER).pull_artifact()
     except Exception:  # pylint: disable=broad-except
-        abort(traceback.format_exc().replace("\n", "\\n"))
+        LOGGER.error(traceback.format_exc().replace("\n", "\\n"))

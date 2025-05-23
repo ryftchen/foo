@@ -3,6 +3,7 @@
 try:
     import argparse
     import ast
+    import curses
     import errno
     import fcntl
     import fnmatch
@@ -13,12 +14,14 @@ try:
     import queue
     import re
     import select
+    import shutil
+    import signal
     import subprocess
     import sys
     import threading
+    import time
     import traceback
     from datetime import datetime
-    import common
 except ImportError as err:
     raise ImportError(err) from err
 
@@ -102,6 +105,12 @@ class Task:
 
         os.environ["TERM"] = "linux"
         os.environ["TERMINFO"] = "/etc/terminfo"
+        env = os.getenv("FOO_ENV")
+        if env is not None:
+            if env != "foo_dev":
+                TermUtil.exit_with_error("The environment variable FOO_ENV must be foo_dev.")
+        else:
+            TermUtil.exit_with_error("Please export the environment variable FOO_ENV.")
         script_path = os.path.split(os.path.realpath(__file__))[0]
         if not fnmatch.fnmatch(script_path, "*foo/script"):
             TermUtil.exit_with_error("Illegal path to current script.")
@@ -111,10 +120,10 @@ class Task:
             os.mkdir(self.report_path)
         proc_path = os.path.expanduser("~/.foo")
         if os.path.exists(proc_path):
-            common.execute_command(f"rm -rf {proc_path}")
+            execute_command(f"rm -rf {proc_path}")
 
         self.stream_logger = sys.stdout
-        self.progress_bar = common.ProgressBar()
+        self.progress_bar = ProgressBar()
         self.task_queue = queue.Queue()
 
     def parse_arguments(self):
@@ -248,9 +257,9 @@ class Task:
     def stop(self, message=""):
         try:
             if self.marked_options["chk"]["cov"]:
-                common.execute_command(f"rm -rf {self.report_path}/dca/chk_cov/{{*.profraw,*.profdata}}")
+                execute_command(f"rm -rf {self.report_path}/dca/chk_cov/{{*.profraw,*.profdata}}")
             if self.marked_options["chk"]["mem"]:
-                common.execute_command(f"rm -rf {self.report_path}/dca/chk_mem/*.xml")
+                execute_command(f"rm -rf {self.report_path}/dca/chk_mem/*.xml")
             sys.stdout = STDOUT
             self.progress_bar.destroy_progress_bar()
             del self.stream_logger
@@ -301,7 +310,7 @@ class Task:
         if not os.path.isfile(self.run_console_batch):
             pathlib.Path(self.run_console_batch).write_text("# console option\n\nusage\nquit\n", "utf-8")
 
-        self.stream_logger = common.StreamLogger(self.run_log_file)
+        self.stream_logger = StreamLogger(self.run_log_file)
         self.progress_bar.setup_progress_bar()
         sys.stdout = self.stream_logger
 
@@ -381,7 +390,7 @@ class Task:
             self.esc_color["blue"], f"CASE: {f'{command}':<{align_len - self.stat_at_least_len}} # START "
         )
 
-        stdout, stderr, return_code = common.execute_command(full_cmd, enter)
+        stdout, stderr, return_code = execute_command(full_cmd, enter)
         if not stdout or stderr or return_code:
             print(f"\n[STDOUT]\n{stdout}\n[STDERR]\n{stderr}\n[RETURN CODE]\n{return_code}")
             self.hint_with_highlight(
@@ -428,61 +437,59 @@ class Task:
         )
 
     def initialize_for_check_coverage(self):
-        stdout, _, _ = common.execute_command("command -v llvm-profdata-16 llvm-cov-16 2>&1")
+        stdout, _, _ = execute_command("command -v llvm-profdata-16 llvm-cov-16 2>&1")
         if stdout.find("llvm-profdata-16") != -1 and stdout.find("llvm-cov-16") != -1:
             os.environ["FOO_BLD_COV"] = "llvm-cov"
             self.marked_options["chk"]["cov"] = True
-            common.execute_command(f"rm -rf {self.report_path}/dca/chk_cov")
-            common.execute_command(f"mkdir -p {self.report_path}/dca/chk_cov")
+            execute_command(f"rm -rf {self.report_path}/dca/chk_cov && mkdir -p {self.report_path}/dca/chk_cov")
         else:
             TermUtil.exit_with_error("No llvm-profdata or llvm-cov program. Please check it.")
 
     def check_coverage_handling(self):
         folder_path = f"{self.report_path}/dca/chk_cov"
-        common.execute_command(
+        execute_command(
             f"llvm-profdata-16 merge -sparse {folder_path}/foo_chk_cov_*.profraw -o {folder_path}/foo_chk_cov.profdata"
         )
         if not self.marked_options["tst"]:
-            common.execute_command(
+            execute_command(
                 f"llvm-cov-16 show -instr-profile={folder_path}/foo_chk_cov.profdata -show-branches=percent \
 -show-expansions -show-regions -show-line-counts-or-regions -format=html -output-dir={folder_path} -Xdemangler=c++filt \
 -object={self.app_bin_path}/{self.app_bin_cmd} {' '.join([f'-object={self.lib_path}/{lib}' for lib in self.lib_list])} \
 2>&1"
             )
         else:
-            common.execute_command(
+            execute_command(
                 f"llvm-cov-16 show -instr-profile={folder_path}/foo_chk_cov.profdata -show-branches=percent \
 -show-expansions -show-regions -show-line-counts-or-regions -format=html -output-dir={folder_path} -Xdemangler=c++filt \
 -object={self.tst_bin_path}/{self.tst_bin_cmd} 2>&1"
             )
         stdout, _, _ = (
-            common.execute_command(
+            execute_command(
                 f"llvm-cov-16 report -instr-profile={folder_path}/foo_chk_cov.profdata \
 -object={self.app_bin_path}/{self.app_bin_cmd} {' '.join([f'-object={self.lib_path}/{lib}' for lib in self.lib_list])} \
 2>&1"
             )
             if not self.marked_options["tst"]
-            else common.execute_command(
+            else execute_command(
                 f"llvm-cov-16 report -instr-profile={folder_path}/foo_chk_cov.profdata \
 -object={self.tst_bin_path}/{self.tst_bin_cmd} 2>&1"
             )
         )
-        common.execute_command(f"rm -rf {folder_path}/{{*.profraw,*.profdata}}")
+        execute_command(f"rm -rf {folder_path}/{{*.profraw,*.profdata}}")
         print(f"\n[CHECK COVERAGE]\n{stdout}")
         if "error" in stdout:
             print("Please further check the compilation parameters related to instrumentation.")
 
     def initialize_for_check_memory(self):
-        stdout, _, _ = common.execute_command("command -v valgrind valgrind-ci 2>&1")
+        stdout, _, _ = execute_command("command -v valgrind valgrind-ci 2>&1")
         if stdout.find("valgrind") != -1 and stdout.find("valgrind-ci") != -1:
             self.marked_options["chk"]["mem"] = True
-            common.execute_command(f"rm -rf {self.report_path}/dca/chk_mem")
-            common.execute_command(f"mkdir -p {self.report_path}/dca/chk_mem")
+            execute_command(f"rm -rf {self.report_path}/dca/chk_mem && mkdir -p {self.report_path}/dca/chk_mem")
         else:
             TermUtil.exit_with_error("No valgrind (including valgrind-ci) program. Please check it.")
 
     def check_memory_handling(self):
-        common.execute_command(f"rm -rf {self.report_path}/dca/chk_mem/*.xml")
+        execute_command(f"rm -rf {self.report_path}/dca/chk_mem/*.xml")
         folder_path = f"{self.report_path}/dca/chk_mem/memory"
         if not os.path.exists(folder_path):
             os.mkdir(folder_path)
@@ -496,7 +503,7 @@ class Task:
             .replace(f"{self.app_bin_cmd} > ", f"{self.app_bin_cmd} &gt; ")
             for folder in case_folders_with_ctime
         ]
-        stdout, _, _ = common.execute_command("pip3 show ValgrindCI")
+        stdout, _, _ = execute_command("pip3 show ValgrindCI")
         pkg_loc = ""
         for line in stdout.splitlines():
             if line.startswith("Location:"):
@@ -509,9 +516,7 @@ class Task:
             or not os.path.isfile(f"{pkg_loc}/valgrind.js")
         ):
             print("\n[CHECK MEMORY]\nMissing source files prevent indexing.")
-        common.execute_command(
-            f"cp -rf {pkg_loc}/{{index.html,valgrind.css,valgrind.js}} {self.report_path}/dca/chk_mem/"
-        )
+        execute_command(f"cp -rf {pkg_loc}/{{index.html,valgrind.css,valgrind.js}} {self.report_path}/dca/chk_mem/")
 
         with open(f"{self.report_path}/dca/chk_mem/index.html", "rt", encoding="utf-8") as index_content:
             fcntl.flock(index_content.fileno(), fcntl.LOCK_EX)
@@ -549,21 +554,19 @@ class Task:
         stdout = ""
         stderr = ""
         if inst_num == 1:
-            stdout, stderr, _ = common.execute_command(f"valgrind-ci {xml_filename}.xml --summary")
+            stdout, stderr, _ = execute_command(f"valgrind-ci {xml_filename}.xml --summary")
         elif inst_num == 2:
-            common.execute_command(
-                f"cp {xml_filename}.xml {xml_filename}_inst_1.xml && \
-mv {xml_filename}.xml {xml_filename}_inst_2.xml"
+            execute_command(
+                f"cp {xml_filename}.xml {xml_filename}_inst_1.xml && mv {xml_filename}.xml {xml_filename}_inst_2.xml"
             )
-            common.execute_command(
+            execute_command(
                 f"a=$(sed -n '/<\\/status>/!d;=;Q' {xml_filename}_inst_1.xml); \
 b=$(sed -n '/<\\/valgrindoutput>/!d;=;Q' {xml_filename}_inst_1.xml); \
 sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
             )
-            common.execute_command(f"sed -i '/<\\/valgrindoutput>/q' {xml_filename}_inst_2.xml")
-            stdout, stderr, _ = common.execute_command(
-                f"valgrind-ci {xml_filename}_inst_1.xml --summary && \
-valgrind-ci {xml_filename}_inst_2.xml --summary"
+            execute_command(f"sed -i '/<\\/valgrindoutput>/q' {xml_filename}_inst_2.xml")
+            stdout, stderr, _ = execute_command(
+                f"valgrind-ci {xml_filename}_inst_1.xml --summary && valgrind-ci {xml_filename}_inst_2.xml --summary"
             )
 
         if "errors" in stdout:
@@ -571,14 +574,14 @@ valgrind-ci {xml_filename}_inst_2.xml --summary"
             print(f"\n[CHECK MEMORY]\n{stdout}")
             case_path = f"{self.report_path}/dca/chk_mem/memory/case_{str(self.complete_steps + 1)}"
             if inst_num == 1:
-                common.execute_command(f"valgrind-ci {xml_filename}.xml --source-dir=./ --output-dir={case_path}")
+                execute_command(f"valgrind-ci {xml_filename}.xml --source-dir=./ --output-dir={case_path}")
                 pathlib.Path(f"{case_path}/case_name").write_text(command, "utf-8")
             elif inst_num == 2:
-                common.execute_command(
+                execute_command(
                     f"valgrind-ci {xml_filename}_inst_1.xml --source-dir=./ --output-dir={case_path}_inst_1"
                 )
                 pathlib.Path(f"{case_path}_inst_1/case_name").write_text(command, "utf-8")
-                common.execute_command(
+                execute_command(
                     f"valgrind-ci {xml_filename}_inst_2.xml --source-dir=./ --output-dir={case_path}_inst_2"
                 )
                 pathlib.Path(f"{case_path}_inst_2/case_name").write_text(command, "utf-8")
@@ -834,6 +837,157 @@ class TermUtil:
                     continue
 
             return process.wait()
+
+
+class StreamLogger:
+    def __init__(self, filename, mode="wt", stream=sys.stdout):
+        self.terminal = stream
+        self.log = open(filename, mode, encoding="utf-8")  # pylint: disable=consider-using-with
+        fcntl.flock(self.log.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+
+    def __del__(self):
+        fcntl.flock(self.log.fileno(), fcntl.LOCK_UN)
+        self.log.close()
+
+    def write(self, content):
+        try:
+            self.terminal.write(content)
+            self.log.write(content)
+        except IOError:
+            pass
+
+    def flush(self):
+        try:
+            self.terminal.flush()
+            self.log.flush()
+        except IOError:
+            pass
+
+
+class ProgressBar:
+    save_cursor = "\033[s"
+    restore_cursor = "\033[u"
+    move_up_cursor = "\033[1A"
+    fore_color = "\033[30m"
+    back_color = "\033[42m"
+    default_fore_color = "\033[39m"
+    default_back_color = "\033[49m"
+    placeholder_length = 20
+
+    def __init__(self):
+        self.current_lines = 0
+        self.set_trap = False
+        self.default_signal = None
+
+    def setup_progress_bar(self):
+        curses.setupterm()
+        self.trap_due_to_interrupt()
+
+        self.current_lines = self.tput_lines()
+        lines = self.current_lines - 1
+        self.print_progress("\n")
+
+        self.print_progress(self.save_cursor)
+        self.print_progress(f"\033[0;{str(lines)}r")
+
+        self.print_progress(self.restore_cursor)
+        self.print_progress(self.move_up_cursor)
+        self.draw_progress_bar(0)
+
+    def draw_progress_bar(self, percentage):
+        lines = self.tput_lines()
+        if lines != self.current_lines:
+            self.setup_progress_bar()
+
+        self.print_progress(self.save_cursor)
+        self.print_progress(f"\033[{str(lines)};0f")
+
+        self.tput()
+        self.print_bar(percentage)
+        self.print_progress(self.restore_cursor)
+        time.sleep(0.01)
+
+    def destroy_progress_bar(self):
+        lines = self.tput_lines()
+        self.print_progress(self.save_cursor)
+        self.print_progress(f"\033[0;{str(lines)}r")
+
+        self.print_progress(self.restore_cursor)
+        self.print_progress(self.move_up_cursor)
+
+        self.clear_progress_bar()
+        self.print_progress("\n\n")
+        if self.set_trap:
+            signal.signal(signal.SIGINT, self.default_signal)
+
+    def trap_due_to_interrupt(self):
+        self.set_trap = True
+        self.default_signal = signal.getsignal(signal.SIGINT)
+        signal.signal(signal.SIGINT, self.clear_due_to_interrupt)
+
+    def clear_due_to_interrupt(self, sign, frame):
+        _ = (sign, frame)
+        self.destroy_progress_bar()
+        raise KeyboardInterrupt
+
+    @classmethod
+    def clear_progress_bar(cls):
+        lines = cls.tput_lines()
+        cls.print_progress(cls.save_cursor)
+        cls.print_progress(f"\033[{str(lines)};0f")
+
+        cls.tput()
+        cls.print_progress(cls.restore_cursor)
+
+    @classmethod
+    def print_bar(cls, percentage):
+        cols = cls.tput_cols()
+        bar_size = cols - cls.placeholder_length
+        color = f"{cls.fore_color}{cls.back_color}"
+        default_color = f"{cls.default_fore_color}{cls.default_back_color}"
+
+        completed_size = int((bar_size * percentage) / 100)
+        remaining_size = bar_size - completed_size
+        progress_bar = f"[{color}{'#' * int(completed_size)}{default_color}{'.' * int(remaining_size)}]"
+        cls.print_progress(f" Progress {percentage:>3}% {progress_bar}\r")
+
+    @staticmethod
+    def print_progress(text):
+        print(text, end="")
+
+    @staticmethod
+    def tput_lines():
+        _, lines = shutil.get_terminal_size()
+        return int(lines)
+
+    @staticmethod
+    def tput_cols():
+        cols, _ = shutil.get_terminal_size()
+        return int(cols)
+
+    @staticmethod
+    def tput():
+        print(curses.tparm(curses.tigetstr("el")).decode(), end="")
+
+
+def execute_command(command, input="", timeout=300):  # pylint: disable=redefined-builtin
+    try:
+        process = subprocess.run(
+            command,
+            executable="/bin/bash",
+            shell=True,
+            universal_newlines=True,
+            capture_output=True,
+            check=True,
+            encoding="utf-8",
+            input=input,
+            timeout=timeout,
+        )
+        return process.stdout.strip(), process.stderr.strip(), process.returncode
+    except subprocess.CalledProcessError as error:
+        return error.stdout.strip(), error.stderr.strip(), error.returncode
+    except subprocess.TimeoutExpired as error:
+        return "", str(error), 124
 
 
 def main():
