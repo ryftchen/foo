@@ -46,6 +46,7 @@ words:
   - Karp
   - Kernighan
   - Landis
+  - levelname
   - libfoo
   - manpath
   - memcheck
