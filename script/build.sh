@@ -1209,7 +1209,7 @@ e.g. with \"distccd --daemon --allow ${local_client}\"."
     fi
 }
 
-function build_native()
+function build_native_if_needed()
 {
     if ! command -v cmake >/dev/null 2>&1 || ! command -v ninja >/dev/null 2>&1; then
         die "No cmake or ninja program. Please install it."
@@ -1274,8 +1274,9 @@ function signal_handler()
     exit 1
 }
 
-function main()
+function prepare_environment()
 {
+    export TERM=linux TERMINFO=/etc/terminfo
     local script_path
     script_path=$(cd "$(dirname "${0}")" &>/dev/null && pwd)
     if [[ ${script_path} != *"${FOLDER[proj]}/${FOLDER[scr]}" ]]; then
@@ -1283,16 +1284,19 @@ function main()
     fi
     cd "$(dirname "${script_path}")" || exit 1
 
-    export TERM=linux TERMINFO=/etc/terminfo
     if [[ ${EUID} -ne 0 ]]; then
         SUDO_PREFIX="sudo "
     fi
     trap signal_handler SIGINT SIGTERM
     clean_up_temporary_files
+}
 
+function main()
+{
+    prepare_environment
     parse_parameters "$@"
     try_perform_single_choice_options
-    build_native
+    build_native_if_needed
     try_perform_multiple_choice_options
 
     exit "${STATUS}"
