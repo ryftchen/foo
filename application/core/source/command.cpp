@@ -202,8 +202,8 @@ try
     {
         constexpr std::uint8_t endNum = 2;
         utility::thread::Thread scheduledJob(endNum);
-        scheduledJob.enqueue(title + "(FE)", &Command::frontEndHandler, this, argc, argv);
-        scheduledJob.enqueue(title + "(BE)", &Command::backEndHandler, this);
+        scheduledJob.enqueue(title + "-front", &Command::frontEndHandler, this, argc, argv);
+        scheduledJob.enqueue(title + "-back", &Command::backEndHandler, this);
     }
 
     if (!launcher.done())
