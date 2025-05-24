@@ -1277,6 +1277,14 @@ function signal_handler()
 function prepare_environment()
 {
     export TERM=linux TERMINFO=/etc/terminfo
+    if [[ -n ${FOO_ENV} ]]; then
+        if [[ ${FOO_ENV} != "foo_dev" ]]; then
+            die "The environment variable FOO_ENV must be foo_dev."
+        fi
+    else
+        die "Please export the environment variable FOO_ENV."
+    fi
+
     local script_path
     script_path=$(cd "$(dirname "${0}")" &>/dev/null && pwd)
     if [[ ${script_path} != *"${FOLDER[proj]}/${FOLDER[scr]}" ]]; then

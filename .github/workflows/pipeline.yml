@@ -9,11 +9,14 @@ on:
   workflow_dispatch:
     inputs:
       name:
-        description: 'Pipeline'
-        default: 'Manual trigger'
+        description: Pipeline
+        default: Retrigger
         required: false
   schedule:
     - cron: '0 0 * * MON'
+
+env:
+  FOO_ENV: foo_dev
 
 jobs:
   static_analysis:
@@ -246,7 +249,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     concurrency:
-      group: 'pages'
+      group: pages
       cancel-in-progress: false
 
     steps:
