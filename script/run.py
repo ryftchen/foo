@@ -105,6 +105,12 @@ class Task:
 
         os.environ["TERM"] = "linux"
         os.environ["TERMINFO"] = "/etc/terminfo"
+        env = os.getenv("FOO_ENV")
+        if env is not None:
+            if env != "foo_dev":
+                TermUtil.exit_with_error("The environment variable FOO_ENV must be foo_dev.")
+        else:
+            TermUtil.exit_with_error("Please export the environment variable FOO_ENV.")
         script_path = os.path.split(os.path.realpath(__file__))[0]
         if not fnmatch.fnmatch(script_path, "*foo/script"):
             TermUtil.exit_with_error("Illegal path to current script.")
