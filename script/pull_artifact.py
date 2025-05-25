@@ -136,10 +136,10 @@ class Schedule:
             with zipfile.ZipFile(f"{self.target_dir}/{self.artifact_name}.zip", "r") as zip_file:
                 if zip_file.testzip() is not None:
                     raise zipfile.BadZipFile("Corrupted zip file.")
-        except Exception:  # pylint: disable=broad-except
+        except Exception as error:
             self.executor(f"rm -rf {self.target_dir}/{self.artifact_name}.zip")
             self.executor(f"git -C {self.project_path} reset --hard {local_commit_id}")
-            raise
+            raise type(error)(str(error)) from None
 
     def update_document(self):
         self.notice("############### UPDATE DOCUMENT ###############")
