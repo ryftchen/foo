@@ -37,28 +37,19 @@ jobs:
 
       - name: Precheck
         run: |
-          ./script/build.sh --hook --spell --statistics
-          git status
-
-      - name: Create artifact
-        run: |
-          ./script/build.sh --browser --doxygen
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4.3.0
-        with:
-          name: foo_artifact
-          path: ./document/artifact/foo_*.tar.bz2
-          retention-days: 7
+          ./script/build.sh --hook --spell
 
       - name: Evaluate code quality
         run: |
           ./script/build.sh --format --lint
-          git status
 
       - name: Evaluate security
         run: |
           ./script/build.sh --query --assume y
+
+      - name: Statisticize
+        run: |
+          ./script/build.sh --statistics
           git status
 
   dynamic_analysis:
@@ -260,9 +251,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.1.0
 
-      - name: Documentation
+      - name: Do documentation
         run: |
-          ./script/build.sh --doxygen
+          ./script/build.sh --browser --doxygen
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4.3.0
+        with:
+          name: foo_artifact
+          path: ./document/artifact/foo_*.tar.bz2
+          retention-days: 7
 
       - name: Delete deployment environment
         uses: strumwolf/delete-deployment-environment@v3.0.0
