@@ -40,7 +40,7 @@ struct Meta
 
     //! @brief The operator (<<) overloading of the Meta struct.
     //! @param os - output stream object
-    //! @param meta - the specific value of Meta enum
+    //! @param meta - specific value of Meta enum
     //! @return reference of the output stream object
     friend std::ostream& operator<<(std::ostream& os, const Meta& meta)
     {

@@ -58,7 +58,7 @@ static const auto& curriedTaskName()
 }
 
 //! @brief Get the alias of the category in algorithm choices.
-//! @tparam Cat - the specific value of Category enum
+//! @tparam Cat - specific value of Category enum
 //! @return alias of the category name
 template <Category Cat>
 static consteval std::string_view categoryAlias()
@@ -72,7 +72,7 @@ static consteval std::string_view categoryAlias()
 namespace match
 {
 //! @brief Show the contents of the match result.
-//! @param method - the specific value of MatchMethod enum
+//! @param method - specific value of MatchMethod enum
 //! @param result - match result
 //! @param pattern - single pattern
 //! @param interval - time interval
@@ -248,7 +248,7 @@ void applyingMatch(const std::vector<std::string>& candidates)
 namespace notation
 {
 //! @brief Show the contents of the notation result.
-//! @param method - the specific value of NotationMethod enum
+//! @param method - specific value of NotationMethod enum
 //! @param result - notation result
 //! @param descr - notation description
 static void showResult(const NotationMethod method, const std::string_view result, const char* const descr)
@@ -328,7 +328,7 @@ void applyingNotation(const std::vector<std::string>& candidates)
 namespace optimal
 {
 //! @brief Show the contents of the optimal result.
-//! @param method - the specific value of OptimalMethod enum
+//! @param method - specific value of OptimalMethod enum
 //! @param result - optimal result
 //! @param interval - time interval
 static void showResult(
@@ -495,7 +495,7 @@ void applyingOptimal(const std::vector<std::string>& candidates)
 namespace search
 {
 //! @brief Show the contents of the search result.
-//! @param method - the specific value of SearchMethod enum
+//! @param method - specific value of SearchMethod enum
 //! @param result - search result
 //! @param key - search key
 //! @param interval - time interval
@@ -617,7 +617,7 @@ void applyingSearch(const std::vector<std::string>& candidates)
 namespace sort
 {
 //! @brief Show the contents of the sort result.
-//! @param method - the specific value of SortMethod enum
+//! @param method - specific value of SortMethod enum
 //! @param result - sort result
 //! @param interval - time interval
 static void showResult(const SortMethod method, const std::vector<std::int32_t>& result, const double interval)

@@ -49,7 +49,7 @@ public:
 
 private:
     //! @brief Generate Fibonacci number.
-    //! @param limit - the smallest integer that is not greater than the maximum value of the Fibonacci sequence
+    //! @param limit - smallest integer that is not greater than the maximum value of the Fibonacci sequence
     //! @return Fibonacci sequence
     static std::vector<std::uint32_t> generateFibonacciNumber(const std::uint32_t limit);
 };

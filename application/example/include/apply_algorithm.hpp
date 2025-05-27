@@ -453,8 +453,8 @@ class InputBuilder
 public:
     //! @brief Construct a new InputBuilder object.
     //! @param length - length of array
-    //! @param left - the left boundary of the array
-    //! @param right - the right boundary of the array
+    //! @param left - left boundary of the array
+    //! @param right - right boundary of the array
     InputBuilder(const std::uint32_t length, const T left, const T right) :
         orderedArray{std::make_unique<T[]>(length + 1)}, length{length}
     {
@@ -552,11 +552,11 @@ private:
         }
     }
     //! @brief Set the ordered array.
-    //! @tparam N - the specific type of integral
+    //! @tparam N - specific type of integral
     //! @param array - ordered array
     //! @param length - length of the ordered array
-    //! @param left - the left boundary of the ordered array
-    //! @param right - the left right of the ordered array
+    //! @param left - left boundary of the ordered array
+    //! @param right - left right of the ordered array
     template <typename N>
     requires std::is_integral_v<N>
     static void setOrderedArray(T array[], const std::uint32_t length, const T left, const T right)
@@ -576,11 +576,11 @@ private:
 #endif // _RUNTIME_PRINTING
     }
     //! @brief Set the ordered array.
-    //! @tparam N - the specific type of floating point
+    //! @tparam N - specific type of floating point
     //! @param array - ordered array
     //! @param length - length of the ordered array
-    //! @param left - the left boundary of the ordered array
-    //! @param right - the left right of the ordered array
+    //! @param left - left boundary of the ordered array
+    //! @param right - left right of the ordered array
     template <typename N>
     requires std::is_floating_point_v<N>
     static void setOrderedArray(T array[], const std::uint32_t length, const T left, const T right)
@@ -692,8 +692,8 @@ class InputBuilder
 public:
     //! @brief Construct a new InputBuilder object.
     //! @param length - length of array
-    //! @param left - the left boundary of the array
-    //! @param right - the right boundary of the array
+    //! @param left - left boundary of the array
+    //! @param right - right boundary of the array
     InputBuilder(const std::uint32_t length, const T left, const T right) :
         randomArray{std::make_unique<T[]>(length + 1)}, length{length}
     {
@@ -788,11 +788,11 @@ private:
         }
     }
     //! @brief Set the random array.
-    //! @tparam N - the specific type of integral
+    //! @tparam N - specific type of integral
     //! @param array - random array
     //! @param length - length of the random array
-    //! @param left - the left boundary of the random array
-    //! @param right - the left right of the random array
+    //! @param left - left boundary of the random array
+    //! @param right - left right of the random array
     template <typename N>
     requires std::is_integral_v<N>
     static void setRandomArray(T array[], const std::uint32_t length, const T left, const T right)
@@ -811,11 +811,11 @@ private:
 #endif // _RUNTIME_PRINTING
     }
     //! @brief Set the random array.
-    //! @tparam N - the specific type of floating point
+    //! @tparam N - specific type of floating point
     //! @param array - random array
     //! @param length - length of the random array
-    //! @param left - the left boundary of the random array
-    //! @param right - the left right of the random array
+    //! @param left - left boundary of the random array
+    //! @param right - left right of the random array
     template <typename N>
     requires std::is_floating_point_v<N>
     static void setRandomArray(T array[], const std::uint32_t length, const T left, const T right)

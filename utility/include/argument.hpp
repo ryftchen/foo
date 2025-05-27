@@ -664,12 +664,12 @@ public:
     //! @brief Destroy the Argument object.
     virtual ~Argument() = default;
     //! @brief Construct a new Argument object.
-    //! @param arg - the object for copy constructor
+    //! @param arg - object for copy constructor
     Argument(const Argument& arg);
     //! @brief Construct a new Argument object.
     Argument(Argument&&) noexcept = default;
     //! @brief The operator (=) overloading of Argument class.
-    //! @param arg - the object for copy assignment operator
+    //! @param arg - object for copy assignment operator
     //! @return reference of the Argument object
     Argument& operator=(const Argument& arg);
     //! @brief The operator (=) overloading of Argument class.

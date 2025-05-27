@@ -99,9 +99,9 @@ Node* getSuccessor(const Node* x)
 
 //! @brief Create a node of the binary search tree.
 //! @param key - key of the node to be created
-//! @param parent - the parent node of the node to be created
-//! @param left - the left child node of the node to be created
-//! @param right - the right child node of the node to be created
+//! @param parent - parent node of the node to be created
+//! @param left - left child node of the node to be created
+//! @param right - right child node of the node to be created
 //! @return new node after creating
 Node* createNode(const Type key, Node* const parent, Node* const left, Node* const right)
 {
@@ -355,7 +355,7 @@ Node* getMaximum(AVLTree tree)
 }
 
 //! @brief LL rotation. A single left rotation.
-//! @param k2 - the root node of the unbalanced AVL tree
+//! @param k2 - root node of the unbalanced AVL tree
 //! @return root node after rotation
 Node* leftLeftRotation(AVLTree k2)
 {
@@ -370,7 +370,7 @@ Node* leftLeftRotation(AVLTree k2)
 }
 
 //! @brief RR rotation. A single right rotation.
-//! @param k1 - the root node of the unbalanced AVL tree
+//! @param k1 - root node of the unbalanced AVL tree
 //! @return root node after rotation
 Node* rightRightRotation(AVLTree k1)
 {
@@ -385,7 +385,7 @@ Node* rightRightRotation(AVLTree k1)
 }
 
 //! @brief LR rotation. A double left rotation.
-//! @param k3 - the root node of the unbalanced AVL tree
+//! @param k3 - root node of the unbalanced AVL tree
 //! @return root node after rotation
 Node* leftRightRotation(AVLTree k3)
 {
@@ -394,7 +394,7 @@ Node* leftRightRotation(AVLTree k3)
 }
 
 //! @brief RL rotation. A double right rotation.
-//! @param k1 - the root node of the unbalanced AVL tree
+//! @param k1 - root node of the unbalanced AVL tree
 //! @return root node after rotation
 Node* rightLeftRotation(AVLTree k1)
 {
@@ -404,8 +404,8 @@ Node* rightLeftRotation(AVLTree k1)
 
 //! @brief Create a node of the AVL tree.
 //! @param key - key of the node to be created
-//! @param left - the left child node of the node to be created
-//! @param right - the right child node of the node to be created
+//! @param left - left child node of the node to be created
+//! @param right - right child node of the node to be created
 //! @return new node after creating
 Node* createNode(const Type key, Node* const left, Node* const right)
 {
@@ -665,8 +665,8 @@ Node* getMaximum(SplayTree tree)
 
 //! @brief Create a node of the splay tree.
 //! @param key - key of the node to be created
-//! @param left - the left child node of the node to be created
-//! @param right - the right child node of the node to be created
+//! @param left - left child node of the node to be created
+//! @param right - right child node of the node to be created
 //! @return new node after creating
 Node* createNode(const Type key, Node* const left, Node* const right)
 {

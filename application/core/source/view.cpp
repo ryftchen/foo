@@ -1057,7 +1057,7 @@ bool View::awaitNotification2Retry()
 
 //! @brief The operator (<<) overloading of the State enum.
 //! @param os - output stream object
-//! @param state - the specific value of State enum
+//! @param state - specific value of State enum
 //! @return reference of the output stream object
 std::ostream& operator<<(std::ostream& os, const View::State state)
 {

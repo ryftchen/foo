@@ -191,7 +191,7 @@ public:
 protected:
     //! @brief The operator (<<) overloading of the Category enum.
     //! @param os - output stream object
-    //! @param cat - the specific value of Category enum
+    //! @param cat - specific value of Category enum
     //! @return reference of the output stream object
     friend std::ostream& operator<<(std::ostream& os, const Category cat)
     {
@@ -488,7 +488,7 @@ using TypeInfo = utility::reflection::TypeInfo<T>;
 //! @brief Alias for Category.
 using Category = ApplyAlgorithm::Category;
 //! @brief Convert category enumeration to string.
-//! @tparam Cat - the specific value of Category enum
+//! @tparam Cat - specific value of Category enum
 //! @return category name
 template <Category Cat>
 inline consteval std::string_view toString()
@@ -512,7 +512,7 @@ inline consteval std::string_view toString()
     return {};
 }
 //! @brief Get the bit flags of the category in algorithm choices.
-//! @tparam Cat - the specific value of Category enum
+//! @tparam Cat - specific value of Category enum
 //! @return reference of the category bit flags
 template <Category Cat>
 inline constexpr auto& categoryOpts()
@@ -544,7 +544,7 @@ inline consteval std::size_t abbrValue(const T method)
 }
 
 //! @brief Convert method enumeration to string.
-//! @param method - the specific value of MatchMethod enum
+//! @param method - specific value of MatchMethod enum
 //! @return method name
 inline constexpr std::string_view toString(const MatchMethod method)
 {
@@ -558,7 +558,7 @@ inline constexpr std::string_view toString(const MatchMethod method)
 }
 
 //! @brief Convert method enumeration to string.
-//! @param method - the specific value of NotationMethod enum
+//! @param method - specific value of NotationMethod enum
 //! @return method name
 inline constexpr std::string_view toString(const NotationMethod method)
 {
@@ -568,7 +568,7 @@ inline constexpr std::string_view toString(const NotationMethod method)
 }
 
 //! @brief Convert method enumeration to string.
-//! @param method - the specific value of OptimalMethod enum
+//! @param method - specific value of OptimalMethod enum
 //! @return method name
 inline constexpr std::string_view toString(const OptimalMethod method)
 {
@@ -583,7 +583,7 @@ inline constexpr std::string_view toString(const OptimalMethod method)
 }
 
 //! @brief Convert method enumeration to string.
-//! @param method - the specific value of SearchMethod enum
+//! @param method - specific value of SearchMethod enum
 //! @return method name
 inline constexpr std::string_view toString(const SearchMethod method)
 {
@@ -593,7 +593,7 @@ inline constexpr std::string_view toString(const SearchMethod method)
 }
 
 //! @brief Convert method enumeration to string.
-//! @param method - the specific value of SortMethod enum
+//! @param method - specific value of SortMethod enum
 //! @return method name
 inline constexpr std::string_view toString(const SortMethod method)
 {
