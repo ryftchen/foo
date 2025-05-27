@@ -22,6 +22,17 @@ const char* version() noexcept
     return ver;
 }
 
+//! @brief Get the ip address from transport information.
+//! @param addr - transport information
+//! @return ip address string
+static std::string ipAddrString(const ::sockaddr_in& addr)
+{
+    char ip[INET_ADDRSTRLEN] = {'\0'};
+    ::inet_ntop(AF_INET, &(addr.sin_addr), ip, INET_ADDRSTRLEN);
+
+    return std::string{ip};
+}
+
 //! @brief Get the errno string safely.
 //! @return errno string
 static std::string errnoString()
@@ -40,9 +51,8 @@ Socket::Socket(const Type socketType, const int socketId)
     ::pthread_spin_init(&sockLock, ::PTHREAD_PROCESS_PRIVATE);
     if (-1 == socketId)
     {
-        spinLock();
+        const SockGuard lock(*this);
         sock = ::socket(AF_INET, socketType, 0);
-        spinUnlock();
         if (-1 == sock)
         {
             throw std::runtime_error{"Socket creation error, errno: " + errnoString() + '.'};
@@ -60,9 +70,41 @@ Socket::~Socket()
     ::pthread_spin_destroy(&sockLock);
 }
 
+void Socket::toClose()
+{
+    signalExit();
+
+    const SockGuard lock(*this);
+    ::shutdown(sock, ::SHUT_RDWR);
+    ::close(sock);
+}
+
+void Socket::signalExit()
+{
+    exitReady.store(true);
+}
+
+bool Socket::exitSignaled() const
+{
+    return exitReady.load();
+}
+
+void Socket::waitIfAlive()
+{
+    if (asyncTask.valid() && (asyncTask.wait_until(std::chrono::system_clock::now()) != std::future_status::ready))
+    {
+        asyncTask.wait();
+    }
+
+    while (!exitSignaled())
+    {
+        std::this_thread::yield();
+    }
+}
+
 std::string Socket::transportAddress() const
 {
-    return ipString(sockAddr);
+    return ipAddrString(sockAddr);
 }
 
 int Socket::transportPort() const
@@ -70,55 +112,14 @@ int Socket::transportPort() const
     return ::ntohs(sockAddr.sin_port);
 }
 
-void Socket::toClose()
-{
-    asyncExit();
-
-    spinLock();
-    ::shutdown(sock, ::SHUT_RDWR);
-    ::close(sock);
-    spinUnlock();
-}
-
-void Socket::asyncExit()
-{
-    exitReady.store(true);
-}
-
-bool Socket::shouldExit() const
-{
-    return exitReady.load();
-}
-
-void Socket::waitIfAlive()
-{
-    if (!task.valid())
-    {
-        throw std::logic_error{"Never use asynchronous."};
-    }
-
-    if (task.wait_until(std::chrono::system_clock::now()) != std::future_status::ready)
-    {
-        task.wait();
-    }
-}
-
-void Socket::spinLock()
+void Socket::spinLock() const
 {
     ::pthread_spin_lock(&sockLock);
 }
 
-void Socket::spinUnlock()
+void Socket::spinUnlock() const
 {
     ::pthread_spin_unlock(&sockLock);
-}
-
-std::string Socket::ipString(const ::sockaddr_in& addr)
-{
-    char ip[INET_ADDRSTRLEN] = {'\0'};
-    ::inet_ntop(AF_INET, &(addr.sin_addr), ip, INET_ADDRSTRLEN);
-
-    return std::string{ip};
 }
 
 int TCPSocket::toSend(const char* const bytes, const std::size_t length)
@@ -131,7 +132,7 @@ int TCPSocket::toSend(const std::string_view message)
     return toSend(message.data(), message.length());
 }
 
-void TCPSocket::toConnect(const std::string_view ip, const std::uint16_t port, const std::function<void()>& onConnected)
+void TCPSocket::toConnect(const std::string_view ip, const std::uint16_t port)
 {
     ::addrinfo hints{}, *addrInfo = nullptr;
     hints.ai_family = AF_INET;
@@ -156,15 +157,12 @@ void TCPSocket::toConnect(const std::string_view ip, const std::uint16_t port, c
     sockAddr.sin_family = AF_INET;
     sockAddr.sin_port = ::htons(port);
     sockAddr.sin_addr.s_addr = static_cast<std::uint32_t>(sockAddr.sin_addr.s_addr);
-    spinLock();
-    const int status = ::connect(sock, reinterpret_cast<const ::sockaddr*>(&sockAddr), sizeof(::sockaddr_in));
-    spinUnlock();
-    if (-1 == status)
+    if (const SockGuard lock(*this);
+        ::connect(sock, reinterpret_cast<const ::sockaddr*>(&sockAddr), sizeof(::sockaddr_in)) == -1)
     {
         throw std::runtime_error{"Failed to connect to the socket, errno: " + errnoString() + '.'};
     }
 
-    onConnected();
     toReceive();
 }
 
@@ -172,7 +170,7 @@ void TCPSocket::toReceive(const bool toDetach)
 {
     if (auto self = shared_from_this(); !toDetach)
     {
-        task = std::async(std::launch::async, toRecv, self);
+        asyncTask = std::async(std::launch::async, toRecv, self);
     }
     else
     {
@@ -187,7 +185,7 @@ void TCPSocket::toRecv(const std::shared_ptr<TCPSocket> socket) // NOLINT(perfor
     std::vector<::pollfd> pollFDs(1);
     pollFDs.at(0).fd = socket->sock;
     pollFDs.at(0).events = POLLIN;
-    for (constexpr int timeout = 10; !socket->shouldExit();)
+    for (constexpr int timeout = 10; !socket->exitSignaled();)
     {
         const int status = ::poll(pollFDs.data(), pollFDs.size(), timeout);
         if (-1 == status)
@@ -201,12 +199,14 @@ void TCPSocket::toRecv(const std::shared_ptr<TCPSocket> socket) // NOLINT(perfor
 
         if (pollFDs.at(0).revents & POLLIN)
         {
-            socket->spinLock();
-            const int msgLen = ::recv(socket->sock, tempBuffer, bufferSize, 0);
-            socket->spinUnlock();
-            if (msgLen <= 0)
+            int msgLen = 0;
+            if (const SockGuard lock(*socket); true)
             {
-                break;
+                msgLen = ::recv(socket->sock, tempBuffer, bufferSize, 0);
+                if (msgLen <= 0)
+                {
+                    break;
+                }
             }
 
             tempBuffer[msgLen] = '\0';
@@ -222,10 +222,6 @@ void TCPSocket::toRecv(const std::shared_ptr<TCPSocket> socket) // NOLINT(perfor
     }
 
     socket->toClose();
-    if (socket->onSocketClosed)
-    {
-        socket->onSocketClosed(errno);
-    }
 }
 
 TCPServer::TCPServer() : Socket(Type::tcp)
@@ -267,7 +263,7 @@ void TCPServer::toAccept(const bool toDetach)
 {
     if (auto weakSelf = std::weak_ptr<TCPServer>(shared_from_this()); !toDetach)
     {
-        task = std::async(
+        asyncTask = std::async(
             std::launch::async,
             [weakSelf]
             {
@@ -302,7 +298,7 @@ void TCPServer::toAccept(const std::shared_ptr<TCPServer> server) // NOLINT(perf
         if (-1 == newSock)
         {
             std::for_each(
-                activeSockets.cbegin(), activeSockets.cend(), [](const auto& socket) { socket->asyncExit(); });
+                activeSockets.cbegin(), activeSockets.cend(), [](const auto& socket) { socket->signalExit(); });
             if ((EBADF == errno) || (EINVAL == errno))
             {
                 return;
@@ -313,10 +309,13 @@ void TCPServer::toAccept(const std::shared_ptr<TCPServer> server) // NOLINT(perf
 
         auto newSocket = std::make_shared<TCPSocket>(newSock);
         newSocket->sockAddr = newSockAddr;
+        if (server->onNewConnection)
+        {
+            server->onNewConnection(newSocket);
+        }
 
-        server->onNewConnection(newSocket);
         newSocket->toReceive(true);
-        activeSockets.emplace_back(newSocket);
+        activeSockets.emplace_back(std::move(newSocket));
     }
 }
 
@@ -395,10 +394,8 @@ void UDPSocket::toConnect(const std::string_view ip, const std::uint16_t port)
     sockAddr.sin_family = AF_INET;
     sockAddr.sin_port = ::htons(port);
     sockAddr.sin_addr.s_addr = static_cast<std::uint32_t>(sockAddr.sin_addr.s_addr);
-    spinLock();
-    const int status = ::connect(sock, reinterpret_cast<const ::sockaddr*>(&sockAddr), sizeof(::sockaddr_in));
-    spinUnlock();
-    if (-1 == status)
+    if (const SockGuard lock(*this);
+        ::connect(sock, reinterpret_cast<const ::sockaddr*>(&sockAddr), sizeof(::sockaddr_in)) == -1)
     {
         throw std::runtime_error{"Failed to connect to the socket, errno: " + errnoString() + '.'};
     }
@@ -408,7 +405,7 @@ void UDPSocket::toReceive(const bool toDetach)
 {
     if (auto self = shared_from_this(); !toDetach)
     {
-        task = std::async(std::launch::async, toRecv, self);
+        asyncTask = std::async(std::launch::async, toRecv, self);
     }
     else
     {
@@ -421,7 +418,7 @@ void UDPSocket::toReceiveFrom(const bool toDetach)
     auto self = shared_from_this();
     if (!toDetach)
     {
-        task = std::async(std::launch::async, toRecvFrom, self);
+        asyncTask = std::async(std::launch::async, toRecvFrom, self);
     }
     else
     {
@@ -436,7 +433,7 @@ void UDPSocket::toRecv(const std::shared_ptr<UDPSocket> socket) // NOLINT(perfor
     std::vector<::pollfd> pollFDs(1);
     pollFDs.at(0).fd = socket->sock;
     pollFDs.at(0).events = POLLIN;
-    for (constexpr int timeout = 10; !socket->shouldExit();)
+    for (constexpr int timeout = 10; !socket->exitSignaled();)
     {
         const int status = ::poll(pollFDs.data(), pollFDs.size(), timeout);
         if (-1 == status)
@@ -450,12 +447,14 @@ void UDPSocket::toRecv(const std::shared_ptr<UDPSocket> socket) // NOLINT(perfor
 
         if (pollFDs.at(0).revents & POLLIN)
         {
-            socket->spinLock();
-            const int msgLen = ::recv(socket->sock, tempBuffer, bufferSize, 0);
-            socket->spinUnlock();
-            if (-1 == msgLen)
+            int msgLen = 0;
+            if (const SockGuard lock(*socket); true)
             {
-                break;
+                msgLen = ::recv(socket->sock, tempBuffer, bufferSize, 0);
+                if (-1 == msgLen)
+                {
+                    break;
+                }
             }
 
             tempBuffer[msgLen] = '\0';
@@ -482,7 +481,7 @@ void UDPSocket::toRecvFrom(const std::shared_ptr<UDPSocket> socket) // NOLINT(pe
     std::vector<::pollfd> pollFDs(1);
     pollFDs.at(0).fd = socket->sock;
     pollFDs.at(0).events = POLLIN;
-    for (constexpr int timeout = 10; !socket->shouldExit();)
+    for (constexpr int timeout = 10; !socket->exitSignaled();)
     {
         const int status = ::poll(pollFDs.data(), pollFDs.size(), timeout);
         if (-1 == status)
@@ -496,23 +495,26 @@ void UDPSocket::toRecvFrom(const std::shared_ptr<UDPSocket> socket) // NOLINT(pe
 
         if (pollFDs.at(0).revents & POLLIN)
         {
-            socket->spinLock();
-            const int msgLen = ::recvfrom(
-                socket->sock, tempBuffer, bufferSize, 0, reinterpret_cast<::sockaddr*>(&addr), &hostAddrSize);
-            socket->spinUnlock();
-            if (-1 == msgLen)
+            int msgLen = 0;
+            if (const SockGuard lock(*socket); true)
             {
-                break;
+                msgLen = ::recvfrom(
+                    socket->sock, tempBuffer, bufferSize, 0, reinterpret_cast<::sockaddr*>(&addr), &hostAddrSize);
+                if (-1 == msgLen)
+                {
+                    break;
+                }
             }
 
             tempBuffer[msgLen] = '\0';
             if (socket->onMessageReceived)
             {
-                socket->onMessageReceived(std::string_view(tempBuffer, msgLen), ipString(addr), ::ntohs(addr.sin_port));
+                socket->onMessageReceived(
+                    std::string_view(tempBuffer, msgLen), ipAddrString(addr), ::ntohs(addr.sin_port));
             }
             if (socket->onRawMessageReceived)
             {
-                socket->onRawMessageReceived(tempBuffer, msgLen, ipString(addr), ::ntohs(addr.sin_port));
+                socket->onRawMessageReceived(tempBuffer, msgLen, ipAddrString(addr), ::ntohs(addr.sin_port));
             }
         }
     }

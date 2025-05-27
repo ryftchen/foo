@@ -900,7 +900,7 @@ void View::renewServer<utility::socket::TCPServer>()
                 if (reqPlaintext == exitSymbol)
                 {
                     newSocket->toSend(respBuffer, buildTLVPacket4Stop(respBuffer));
-                    newSocket->asyncExit();
+                    newSocket->signalExit();
                     return;
                 }
 
