@@ -593,7 +593,7 @@ void Command::precheck()
         bits.set(Category(index));
     }
 
-    for (constexpr std::string_view helpArgInExtra = toString(Category::help);
+    for (constexpr auto helpArgInExtra = toString(Category::help);
          [[maybe_unused]] const auto& [subCLIName, categoryMap] :
          extraChoices
              | std::views::filter(
@@ -700,7 +700,7 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
         {
             if (onParsing4Client(buffer, length))
             {
-                client->asyncExit();
+                client->signalExit();
             }
         }
         catch (const std::exception& err)
@@ -724,7 +724,7 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
         {
             if (onParsing4Client(buffer, length))
             {
-                client->asyncExit();
+                client->signalExit();
             }
         }
         catch (const std::exception& err)

@@ -21,25 +21,21 @@ extern const char* version() noexcept;
 class Socket
 {
 public:
+    //! @brief Close the socket.
+    void toClose();
+    //! @brief Set the flag to indicate that an asynchronous exit has been requested.
+    void signalExit();
+    //! @brief Check whether an asynchronous exit has been requested.
+    //! @return has been requested or not
+    [[nodiscard]] bool exitSignaled() const;
+    //! @brief When using asynchronous, wait for the non-detached thread to exit.
+    void waitIfAlive();
     //! @brief Get the transport ip address.
     //! @return transport ip address
     [[nodiscard]] std::string transportAddress() const;
     //! @brief Get the transport port number.
     //! @return transport port number
     [[nodiscard]] int transportPort() const;
-    //! @brief Close the socket.
-    void toClose();
-    //! @brief Set the flag to indicate that an asynchronous exit has been requested.
-    void asyncExit();
-    //! @brief Check whether an asynchronous exit has been requested.
-    //! @return has been requested or not
-    [[nodiscard]] bool shouldExit() const;
-    //! @brief When using asynchronous, wait for the non-detached thread to exit.
-    void waitIfAlive();
-    //! @brief Acquire the spin lock to ensure mutual exclusion.
-    void spinLock();
-    //! @brief Release the spin lock to allow other threads to acquire it.
-    void spinUnlock();
 
     //! @brief Transport information.
     ::sockaddr_in sockAddr{};
@@ -58,7 +54,12 @@ private:
     //! @brief Flag for asynchronous exit.
     std::atomic<bool> exitReady{false};
     //! @brief Spin lock to synchronize access to the socket.
-    ::pthread_spinlock_t sockLock{};
+    mutable ::pthread_spinlock_t sockLock{};
+
+    //! @brief Acquire the spin lock to ensure mutual exclusion.
+    void spinLock() const;
+    //! @brief Release the spin lock to allow other threads to acquire it.
+    void spinUnlock() const;
 
 protected:
     //! @brief Construct a new Socket object.
@@ -68,15 +69,25 @@ protected:
     //! @brief Destroy the Socket object.
     ~Socket();
 
-    //! @brief Get the ip address from transport information.
-    //! @param addr - transport information
-    //! @return ip address string
-    static std::string ipString(const ::sockaddr_in& addr);
+    //! @brief Guard for the spin lock to ensure mutual exclusion.
+    class SockGuard
+    {
+    public:
+        //! @brief Construct a new SockGuard object.
+        //! @param socket - target socket
+        explicit SockGuard(const Socket& socket) : socket{socket} { socket.spinLock(); }
+        //! @brief Destroy the SockGuard object.
+        virtual ~SockGuard() { socket.spinUnlock(); }
+
+    private:
+        //! @brief Socket to be mutually exclusive.
+        const Socket& socket;
+    };
 
     //! @brief File descriptor.
     int sock{-1};
     //! @brief Result of asynchronous operations for the non-detached thread.
-    std::future<void> task{};
+    std::future<void> asyncTask{};
 };
 
 //! @brief TCP socket.
@@ -99,9 +110,7 @@ public:
     //! @brief Open a connection on socket FD to peer.
     //! @param ip - peer ip address
     //! @param port - peer port number
-    //! @param onConnected - handling on connected
-    void toConnect(
-        const std::string_view ip, const std::uint16_t port, const std::function<void()>& onConnected = []() {});
+    void toConnect(const std::string_view ip, const std::uint16_t port);
     //! @brief Create a thread to receive.
     //! @param toDetach - whether to detach
     void toReceive(const bool toDetach = false);
@@ -109,8 +118,6 @@ public:
     std::function<void(const std::string_view)> onMessageReceived{};
     //! @brief Handling on raw message received.
     std::function<void(char*, const int)> onRawMessageReceived{};
-    //! @brief Handling on socket closed.
-    std::function<void(const int)> onSocketClosed{};
 
 private:
     //! @brief Receive bytes from socket FD.
