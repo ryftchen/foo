@@ -35,13 +35,13 @@ public:
     template <typename U>
     Memory(const Memory<U>&) = delete;
     //! @brief Construct a new Memory object.
-    //! @param memory - the object for move constructor
+    //! @param memory - object for move constructor
     Memory(Memory&& memory) noexcept;
     //! @brief The operator (=) overloading of Memory class.
     //! @return reference of the Memory object
     Memory& operator=(const Memory&) = delete;
     //! @brief The operator (=) overloading of Memory class.
-    //! @param memory - the object for move assignment operator
+    //! @param memory - object for move assignment operator
     //! @return reference of the Memory object
     Memory& operator=(Memory&& memory) noexcept;
 

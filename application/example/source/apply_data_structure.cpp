@@ -59,7 +59,7 @@ static const auto& curriedTaskName()
 }
 
 //! @brief Get the alias of the category in data structure choices.
-//! @tparam Cat - the specific value of Category enum
+//! @tparam Cat - specific value of Category enum
 //! @return alias of the category name
 template <Category Cat>
 static consteval std::string_view categoryAlias()
@@ -73,7 +73,7 @@ static consteval std::string_view categoryAlias()
 namespace linear
 {
 //! @brief Show the contents of the linear result.
-//! @param instance - the specific value of LinearInstance enum
+//! @param instance - specific value of LinearInstance enum
 //! @param result - linear result
 static void showResult(const LinearInstance instance, const std::string_view result)
 {
@@ -164,7 +164,7 @@ void applyingLinear(const std::vector<std::string>& candidates)
 namespace tree
 {
 //! @brief Show the contents of the tree result.
-//! @param instance - the specific value of TreeInstance enum
+//! @param instance - specific value of TreeInstance enum
 //! @param result - tree result
 static void showResult(const TreeInstance instance, const std::string_view result)
 {

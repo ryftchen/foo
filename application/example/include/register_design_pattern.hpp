@@ -151,7 +151,7 @@ public:
 protected:
     //! @brief The operator (<<) overloading of the Category enum.
     //! @param os - output stream object
-    //! @param cat - the specific value of Category enum
+    //! @param cat - specific value of Category enum
     //! @return reference of the output stream object
     friend std::ostream& operator<<(std::ostream& os, const Category cat)
     {
@@ -377,7 +377,7 @@ using TypeInfo = utility::reflection::TypeInfo<T>;
 //! @brief Alias for Category.
 using Category = ApplyDesignPattern::Category;
 //! @brief Convert category enumeration to string.
-//! @tparam Cat - the specific value of Category enum
+//! @tparam Cat - specific value of Category enum
 //! @return category name
 template <Category Cat>
 inline consteval std::string_view toString()
@@ -397,7 +397,7 @@ inline consteval std::string_view toString()
     return {};
 }
 //! @brief Get the bit flags of the category in design pattern choices.
-//! @tparam Cat - the specific value of Category enum
+//! @tparam Cat - specific value of Category enum
 //! @return reference of the category bit flags
 template <Category Cat>
 inline constexpr auto& categoryOpts()
@@ -429,7 +429,7 @@ inline consteval std::size_t abbrValue(const T instance)
 }
 
 //! @brief Convert instance enumeration to string.
-//! @param instance - the specific value of BehavioralInstance enum
+//! @param instance - specific value of BehavioralInstance enum
 //! @return instance name
 inline constexpr std::string_view toString(const BehavioralInstance instance)
 {
@@ -449,7 +449,7 @@ inline constexpr std::string_view toString(const BehavioralInstance instance)
 }
 
 //! @brief Convert instance enumeration to string.
-//! @param instance - the specific value of CreationalInstance enum
+//! @param instance - specific value of CreationalInstance enum
 //! @return instance name
 inline constexpr std::string_view toString(const CreationalInstance instance)
 {
@@ -463,7 +463,7 @@ inline constexpr std::string_view toString(const CreationalInstance instance)
 }
 
 //! @brief Convert instance enumeration to string.
-//! @param instance - the specific value of StructuralInstance enum
+//! @param instance - specific value of StructuralInstance enum
 //! @return instance name
 inline constexpr std::string_view toString(const StructuralInstance instance)
 {

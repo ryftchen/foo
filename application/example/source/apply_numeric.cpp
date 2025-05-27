@@ -58,7 +58,7 @@ static const auto& curriedTaskName()
 }
 
 //! @brief Get the alias of the category in numeric choices.
-//! @tparam Cat - the specific value of Category enum
+//! @tparam Cat - specific value of Category enum
 //! @return alias of the category name
 template <Category Cat>
 static consteval std::string_view categoryAlias()
@@ -72,7 +72,7 @@ static consteval std::string_view categoryAlias()
 namespace arithmetic
 {
 //! @brief Show the contents of the arithmetic result.
-//! @param method - the specific value of ArithmeticMethod enum
+//! @param method - specific value of ArithmeticMethod enum
 //! @param result - arithmetic result
 //! @param a - first integer for elementary arithmetic
 //! @param b - second integer for elementary arithmetic
@@ -186,7 +186,7 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
 namespace divisor
 {
 //! @brief Show the contents of the divisor result.
-//! @param method - the specific value of DivisorMethod enum
+//! @param method - specific value of DivisorMethod enum
 //! @param result - divisor result
 //! @param interval - time interval
 static void showResult(const DivisorMethod method, const std::set<std::int32_t>& result, const double interval)
@@ -277,7 +277,7 @@ void applyingDivisor(const std::vector<std::string>& candidates)
 namespace integral
 {
 //! @brief Show the contents of the integral result.
-//! @param method - the specific value of IntegralMethod enum
+//! @param method - specific value of IntegralMethod enum
 //! @param result - integral result
 //! @param interval - time interval
 static void showResult(const IntegralMethod method, const double result, const double interval)
@@ -414,7 +414,7 @@ void applyingIntegral(const std::vector<std::string>& candidates)
 namespace prime
 {
 //! @brief Show the contents of the prime result.
-//! @param method - the specific value of PrimeMethod enum
+//! @param method - specific value of PrimeMethod enum
 //! @param result - prime result
 //! @param interval - time interval
 static void showResult(const PrimeMethod method, const std::vector<std::uint32_t>& result, const double interval)

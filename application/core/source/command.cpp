@@ -128,7 +128,7 @@ static action::Awaitable helperLifecycle()
 }
 
 //! @brief Convert category enumeration to string.
-//! @param cat - the specific value of Category enum
+//! @param cat - specific value of Category enum
 //! @return category name
 static constexpr std::string_view toString(const Category cat)
 {

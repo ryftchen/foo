@@ -148,7 +148,7 @@ public:
 protected:
     //! @brief The operator (<<) overloading of the Category enum.
     //! @param os - output stream object
-    //! @param cat - the specific value of Category enum
+    //! @param cat - specific value of Category enum
     //! @return reference of the output stream object
     friend std::ostream& operator<<(std::ostream& os, const Category cat)
     {
@@ -387,7 +387,7 @@ using TypeInfo = utility::reflection::TypeInfo<T>;
 //! @brief Alias for Category.
 using Category = ApplyNumeric::Category;
 //! @brief Convert category enumeration to string.
-//! @tparam Cat - the specific value of Category enum
+//! @tparam Cat - specific value of Category enum
 //! @return category name
 template <Category Cat>
 inline consteval std::string_view toString()
@@ -409,7 +409,7 @@ inline consteval std::string_view toString()
     return {};
 }
 //! @brief Get the bit flags of the category in numeric choices.
-//! @tparam Cat - the specific value of Category enum
+//! @tparam Cat - specific value of Category enum
 //! @return reference of the category bit flags
 template <Category Cat>
 inline constexpr auto& categoryOpts()
@@ -441,7 +441,7 @@ inline consteval std::size_t abbrValue(const T method)
 }
 
 //! @brief Convert method enumeration to string.
-//! @param method - the specific value of ArithmeticMethod enum
+//! @param method - specific value of ArithmeticMethod enum
 //! @return method name
 inline constexpr std::string_view toString(const ArithmeticMethod method)
 {
@@ -454,7 +454,7 @@ inline constexpr std::string_view toString(const ArithmeticMethod method)
 }
 
 //! @brief Convert method enumeration to string.
-//! @param method - the specific value of DivisorMethod enum
+//! @param method - specific value of DivisorMethod enum
 //! @return method name
 inline constexpr std::string_view toString(const DivisorMethod method)
 {
@@ -464,7 +464,7 @@ inline constexpr std::string_view toString(const DivisorMethod method)
 }
 
 //! @brief Convert method enumeration to string.
-//! @param method - the specific value of IntegralMethod enum
+//! @param method - specific value of IntegralMethod enum
 //! @return method name
 inline constexpr std::string_view toString(const IntegralMethod method)
 {
@@ -478,7 +478,7 @@ inline constexpr std::string_view toString(const IntegralMethod method)
 }
 
 //! @brief Convert method enumeration to string.
-//! @param method - the specific value of PrimeMethod enum
+//! @param method - specific value of PrimeMethod enum
 //! @return method name
 inline constexpr std::string_view toString(const PrimeMethod method)
 {

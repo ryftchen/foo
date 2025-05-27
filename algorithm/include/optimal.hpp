@@ -502,8 +502,8 @@ private:
     //! @return initial population
     Population populationInit();
     //! @brief The genetic cross.
-    //! @param chr1 - the chromosome from one of the parents
-    //! @param chr2 - the chromosome from one of the parents
+    //! @param chr1 - chromosome from one of the parents
+    //! @param chr2 - chromosome from one of the parents
     void geneticCross(Chromosome& chr1, Chromosome& chr2);
     //! @brief Chromosomal crossover in the population.
     //! @param pop - whole population

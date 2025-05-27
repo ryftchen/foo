@@ -77,7 +77,7 @@ public:
     {
     }
     //! @brief Destroy the Defer object.
-    ~Defer() { deferred(); }
+    virtual ~Defer() { deferred(); }
     //! @brief Construct a new Defer object.
     Defer(const Defer&) = delete;
     //! @brief Construct a new Defer object.

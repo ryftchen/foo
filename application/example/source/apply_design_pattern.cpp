@@ -59,7 +59,7 @@ static const auto& curriedTaskName()
 }
 
 //! @brief Get the alias of the category in design pattern choices.
-//! @tparam Cat - the specific value of Category enum
+//! @tparam Cat - specific value of Category enum
 //! @return alias of the category name
 template <Category Cat>
 static consteval std::string_view categoryAlias()
@@ -73,7 +73,7 @@ static consteval std::string_view categoryAlias()
 namespace behavioral
 {
 //! @brief Show the contents of the behavioral result.
-//! @param instance - the specific value of BehavioralInstance enum
+//! @param instance - specific value of BehavioralInstance enum
 //! @param result - behavioral result
 static void showResult(const BehavioralInstance instance, const std::string_view result)
 {
@@ -276,7 +276,7 @@ void applyingBehavioral(const std::vector<std::string>& candidates)
 namespace creational
 {
 //! @brief Show the contents of the creational result.
-//! @param instance - the specific value of CreationalInstance enum
+//! @param instance - specific value of CreationalInstance enum
 //! @param result - creational result
 static void showResult(const CreationalInstance instance, const std::string_view result)
 {
@@ -395,7 +395,7 @@ void applyingCreational(const std::vector<std::string>& candidates)
 namespace structural
 {
 //! @brief Show the contents of the structural result.
-//! @param instance - the specific value of StructuralInstance enum
+//! @param instance - specific value of StructuralInstance enum
 //! @param result - structural result
 static void showResult(const StructuralInstance instance, const std::string_view result)
 {
