@@ -109,12 +109,12 @@ class Task:
         env = os.getenv("FOO_ENV")
         if env is not None:
             if env != "foo_dev":
-                TermUtil.exit_with_error("The environment variable FOO_ENV must be foo_dev.")
+                exit_with_error("The environment variable FOO_ENV must be foo_dev.")
         else:
-            TermUtil.exit_with_error("Please export the environment variable FOO_ENV.")
+            exit_with_error("Please export the environment variable FOO_ENV.")
         self_path = os.path.split(os.path.realpath(__file__))[0]
         if not fnmatch.fnmatch(self_path, "*foo/script"):
-            TermUtil.exit_with_error("Illegal path to current script.")
+            exit_with_error("Illegal path to current script.")
         os.chdir(os.path.dirname(self_path))
         sys.path.append("./")
         if not os.path.exists(self._report_path):
@@ -172,7 +172,7 @@ class Task:
             pass
         finally:
             if message:
-                TermUtil.exit_with_error(message)
+                exit_with_error(message)
             sys.exit(1)
 
     def _parse_arguments(self):
@@ -218,7 +218,7 @@ class Task:
     def _apply_arguments(self):
         if self._args.analyze:
             if len(sys.argv) > 2:
-                TermUtil.exit_with_error("No other arguments are supported during analyzing.")
+                exit_with_error("No other arguments are supported during analyzing.")
             self._analyze_only = True
             self._summarize_run_log()
             sys.exit(0)
@@ -235,18 +235,16 @@ class Task:
 
         if self._args.check is not None:
             if self._args.sanitizer is not None:
-                TermUtil.exit_with_error(
+                exit_with_error(
                     "It is not possible to use the --check option and the --sanitizer option at the same time."
                 )
             if "cov" in self._args.check:
                 if self._args.build is None:
-                    TermUtil.exit_with_error(
+                    exit_with_error(
                         "Checking coverage requires recompiling with instrumentation. Please add the --build option."
                     )
                 if "mem" in self._args.check:
-                    TermUtil.exit_with_error(
-                        "Checking coverage and memory at the same time can lead to inaccurate results."
-                    )
+                    exit_with_error("Checking coverage and memory at the same time can lead to inaccurate results.")
                 self._initialize_for_check_coverage()
 
             if "mem" in self._args.check:
@@ -254,7 +252,7 @@ class Task:
 
         if self._args.sanitizer is not None:
             if self._args.build is None:
-                TermUtil.exit_with_error(
+                exit_with_error(
                     "The runtime sanitizer requires recompiling with instrumentation. Please add the --build option."
                 )
             os.environ["FOO_BLD_SAN"] = self._args.sanitizer
@@ -266,11 +264,11 @@ class Task:
                     build_cmd += " --test"
                 if self._args.build == "rls":
                     build_cmd += " --release"
-                return_code = TermUtil.execute_in_pty(build_cmd)
+                return_code = execute_in_pty(build_cmd)
                 if return_code:
-                    TermUtil.exit_with_error(f"Failed to run shell script {self._build_script}.")
+                    exit_with_error(f"Failed to run shell script {self._build_script}.")
             else:
-                TermUtil.exit_with_error(f"No shell script {self._build_script} file.")
+                exit_with_error(f"No shell script {self._build_script} file.")
 
     def _load_run_dict(self):
         if os.path.isfile(self._run_dict):
@@ -302,9 +300,9 @@ class Task:
 
     def _prepare(self):
         if not self._marked_options["tst"] and not os.path.isfile(f"{self._app_bin_path}/{self._app_bin_cmd}"):
-            TermUtil.exit_with_error("No executable file. Please use the --build option to build it.")
+            exit_with_error("No executable file. Please use the --build option to build it.")
         if self._marked_options["tst"] and not os.path.isfile(f"{self._tst_bin_path}/{self._tst_bin_cmd}"):
-            TermUtil.exit_with_error("No executable file for testing. Please use the --build option to build it.")
+            exit_with_error("No executable file for testing. Please use the --build option to build it.")
 
         if not os.path.exists(self._report_path):
             os.makedirs(self._report_path)
@@ -442,7 +440,7 @@ class Task:
             self._marked_options["chk"]["cov"] = True
             execute_command(f"rm -rf {self._report_path}/dca/chk_cov && mkdir -p {self._report_path}/dca/chk_cov")
         else:
-            TermUtil.exit_with_error("No llvm-profdata or llvm-cov program. Please check it.")
+            exit_with_error("No llvm-profdata or llvm-cov program. Please check it.")
 
     def _check_coverage_handling(self):
         folder_path = f"{self._report_path}/dca/chk_cov"
@@ -485,7 +483,7 @@ class Task:
             self._marked_options["chk"]["mem"] = True
             execute_command(f"rm -rf {self._report_path}/dca/chk_mem && mkdir -p {self._report_path}/dca/chk_mem")
         else:
-            TermUtil.exit_with_error("No valgrind (including valgrind-ci) program. Please check it.")
+            exit_with_error("No valgrind (including valgrind-ci) program. Please check it.")
 
     def _check_memory_handling(self):
         execute_command(f"rm -rf {self._report_path}/dca/chk_mem/*.xml")
@@ -625,9 +623,7 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
             or tags["chk"]["cov"] != self._marked_options["chk"]["cov"]
             or (tags["chk"]["mem"] and not self._marked_options["chk"]["mem"])
         ):
-            TermUtil.exit_with_error(
-                f"Run options do not match the actual contents of the run log {self.log_file} file."
-            )
+            exit_with_error(f"Run options do not match the actual contents of the run log {self.log_file} file.")
 
         start_indices = []
         finish_indices = []
@@ -642,7 +638,7 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
             or len(start_indices) != len(finish_indices)
             or (not self._analyze_only and len(finish_indices) != self._total_steps)
         ):
-            TermUtil.exit_with_error(f"The run log {self._run_log_file} file is incomplete. Please retry.")
+            exit_with_error(f"The run log {self._run_log_file} file is incomplete. Please retry.")
 
         dur_time, fail_res, cov_per, mem_leak = self._analyze_for_report(readlines, start_indices, finish_indices, tags)
         with open(self._run_report_file, "wt", encoding="utf-8") as run_report:
@@ -805,49 +801,69 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
         return "\n".join(rows)
 
 
-class TermUtil:
-    @staticmethod
-    def exit_with_error(message: str):
-        print(f"{os.path.basename(__file__)}: {message}", file=sys.stderr)
-        sys.exit(1)
-
-    @staticmethod
-    def execute_in_pty(command: str):
-        master_fd, slave_fd = pty.openpty()
-        with subprocess.Popen(
+def execute_command(
+    command: str, input: str = "", timeout: int = 300  # pylint: disable=redefined-builtin
+) -> tuple[str, str, int]:
+    try:
+        process = subprocess.run(
             command,
             executable="/bin/bash",
-            stdin=slave_fd,
-            stdout=slave_fd,
-            stderr=slave_fd,
-            close_fds=True,
             shell=True,
-            universal_newlines=False,
+            universal_newlines=True,
+            capture_output=True,
+            check=True,
             encoding="utf-8",
-        ) as process:
-            os.close(slave_fd)
-            buffer = b""
-            while True:
-                rlist, _, _ = select.select([master_fd], [], [], 0.1)
-                if master_fd in rlist:
-                    try:
-                        chunk = os.read(master_fd, 1024)
-                    except OSError as error:
-                        if error.errno == errno.EIO:
-                            break
-                        raise
-                    if not chunk:
+            input=input,
+            timeout=timeout,
+        )
+        return process.stdout.strip(), process.stderr.strip(), process.returncode
+    except subprocess.CalledProcessError as error:
+        return error.stdout.strip(), error.stderr.strip(), error.returncode
+    except subprocess.TimeoutExpired as error:
+        return "", str(error), 124
+
+
+def execute_in_pty(command: str):
+    master_fd, slave_fd = pty.openpty()
+    with subprocess.Popen(
+        command,
+        executable="/bin/bash",
+        stdin=slave_fd,
+        stdout=slave_fd,
+        stderr=slave_fd,
+        close_fds=True,
+        shell=True,
+        universal_newlines=False,
+        encoding="utf-8",
+    ) as process:
+        os.close(slave_fd)
+        buffer = b""
+        while True:
+            rlist, _, _ = select.select([master_fd], [], [], 0.1)
+            if master_fd in rlist:
+                try:
+                    chunk = os.read(master_fd, 1024)
+                except OSError as error:
+                    if error.errno == errno.EIO:
                         break
-                    buffer += chunk
-                    lines = buffer.split(b"\n")
-                    buffer = lines.pop()
-                    for raw in lines:
-                        print(raw.decode("utf-8", "ignore"))
+                    raise
+                if not chunk:
+                    break
+                buffer += chunk
+                lines = buffer.split(b"\n")
+                buffer = lines.pop()
+                for raw in lines:
+                    print(raw.decode("utf-8", "ignore"))
 
-                if process.poll() is not None:
-                    continue
+            if process.poll() is not None:
+                continue
 
-            return process.wait()
+        return process.wait()
+
+
+def exit_with_error(message: str):
+    print(f"{os.path.basename(__file__)}: {message}", file=sys.stderr)
+    sys.exit(1)
 
 
 class StreamLogger:
@@ -980,28 +996,6 @@ class ProgressBar:
         print(curses.tparm(curses.tigetstr("el")).decode(), end="")
 
 
-def execute_command(
-    command: str, input: str = "", timeout: int = 300  # pylint: disable=redefined-builtin
-) -> tuple[str, str, int]:
-    try:
-        process = subprocess.run(
-            command,
-            executable="/bin/bash",
-            shell=True,
-            universal_newlines=True,
-            capture_output=True,
-            check=True,
-            encoding="utf-8",
-            input=input,
-            timeout=timeout,
-        )
-        return process.stdout.strip(), process.stderr.strip(), process.returncode
-    except subprocess.CalledProcessError as error:
-        return error.stdout.strip(), error.stderr.strip(), error.returncode
-    except subprocess.TimeoutExpired as error:
-        return "", str(error), 124
-
-
 def main():
     task = None
     try:
@@ -1021,4 +1015,4 @@ if __name__ == "__main__":
     try:
         main()
     except Exception:  # pylint: disable=broad-except
-        TermUtil.exit_with_error(f"Raised exception.\n{traceback.format_exc()}")
+        exit_with_error(f"Raised exception.\n{traceback.format_exc()}")
