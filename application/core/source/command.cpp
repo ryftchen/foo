@@ -698,7 +698,7 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
     {
         try
         {
-            if (onParsing4Client(buffer, length))
+            if (!client->exitSignaled() && onParsing4Client(buffer, length))
             {
                 client->signalExit();
             }
@@ -722,7 +722,7 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
     {
         try
         {
-            if (onParsing4Client(buffer, length))
+            if (!client->exitSignaled() && onParsing4Client(buffer, length))
             {
                 client->signalExit();
             }

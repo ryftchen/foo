@@ -122,6 +122,12 @@ void Socket::spinUnlock() const
     ::pthread_spin_unlock(&sockLock);
 }
 
+template <typename Func, typename... Args>
+void Socket::launchAsyncTask(Func&& func, Args&&... args)
+{
+    asyncTask = std::async(std::launch::async, std::forward<Func>(func), std::forward<Args>(args)...);
+}
+
 int TCPSocket::toSend(const char* const bytes, const std::size_t length)
 {
     return ::send(sock, bytes, length, 0);
@@ -170,7 +176,7 @@ void TCPSocket::toReceive(const bool toDetach)
 {
     if (auto self = shared_from_this(); !toDetach)
     {
-        asyncTask = std::async(std::launch::async, toRecv, self);
+        launchAsyncTask(toRecv, self);
     }
     else
     {
@@ -263,8 +269,7 @@ void TCPServer::toAccept(const bool toDetach)
 {
     if (auto weakSelf = std::weak_ptr<TCPServer>(shared_from_this()); !toDetach)
     {
-        asyncTask = std::async(
-            std::launch::async,
+        launchAsyncTask(
             [weakSelf]
             {
                 if (auto sharedSelf = weakSelf.lock())
@@ -405,7 +410,7 @@ void UDPSocket::toReceive(const bool toDetach)
 {
     if (auto self = shared_from_this(); !toDetach)
     {
-        asyncTask = std::async(std::launch::async, toRecv, self);
+        launchAsyncTask(toRecv, self);
     }
     else
     {
@@ -418,7 +423,7 @@ void UDPSocket::toReceiveFrom(const bool toDetach)
     auto self = shared_from_this();
     if (!toDetach)
     {
-        asyncTask = std::async(std::launch::async, toRecvFrom, self);
+        launchAsyncTask(toRecvFrom, self);
     }
     else
     {

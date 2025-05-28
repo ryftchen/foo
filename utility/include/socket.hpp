@@ -53,6 +53,8 @@ public:
 private:
     //! @brief Flag for asynchronous exit.
     std::atomic<bool> exitReady{false};
+    //! @brief Result of asynchronous operations for the non-detached thread.
+    std::future<void> asyncTask{};
     //! @brief Spin lock to synchronize access to the socket.
     mutable ::pthread_spinlock_t sockLock{};
 
@@ -69,6 +71,13 @@ protected:
     //! @brief Destroy the Socket object.
     ~Socket();
 
+    //! @brief Launch the asynchronous operations.
+    //! @tparam Func - type of callable function
+    //! @tparam Args - type of function arguments
+    //! @param func - callable function
+    //! @param args - function arguments
+    template <typename Func, typename... Args>
+    void launchAsyncTask(Func&& func, Args&&... args);
     //! @brief Guard for the spin lock to ensure mutual exclusion.
     class SockGuard
     {
@@ -86,8 +95,6 @@ protected:
 
     //! @brief File descriptor.
     int sock{-1};
-    //! @brief Result of asynchronous operations for the non-detached thread.
-    std::future<void> asyncTask{};
 };
 
 //! @brief TCP socket.
