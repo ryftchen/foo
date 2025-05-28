@@ -27,15 +27,15 @@ public:
     void signalExit();
     //! @brief Check whether an asynchronous exit has been requested.
     //! @return has been requested or not
-    [[nodiscard]] bool exitSignaled() const;
+    bool exitSignaled() const;
     //! @brief When using asynchronous, wait for the non-detached thread to exit.
     void waitIfAlive();
     //! @brief Get the transport ip address.
     //! @return transport ip address
-    [[nodiscard]] std::string transportAddress() const;
+    std::string transportAddress() const;
     //! @brief Get the transport port number.
     //! @return transport port number
-    [[nodiscard]] int transportPort() const;
+    int transportPort() const;
 
     //! @brief Transport information.
     ::sockaddr_in sockAddr{};

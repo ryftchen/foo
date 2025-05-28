@@ -61,7 +61,7 @@ public:
     //! @param upper - upper endpoint
     //! @param eps - precision of calculation
     //! @return result of integral
-    [[nodiscard]] double operator()(double lower, double upper, const double eps) const override;
+    double operator()(double lower, double upper, const double eps) const override;
 
 private:
     //! @brief Target expression.
@@ -81,7 +81,7 @@ public:
     //! @param upper - upper endpoint
     //! @param eps - precision of calculation
     //! @return result of integral
-    [[nodiscard]] double operator()(double lower, double upper, const double eps) const override;
+    double operator()(double lower, double upper, const double eps) const override;
 
 private:
     //! @brief Target expression.
@@ -119,7 +119,7 @@ public:
     //! @param upper - upper endpoint
     //! @param eps - precision of calculation
     //! @return result of integral
-    [[nodiscard]] double operator()(double lower, double upper, const double eps) const override;
+    double operator()(double lower, double upper, const double eps) const override;
 
 private:
     //! @brief Target expression.
@@ -139,7 +139,7 @@ public:
     //! @param upper - upper endpoint
     //! @param eps - precision of calculation
     //! @return result of integral
-    [[nodiscard]] double operator()(double lower, double upper, const double eps) const override;
+    double operator()(double lower, double upper, const double eps) const override;
 
 private:
     //! @brief Target expression.
@@ -159,7 +159,7 @@ public:
     //! @param upper - upper endpoint
     //! @param eps - precision of calculation
     //! @return result of integral
-    [[nodiscard]] double operator()(double lower, double upper, const double eps) const override;
+    double operator()(double lower, double upper, const double eps) const override;
 
 private:
     //! @brief Target expression.

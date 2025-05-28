@@ -265,7 +265,7 @@ public:
     std::shared_ptr<Iterator> createIterator() override;
     //! @brief Get the size of items.
     //! @return size of items
-    [[nodiscard]] std::uint32_t size() const;
+    std::uint32_t size() const;
     //! @brief Get the item by index.
     //! @param index - index of item
     //! @return item

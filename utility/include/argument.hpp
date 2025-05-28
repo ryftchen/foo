@@ -721,15 +721,15 @@ public:
     //! @brief Check whether the argument is used.
     //! @param argName - target argument name
     //! @return be used or not used
-    [[nodiscard]] bool isUsed(const std::string_view argName) const;
+    bool isUsed(const std::string_view argName) const;
     //! @brief Check whether the sub-command is used.
     //! @param subCommandName - target sub-command name
     //! @return be used or not used
-    [[nodiscard]] inline auto isSubCommandUsed(const std::string_view subCommandName) const;
+    inline auto isSubCommandUsed(const std::string_view subCommandName) const;
     //! @brief Check whether the sub-command is used.
     //! @param subParser - target sub-parser
     //! @return be used or not used
-    [[nodiscard]] inline auto isSubCommandUsed(const Argument& subParser) const;
+    inline auto isSubCommandUsed(const Argument& subParser) const;
     //! @brief Get the title name.
     //! @return title name
     std::string title() const;
@@ -738,10 +738,10 @@ public:
     std::string version() const;
     //! @brief Get the help message content.
     //! @return help message content
-    [[nodiscard]] std::ostringstream help() const;
+    std::ostringstream help() const;
     //! @brief Get the usage content.
     //! @return usage content
-    [[nodiscard]] std::string usage() const;
+    std::string usage() const;
     //! @brief Add a sub-parser.
     //! @param parser - sub-parser
     void addSubParser(Argument& parser);
@@ -782,14 +782,14 @@ private:
     //! @brief Check whether the prefix character is valid.
     //! @param c - prefix character
     //! @return be valid or invalid
-    [[nodiscard]] bool isValidPrefixChar(const char c) const;
+    bool isValidPrefixChar(const char c) const;
     //! @brief Get any valid prefix character.
     //! @return valid prefix character
-    [[nodiscard]] char getAnyValidPrefixChar() const;
+    char getAnyValidPrefixChar() const;
     //! @brief Preprocess all raw arguments.
     //! @param rawArguments - container of all raw arguments
     //! @return preprocessed argument container
-    [[nodiscard]] std::vector<std::string> preprocessArguments(const std::vector<std::string>& rawArguments) const;
+    std::vector<std::string> preprocessArguments(const std::vector<std::string>& rawArguments) const;
     //! @brief Parse all input arguments for internal.
     //! @param rawArguments - container of all raw arguments
     void parseArgsInternal(const std::vector<std::string>& rawArguments);
@@ -803,7 +803,7 @@ private:
     Iterator processRegisteredArgument(Iterator current, Iterator end, const std::string_view argName) const;
     //! @brief Get the length of the longest argument.
     //! @return length of the longest argument
-    [[nodiscard]] std::size_t getLengthOfLongestArgument() const;
+    std::size_t getLengthOfLongestArgument() const;
     //! @brief Make index for argumentMap.
     //! @param iterator - iterator in all argument traits
     void indexArgument(const TraitIter& iterator);
