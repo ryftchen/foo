@@ -64,7 +64,7 @@ public:
     //! @param right - right endpoint
     //! @param eps - precision of calculation
     //! @return result of optimal
-    [[nodiscard]] std::optional<std::tuple<double, double>> operator()(
+    std::optional<std::tuple<double, double>> operator()(
         const double left, const double right, const double eps) override;
 
 private:
@@ -121,7 +121,7 @@ public:
     //! @param right - right endpoint
     //! @param eps - precision of calculation
     //! @return result of optimal
-    [[nodiscard]] std::optional<std::tuple<double, double>> operator()(
+    std::optional<std::tuple<double, double>> operator()(
         const double left, const double right, const double eps) override;
 
 private:
@@ -188,7 +188,7 @@ public:
     //! @param right - right endpoint
     //! @param eps - precision of calculation
     //! @return result of optimal
-    [[nodiscard]] std::optional<std::tuple<double, double>> operator()(
+    std::optional<std::tuple<double, double>> operator()(
         const double left, const double right, const double eps) override;
 
 private:
@@ -261,7 +261,7 @@ public:
     //! @param right - right endpoint
     //! @param eps - precision of calculation
     //! @return result of optimal
-    [[nodiscard]] std::optional<std::tuple<double, double>> operator()(
+    std::optional<std::tuple<double, double>> operator()(
         const double left, const double right, const double eps) override;
 
 private:
@@ -366,7 +366,7 @@ public:
     //! @param right - right endpoint
     //! @param eps - precision of calculation
     //! @return result of optimal
-    [[nodiscard]] std::optional<std::tuple<double, double>> operator()(
+    std::optional<std::tuple<double, double>> operator()(
         const double left, const double right, const double eps) override;
 
 private:
@@ -450,7 +450,7 @@ public:
     //! @param right - right endpoint
     //! @param eps - precision of calculation
     //! @return result of optimal
-    [[nodiscard]] std::optional<std::tuple<double, double>> operator()(
+    std::optional<std::tuple<double, double>> operator()(
         const double left, const double right, const double eps) override;
 
 private:

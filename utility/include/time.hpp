@@ -33,7 +33,7 @@ public:
     //! @tparam Period - type of tick period
     //! @return elapsed time
     template <typename Rep = double, typename Period = std::milli>
-    [[nodiscard]] Rep elapsedTime() const;
+    Rep elapsedTime() const;
 
 private:
     //! @brief Beginning time.

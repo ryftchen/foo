@@ -170,13 +170,13 @@ public:
         inline typename Container::iterator end() { return object ? object->end() : typename Container::iterator(); }
         //! @brief Get the first const iterator.
         //! @return first const iterator
-        [[nodiscard]] inline typename Container::const_iterator begin() const
+        inline typename Container::const_iterator begin() const
         {
             return object ? object->begin() : typename Container::iterator();
         }
         //! @brief Get the last const iterator.
         //! @return last const iterator
-        [[nodiscard]] inline typename Container::const_iterator end() const
+        inline typename Container::const_iterator end() const
         {
             return object ? object->end() : typename Container::iterator();
         }
@@ -198,13 +198,13 @@ public:
         const Container* object{nullptr};
         //! @brief Get the first const iterator.
         //! @return first const iterator
-        [[nodiscard]] inline typename Container::const_iterator begin() const
+        inline typename Container::const_iterator begin() const
         {
             return object ? object->begin() : typename Container::const_iterator();
         }
         //! @brief Get the last const iterator.
         //! @return last const iterator
-        [[nodiscard]] inline typename Container::const_iterator end() const
+        inline typename Container::const_iterator end() const
         {
             return object ? object->end() : typename Container::const_iterator();
         }
