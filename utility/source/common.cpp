@@ -199,7 +199,6 @@ void ReadWriteLock::readUnlock()
     reader.fetch_sub(1);
     lock.unlock();
     cond.notify_all();
-    lock.lock();
 }
 
 void ReadWriteLock::writeLock()
@@ -218,7 +217,6 @@ void ReadWriteLock::writeUnlock()
     writer.fetch_sub(1);
     lock.unlock();
     cond.notify_all();
-    lock.lock();
 }
 
 LockGuard::LockGuard(ReadWriteLock& lock, const LockMode mode) : lock{lock}, mode{mode}
