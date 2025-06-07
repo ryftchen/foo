@@ -546,7 +546,7 @@ void Argument::parseArgsInternal(const std::vector<std::string>& rawArguments)
             throw std::runtime_error{"Maximum number of positional arguments exceeded."};
         }
 
-        iterator = processRegisteredArgument(iterator, ending, currentArg);
+        iterator = processRegArgument(iterator, ending, currentArg);
     }
     isParsed = true;
 }

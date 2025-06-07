@@ -453,18 +453,19 @@ int View::buildResponse(const std::string_view reqPlaintext, char* respBuffer)
 View::OptionType View::extractOption(const std::string_view reqPlaintext)
 {
     auto args = splitString(reqPlaintext);
-    const auto option = args.at(0);
-    args.erase(args.cbegin());
-    switch (utility::common::bkdrHash(option.c_str()))
+    const auto optName = !args.empty() ? args.at(0) : std::string{};
+    switch (utility::common::bkdrHash(optName.c_str()))
     {
         using utility::common::operator""_bkdrHash;
         case operator""_bkdrHash(OptDepend::name.data()):
             return OptDepend{};
         case operator""_bkdrHash(OptExecute::name.data()):
+            args.erase(args.cbegin());
             return OptExecute{std::move(args)};
         case operator""_bkdrHash(OptJournal::name.data()):
             return OptJournal{};
         case operator""_bkdrHash(OptMonitor::name.data()):
+            args.erase(args.cbegin());
             return OptMonitor{std::move(args)};
         case operator""_bkdrHash(OptProfile::name.data()):
             return OptProfile{};
