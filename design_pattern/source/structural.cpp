@@ -92,7 +92,7 @@ Composite::~Composite()
 
 std::shared_ptr<Component> Composite::getChild(const std::uint32_t index)
 {
-    return children[index];
+    return children.at(index);
 }
 
 void Composite::add(const std::shared_ptr<Component>& component)
@@ -102,7 +102,7 @@ void Composite::add(const std::shared_ptr<Component>& component)
 
 void Composite::remove(const std::uint32_t index)
 {
-    std::shared_ptr<Component> child = children[index];
+    std::shared_ptr<Component> child = children.at(index);
     children.erase(children.cbegin() + index);
     child.reset();
 }

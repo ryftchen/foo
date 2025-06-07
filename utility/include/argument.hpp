@@ -800,7 +800,7 @@ private:
     //! @param argName - target argument name
     //! @return argument iterator between current and end
     template <typename Iterator>
-    Iterator processRegisteredArgument(Iterator current, Iterator end, const std::string_view argName) const;
+    Iterator processRegArgument(Iterator current, Iterator end, const std::string_view argName) const;
     //! @brief Get the length of the longest argument.
     //! @return length of the longest argument
     std::size_t getLengthOfLongestArgument() const;
@@ -869,7 +869,7 @@ inline auto Argument::isSubCommandUsed(const Argument& subParser) const
 }
 
 template <typename Iterator>
-Iterator Argument::processRegisteredArgument(Iterator current, Iterator end, const std::string_view argName) const
+Iterator Argument::processRegArgument(Iterator current, Iterator end, const std::string_view argName) const
 {
     if (const auto argMapIter = argumentMap.find(argName); argumentMap.cend() != argMapIter)
     {
@@ -883,10 +883,10 @@ Iterator Argument::processRegisteredArgument(Iterator current, Iterator end, con
         for (std::size_t i = 1; i < compoundArg.length(); ++i)
         {
             const auto hypotheticalArg = std::string{'-', compoundArg.at(i)};
-            if (const auto argMapIter2 = argumentMap.find(hypotheticalArg); argumentMap.cend() != argMapIter2)
+            if (const auto argMapIter = argumentMap.find(hypotheticalArg); argumentMap.cend() != argMapIter)
             {
-                auto argument = argMapIter2->second;
-                current = argument->consume(current, end, argMapIter2->first);
+                auto argument = argMapIter->second;
+                current = argument->consume(current, end, argMapIter->first);
                 continue;
             }
             throw std::runtime_error{"Unknown argument: " + std::string{argName} + '.'};

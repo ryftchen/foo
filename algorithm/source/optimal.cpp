@@ -79,20 +79,19 @@ std::optional<std::tuple<double, double>> Tabu::operator()(const double left, co
     for (std::uint32_t i = 0; i < maxIterations; ++i)
     {
         updateNeighborhood(neighborhood, solution, stepLen, left, right);
-        const auto [yBestNbr, xBestNbr] = neighborhoodSearch(neighborhood, solution, tabuList);
-        neighborhood.clear();
-        if (yBestNbr < yBest)
+        if (const auto [yBestNbr, xBestNbr] = neighborhoodSearch(neighborhood, solution, tabuList); yBestNbr < yBest)
         {
             xBest = xBestNbr;
             yBest = yBestNbr;
         }
+        neighborhood.clear();
 
         solution = xBest;
-        tabuList.emplace_back(solution);
-        if (tabuList.size() > tabuTenure)
+        if (tabuList.size() == tabuTenure)
         {
             tabuList.erase(tabuList.cbegin());
         }
+        tabuList.emplace_back(solution);
         stepLen *= expDecay;
         if (stepLen < eps)
         {
@@ -112,18 +111,10 @@ void Tabu::updateNeighborhood(
 {
     for (std::uint32_t i = 0; i < neighborSize / 2; ++i)
     {
-        double neighbor1 = solution + i * stepLen;
-        if (neighbor1 > right)
-        {
-            neighbor1 = right;
-        }
+        const double neighbor1 = std::min(solution + i * stepLen, right);
         neighborhood.emplace_back(neighbor1);
 
-        double neighbor2 = solution - i * stepLen;
-        if (neighbor2 < left)
-        {
-            neighbor2 = left;
-        }
+        const double neighbor2 = std::max(solution - i * stepLen, left);
         neighborhood.emplace_back(neighbor2);
     }
 }

@@ -130,7 +130,7 @@ void Context::set(const std::string_view expr, const bool val)
 
 bool Context::get(const std::string_view expr)
 {
-    return vars[expr.data()];
+    return vars.at(expr.data());
 }
 
 bool AbstractExpression::interpret(const std::shared_ptr<Context>& /*context*/)
