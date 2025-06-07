@@ -54,6 +54,8 @@ protected:
     const algorithm::match::Match sut{};
     //! @brief Fixture data.
     static std::shared_ptr<match::InputBuilder> fixture;
+    //! @brief Expected result.
+    static constexpr std::int64_t expRes{49702};
 };
 std::shared_ptr<match::InputBuilder> MatchTestBase::fixture = {};
 
@@ -61,7 +63,7 @@ std::shared_ptr<match::InputBuilder> MatchTestBase::fixture = {};
 TEST_F(MatchTestBase, rkMethod)
 {
     ASSERT_EQ(
-        49702,
+        expRes,
         sut.rk(
             fixture->getMatchingText().get(),
             fixture->getSinglePattern().get(),
@@ -73,7 +75,7 @@ TEST_F(MatchTestBase, rkMethod)
 TEST_F(MatchTestBase, kmpMethod)
 {
     ASSERT_EQ(
-        49702,
+        expRes,
         sut.kmp(
             fixture->getMatchingText().get(),
             fixture->getSinglePattern().get(),
@@ -85,7 +87,7 @@ TEST_F(MatchTestBase, kmpMethod)
 TEST_F(MatchTestBase, bmMethod)
 {
     ASSERT_EQ(
-        49702,
+        expRes,
         sut.bm(
             fixture->getMatchingText().get(),
             fixture->getSinglePattern().get(),
@@ -97,7 +99,7 @@ TEST_F(MatchTestBase, bmMethod)
 TEST_F(MatchTestBase, horspoolMethod)
 {
     ASSERT_EQ(
-        49702,
+        expRes,
         sut.horspool(
             fixture->getMatchingText().get(),
             fixture->getSinglePattern().get(),
@@ -109,7 +111,7 @@ TEST_F(MatchTestBase, horspoolMethod)
 TEST_F(MatchTestBase, sundayMethod)
 {
     ASSERT_EQ(
-        49702,
+        expRes,
         sut.sunday(
             fixture->getMatchingText().get(),
             fixture->getSinglePattern().get(),
@@ -148,19 +150,23 @@ protected:
     const algorithm::notation::Notation sut{};
     //! @brief Fixture data.
     static std::shared_ptr<notation::InputBuilder> fixture;
+    //! @brief Expected result 1.
+    static constexpr std::string_view expRes1{"+a-*b^-^cde+f*ghi"};
+    //! @brief Expected result 2.
+    static constexpr std::string_view expRes2{"abcd^e-fgh*+^*+i-"};
 };
 std::shared_ptr<notation::InputBuilder> NotationTestBase::fixture = {};
 
 //! @brief Test for the prefix method in the solution of notation.
 TEST_F(NotationTestBase, prefixMethod)
 {
-    ASSERT_EQ("+a-*b^-^cde+f*ghi", sut.prefix(fixture->getInfixNotation()));
+    ASSERT_EQ(expRes1, sut.prefix(fixture->getInfixNotation()));
 }
 
 //! @brief Test for the postfix method in the solution of notation.
 TEST_F(NotationTestBase, postfixMethod)
 {
-    ASSERT_EQ("abcd^e-fgh*+^*+i-", sut.postfix(fixture->getInfixNotation()));
+    ASSERT_EQ(expRes2, sut.postfix(fixture->getInfixNotation()));
 }
 
 //! @brief Test base of optimal.
@@ -192,8 +198,18 @@ protected:
     //! @brief Tear down.
     void TearDown() override {}
 
+    //! @brief System under test.
+    //! @tparam T - type of system under test
+    //! @return system under test
+    template <typename T>
+    static std::unique_ptr<algorithm::optimal::Optimal> sut()
+    {
+        return std::make_unique<T>(fixture->getFunction());
+    }
     //! @brief Fixture data.
     static std::shared_ptr<optimal::InputBuilder> fixture;
+    //! @brief Expected result.
+    static constexpr double expRes{0.0};
     //! @brief Allowable error.
     static constexpr double error{1e-3};
 };
@@ -202,85 +218,61 @@ std::shared_ptr<optimal::InputBuilder> OptimalTestBase::fixture = {};
 //! @brief Test for the gradient descent method in the solution of optimal.
 TEST_F(OptimalTestBase, gradientDescentMethod)
 {
-    const std::shared_ptr<algorithm::optimal::Optimal> gradient =
-        std::make_shared<algorithm::optimal::Gradient>(fixture->getFunction());
-    std::optional<std::tuple<double, double>> result = std::nullopt;
-
-    ASSERT_NO_THROW(
-        result = (*gradient)(fixture->getRanges().first, fixture->getRanges().second, algorithm::optimal::epsilon));
+    const auto result = (*sut<algorithm::optimal::Gradient>())(
+        fixture->getRanges().first, fixture->getRanges().second, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
-    EXPECT_GT(std::get<0>(result.value()), 0.0 - error);
-    EXPECT_LT(std::get<0>(result.value()), 0.0 + error);
+    EXPECT_GT(std::get<0>(result.value()), expRes - error);
+    EXPECT_LT(std::get<0>(result.value()), expRes + error);
 }
 
 //! @brief Test for the tabu method in the solution of optimal.
 TEST_F(OptimalTestBase, tabuMethod)
 {
-    const std::shared_ptr<algorithm::optimal::Optimal> tabu =
-        std::make_shared<algorithm::optimal::Tabu>(fixture->getFunction());
-    std::optional<std::tuple<double, double>> result = std::nullopt;
-
-    ASSERT_NO_THROW(
-        result = (*tabu)(fixture->getRanges().first, fixture->getRanges().second, algorithm::optimal::epsilon));
+    const auto result = (*sut<algorithm::optimal::Tabu>())(
+        fixture->getRanges().first, fixture->getRanges().second, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
-    EXPECT_GT(std::get<0>(result.value()), 0.0 - error);
-    EXPECT_LT(std::get<0>(result.value()), 0.0 + error);
+    EXPECT_GT(std::get<0>(result.value()), expRes - error);
+    EXPECT_LT(std::get<0>(result.value()), expRes + error);
 }
 
 //! @brief Test for the simulated annealing method in the solution of optimal.
 TEST_F(OptimalTestBase, simulatedAnnealingMethod)
 {
-    const std::shared_ptr<algorithm::optimal::Optimal> annealing =
-        std::make_shared<algorithm::optimal::Annealing>(fixture->getFunction());
-    std::optional<std::tuple<double, double>> result = std::nullopt;
-
-    ASSERT_NO_THROW(
-        result = (*annealing)(fixture->getRanges().first, fixture->getRanges().second, algorithm::optimal::epsilon));
+    const auto result = (*sut<algorithm::optimal::Annealing>())(
+        fixture->getRanges().first, fixture->getRanges().second, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
-    EXPECT_GT(std::get<0>(result.value()), 0.0 - error);
-    EXPECT_LT(std::get<0>(result.value()), 0.0 + error);
+    EXPECT_GT(std::get<0>(result.value()), expRes - error);
+    EXPECT_LT(std::get<0>(result.value()), expRes + error);
 }
 
 //! @brief Test for the particle swarm method in the solution of optimal.
 TEST_F(OptimalTestBase, particleSwarmMethod)
 {
-    const std::shared_ptr<algorithm::optimal::Optimal> particle =
-        std::make_shared<algorithm::optimal::Particle>(fixture->getFunction());
-    std::optional<std::tuple<double, double>> result = std::nullopt;
-
-    ASSERT_NO_THROW(
-        result = (*particle)(fixture->getRanges().first, fixture->getRanges().second, algorithm::optimal::epsilon));
+    const auto result = (*sut<algorithm::optimal::Particle>())(
+        fixture->getRanges().first, fixture->getRanges().second, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
-    EXPECT_GT(std::get<0>(result.value()), 0.0 - error);
-    EXPECT_LT(std::get<0>(result.value()), 0.0 + error);
+    EXPECT_GT(std::get<0>(result.value()), expRes - error);
+    EXPECT_LT(std::get<0>(result.value()), expRes + error);
 }
 
 //! @brief Test for the ant colony method in the solution of optimal.
 TEST_F(OptimalTestBase, antColonyMethod)
 {
-    const std::shared_ptr<algorithm::optimal::Optimal> ant =
-        std::make_shared<algorithm::optimal::Ant>(fixture->getFunction());
-    std::optional<std::tuple<double, double>> result = std::nullopt;
-
-    ASSERT_NO_THROW(
-        result = (*ant)(fixture->getRanges().first, fixture->getRanges().second, algorithm::optimal::epsilon));
+    const auto result = (*sut<algorithm::optimal::Ant>())(
+        fixture->getRanges().first, fixture->getRanges().second, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
-    EXPECT_GT(std::get<0>(result.value()), 0.0 - error);
-    EXPECT_LT(std::get<0>(result.value()), 0.0 + error);
+    EXPECT_GT(std::get<0>(result.value()), expRes - error);
+    EXPECT_LT(std::get<0>(result.value()), expRes + error);
 }
 
 //! @brief Test for the genetic method in the solution of optimal.
 TEST_F(OptimalTestBase, geneticMethod)
 {
-    const std::shared_ptr<algorithm::optimal::Optimal> genetic =
-        std::make_shared<algorithm::optimal::Genetic>(fixture->getFunction());
-    std::optional<std::tuple<double, double>> result = std::nullopt;
-
-    ASSERT_NO_THROW(
-        result = (*genetic)(fixture->getRanges().first, fixture->getRanges().second, algorithm::optimal::epsilon));
+    const auto result = (*sut<algorithm::optimal::Genetic>())(
+        fixture->getRanges().first, fixture->getRanges().second, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
-    EXPECT_GT(std::get<0>(result.value()), 0.0 - error);
-    EXPECT_LT(std::get<0>(result.value()), 0.0 + error);
+    EXPECT_GT(std::get<0>(result.value()), expRes - error);
+    EXPECT_LT(std::get<0>(result.value()), expRes + error);
 }
 
 //! @brief Test base of search.
@@ -294,12 +286,8 @@ public:
 
 private:
     //! @brief Update expected result.
-    static void updateExpectation()
+    static void updateExpRes()
     {
-        if (!fixture)
-        {
-            return;
-        }
         const auto* const orderedArray = fixture->getOrderedArray().get();
         const auto length = fixture->getLength();
         const auto searchKey = fixture->getSearchKey();
@@ -307,7 +295,7 @@ private:
         {
             if (searchKey == orderedArray[i])
             {
-                expColl.emplace(i);
+                expRes.emplace(i);
             }
         }
     }
@@ -319,7 +307,7 @@ protected:
         TST_ALGO_PRINT_TASK_TITLE("SEARCH", "BEGIN");
         fixture = std::make_shared<search::InputBuilder<float>>(
             search::input::arrayLength, search::input::arrayRangeMin, search::input::arrayRangeMax);
-        updateExpectation();
+        updateExpRes();
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
@@ -337,29 +325,29 @@ protected:
     //! @brief Fixture data.
     static std::shared_ptr<search::InputBuilder<float>> fixture;
     //! @brief Expected result.
-    static std::set<std::int64_t> expColl;
+    static std::set<std::int64_t> expRes;
 };
 std::shared_ptr<search::InputBuilder<float>> SearchTestBase::fixture = {};
-std::set<std::int64_t> SearchTestBase::expColl = {};
+std::set<std::int64_t> SearchTestBase::expRes = {};
 
 //! @brief Test for the binary method in the solution of search.
 TEST_F(SearchTestBase, binaryMethod)
 {
     ASSERT_TRUE(
-        expColl.contains(sut.binary(fixture->getOrderedArray().get(), fixture->getLength(), fixture->getSearchKey())));
+        expRes.contains(sut.binary(fixture->getOrderedArray().get(), fixture->getLength(), fixture->getSearchKey())));
 }
 
 //! @brief Test for the interpolation method in the solution of search.
 TEST_F(SearchTestBase, interpolationMethod)
 {
-    ASSERT_TRUE(expColl.contains(
+    ASSERT_TRUE(expRes.contains(
         sut.interpolation(fixture->getOrderedArray().get(), fixture->getLength(), fixture->getSearchKey())));
 }
 
 //! @brief Test for the Fibonacci method in the solution of search.
 TEST_F(SearchTestBase, fibonacciMethod)
 {
-    ASSERT_TRUE(expColl.contains(
+    ASSERT_TRUE(expRes.contains(
         sut.fibonacci(fixture->getOrderedArray().get(), fixture->getLength(), fixture->getSearchKey())));
 }
 
@@ -374,15 +362,11 @@ public:
 
 private:
     //! @brief Update expected result.
-    static void updateExpectation()
+    static void updateExpRes()
     {
-        if (!fixture)
-        {
-            return;
-        }
-        expColl = std::vector<std::int32_t>(
+        expRes = std::vector<std::int32_t>(
             fixture->getRandomArray().get(), fixture->getRandomArray().get() + fixture->getLength());
-        std::sort(expColl.begin(), expColl.end());
+        std::sort(expRes.begin(), expRes.end());
     }
 
 protected:
@@ -392,7 +376,7 @@ protected:
         TST_ALGO_PRINT_TASK_TITLE("SORT", "BEGIN");
         fixture = std::make_shared<sort::InputBuilder<std::int32_t>>(
             sort::input::arrayLength, sort::input::arrayRangeMin, sort::input::arrayRangeMax);
-        updateExpectation();
+        updateExpRes();
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
@@ -410,69 +394,69 @@ protected:
     //! @brief Fixture data.
     static std::shared_ptr<sort::InputBuilder<std::int32_t>> fixture;
     //! @brief Expected result.
-    static std::vector<std::int32_t> expColl;
+    static std::vector<std::int32_t> expRes;
 };
 std::shared_ptr<sort::InputBuilder<std::int32_t>> SortTestBase::fixture = {};
-std::vector<std::int32_t> SortTestBase::expColl = {};
+std::vector<std::int32_t> SortTestBase::expRes = {};
 
 //! @brief Test for the bubble method in the solution of sort.
 TEST_F(SortTestBase, bubbleMethod)
 {
-    ASSERT_EQ(expColl, sut.bubble(fixture->getRandomArray().get(), fixture->getLength()));
+    ASSERT_EQ(expRes, sut.bubble(fixture->getRandomArray().get(), fixture->getLength()));
 }
 
 //! @brief Test for the selection method in the solution of sort.
 TEST_F(SortTestBase, selectionMethod)
 {
-    ASSERT_EQ(expColl, sut.selection(fixture->getRandomArray().get(), fixture->getLength()));
+    ASSERT_EQ(expRes, sut.selection(fixture->getRandomArray().get(), fixture->getLength()));
 }
 
 //! @brief Test for the insertion method in the solution of sort.
 TEST_F(SortTestBase, insertionMethod)
 {
-    ASSERT_EQ(expColl, sut.insertion(fixture->getRandomArray().get(), fixture->getLength()));
+    ASSERT_EQ(expRes, sut.insertion(fixture->getRandomArray().get(), fixture->getLength()));
 }
 
 //! @brief Test for the shell method in the solution of sort.
 TEST_F(SortTestBase, shellMethod)
 {
-    ASSERT_EQ(expColl, sut.shell(fixture->getRandomArray().get(), fixture->getLength()));
+    ASSERT_EQ(expRes, sut.shell(fixture->getRandomArray().get(), fixture->getLength()));
 }
 
 //! @brief Test for the merge method in the solution of sort.
 TEST_F(SortTestBase, mergeMethod)
 {
-    ASSERT_EQ(expColl, sut.merge(fixture->getRandomArray().get(), fixture->getLength()));
+    ASSERT_EQ(expRes, sut.merge(fixture->getRandomArray().get(), fixture->getLength()));
 }
 
 //! @brief Test for the quick method in the solution of sort.
 TEST_F(SortTestBase, quickMethod)
 {
-    ASSERT_EQ(expColl, sut.quick(fixture->getRandomArray().get(), fixture->getLength()));
+    ASSERT_EQ(expRes, sut.quick(fixture->getRandomArray().get(), fixture->getLength()));
 }
 
 //! @brief Test for the heap method in the solution of sort.
 TEST_F(SortTestBase, heapMethod)
 {
-    ASSERT_EQ(expColl, sut.heap(fixture->getRandomArray().get(), fixture->getLength()));
+    ASSERT_EQ(expRes, sut.heap(fixture->getRandomArray().get(), fixture->getLength()));
 }
 
 //! @brief Test for the counting method in the solution of sort.
 TEST_F(SortTestBase, countingMethod)
 {
-    ASSERT_EQ(expColl, sut.counting(fixture->getRandomArray().get(), fixture->getLength()));
+    ASSERT_EQ(expRes, sut.counting(fixture->getRandomArray().get(), fixture->getLength()));
 }
 
 //! @brief Test for the bucket method in the solution of sort.
 TEST_F(SortTestBase, bucketMethod)
 {
-    ASSERT_EQ(expColl, sut.bucket(fixture->getRandomArray().get(), fixture->getLength()));
+    ASSERT_EQ(expRes, sut.bucket(fixture->getRandomArray().get(), fixture->getLength()));
 }
 
 //! @brief Test for the radix method in the solution of sort.
 TEST_F(SortTestBase, radixMethod)
 {
-    ASSERT_EQ(expColl, sut.radix(fixture->getRandomArray().get(), fixture->getLength()));
+    ASSERT_EQ(expRes, sut.radix(fixture->getRandomArray().get(), fixture->getLength()));
 }
 } // namespace tst_algo
 } // namespace test

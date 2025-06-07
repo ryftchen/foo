@@ -86,7 +86,7 @@ TEST_F(TreeTestBase, bsInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = tree::Tree::bs());
-    ASSERT_TRUE(!result.str().empty());
+    ASSERT_FALSE(result.str().empty());
 }
 
 //! @brief Test for the Adelson-Velsky-Landis instance in the structure of tree.
@@ -94,7 +94,7 @@ TEST_F(TreeTestBase, avlInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = tree::Tree::avl());
-    ASSERT_TRUE(!result.str().empty());
+    ASSERT_FALSE(result.str().empty());
 }
 
 //! @brief Test for the splay instance in the structure of tree.
@@ -102,7 +102,7 @@ TEST_F(TreeTestBase, splayInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = tree::Tree::splay());
-    ASSERT_TRUE(!result.str().empty());
+    ASSERT_FALSE(result.str().empty());
 }
 } // namespace tst_ds
 } // namespace test
