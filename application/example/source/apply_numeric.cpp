@@ -83,7 +83,7 @@ static void showResult(
     std::printf("\n==> %-14s Method <==\n(%d) %c (%d) = %d\n", makeTitle(method).c_str(), a, op, b, result);
 }
 
-void ArithmeticSolution::additionMethod(const std::int32_t augend, const std::int32_t addend)
+void ArithmeticCalculation::additionMethod(const std::int32_t augend, const std::int32_t addend)
 try
 {
     const auto calc = numeric::arithmetic::Arithmetic().addition(augend, addend);
@@ -91,10 +91,10 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in calculation (%s): %s", __func__, err.what());
 }
 
-void ArithmeticSolution::subtractionMethod(const std::int32_t minuend, const std::int32_t subtrahend)
+void ArithmeticCalculation::subtractionMethod(const std::int32_t minuend, const std::int32_t subtrahend)
 try
 {
     const auto calc = numeric::arithmetic::Arithmetic().subtraction(minuend, subtrahend);
@@ -102,10 +102,10 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in calculation (%s): %s", __func__, err.what());
 }
 
-void ArithmeticSolution::multiplicationMethod(const std::int32_t multiplier, const std::int32_t multiplicand)
+void ArithmeticCalculation::multiplicationMethod(const std::int32_t multiplier, const std::int32_t multiplicand)
 try
 {
     const auto calc = numeric::arithmetic::Arithmetic().multiplication(multiplier, multiplicand);
@@ -113,10 +113,10 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in calculation (%s): %s", __func__, err.what());
 }
 
-void ArithmeticSolution::divisionMethod(const std::int32_t dividend, const std::int32_t divisor)
+void ArithmeticCalculation::divisionMethod(const std::int32_t dividend, const std::int32_t divisor)
 try
 {
     const auto calc = numeric::arithmetic::Arithmetic().division(dividend, divisor);
@@ -124,7 +124,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in calculation (%s): %s", __func__, err.what());
 }
 } // namespace arithmetic
 //! @brief To apply arithmetic-related methods.
@@ -161,19 +161,19 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
-            using arithmetic::ArithmeticSolution;
-            static_assert(utility::common::isStatelessClass<ArithmeticSolution>());
+            using arithmetic::ArithmeticCalculation;
+            static_assert(utility::common::isStatelessClass<ArithmeticCalculation>());
             case abbrValue(ArithmeticMethod::addition):
-                addTask(target, &ArithmeticSolution::additionMethod);
+                addTask(target, &ArithmeticCalculation::additionMethod);
                 break;
             case abbrValue(ArithmeticMethod::subtraction):
-                addTask(target, &ArithmeticSolution::subtractionMethod);
+                addTask(target, &ArithmeticCalculation::subtractionMethod);
                 break;
             case abbrValue(ArithmeticMethod::multiplication):
-                addTask(target, &ArithmeticSolution::multiplicationMethod);
+                addTask(target, &ArithmeticCalculation::multiplicationMethod);
                 break;
             case abbrValue(ArithmeticMethod::division):
-                addTask(target, &ArithmeticSolution::divisionMethod);
+                addTask(target, &ArithmeticCalculation::divisionMethod);
                 break;
             default:
                 throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};
@@ -200,7 +200,7 @@ static void showResult(const DivisorMethod method, const std::set<std::int32_t>&
         interval);
 }
 
-void DivisorSolution::euclideanMethod(std::int32_t a, std::int32_t b)
+void DivisorCalculation::euclideanMethod(std::int32_t a, std::int32_t b)
 try
 {
     const utility::time::Time timer{};
@@ -209,10 +209,10 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in calculation (%s): %s", __func__, err.what());
 }
 
-void DivisorSolution::steinMethod(std::int32_t a, std::int32_t b)
+void DivisorCalculation::steinMethod(std::int32_t a, std::int32_t b)
 try
 {
     const utility::time::Time timer{};
@@ -221,7 +221,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in calculation (%s): %s", __func__, err.what());
 }
 } // namespace divisor
 //! @brief To apply divisor-related methods.
@@ -258,13 +258,13 @@ void applyingDivisor(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
-            using divisor::DivisorSolution;
-            static_assert(utility::common::isStatelessClass<DivisorSolution>());
+            using divisor::DivisorCalculation;
+            static_assert(utility::common::isStatelessClass<DivisorCalculation>());
             case abbrValue(DivisorMethod::euclidean):
-                addTask(target, &DivisorSolution::euclideanMethod);
+                addTask(target, &DivisorCalculation::euclideanMethod);
                 break;
             case abbrValue(DivisorMethod::stein):
-                addTask(target, &DivisorSolution::steinMethod);
+                addTask(target, &DivisorCalculation::steinMethod);
                 break;
             default:
                 throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};
@@ -286,7 +286,7 @@ static void showResult(const IntegralMethod method, const double result, const d
         "\n==> %-11s Method <==\nI(def)=%+.5f, run time: %8.5f ms\n", makeTitle(method).c_str(), result, interval);
 }
 
-void IntegralSolution::trapezoidalMethod(const Expression& expr, const double lower, const double upper)
+void IntegralCalculation::trapezoidalMethod(const Expression& expr, const double lower, const double upper)
 try
 {
     const utility::time::Time timer{};
@@ -295,10 +295,10 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in calculation (%s): %s", __func__, err.what());
 }
 
-void IntegralSolution::adaptiveSimpsonMethod(const Expression& expr, const double lower, const double upper)
+void IntegralCalculation::adaptiveSimpsonMethod(const Expression& expr, const double lower, const double upper)
 try
 {
     const utility::time::Time timer{};
@@ -307,10 +307,10 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in calculation (%s): %s", __func__, err.what());
 }
 
-void IntegralSolution::rombergMethod(const Expression& expr, const double lower, const double upper)
+void IntegralCalculation::rombergMethod(const Expression& expr, const double lower, const double upper)
 try
 {
     const utility::time::Time timer{};
@@ -319,10 +319,10 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in calculation (%s): %s", __func__, err.what());
 }
 
-void IntegralSolution::gaussLegendreMethod(const Expression& expr, const double lower, const double upper)
+void IntegralCalculation::gaussLegendreMethod(const Expression& expr, const double lower, const double upper)
 try
 {
     const utility::time::Time timer{};
@@ -331,10 +331,10 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in calculation (%s): %s", __func__, err.what());
 }
 
-void IntegralSolution::monteCarloMethod(const Expression& expr, const double lower, const double upper)
+void IntegralCalculation::monteCarloMethod(const Expression& expr, const double lower, const double upper)
 try
 {
     const utility::time::Time timer{};
@@ -343,7 +343,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in calculation (%s): %s", __func__, err.what());
 }
 } // namespace integral
 //! @brief To apply integral-related methods.
@@ -386,22 +386,22 @@ void applyingIntegral(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
-            using integral::IntegralSolution;
-            static_assert(utility::common::isStatelessClass<IntegralSolution>());
+            using integral::IntegralCalculation;
+            static_assert(utility::common::isStatelessClass<IntegralCalculation>());
             case abbrValue(IntegralMethod::trapezoidal):
-                addTask(target, &IntegralSolution::trapezoidalMethod);
+                addTask(target, &IntegralCalculation::trapezoidalMethod);
                 break;
             case abbrValue(IntegralMethod::simpson):
-                addTask(target, &IntegralSolution::adaptiveSimpsonMethod);
+                addTask(target, &IntegralCalculation::adaptiveSimpsonMethod);
                 break;
             case abbrValue(IntegralMethod::romberg):
-                addTask(target, &IntegralSolution::rombergMethod);
+                addTask(target, &IntegralCalculation::rombergMethod);
                 break;
             case abbrValue(IntegralMethod::gauss):
-                addTask(target, &IntegralSolution::gaussLegendreMethod);
+                addTask(target, &IntegralCalculation::gaussLegendreMethod);
                 break;
             case abbrValue(IntegralMethod::monteCarlo):
-                addTask(target, &IntegralSolution::monteCarloMethod);
+                addTask(target, &IntegralCalculation::monteCarloMethod);
                 break;
             default:
                 throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};
@@ -428,7 +428,7 @@ static void showResult(const PrimeMethod method, const std::vector<std::uint32_t
         interval);
 }
 
-void PrimeSolution::eratosthenesMethod(const std::uint32_t max)
+void PrimeCalculation::eratosthenesMethod(const std::uint32_t max)
 try
 {
     const utility::time::Time timer{};
@@ -437,10 +437,10 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in calculation (%s): %s", __func__, err.what());
 }
 
-void PrimeSolution::eulerMethod(const std::uint32_t max)
+void PrimeCalculation::eulerMethod(const std::uint32_t max)
 try
 {
     const utility::time::Time timer{};
@@ -449,7 +449,7 @@ try
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in calculation (%s): %s", __func__, err.what());
 }
 } // namespace prime
 //! @brief To apply prime-related methods.
@@ -483,13 +483,13 @@ void applyingPrime(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
-            using prime::PrimeSolution;
-            static_assert(utility::common::isStatelessClass<PrimeSolution>());
+            using prime::PrimeCalculation;
+            static_assert(utility::common::isStatelessClass<PrimeCalculation>());
             case abbrValue(PrimeMethod::eratosthenes):
-                addTask(target, &PrimeSolution::eratosthenesMethod);
+                addTask(target, &PrimeCalculation::eratosthenesMethod);
                 break;
             case abbrValue(PrimeMethod::euler):
-                addTask(target, &PrimeSolution::eulerMethod);
+                addTask(target, &PrimeCalculation::eulerMethod);
                 break;
             default:
                 throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};

@@ -41,13 +41,16 @@ protected:
     void SetUp() override {}
     //! @brief Tear down.
     void TearDown() override {}
+
+    //! @brief System under test.
+    const behavioral::Showcase sut{};
 };
 
 //! @brief Test for the chain of responsibility instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, chainOfResponsibilityInstance)
 {
     std::ostringstream result{};
-    ASSERT_NO_THROW(result = behavioral::Behavioral::chainOfResponsibility());
+    ASSERT_NO_THROW(result = sut.chainOfResponsibility());
     ASSERT_FALSE(result.str().empty());
 }
 
@@ -55,7 +58,7 @@ TEST_F(BehavioralTestBase, chainOfResponsibilityInstance)
 TEST_F(BehavioralTestBase, commandInstance)
 {
     std::ostringstream result{};
-    ASSERT_NO_THROW(result = behavioral::Behavioral::command());
+    ASSERT_NO_THROW(result = sut.command());
     ASSERT_FALSE(result.str().empty());
 }
 
@@ -63,7 +66,7 @@ TEST_F(BehavioralTestBase, commandInstance)
 TEST_F(BehavioralTestBase, interpreterInstance)
 {
     std::ostringstream result{};
-    ASSERT_NO_THROW(result = behavioral::Behavioral::interpreter());
+    ASSERT_NO_THROW(result = sut.interpreter());
     ASSERT_FALSE(result.str().empty());
 }
 
@@ -71,7 +74,7 @@ TEST_F(BehavioralTestBase, interpreterInstance)
 TEST_F(BehavioralTestBase, iteratorInstance)
 {
     std::ostringstream result{};
-    ASSERT_NO_THROW(result = behavioral::Behavioral::iterator());
+    ASSERT_NO_THROW(result = sut.iterator());
     ASSERT_FALSE(result.str().empty());
 }
 
@@ -79,7 +82,7 @@ TEST_F(BehavioralTestBase, iteratorInstance)
 TEST_F(BehavioralTestBase, mediatorInstance)
 {
     std::ostringstream result{};
-    ASSERT_NO_THROW(result = behavioral::Behavioral::mediator());
+    ASSERT_NO_THROW(result = sut.mediator());
     ASSERT_FALSE(result.str().empty());
 }
 
@@ -87,7 +90,7 @@ TEST_F(BehavioralTestBase, mediatorInstance)
 TEST_F(BehavioralTestBase, mementoInstance)
 {
     std::ostringstream result{};
-    ASSERT_NO_THROW(result = behavioral::Behavioral::memento());
+    ASSERT_NO_THROW(result = sut.memento());
     ASSERT_FALSE(result.str().empty());
 }
 
@@ -95,7 +98,7 @@ TEST_F(BehavioralTestBase, mementoInstance)
 TEST_F(BehavioralTestBase, observerInstance)
 {
     std::ostringstream result{};
-    ASSERT_NO_THROW(result = behavioral::Behavioral::observer());
+    ASSERT_NO_THROW(result = sut.observer());
     ASSERT_FALSE(result.str().empty());
 }
 
@@ -103,7 +106,7 @@ TEST_F(BehavioralTestBase, observerInstance)
 TEST_F(BehavioralTestBase, stateInstance)
 {
     std::ostringstream result{};
-    ASSERT_NO_THROW(result = behavioral::Behavioral::state());
+    ASSERT_NO_THROW(result = sut.state());
     ASSERT_FALSE(result.str().empty());
 }
 
@@ -111,7 +114,7 @@ TEST_F(BehavioralTestBase, stateInstance)
 TEST_F(BehavioralTestBase, strategyInstance)
 {
     std::ostringstream result{};
-    ASSERT_NO_THROW(result = behavioral::Behavioral::strategy());
+    ASSERT_NO_THROW(result = sut.strategy());
     ASSERT_FALSE(result.str().empty());
 }
 
@@ -119,7 +122,7 @@ TEST_F(BehavioralTestBase, strategyInstance)
 TEST_F(BehavioralTestBase, templateMethodInstance)
 {
     std::ostringstream result{};
-    ASSERT_NO_THROW(result = behavioral::Behavioral::templateMethod());
+    ASSERT_NO_THROW(result = sut.templateMethod());
     ASSERT_FALSE(result.str().empty());
 }
 
@@ -127,7 +130,7 @@ TEST_F(BehavioralTestBase, templateMethodInstance)
 TEST_F(BehavioralTestBase, visitorInstance)
 {
     std::ostringstream result{};
-    ASSERT_NO_THROW(result = behavioral::Behavioral::visitor());
+    ASSERT_NO_THROW(result = sut.visitor());
     ASSERT_FALSE(result.str().empty());
 }
 
@@ -149,13 +152,16 @@ protected:
     void SetUp() override {}
     //! @brief Tear down.
     void TearDown() override {}
+
+    //! @brief System under test.
+    const creational::Showcase sut{};
 };
 
 //! @brief Test for the abstract factory instance in the pattern of creational.
 TEST_F(CreationalTestBase, abstractFactoryInstance)
 {
     std::ostringstream result{};
-    ASSERT_NO_THROW(result = creational::Creational::abstractFactory());
+    ASSERT_NO_THROW(result = sut.abstractFactory());
     ASSERT_FALSE(result.str().empty());
 }
 
@@ -163,7 +169,7 @@ TEST_F(CreationalTestBase, abstractFactoryInstance)
 TEST_F(CreationalTestBase, builderInstance)
 {
     std::ostringstream result{};
-    ASSERT_NO_THROW(result = creational::Creational::builder());
+    ASSERT_NO_THROW(result = sut.builder());
     ASSERT_FALSE(result.str().empty());
 }
 
@@ -171,7 +177,7 @@ TEST_F(CreationalTestBase, builderInstance)
 TEST_F(CreationalTestBase, factoryMethodInstance)
 {
     std::ostringstream result{};
-    ASSERT_NO_THROW(result = creational::Creational::factoryMethod());
+    ASSERT_NO_THROW(result = sut.factoryMethod());
     ASSERT_FALSE(result.str().empty());
 }
 
@@ -179,7 +185,7 @@ TEST_F(CreationalTestBase, factoryMethodInstance)
 TEST_F(CreationalTestBase, prototypeInstance)
 {
     std::ostringstream result{};
-    ASSERT_NO_THROW(result = creational::Creational::prototype());
+    ASSERT_NO_THROW(result = sut.prototype());
     ASSERT_FALSE(result.str().empty());
 }
 
@@ -187,7 +193,7 @@ TEST_F(CreationalTestBase, prototypeInstance)
 TEST_F(CreationalTestBase, singletonInstance)
 {
     std::ostringstream result{};
-    ASSERT_NO_THROW(result = creational::Creational::singleton());
+    ASSERT_NO_THROW(result = sut.singleton());
     ASSERT_FALSE(result.str().empty());
 }
 
@@ -209,13 +215,16 @@ protected:
     void SetUp() override {}
     //! @brief Tear down.
     void TearDown() override {}
+
+    //! @brief System under test.
+    const structural::Showcase sut{};
 };
 
 //! @brief Test for the adapter instance in the pattern of structural.
 TEST_F(StructuralTestBase, adapterInstance)
 {
     std::ostringstream result{};
-    ASSERT_NO_THROW(result = structural::Structural::adapter());
+    ASSERT_NO_THROW(result = sut.adapter());
     ASSERT_FALSE(result.str().empty());
 }
 
@@ -223,7 +232,7 @@ TEST_F(StructuralTestBase, adapterInstance)
 TEST_F(StructuralTestBase, bridgeInstance)
 {
     std::ostringstream result{};
-    ASSERT_NO_THROW(result = structural::Structural::bridge());
+    ASSERT_NO_THROW(result = sut.bridge());
     ASSERT_FALSE(result.str().empty());
 }
 
@@ -231,7 +240,7 @@ TEST_F(StructuralTestBase, bridgeInstance)
 TEST_F(StructuralTestBase, compositeInstance)
 {
     std::ostringstream result{};
-    ASSERT_NO_THROW(result = structural::Structural::composite());
+    ASSERT_NO_THROW(result = sut.composite());
     ASSERT_FALSE(result.str().empty());
 }
 
@@ -239,7 +248,7 @@ TEST_F(StructuralTestBase, compositeInstance)
 TEST_F(StructuralTestBase, decoratorInstance)
 {
     std::ostringstream result{};
-    ASSERT_NO_THROW(result = structural::Structural::decorator());
+    ASSERT_NO_THROW(result = sut.decorator());
     ASSERT_FALSE(result.str().empty());
 }
 
@@ -247,7 +256,7 @@ TEST_F(StructuralTestBase, decoratorInstance)
 TEST_F(StructuralTestBase, facadeInstance)
 {
     std::ostringstream result{};
-    ASSERT_NO_THROW(result = structural::Structural::facade());
+    ASSERT_NO_THROW(result = sut.facade());
     ASSERT_FALSE(result.str().empty());
 }
 
@@ -255,7 +264,7 @@ TEST_F(StructuralTestBase, facadeInstance)
 TEST_F(StructuralTestBase, flyweightInstance)
 {
     std::ostringstream result{};
-    ASSERT_NO_THROW(result = structural::Structural::flyweight());
+    ASSERT_NO_THROW(result = sut.flyweight());
     ASSERT_FALSE(result.str().empty());
 }
 
@@ -263,7 +272,7 @@ TEST_F(StructuralTestBase, flyweightInstance)
 TEST_F(StructuralTestBase, proxyInstance)
 {
     std::ostringstream result{};
-    ASSERT_NO_THROW(result = structural::Structural::proxy());
+    ASSERT_NO_THROW(result = sut.proxy());
     ASSERT_FALSE(result.str().empty());
 }
 } // namespace tst_dp

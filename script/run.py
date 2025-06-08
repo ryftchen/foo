@@ -34,7 +34,7 @@ class Task:
     _app_bin_path = "./build/bin"
     _tst_bin_cmd = "foo_test"
     _tst_bin_path = "./test/build/bin"
-    _lib_list = ["libfoo_util.so", "libfoo_algo.so", "libfoo_ds.so", "libfoo_dp.so", "libfoo_num.so"]
+    _lib_list = ["libfoo_util.so", "libfoo_algo.so", "libfoo_dp.so", "libfoo_ds.so", "libfoo_num.so"]
     _lib_path = "./build/lib"
     _script_path = "./script"
     _build_script = f"{_script_path}/build.sh"

@@ -41,24 +41,33 @@ protected:
     void SetUp() override {}
     //! @brief Tear down.
     void TearDown() override {}
+
+    //! @brief System under test.
+    const linear::Showcase sut{};
 };
 
 //! @brief Test for the linked list instance in the structure of linear.
 TEST_F(LinearTestBase, linkedListInstance)
 {
-    ASSERT_NO_THROW(linear::Linear::linkedList());
+    std::ostringstream result{};
+    ASSERT_NO_THROW(result = sut.linkedList());
+    ASSERT_FALSE(result.str().empty());
 }
 
 //! @brief Test for the stack instance in the structure of linear.
 TEST_F(LinearTestBase, stackInstance)
 {
-    ASSERT_NO_THROW(linear::Linear::stack());
+    std::ostringstream result{};
+    ASSERT_NO_THROW(result = sut.stack());
+    ASSERT_FALSE(result.str().empty());
 }
 
 //! @brief Test for the queue instance in the structure of linear.
 TEST_F(LinearTestBase, queueInstance)
 {
-    ASSERT_NO_THROW(linear::Linear::queue());
+    std::ostringstream result{};
+    ASSERT_NO_THROW(result = sut.queue());
+    ASSERT_FALSE(result.str().empty());
 }
 
 //! @brief Test base of tree.
@@ -79,13 +88,16 @@ protected:
     void SetUp() override {}
     //! @brief Tear down.
     void TearDown() override {}
+
+    //! @brief System under test.
+    const tree::Showcase sut{};
 };
 
 //! @brief Test for the binary search instance in the structure of tree.
 TEST_F(TreeTestBase, bsInstance)
 {
     std::ostringstream result{};
-    ASSERT_NO_THROW(result = tree::Tree::bs());
+    ASSERT_NO_THROW(result = sut.bs());
     ASSERT_FALSE(result.str().empty());
 }
 
@@ -93,7 +105,7 @@ TEST_F(TreeTestBase, bsInstance)
 TEST_F(TreeTestBase, avlInstance)
 {
     std::ostringstream result{};
-    ASSERT_NO_THROW(result = tree::Tree::avl());
+    ASSERT_NO_THROW(result = sut.avl());
     ASSERT_FALSE(result.str().empty());
 }
 
@@ -101,7 +113,7 @@ TEST_F(TreeTestBase, avlInstance)
 TEST_F(TreeTestBase, splayInstance)
 {
     std::ostringstream result{};
-    ASSERT_NO_THROW(result = tree::Tree::splay());
+    ASSERT_NO_THROW(result = sut.splay());
     ASSERT_FALSE(result.str().empty());
 }
 } // namespace tst_ds

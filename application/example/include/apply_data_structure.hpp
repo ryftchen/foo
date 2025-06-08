@@ -48,12 +48,12 @@ struct Meta
         return os;
     }
 };
-//! @brief Linear instances.
-class Linear
+//! @brief Showcase for linear instances.
+class Showcase
 {
 public:
-    //! @brief Destroy the Linear object.
-    virtual ~Linear() = default;
+    //! @brief Destroy the Showcase object.
+    virtual ~Showcase() = default;
 
     // NOLINTBEGIN(google-build-using-namespace)
     //! @brief Linked list.
@@ -107,7 +107,7 @@ public:
         process << " -> NULL\n";
         destroyDll(&dll);
 
-        return std::ostringstream(process.str());
+        return std::ostringstream{process.str()};
     }
     //! @brief Stack.
     //! @return procedure output
@@ -152,7 +152,7 @@ public:
         process << "] BOTTOM\n";
         destroyStack(&stacks);
 
-        return std::ostringstream(process.str());
+        return std::ostringstream{process.str()};
     }
     //! @brief Queue.
     //! @return procedure output
@@ -197,7 +197,7 @@ public:
         process << "] REAR\n";
         destroyQueue(&queues);
 
-        return std::ostringstream(process.str());
+        return std::ostringstream{process.str()};
     }
     // NOLINTEND(google-build-using-namespace)
 };
@@ -225,12 +225,12 @@ namespace tree
 //! @brief The version used to apply.
 const char* const version = date_structure::tree::version();
 
-//! @brief Tree instances.
-class Tree
+//! @brief Showcase for tree instances.
+class Showcase
 {
 public:
-    //! @brief Destroy the Tree object.
-    virtual ~Tree() = default;
+    //! @brief Destroy the Showcase object.
+    virtual ~Showcase() = default;
 
     // NOLINTBEGIN(google-build-using-namespace)
     //! @brief Binary search.
@@ -277,7 +277,7 @@ public:
 
         destroyBSTree(root);
 
-        return std::ostringstream(process.str());
+        return std::ostringstream{process.str()};
     }
     //! @brief Adelson-Velsky-Landis.
     //! @return procedure output
@@ -326,7 +326,7 @@ public:
 
         destroyAVLTree(root);
 
-        return std::ostringstream(process.str());
+        return std::ostringstream{process.str()};
     }
     //! @brief Splay.
     //! @return procedure output
@@ -379,7 +379,7 @@ public:
 
         destroySplayTree(root);
 
-        return std::ostringstream(process.str());
+        return std::ostringstream{process.str()};
     }
     // NOLINTEND(google-build-using-namespace)
 };

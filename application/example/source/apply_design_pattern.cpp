@@ -83,122 +83,122 @@ static void showResult(const BehavioralInstance instance, const std::string_view
 void BehavioralPattern::chainOfResponsibilityInstance()
 try
 {
-    const auto output = Behavioral().chainOfResponsibility();
+    const auto output = Showcase().chainOfResponsibility();
     showResult(BehavioralInstance::chainOfResponsibility, output.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
 }
 
 void BehavioralPattern::commandInstance()
 try
 {
-    const auto output = Behavioral().command();
+    const auto output = Showcase().command();
     showResult(BehavioralInstance::command, output.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
 }
 
 void BehavioralPattern::interpreterInstance()
 try
 {
-    const auto output = Behavioral().interpreter();
+    const auto output = Showcase().interpreter();
     showResult(BehavioralInstance::interpreter, output.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
 }
 
 void BehavioralPattern::iteratorInstance()
 try
 {
-    const auto output = Behavioral().iterator();
+    const auto output = Showcase().iterator();
     showResult(BehavioralInstance::iterator, output.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
 }
 
 void BehavioralPattern::mediatorInstance()
 try
 {
-    const auto output = Behavioral().mediator();
+    const auto output = Showcase().mediator();
     showResult(BehavioralInstance::mediator, output.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
 }
 
 void BehavioralPattern::mementoInstance()
 try
 {
-    const auto output = Behavioral().memento();
+    const auto output = Showcase().memento();
     showResult(BehavioralInstance::memento, output.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
 }
 
 void BehavioralPattern::observerInstance()
 try
 {
-    const auto output = Behavioral().observer();
+    const auto output = Showcase().observer();
     showResult(BehavioralInstance::observer, output.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
 }
 
 void BehavioralPattern::stateInstance()
 try
 {
-    const auto output = Behavioral().state();
+    const auto output = Showcase().state();
     showResult(BehavioralInstance::state, output.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
 }
 
 void BehavioralPattern::strategyInstance()
 try
 {
-    const auto output = Behavioral().strategy();
+    const auto output = Showcase().strategy();
     showResult(BehavioralInstance::strategy, output.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
 }
 
 void BehavioralPattern::templateMethodInstance()
 try
 {
-    const auto output = Behavioral().templateMethod();
+    const auto output = Showcase().templateMethod();
     showResult(BehavioralInstance::templateMethod, output.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
 }
 
 void BehavioralPattern::visitorInstance()
 try
 {
-    const auto output = Behavioral().visitor();
+    const auto output = Showcase().visitor();
     showResult(BehavioralInstance::visitor, output.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
 }
 } // namespace behavioral
 //! @brief To apply behavioral-related instances.
@@ -286,56 +286,56 @@ static void showResult(const CreationalInstance instance, const std::string_view
 void CreationalPattern::abstractFactoryInstance()
 try
 {
-    const auto output = Creational().abstractFactory();
+    const auto output = Showcase().abstractFactory();
     showResult(CreationalInstance::abstractFactory, output.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
 }
 
 void CreationalPattern::builderInstance()
 try
 {
-    const auto output = Creational().builder();
+    const auto output = Showcase().builder();
     showResult(CreationalInstance::builder, output.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
 }
 
 void CreationalPattern::factoryMethodInstance()
 try
 {
-    const auto output = Creational().factoryMethod();
+    const auto output = Showcase().factoryMethod();
     showResult(CreationalInstance::factoryMethod, output.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
 }
 
 void CreationalPattern::prototypeInstance()
 try
 {
-    const auto output = Creational().prototype();
+    const auto output = Showcase().prototype();
     showResult(CreationalInstance::prototype, output.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
 }
 
 void CreationalPattern::singletonInstance()
 try
 {
-    const auto output = Creational().singleton();
+    const auto output = Showcase().singleton();
     showResult(CreationalInstance::singleton, output.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
 }
 } // namespace creational
 //! @brief To apply creational-related instances.
@@ -405,78 +405,78 @@ static void showResult(const StructuralInstance instance, const std::string_view
 void StructuralPattern::adapterInstance()
 try
 {
-    const auto output = Structural().adapter();
+    const auto output = Showcase().adapter();
     showResult(StructuralInstance::adapter, output.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
 }
 
 void StructuralPattern::bridgeInstance()
 try
 {
-    const auto output = Structural().bridge();
+    const auto output = Showcase().bridge();
     showResult(StructuralInstance::bridge, output.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
 }
 
 void StructuralPattern::compositeInstance()
 try
 {
-    const auto output = Structural().composite();
+    const auto output = Showcase().composite();
     showResult(StructuralInstance::composite, output.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
 }
 
 void StructuralPattern::decoratorInstance()
 try
 {
-    const auto output = Structural().decorator();
+    const auto output = Showcase().decorator();
     showResult(StructuralInstance::decorator, output.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
 }
 
 void StructuralPattern::facadeInstance()
 try
 {
-    const auto output = Structural().facade();
+    const auto output = Showcase().facade();
     showResult(StructuralInstance::facade, output.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
 }
 
 void StructuralPattern::flyweightInstance()
 try
 {
-    const auto output = Structural().flyweight();
+    const auto output = Showcase().flyweight();
     showResult(StructuralInstance::flyweight, output.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
 }
 
 void StructuralPattern::proxyInstance()
 try
 {
-    const auto output = Structural().proxy();
+    const auto output = Showcase().proxy();
     showResult(StructuralInstance::proxy, output.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
 }
 } // namespace structural
 //! @brief To apply structural-related instances.
