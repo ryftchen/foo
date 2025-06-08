@@ -65,25 +65,25 @@ protected:
 };
 std::shared_ptr<arithmetic::InputBuilder> ArithmeticTestBase::fixture = {};
 
-//! @brief Test for the addition method in the solution of arithmetic.
+//! @brief Test for the addition method in the calculation of arithmetic.
 TEST_F(ArithmeticTestBase, additionMethod)
 {
     ASSERT_EQ(expRes1, sut.addition(fixture->getIntegers().first, fixture->getIntegers().second));
 }
 
-//! @brief Test for the subtraction method in the solution of arithmetic.
+//! @brief Test for the subtraction method in the calculation of arithmetic.
 TEST_F(ArithmeticTestBase, subtractionMethod)
 {
     ASSERT_EQ(expRes2, sut.subtraction(fixture->getIntegers().first, fixture->getIntegers().second));
 }
 
-//! @brief Test for the multiplication method in the solution of arithmetic.
+//! @brief Test for the multiplication method in the calculation of arithmetic.
 TEST_F(ArithmeticTestBase, multiplicationMethod)
 {
     ASSERT_EQ(expRes3, sut.multiplication(fixture->getIntegers().first, fixture->getIntegers().second));
 }
 
-//! @brief Test for the division method in the solution of arithmetic.
+//! @brief Test for the division method in the calculation of arithmetic.
 TEST_F(ArithmeticTestBase, divisionMethod)
 {
     ASSERT_EQ(expRes4, sut.division(fixture->getIntegers().first, fixture->getIntegers().second));
@@ -125,13 +125,13 @@ protected:
 };
 std::shared_ptr<divisor::InputBuilder> DivisorTestBase::fixture = {};
 
-//! @brief Test for the Euclidean method in the solution of divisor.
+//! @brief Test for the Euclidean method in the calculation of divisor.
 TEST_F(DivisorTestBase, euclideanMethod)
 {
     ASSERT_EQ(expRes, sut.euclidean(fixture->getIntegers().first, fixture->getIntegers().second));
 }
 
-//! @brief Test for the Stein method in the solution of divisor.
+//! @brief Test for the Stein method in the calculation of divisor.
 TEST_F(DivisorTestBase, steinMethod)
 {
     ASSERT_EQ(expRes, sut.stein(fixture->getIntegers().first, fixture->getIntegers().second));
@@ -183,7 +183,7 @@ protected:
 };
 std::shared_ptr<integral::InputBuilder> IntegralTestBase::fixture = {};
 
-//! @brief Test for the trapezoidal method in the solution of integral.
+//! @brief Test for the trapezoidal method in the calculation of integral.
 TEST_F(IntegralTestBase, trapezoidalMethod)
 {
     const auto result = (*sut<numeric::integral::Trapezoidal>())(
@@ -192,7 +192,7 @@ TEST_F(IntegralTestBase, trapezoidalMethod)
     EXPECT_LT(result, expRes + error);
 }
 
-//! @brief Test for the adaptive Simpson's 1/3 method in the solution of integral.
+//! @brief Test for the adaptive Simpson's 1/3 method in the calculation of integral.
 TEST_F(IntegralTestBase, adaptiveSimpsonMethod)
 {
     const auto result = (*sut<numeric::integral::Simpson>())(
@@ -201,7 +201,7 @@ TEST_F(IntegralTestBase, adaptiveSimpsonMethod)
     EXPECT_LT(result, expRes + error);
 }
 
-//! @brief Test for the Romberg method in the solution of integral.
+//! @brief Test for the Romberg method in the calculation of integral.
 TEST_F(IntegralTestBase, rombergMethod)
 {
     const auto result = (*sut<numeric::integral::Romberg>())(
@@ -210,7 +210,7 @@ TEST_F(IntegralTestBase, rombergMethod)
     EXPECT_LT(result, expRes + error);
 }
 
-//! @brief Test for the Gauss-Legendre's 5-points method in the solution of integral.
+//! @brief Test for the Gauss-Legendre's 5-points method in the calculation of integral.
 TEST_F(IntegralTestBase, gaussLegendreMethod)
 {
     const auto result = (*sut<numeric::integral::Gauss>())(
@@ -219,7 +219,7 @@ TEST_F(IntegralTestBase, gaussLegendreMethod)
     EXPECT_LT(result, expRes + error);
 }
 
-//! @brief Test for the Monte-Carlo method in the solution of integral.
+//! @brief Test for the Monte-Carlo method in the calculation of integral.
 TEST_F(IntegralTestBase, monteCarloMethod)
 {
     const auto result = (*sut<numeric::integral::MonteCarlo>())(
@@ -278,13 +278,13 @@ protected:
 };
 std::shared_ptr<prime::InputBuilder> PrimeTestBase::fixture = {};
 
-//! @brief Test for the Eratosthenes method in the solution of prime.
+//! @brief Test for the Eratosthenes method in the calculation of prime.
 TEST_F(PrimeTestBase, eratosthenesMethod)
 {
     ASSERT_EQ(expRes(), sut.eratosthenes(fixture->getMaxPositiveInteger()));
 }
 
-//! @brief Test for the Euler method in the solution of prime.
+//! @brief Test for the Euler method in the calculation of prime.
 TEST_F(PrimeTestBase, eulerMethod)
 {
     ASSERT_EQ(expRes(), sut.euler(fixture->getMaxPositiveInteger()));

@@ -83,34 +83,34 @@ static void showResult(const LinearInstance instance, const std::string_view res
 void LinearStructure::linkedListInstance()
 try
 {
-    const auto output = Linear().linkedList();
+    const auto output = Showcase().linkedList();
     showResult(LinearInstance::linkedList, output.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
 }
 
 void LinearStructure::stackInstance()
 try
 {
-    const auto output = Linear().stack();
+    const auto output = Showcase().stack();
     showResult(LinearInstance::stack, output.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
 }
 
 void LinearStructure::queueInstance()
 try
 {
-    const auto output = Linear().queue();
+    const auto output = Showcase().queue();
     showResult(LinearInstance::queue, output.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
 }
 } // namespace linear
 //! @brief To apply linear-related instances.
@@ -174,34 +174,34 @@ static void showResult(const TreeInstance instance, const std::string_view resul
 void TreeStructure::bsInstance()
 try
 {
-    const auto output = Tree().bs();
+    const auto output = Showcase().bs();
     showResult(TreeInstance::binarySearch, output.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
 }
 
 void TreeStructure::avlInstance()
 try
 {
-    const auto output = Tree().avl();
+    const auto output = Showcase().avl();
     showResult(TreeInstance::adelsonVelskyLandis, output.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
 }
 
 void TreeStructure::splayInstance()
 try
 {
-    const auto output = Tree().splay();
+    const auto output = Showcase().splay();
     showResult(TreeInstance::splay, output.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
 }
 } // namespace tree
 //! @brief To apply tree-related instances.

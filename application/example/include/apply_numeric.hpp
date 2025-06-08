@@ -40,12 +40,12 @@ constexpr std::int32_t integerA = 46340;
 constexpr std::int32_t integerB = -46340;
 } // namespace input
 
-//! @brief Solution of arithmetic.
-class ArithmeticSolution
+//! @brief Calculation of arithmetic.
+class ArithmeticCalculation
 {
 public:
-    //! @brief Destroy the ArithmeticSolution object.
-    virtual ~ArithmeticSolution() = default;
+    //! @brief Destroy the ArithmeticCalculation object.
+    virtual ~ArithmeticCalculation() = default;
 
     //! @brief The addition method.
     //! @param augend - augend of addition
@@ -112,12 +112,12 @@ constexpr std::int32_t integerA = 2 * 2 * 3 * 3 * 5 * 5 * 7 * 7;
 constexpr std::int32_t integerB = 2 * 3 * 5 * 7 * 11 * 13 * 17;
 } // namespace input
 
-//! @brief Solution of divisor.
-class DivisorSolution
+//! @brief Calculation of divisor.
+class DivisorCalculation
 {
 public:
-    //! @brief Destroy the DivisorSolution object.
-    virtual ~DivisorSolution() = default;
+    //! @brief Destroy the DivisorCalculation object.
+    virtual ~DivisorCalculation() = default;
 
     //! @brief The Euclidean method.
     //! @param a - first integer
@@ -256,12 +256,12 @@ public:
 };
 } // namespace input
 
-//! @brief Solution of integral.
-class IntegralSolution
+//! @brief Calculation of integral.
+class IntegralCalculation
 {
 public:
-    //! @brief Destroy the IntegralSolution object.
-    virtual ~IntegralSolution() = default;
+    //! @brief Destroy the IntegralCalculation object.
+    virtual ~IntegralCalculation() = default;
 
     //! @brief The trapezoidal method.
     //! @param expr - target expression
@@ -341,12 +341,12 @@ namespace input
 constexpr std::uint32_t maxPositiveInteger = 997;
 } // namespace input
 
-//! @brief Solution of prime.
-class PrimeSolution
+//! @brief Calculation of prime.
+class PrimeCalculation
 {
 public:
-    //! @brief Destroy the PrimeSolution object.
-    virtual ~PrimeSolution() = default;
+    //! @brief Destroy the PrimeCalculation object.
+    virtual ~PrimeCalculation() = default;
 
     //! @brief The Eratosthenes method.
     //! @param max - maximum positive integer

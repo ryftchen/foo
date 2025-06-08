@@ -22,12 +22,12 @@ namespace behavioral
 //! @brief The version used to apply.
 const char* const version = design_pattern::behavioral::version();
 
-//! @brief Behavioral instances.
-class Behavioral
+//! @brief Showcase for behavioral instances.
+class Showcase
 {
 public:
-    //! @brief Destroy the Behavioral object.
-    virtual ~Behavioral() = default;
+    //! @brief Destroy the Showcase object.
+    virtual ~Showcase() = default;
 
     // NOLINTBEGIN(google-build-using-namespace)
     //! @brief Chain of responsibility.
@@ -263,12 +263,12 @@ namespace creational
 //! @brief The version used to apply.
 const char* const version = design_pattern::creational::version();
 
-//! @brief Creational instances.
-class Creational
+//! @brief Showcase for creational instances.
+class Showcase
 {
 public:
-    //! @brief Destroy the Creational object.
-    virtual ~Creational() = default;
+    //! @brief Destroy the Showcase object.
+    virtual ~Showcase() = default;
 
     // NOLINTBEGIN(google-build-using-namespace)
     //! @brief Abstract factory.
@@ -399,12 +399,12 @@ namespace structural
 //! @brief The version used to apply.
 const char* const version = design_pattern::structural::version();
 
-//! @brief Structural instances.
-class Structural
+//! @brief Showcase for structural instances.
+class Showcase
 {
 public:
-    //! @brief Destroy the Structural object.
-    virtual ~Structural() = default;
+    //! @brief Destroy the Showcase object.
+    virtual ~Showcase() = default;
 
     // NOLINTBEGIN(google-build-using-namespace)
     //! @brief Adapter.
