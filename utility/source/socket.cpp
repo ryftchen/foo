@@ -130,6 +130,7 @@ void Socket::launchAsyncTask(Func&& func, Args&&... args)
 
 int TCPSocket::toSend(const char* const bytes, const std::size_t length)
 {
+    const SockGuard lock(*this);
     return ::send(sock, bytes, length, 0);
 }
 
@@ -163,8 +164,7 @@ void TCPSocket::toConnect(const std::string_view ip, const std::uint16_t port)
     sockAddr.sin_family = AF_INET;
     sockAddr.sin_port = ::htons(port);
     sockAddr.sin_addr.s_addr = static_cast<std::uint32_t>(sockAddr.sin_addr.s_addr);
-    if (const SockGuard lock(*this);
-        ::connect(sock, reinterpret_cast<const ::sockaddr*>(&sockAddr), sizeof(::sockaddr_in)) == -1)
+    if (::connect(sock, reinterpret_cast<const ::sockaddr*>(&sockAddr), sizeof(::sockaddr_in)) == -1)
     {
         throw std::runtime_error{"Failed to connect to the socket, errno: " + errnoString() + '.'};
     }
@@ -203,9 +203,8 @@ void TCPSocket::toRecv(const std::shared_ptr<TCPSocket> socket) // NOLINT(perfor
             continue;
         }
 
-        if (pollFDs.at(0).revents & POLLIN)
+        if (int msgLen = 0; pollFDs.at(0).revents & POLLIN)
         {
-            int msgLen = 0;
             if (const SockGuard lock(*socket); true)
             {
                 msgLen = ::recv(socket->sock, tempBuffer, bufferSize, 0);
@@ -232,6 +231,7 @@ void TCPSocket::toRecv(const std::shared_ptr<TCPSocket> socket) // NOLINT(perfor
 
 TCPServer::TCPServer() : Socket(Type::tcp)
 {
+    const SockGuard lock(*this);
     int opt1 = 1, opt2 = 0;
     ::setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &opt1, sizeof(opt1));
     ::setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, &opt2, sizeof(opt2));
@@ -246,7 +246,8 @@ void TCPServer::toBind(const std::string_view ip, const std::uint16_t port)
 
     sockAddr.sin_family = AF_INET;
     sockAddr.sin_port = ::htons(port);
-    if (::bind(sock, reinterpret_cast<const ::sockaddr*>(&sockAddr), sizeof(sockAddr)) == -1)
+    if (const SockGuard lock(*this);
+        ::bind(sock, reinterpret_cast<const ::sockaddr*>(&sockAddr), sizeof(sockAddr)) == -1)
     {
         throw std::runtime_error{"Failed to bind the socket, errno: " + errnoString() + '.'};
     }
@@ -259,7 +260,8 @@ void TCPServer::toBind(const std::uint16_t port)
 
 void TCPServer::toListen()
 {
-    if (constexpr int retryTimes = 10; ::listen(sock, retryTimes) == -1)
+    constexpr int retryTimes = 10;
+    if (const SockGuard lock(*this); ::listen(sock, retryTimes) == -1)
     {
         throw std::runtime_error{"Server could not listen on the socket, errno: " + errnoString() + '.'};
     }
@@ -308,7 +310,6 @@ void TCPServer::toAccept(const std::shared_ptr<TCPServer> server) // NOLINT(perf
             {
                 return;
             }
-
             throw std::runtime_error{"Error while accepting a new connection, errno: " + errnoString() + '.'};
         }
 
@@ -350,10 +351,14 @@ int UDPSocket::toSendTo(
 
     addr.sin_port = ::htons(port);
     addr.sin_family = AF_INET;
-    const int sent = ::sendto(sock, bytes, length, 0, reinterpret_cast<::sockaddr*>(&addr), sizeof(addr));
-    if (-1 == sent)
+    int sent = 0;
+    if (const SockGuard lock(*this); true)
     {
-        throw std::runtime_error{"Unable to send message to address, errno: " + errnoString() + '.'};
+        sent = ::sendto(sock, bytes, length, 0, reinterpret_cast<const ::sockaddr*>(&addr), sizeof(addr));
+        if (-1 == sent)
+        {
+            throw std::runtime_error{"Unable to send message to address, errno: " + errnoString() + '.'};
+        }
     }
 
     return sent;
@@ -366,6 +371,7 @@ int UDPSocket::toSendTo(const std::string_view message, const std::string_view i
 
 int UDPSocket::toSend(const char* const bytes, const std::size_t length)
 {
+    const SockGuard lock(*this);
     return ::send(sock, bytes, length, 0);
 }
 
@@ -399,8 +405,7 @@ void UDPSocket::toConnect(const std::string_view ip, const std::uint16_t port)
     sockAddr.sin_family = AF_INET;
     sockAddr.sin_port = ::htons(port);
     sockAddr.sin_addr.s_addr = static_cast<std::uint32_t>(sockAddr.sin_addr.s_addr);
-    if (const SockGuard lock(*this);
-        ::connect(sock, reinterpret_cast<const ::sockaddr*>(&sockAddr), sizeof(::sockaddr_in)) == -1)
+    if (::connect(sock, reinterpret_cast<const ::sockaddr*>(&sockAddr), sizeof(::sockaddr_in)) == -1)
     {
         throw std::runtime_error{"Failed to connect to the socket, errno: " + errnoString() + '.'};
     }
@@ -450,9 +455,8 @@ void UDPSocket::toRecv(const std::shared_ptr<UDPSocket> socket) // NOLINT(perfor
             continue;
         }
 
-        if (pollFDs.at(0).revents & POLLIN)
+        if (int msgLen = 0; pollFDs.at(0).revents & POLLIN)
         {
-            int msgLen = 0;
             if (const SockGuard lock(*socket); true)
             {
                 msgLen = ::recv(socket->sock, tempBuffer, bufferSize, 0);
@@ -498,9 +502,8 @@ void UDPSocket::toRecvFrom(const std::shared_ptr<UDPSocket> socket) // NOLINT(pe
             continue;
         }
 
-        if (pollFDs.at(0).revents & POLLIN)
+        if (int msgLen = 0; pollFDs.at(0).revents & POLLIN)
         {
-            int msgLen = 0;
             if (const SockGuard lock(*socket); true)
             {
                 msgLen = ::recvfrom(
@@ -534,7 +537,8 @@ void UDPServer::toBind(const std::string_view ip, const std::uint16_t port)
 
     sockAddr.sin_family = AF_INET;
     sockAddr.sin_port = ::htons(port);
-    if (::bind(sock, reinterpret_cast<const ::sockaddr*>(&sockAddr), sizeof(sockAddr)) == -1)
+    if (const SockGuard lock(*this);
+        ::bind(sock, reinterpret_cast<const ::sockaddr*>(&sockAddr), sizeof(sockAddr)) == -1)
     {
         throw std::runtime_error{"Failed to bind the socket, errno: " + errnoString() + '.'};
     }
