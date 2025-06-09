@@ -826,12 +826,8 @@ function perform_lint_option()
             fi
         fi
         shell_command "rm -rf ./${tst_comp_db} && mv ./${tst_comp_db}.bak ./${tst_comp_db}"
-        if [[ -f ${clang_tidy_log} ]]; then
-            shell_command "cat ${clang_tidy_log} | sed 's/\x1b\[[0-9;]*m//g' \
+        shell_command "(test -f ${clang_tidy_log} && cat ${clang_tidy_log}) | sed 's/\x1b\[[0-9;]*m//g' \
 | python3 -m clang_tidy_converter --project_root ./ html >${clang_tidy_output_path}/index.html"
-        else
-            die "Could not find log file in clang-tidy output."
-        fi
     fi
 
     if [[ ${ARGS[lint]} = true ]] || [[ ${ARGS[lint]} = "sh" ]]; then
