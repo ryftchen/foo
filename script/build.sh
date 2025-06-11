@@ -3,9 +3,9 @@
 declare -rA FOLDER=([proj]="foo" [app]="application" [util]="utility" [algo]="algorithm" [ds]="data_structure"
     [dp]="design_pattern" [num]="numeric" [tst]="test" [scr]="script" [doc]="document" [dock]="docker" [bld]="build"
     [rep]="report" [cac]=".cache")
-declare -r COMP_DB="compile_commands.json"
+declare -r COMPILE_DB="compile_commands.json"
 declare -r BASH_RC=".bashrc"
-declare -r GIT_CHANGED="git status --porcelain -z | cut -z -c4- | tr '\0' '\n'"
+declare -r GIT_CHANGE_CMD="git status --porcelain -z | cut -z -c4- | tr '\0' '\n'"
 declare -rA ESC_COLOR=([exec]="\033[0;33;40m\033[1m\033[49m" [succ]="\033[0;32;40m\033[1m\033[49m"
     [fail]="\033[0;31;40m\033[1m\033[49m" [time]="\033[0;39;40m\033[1m\033[2m\033[49m")
 declare -r ESC_OFF="\033[0m"
@@ -465,19 +465,19 @@ function perform_container_option()
         return
     fi
 
-    if command -v docker >/dev/null 2>&1; then
-        echo "Please confirm whether continue constructing the docker container. (y or n)"
-        local input
-        input=$(wait_until_get_input)
-        if echo "${input}" | grep -iq '^y'; then
-            echo "Yes"
-        else
-            echo "No"
-
-            exit "${STATUS}"
-        fi
-    else
+    if ! command -v docker >/dev/null 2>&1; then
         die "No docker program. Please install it."
+    fi
+
+    echo "Please confirm whether continue constructing the docker container. (y or n)"
+    local input
+    input=$(wait_until_get_input)
+    if echo "${input}" | grep -iq '^y'; then
+        echo "Yes"
+    else
+        echo "No"
+
+        exit "${STATUS}"
     fi
 
     if ! docker ps -a --format "{{lower .Image}} {{lower .Names}}" \
@@ -496,34 +496,37 @@ function perform_archive_option()
         return
     fi
 
-    if command -v rustc >/dev/null 2>&1 && command -v cargo >/dev/null 2>&1; then
-        shell_command "cargo build --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
-        local html_file="index.html" css_file="main.css"
-        if [[ ! -f ./${FOLDER[doc]}/${html_file} ]] || [[ ! -f ./${FOLDER[doc]}/${css_file} ]]; then
-            shell_command "cp ./${FOLDER[doc]}/template/archive_${html_file} ./${FOLDER[doc]}/${html_file} \
+    if ! command -v rustc >/dev/null 2>&1 || ! command -v cargo >/dev/null 2>&1; then
+        die "No rustc or cargo program. Please install it."
+    fi
+
+    shell_command "cargo build --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
+    local html_file="index.html" css_file="main.css"
+    if [[ ! -f ./${FOLDER[doc]}/${html_file} ]] || [[ ! -f ./${FOLDER[doc]}/${css_file} ]]; then
+        shell_command "cp ./${FOLDER[doc]}/template/archive_${html_file} ./${FOLDER[doc]}/${html_file} \
 && cp ./${FOLDER[doc]}/template/archive_${css_file} ./${FOLDER[doc]}/${css_file}"
-            shell_command "sed -i 's/unamed list/document list/g' ./${FOLDER[doc]}/index.html"
-            local item_rows
-            item_rows=$(
-                cat <<EOF
+        shell_command "sed -i 's/unamed list/document list/g' ./${FOLDER[doc]}/index.html"
+        local item_rows
+        item_rows=$(
+            cat <<EOF
 <li><a href="./doxygen/index.html" target="_blank" rel="noopener">doxygen document</a></li>
 <li><a href="./browser/index.html" target="_blank" rel="noopener">codebrowser document</a></li>
 EOF
-            )
-            local item_row_single_line
-            item_row_single_line=$(echo "${item_rows}" | tr -d '\n')
-            shell_command "sed -i 's|<li>unamed item</li>|${item_row_single_line}|g' ./${FOLDER[doc]}/index.html"
+        )
+        local item_row_single_line
+        item_row_single_line=$(echo "${item_rows}" | tr -d '\n')
+        shell_command "sed -i 's|<li>unamed item</li>|${item_row_single_line}|g' ./${FOLDER[doc]}/index.html"
+    fi
+    if [[ ! -f ./${FOLDER[rep]}/${html_file} ]] || [[ ! -f ./${FOLDER[rep]}/${css_file} ]]; then
+        if [[ ! -d ./${FOLDER[rep]} ]]; then
+            shell_command "mkdir ./${FOLDER[rep]}"
         fi
-        if [[ ! -f ./${FOLDER[rep]}/${html_file} ]] || [[ ! -f ./${FOLDER[rep]}/${css_file} ]]; then
-            if [[ ! -d ./${FOLDER[rep]} ]]; then
-                shell_command "mkdir ./${FOLDER[rep]}"
-            fi
-            shell_command "cp ./${FOLDER[doc]}/template/archive_${html_file} ./${FOLDER[rep]}/${html_file} \
+        shell_command "cp ./${FOLDER[doc]}/template/archive_${html_file} ./${FOLDER[rep]}/${html_file} \
 && cp ./${FOLDER[doc]}/template/archive_${css_file} ./${FOLDER[rep]}/${css_file}"
-            shell_command "sed -i 's/unamed list/report list/g' ./${FOLDER[rep]}/index.html"
-            local item_rows
-            item_rows=$(
-                cat <<EOF
+        shell_command "sed -i 's/unamed list/report list/g' ./${FOLDER[rep]}/index.html"
+        local item_rows
+        item_rows=$(
+            cat <<EOF
 <li>dca</li>
 <ul>
 <li><a href="./dca/chk_cov/index.html" target="_blank" rel="noopener">llvm-cov report</a></li>
@@ -535,45 +538,42 @@ EOF
 <li><a href="./sca/query/index.html" target="_blank" rel="noopener">codeql report</a></li>
 </ul>
 EOF
-            )
-            local item_row_single_line
-            item_row_single_line=$(echo "${item_rows}" | tr -d '\n')
-            shell_command "sed -i 's|<li>unamed item</li>|${item_row_single_line}|g' ./${FOLDER[rep]}/index.html"
-        fi
+        )
+        local item_row_single_line
+        item_row_single_line=$(echo "${item_rows}" | tr -d '\n')
+        shell_command "sed -i 's|<li>unamed item</li>|${item_row_single_line}|g' ./${FOLDER[rep]}/index.html"
+    fi
 
-        local host_addr="127.0.0.1" start_port=61503
-        local server_daemon="./${FOLDER[doc]}/server/target/release/${FOLDER[proj]}_arc --root-dir ./${FOLDER[doc]} \
+    local host_addr="127.0.0.1" start_port=61503
+    local server_daemon="./${FOLDER[doc]}/server/target/release/${FOLDER[proj]}_arc --root-dir ./${FOLDER[doc]} \
 --root-dir ./${FOLDER[rep]} --host ${host_addr} --port ${start_port}"
-        if ! pgrep -f "${server_daemon}" >/dev/null 2>&1; then
-            echo "Please confirm whether continue starting the archive server. (y or n)"
-            local input
-            input=$(wait_until_get_input)
-            if echo "${input}" | grep -iq '^y'; then
-                echo "Yes"
-                shell_command "${server_daemon} & sleep 0.5s"
-            else
-                echo "No"
-            fi
+    if ! pgrep -f "${server_daemon}" >/dev/null 2>&1; then
+        echo "Please confirm whether continue starting the archive server. (y or n)"
+        local input
+        input=$(wait_until_get_input)
+        if echo "${input}" | grep -iq '^y'; then
+            echo "Yes"
+            shell_command "${server_daemon} & sleep 0.5s"
         else
-            echo "Please confirm whether continue stopping the archive server. (y or n)"
-            local input
-            input=$(wait_until_get_input)
-            if echo "${input}" | grep -iq '^y'; then
-                echo "Yes"
-                local port1=${start_port}
-                if netstat -tuln | grep ":${port1} " >/dev/null 2>&1; then
-                    shell_command "fuser -k ${port1}/tcp || true"
-                fi
-                local port2=$((port1 + 1))
-                if netstat -tuln | grep ":${port2} " >/dev/null 2>&1; then
-                    shell_command "fuser -k ${port2}/tcp || true"
-                fi
-            else
-                echo "No"
-            fi
+            echo "No"
         fi
     else
-        die "No rustc or cargo program. Please install it."
+        echo "Please confirm whether continue stopping the archive server. (y or n)"
+        local input
+        input=$(wait_until_get_input)
+        if echo "${input}" | grep -iq '^y'; then
+            echo "Yes"
+            local port1=${start_port}
+            if netstat -tuln | grep ":${port1} " >/dev/null 2>&1; then
+                shell_command "fuser -k ${port1}/tcp || true"
+            fi
+            local port2=$((port1 + 1))
+            if netstat -tuln | grep ":${port2} " >/dev/null 2>&1; then
+                shell_command "fuser -k ${port2}/tcp || true"
+            fi
+        else
+            echo "No"
+        fi
     fi
 
     exit "${STATUS}"
@@ -590,7 +590,7 @@ function try_perform_single_choice_options()
     perform_archive_option
 }
 
-function check_extra_dependencies()
+function check_potential_dependencies()
 {
     if [[ ${ARGS[hook]} != false ]]; then
         if ! command -v pre-commit >/dev/null 2>&1; then
@@ -626,7 +626,7 @@ function check_extra_dependencies()
 or clippy program. Please install it."
         fi
         if [[ ${DEV_OPT[pch]} = true ]] || [[ ${DEV_OPT[unity]} = true ]]; then
-            die "Due to the unconventional ${COMP_DB} file, the --lint option cannot run if the FOO_BLD_PCH or \
+            die "Due to the unconventional ${COMPILE_DB} file, the --lint option cannot run if the FOO_BLD_PCH or \
 FOO_BLD_UNITY is turned on."
         fi
     fi
@@ -649,7 +649,7 @@ FOO_BLD_UNITY is turned on."
             die "No codebrowser_generator or codebrowser_indexgenerator program. Please install it."
         fi
         if [[ ${DEV_OPT[pch]} = true ]] || [[ ${DEV_OPT[unity]} = true ]]; then
-            die "Due to the unconventional ${COMP_DB} file, the --browser option cannot run if the FOO_BLD_PCH or \
+            die "Due to the unconventional ${COMPILE_DB} file, the --browser option cannot run if the FOO_BLD_PCH or \
 FOO_BLD_UNITY is turned on."
         fi
     fi
@@ -696,7 +696,7 @@ function perform_format_option()
 ./${FOLDER[num]} ./${FOLDER[tst]} -name '*.cpp' -o -name '*.hpp' -o -name '*.tpp' | grep -v '/${FOLDER[bld]}/' \
 | xargs clang-format-16 --Werror -i --style=file:./.clang-format --verbose"
         else
-            local format_changed_cpp="${GIT_CHANGED} | grep -E '\.(cpp|hpp|tpp)$'"
+            local format_changed_cpp="${GIT_CHANGE_CMD} | grep -E '\.(cpp|hpp|tpp)$'"
             if eval "${format_changed_cpp}" >/dev/null; then
                 shell_command "${format_changed_cpp} \
 | xargs clang-format-16 --Werror -i --style=file:./.clang-format --verbose"
@@ -708,7 +708,7 @@ function perform_format_option()
         if [[ ${ARGS[quick]} = false ]]; then
             shell_command "shfmt -l -w ./${FOLDER[scr]}/*.sh"
         else
-            local format_changed_sh="${GIT_CHANGED} | grep -E '\.sh$'"
+            local format_changed_sh="${GIT_CHANGE_CMD} | grep -E '\.sh$'"
             if eval "${format_changed_sh}" >/dev/null; then
                 shell_command "${format_changed_sh} | xargs shfmt -l -w"
             fi
@@ -719,7 +719,7 @@ function perform_format_option()
         if [[ ${ARGS[quick]} = false ]]; then
             shell_command "black --config ./.toml ./${FOLDER[scr]}/*.py"
         else
-            local format_changed_py="${GIT_CHANGED} | grep -E '\.py$'"
+            local format_changed_py="${GIT_CHANGE_CMD} | grep -E '\.py$'"
             if eval "${format_changed_py}" >/dev/null; then
                 shell_command "${format_changed_py} | xargs black --config ./.toml"
             fi
@@ -732,7 +732,7 @@ function perform_format_option()
         if [[ ${ARGS[quick]} = false ]]; then
             shell_command "cargo fmt --all --verbose --manifest-path ${crate_path}"
         else
-            local format_changed_rs="${GIT_CHANGED} | grep -E '\.rs$'"
+            local format_changed_rs="${GIT_CHANGE_CMD} | grep -E '\.rs$'"
             if eval "${format_changed_rs}" >/dev/null; then
                 local split_crate="${format_changed_rs} | xargs -I {} dirname {} | while read path; \
 do while [[ ! -f \${path}/${cargo_toml} ]] && [[ \${path} != \"/\" ]]; do path=\$(dirname \"\${path}\"); done; \
@@ -753,12 +753,12 @@ function perform_lint_option()
     fi
 
     if [[ ${ARGS[lint]} = true ]] || [[ ${ARGS[lint]} = "cpp" ]]; then
-        local app_comp_db=${FOLDER[bld]}/${COMP_DB}
+        local app_comp_db=${FOLDER[bld]}/${COMPILE_DB}
         if [[ ! -f ./${app_comp_db} ]]; then
-            die "There is no ${COMP_DB} file in the ${FOLDER[bld]} folder. Please generate it."
+            die "There is no ${COMPILE_DB} file in the ${FOLDER[bld]} folder. Please generate it."
         fi
-        shell_command "compdb -p ./${FOLDER[bld]} list >./${COMP_DB} && mv ./${app_comp_db} ./${app_comp_db}.bak \
-&& mv ./${COMP_DB} ./${FOLDER[bld]}"
+        shell_command "compdb -p ./${FOLDER[bld]} list >./${COMPILE_DB} && mv ./${app_comp_db} ./${app_comp_db}.bak \
+&& mv ./${COMPILE_DB} ./${FOLDER[bld]}"
         local exist_file_extention=false
         while true; do
             local line
@@ -784,7 +784,7 @@ function perform_lint_option()
 ./${FOLDER[ds]} ./${FOLDER[dp]} ./${FOLDER[num]} -name '*.cpp' -o -name '*.hpp' \
 | xargs run-clang-tidy-16 -config-file=./.clang-tidy -p ./${FOLDER[bld]} -quiet | tee -a ${clang_tidy_log}"
         else
-            local lint_changed_cpp_for_app="${GIT_CHANGED} \
+            local lint_changed_cpp_for_app="${GIT_CHANGE_CMD} \
 | grep -E '^(${FOLDER[app]}|${FOLDER[util]}|${FOLDER[algo]}|${FOLDER[ds]}|${FOLDER[dp]}|${FOLDER[num]})/.*\.(cpp|hpp)$'"
             if eval "${lint_changed_cpp_for_app}" >/dev/null; then
                 shell_command "set -o pipefail && ${lint_changed_cpp_for_app} \
@@ -797,7 +797,7 @@ function perform_lint_option()
 ./${FOLDER[ds]} ./${FOLDER[dp]} ./${FOLDER[num]} -name '*.tpp' \
 | xargs clang-tidy-16 --config-file=./.clang-tidy -p ./${FOLDER[bld]} --quiet | tee -a ${clang_tidy_log}"
             else
-                local lint_changed_cpp_for_app_ext="${GIT_CHANGED} \
+                local lint_changed_cpp_for_app_ext="${GIT_CHANGE_CMD} \
 | grep -E '^(${FOLDER[app]}|${FOLDER[util]}|${FOLDER[algo]}|${FOLDER[ds]}|${FOLDER[dp]}|${FOLDER[num]})/.*\.tpp$'"
                 if eval "${lint_changed_cpp_for_app_ext}" >/dev/null; then
                     shell_command "set -o pipefail && ${lint_changed_cpp_for_app_ext} \
@@ -807,18 +807,18 @@ function perform_lint_option()
         fi
         shell_command "rm -rf ./${app_comp_db} && mv ./${app_comp_db}.bak ./${app_comp_db}"
 
-        local tst_comp_db=${FOLDER[tst]}/${FOLDER[bld]}/${COMP_DB}
+        local tst_comp_db=${FOLDER[tst]}/${FOLDER[bld]}/${COMPILE_DB}
         if [[ ! -f ./${tst_comp_db} ]]; then
-            die "There is no ${COMP_DB} file in the ${FOLDER[tst]}/${FOLDER[bld]} folder. Please generate it."
+            die "There is no ${COMPILE_DB} file in the ${FOLDER[tst]}/${FOLDER[bld]} folder. Please generate it."
         fi
-        shell_command "compdb -p ./${FOLDER[tst]}/${FOLDER[bld]} list >./${COMP_DB} \
-&& mv ./${tst_comp_db} ./${tst_comp_db}.bak && mv ./${COMP_DB} ./${FOLDER[tst]}/${FOLDER[bld]}"
+        shell_command "compdb -p ./${FOLDER[tst]}/${FOLDER[bld]} list >./${COMPILE_DB} \
+&& mv ./${tst_comp_db} ./${tst_comp_db}.bak && mv ./${COMPILE_DB} ./${FOLDER[tst]}/${FOLDER[bld]}"
         if [[ ${ARGS[quick]} = false ]]; then
             shell_command "set -o pipefail && find ./${FOLDER[tst]} -name '*.cpp' \
 | xargs run-clang-tidy-16 -config-file=./.clang-tidy -p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet \
 | tee -a ${clang_tidy_log}"
         else
-            local lint_changed_cpp_for_tst="${GIT_CHANGED} | grep -E '^${FOLDER[tst]}/.*\.cpp$'"
+            local lint_changed_cpp_for_tst="${GIT_CHANGE_CMD} | grep -E '^${FOLDER[tst]}/.*\.cpp$'"
             if eval "${lint_changed_cpp_for_tst}" >/dev/null; then
                 shell_command "set -o pipefail && ${lint_changed_cpp_for_tst} \
 | xargs run-clang-tidy-16 -config-file=./.clang-tidy -p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet \
@@ -834,7 +834,7 @@ function perform_lint_option()
         if [[ ${ARGS[quick]} = false ]]; then
             shell_command "shellcheck -a ./${FOLDER[scr]}/*.sh"
         else
-            local lint_changed_sh="${GIT_CHANGED} | grep -E '\.sh$'"
+            local lint_changed_sh="${GIT_CHANGE_CMD} | grep -E '\.sh$'"
             if eval "${lint_changed_sh}" >/dev/null; then
                 shell_command "${lint_changed_sh} | xargs shellcheck -a"
             fi
@@ -845,7 +845,7 @@ function perform_lint_option()
         if [[ ${ARGS[quick]} = false ]]; then
             shell_command "pylint --rcfile=./.pylintrc ./${FOLDER[scr]}/*.py"
         else
-            local lint_changed_py="${GIT_CHANGED} | grep -E '\.py$'"
+            local lint_changed_py="${GIT_CHANGE_CMD} | grep -E '\.py$'"
             if eval "${lint_changed_py}" >/dev/null; then
                 shell_command "${lint_changed_py} | xargs pylint --rcfile=./.pylintrc"
             fi
@@ -862,7 +862,7 @@ function perform_lint_option()
         if [[ ${ARGS[quick]} = false ]]; then
             shell_command "cargo clippy --manifest-path ${crate_path}""${build_type}"
         else
-            local lint_changed_rs="${GIT_CHANGED} | grep -E '\.rs$'"
+            local lint_changed_rs="${GIT_CHANGE_CMD} | grep -E '\.rs$'"
             if eval "${lint_changed_rs}" >/dev/null; then
                 local split_crate="${lint_changed_rs} | xargs -I {} dirname {} | while read path; \
 do while [[ ! -f \${path}/${cargo_toml} ]] && [[ \${path} != \"/\" ]]; do path=\$(dirname \"\${path}\"); done; \
@@ -992,8 +992,8 @@ function package_for_browser()
 {
     local commit_id=$1
 
-    if [[ ! -f ./${FOLDER[bld]}/${COMP_DB} ]]; then
-        die "There is no ${COMP_DB} file in the ${FOLDER[bld]} folder. Please generate it."
+    if [[ ! -f ./${FOLDER[bld]}/${COMPILE_DB} ]]; then
+        die "There is no ${COMPILE_DB} file in the ${FOLDER[bld]} folder. Please generate it."
     fi
     local browser_folder="browser"
     local tar_file="${FOLDER[proj]}_${browser_folder}_${commit_id}.tar.bz2"
@@ -1003,9 +1003,9 @@ function package_for_browser()
     shell_command "cp -rf /usr/local/share/woboq/data ./${FOLDER[doc]}/${browser_folder}/"
     shell_command "sed -i \"s|'><img src='|'><img src='https://web.archive.org/web/20220224111803/|g\" \
 ./${FOLDER[doc]}/${browser_folder}/data/codebrowser.js"
-    shell_command "codebrowser_generator -color -a -b ./${FOLDER[bld]}/${COMP_DB} \
+    shell_command "codebrowser_generator -color -a -b ./${FOLDER[bld]}/${COMPILE_DB} \
 -o ./${FOLDER[doc]}/${browser_folder} -p ${FOLDER[proj]}:.:${commit_id} -d ./data"
-    shell_command "codebrowser_generator -color -a -b ./${FOLDER[tst]}/${FOLDER[bld]}/${COMP_DB} \
+    shell_command "codebrowser_generator -color -a -b ./${FOLDER[tst]}/${FOLDER[bld]}/${COMPILE_DB} \
 -o ./${FOLDER[doc]}/${browser_folder} -p ${FOLDER[proj]}:.:${commit_id} -d ./data"
     shell_command "codebrowser_indexgenerator ./${FOLDER[doc]}/${browser_folder} -d ./data"
 
@@ -1048,7 +1048,7 @@ function perform_browser_option()
 
 function try_perform_multiple_choice_options()
 {
-    check_extra_dependencies
+    check_potential_dependencies
 
     perform_hook_option
     perform_spell_option
@@ -1252,11 +1252,11 @@ function build_native_if_needed()
 
 function clean_up_temporary_files()
 {
-    local app_comp_db=${FOLDER[bld]}/${COMP_DB}
+    local app_comp_db=${FOLDER[bld]}/${COMPILE_DB}
     if [[ -f ./${app_comp_db}.bak ]]; then
         shell_command "rm -rf ./${app_comp_db} && mv ./${app_comp_db}.bak ./${app_comp_db}"
     fi
-    local tst_comp_db=${FOLDER[tst]}/${FOLDER[bld]}/${COMP_DB}
+    local tst_comp_db=${FOLDER[tst]}/${FOLDER[bld]}/${COMPILE_DB}
     if [[ -f ./${tst_comp_db}.bak ]]; then
         shell_command "rm -rf ./${tst_comp_db} && mv ./${tst_comp_db}.bak ./${tst_comp_db}"
     fi
