@@ -489,7 +489,7 @@ public:
 
     //! @brief Get the state of observer.
     //! @return state of observer
-    virtual int getState() = 0;
+    [[nodiscard]] virtual int getState() const = 0;
     //! @brief Update the state of observer by subject.
     //! @param subject - target subject
     virtual void update(const std::weak_ptr<Subject>& subject) = 0;
@@ -512,7 +512,7 @@ public:
     void notify();
     //! @brief Get the state of subject.
     //! @return state of subject
-    virtual int getState() = 0;
+    virtual int getState() const = 0;
     //! @brief Set the state of subject.
     //! @param s - target state of subject
     virtual void setState(const int s) = 0;
@@ -534,7 +534,7 @@ public:
 
     //! @brief Get the state of observer.
     //! @return state of observer
-    int getState() override;
+    [[nodiscard]] int getState() const override;
     //! @brief Update the state of observer by subject.
     //! @param subject - target subject
     void update(const std::weak_ptr<Subject>& subject) override;
@@ -555,7 +555,7 @@ public:
 
     //! @brief Get the state of subject.
     //! @return state of subject
-    int getState() override;
+    int getState() const override;
     //! @brief Set the state of subject.
     //! @param s - target state of subject
     void setState(const int s) override;

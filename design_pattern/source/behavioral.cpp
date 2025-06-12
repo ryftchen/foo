@@ -368,7 +368,7 @@ void Subject::notify()
         });
 }
 
-int ConcreteObserver::getState()
+int ConcreteObserver::getState() const
 {
     return observerState;
 }
@@ -382,7 +382,7 @@ void ConcreteObserver::update(const std::weak_ptr<Subject>& subject)
     }
 }
 
-int ConcreteSubject::getState()
+int ConcreteSubject::getState() const
 {
     return subjectState;
 }

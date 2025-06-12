@@ -186,7 +186,7 @@ public:
     //! @param argName - target argument name
     //! @return argument iterator between start and end
     template <typename Iterator>
-    Iterator consume(Iterator start, Iterator end, const std::string_view argName = {});
+    Iterator consume(const Iterator start, Iterator end, const std::string_view argName = {});
     //! @brief Validate all arguments.
     void validate() const;
     //! @brief Get the inline usage.
@@ -446,16 +446,16 @@ auto Trait::action(Func&& callable, Args&&... boundArgs)
     }
     else
     {
-        actions.emplace<ActionType>(
-            [func = std::forward<Func>(callable), tup = std::make_tuple(std::forward<Args>(boundArgs)...)](
-                const std::string& opt) mutable { return applyScopedOne(func, tup, opt); });
+        actions.emplace<ActionType>([func = std::forward<Func>(callable),
+                                     tup = std::make_tuple(std::forward<Args>(boundArgs)...)](const std::string& opt)
+                                    { return applyScopedOne(func, tup, opt); });
     }
 
     return *this;
 }
 
 template <typename Iterator>
-Iterator Trait::consume(Iterator start, Iterator end, const std::string_view argName)
+Iterator Trait::consume(const Iterator start, Iterator end, const std::string_view argName)
 {
     if (!isRepeatable && isUsed)
     {
@@ -800,7 +800,7 @@ private:
     //! @param argName - target argument name
     //! @return argument iterator between current and end
     template <typename Iterator>
-    Iterator processRegArgument(Iterator current, Iterator end, const std::string_view argName) const;
+    Iterator processRegArgument(Iterator current, const Iterator end, const std::string_view argName) const;
     //! @brief Get the length of the longest argument.
     //! @return length of the longest argument
     std::size_t getLengthOfLongestArgument() const;
@@ -869,7 +869,7 @@ inline auto Argument::isSubCommandUsed(const Argument& subParser) const
 }
 
 template <typename Iterator>
-Iterator Argument::processRegArgument(Iterator current, Iterator end, const std::string_view argName) const
+Iterator Argument::processRegArgument(Iterator current, const Iterator end, const std::string_view argName) const
 {
     if (const auto argMapIter = argumentMap.find(argName); argumentMap.cend() != argMapIter)
     {
