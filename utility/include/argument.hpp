@@ -373,6 +373,35 @@ private:
     //! @return container after converting type
     template <typename T>
     static T anyCastContainer(const std::vector<std::any>& operand);
+    //! @brief Wrap for applying actions.
+    //! @tparam Iterator - type of argument iterator
+    template <typename Iterator>
+    struct ApplyAction
+    {
+        //! @brief The first argument iterator.
+        const Iterator first{};
+        //! @brief The last argument iterator.
+        const Iterator last{};
+        //! @brief The Trait instance.
+        Trait& self;
+
+        //! @brief The operator (()) overloading of ApplyAction struct.
+        //! @param func - function which has valued return
+        void operator()(const ValuedAction& func) const
+        {
+            std::transform(first, last, std::back_inserter(self.values), func);
+        }
+        //! @brief The operator (()) overloading of ApplyAction struct.
+        //! @param func - function which has void return
+        void operator()(const VoidAction& func) const
+        {
+            std::for_each(first, last, func);
+            if (!self.defaultVal.has_value() && !self.optionalAsValue)
+            {
+                self.values.resize(static_cast<std::size_t>(std::distance(first, last)));
+            }
+        }
+    };
 
 protected:
     friend std::ostream& operator<<(std::ostream& os, const Trait& tra);
@@ -486,27 +515,7 @@ Iterator Trait::consume(const Iterator start, Iterator end, const std::string_vi
                 throw std::runtime_error{"Too few arguments."};
             }
         }
-
-        struct ApplyAction
-        {
-            const Iterator first{};
-            const Iterator last{};
-            Trait& self;
-
-            void operator()(const ValuedAction& func) const
-            {
-                std::transform(first, last, std::back_inserter(self.values), func);
-            }
-            void operator()(const VoidAction& func) const
-            {
-                std::for_each(first, last, func);
-                if (!self.defaultVal.has_value() && !self.optionalAsValue)
-                {
-                    self.values.resize(static_cast<std::size_t>(std::distance(first, last)));
-                }
-            }
-        };
-        std::visit(ApplyAction{start, end, *this}, actions);
+        std::visit(ApplyAction<Iterator>{start, end, *this}, actions);
 
         return end;
     }
@@ -752,9 +761,9 @@ private:
     //! @brief Version number.
     std::string versionNumber{};
 
-    //! @brief Alias for iterator in all Trait instance.
+    //! @brief Alias for iterator in all Trait instances.
     using TraitIter = std::list<Trait>::iterator;
-    //! @brief Alias for iterator in all Argument instance.
+    //! @brief Alias for iterator in all Argument instances.
     using ArgumentIter = std::list<std::reference_wrapper<Argument>>::iterator;
     //! @brief Description text.
     std::string descrText{};
