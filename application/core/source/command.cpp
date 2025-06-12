@@ -257,7 +257,7 @@ void Command::initializeNativeCLI()
                 if (std::all_of(
                         input.cbegin(), input.cend(), [l = std::locale{}](const auto c) { return std::isspace(c, l); }))
                 {
-                    throw std::runtime_error{"Invalid console command."};
+                    throw std::runtime_error{"Invalid " + std::string{toString(Category::console)} + " command."};
                 }
                 return input;
             })
