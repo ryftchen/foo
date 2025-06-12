@@ -11,7 +11,7 @@
 #include <lz4.h>
 #include <array>
 #include <cstring>
-#include <stdexcept>
+#include <iomanip>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // _PRECOMPILED_HEADER
@@ -139,5 +139,25 @@ void decompressData(std::vector<char>& cache)
     }
     decompressed.resize(decompressedSize);
     cache = std::move(decompressed);
+}
+
+//! @brief Convert a byte buffer to a space-separated hexadecimal string.
+//! @param buffer - byte buffer
+//! @param length - buffer length
+//! @return hexadecimal string representation of the buffer
+std::string toHexString(const char* const buffer, const int length)
+{
+    std::ostringstream body{};
+    for (int i = 0; i < length; ++i)
+    {
+        body << "0x" << std::setfill('0') << std::setw(2) << std::hex
+             << static_cast<int>(static_cast<unsigned char>(buffer[i]));
+        if ((i + 1) != length)
+        {
+            body << ' ';
+        }
+    }
+
+    return body.str();
 }
 } // namespace application::data

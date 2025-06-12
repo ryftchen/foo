@@ -48,7 +48,6 @@
 #include <regex>
 #include <source_location>
 #include <span>
-#include <stdexcept>
 #include <string>
 #include <syncstream>
 #include <thread>

@@ -9,6 +9,7 @@
 #ifndef _PRECOMPILED_HEADER
 #include <netinet/in.h>
 #include <cstdint>
+#include <string>
 #include <vector>
 #else
 #include "application/pch/precompiled_header.hpp"
@@ -105,5 +106,6 @@ extern void encryptMessage(char* buffer, const int length);
 extern void decryptMessage(char* buffer, const int length);
 extern void compressData(std::vector<char>& cache);
 extern void decompressData(std::vector<char>& cache);
+extern std::string toHexString(const char* const buffer, const int length);
 } // namespace data
 } // namespace application
