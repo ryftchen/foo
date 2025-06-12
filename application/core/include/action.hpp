@@ -78,104 +78,104 @@ private:
 //! @tparam T - type of target object
 template <typename T>
 using TypeInfo = utility::reflection::TypeInfo<T>;
-//! @brief Sub-cli type selector.
+//! @brief The registration selector used to store the type.
 //! @tparam T - type of sub-cli's category
 template <typename T>
-struct SubCLITypeSelector;
-//! @brief Sub-cli type selector (algorithm-related registrations).
+struct RegSelector;
+//! @brief The registration selector used to store the type (algorithm-related registrations).
 template <>
-struct SubCLITypeSelector<reg_algo::MatchMethod>
+struct RegSelector<reg_algo::MatchMethod>
 {
     //! @brief Alias for the algorithm-related type.
     using Type = reg_algo::ApplyAlgorithm;
 };
-//! @brief Sub-cli type selector (algorithm-related registrations).
+//! @brief The registration selector used to store the type (algorithm-related registrations).
 template <>
-struct SubCLITypeSelector<reg_algo::NotationMethod>
+struct RegSelector<reg_algo::NotationMethod>
 {
     //! @brief Alias for the algorithm-related type.
     using Type = reg_algo::ApplyAlgorithm;
 };
-//! @brief Sub-cli type selector (algorithm-related registrations).
+//! @brief The registration selector used to store the type (algorithm-related registrations).
 template <>
-struct SubCLITypeSelector<reg_algo::OptimalMethod>
+struct RegSelector<reg_algo::OptimalMethod>
 {
     //! @brief Alias for the algorithm-related type.
     using Type = reg_algo::ApplyAlgorithm;
 };
-//! @brief Sub-cli type selector (algorithm-related registrations).
+//! @brief The registration selector used to store the type (algorithm-related registrations).
 template <>
-struct SubCLITypeSelector<reg_algo::SearchMethod>
+struct RegSelector<reg_algo::SearchMethod>
 {
     //! @brief Alias for the algorithm-related type.
     using Type = reg_algo::ApplyAlgorithm;
 };
-//! @brief Sub-cli type selector (algorithm-related registrations).
+//! @brief The registration selector used to store the type (algorithm-related registrations).
 template <>
-struct SubCLITypeSelector<reg_algo::SortMethod>
+struct RegSelector<reg_algo::SortMethod>
 {
     //! @brief Alias for the algorithm-related type.
     using Type = reg_algo::ApplyAlgorithm;
 };
-//! @brief Sub-cli type selector (design-pattern-related registrations).
+//! @brief The registration selector used to store the type (design-pattern-related registrations).
 template <>
-struct SubCLITypeSelector<reg_dp::BehavioralInstance>
+struct RegSelector<reg_dp::BehavioralInstance>
 {
     //! @brief Alias for the design-pattern-related type.
     using Type = reg_dp::ApplyDesignPattern;
 };
-//! @brief Sub-cli type selector (design-pattern-related registrations).
+//! @brief The registration selector used to store the type (design-pattern-related registrations).
 template <>
-struct SubCLITypeSelector<reg_dp::CreationalInstance>
+struct RegSelector<reg_dp::CreationalInstance>
 {
     //! @brief Alias for the design-pattern-related type.
     using Type = reg_dp::ApplyDesignPattern;
 };
-//! @brief Sub-cli type selector (design-pattern-related registrations).
+//! @brief The registration selector used to store the type (design-pattern-related registrations).
 template <>
-struct SubCLITypeSelector<reg_dp::StructuralInstance>
+struct RegSelector<reg_dp::StructuralInstance>
 {
     //! @brief Alias for the design-pattern-related type.
     using Type = reg_dp::ApplyDesignPattern;
 };
-//! @brief Sub-cli type selector (data-structure-related registrations).
+//! @brief The registration selector used to store the type (data-structure-related registrations).
 template <>
-struct SubCLITypeSelector<reg_ds::LinearInstance>
+struct RegSelector<reg_ds::LinearInstance>
 {
     //! @brief Alias for the data-structure-related type.
     using Type = reg_ds::ApplyDataStructure;
 };
-//! @brief Sub-cli type selector (data-structure-related registrations).
+//! @brief The registration selector used to store the type (data-structure-related registrations).
 template <>
-struct SubCLITypeSelector<reg_ds::TreeInstance>
+struct RegSelector<reg_ds::TreeInstance>
 {
     //! @brief Alias for the data-structure-related type.
     using Type = reg_ds::ApplyDataStructure;
 };
-//! @brief Sub-cli type selector (numeric-related registrations).
+//! @brief The registration selector used to store the type (numeric-related registrations).
 template <>
-struct SubCLITypeSelector<reg_num::ArithmeticMethod>
+struct RegSelector<reg_num::ArithmeticMethod>
 {
     //! @brief Alias for the numeric-related type.
     using Type = reg_num::ApplyNumeric;
 };
-//! @brief Sub-cli type selector (numeric-related registrations).
+//! @brief The registration selector used to store the type (numeric-related registrations).
 template <>
-struct SubCLITypeSelector<reg_num::DivisorMethod>
+struct RegSelector<reg_num::DivisorMethod>
 {
     //! @brief Alias for the numeric-related type.
     using Type = reg_num::ApplyNumeric;
 };
-//! @brief Sub-cli type selector (numeric-related registrations).
+//! @brief The registration selector used to store the type (numeric-related registrations).
 template <>
-struct SubCLITypeSelector<reg_num::IntegralMethod>
+struct RegSelector<reg_num::IntegralMethod>
 {
     //! @brief Alias for the numeric-related type.
     using Type = reg_num::ApplyNumeric;
 };
-//! @brief Sub-cli type selector (numeric-related registrations).
+//! @brief The registration selector used to store the type (numeric-related registrations).
 template <>
-struct SubCLITypeSelector<reg_num::PrimeMethod>
+struct RegSelector<reg_num::PrimeMethod>
 {
     //! @brief Alias for the numeric-related type.
     using Type = reg_num::ApplyNumeric;
@@ -202,7 +202,7 @@ inline consteval std::string_view descr()
 template <typename T>
 inline consteval std::string_view alias()
 {
-    return TypeInfo<typename SubCLITypeSelector<T>::Type>::fields.find(REFLECTION_STR(TypeInfo<T>::name))
+    return TypeInfo<typename RegSelector<T>::Type>::fields.find(REFLECTION_STR(TypeInfo<T>::name))
         .attrs.find(REFLECTION_STR("alias"))
         .value;
 }
