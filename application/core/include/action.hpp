@@ -78,6 +78,108 @@ private:
 //! @tparam T - type of target object
 template <typename T>
 using TypeInfo = utility::reflection::TypeInfo<T>;
+//! @brief Sub-cli type selector.
+//! @tparam T - type of sub-cli's category
+template <typename T>
+struct SubCLITypeSelector;
+//! @brief Sub-cli type selector (algorithm-related registrations).
+template <>
+struct SubCLITypeSelector<reg_algo::MatchMethod>
+{
+    //! @brief Alias for the algorithm-related type.
+    using Type = reg_algo::ApplyAlgorithm;
+};
+//! @brief Sub-cli type selector (algorithm-related registrations).
+template <>
+struct SubCLITypeSelector<reg_algo::NotationMethod>
+{
+    //! @brief Alias for the algorithm-related type.
+    using Type = reg_algo::ApplyAlgorithm;
+};
+//! @brief Sub-cli type selector (algorithm-related registrations).
+template <>
+struct SubCLITypeSelector<reg_algo::OptimalMethod>
+{
+    //! @brief Alias for the algorithm-related type.
+    using Type = reg_algo::ApplyAlgorithm;
+};
+//! @brief Sub-cli type selector (algorithm-related registrations).
+template <>
+struct SubCLITypeSelector<reg_algo::SearchMethod>
+{
+    //! @brief Alias for the algorithm-related type.
+    using Type = reg_algo::ApplyAlgorithm;
+};
+//! @brief Sub-cli type selector (algorithm-related registrations).
+template <>
+struct SubCLITypeSelector<reg_algo::SortMethod>
+{
+    //! @brief Alias for the algorithm-related type.
+    using Type = reg_algo::ApplyAlgorithm;
+};
+//! @brief Sub-cli type selector (design-pattern-related registrations).
+template <>
+struct SubCLITypeSelector<reg_dp::BehavioralInstance>
+{
+    //! @brief Alias for the design-pattern-related type.
+    using Type = reg_dp::ApplyDesignPattern;
+};
+//! @brief Sub-cli type selector (design-pattern-related registrations).
+template <>
+struct SubCLITypeSelector<reg_dp::CreationalInstance>
+{
+    //! @brief Alias for the design-pattern-related type.
+    using Type = reg_dp::ApplyDesignPattern;
+};
+//! @brief Sub-cli type selector (design-pattern-related registrations).
+template <>
+struct SubCLITypeSelector<reg_dp::StructuralInstance>
+{
+    //! @brief Alias for the design-pattern-related type.
+    using Type = reg_dp::ApplyDesignPattern;
+};
+//! @brief Sub-cli type selector (data-structure-related registrations).
+template <>
+struct SubCLITypeSelector<reg_ds::LinearInstance>
+{
+    //! @brief Alias for the data-structure-related type.
+    using Type = reg_ds::ApplyDataStructure;
+};
+//! @brief Sub-cli type selector (data-structure-related registrations).
+template <>
+struct SubCLITypeSelector<reg_ds::TreeInstance>
+{
+    //! @brief Alias for the data-structure-related type.
+    using Type = reg_ds::ApplyDataStructure;
+};
+//! @brief Sub-cli type selector (numeric-related registrations).
+template <>
+struct SubCLITypeSelector<reg_num::ArithmeticMethod>
+{
+    //! @brief Alias for the numeric-related type.
+    using Type = reg_num::ApplyNumeric;
+};
+//! @brief Sub-cli type selector (numeric-related registrations).
+template <>
+struct SubCLITypeSelector<reg_num::DivisorMethod>
+{
+    //! @brief Alias for the numeric-related type.
+    using Type = reg_num::ApplyNumeric;
+};
+//! @brief Sub-cli type selector (numeric-related registrations).
+template <>
+struct SubCLITypeSelector<reg_num::IntegralMethod>
+{
+    //! @brief Alias for the numeric-related type.
+    using Type = reg_num::ApplyNumeric;
+};
+//! @brief Sub-cli type selector (numeric-related registrations).
+template <>
+struct SubCLITypeSelector<reg_num::PrimeMethod>
+{
+    //! @brief Alias for the numeric-related type.
+    using Type = reg_num::ApplyNumeric;
+};
 //! @brief Get the name field directly for sub-cli related registrations.
 //! @tparam T - type of sub-cli or sub-cli's category
 //! @return name field
@@ -98,47 +200,9 @@ inline consteval std::string_view descr()
 //! @tparam T - type of sub-cli's category
 //! @return alias attribute
 template <typename T>
-requires std::is_same_v<T, reg_algo::MatchMethod> || std::is_same_v<T, reg_algo::NotationMethod>
-    || std::is_same_v<T, reg_algo::OptimalMethod> || std::is_same_v<T, reg_algo::SearchMethod>
-    || std::is_same_v<T, reg_algo::SortMethod>
 inline consteval std::string_view alias()
 {
-    return TypeInfo<reg_algo::ApplyAlgorithm>::fields.find(REFLECTION_STR(TypeInfo<T>::name))
-        .attrs.find(REFLECTION_STR("alias"))
-        .value;
-}
-//! @brief Get the alias attribute directly for sub-cli related registrations.
-//! @tparam T - type of sub-cli's category
-//! @return alias attribute
-template <typename T>
-requires std::is_same_v<T, reg_dp::BehavioralInstance> || std::is_same_v<T, reg_dp::CreationalInstance>
-    || std::is_same_v<T, reg_dp::StructuralInstance>
-inline consteval std::string_view alias()
-{
-    return TypeInfo<reg_dp::ApplyDesignPattern>::fields.find(REFLECTION_STR(TypeInfo<T>::name))
-        .attrs.find(REFLECTION_STR("alias"))
-        .value;
-}
-//! @brief Get the alias attribute directly for sub-cli related registrations.
-//! @tparam T - type of sub-cli's category
-//! @return alias attribute
-template <typename T>
-requires std::is_same_v<T, reg_ds::LinearInstance> || std::is_same_v<T, reg_ds::TreeInstance>
-inline consteval std::string_view alias()
-{
-    return TypeInfo<reg_ds::ApplyDataStructure>::fields.find(REFLECTION_STR(TypeInfo<T>::name))
-        .attrs.find(REFLECTION_STR("alias"))
-        .value;
-}
-//! @brief Get the alias attribute directly for sub-cli related registrations.
-//! @tparam T - type of sub-cli's category
-//! @return alias attribute
-template <typename T>
-requires std::is_same_v<T, reg_num::ArithmeticMethod> || std::is_same_v<T, reg_num::DivisorMethod>
-    || std::is_same_v<T, reg_num::IntegralMethod> || std::is_same_v<T, reg_num::PrimeMethod>
-inline consteval std::string_view alias()
-{
-    return TypeInfo<reg_num::ApplyNumeric>::fields.find(REFLECTION_STR(TypeInfo<T>::name))
+    return TypeInfo<typename SubCLITypeSelector<T>::Type>::fields.find(REFLECTION_STR(TypeInfo<T>::name))
         .attrs.find(REFLECTION_STR("alias"))
         .value;
 }
