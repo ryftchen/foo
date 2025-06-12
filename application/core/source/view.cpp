@@ -365,17 +365,7 @@ bool View::Access::onParsing(char* buffer, const int length) const
     tlv::TLVValue value{};
     if (tlv::decodeTLV(buffer, length, value) < 0)
     {
-        std::ostringstream body{};
-        for (int i = 0; i < length; ++i)
-        {
-            body << "0x" << std::setfill('0') << std::setw(2) << std::hex
-                 << static_cast<int>(static_cast<unsigned char>(buffer[i]));
-            if ((i + 1) != length)
-            {
-                body << ' ';
-            }
-        }
-        throw std::runtime_error{"Invalid message content (" + body.str() + ")."};
+        throw std::runtime_error{"Invalid message content (" + data::toHexString(buffer, length) + ")."};
     }
 
     if (std::strlen(value.libDetail) != 0)
@@ -898,13 +888,8 @@ void View::renewServer<utility::socket::TCPServer>()
             try
             {
                 const auto reqPlaintext = utility::common::base64Decode(message);
-                if (reqPlaintext == exitSymbol)
-                {
-                    newSocket->toSend(respBuffer, buildFinTLVPacket(respBuffer));
-                    newSocket->signalExit();
-                    return;
-                }
-                newSocket->toSend(respBuffer, buildResponse(reqPlaintext, respBuffer));
+                (reqPlaintext != exitSymbol) ? newSocket->toSend(respBuffer, buildResponse(reqPlaintext, respBuffer))
+                                             : newSocket->toSend(respBuffer, buildFinTLVPacket(respBuffer));
             }
             catch (const std::exception& err)
             {

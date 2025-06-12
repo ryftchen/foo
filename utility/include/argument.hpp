@@ -515,7 +515,7 @@ Iterator Trait::consume(const Iterator start, Iterator end, const std::string_vi
                 throw std::runtime_error{"Too few arguments."};
             }
         }
-        std::visit(ApplyAction<Iterator>{start, end, *this}, actions);
+        std::visit(ApplyAction{start, end, *this}, actions);
 
         return end;
     }
