@@ -494,19 +494,19 @@ int View::buildAckTLVPacket(char* buf)
     int len = 0;
     if (tlv::encodeTLV(buf, len, tlv::TLVValue{}) < 0)
     {
-        throw std::runtime_error{"Failed to build acknowledge packet."};
+        throw std::runtime_error{"Failed to build acknowledgement packet."};
     }
     data::encryptMessage(buf, len);
 
     return len;
 }
 
-int View::buildTLVPacket4Stop(char* buf)
+int View::buildFinTLVPacket(char* buf)
 {
     int len = 0;
     if (tlv::encodeTLV(buf, len, tlv::TLVValue{.stopTag = true}) < 0)
     {
-        throw std::runtime_error{"Failed to build packet to stop."};
+        throw std::runtime_error{"Failed to build finish packet."};
     }
     data::encryptMessage(buf, len);
 
@@ -900,11 +900,10 @@ void View::renewServer<utility::socket::TCPServer>()
                 const auto reqPlaintext = utility::common::base64Decode(message);
                 if (reqPlaintext == exitSymbol)
                 {
-                    newSocket->toSend(respBuffer, buildTLVPacket4Stop(respBuffer));
+                    newSocket->toSend(respBuffer, buildFinTLVPacket(respBuffer));
                     newSocket->signalExit();
                     return;
                 }
-
                 newSocket->toSend(respBuffer, buildResponse(reqPlaintext, respBuffer));
             }
             catch (const std::exception& err)
@@ -933,13 +932,9 @@ void View::renewServer<utility::socket::UDPServer>()
         try
         {
             const auto reqPlaintext = utility::common::base64Decode(message);
-            if (reqPlaintext == exitSymbol)
-            {
-                udpServer->toSendTo(respBuffer, buildTLVPacket4Stop(respBuffer), ip, port);
-                return;
-            }
-
-            udpServer->toSendTo(respBuffer, buildResponse(reqPlaintext, respBuffer), ip, port);
+            (reqPlaintext != exitSymbol)
+                ? udpServer->toSendTo(respBuffer, buildResponse(reqPlaintext, respBuffer), ip, port)
+                : udpServer->toSendTo(respBuffer, buildFinTLVPacket(respBuffer), ip, port);
         }
         catch (const std::exception& err)
         {

@@ -243,7 +243,7 @@ private:
     //! @brief Build the TLV packet of the response message to stop connection.
     //! @param buf - TLV packet buffer
     //! @return buffer length
-    static int buildTLVPacket4Stop(char* buf);
+    static int buildFinTLVPacket(char* buf);
     //! @brief Build the TLV packet of the response message to get library information.
     //! @param args - container of arguments
     //! @param buf - TLV packet buffer
