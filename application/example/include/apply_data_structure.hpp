@@ -123,15 +123,11 @@ public:
 
         const Meta* val = nullptr;
         Stack stacks = nullptr;
-        createStack(&stacks);
-        std::for_each(
-            nodes.begin(),
-            nodes.end(),
-            [&](auto& node)
-            {
-                stackPush(stacks, &node);
-                process << "push: " << node << '\n';
-            });
+        for (createStack(&stacks); auto& node : nodes)
+        {
+            stackPush(stacks, &node);
+            process << "push: " << node << '\n';
+        }
 
         val = static_cast<Meta*>(stackPop(stacks));
         process << "pop: " << *val << '\n';
@@ -168,15 +164,11 @@ public:
 
         const Meta* val = nullptr;
         Queue queues = nullptr;
-        createQueue(&queues);
-        std::for_each(
-            nodes.begin(),
-            nodes.end(),
-            [&](auto& node)
-            {
-                queuePush(queues, &node);
-                process << "push: " << node << '\n';
-            });
+        for (createQueue(&queues); auto& node : nodes)
+        {
+            queuePush(queues, &node);
+            process << "push: " << node << '\n';
+        }
 
         val = static_cast<Meta*>(queuePop(queues));
         process << "pop: " << *val << '\n';

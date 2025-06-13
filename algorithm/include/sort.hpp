@@ -440,12 +440,12 @@ void Sort<T>::leastSignificantDigit(
         std::fill(countNew.begin(), countNew.end(), 0);
         for (auto bucketIter = bucket.begin(); bucket.end() != bucketIter; ++bucketIter)
         {
-            if (bucketIter->size() == 0)
+            if (bucketIter->empty())
             {
                 continue;
             }
 
-            const std::uint32_t countIdx = bucketIter - bucket.begin();
+            const std::uint32_t countIdx = bucketIter - bucket.cbegin();
             while (countOld[countIdx])
             {
                 const T elem = bucketIter->front();

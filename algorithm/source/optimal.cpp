@@ -439,7 +439,7 @@ void Genetic::crossover(Population& pop)
 {
     std::vector<std::reference_wrapper<Chromosome>> selector(pop.begin(), pop.end());
     std::shuffle(selector.begin(), selector.end(), engine);
-    for (auto chrIter = selector.begin(); (selector.end() != chrIter) && (selector.end() != std::next(chrIter, 1));
+    for (auto chrIter = selector.cbegin(); (selector.cend() != chrIter) && (selector.cend() != std::next(chrIter, 1));
          std::advance(chrIter, 2))
     {
         if (crossPr > probability(engine))
