@@ -131,7 +131,7 @@ std::string Trait::getInlineUsage() const
         out << '[';
     }
     out << longestName;
-    const std::string metavar = !metavarCont.empty() ? metavarCont : "VAR";
+    const auto metavar = metavarCont.empty() ? "VAR" : metavarCont;
     if (argsNumRange.getMax() > 0)
     {
         out << ' ' << metavar;
@@ -154,7 +154,7 @@ std::size_t Trait::getArgumentsLength() const
         names.cbegin(), names.cend(), 0, [](const auto sum, const auto& str) { return sum + str.length(); });
     if (checkIfPositional(names.at(0), prefixChars))
     {
-        return !metavarCont.empty() ? metavarCont.length() : (namesSize + (names.size() - 1));
+        return metavarCont.empty() ? (namesSize + (names.size() - 1)) : metavarCont.length();
     }
 
     std::size_t size = namesSize + 2 * (names.size() - 1);
@@ -169,7 +169,7 @@ std::size_t Trait::getArgumentsLength() const
 void Trait::throwArgsNumRangeValidationException() const
 {
     std::ostringstream out{};
-    out << (!usedName.empty() ? usedName : names.at(0)) << ": " << argsNumRange.getMin();
+    out << (usedName.empty() ? names.at(0) : usedName) << ": " << argsNumRange.getMin();
     if (!argsNumRange.isExact())
     {
         if (argsNumRange.existRightBound())
@@ -248,7 +248,7 @@ std::ostream& operator<<(std::ostream& os, const Trait& tra)
     std::ostringstream out{};
     if (tra.checkIfPositional(tra.names.at(0), tra.prefixChars))
     {
-        out << (!tra.metavarCont.empty() ? tra.metavarCont : join(tra.names.cbegin(), tra.names.cend(), " "));
+        out << (tra.metavarCont.empty() ? join(tra.names.cbegin(), tra.names.cend(), " ") : tra.metavarCont);
     }
     else
     {
@@ -447,7 +447,7 @@ std::string Argument::usage() const
     }
     for (const auto& argument : positionalArgs)
     {
-        out << ' ' << (!argument.metavarCont.empty() ? argument.metavarCont : argument.names.at(0));
+        out << ' ' << (argument.metavarCont.empty() ? argument.names.at(0) : argument.metavarCont);
     }
 
     if (!subParserMap.empty())
