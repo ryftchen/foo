@@ -420,7 +420,6 @@ int View::buildResponse(const std::string_view reqPlaintext, char* respBuffer)
 {
     return std::visit(
         OptionVisitor{
-            [](const OptBase& /*opt*/) { return 0; },
             [&respBuffer](const OptDepend& opt) { return buildTLVPacket4Depend(opt.args, respBuffer); },
             [&respBuffer](const OptExecute& opt) { return buildTLVPacket4Execute(opt.args, respBuffer); },
             [&respBuffer](const OptJournal& opt) { return buildTLVPacket4Journal(opt.args, respBuffer); },
@@ -433,7 +432,8 @@ int View::buildResponse(const std::string_view reqPlaintext, char* respBuffer)
                     dynamic_cast<OptBase*>(optPtr))
                 {
                     throw std::runtime_error{
-                        "Unprocessed option type (detail: " + std::string{typeid(opt).name()} + ")."};
+                        "The option is unprocessed due to unregistered or potential registration failures (typeid: "
+                        + std::string{typeid(opt).name()} + ")."};
                 }
                 return 0;
             }},
@@ -443,21 +443,21 @@ int View::buildResponse(const std::string_view reqPlaintext, char* respBuffer)
 View::OptionType View::extractOption(const std::string_view reqPlaintext)
 {
     auto args = splitString(reqPlaintext);
-    const auto optName = !args.empty() ? args.at(0) : std::string{};
+    const auto optName = args.empty() ? std::string{} : args.at(0);
     switch (utility::common::bkdrHash(optName.c_str()))
     {
         using utility::common::operator""_bkdrHash;
-        case operator""_bkdrHash(OptDepend::name.data()):
+        case operator""_bkdrHash(OptDepend::name):
             return OptDepend{};
-        case operator""_bkdrHash(OptExecute::name.data()):
+        case operator""_bkdrHash(OptExecute::name):
             args.erase(args.cbegin());
             return OptExecute{std::move(args)};
-        case operator""_bkdrHash(OptJournal::name.data()):
+        case operator""_bkdrHash(OptJournal::name):
             return OptJournal{};
-        case operator""_bkdrHash(OptMonitor::name.data()):
+        case operator""_bkdrHash(OptMonitor::name):
             args.erase(args.cbegin());
             return OptMonitor{std::move(args)};
-        case operator""_bkdrHash(OptProfile::name.data()):
+        case operator""_bkdrHash(OptProfile::name):
             return OptProfile{};
         default:
             break;
