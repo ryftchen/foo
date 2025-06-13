@@ -523,7 +523,7 @@ void Argument::parseArgsInternal(const std::vector<std::string>& rawArguments)
 
     const auto ending = arguments.cend();
     auto positionalArgIter = positionalArgs.begin();
-    for (auto iterator = std::next(arguments.begin()); ending != iterator;)
+    for (auto iterator = std::next(arguments.cbegin()); ending != iterator;)
     {
         const auto& currentArg = *iterator;
         if (Trait::checkIfPositional(currentArg, prefixChars))

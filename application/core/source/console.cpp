@@ -259,7 +259,7 @@ char* Console::customCompentry(const char* text, int state)
         optionIterator = regTable.begin();
     }
 
-    while (regTable.end() != optionIterator)
+    while (regTable.cend() != optionIterator)
     {
         const auto& option = optionIterator->first;
         ++optionIterator;
