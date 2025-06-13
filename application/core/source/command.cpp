@@ -986,7 +986,19 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
             interactionLatency();
             return retCode;
         });
-    for (const auto& [name, description] : view::info::viewerSupportedOptions())
+
+    auto supportedOptions = view::info::viewerSupportedOptions();
+    decltype(supportedOptions) validOptions{};
+    for (auto iterator = supportedOptions.cbegin(); supportedOptions.cend() != iterator;)
+    {
+        auto node = supportedOptions.extract(iterator++);
+        auto& key = node.key();
+        key.erase(
+            std::remove_if(key.begin(), key.end(), [l = std::locale{}](const auto c) { return std::isspace(c, l); }),
+            key.cend());
+        validOptions.insert(std::move(node));
+    }
+    for (const auto& [name, description] : validOptions)
     {
         session.registerOption(name, description, asyncReqSender);
     }

@@ -137,41 +137,41 @@ private:
     struct OptDepend : public OptBase
     {
         //! @brief The option name.
-        static constexpr std::string_view name{"depend"};
+        static constexpr char name[]{"depend"};
         //! @brief The option description.
-        static constexpr std::string_view description{"list all associated libraries"};
+        static constexpr char description[]{"list all associated libraries"};
     };
     //! @brief Option attribute for the execute option.
     struct OptExecute : public OptBase
     {
         //! @brief The option name.
-        static constexpr std::string_view name{"execute"};
+        static constexpr char name[]{"execute"};
         //! @brief The option description.
-        static constexpr std::string_view description{"enter bash commands in quotes [inputs: 'CMD']"};
+        static constexpr char description[]{"enter bash commands in quotes [inputs: 'CMD']"};
     };
     //! @brief Option attribute for the journal option.
     struct OptJournal : public OptBase
     {
         //! @brief The option name.
-        static constexpr std::string_view name{"journal"};
+        static constexpr char name[]{"journal"};
         //! @brief The option description.
-        static constexpr std::string_view description{"view the log with highlights"};
+        static constexpr char description[]{"view the log with highlights"};
     };
     //! @brief Option attribute for the monitor option.
     struct OptMonitor : public OptBase
     {
         //! @brief The option name.
-        static constexpr std::string_view name{"monitor"};
+        static constexpr char name[]{"monitor"};
         //! @brief The option description.
-        static constexpr std::string_view description{"query process status and stacks [inputs: NUM]"};
+        static constexpr char description[]{"query process status and stacks [inputs: NUM]"};
     };
     //! @brief Option attribute for the profile option.
     struct OptProfile : public OptBase
     {
         //! @brief The option name.
-        static constexpr std::string_view name{"profile"};
+        static constexpr char name[]{"profile"};
         //! @brief The option description.
-        static constexpr std::string_view description{"display current configuration"};
+        static constexpr char description[]{"display current configuration"};
     };
     //! @brief Option type object's helper type for the visitor.
     //! @tparam Ts - type of visitors
@@ -187,7 +187,7 @@ private:
     //! @brief Alias for the option type.
     using OptionType = std::variant<OptBase, OptDepend, OptExecute, OptJournal, OptMonitor, OptProfile>;
     //! @brief Alias for the map of option name and OptionAttr.
-    using OptionMap = std::map<std::string_view, std::string_view>;
+    using OptionMap = std::map<std::string, std::string>;
     // clang-format off
     //! @brief Mapping table of all viewer options.
     const OptionMap supportedOptions
