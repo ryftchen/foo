@@ -65,7 +65,7 @@ Console::RetCode Console::optionExecutor(const std::string_view option) const
     }
 
     const auto regIter = terminal->regTable.find(inputs.front());
-    if (terminal->regTable.cend() == regIter)
+    if (regIter == terminal->regTable.cend())
     {
         throw std::runtime_error{
             "The console option (" + inputs.front() + ") could not be found. Enter the \"usage\" for help."};
@@ -87,7 +87,7 @@ Console::RetCode Console::fileExecutor(const std::string_view filename) const
     std::ostringstream out{};
     while (std::getline(batch, input))
     {
-        if (input.empty() || ('#' == input.front()))
+        if (input.empty() || (input.front() == '#'))
         {
             continue;
         }
@@ -97,7 +97,7 @@ Console::RetCode Console::fileExecutor(const std::string_view filename) const
         std::cout << out.str() << std::flush;
         out.str("");
         out.clear();
-        if (const auto result = optionExecutor(input); RetCode::success != result)
+        if (const auto result = optionExecutor(input); result != RetCode::success)
         {
             return result;
         }
@@ -117,7 +117,7 @@ Console::RetCode Console::readLine()
         return RetCode::quit;
     }
 
-    if ('\0' != buffer[0])
+    if (buffer[0] != '\0')
     {
         ::add_history(buffer);
     }
@@ -242,7 +242,7 @@ void Console::reserveConsole()
 
 char** Console::customCompleter(const char* text, int start, int /*end*/)
 {
-    return (0 == start) ? ::rl_completion_matches(text, &Console::customCompentry) : nullptr;
+    return (start == 0) ? ::rl_completion_matches(text, &Console::customCompentry) : nullptr;
 }
 
 char* Console::customCompentry(const char* text, int state)
@@ -254,12 +254,12 @@ char* Console::customCompentry(const char* text, int state)
     }
 
     auto& regTable = currentSession->terminal->regTable;
-    if (0 == state)
+    if (state == 0)
     {
         optionIterator = regTable.begin();
     }
 
-    while (regTable.cend() != optionIterator)
+    while (optionIterator != regTable.cend())
     {
         const auto& option = optionIterator->first;
         ++optionIterator;

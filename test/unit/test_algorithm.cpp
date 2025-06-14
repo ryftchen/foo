@@ -293,7 +293,7 @@ private:
         const auto searchKey = fixture->getSearchKey();
         for (std::uint32_t i = 0; i < length; ++i)
         {
-            if (searchKey == orderedArray[i])
+            if (orderedArray[i] == searchKey)
             {
                 expRes.emplace(i);
             }

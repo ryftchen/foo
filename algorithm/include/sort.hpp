@@ -438,7 +438,7 @@ void Sort<T>::leastSignificantDigit(
     {
         countOld = countNew;
         std::fill(countNew.begin(), countNew.end(), 0);
-        for (auto bucketIter = bucket.begin(); bucket.end() != bucketIter; ++bucketIter)
+        for (auto bucketIter = bucket.begin(); bucketIter != bucket.end(); ++bucketIter)
         {
             if (bucketIter->empty())
             {

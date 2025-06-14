@@ -295,7 +295,7 @@ inline consteval std::size_t abbrValue(const T instance)
         {
             if (field.name == toString(instance))
             {
-                static_assert(1 == field.attrs.size);
+                static_assert(field.attrs.size == 1);
                 const auto attr = field.attrs.find(REFLECTION_STR("choice"));
                 static_assert(attr.hasValue);
                 value = utility::common::operator""_bkdrHash(attr.value);

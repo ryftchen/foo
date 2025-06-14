@@ -25,11 +25,11 @@ std::string Notation::prefix(const std::string_view infix)
     std::reverse(preprocess.begin(), preprocess.end());
     for (auto& c : preprocess)
     {
-        if ('(' == c)
+        if (c == '(')
         {
             c = ')';
         }
-        else if (')' == c)
+        else if (c == ')')
         {
             c = '(';
         }
@@ -56,13 +56,13 @@ std::string Notation::infixToPostfix(const std::string_view infix)
         {
             postfix += c;
         }
-        else if ('(' == c)
+        else if (c == '(')
         {
             charStack.push('(');
         }
-        else if (')' == c)
+        else if (c == ')')
         {
-            while ('(' != charStack.top())
+            while (charStack.top() != '(')
             {
                 postfix += charStack.top();
                 charStack.pop();

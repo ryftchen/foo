@@ -43,7 +43,7 @@ std::int32_t Arithmetic::multiplication(const std::int32_t multiplier, const std
 
 std::int32_t Arithmetic::division(const std::int32_t dividend, const std::int32_t divisor)
 {
-    if (0 == divisor)
+    if (divisor == 0)
     {
         return 0;
     }

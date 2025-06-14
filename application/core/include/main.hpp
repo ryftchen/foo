@@ -50,7 +50,7 @@ static void signalHandler(const int sig)
         {
             char* demangle = nullptr;
             int status = -1;
-            if ('_' == info.dli_sname[0])
+            if (info.dli_sname[0] == '_')
             {
                 demangle = ::abi::__cxa_demangle(info.dli_sname, nullptr, nullptr, &status);
             }
@@ -61,7 +61,7 @@ static void signalHandler(const int sig)
                 i,
                 static_cast<int>(2 + sizeof(void*) * 2),
                 callStack[i],
-                (0 == status) ? demangle : (info.dli_sname ? info.dli_sname : symbols[i]),
+                (status == 0) ? demangle : (info.dli_sname ? info.dli_sname : symbols[i]),
                 static_cast<char*>(callStack[i]) - static_cast<char*>(info.dli_saddr));
             std::free(demangle);
         }
@@ -80,7 +80,7 @@ static void signalHandler(const int sig)
     }
     std::free(symbols);
 
-    if (maxFrame == numOfFrame)
+    if (numOfFrame == maxFrame)
     {
         detailedTrace << "\n<TRUNCATED>\n";
     }
@@ -92,7 +92,7 @@ static void signalHandler(const int sig)
         originalTrace.str().c_str(),
         detailedTrace.str().c_str());
 
-    if (SIGINT != signalStatus)
+    if (signalStatus != SIGINT)
     {
         std::signal(sig, SIG_DFL);
         std::raise(sig);

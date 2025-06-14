@@ -55,7 +55,7 @@ std::vector<std::uint32_t> Prime::euler(const std::uint32_t max)
         for (std::uint32_t j = 1; (j <= storage.size()) && ((i * storage[j - 1]) <= max); ++j)
         {
             isPrime[static_cast<std::uint32_t>(i * storage[j - 1])] = false;
-            if (0 == (i % storage[j - 1]))
+            if ((i % storage[j - 1]) == 0)
             {
                 break;
             }

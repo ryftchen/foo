@@ -257,14 +257,14 @@ std::string_view Log::getPrefix(const OutputLevel level)
 std::vector<std::string> Log::reformatContents(const std::string_view label, const std::string_view formatted)
 {
     std::vector<std::string> rows{};
-    if (std::string_view::npos == formatted.find('\n'))
+    if (formatted.find('\n') == std::string_view::npos)
     {
         rows.emplace_back(formatted);
     }
     else
     {
         std::size_t pos = 0, prev = 0;
-        while (std::string_view::npos != (pos = formatted.find('\n', prev)))
+        while ((pos = formatted.find('\n', prev)) != std::string_view::npos)
         {
             rows.emplace_back(formatted.substr(prev, pos - prev + 1));
             prev += pos - prev + 1;
@@ -280,7 +280,7 @@ std::vector<std::string> Log::reformatContents(const std::string_view label, con
             [](auto& line)
             {
                 line.erase(
-                    std::remove_if(line.begin(), line.end(), [](const auto c) { return ('\n' == c) || ('\r' == c); }),
+                    std::remove_if(line.begin(), line.end(), [](const auto c) { return (c == '\n') || (c == '\r'); }),
                     line.cend());
                 return line;
             })
@@ -531,7 +531,7 @@ std::string& changeToLogStyle(std::string& line)
             style.predefinedLevelPrefixes.cbegin(),
             style.predefinedLevelPrefixes.cend(),
             [&line](const auto& predefined) { return std::regex_search(line, std::get<std::regex>(predefined)); });
-        style.predefinedLevelPrefixes.cend() != segIter)
+        segIter != style.predefinedLevelPrefixes.cend())
     {
         line = std::regex_replace(line, std::get<std::regex>(*segIter), std::get<std::string>(*segIter));
     }

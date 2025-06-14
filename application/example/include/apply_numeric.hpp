@@ -174,7 +174,7 @@ public:
             { return std::max<std::uint32_t>(std::to_string(elem).length(), max); });
         int formatSize = 0;
         std::uint32_t completeSize = 0;
-        for (auto iterator = container.cbegin(); container.cend() != iterator; ++iterator)
+        for (auto iterator = container.cbegin(); iterator != container.cend(); ++iterator)
         {
             formatSize = std::snprintf(buffer + completeSize, bufferSize - completeSize, "%*d ", align + 1, *iterator);
             if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))
@@ -184,7 +184,7 @@ public:
             completeSize += formatSize;
 
             if (const std::uint32_t nextIdx = std::distance(container.cbegin(), iterator) + 1;
-                (0 == (nextIdx % maxColumnOfPrint)) && (nextIdx != container.size()))
+                ((nextIdx % maxColumnOfPrint) == 0) && (nextIdx != container.size()))
             {
                 formatSize = std::snprintf(buffer + completeSize, bufferSize - completeSize, "\n");
                 if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))
@@ -407,7 +407,7 @@ public:
             }
             completeSize += formatSize;
 
-            if ((0 == ((i + 1) % maxColumnOfPrint)) && ((i + 1) != container.size()))
+            if ((((i + 1) % maxColumnOfPrint) == 0) && ((i + 1) != container.size()))
             {
                 formatSize = std::snprintf(buffer + completeSize, bufferSize - completeSize, "\n");
                 if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))

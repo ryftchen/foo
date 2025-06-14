@@ -96,7 +96,7 @@ static int watchdog(const ::pid_t pid)
 //! @return the argument to the implicit call to exit()
 int main(int argc, char* argv[])
 {
-    if (1 == argc)
+    if (argc == 1)
     {
         return application::run(argc, argv);
     }
@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
     {
         return EXIT_FAILURE;
     }
-    if (0 == pid)
+    if (pid == 0)
     {
         ::prctl(PR_SET_PDEATHSIG, SIGTERM);
         return (::getppid() == ppidBeforeFork) ? application::run(argc, argv) : EXIT_FAILURE;

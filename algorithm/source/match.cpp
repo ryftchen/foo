@@ -136,7 +136,7 @@ std::int64_t Match::bm(
             --textIndex;
             --patternIndex;
         }
-        if ((0 == patternIndex) && (text[textIndex] == pattern[patternIndex]))
+        if ((patternIndex == 0) && (text[textIndex] == pattern[patternIndex]))
         {
             shift = textIndex;
             break;
