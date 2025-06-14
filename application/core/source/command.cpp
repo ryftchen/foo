@@ -194,7 +194,7 @@ try
         launcher.resume();
     }
 
-    if (1 == argc)
+    if (argc == 1)
     {
         enterConsoleMode();
     }
@@ -680,7 +680,7 @@ std::vector<std::string> Command::extractChoices()
     utility::reflection::TypeInfo<T>::fields.forEach(
         [&choices](const auto field)
         {
-            static_assert(1 == field.attrs.size);
+            static_assert(field.attrs.size == 1);
             const auto attr = field.attrs.find(REFLECTION_STR("choice"));
             static_assert(attr.hasValue);
             choices.emplace_back(attr.value);
@@ -896,7 +896,7 @@ try
         session->setGreeting(greeting);
         interactionLatency();
     }
-    while (RetCode::quit != retCode);
+    while (retCode != RetCode::quit);
     tcpClient->toSend(buildExitRequest4Client());
     tcpClient->waitIfAlive();
     interactionLatency();
@@ -989,7 +989,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
 
     auto supportedOptions = view::info::viewerSupportedOptions();
     decltype(supportedOptions) validOptions{};
-    for (auto iterator = supportedOptions.cbegin(); supportedOptions.cend() != iterator;)
+    for (auto iterator = supportedOptions.cbegin(); iterator != supportedOptions.cend();)
     {
         auto node = supportedOptions.extract(iterator++);
         auto& key = node.key();
@@ -1006,7 +1006,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
 
 bool Command::onParsing4Client(char* buffer, const int length)
 {
-    return (0 != length) ? view::View::Access().onParsing(buffer, length) : false;
+    return (length != 0) ? view::View::Access().onParsing(buffer, length) : false;
 }
 
 void Command::enableWait4Client()

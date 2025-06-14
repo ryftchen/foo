@@ -79,7 +79,7 @@ namespace match
 static void showResult(
     const MatchMethod method, const std::int64_t result, const unsigned char* const pattern, const double interval)
 {
-    if (-1 != result)
+    if (result != -1)
     {
         std::printf(
             "\n==> %-16s Method <==\npattern \"%s\" found starting (1st) at index %ld, run time: %8.5f ms\n",
@@ -501,7 +501,7 @@ namespace search
 //! @param interval - time interval
 static void showResult(const SearchMethod method, const std::int64_t result, const float key, const double interval)
 {
-    if (-1 != result)
+    if (result != -1)
     {
         std::printf(
             "\n==> %-13s Method <==\nfound the key \"%.5f\" that appears in the index %ld, run time: %8.5f ms\n",

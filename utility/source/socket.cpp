@@ -28,7 +28,7 @@ const char* version() noexcept
 static std::string ipAddrString(const ::sockaddr_in& addr)
 {
     char ip[INET_ADDRSTRLEN] = {'\0'};
-    ::inet_ntop(AF_INET, &(addr.sin_addr), ip, INET_ADDRSTRLEN);
+    ::inet_ntop(AF_INET, &addr.sin_addr, ip, INET_ADDRSTRLEN);
 
     return std::string{ip};
 }
@@ -49,11 +49,11 @@ static std::string errnoString()
 Socket::Socket(const Type socketType, const int socketId)
 {
     ::pthread_spin_init(&sockLock, ::PTHREAD_PROCESS_PRIVATE);
-    if (-1 == socketId)
+    if (socketId == -1)
     {
         const SockGuard lock(*this);
         sock = ::socket(AF_INET, socketType, 0);
-        if (-1 == sock)
+        if (sock == -1)
         {
             throw std::runtime_error{"Socket creation error, errno: " + errnoString() + '.'};
         }
@@ -145,15 +145,15 @@ void TCPSocket::toConnect(const std::string_view ip, const std::uint16_t port)
     hints.ai_family = AF_INET;
     hints.ai_socktype = ::SOCK_STREAM;
 
-    if (const int status = ::getaddrinfo(ip.data(), nullptr, &hints, &addrInfo); 0 != status)
+    if (const int status = ::getaddrinfo(ip.data(), nullptr, &hints, &addrInfo); status != 0)
     {
         throw std::runtime_error{
             "Invalid address, status: " + std::string{::gai_strerror(status)} + ", errno: " + errnoString() + '.'};
     }
 
-    for (const ::addrinfo* entry = addrInfo; nullptr != entry; entry = entry->ai_next)
+    for (const ::addrinfo* entry = addrInfo; entry != nullptr; entry = entry->ai_next)
     {
-        if (AF_INET == entry->ai_family)
+        if (entry->ai_family == AF_INET)
         {
             std::memcpy(static_cast<void*>(&sockAddr), static_cast<void*>(entry->ai_addr), sizeof(::sockaddr_in));
             break;
@@ -194,11 +194,11 @@ void TCPSocket::toRecv(const std::shared_ptr<TCPSocket> socket) // NOLINT(perfor
     for (constexpr int timeout = 10; !socket->exitSignaled();)
     {
         const int status = ::poll(pollFDs.data(), pollFDs.size(), timeout);
-        if (-1 == status)
+        if (status == -1)
         {
             throw std::runtime_error{"Not the expected wait result for poll, errno: " + errnoString() + '.'};
         }
-        if (0 == status)
+        if (status == 0)
         {
             continue;
         }
@@ -302,11 +302,11 @@ void TCPServer::toAccept(const std::shared_ptr<TCPServer> server) // NOLINT(perf
     for (std::vector<std::shared_ptr<TCPSocket>> activeSockets{};;)
     {
         const int newSock = ::accept(server->sock, reinterpret_cast<::sockaddr*>(&newSockAddr), &newSockAddrLen);
-        if (-1 == newSock)
+        if (newSock == -1)
         {
             std::for_each(
                 activeSockets.cbegin(), activeSockets.cend(), [](const auto& socket) { socket->signalExit(); });
-            if ((EBADF == errno) || (EINVAL == errno))
+            if ((errno == EBADF) || (errno == EINVAL))
             {
                 return;
             }
@@ -333,15 +333,15 @@ int UDPSocket::toSendTo(
     hints.ai_family = AF_INET;
     hints.ai_socktype = ::SOCK_DGRAM;
 
-    if (const int status = ::getaddrinfo(ip.data(), nullptr, &hints, &addrInfo); 0 != status)
+    if (const int status = ::getaddrinfo(ip.data(), nullptr, &hints, &addrInfo); status != 0)
     {
         throw std::runtime_error{
             "Invalid address, status: " + std::string{::gai_strerror(status)} + ", errno: " + errnoString() + '.'};
     }
 
-    for (const ::addrinfo* entry = addrInfo; nullptr != entry; entry = entry->ai_next)
+    for (const ::addrinfo* entry = addrInfo; entry != nullptr; entry = entry->ai_next)
     {
-        if (AF_INET == entry->ai_family)
+        if (entry->ai_family == AF_INET)
         {
             std::memcpy(static_cast<void*>(&addr), static_cast<void*>(entry->ai_addr), sizeof(::sockaddr_in));
             break;
@@ -355,7 +355,7 @@ int UDPSocket::toSendTo(
     if (const SockGuard lock(*this); true)
     {
         sent = ::sendto(sock, bytes, length, 0, reinterpret_cast<const ::sockaddr*>(&addr), sizeof(addr));
-        if (-1 == sent)
+        if (sent == -1)
         {
             throw std::runtime_error{"Unable to send message to address, errno: " + errnoString() + '.'};
         }
@@ -386,15 +386,15 @@ void UDPSocket::toConnect(const std::string_view ip, const std::uint16_t port)
     hints.ai_family = AF_INET;
     hints.ai_socktype = ::SOCK_DGRAM;
 
-    if (const int status = ::getaddrinfo(ip.data(), nullptr, &hints, &addrInfo); 0 != status)
+    if (const int status = ::getaddrinfo(ip.data(), nullptr, &hints, &addrInfo); status != 0)
     {
         throw std::runtime_error{
             "Invalid address, status: " + std::string{::gai_strerror(status)} + ", errno: " + errnoString() + '.'};
     }
 
-    for (const ::addrinfo* entry = addrInfo; nullptr != entry; entry = entry->ai_next)
+    for (const ::addrinfo* entry = addrInfo; entry != nullptr; entry = entry->ai_next)
     {
-        if (AF_INET == entry->ai_family)
+        if (entry->ai_family == AF_INET)
         {
             std::memcpy(static_cast<void*>(&sockAddr), static_cast<void*>(entry->ai_addr), sizeof(::sockaddr_in));
             break;
@@ -446,11 +446,11 @@ void UDPSocket::toRecv(const std::shared_ptr<UDPSocket> socket) // NOLINT(perfor
     for (constexpr int timeout = 10; !socket->exitSignaled();)
     {
         const int status = ::poll(pollFDs.data(), pollFDs.size(), timeout);
-        if (-1 == status)
+        if (status == -1)
         {
             throw std::runtime_error{"Not the expected wait result for poll, errno: " + errnoString() + '.'};
         }
-        if (0 == status)
+        if (status == 0)
         {
             continue;
         }
@@ -460,7 +460,7 @@ void UDPSocket::toRecv(const std::shared_ptr<UDPSocket> socket) // NOLINT(perfor
             if (const SockGuard lock(*socket); true)
             {
                 msgLen = ::recv(socket->sock, tempBuffer, bufferSize, 0);
-                if (-1 == msgLen)
+                if (msgLen == -1)
                 {
                     break;
                 }
@@ -493,11 +493,11 @@ void UDPSocket::toRecvFrom(const std::shared_ptr<UDPSocket> socket) // NOLINT(pe
     for (constexpr int timeout = 10; !socket->exitSignaled();)
     {
         const int status = ::poll(pollFDs.data(), pollFDs.size(), timeout);
-        if (-1 == status)
+        if (status == -1)
         {
             throw std::runtime_error{"Not the expected wait result for poll, errno: " + errnoString() + '.'};
         }
-        if (0 == status)
+        if (status == 0)
         {
             continue;
         }
@@ -508,7 +508,7 @@ void UDPSocket::toRecvFrom(const std::shared_ptr<UDPSocket> socket) // NOLINT(pe
             {
                 msgLen = ::recvfrom(
                     socket->sock, tempBuffer, bufferSize, 0, reinterpret_cast<::sockaddr*>(&addr), &hostAddrSize);
-                if (-1 == msgLen)
+                if (msgLen == -1)
                 {
                     break;
                 }

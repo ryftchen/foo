@@ -158,7 +158,7 @@ std::size_t Trait::getArgumentsLength() const
     }
 
     std::size_t size = namesSize + 2 * (names.size() - 1);
-    if (!metavarCont.empty() && (ArgsNumRange{1, 1} == argsNumRange))
+    if (!metavarCont.empty() && (argsNumRange == ArgsNumRange{1, 1}))
     {
         size += metavarCont.length() + 1;
     }
@@ -199,7 +199,7 @@ bool Trait::checkIfOptional(const std::string_view name, const std::string_view 
 bool Trait::checkIfPositional(const std::string_view name, const std::string_view prefix)
 {
     const int first = lookAhead(name);
-    if (eof == first)
+    if (first == eof)
     {
         return true;
     }
@@ -253,7 +253,7 @@ std::ostream& operator<<(std::ostream& os, const Trait& tra)
     else
     {
         out << join(tra.names.cbegin(), tra.names.cend(), ", ");
-        if (!tra.metavarCont.empty() && (Trait::ArgsNumRange{1, 1} == tra.argsNumRange))
+        if (!tra.metavarCont.empty() && (tra.argsNumRange == Trait::ArgsNumRange{1, 1}))
         {
             out << ' ' << tra.metavarCont;
         }
@@ -267,7 +267,7 @@ std::ostream& operator<<(std::ostream& os, const Trait& tra)
     bool firstLine = true;
     const std::string_view helpView = tra.helpCont;
     const char* tabSpace = "    ";
-    while (std::string::npos != (pos = tra.helpCont.find('\n', prev)))
+    while ((pos = tra.helpCont.find('\n', prev)) != std::string::npos)
     {
         const auto line = helpView.substr(prev, pos - prev + 1);
         if (firstLine)
@@ -303,7 +303,7 @@ std::ostream& operator<<(std::ostream& os, const Trait& tra)
     }
     os << tra.argsNumRange;
 
-    if (tra.defaultVal.has_value() && (Trait::ArgsNumRange{0, 0} != tra.argsNumRange))
+    if (tra.defaultVal.has_value() && (tra.argsNumRange != Trait::ArgsNumRange{0, 0}))
     {
         os << "[default: " << tra.representedDefVal << ']';
     }
@@ -328,15 +328,15 @@ Argument::Argument(const Argument& arg) :
     parserPath{arg.parserPath},
     subParsers{arg.subParsers}
 {
-    for (auto iterator = optionalArgs.begin(); optionalArgs.end() != iterator; ++iterator)
+    for (auto iterator = optionalArgs.begin(); iterator != optionalArgs.end(); ++iterator)
     {
         indexArgument(iterator);
     }
-    for (auto iterator = positionalArgs.begin(); positionalArgs.end() != iterator; ++iterator)
+    for (auto iterator = positionalArgs.begin(); iterator != positionalArgs.end(); ++iterator)
     {
         indexArgument(iterator);
     }
-    for (auto iterator = subParsers.begin(); subParsers.end() != iterator; ++iterator)
+    for (auto iterator = subParsers.begin(); iterator != subParsers.end(); ++iterator)
     {
         subParserMap.insert_or_assign(iterator->get().titleName, iterator);
         subParserUsed.insert_or_assign(iterator->get().titleName, false);
@@ -366,7 +366,7 @@ Argument::operator bool() const
 Trait& Argument::operator[](const std::string_view argName) const
 {
     auto iterator = argumentMap.find(argName);
-    if (argumentMap.cend() != iterator)
+    if (iterator != argumentMap.cend())
     {
         return *(iterator->second);
     }
@@ -378,13 +378,13 @@ Trait& Argument::operator[](const std::string_view argName) const
 
         const auto name = prefix + argName.data();
         iterator = argumentMap.find(name);
-        if (argumentMap.cend() != iterator)
+        if (iterator != argumentMap.cend())
         {
             return *(iterator->second);
         }
 
         iterator = argumentMap.find(prefix + name);
-        if (argumentMap.cend() != iterator)
+        if (iterator != argumentMap.cend())
         {
             return *(iterator->second);
         }
@@ -455,7 +455,7 @@ std::string Argument::usage() const
         out << " {";
         for (std::size_t i = 0; const auto& command : std::views::keys(subParserMap))
         {
-            if (0 != i)
+            if (i != 0)
             {
                 out << ',';
             }
@@ -497,10 +497,10 @@ std::vector<std::string> Argument::preprocessArguments(const std::vector<std::st
 
     for (const auto& arg : rawArguments)
     {
-        if (const auto assignCharPos = arg.find_first_of(assignChars); (argumentMap.cend() == argumentMap.find(arg))
-            && startWithPrefixChars(arg) && (std::string::npos != assignCharPos))
+        if (const auto assignCharPos = arg.find_first_of(assignChars); (argumentMap.find(arg) == argumentMap.cend())
+            && startWithPrefixChars(arg) && (assignCharPos != std::string::npos))
         {
-            if (const auto optName = arg.substr(0, assignCharPos); argumentMap.cend() != argumentMap.find(optName))
+            if (const auto optName = arg.substr(0, assignCharPos); argumentMap.find(optName) != argumentMap.cend())
             {
                 arguments.emplace_back(optName);
                 arguments.emplace_back(arg.substr(assignCharPos + 1));
@@ -523,12 +523,12 @@ void Argument::parseArgsInternal(const std::vector<std::string>& rawArguments)
 
     const auto ending = arguments.cend();
     auto positionalArgIter = positionalArgs.begin();
-    for (auto iterator = std::next(arguments.cbegin()); ending != iterator;)
+    for (auto iterator = std::next(arguments.cbegin()); iterator != ending;)
     {
         const auto& currentArg = *iterator;
         if (Trait::checkIfPositional(currentArg, prefixChars))
         {
-            if (positionalArgs.cend() != positionalArgIter)
+            if (positionalArgIter != positionalArgs.cend())
             {
                 const auto argument = positionalArgIter++;
                 iterator = argument->consume(iterator, ending);
@@ -536,7 +536,7 @@ void Argument::parseArgsInternal(const std::vector<std::string>& rawArguments)
             }
 
             const std::string_view maybeCommand = currentArg;
-            if (const auto subParserIter = subParserMap.find(maybeCommand); subParserMap.cend() != subParserIter)
+            if (const auto subParserIter = subParserMap.find(maybeCommand); subParserIter != subParserMap.cend())
             {
                 const auto unprocessedArgs = std::vector<std::string>(iterator, ending);
                 isParsed = true;

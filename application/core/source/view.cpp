@@ -185,7 +185,7 @@ static int decodeTLV(char* buf, const int len, TLVValue& val)
     data::Packet dec(buf, len);
     int type = 0;
     dec.read<int>(&type);
-    if (TLVType::header != type)
+    if (type != TLVType::header)
     {
         return -1;
     }
@@ -372,15 +372,15 @@ bool View::Access::onParsing(char* buffer, const int length) const
     {
         std::cout << value.libDetail << std::endl;
     }
-    if (tlv::invalidShmId != value.bashShmId)
+    if (value.bashShmId != tlv::invalidShmId)
     {
         printSharedMemory(value.bashShmId);
     }
-    if (tlv::invalidShmId != value.logShmId)
+    if (value.logShmId != tlv::invalidShmId)
     {
         printSharedMemory(value.logShmId, !inst.isInServingState(State::work));
     }
-    if (tlv::invalidShmId != value.statusShmId)
+    if (value.statusShmId != tlv::invalidShmId)
     {
         printSharedMemory(value.statusShmId);
     }
@@ -641,7 +641,7 @@ int View::fillSharedMemory(const std::string_view contents)
 {
     const int shmId = ::shmget(
         0, sizeof(SharedMemory), IPC_CREAT | IPC_EXCL | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
-    if (-1 == shmId)
+    if (shmId == -1)
     {
         throw std::runtime_error{"Failed to create shared memory (" + std::to_string(shmId) + ")."};
     }
@@ -777,7 +777,7 @@ void View::segmentedOutput(const std::string_view buffer)
     {
         std::cout << line << '\n';
         ++counter;
-        if (!withoutPaging && (moreRows || (terminalRows == counter)))
+        if (!withoutPaging && (moreRows || (counter == terminalRows)))
         {
             std::cout << prompt << "\n\x1b[1A\x1b[" << prompt.length() << 'C' << std::flush;
             utility::io::waitForUserInput(handling);
@@ -821,7 +821,7 @@ std::string View::statusReportsPreview(const std::uint16_t frame)
     const auto queryResult = utility::io::executeCommand(cmd);
     std::vector<std::string> cmdColl{};
     std::size_t pos = 0, prev = 0;
-    while (std::string::npos != (pos = queryResult.find('\n', prev)))
+    while ((pos = queryResult.find('\n', prev)) != std::string::npos)
     {
         const int tid = std::stoi(queryResult.substr(prev, pos - prev + 1));
         char cmd[totalLen] = {'\0'};
@@ -835,7 +835,7 @@ std::string View::statusReportsPreview(const std::uint16_t frame)
                 pid,
                 tid,
                 focusField.data());
-            0 == frame)
+            frame == 0)
         {
             std::strncpy(cmd + usedLen, "; fi\"", totalLen - usedLen);
         }

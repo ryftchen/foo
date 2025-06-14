@@ -91,7 +91,7 @@ static JSON parseObject(const std::string_view fmt, std::size_t& offset)
     auto object = JSON::make(JSON::Type::object);
     ++offset;
     consumeWhitespace(fmt, offset);
-    if ('}' == fmt.at(offset))
+    if (fmt.at(offset) == '}')
     {
         ++offset;
         return object;
@@ -101,7 +101,7 @@ static JSON parseObject(const std::string_view fmt, std::size_t& offset)
     {
         const auto key = parseNext(fmt, offset);
         consumeWhitespace(fmt, offset);
-        if (':' != fmt.at(offset))
+        if (fmt.at(offset) != ':')
         {
             throw std::runtime_error{"For JSON object, expected ':', found '" + std::string{fmt.at(offset)} + "'."};
         }
@@ -110,12 +110,12 @@ static JSON parseObject(const std::string_view fmt, std::size_t& offset)
         object[key.toString()] = val;
 
         consumeWhitespace(fmt, offset);
-        if (',' == fmt.at(offset))
+        if (fmt.at(offset) == ',')
         {
             ++offset;
             continue;
         }
-        if ('}' == fmt.at(offset))
+        if (fmt.at(offset) == '}')
         {
             ++offset;
             break;
@@ -136,7 +136,7 @@ static JSON parseArray(const std::string_view fmt, std::size_t& offset)
     auto array = JSON::make(JSON::Type::array);
     ++offset;
     consumeWhitespace(fmt, offset);
-    if (']' == fmt.at(offset))
+    if (fmt.at(offset) == ']')
     {
         ++offset;
         return array;
@@ -146,12 +146,12 @@ static JSON parseArray(const std::string_view fmt, std::size_t& offset)
     {
         array[index++] = parseNext(fmt, offset);
         consumeWhitespace(fmt, offset);
-        if (',' == fmt.at(offset))
+        if (fmt.at(offset) == ',')
         {
             ++offset;
             continue;
         }
-        if (']' == fmt.at(offset))
+        if (fmt.at(offset) == ']')
         {
             ++offset;
             break;
@@ -178,9 +178,9 @@ static bool isHexCharacter(const char c)
 static JSON parseString(const std::string_view fmt, std::size_t& offset)
 {
     std::string val{};
-    for (char c = fmt.at(++offset); '\"' != c; c = fmt.at(++offset))
+    for (char c = fmt.at(++offset); c != '\"'; c = fmt.at(++offset))
     {
-        if ('\\' == c)
+        if (c == '\\')
         {
             switch (fmt.at(++offset))
             {
@@ -251,12 +251,12 @@ static std::string extractExponent(const std::string_view fmt, std::size_t& offs
 {
     char c = fmt.at(offset);
     std::string expStr{};
-    if ('-' == c)
+    if (c == '-')
     {
         ++offset;
         expStr += '-';
     }
-    else if ('+' == c)
+    else if (c == '+')
     {
         ++offset;
     }
@@ -268,7 +268,7 @@ static std::string extractExponent(const std::string_view fmt, std::size_t& offs
         {
             expStr += c;
         }
-        else if (!std::isspace(c) && (',' != c) && (']' != c) && ('}' != c))
+        else if (!std::isspace(c) && (c != ',') && (c != ']') && (c != '}'))
         {
             throw std::runtime_error{
                 "For JSON number, expected a number for exponent, found '" + std::string{c} + "'."};
@@ -294,11 +294,11 @@ static JSON parseNumber(const std::string_view fmt, std::size_t& offset)
     while (offset < fmt.length())
     {
         c = fmt.at(offset++);
-        if (('-' == c) || ((c >= '0') && (c <= '9')))
+        if (((c >= '0') && (c <= '9')) || (c == '-'))
         {
             val += c;
         }
-        else if ('.' == c)
+        else if (c == '.')
         {
             val += c;
             isFloating = true;
@@ -311,12 +311,12 @@ static JSON parseNumber(const std::string_view fmt, std::size_t& offset)
 
     long long exp = 0;
     std::string expStr{};
-    if (('E' == c) || ('e' == c))
+    if ((c == 'E') || (c == 'e'))
     {
         expStr = extractExponent(fmt, offset);
         exp = std::stol(expStr);
     }
-    else if (!std::isspace(c) && (',' != c) && (']' != c) && ('}' != c))
+    else if (!std::isspace(c) && (c != ',') && (c != ']') && (c != '}'))
     {
         throw std::runtime_error{"For JSON number, unexpected character '" + std::string{c} + "'."};
     }
@@ -403,7 +403,7 @@ static JSON parseNext(const std::string_view fmt, std::size_t& offset)
         case 'n':
             return parseNull(fmt, offset);
         default:
-            if (((c >= '0') && (c <= '9')) || ('-' == c))
+            if (((c >= '0') && (c <= '9')) || (c == '-'))
             {
                 return parseNumber(fmt, offset);
             }
@@ -446,7 +446,7 @@ JSON::JSON(const Type type)
 JSON::JSON(const std::initializer_list<JSON>& list)
 {
     setType<Object>();
-    for (const auto* iterator = list.begin(); list.end() != iterator; std::advance(iterator, 2))
+    for (const auto* iterator = list.begin(); iterator != list.end(); std::advance(iterator, 2))
     {
         operator[](iterator->toString()) = *std::next(iterator);
     }

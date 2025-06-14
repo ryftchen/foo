@@ -289,7 +289,7 @@ void Output::printBSTree(BSTree tree, const Type key, const int direction)
     if (tree)
     {
         const int currInd = indent;
-        if (0 == direction)
+        if (direction == 0)
         {
             indent = 0;
             output() << "+ " << tree->key << " -> root\n";
@@ -297,7 +297,7 @@ void Output::printBSTree(BSTree tree, const Type key, const int direction)
         else
         {
             output() << "+ " << std::string(currInd, ' ') << tree->key << " -> " << key << "'s "
-                     << ((1 == direction) ? "right" : "left") << " child\n";
+                     << ((direction == 1) ? "right" : "left") << " child\n";
         }
 
         indent += 2;
@@ -606,7 +606,7 @@ void Output::printAVLTree(AVLTree tree, const Type key, const int direction)
     if (tree)
     {
         const int currInd = indent;
-        if (0 == direction)
+        if (direction == 0)
         {
             indent = 0;
             output() << "+ " << tree->key << " -> root\n";
@@ -614,7 +614,7 @@ void Output::printAVLTree(AVLTree tree, const Type key, const int direction)
         else
         {
             output() << "+ " << std::string(currInd, ' ') << tree->key << " -> " << key << "'s "
-                     << ((1 == direction) ? "right" : "left") << " child\n";
+                     << ((direction == 1) ? "right" : "left") << " child\n";
         }
 
         indent += 2;
@@ -911,7 +911,7 @@ void Output::printSplayTree(SplayTree tree, const Type key, const int direction)
     if (tree)
     {
         const int currInd = indent;
-        if (0 == direction)
+        if (direction == 0)
         {
             indent = 0;
             output() << "+ " << tree->key << " -> root\n";
@@ -919,7 +919,7 @@ void Output::printSplayTree(SplayTree tree, const Type key, const int direction)
         else
         {
             output() << "+ " << std::string(currInd, ' ') << tree->key << " -> " << key << "'s "
-                     << ((1 == direction) ? "right" : "left") << " child\n";
+                     << ((direction == 1) ? "right" : "left") << " child\n";
         }
 
         indent += 2;

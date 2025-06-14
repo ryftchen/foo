@@ -294,12 +294,12 @@ private:
         {
             if (range.min == range.max)
             {
-                if ((0 != range.min) && (1 != range.min))
+                if ((range.min != 0) && (range.min != 1))
                 {
                     os << "[args: " << range.min << "] ";
                 }
             }
-            else if (std::numeric_limits<std::size_t>::max() == range.max)
+            else if (range.max == std::numeric_limits<std::size_t>::max())
             {
                 os << "[args: " << range.min << " or more] ";
             }
@@ -494,7 +494,7 @@ Iterator Trait::consume(const Iterator start, Iterator end, const std::string_vi
     isUsed = true;
     usedName = argName;
     const auto numMax = argsNumRange.getMax(), numMin = argsNumRange.getMin();
-    if (0 == numMax)
+    if (numMax == 0)
     {
         values.emplace_back(implicitVal);
         std::visit([](const auto& func) { func({}); }, actions);
@@ -842,7 +842,7 @@ T& Argument::at(const std::string_view name)
     {
         return (*this)[name];
     }
-    else if (const auto subParserIter = subParserMap.find(name); subParserMap.cend() != subParserIter)
+    else if (const auto subParserIter = subParserMap.find(name); subParserIter != subParserMap.cend())
     {
         return subParserIter->second->get();
     }
@@ -880,7 +880,7 @@ inline auto Argument::isSubCommandUsed(const Argument& subParser) const
 template <typename Iterator>
 Iterator Argument::processRegArgument(Iterator current, const Iterator end, const std::string_view argName) const
 {
-    if (const auto argMapIter = argumentMap.find(argName); argumentMap.cend() != argMapIter)
+    if (const auto argMapIter = argumentMap.find(argName); argMapIter != argumentMap.cend())
     {
         const auto argument = argMapIter->second;
         current = argument->consume(std::next(current), end, argMapIter->first);
@@ -892,7 +892,7 @@ Iterator Argument::processRegArgument(Iterator current, const Iterator end, cons
         for (std::size_t i = 1; i < compoundArg.length(); ++i)
         {
             const auto hypotheticalArg = std::string{'-', compoundArg.at(i)};
-            if (const auto argMapIter = argumentMap.find(hypotheticalArg); argumentMap.cend() != argMapIter)
+            if (const auto argMapIter = argumentMap.find(hypotheticalArg); argMapIter != argumentMap.cend())
             {
                 auto argument = argMapIter->second;
                 current = argument->consume(current, end, argMapIter->first);

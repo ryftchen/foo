@@ -40,13 +40,13 @@ std::set<std::int32_t> Divisor::stein(std::int32_t a, std::int32_t b)
     a = std::abs(a);
     b = std::abs(b);
 
-    while ((0 == (a & 0x1)) && (0 == (b & 0x1)))
+    while (((a & 0x1) == 0) && ((b & 0x1) == 0))
     {
         a = a >> 1;
         b = b >> 1;
         ++c;
     }
-    if (0 == (a & 0x1))
+    if ((a & 0x1) == 0)
     {
         a = a >> 1;
         gcd = steinRecursive(a, b) << c;
@@ -61,16 +61,16 @@ std::set<std::int32_t> Divisor::stein(std::int32_t a, std::int32_t b)
 
 std::int32_t Divisor::steinRecursive(std::int32_t a, std::int32_t b)
 {
-    if (0 == a)
+    if (a == 0)
     {
         return b;
     }
-    if (0 == b)
+    if (b == 0)
     {
         return a;
     }
 
-    while (0 == (a & 0x1))
+    while ((a & 0x1) == 0)
     {
         a = a >> 1;
     }
@@ -89,7 +89,7 @@ std::set<std::int32_t> Divisor::getAllDivisors(const std::int32_t gcd)
     std::set<std::int32_t> divisors{};
     for (std::int32_t i = 1; i <= std::sqrt(gcd); ++i)
     {
-        if (0 == (gcd % i))
+        if ((gcd % i) == 0)
         {
             divisors.emplace(i);
             if ((gcd / i) != i)

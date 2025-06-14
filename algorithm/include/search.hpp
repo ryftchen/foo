@@ -170,7 +170,7 @@ std::int64_t Search<T>::fibonacci(const T* const array, const std::uint32_t leng
 template <typename T>
 std::vector<std::uint32_t> Search<T>::generateFibonacciNumber(const std::uint32_t limit)
 {
-    if (0 == limit)
+    if (limit == 0)
     {
         return {};
     }

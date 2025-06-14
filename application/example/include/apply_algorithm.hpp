@@ -522,7 +522,7 @@ public:
             }
             completeSize += totalLen;
 
-            if ((0 == ((i + 1) % maxColumnOfPrint)) && ((i + 1) != length))
+            if ((((i + 1) % maxColumnOfPrint) == 0) && ((i + 1) != length))
             {
                 totalLen = std::snprintf(buffer + completeSize, bufferSize - completeSize, "\n");
                 if ((totalLen < 0) || (totalLen >= static_cast<int>(bufferSize - completeSize)))
@@ -758,7 +758,7 @@ public:
             }
             completeSize += totalLen;
 
-            if ((0 == ((i + 1) % maxColumnOfPrint)) && ((i + 1) != length))
+            if ((((i + 1) % maxColumnOfPrint) == 0) && ((i + 1) != length))
             {
                 totalLen = std::snprintf(buffer + completeSize, bufferSize - completeSize, "\n");
                 if ((totalLen < 0) || (totalLen >= static_cast<int>(bufferSize - completeSize)))

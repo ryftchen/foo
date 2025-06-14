@@ -83,7 +83,7 @@ static Node* getNode(DLL head, const int index)
 //! @return 0 if successful, otherwise -1
 int createDll(DLL* const dll)
 {
-    return (nullptr != (*dll = createNode(nullptr))) ? 0 : -1;
+    return ((*dll = createNode(nullptr)) != nullptr) ? 0 : -1;
 }
 
 //! @brief Destroy a doubly linked list.
@@ -167,7 +167,7 @@ void* dllGetLast(DLL head)
 //! @return 0 if successful, otherwise -1
 int dllInsert(DLL head, const int index, void* const val)
 {
-    if (0 == index)
+    if (index == 0)
     {
         return dllInsertFirst(head, val);
     }

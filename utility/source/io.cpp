@@ -36,7 +36,7 @@ std::string executeCommand(const std::string_view command)
     for (std::vector<char> buffer(4096);;)
     {
         const std::size_t readLen = std::fread(buffer.data(), sizeof(char), buffer.size(), pipe);
-        if (0 == readLen)
+        if (readLen == 0)
         {
             break;
         }
@@ -62,7 +62,7 @@ std::string executeCommand(const std::string_view command)
 void waitForUserInput(const std::function<bool(const std::string_view)>& operation, const int timeout)
 {
     const int epollFD = ::epoll_create1(0);
-    if (-1 == epollFD)
+    if (epollFD == -1)
     {
         throw std::runtime_error{"Could not create epoll when trying to wait for user input."};
     }
@@ -79,12 +79,12 @@ void waitForUserInput(const std::function<bool(const std::string_view)>& operati
     for (;;)
     {
         const int status = ::epoll_wait(epollFD, &event, 1, timeout);
-        if (-1 == status)
+        if (status == -1)
         {
             ::close(epollFD);
             throw std::runtime_error{"Failed to wait epoll when waiting for user input."};
         }
-        if (0 == status)
+        if (status == 0)
         {
             break;
         }
