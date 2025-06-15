@@ -68,21 +68,21 @@ function wait_until_get_input()
     return 0
 }
 
-function check_single_choice_parameters_validity()
+function validate_single_choice_exclusivity()
 {
-    if [[ $(existing_single_choice_parameters) -gt 0 ]] || [[ $(existing_multiple_choice_parameters) -gt 0 ]]; then
+    if [[ $(count_enabled_single_choice_parameters) -gt 0 ]] || [[ $(count_enabled_multiple_choice_parameters) -gt 0 ]]; then
         die "Mutually exclusive option: $1 is not allowed."
     fi
 }
 
-function check_multiple_choice_parameters_validity()
+function validate_multiple_choice_exclusivity()
 {
-    if [[ $(existing_single_choice_parameters) -gt 0 ]]; then
+    if [[ $(count_enabled_single_choice_parameters) -gt 0 ]]; then
         die "Mutually exclusive option: $1 is not allowed."
     fi
 }
 
-function existing_single_choice_parameters()
+function count_enabled_single_choice_parameters()
 {
     local number=0
     for key in "${!ARGS[@]}"; do
@@ -99,7 +99,7 @@ function existing_single_choice_parameters()
     return 0
 }
 
-function existing_multiple_choice_parameters()
+function count_enabled_multiple_choice_parameters()
 {
     local number=0
     for key in "${!ARGS[@]}"; do
@@ -175,81 +175,81 @@ function parse_parameters()
             ARGS[dry]=true
             ;;
         -I | --initialize)
-            check_single_choice_parameters_validity "$1"
+            validate_single_choice_exclusivity "$1"
             ARGS[initialize]=true
             ;;
         -C | --clean)
-            check_single_choice_parameters_validity "$1"
+            validate_single_choice_exclusivity "$1"
             ARGS[clean]=true
             ;;
         -i | --install)
-            check_single_choice_parameters_validity "$1"
+            validate_single_choice_exclusivity "$1"
             ARGS[install]=true
             ;;
         -u | --uninstall)
-            check_single_choice_parameters_validity "$1"
+            validate_single_choice_exclusivity "$1"
             ARGS[uninstall]=true
             ;;
         -c | --container)
-            check_single_choice_parameters_validity "$1"
+            validate_single_choice_exclusivity "$1"
             ARGS[container]=true
             ;;
         -a | --archive)
-            check_single_choice_parameters_validity "$1"
+            validate_single_choice_exclusivity "$1"
             ARGS[archive]=true
             ;;
         -t | --test)
             if {
-                [[ ${ARGS[release]} != false ]] && [[ $(existing_multiple_choice_parameters) -gt 1 ]]
+                [[ ${ARGS[release]} != false ]] && [[ $(count_enabled_multiple_choice_parameters) -gt 1 ]]
             } || {
-                [[ ${ARGS[release]} = false ]] && [[ $(existing_multiple_choice_parameters) -gt 0 ]]
-            } || [[ $(existing_single_choice_parameters) -gt 0 ]]; then
+                [[ ${ARGS[release]} = false ]] && [[ $(count_enabled_multiple_choice_parameters) -gt 0 ]]
+            } || [[ $(count_enabled_single_choice_parameters) -gt 0 ]]; then
                 die "Mutually exclusive option: $1 is not allowed."
             fi
             ARGS[test]=true
             ;;
         -r | --release)
             if {
-                [[ ${ARGS[test]} != false ]] && [[ $(existing_single_choice_parameters) -gt 1 ]]
+                [[ ${ARGS[test]} != false ]] && [[ $(count_enabled_single_choice_parameters) -gt 1 ]]
             } || {
-                [[ ${ARGS[test]} = false ]] && [[ $(existing_single_choice_parameters) -gt 0 ]]
+                [[ ${ARGS[test]} = false ]] && [[ $(count_enabled_single_choice_parameters) -gt 0 ]]
             }; then
                 die "Mutually exclusive option: $1 is not allowed."
             fi
             ARGS[release]=true
             ;;
         -H | --hook)
-            check_multiple_choice_parameters_validity "$1"
+            validate_multiple_choice_exclusivity "$1"
             ARGS[hook]=true
             ;;
         -s | --spell)
-            check_multiple_choice_parameters_validity "$1"
+            validate_multiple_choice_exclusivity "$1"
             ARGS[spell]=true
             ;;
         -S | --statistics)
-            check_multiple_choice_parameters_validity "$1"
+            validate_multiple_choice_exclusivity "$1"
             ARGS[statistics]=true
             ;;
         -f | --format)
-            check_multiple_choice_parameters_validity "$1"
+            validate_multiple_choice_exclusivity "$1"
             handle_type_related_parameter "format" "$@"
             shift $?
             ;;
         -l | --lint)
-            check_multiple_choice_parameters_validity "$1"
+            validate_multiple_choice_exclusivity "$1"
             handle_type_related_parameter "lint" "$@"
             shift $?
             ;;
         -q | --query)
-            check_multiple_choice_parameters_validity "$1"
+            validate_multiple_choice_exclusivity "$1"
             ARGS[query]=true
             ;;
         -d | --doxygen)
-            check_multiple_choice_parameters_validity "$1"
+            validate_multiple_choice_exclusivity "$1"
             ARGS[doxygen]=true
             ;;
         -b | --browser)
-            check_multiple_choice_parameters_validity "$1"
+            validate_multiple_choice_exclusivity "$1"
             ARGS[browser]=true
             ;;
         *)
@@ -1237,7 +1237,7 @@ function build_native_if_needed()
     shell_command "cmake -S ./ -B ./${FOLDER[bld]} -G Ninja""${CMAKE_CACHE_ENTRY}"
 
     local valid_param_num
-    valid_param_num=$(($(existing_single_choice_parameters) + $(existing_multiple_choice_parameters)))
+    valid_param_num=$(($(count_enabled_single_choice_parameters) + $(count_enabled_multiple_choice_parameters)))
     if [[ valid_param_num -eq 0 ]] || {
         [[ valid_param_num -eq 1 ]] && [[ ${ARGS[release]} != false ]]
     }; then
