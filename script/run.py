@@ -183,16 +183,22 @@ class Task:
             raise argparse.ArgumentTypeError("Must be a positive integer.")
 
         parser = argparse.ArgumentParser(description="run script", formatter_class=argparse.RawTextHelpFormatter)
-        parser.add_argument("-t", "--test", action="store_true", default=False, help="run unit test only")
+        parser.add_argument("-t", "--test", action="store_true", default=False, help="switch to unit test mode")
         parser.add_argument(
-            "-r", "--repeat", nargs="?", const=1, type=_check_positive_integer, help="run repeatedly", metavar="TIMES"
+            "-r",
+            "--repeat",
+            nargs="?",
+            const=1,
+            type=_check_positive_integer,
+            help="run repeatedly with multiple times",
+            metavar="TIMES",
         )
         parser.add_argument(
             "-c",
             "--check",
             nargs="+",
             choices=["cov", "mem"],
-            help="run with check\n- cov    coverage (force to use clang)\n- mem    memory",
+            help="run and check further\n- cov    coverage (force to use clang)\n- mem    memory",
         )
         parser.add_argument(
             "-b",
@@ -200,7 +206,7 @@ class Task:
             nargs="?",
             const="dbg",
             choices=["dbg", "rls"],
-            help="build before run\n- dbg    debug\n- rls    release",
+            help="build executable before run\n- dbg    debug\n- rls    release",
         )
         parser.add_argument(
             "-s",
@@ -210,7 +216,9 @@ class Task:
             help="build with sanitizer (force to use clang)\n\
 - asan   address sanitizer\n- tsan   thread sanitizer\n- ubsan  undefined behavior sanitizer",
         )
-        parser.add_argument("-a", "--analyze", action="store_true", default=False, help="analyze run log only")
+        parser.add_argument(
+            "-a", "--analyze", action="store_true", default=False, help="analyze run log and report only"
+        )
         parser.add_argument("-d", "--dump", action="store_true", default=False, help="dump run task dictionary only")
 
         self._args = parser.parse_args()
