@@ -473,7 +473,7 @@ public:
     //! @return reference of the InputBuilder object
     InputBuilder<T>& operator=(const InputBuilder& rhs)
     {
-        if (this != &rhs)
+        if (&rhs != this)
         {
             deepCopy(rhs);
         }
@@ -712,7 +712,7 @@ public:
     //! @return reference of the InputBuilder object
     InputBuilder<T>& operator=(const InputBuilder& rhs)
     {
-        if (this != &rhs)
+        if (&rhs != this)
         {
             deepCopy(rhs);
         }

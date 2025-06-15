@@ -143,7 +143,7 @@ Memory<T, BlockSize>::Memory(Memory&& memory) noexcept :
 template <typename T, std::size_t BlockSize>
 Memory<T, BlockSize>& Memory<T, BlockSize>::operator=(Memory&& memory) noexcept
 {
-    if (this != &memory)
+    if (&memory != this)
     {
         std::swap(currentBlock, memory.currentBlock);
         currentSlot = memory.currentSlot;
