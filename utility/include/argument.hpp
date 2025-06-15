@@ -260,7 +260,7 @@ private:
         //! @brief The operator (!=) overloading of Trait class.
         //! @param rhs - right-hand side
         //! @return be not equal or equal
-        bool operator!=(const ArgsNumRange& rhs) const { return !(*this == rhs); }
+        bool operator!=(const ArgsNumRange& rhs) const { return !(rhs == *this); }
 
         //! @brief Check whether the number of arguments is within the range.
         //! @param value - number of arguments
@@ -449,7 +449,7 @@ bool Trait::operator==(const T& rhs) const
 template <typename T>
 bool Trait::operator!=(const T& rhs) const
 {
-    return !(*this == rhs);
+    return !(rhs == *this);
 }
 
 template <typename T>

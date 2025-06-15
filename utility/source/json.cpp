@@ -459,7 +459,7 @@ JSON::JSON(JSON&& json) noexcept : data{std::move(json.data)} // NOLINT(bugprone
 
 JSON& JSON::operator=(JSON&& json) noexcept // NOLINT(bugprone-exception-escape)
 {
-    if (this != &json)
+    if (&json != this)
     {
         data = std::move(json.data);
         json.data = Data{};

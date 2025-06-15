@@ -345,7 +345,7 @@ Argument::Argument(const Argument& arg) :
 
 Argument& Argument::operator=(const Argument& arg)
 {
-    if (this != &arg)
+    if (&arg != this)
     {
         auto temp = arg;
         std::swap(*this, temp);

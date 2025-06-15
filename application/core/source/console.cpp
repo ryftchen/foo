@@ -227,7 +227,7 @@ void Console::saveState()
 
 void Console::reserveConsole()
 {
-    if (this == currentSession)
+    if (currentSession == this)
     {
         return;
     }
