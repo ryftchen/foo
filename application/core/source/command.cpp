@@ -142,8 +142,8 @@ static constexpr std::string_view toString(const Category cat)
 #define COMMAND_CATEGORY_X_MACRO_MAPPING                                                    \
     X(Category::console, "run options in console mode and exit\nseparate with quotes", "c") \
     X(Category::dump   , "dump default configuration and exit"                       , "d") \
-    X(Category::help   , "show help and exit"                                        , "h") \
-    X(Category::version, "show version and exit"                                     , "v")
+    X(Category::help   , "show this help message and exit"                           , "h") \
+    X(Category::version, "show version information and exit"                         , "v")
 // clang-format on
 consteval std::string_view Command::getDescr(const Category cat)
 {

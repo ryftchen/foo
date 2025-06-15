@@ -40,7 +40,7 @@ impl Parser {
         println!("archive server");
         println!();
         println!("options:");
-        println!("  -h, --help            show help and exit");
+        println!("  -h, --help            show this help message and exit");
         println!("  -r {{DIR}}, --root-dir {{DIR}}");
         println!("                        set root directory");
         println!("  -H {{IP}}, --host {{IP}}  set host address");
