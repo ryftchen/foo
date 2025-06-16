@@ -466,7 +466,7 @@ public:
     //! @param rhs - right-hand side
     InputBuilder(const InputBuilder& rhs) : orderedArray{std::make_unique<T[]>(rhs.length + 1)}, length{rhs.length}
     {
-        deepCopy(rhs);
+        clone(rhs);
     }
     //! @brief The operator (!=) overloading of InputBuilder class.
     //! @param rhs - right-hand side
@@ -475,7 +475,7 @@ public:
     {
         if (&rhs != this)
         {
-            deepCopy(rhs);
+            clone(rhs);
         }
 
         return *this;
@@ -544,9 +544,9 @@ private:
 
     //! @brief Deep copy for copy constructor.
     //! @param rhs - right-hand side
-    void deepCopy(const InputBuilder& rhs) const
+    void clone(const InputBuilder& rhs) const
     {
-        if (rhs.orderedArray)
+        if (rhs.orderedArray && orderedArray)
         {
             std::memcpy(orderedArray.get(), rhs.orderedArray.get(), length * sizeof(T));
         }
@@ -705,7 +705,7 @@ public:
     //! @param rhs - right-hand side
     InputBuilder(const InputBuilder& rhs) : randomArray{std::make_unique<T[]>(rhs.length + 1)}, length{rhs.length}
     {
-        deepCopy(rhs);
+        clone(rhs);
     }
     //! @brief The operator (!=) overloading of InputBuilder class.
     //! @param rhs - right-hand side
@@ -714,7 +714,7 @@ public:
     {
         if (&rhs != this)
         {
-            deepCopy(rhs);
+            clone(rhs);
         }
 
         return *this;
@@ -780,9 +780,9 @@ private:
 
     //! @brief Deep copy for copy constructor.
     //! @param rhs - right-hand side
-    void deepCopy(const InputBuilder& rhs) const
+    void clone(const InputBuilder& rhs) const
     {
-        if (rhs.randomArray)
+        if (rhs.randomArray && randomArray)
         {
             std::memcpy(randomArray.get(), rhs.randomArray.get(), length * sizeof(T));
         }
