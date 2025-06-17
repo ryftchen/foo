@@ -757,24 +757,23 @@ void Command::executeInConsole() const
     launchClient(udpClient);
     registerOnConsole(*session, udpClient);
 
-    std::any_of(
-        pendingInputs.cbegin(),
-        pendingInputs.cend(),
-        [&greeting, &session](const auto& opt)
+    for (const auto& opt : pendingInputs)
+    {
+        try
         {
-            try
+            using RetCode = console::Console::RetCode;
+            std::cout << greeting << opt << std::endl;
+            if (session->optionExecutor(opt) == RetCode::quit)
             {
-                using RetCode = console::Console::RetCode;
-                std::cout << greeting << opt << std::endl;
-                return session->optionExecutor(opt) == RetCode::quit;
+                break;
             }
-            catch (const std::exception& err)
-            {
-                LOG_WRN << err.what();
-                interactionLatency();
-            }
-            return false;
-        });
+        }
+        catch (const std::exception& err)
+        {
+            LOG_WRN << err.what();
+            interactionLatency();
+        }
+    }
     udpClient->toSend(buildExitRequest4Client());
     udpClient->waitIfAlive();
     interactionLatency();

@@ -475,18 +475,11 @@ template <typename Derived, typename State>
 template <typename Event>
 inline void FSM<Derived, State>::processEvent(const Event& event)
 {
-    try
-    {
-        const std::lock_guard<std::recursive_mutex> lock(mtx);
-        using Rows = typename ByEventType<Event, typename Derived::TransitionTable>::Type;
-        static_assert(std::is_base_of_v<FSM, Derived>);
-        auto& self = static_cast<Derived&>(*this);
-        state = handleEvent<Event, Rows>::execute(self, event, state);
-    }
-    catch (...)
-    {
-        throw;
-    }
+    const std::lock_guard<std::recursive_mutex> lock(mtx);
+    using Rows = typename ByEventType<Event, typename Derived::TransitionTable>::Type;
+    static_assert(std::is_base_of_v<FSM, Derived>);
+    auto& self = static_cast<Derived&>(*this);
+    state = handleEvent<Event, Rows>::execute(self, event, state);
 }
 
 template <typename Derived, typename State>
