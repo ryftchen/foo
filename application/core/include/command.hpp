@@ -190,18 +190,6 @@ private:
     //! @brief Check for excessive arguments.
     void checkForExcessiveArguments();
 
-    //! @brief Alias for the trait of the registered sub-cli's category.
-    struct RegCatTrait
-    {
-        //! @brief The candidates for the choice.
-        const std::vector<std::string> choices;
-        //! @brief The internal event for applying.
-        const action::EventType event;
-    };
-    //! @brief Alias for the map of sub-cli's category name and RegCatTrait.
-    using RegCatMap = std::map<std::string, RegCatTrait>;
-    //! @brief Alias for the map of sub-cli name and RegCatMap.
-    using RegChoiceMap = std::map<std::string, RegCatMap>;
     //! @brief Get the description.
     //! @param cat - specific value of Category enum
     //! @return description
@@ -215,8 +203,6 @@ private:
     //! @return all choices
     template <typename T>
     static std::vector<std::string> extractChoices();
-    //! @brief Mapping table of all extra choices. Fill as needed.
-    RegChoiceMap extraChoices;
 
     //! @brief Manage tasks.
     class TaskManager
@@ -248,6 +234,19 @@ private:
     class ExtraManager : virtual public TaskManager
     {
     public:
+        //! @brief Alias for the trait of the registered sub-cli's category.
+        struct Trait
+        {
+            //! @brief The candidates for the choice.
+            const std::vector<std::string> choices;
+            //! @brief The internal event for applying.
+            const action::EventType event;
+        };
+        //! @brief Alias for the map of sub-cli's category name and Trait.
+        using CategoryMap = std::map<std::string, Trait>;
+        //! @brief Mapping table of all extra choices. Fill as needed.
+        std::map<std::string, CategoryMap> extraChoiceRegistry;
+
         //! @brief Wrap interfaces to check for existing and reset extra choices.
         struct Intf
         {
@@ -256,10 +255,10 @@ private:
             //! @brief Reset control of the extra choice.
             const std::function<void()> clear;
         };
-        //! @brief Flag for help only.
-        bool extraHelpOnly{false};
         //! @brief Existence status and reset control of the sub-cli to which the extra choices belong.
         std::map<std::string, Intf> extraChecklist;
+        //! @brief Flag for help only.
+        bool extraHelpOnly{false};
 
         //! @brief Check whether any extra choices do not exist.
         //! @return any extra choices do not exist or exist
