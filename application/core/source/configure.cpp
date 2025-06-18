@@ -106,10 +106,10 @@ void Configure::checkObjectInHelperList<log::Log>(const utility::json::JSON& hel
         switch (utility::common::bkdrHash(key.c_str()))
         {
             using utility::common::operator""_bkdrHash, utility::common::EnumCheck;
-            case operator""_bkdrHash(field::filePath.data()):
+            case operator""_bkdrHash(field::filePath):
                 isVerified &= item.isStringType();
                 break;
-            case operator""_bkdrHash(field::priorityLevel.data()):
+            case operator""_bkdrHash(field::priorityLevel):
                 using OutputLevel = log::Log::OutputLevel;
                 isVerified &= item.isIntegralType()
                     && EnumCheck<OutputLevel,
@@ -118,13 +118,13 @@ void Configure::checkObjectInHelperList<log::Log>(const utility::json::JSON& hel
                                  OutputLevel::warning,
                                  OutputLevel::error>::has(item.toIntegral());
                 break;
-            case operator""_bkdrHash(field::targetType.data()):
+            case operator""_bkdrHash(field::targetType):
                 using OutputType = log::Log::OutputType;
                 isVerified &= item.isIntegralType()
                     && EnumCheck<OutputType, OutputType::file, OutputType::terminal, OutputType::all>::has(
                                   item.toIntegral());
                 break;
-            case operator""_bkdrHash(field::writeMode.data()):
+            case operator""_bkdrHash(field::writeMode):
                 using OutputMode = log::Log::OutputMode;
                 isVerified &= item.isIntegralType()
                     && EnumCheck<OutputMode, OutputMode::append, OutputMode::overwrite>::has(item.toIntegral());
@@ -168,17 +168,17 @@ void Configure::checkObjectInHelperList<view::View>(const utility::json::JSON& h
         switch (utility::common::bkdrHash(key.c_str()))
         {
             using utility::common::operator""_bkdrHash;
-            case operator""_bkdrHash(field::tcpHost.data()):
+            case operator""_bkdrHash(field::tcpHost):
                 isVerified &= item.isStringType();
                 break;
-            case operator""_bkdrHash(field::tcpPort.data()):
+            case operator""_bkdrHash(field::tcpPort):
                 isVerified &= item.isIntegralType()
                     && ((item.toIntegral() >= view::minPortNumber) && (item.toIntegral() <= view::maxPortNumber));
                 break;
-            case operator""_bkdrHash(field::udpHost.data()):
+            case operator""_bkdrHash(field::udpHost):
                 isVerified &= item.isStringType();
                 break;
-            case operator""_bkdrHash(field::udpPort.data()):
+            case operator""_bkdrHash(field::udpPort):
                 isVerified &= item.isIntegralType()
                     && ((item.toIntegral() >= view::minPortNumber) && (item.toIntegral() <= view::maxPortNumber));
                 break;
@@ -223,10 +223,10 @@ void Configure::verifyConfigData(const utility::json::JSON& configData)
         switch (utility::common::bkdrHash(key.c_str()))
         {
             using utility::common::operator""_bkdrHash;
-            case operator""_bkdrHash(field::logger.data()):
+            case operator""_bkdrHash(field::logger):
                 checkObjectInHelperList<log::Log>(item);
                 break;
-            case operator""_bkdrHash(field::viewer.data()):
+            case operator""_bkdrHash(field::viewer):
                 checkObjectInHelperList<view::View>(item);
                 break;
             default:
@@ -249,8 +249,7 @@ utility::json::JSON getDefaultConfiguration()
     loggerProperties.at(field::targetType) = static_cast<int>(Log::OutputType::all);
     loggerProperties.at(field::writeMode) = static_cast<int>(Log::OutputMode::append);
     auto loggerRequired = utility::json::array();
-    loggerRequired.append(
-        field::filePath.data(), field::priorityLevel.data(), field::targetType.data(), field::writeMode.data());
+    loggerRequired.append(field::filePath, field::priorityLevel, field::targetType, field::writeMode);
     assert(loggerProperties.size() == loggerRequired.length());
 
     auto viewerProperties = utility::json::object();
@@ -259,25 +258,25 @@ utility::json::JSON getDefaultConfiguration()
     viewerProperties.at(field::udpHost) = "localhost";
     viewerProperties.at(field::udpPort) = 61502;
     auto viewerRequired = utility::json::array();
-    viewerRequired.append(field::tcpHost.data(), field::tcpPort.data(), field::udpHost.data(), field::udpPort.data());
+    viewerRequired.append(field::tcpHost, field::tcpPort, field::udpHost, field::udpPort);
     assert(viewerProperties.size() == viewerRequired.length());
 
     // clang-format off
     return utility::json::JSON
     (
     {
-        field::activateHelper.data(), true,
-        field::helperList.data(), {
-            field::logger.data(), {
-                field::properties.data(), std::move(loggerProperties),
-                field::required.data(), std::move(loggerRequired)
+        field::activateHelper, true,
+        field::helperList, {
+            field::logger, {
+                field::properties, std::move(loggerProperties),
+                field::required, std::move(loggerRequired)
             },
-            field::viewer.data(), {
-                field::properties.data(), std::move(viewerProperties),
-                field::required.data(), std::move(viewerRequired)
+            field::viewer, {
+                field::properties, std::move(viewerProperties),
+                field::required, std::move(viewerRequired)
             }
         },
-        field::helperTimeout.data(), 1000
+        field::helperTimeout, 1000
     }
     );
     // clang-format on
@@ -321,9 +320,9 @@ static bool handleConfigurationException(const std::string_view filePath)
     constexpr std::uint16_t timeoutPeriod = 5000;
     utility::io::waitForUserInput(
         utility::common::wrapClosure(
-            [&](const std::string_view input)
+            [&](const std::string& input)
             {
-                switch (utility::common::bkdrHash(input.data()))
+                switch (utility::common::bkdrHash(input.c_str()))
                 {
                     using utility::common::operator""_bkdrHash;
                     case "y"_bkdrHash:

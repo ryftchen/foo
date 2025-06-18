@@ -42,7 +42,7 @@ public:
     //! @brief Bytes buffer size.
     static constexpr std::uint16_t bufferSize{0xFFFFU};
     //! @brief Enumerate specific socket types.
-    enum Type : int
+    enum Type : std::uint8_t
     {
         //! @brief TCP.
         tcp = ::SOCK_STREAM,
@@ -54,7 +54,7 @@ private:
     //! @brief Flag for asynchronous exit.
     std::atomic<bool> exitReady{false};
     //! @brief Result of asynchronous operations for the non-detached thread.
-    std::future<void> asyncTask{};
+    std::future<void> asyncTask;
     //! @brief Spin lock to synchronize access to the socket.
     mutable ::pthread_spinlock_t sockLock{};
 
@@ -117,14 +117,14 @@ public:
     //! @brief Open a connection on socket FD to peer.
     //! @param ip - peer ip address
     //! @param port - peer port number
-    void toConnect(const std::string_view ip, const std::uint16_t port);
+    void toConnect(const std::string& ip, const std::uint16_t port);
     //! @brief Create a thread to receive.
     //! @param toDetach - whether to detach
     void toReceive(const bool toDetach = false);
     //! @brief Handling on message received.
-    std::function<void(const std::string_view)> onMessageReceived{};
+    std::function<void(const std::string_view)> onMessageReceived;
     //! @brief Handling on raw message received.
-    std::function<void(char*, const int)> onRawMessageReceived{};
+    std::function<void(char*, const int)> onRawMessageReceived;
 
 private:
     //! @brief Receive bytes from socket FD.
@@ -142,7 +142,7 @@ public:
     //! @brief Bind to transport ip address and port number.
     //! @param ip - ip address
     //! @param port - port number
-    void toBind(const std::string_view ip, const std::uint16_t port);
+    void toBind(const std::string& ip, const std::uint16_t port);
     //! @brief Bind to transport port number with default ip address.
     //! @param port - port number
     void toBind(const std::uint16_t port);
@@ -152,7 +152,7 @@ public:
     //! @param toDetach - whether to detach
     void toAccept(const bool toDetach = false);
     //! @brief Handling on new connection.
-    std::function<void(const std::shared_ptr<TCPSocket>)> onNewConnection{};
+    std::function<void(const std::shared_ptr<TCPSocket>)> onNewConnection;
 
 private:
     //! @brief Accept the connection on socket FD.
@@ -174,14 +174,13 @@ public:
     //! @param ip - peer ip address
     //! @param port - peer port number
     //! @return sent size
-    int toSendTo(
-        const char* const bytes, const std::size_t length, const std::string_view ip, const std::uint16_t port);
+    int toSendTo(const char* const bytes, const std::size_t length, const std::string& ip, const std::uint16_t port);
     //! @brief Send the message string on socket FD to peer.
     //! @param message - message string
     //! @param ip - peer ip address
     //! @param port - peer port number
     //! @return sent size
-    int toSendTo(const std::string_view message, const std::string_view ip, const std::uint16_t port);
+    int toSendTo(const std::string_view message, const std::string& ip, const std::uint16_t port);
     //! @brief Send bytes from the buffer to socket FD.
     //! @param bytes - bytes buffer
     //! @param length - length of buffer
@@ -194,7 +193,7 @@ public:
     //! @brief Open a connection on socket FD to peer.
     //! @param ip - peer ip address
     //! @param port - peer port number
-    void toConnect(const std::string_view ip, const std::uint16_t port);
+    void toConnect(const std::string& ip, const std::uint16_t port);
     //! @brief Create a thread to receive.
     //! @param toDetach - whether to detach
     void toReceive(const bool toDetach = false);
@@ -202,9 +201,9 @@ public:
     //! @param toDetach - whether to detach
     void toReceiveFrom(const bool toDetach = false);
     //! @brief Handling on message received.
-    std::function<void(const std::string_view, const std::string_view, const std::uint16_t)> onMessageReceived{};
+    std::function<void(const std::string_view, const std::string&, const std::uint16_t)> onMessageReceived;
     //! @brief Handling on raw message received.
-    std::function<void(char*, const int, const std::string_view, const std::uint16_t)> onRawMessageReceived{};
+    std::function<void(char*, const int, const std::string&, const std::uint16_t)> onRawMessageReceived;
 
 private:
     //! @brief Receive bytes from socket FD.
@@ -222,7 +221,7 @@ public:
     //! @brief Bind to transport ip address and port number.
     //! @param ip - ip address
     //! @param port - port number
-    void toBind(const std::string_view ip, const std::uint16_t port);
+    void toBind(const std::string& ip, const std::uint16_t port);
     //! @brief Bind to transport port number with default ip address.
     //! @param port - port number
     void toBind(const std::uint16_t port);

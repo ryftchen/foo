@@ -122,22 +122,22 @@ public:
     };
 
     //! @brief Bit flags for managing arithmetic methods.
-    std::bitset<Bottom<ArithmeticMethod>::value> arithmeticOpts{};
+    std::bitset<Bottom<ArithmeticMethod>::value> arithmeticOpts;
     //! @brief Bit flags for managing divisor methods.
-    std::bitset<Bottom<DivisorMethod>::value> divisorOpts{};
+    std::bitset<Bottom<DivisorMethod>::value> divisorOpts;
     //! @brief Bit flags for managing integral methods.
-    std::bitset<Bottom<IntegralMethod>::value> integralOpts{};
+    std::bitset<Bottom<IntegralMethod>::value> integralOpts;
     //! @brief Bit flags for managing prime methods.
-    std::bitset<Bottom<PrimeMethod>::value> primeOpts{};
+    std::bitset<Bottom<PrimeMethod>::value> primeOpts;
 
     //! @brief Check whether any numeric choices do not exist.
     //! @return any numeric choices do not exist or exist
-    [[nodiscard]] inline bool empty() const
+    [[nodiscard]] bool empty() const
     {
         return arithmeticOpts.none() && divisorOpts.none() && integralOpts.none() && primeOpts.none();
     }
     //! @brief Reset bit flags that manage numeric choices.
-    inline void reset()
+    void reset()
     {
         arithmeticOpts.reset();
         divisorOpts.reset();
@@ -180,7 +180,7 @@ extern ApplyNumeric& manager() noexcept;
 //! @tparam T - type of target method
 //! @param target - target method
 template <typename T>
-void updateChoice(const std::string_view target);
+void updateChoice(const std::string& target);
 //! @brief Run choices.
 //! @tparam T - type of target method
 //! @param candidates - container for the candidate target methods
@@ -193,7 +193,7 @@ namespace arithmetic
 extern const char* version() noexcept;
 } // namespace arithmetic
 template <>
-void updateChoice<ArithmeticMethod>(const std::string_view target);
+void updateChoice<ArithmeticMethod>(const std::string& target);
 template <>
 void runChoices<ArithmeticMethod>(const std::vector<std::string>& candidates);
 
@@ -203,7 +203,7 @@ namespace divisor
 extern const char* version() noexcept;
 } // namespace divisor
 template <>
-void updateChoice<DivisorMethod>(const std::string_view target);
+void updateChoice<DivisorMethod>(const std::string& target);
 template <>
 void runChoices<DivisorMethod>(const std::vector<std::string>& candidates);
 
@@ -213,7 +213,7 @@ namespace integral
 extern const char* version() noexcept;
 } // namespace integral
 template <>
-void updateChoice<IntegralMethod>(const std::string_view target);
+void updateChoice<IntegralMethod>(const std::string& target);
 template <>
 void runChoices<IntegralMethod>(const std::vector<std::string>& candidates);
 
@@ -223,7 +223,7 @@ namespace prime
 extern const char* version() noexcept;
 } // namespace prime
 template <>
-void updateChoice<PrimeMethod>(const std::string_view target);
+void updateChoice<PrimeMethod>(const std::string& target);
 template <>
 void runChoices<PrimeMethod>(const std::vector<std::string>& candidates);
 } // namespace reg_num
@@ -390,7 +390,7 @@ using Category = ApplyNumeric::Category;
 //! @tparam Cat - specific value of Category enum
 //! @return category name
 template <Category Cat>
-inline consteval std::string_view toString()
+consteval std::string_view toString()
 {
     switch (Cat)
     {
@@ -412,7 +412,7 @@ inline consteval std::string_view toString()
 //! @tparam Cat - specific value of Category enum
 //! @return reference of the category bit flags
 template <Category Cat>
-inline constexpr auto& categoryOpts()
+constexpr auto& categoryOpts()
 {
     return std::invoke(TypeInfo<ApplyNumeric>::fields.find(REFLECTION_STR(toString<Cat>())).value, manager());
 }
@@ -421,7 +421,7 @@ inline constexpr auto& categoryOpts()
 //! @param method - target method
 //! @return abbreviation value
 template <typename T>
-inline consteval std::size_t abbrValue(const T method)
+consteval std::size_t abbrValue(const T method)
 {
     static_assert(Bottom<T>::value == TypeInfo<T>::fields.size);
     std::size_t value = 0;
@@ -443,7 +443,7 @@ inline consteval std::size_t abbrValue(const T method)
 //! @brief Convert method enumeration to string.
 //! @param method - specific value of ArithmeticMethod enum
 //! @return method name
-inline constexpr std::string_view toString(const ArithmeticMethod method)
+constexpr std::string_view toString(const ArithmeticMethod method)
 {
     constexpr std::array<std::string_view, Bottom<ArithmeticMethod>::value> stringify = {
         MACRO_STRINGIFY(addition),
@@ -456,7 +456,7 @@ inline constexpr std::string_view toString(const ArithmeticMethod method)
 //! @brief Convert method enumeration to string.
 //! @param method - specific value of DivisorMethod enum
 //! @return method name
-inline constexpr std::string_view toString(const DivisorMethod method)
+constexpr std::string_view toString(const DivisorMethod method)
 {
     constexpr std::array<std::string_view, Bottom<DivisorMethod>::value> stringify = {
         MACRO_STRINGIFY(euclidean), MACRO_STRINGIFY(stein)};
@@ -466,7 +466,7 @@ inline constexpr std::string_view toString(const DivisorMethod method)
 //! @brief Convert method enumeration to string.
 //! @param method - specific value of IntegralMethod enum
 //! @return method name
-inline constexpr std::string_view toString(const IntegralMethod method)
+constexpr std::string_view toString(const IntegralMethod method)
 {
     constexpr std::array<std::string_view, Bottom<IntegralMethod>::value> stringify = {
         MACRO_STRINGIFY(trapezoidal),
@@ -480,7 +480,7 @@ inline constexpr std::string_view toString(const IntegralMethod method)
 //! @brief Convert method enumeration to string.
 //! @param method - specific value of PrimeMethod enum
 //! @return method name
-inline constexpr std::string_view toString(const PrimeMethod method)
+constexpr std::string_view toString(const PrimeMethod method)
 {
     constexpr std::array<std::string_view, Bottom<PrimeMethod>::value> stringify = {
         MACRO_STRINGIFY(eratosthenes), MACRO_STRINGIFY(euler)};

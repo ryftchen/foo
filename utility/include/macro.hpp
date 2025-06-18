@@ -47,7 +47,7 @@ extern const char* version() noexcept;
 //! @brief Safely ignore all provided arguments.
 //! @tparam Args - type of all provided arguments
 template <typename... Args>
-inline constexpr void ignoreAll(Args&&... /*args*/) noexcept
+constexpr void ignoreAll(Args&&... /*args*/) noexcept
 {
 }
 
@@ -98,7 +98,7 @@ private:
 //! @param deferred - deferred callable
 //! @return deferral
 template <typename T>
-inline constexpr auto makeDeferral(T&& deferred) noexcept
+constexpr auto makeDeferral(T&& deferred) noexcept
 {
     return Defer<std::decay_t<T>>(std::forward<T>(deferred));
 }

@@ -6,7 +6,6 @@
 
 #include "divisor.hpp"
 
-#include <algorithm>
 #include <cmath>
 
 namespace numeric::divisor

@@ -83,7 +83,7 @@ public:
 
 private:
     //! @brief Output stream of the binary search tree structure.
-    std::ostringstream process{};
+    std::ostringstream process;
     //! @brief Indentation size.
     int indent{0};
 };
@@ -158,7 +158,7 @@ public:
 
 private:
     //! @brief Output stream of the AVL tree structure.
-    std::ostringstream process{};
+    std::ostringstream process;
     //! @brief Indentation size.
     int indent{0};
 };
@@ -227,7 +227,7 @@ public:
 
 private:
     //! @brief Output stream of the splay tree structure.
-    std::ostringstream process{};
+    std::ostringstream process;
     //! @brief Indentation size.
     int indent{0};
 };

@@ -25,6 +25,8 @@
 #include "application/pch/precompiled_header.hpp"
 #endif // _PRECOMPILED_HEADER
 
+#include "utility/include/time.hpp"
+
 namespace application::view
 {
 //! @brief Type-length-value scheme.
@@ -43,15 +45,15 @@ enum TLVType : int
     //! @brief Stop.
     stop = 0,
     //! @brief Depend.
-    depend,
+    depend = 1,
     //! @brief Execute.
-    execute,
+    execute = 2,
     //! @brief Journal.
-    journal,
+    journal = 3,
     //! @brief Monitor.
-    monitor,
+    monitor = 4,
     //! @brief Profile.
-    profile
+    profile = 5
 };
 
 //! @brief Value in TLV.
@@ -79,7 +81,7 @@ struct TLVValue
 //! @return summary offset of length-value
 template <typename T>
 requires std::is_arithmetic_v<T>
-static int serialize(data::Packet& pkt, const TLVValue& val, T TLVValue::*pl)
+static int serialize(data::Packet& pkt, const TLVValue& val, T TLVValue::* pl)
 {
     constexpr int length = sizeof(T);
     pkt.write<int>(length);
@@ -110,7 +112,7 @@ static int serialize(data::Packet& pkt, const TLVValue& val, char (TLVValue::*pl
 //! @return summary offset of length-value
 template <typename T>
 requires std::is_arithmetic_v<T>
-static int deserialize(data::Packet& pkt, TLVValue& val, T TLVValue::*pl)
+static int deserialize(data::Packet& pkt, TLVValue& val, T TLVValue::* pl)
 {
     int length = 0;
     pkt.read<int>(&length);
@@ -416,7 +418,7 @@ void View::Access::disableWait() const
     inst.outputCond.notify_one();
 }
 
-int View::buildResponse(const std::string_view reqPlaintext, char* respBuffer)
+int View::buildResponse(const std::string& reqPlaintext, char* respBuffer)
 {
     return std::visit(
         OptionVisitor{
@@ -440,7 +442,7 @@ int View::buildResponse(const std::string_view reqPlaintext, char* respBuffer)
         extractOption(reqPlaintext));
 }
 
-View::OptionType View::extractOption(const std::string_view reqPlaintext)
+View::OptionType View::extractOption(const std::string& reqPlaintext)
 {
     auto args = splitString(reqPlaintext);
     const auto optName = args.empty() ? std::string{} : args.at(0);
@@ -466,10 +468,10 @@ View::OptionType View::extractOption(const std::string_view reqPlaintext)
     return {};
 }
 
-std::vector<std::string> View::splitString(const std::string_view str)
+std::vector<std::string> View::splitString(const std::string& str)
 {
     std::vector<std::string> split{};
-    std::istringstream transfer(str.data());
+    std::istringstream transfer(str);
     std::string token{};
     while (transfer >> token)
     {
@@ -729,12 +731,12 @@ void View::printSharedMemory(const int shmId, const bool withoutPaging)
     }
 }
 
-void View::segmentedOutput(const std::string_view buffer)
+void View::segmentedOutput(const std::string& buffer)
 {
     constexpr std::uint8_t terminalRows = 24;
     constexpr std::string_view prompt = "--- Type <CR> for more, c to continue, n to show next page, q to quit ---: ",
                                escapeClear = "\x1b[1A\x1b[2K\r";
-    std::istringstream transfer(buffer.data());
+    std::istringstream transfer(buffer);
     const std::size_t lineNum =
         std::count(std::istreambuf_iterator<char>(transfer), std::istreambuf_iterator<char>{}, '\n');
     transfer.seekg(std::ios::beg);
@@ -743,7 +745,7 @@ void View::segmentedOutput(const std::string_view buffer)
     std::string line{};
     std::size_t counter = 0;
     const auto handling = utility::common::wrapClosure(
-        [&](const std::string_view input)
+        [&](const std::string& input)
         {
             std::cout << escapeClear << std::flush;
             if (input.empty())
@@ -754,7 +756,7 @@ void View::segmentedOutput(const std::string_view buffer)
             else
             {
                 moreRows = false;
-                switch (utility::common::bkdrHash(input.data()))
+                switch (utility::common::bkdrHash(input.c_str()))
                 {
                     using utility::common::operator""_bkdrHash;
                     case "c"_bkdrHash:
@@ -816,8 +818,8 @@ std::string View::statusReportsPreview(const std::uint16_t frame)
     char cmd[totalLen] = {'\0'};
     std::snprintf(cmd, totalLen, "ps -T -p %d | awk 'NR>1 {split($0, a, \" \"); print a[2]}'", pid);
 
-    constexpr std::string_view focusField = "Name|State|Tgid|Pid|PPid|TracerPid|Uid|Gid|VmSize|VmRSS|CoreDumping|"
-                                            "Threads|SigQ|voluntary_ctxt_switches|nonvoluntary_ctxt_switches";
+    constexpr const char* const focusField = "Name|State|Tgid|Pid|PPid|TracerPid|Uid|Gid|VmSize|VmRSS|CoreDumping|"
+                                             "Threads|SigQ|voluntary_ctxt_switches|nonvoluntary_ctxt_switches";
     const auto queryResult = utility::io::executeCommand(cmd);
     std::vector<std::string> cmdColl{};
     std::size_t pos = 0, prev = 0;
@@ -834,7 +836,7 @@ std::string View::statusReportsPreview(const std::uint16_t frame)
                 tid,
                 pid,
                 tid,
-                focusField.data());
+                focusField);
             frame == 0)
         {
             std::strncpy(cmd + usedLen, "; fi\"", totalLen - usedLen);
@@ -906,7 +908,7 @@ void View::renewServer<utility::socket::UDPServer>()
 {
     udpServer = std::make_shared<utility::socket::UDPServer>();
     udpServer->onMessageReceived =
-        [this](const std::string_view message, const std::string_view ip, const std::uint16_t port)
+        [this](const std::string_view message, const std::string& ip, const std::uint16_t port)
     {
         if (message.empty())
         {
@@ -983,7 +985,7 @@ void View::doRollback()
             tcpServer->toClose();
             tcpServer->waitIfAlive();
         }
-        catch (...)
+        catch (...) // NOLINT(bugprone-empty-catch)
         {
         }
         tcpServer.reset();
@@ -995,7 +997,7 @@ void View::doRollback()
             udpServer->toClose();
             udpServer->waitIfAlive();
         }
-        catch (...)
+        catch (...) // NOLINT(bugprone-empty-catch)
         {
         }
         udpServer.reset();

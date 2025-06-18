@@ -19,6 +19,7 @@
 #endif // _PRECOMPILED_HEADER
 
 #include "utility/include/currying.hpp"
+#include "utility/include/time.hpp"
 
 namespace application::command
 {
@@ -29,13 +30,9 @@ inline namespace
 //! @tparam T - type of helper
 template <typename T>
 concept HelperType = !std::is_constructible_v<T> && !std::is_copy_constructible_v<T> && !std::is_copy_assignable_v<T>
-    && !std::is_move_constructible_v<T> && !std::is_move_assignable_v<T> &&
-    requires (T /*helper*/)
-{
-    {
-        T::getInstance()
-    } -> std::same_as<T&>;
-};
+    && !std::is_move_constructible_v<T> && !std::is_move_assignable_v<T> && requires (T /*helper*/) {
+           { T::getInstance() } -> std::same_as<T&>;
+       };
 
 //! @brief Enumerate specific events to control external helpers.
 enum class ExtEvent : std::uint8_t
@@ -278,11 +275,11 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     auto& algoTable = extraChoices[subCLIAppAlgo.title()];
     checklist.emplace(
         subCLIAppAlgo.title(),
-        ExtraManager::WrapIntf{[]() { return !reg_algo::manager().empty(); }, []() { reg_algo::manager().reset(); }});
+        ExtraManager::Intf{[]() { return !reg_algo::manager().empty(); }, []() { reg_algo::manager().reset(); }});
     subCLIAppAlgo.addDescription(descr<reg_algo::ApplyAlgorithm>());
     subCLIAppAlgo.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
     candidates = extractChoices<reg_algo::MatchMethod>();
-    algoTable.emplace(name<reg_algo::MatchMethod>(), CategoryExtAttr{candidates, reg_algo::MatchMethod{}});
+    algoTable.emplace(name<reg_algo::MatchMethod>(), CategoryExtTrait{candidates, reg_algo::MatchMethod{}});
     subCLIAppAlgo
         .addArgument(
             prefix1 + std::string{alias<reg_algo::MatchMethod>()}, prefix2 + std::string{name<reg_algo::MatchMethod>()})
@@ -298,7 +295,7 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     relatedVersions.emplace(
         RelVerPair{name<reg_algo::ApplyAlgorithm>(), reg_algo::match::version()}, name<reg_algo::MatchMethod>());
     candidates = extractChoices<reg_algo::NotationMethod>();
-    algoTable.emplace(name<reg_algo::NotationMethod>(), CategoryExtAttr{candidates, reg_algo::NotationMethod{}});
+    algoTable.emplace(name<reg_algo::NotationMethod>(), CategoryExtTrait{candidates, reg_algo::NotationMethod{}});
     subCLIAppAlgo
         .addArgument(
             prefix1 + std::string{alias<reg_algo::NotationMethod>()},
@@ -315,7 +312,7 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     relatedVersions.emplace(
         RelVerPair{name<reg_algo::ApplyAlgorithm>(), reg_algo::notation::version()}, name<reg_algo::NotationMethod>());
     candidates = extractChoices<reg_algo::OptimalMethod>();
-    algoTable.emplace(name<reg_algo::OptimalMethod>(), CategoryExtAttr{candidates, reg_algo::OptimalMethod{}});
+    algoTable.emplace(name<reg_algo::OptimalMethod>(), CategoryExtTrait{candidates, reg_algo::OptimalMethod{}});
     subCLIAppAlgo
         .addArgument(
             prefix1 + std::string{alias<reg_algo::OptimalMethod>()},
@@ -332,7 +329,7 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     relatedVersions.emplace(
         RelVerPair{name<reg_algo::ApplyAlgorithm>(), reg_algo::optimal::version()}, name<reg_algo::OptimalMethod>());
     candidates = extractChoices<reg_algo::SearchMethod>();
-    algoTable.emplace(name<reg_algo::SearchMethod>(), CategoryExtAttr{candidates, reg_algo::SearchMethod{}});
+    algoTable.emplace(name<reg_algo::SearchMethod>(), CategoryExtTrait{candidates, reg_algo::SearchMethod{}});
     subCLIAppAlgo
         .addArgument(
             prefix1 + std::string{alias<reg_algo::SearchMethod>()},
@@ -349,7 +346,7 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     relatedVersions.emplace(
         RelVerPair{name<reg_algo::ApplyAlgorithm>(), reg_algo::search::version()}, name<reg_algo::SearchMethod>());
     candidates = extractChoices<reg_algo::SortMethod>();
-    algoTable.emplace(name<reg_algo::SortMethod>(), CategoryExtAttr{candidates, reg_algo::SortMethod{}});
+    algoTable.emplace(name<reg_algo::SortMethod>(), CategoryExtTrait{candidates, reg_algo::SortMethod{}});
     subCLIAppAlgo
         .addArgument(
             prefix1 + std::string{alias<reg_algo::SortMethod>()}, prefix2 + std::string{name<reg_algo::SortMethod>()})
@@ -369,11 +366,11 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     auto& dpTable = extraChoices[subCLIAppDp.title()];
     checklist.emplace(
         subCLIAppDp.title(),
-        ExtraManager::WrapIntf{[]() { return !reg_dp::manager().empty(); }, []() { reg_dp::manager().reset(); }});
+        ExtraManager::Intf{[]() { return !reg_dp::manager().empty(); }, []() { reg_dp::manager().reset(); }});
     subCLIAppDp.addDescription(descr<reg_dp::ApplyDesignPattern>());
     subCLIAppDp.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
     candidates = extractChoices<reg_dp::BehavioralInstance>();
-    dpTable.emplace(name<reg_dp::BehavioralInstance>(), CategoryExtAttr{candidates, reg_dp::BehavioralInstance{}});
+    dpTable.emplace(name<reg_dp::BehavioralInstance>(), CategoryExtTrait{candidates, reg_dp::BehavioralInstance{}});
     subCLIAppDp
         .addArgument(
             prefix1 + std::string{alias<reg_dp::BehavioralInstance>()},
@@ -391,7 +388,7 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
         RelVerPair{name<reg_dp::ApplyDesignPattern>(), reg_dp::behavioral::version()},
         name<reg_dp::BehavioralInstance>());
     candidates = extractChoices<reg_dp::CreationalInstance>();
-    dpTable.emplace(name<reg_dp::CreationalInstance>(), CategoryExtAttr{candidates, reg_dp::CreationalInstance{}});
+    dpTable.emplace(name<reg_dp::CreationalInstance>(), CategoryExtTrait{candidates, reg_dp::CreationalInstance{}});
     subCLIAppDp
         .addArgument(
             prefix1 + std::string{alias<reg_dp::CreationalInstance>()},
@@ -409,7 +406,7 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
         RelVerPair{name<reg_dp::ApplyDesignPattern>(), reg_dp::creational::version()},
         name<reg_dp::CreationalInstance>());
     candidates = extractChoices<reg_dp::StructuralInstance>();
-    dpTable.emplace(name<reg_dp::StructuralInstance>(), CategoryExtAttr{candidates, reg_dp::StructuralInstance{}});
+    dpTable.emplace(name<reg_dp::StructuralInstance>(), CategoryExtTrait{candidates, reg_dp::StructuralInstance{}});
     subCLIAppDp
         .addArgument(
             prefix1 + std::string{alias<reg_dp::StructuralInstance>()},
@@ -431,11 +428,11 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     auto& dsTable = extraChoices[subCLIAppDs.title()];
     checklist.emplace(
         subCLIAppDs.title(),
-        ExtraManager::WrapIntf{[]() { return !reg_ds::manager().empty(); }, []() { reg_ds::manager().reset(); }});
+        ExtraManager::Intf{[]() { return !reg_ds::manager().empty(); }, []() { reg_ds::manager().reset(); }});
     subCLIAppDs.addDescription(descr<reg_ds::ApplyDataStructure>());
     subCLIAppDs.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
     candidates = extractChoices<reg_ds::LinearInstance>();
-    dsTable.emplace(name<reg_ds::LinearInstance>(), CategoryExtAttr{candidates, reg_ds::LinearInstance{}});
+    dsTable.emplace(name<reg_ds::LinearInstance>(), CategoryExtTrait{candidates, reg_ds::LinearInstance{}});
     subCLIAppDs
         .addArgument(
             prefix1 + std::string{alias<reg_ds::LinearInstance>()},
@@ -452,7 +449,7 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     relatedVersions.emplace(
         RelVerPair{name<reg_ds::ApplyDataStructure>(), reg_ds::linear::version()}, name<reg_ds::LinearInstance>());
     candidates = extractChoices<reg_ds::TreeInstance>();
-    dsTable.emplace(name<reg_ds::TreeInstance>(), CategoryExtAttr{candidates, reg_ds::TreeInstance{}});
+    dsTable.emplace(name<reg_ds::TreeInstance>(), CategoryExtTrait{candidates, reg_ds::TreeInstance{}});
     subCLIAppDs
         .addArgument(
             prefix1 + std::string{alias<reg_ds::TreeInstance>()}, prefix2 + std::string{name<reg_ds::TreeInstance>()})
@@ -472,11 +469,11 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     auto& numTable = extraChoices[subCLIAppNum.title()];
     checklist.emplace(
         subCLIAppNum.title(),
-        ExtraManager::WrapIntf{[]() { return !reg_num::manager().empty(); }, []() { reg_num::manager().reset(); }});
+        ExtraManager::Intf{[]() { return !reg_num::manager().empty(); }, []() { reg_num::manager().reset(); }});
     subCLIAppNum.addDescription(descr<reg_num::ApplyNumeric>());
     subCLIAppNum.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
     candidates = extractChoices<reg_num::ArithmeticMethod>();
-    numTable.emplace(name<reg_num::ArithmeticMethod>(), CategoryExtAttr{candidates, reg_num::ArithmeticMethod{}});
+    numTable.emplace(name<reg_num::ArithmeticMethod>(), CategoryExtTrait{candidates, reg_num::ArithmeticMethod{}});
     subCLIAppNum
         .addArgument(
             prefix1 + std::string{alias<reg_num::ArithmeticMethod>()},
@@ -493,7 +490,7 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     relatedVersions.emplace(
         RelVerPair{name<reg_num::ApplyNumeric>(), reg_num::arithmetic::version()}, name<reg_num::ArithmeticMethod>());
     candidates = extractChoices<reg_num::DivisorMethod>();
-    numTable.emplace(name<reg_num::DivisorMethod>(), CategoryExtAttr{candidates, reg_num::DivisorMethod{}});
+    numTable.emplace(name<reg_num::DivisorMethod>(), CategoryExtTrait{candidates, reg_num::DivisorMethod{}});
     subCLIAppNum
         .addArgument(
             prefix1 + std::string{alias<reg_num::DivisorMethod>()},
@@ -510,7 +507,7 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     relatedVersions.emplace(
         RelVerPair{name<reg_num::ApplyNumeric>(), reg_num::divisor::version()}, name<reg_num::DivisorMethod>());
     candidates = extractChoices<reg_num::IntegralMethod>();
-    numTable.emplace(name<reg_num::IntegralMethod>(), CategoryExtAttr{candidates, reg_num::IntegralMethod{}});
+    numTable.emplace(name<reg_num::IntegralMethod>(), CategoryExtTrait{candidates, reg_num::IntegralMethod{}});
     subCLIAppNum
         .addArgument(
             prefix1 + std::string{alias<reg_num::IntegralMethod>()},
@@ -527,7 +524,7 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     relatedVersions.emplace(
         RelVerPair{name<reg_num::ApplyNumeric>(), reg_num::integral::version()}, name<reg_num::IntegralMethod>());
     candidates = extractChoices<reg_num::PrimeMethod>();
-    numTable.emplace(name<reg_num::PrimeMethod>(), CategoryExtAttr{candidates, reg_num::PrimeMethod{}});
+    numTable.emplace(name<reg_num::PrimeMethod>(), CategoryExtTrait{candidates, reg_num::PrimeMethod{}});
     subCLIAppNum
         .addArgument(
             prefix1 + std::string{alias<reg_num::PrimeMethod>()}, prefix2 + std::string{name<reg_num::PrimeMethod>()})
@@ -617,9 +614,9 @@ void Command::precheck()
             for (const auto& target : subCLI.get<std::vector<std::string>>(categoryName))
             {
                 std::visit(
-                    action::EvtVisitor{[this, &target](auto&& event) {
-                        applyingForwarder.onMessage(action::UpdateChoice<std::decay_t<decltype(event)>>{target});
-                    }},
+                    action::EvtVisitor{
+                        [this, &target](auto&& event)
+                        { applyingForwarder.onMessage(action::UpdateChoice<std::decay_t<decltype(event)>>{target}); }},
                     categoryAttr.event);
             }
         }
@@ -664,9 +661,9 @@ void Command::dispatch()
                  | std::views::values | std::views::join)
         {
             std::visit(
-                action::EvtVisitor{[this, &candidates = categoryAttr.choices](auto&& event) {
-                    applyingForwarder.onMessage(action::RunChoices<std::decay_t<decltype(event)>>{candidates});
-                }},
+                action::EvtVisitor{
+                    [this, &candidates = categoryAttr.choices](auto&& event)
+                    { applyingForwarder.onMessage(action::RunChoices<std::decay_t<decltype(event)>>{candidates}); }},
                 categoryAttr.event);
         }
     }
@@ -718,7 +715,7 @@ template <>
 void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::socket::UDPSocket>& client)
 {
     client->onRawMessageReceived =
-        [&client](char* buffer, const int length, const std::string_view /*ip*/, const std::uint16_t /*port*/)
+        [&client](char* buffer, const int length, const std::string& /*ip*/, const std::uint16_t /*port*/)
     {
         try
         {

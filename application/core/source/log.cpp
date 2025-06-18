@@ -16,6 +16,8 @@
 #include "application/pch/precompiled_header.hpp"
 #endif // _PRECOMPILED_HEADER
 
+#include "utility/include/time.hpp"
+
 namespace application::log
 {
 //! @brief Anonymous namespace.
@@ -26,15 +28,15 @@ struct HlRegex
 {
     //! @brief Alternatives to predefined level prefix highlighting.
     const std::vector<std::pair<std::regex, std::string>> predefinedLevelPrefixes{
-        {std::regex{debugLevelPrefixRegex.data()}, std::string{debugLevelPrefixWithColor}},
-        {std::regex{infoLevelPrefixRegex.data()}, std::string{infoLevelPrefixWithColor}},
-        {std::regex{warningLevelPrefixRegex.data()}, std::string{warningLevelPrefixWithColor}},
-        {std::regex{errorLevelPrefixRegex.data()}, std::string{errorLevelPrefixWithColor}},
-        {std::regex{traceLevelPrefixRegex.data()}, std::string{traceLevelPrefixWithColor}}};
+        {std::regex{std::string{debugLevelPrefixRegex}}, std::string{debugLevelPrefixWithColor}},
+        {std::regex{std::string{infoLevelPrefixRegex}}, std::string{infoLevelPrefixWithColor}},
+        {std::regex{std::string{warningLevelPrefixRegex}}, std::string{warningLevelPrefixWithColor}},
+        {std::regex{std::string{errorLevelPrefixRegex}}, std::string{errorLevelPrefixWithColor}},
+        {std::regex{std::string{traceLevelPrefixRegex}}, std::string{traceLevelPrefixWithColor}}};
     //! @brief Identity segments for basic highlighting (date time, code file, etc.).
     const std::vector<std::pair<std::regex, std::string>> identitySegments{
-        {std::regex{dateTimeRegex.data()}, std::string{dateTimeBaseColor}},
-        {std::regex{codeFileRegex.data()}, std::string{codeFileBaseColor}}};
+        {std::regex{std::string{dateTimeRegex}}, std::string{dateTimeBaseColor}},
+        {std::regex{std::string{codeFileRegex}}, std::string{codeFileBaseColor}}};
 };
 } // namespace
 

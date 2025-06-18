@@ -12,6 +12,7 @@
 #include <forward_list>
 #include <iostream>
 #include <source_location>
+#include <sstream>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // _PRECOMPILED_HEADER
@@ -19,7 +20,6 @@
 #include "utility/include/common.hpp"
 #include "utility/include/fsm.hpp"
 #include "utility/include/io.hpp"
-#include "utility/include/time.hpp"
 
 //! @brief Log with debug level.
 #define LOG_DBG application::log::Log::Holder<application::log::Log::OutputLevel::debug>().stream()
@@ -234,10 +234,10 @@ public:
 
         //! @brief Get the log file path.
         //! @return log file path
-        [[nodiscard]] inline std::string getFilePath() const noexcept { return inst.filePath; }
+        [[nodiscard]] std::string getFilePath() const noexcept { return inst.filePath; }
         //! @brief Get the log file lock.
         //! @return log file lock
-        [[nodiscard]] inline utility::common::ReadWriteLock& getFileLock() const noexcept { return inst.fileLock; }
+        [[nodiscard]] utility::common::ReadWriteLock& getFileLock() const noexcept { return inst.fileLock; }
 
     private:
         //! @brief Instance to be accessed.
@@ -256,7 +256,7 @@ public:
         const OutputLevel severity,
         const std::string_view srcFile,
         const std::uint32_t srcLine,
-        const std::string_view format,
+        const std::string& format,
         Args&&... args);
     //! @brief Log output for modern (format style).
     //! @tparam Args - type of arguments of log format
@@ -286,13 +286,13 @@ public:
 
         //! @brief Get the output stream for flushing.
         //! @return reference of the output stream object, which is on string based
-        inline std::ostringstream& stream() { return output; }
+        std::ostringstream& stream() { return output; }
 
     private:
         //! @brief Output stream for flushing.
-        std::ostringstream output{};
+        std::ostringstream output;
         //! @brief Source location.
-        const std::source_location location{};
+        const std::source_location location;
     };
 
     static_assert((sourceDirectory.front() == '/') && (sourceDirectory.back() == '/'));
@@ -312,11 +312,11 @@ private:
     //! @brief Timeout period (ms) to waiting for the logger to change to the target state.
     const std::uint32_t timeoutPeriod{static_cast<std::uint32_t>(configure::detail::helperTimeout())};
     //! @brief The queue of logs.
-    std::queue<std::string> logQueue{};
+    std::queue<std::string> logQueue;
     //! @brief Mutex for controlling daemon.
-    mutable std::mutex daemonMtx{};
+    mutable std::mutex daemonMtx;
     //! @brief The synchronization condition for daemon. Use with daemonMtx.
-    std::condition_variable daemonCond{};
+    std::condition_variable daemonCond;
     //! @brief Flag to indicate whether it is logging.
     std::atomic<bool> ongoing{false};
     //! @brief Flag for rollback request.
@@ -332,11 +332,11 @@ private:
     //! @brief Writer of the log content.
     utility::io::FileWriter logWriter{filePath};
     //! @brief Operation lock for the log file.
-    utility::common::ReadWriteLock fileLock{};
+    utility::common::ReadWriteLock fileLock;
     //! @brief The cache logs that could not be processed properly.
-    std::forward_list<std::string> unprocessedCache{};
+    std::forward_list<std::string> unprocessedCache;
     //! @brief Spin lock for controlling cache.
-    mutable utility::common::SpinLock cacheSwitch{};
+    mutable utility::common::SpinLock cacheSwitch;
 
     //! @brief Alias for the lock mode.
     using LockMode = utility::common::ReadWriteLock::LockMode;
@@ -452,7 +452,7 @@ void Log::printfStyle(
     const OutputLevel severity,
     const std::string_view srcFile,
     const std::uint32_t srcLine,
-    const std::string_view format,
+    const std::string& format,
     Args&&... args)
 {
     if (configure::detail::activateHelper())
@@ -460,13 +460,13 @@ void Log::printfStyle(
         getInstance().flush(
             severity,
             createLabelTemplate(srcFile, srcLine),
-            utility::common::printfString(format.data(), std::forward<Args>(args)...));
+            utility::common::printfString(format.c_str(), std::forward<Args>(args)...));
         return;
     }
 
     const auto rows = reformatContents(
         std::string{sourceDirectory.substr(1, sourceDirectory.length() - 2)} + ": ",
-        utility::common::printfString(format.data(), std::forward<Args>(args)...));
+        utility::common::printfString(format.c_str(), std::forward<Args>(args)...));
     std::for_each(rows.cbegin(), rows.cend(), [](const auto& output) { std::clog << output << std::endl; });
 }
 
@@ -483,13 +483,13 @@ void Log::formatStyle(
         getInstance().flush(
             severity,
             createLabelTemplate(srcFile, srcLine),
-            std::vformat(format.get(), std::make_format_args(args...)));
+            std::vformat(format.get(), std::make_format_args(std::forward<Args>(args)...)));
         return;
     }
 
     const auto rows = reformatContents(
         std::string{sourceDirectory.substr(1, sourceDirectory.length() - 2)} + ": ",
-        std::vformat(format.get(), std::make_format_args(args...)));
+        std::vformat(format.get(), std::make_format_args(std::forward<Args>(args)...)));
     std::for_each(rows.cbegin(), rows.cend(), [](const auto& output) { std::clog << output << std::endl; });
 }
 

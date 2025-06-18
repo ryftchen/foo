@@ -66,19 +66,19 @@ public:
         //! @tparam T - type of target string
         //! @return be custom string type or not
         template <typename T>
-        static inline consteval bool is(const T /*str*/ = {})
+        static consteval bool is(const T /*str*/ = {})
         {
             return std::is_same_v<T, String>;
         }
         //! @brief Get the string data.
         //! @return string data
-        static inline consteval auto data() { return Str.data; }
+        static consteval auto data() { return Str.data; }
         //! @brief Get the string size.
         //! @return string size
-        static inline consteval auto size() { return Str.size; }
+        static consteval auto size() { return Str.size; }
         //! @brief Get the string for view only.
         //! @return string data for view only
-        static inline consteval std::basic_string_view<Char> view() { return Str.data; }
+        static consteval std::basic_string_view<Char> view() { return Str.data; }
     };
 
     //! @brief Finding by condition.
@@ -89,7 +89,7 @@ public:
     //! @param sequence - sequences related to arguments
     //! @return value index
     template <typename Lit, typename Func>
-    static inline constexpr std::size_t findIf(const Lit lit, Func&& func, const std::index_sequence<>& sequence);
+    static constexpr std::size_t findIf(const Lit lit, Func&& func, const std::index_sequence<>& sequence);
     //! @brief Finding by condition.
     //! @tparam Lit - type of string literal
     //! @tparam Func - type of callable function
@@ -100,8 +100,7 @@ public:
     //! @param sequence - sequences related to arguments
     //! @return value index
     template <typename Lit, typename Func, std::size_t N0, std::size_t... Ns>
-    static inline constexpr std::size_t findIf(
-        const Lit lit, Func&& func, const std::index_sequence<N0, Ns...>& sequence);
+    static constexpr std::size_t findIf(const Lit lit, Func&& func, const std::index_sequence<N0, Ns...>& sequence);
     //! @brief Calculate accumulation.
     //! @tparam Lit - type of string literal
     //! @tparam Func - type of callable function
@@ -112,7 +111,7 @@ public:
     //! @param sequence - sequences related to arguments
     //! @return result of accumulation
     template <typename Lit, typename Func, typename Ret>
-    static inline constexpr auto acc(const Lit lit, Func&& func, Ret ret, const std::index_sequence<>& sequence);
+    static constexpr auto acc(const Lit lit, Func&& func, Ret ret, const std::index_sequence<>& sequence);
     //! @brief Calculate accumulation.
     //! @tparam Lit - type of string literal
     //! @tparam Func - type of callable function
@@ -125,8 +124,7 @@ public:
     //! @param sequence - sequences related to arguments
     //! @return result of accumulation
     template <typename Lit, typename Func, typename Ret, std::size_t N0, std::size_t... Ns>
-    static inline constexpr auto acc(
-        const Lit lit, Func&& func, Ret ret, const std::index_sequence<N0, Ns...>& sequence);
+    static constexpr auto acc(const Lit lit, Func&& func, Ret ret, const std::index_sequence<N0, Ns...>& sequence);
     //! @brief Calculate accumulation by the DFS algorithm.
     //! @tparam D - degree of depth
     //! @tparam T - type of type information
@@ -137,7 +135,7 @@ public:
     //! @param ret - return value
     //! @return result of the accumulation
     template <std::size_t D, typename T, typename Ret, typename Func>
-    static inline constexpr auto dfsAcc(const T info, Func&& func, Ret ret);
+    static constexpr auto dfsAcc(const T info, Func&& func, Ret ret);
     //! @brief Traverse the variable of node v in the DFS algorithm.
     //! @tparam T - type of type information
     //! @tparam U - type of object to be traversed
@@ -146,40 +144,36 @@ public:
     //! @param obj - object to be traversed
     //! @param func - callable function
     template <typename T, typename U, typename Func>
-    static inline constexpr void varInNodeV(const T info, U&& obj, Func&& func);
+    static constexpr void varInNodeV(const T info, U&& obj, Func&& func);
 };
 
 template <typename Lit, typename Func>
-inline constexpr std::size_t Reflect::findIf(
-    const Lit /*lit*/, Func&& /*func*/, const std::index_sequence<>& /*sequence*/)
+constexpr std::size_t Reflect::findIf(const Lit /*lit*/, Func&& /*func*/, const std::index_sequence<>& /*sequence*/)
 {
     return -1;
 }
 
 template <typename Lit, typename Func, std::size_t N0, std::size_t... Ns>
-inline constexpr std::size_t Reflect::findIf(
-    const Lit lit, Func&& func, const std::index_sequence<N0, Ns...>& /*sequence*/)
+constexpr std::size_t Reflect::findIf(const Lit lit, Func&& func, const std::index_sequence<N0, Ns...>& /*sequence*/)
 {
     return func(lit.template get<N0>()) ? N0 : findIf(lit, std::forward<Func>(func), std::index_sequence<Ns...>{});
 }
 
 template <typename Lit, typename Func, typename Ret>
-inline constexpr auto Reflect::acc(
-    const Lit /*lit*/, Func&& /*func*/, Ret ret, const std::index_sequence<>& /*sequence*/)
+constexpr auto Reflect::acc(const Lit /*lit*/, Func&& /*func*/, Ret ret, const std::index_sequence<>& /*sequence*/)
 {
     return ret;
 }
 
 template <typename Lit, typename Func, typename Ret, std::size_t N0, std::size_t... Ns>
-inline constexpr auto Reflect::acc(
-    const Lit lit, Func&& func, Ret ret, const std::index_sequence<N0, Ns...>& /*sequence*/)
+constexpr auto Reflect::acc(const Lit lit, Func&& func, Ret ret, const std::index_sequence<N0, Ns...>& /*sequence*/)
 {
     return acc(
         lit, std::forward<Func>(func), func(std::move(ret), lit.template get<N0>()), std::index_sequence<Ns...>{});
 }
 
 template <std::size_t D, typename T, typename Ret, typename Func>
-inline constexpr auto Reflect::dfsAcc(const T info, Func&& func, Ret ret)
+constexpr auto Reflect::dfsAcc(const T info, Func&& func, Ret ret)
 {
     return info.bases.accumulate(
         std::move(ret),
@@ -198,7 +192,7 @@ inline constexpr auto Reflect::dfsAcc(const T info, Func&& func, Ret ret)
 }
 
 template <typename T, typename U, typename Func>
-inline constexpr void Reflect::varInNodeV(const T /*info*/, U&& obj, Func&& func)
+constexpr void Reflect::varInNodeV(const T /*info*/, U&& obj, Func&& func)
 {
     T::fields.forEach(
         [&](const auto fld)
@@ -302,7 +296,7 @@ struct ElemList
     //! @param func - callable function
     //! @return result of accumulation
     template <typename Init, typename Func>
-    inline constexpr auto accumulate(Init init, Func&& func) const
+    constexpr auto accumulate(Init init, Func&& func) const
     {
         return Reflect::acc(*this, std::forward<Func>(func), std::move(init), std::make_index_sequence<size>{});
     }
@@ -310,7 +304,7 @@ struct ElemList
     //! @tparam Func - type of callable function
     //! @param func - callable function
     template <typename Func>
-    inline constexpr void forEach(Func&& func) const
+    constexpr void forEach(Func&& func) const
     {
         accumulate(
             0,
@@ -324,7 +318,7 @@ struct ElemList
     //! @tparam Str - type of custom string
     //! @return contain or not contain
     template <typename Str>
-    static inline constexpr bool contain(const Str /*str*/ = {})
+    static constexpr bool contain(const Str /*str*/ = {})
     {
         return (Es::NameType::template is<Str>() || ...);
     }
@@ -333,7 +327,7 @@ struct ElemList
     //! @param func - callable function
     //! @return value index
     template <typename Func>
-    inline constexpr std::size_t findIf(Func&& func) const
+    constexpr std::size_t findIf(Func&& func) const
     {
         return Reflect::findIf(*this, std::forward<Func>(func), std::make_index_sequence<size>{});
     }
@@ -341,7 +335,7 @@ struct ElemList
     //! @tparam Str - type of custom string
     //! @return value index
     template <typename Str>
-    inline constexpr const auto& find(const Str /*str*/ = {}) const
+    constexpr const auto& find(const Str /*str*/ = {}) const
     {
         constexpr std::size_t index = []() constexpr
         {
@@ -362,7 +356,7 @@ struct ElemList
     //! @param val - target value
     //! @return value index
     template <typename T>
-    inline constexpr std::size_t findValue(const T val) const
+    constexpr std::size_t findValue(const T val) const
     {
         return findIf([&val](const auto elem) { return elem == val; });
     }
@@ -372,7 +366,7 @@ struct ElemList
     //! @param name - value name
     //! @return pointer of value
     template <typename T, typename Str>
-    inline constexpr const T* valuePtrOfName(const Str name) const
+    constexpr const T* valuePtrOfName(const Str name) const
     {
         return accumulate(
             nullptr,
@@ -394,7 +388,7 @@ struct ElemList
     //! @param name - value name
     //! @return reference of value
     template <typename T, typename Str>
-    inline constexpr const T& valueOfName(const Str name) const
+    constexpr const T& valueOfName(const Str name) const
     {
         return *valuePtrOfName<T>(name);
     }
@@ -404,7 +398,7 @@ struct ElemList
     //! @param val - target value
     //! @return value name
     template <typename T, typename Char = char>
-    inline constexpr auto nameOfValue(const T val) const
+    constexpr auto nameOfValue(const T val) const
     {
         return accumulate(
             std::basic_string_view<Char>{},
@@ -415,7 +409,7 @@ struct ElemList
     //! @param elem - target element
     //! @return position after pushing
     template <typename Elem>
-    inline constexpr auto push(const Elem elem) const
+    constexpr auto push(const Elem elem) const
     {
         return std::apply([&elem](const auto... es) { return ElemList<Es..., Elem>{es..., elem}; }, elems);
     }
@@ -424,7 +418,7 @@ struct ElemList
     //! @param elem - target element
     //! @return position after inserting
     template <typename Elem>
-    inline constexpr auto insert(const Elem elem) const
+    constexpr auto insert(const Elem elem) const
     {
         if constexpr ((std::is_same_v<Es, Elem> || ...))
         {
@@ -439,7 +433,7 @@ struct ElemList
     //! @tparam N - value index
     //! @return target value
     template <std::size_t N>
-    [[nodiscard]] inline constexpr const auto& get() const
+    [[nodiscard]] constexpr const auto& get() const
     {
         return std::get<N>(elems);
     }
@@ -588,24 +582,24 @@ struct TypeInfoBase
     //! @param derived - derived class object
     //! @return base class object
     template <typename U>
-    static inline constexpr auto&& forward(U&& derived)
+    static constexpr auto&& forward(U&& derived)
     {
         if constexpr (std::is_same_v<std::decay_t<U>, U>)
         {
-            return static_cast<Type&&>(derived);
+            return static_cast<Type&&>(std::forward<U>(derived));
         }
         else if constexpr (std::is_same_v<std::decay_t<U>&, U>)
         {
-            return static_cast<Type&>(derived);
+            return static_cast<Type&>(std::forward<U>(derived));
         }
         else
         {
-            return static_cast<const std::decay_t<U>&>(derived);
+            return static_cast<const std::decay_t<U>&>(std::forward<U>(derived));
         }
     }
     //! @brief Get all virtual base class objects.
     //! @return accumulation of virtual base class
-    static inline constexpr auto virtualBases()
+    static constexpr auto virtualBases()
     {
         return bases.accumulate(
             ElemList<>{},
@@ -630,7 +624,7 @@ struct TypeInfoBase
     //! @param func - callable function
     //! @return result of accumulation
     template <typename Ret, typename Func>
-    static inline constexpr auto dfsAcc(Ret ret, Func&& func)
+    static constexpr auto dfsAcc(Ret ret, Func&& func)
     {
         return Reflect::dfsAcc<0>(
             TypeInfo<Type>{},
@@ -643,7 +637,7 @@ struct TypeInfoBase
     //! @tparam Func - type of callable function
     //! @param func - callable function
     template <typename Func>
-    static inline constexpr void dfsForEach(Func&& func)
+    static constexpr void dfsForEach(Func&& func)
     {
         dfsAcc(
             0,
@@ -659,7 +653,7 @@ struct TypeInfoBase
     //! @param obj - object to be traversed
     //! @param func - callable function
     template <typename U, typename Func>
-    static inline constexpr void forEachVarOf(U&& obj, Func&& func)
+    static constexpr void forEachVarOf(U&& obj, Func&& func)
     {
         virtualBases().forEach(
             [&](const auto vb)

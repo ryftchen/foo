@@ -55,7 +55,7 @@ public:
 
 private:
     //! @brief The adaptee.
-    std::unique_ptr<Adaptee> adaptee{};
+    std::unique_ptr<Adaptee> adaptee;
 };
 
 extern std::ostringstream& output() noexcept;
@@ -123,7 +123,7 @@ public:
 
 private:
     //! @brief The implementor.
-    const std::unique_ptr<Implementor> implementor{};
+    const std::unique_ptr<Implementor> implementor;
 };
 
 extern std::ostringstream& output() noexcept;
@@ -174,7 +174,7 @@ public:
 
 private:
     //! @brief Child components.
-    std::vector<std::shared_ptr<Component>> children{};
+    std::vector<std::shared_ptr<Component>> children;
 };
 
 //! @brief The behavior of the element that has no child in the composition.
@@ -238,7 +238,7 @@ public:
 
 private:
     //! @brief The component.
-    const std::shared_ptr<Component> component{};
+    const std::shared_ptr<Component> component;
 };
 
 //! @brief The concrete decorator.
@@ -309,11 +309,11 @@ public:
 
 private:
     //! @brief Subsystem A.
-    const std::shared_ptr<SubsystemA> subsystemA{};
+    const std::shared_ptr<SubsystemA> subsystemA;
     //! @brief Subsystem B.
-    const std::shared_ptr<SubsystemB> subsystemB{};
+    const std::shared_ptr<SubsystemB> subsystemB;
     //! @brief Subsystem C.
-    const std::shared_ptr<SubsystemC> subsystemC{};
+    const std::shared_ptr<SubsystemC> subsystemC;
 };
 
 extern std::ostringstream& output() noexcept;
@@ -383,7 +383,7 @@ public:
 
 private:
     //! @brief The flies.
-    std::map<int, std::unique_ptr<Flyweight>> flies{};
+    std::map<int, std::unique_ptr<Flyweight>> flies;
 };
 
 extern std::ostringstream& output() noexcept;
@@ -423,7 +423,7 @@ public:
 
 private:
     //! @brief Real subject.
-    std::unique_ptr<RealSubject> subject{};
+    std::unique_ptr<RealSubject> subject;
 
 protected:
     //! @brief Get the real subject.

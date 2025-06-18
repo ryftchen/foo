@@ -83,7 +83,7 @@ public:
 
     //! @brief Get the pair of integers.
     //! @return pair of integers
-    [[nodiscard]] inline std::pair<std::int32_t, std::int32_t> getIntegers() const
+    [[nodiscard]] std::pair<std::int32_t, std::int32_t> getIntegers() const
     {
         return std::make_pair(integer1, integer2);
     }
@@ -152,7 +152,7 @@ public:
 
     //! @brief Get the pair of integers.
     //! @return pair of integers
-    [[nodiscard]] inline std::pair<std::int32_t, std::int32_t> getIntegers() const
+    [[nodiscard]] std::pair<std::int32_t, std::int32_t> getIntegers() const
     {
         return std::make_pair(integer1, integer2);
     }
@@ -244,7 +244,7 @@ public:
     //! @brief The operator (()) overloading of Griewank class.
     //! @param x - independent variable
     //! @return dependent variable
-    double operator()(const double x) const override { return 1.0 + 1.0 / 4000.0 * x * x - std::cos(x); }
+    double operator()(const double x) const override { return 1.0 + (1.0 / 4000.0 * x * x) - std::cos(x); }
 
     //! @brief Left endpoint.
     static constexpr double range1{-600.0};
@@ -312,18 +312,18 @@ public:
 
     //! @brief Get the target expression.
     //! @return target expression
-    [[nodiscard]] inline Expression getExpression() const { return expression; }
+    [[nodiscard]] Expression getExpression() const { return expression; }
     //! @brief Get the pair of ranges.
     //! @return pair of ranges
-    [[nodiscard]] inline std::pair<double, double> getRanges() const { return std::make_pair(range1, range2); }
+    [[nodiscard]] std::pair<double, double> getRanges() const { return std::make_pair(range1, range2); }
 
 private:
     //! @brief Target expression.
-    const Expression expression{};
+    const Expression expression;
     //! @brief Lower endpoint.
-    const double range1{};
+    const double range1{0.0};
     //! @brief Upper endpoint.
-    const double range2{};
+    const double range2{0.0};
 };
 } // namespace integral
 extern void applyingIntegral(const std::vector<std::string>& candidates);
@@ -378,7 +378,7 @@ public:
 
     //! @brief Get the Maximum positive integer.
     //! @return maximum positive integer
-    [[nodiscard]] inline std::uint32_t getMaxPositiveInteger() const { return maxPositiveInteger; }
+    [[nodiscard]] std::uint32_t getMaxPositiveInteger() const { return maxPositiveInteger; }
     //! @brief Splice all integers for printing.
     //! @tparam T - type of container
     //! @param container - integer container

@@ -80,15 +80,15 @@ public:
     };
 
     //! @brief Bit flags for managing linear instances.
-    std::bitset<Bottom<LinearInstance>::value> linearOpts{};
+    std::bitset<Bottom<LinearInstance>::value> linearOpts;
     //! @brief Bit flags for managing tree instances.
-    std::bitset<Bottom<TreeInstance>::value> treeOpts{};
+    std::bitset<Bottom<TreeInstance>::value> treeOpts;
 
     //! @brief Check whether any data structure choices do not exist.
     //! @return any data structure choices do not exist or exist
-    [[nodiscard]] inline bool empty() const { return linearOpts.none() && treeOpts.none(); }
+    [[nodiscard]] bool empty() const { return linearOpts.none() && treeOpts.none(); }
     //! @brief Reset bit flags that manage data structure choices.
-    inline void reset()
+    void reset()
     {
         linearOpts.reset();
         treeOpts.reset();
@@ -123,7 +123,7 @@ extern ApplyDataStructure& manager() noexcept;
 //! @tparam T - type of target instance
 //! @param target - target instance
 template <typename T>
-void updateChoice(const std::string_view target);
+void updateChoice(const std::string& target);
 //! @brief Run choices.
 //! @tparam T - type of target instance
 //! @param candidates - container for the candidate target instances
@@ -136,7 +136,7 @@ namespace linear
 extern const char* version() noexcept;
 } // namespace linear
 template <>
-void updateChoice<LinearInstance>(const std::string_view target);
+void updateChoice<LinearInstance>(const std::string& target);
 template <>
 void runChoices<LinearInstance>(const std::vector<std::string>& candidates);
 
@@ -146,7 +146,7 @@ namespace tree
 extern const char* version() noexcept;
 } // namespace tree
 template <>
-void updateChoice<TreeInstance>(const std::string_view target);
+void updateChoice<TreeInstance>(const std::string& target);
 template <>
 void runChoices<TreeInstance>(const std::vector<std::string>& candidates);
 } // namespace reg_ds
@@ -259,7 +259,7 @@ using Category = ApplyDataStructure::Category;
 //! @tparam Cat - specific value of Category enum
 //! @return category name
 template <Category Cat>
-inline consteval std::string_view toString()
+consteval std::string_view toString()
 {
     switch (Cat)
     {
@@ -277,7 +277,7 @@ inline consteval std::string_view toString()
 //! @tparam Cat - specific value of Category enum
 //! @return reference of the category bit flags
 template <Category Cat>
-inline constexpr auto& categoryOpts()
+constexpr auto& categoryOpts()
 {
     return std::invoke(TypeInfo<ApplyDataStructure>::fields.find(REFLECTION_STR(toString<Cat>())).value, manager());
 }
@@ -286,7 +286,7 @@ inline constexpr auto& categoryOpts()
 //! @param instance - target instance
 //! @return abbreviation value
 template <typename T>
-inline consteval std::size_t abbrValue(const T instance)
+consteval std::size_t abbrValue(const T instance)
 {
     static_assert(Bottom<T>::value == TypeInfo<T>::fields.size);
     std::size_t value = 0;
@@ -308,7 +308,7 @@ inline consteval std::size_t abbrValue(const T instance)
 //! @brief Convert instance enumeration to string.
 //! @param instance - specific value of LinearInstance enum
 //! @return instance name
-inline constexpr std::string_view toString(const LinearInstance instance)
+constexpr std::string_view toString(const LinearInstance instance)
 {
     constexpr std::array<std::string_view, Bottom<LinearInstance>::value> stringify = {
         MACRO_STRINGIFY(linkedList), MACRO_STRINGIFY(stack), MACRO_STRINGIFY(queue)};
@@ -318,7 +318,7 @@ inline constexpr std::string_view toString(const LinearInstance instance)
 //! @brief Convert instance enumeration to string.
 //! @param instance - specific value of TreeInstance enum
 //! @return instance name
-inline constexpr std::string_view toString(const TreeInstance instance)
+constexpr std::string_view toString(const TreeInstance instance)
 {
     constexpr std::array<std::string_view, Bottom<TreeInstance>::value> stringify = {
         MACRO_STRINGIFY(binarySearch), MACRO_STRINGIFY(adelsonVelskyLandis), MACRO_STRINGIFY(splay)};

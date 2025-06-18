@@ -9,6 +9,7 @@
 
 #ifndef _PRECOMPILED_HEADER
 #include <cassert>
+#include <iomanip>
 #include <ranges>
 #include <syncstream>
 #else
@@ -75,9 +76,9 @@ namespace linear
 //! @brief Show the contents of the linear result.
 //! @param instance - specific value of LinearInstance enum
 //! @param result - linear result
-static void showResult(const LinearInstance instance, const std::string_view result)
+static void showResult(const LinearInstance instance, const std::string& result)
 {
-    std::printf("\n==> %-10s Instance <==\n%s", makeTitle(instance).c_str(), result.data());
+    std::printf("\n==> %-10s Instance <==\n%s", makeTitle(instance).c_str(), result.c_str());
 }
 
 void LinearStructure::linkedListInstance()
@@ -166,9 +167,9 @@ namespace tree
 //! @brief Show the contents of the tree result.
 //! @param instance - specific value of TreeInstance enum
 //! @param result - tree result
-static void showResult(const TreeInstance instance, const std::string_view result)
+static void showResult(const TreeInstance instance, const std::string& result)
 {
-    std::printf("\n==> %-19s Instance <==\n%s", makeTitle(instance).c_str(), result.data());
+    std::printf("\n==> %-19s Instance <==\n%s", makeTitle(instance).c_str(), result.c_str());
 }
 
 void TreeStructure::bsInstance()

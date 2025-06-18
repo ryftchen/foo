@@ -278,7 +278,7 @@ template <typename T>
 std::vector<T> Sort<T>::heap(const T* const array, const std::uint32_t length)
 {
     std::vector<T> sorting(array, array + length);
-    for (std::int64_t i = length / 2 + 1; i >= 0; --i)
+    for (std::int64_t i = (length / 2) + 1; i >= 0; --i)
     {
         buildMaxHeap(sorting.data(), i, length - 1);
     }
@@ -294,7 +294,7 @@ std::vector<T> Sort<T>::heap(const T* const array, const std::uint32_t length)
 template <typename T>
 void Sort<T>::buildMaxHeap(T* const sorting, const std::uint32_t begin, const std::uint32_t end)
 {
-    std::uint32_t parent = begin, child = parent * 2 + 1;
+    std::uint32_t parent = begin, child = (parent * 2) + 1;
     while (child <= end)
     {
         if (((child + 1) <= end) && (sorting[child] < sorting[child + 1]))
@@ -363,7 +363,7 @@ std::vector<T> Sort<T>::bucket(const T* const array, const std::uint32_t length)
     std::vector<std::vector<T>> bucket(bucketSize, std::vector<T>{});
     for (std::uint32_t i = 0; i < length; ++i)
     {
-        const std::uint32_t bucketIdx = std::floor(static_cast<double>(sorting[i] - min) / intervalSpan + 1) - 1;
+        const std::uint32_t bucketIdx = std::floor((static_cast<double>(sorting[i] - min) / intervalSpan) + 1) - 1;
         bucket[bucketIdx].emplace_back(sorting[i]);
     }
 
@@ -389,13 +389,12 @@ std::vector<T> Sort<T>::radix(const T* const array, const std::uint32_t length)
 
     std::vector<T> sorting(array, array + length);
     T max = std::numeric_limits<T>::min(), min = std::numeric_limits<T>::max();
-    bool positive = false, negative = false;
     for (std::uint32_t i = 0; i < length; ++i)
     {
         max = std::max(sorting[i], max);
         min = std::min(sorting[i], min);
-        (sorting[i] > 0) ? positive = true : ((sorting[i] < 0) ? negative = true : sorting[i]);
     }
+
     T absMax = std::max(max, -min);
     constexpr std::uint32_t base = 10;
     std::uint32_t maxDigit = 0;
@@ -405,10 +404,11 @@ std::vector<T> Sort<T>::radix(const T* const array, const std::uint32_t length)
         ++maxDigit;
     }
 
-    constexpr std::uint32_t naturalNumberBucket = 10, negativeIntegerBucket = 9;
+    constexpr std::uint32_t naturalNumberRdx = 10, negativeIntegerRdx = 9;
+    const bool hasPositive = (max > 0), hasNegative = (min < 0);
     const std::uint32_t bucketSize =
-                            (positive ^ negative) ? naturalNumberBucket : (naturalNumberBucket + negativeIntegerBucket),
-                        indexOffset = (!negative) ? 0 : negativeIntegerBucket;
+                            (hasPositive ^ hasNegative) ? naturalNumberRdx : (naturalNumberRdx + negativeIntegerRdx),
+                        indexOffset = (!hasNegative) ? 0 : negativeIntegerRdx;
     leastSignificantDigit(sorting.data(), length, maxDigit, bucketSize, indexOffset);
 
     return sorting;
@@ -428,7 +428,7 @@ void Sort<T>::leastSignificantDigit(
     for (std::uint32_t i = 0; i < length; ++i)
     {
         const std::int8_t sign = (sorting[i] > 0) ? 1 : -1;
-        const std::uint32_t bucketIdx = std::abs(sorting[i]) / 1 % base * sign + indexOffset;
+        const std::uint32_t bucketIdx = (std::abs(sorting[i]) / 1 % base * sign) + indexOffset;
         bucket[bucketIdx].push(sorting[i]);
         ++countNew[bucketIdx];
     }
@@ -450,7 +450,7 @@ void Sort<T>::leastSignificantDigit(
             {
                 const T elem = bucketIter->front();
                 const std::int8_t sign = (elem > 0) ? 1 : -1;
-                const std::uint32_t bucketIdx = std::abs(elem) / pow % base * sign + indexOffset;
+                const std::uint32_t bucketIdx = (std::abs(elem) / pow % base * sign) + indexOffset;
                 bucket[bucketIdx].push(elem);
                 ++countNew[bucketIdx];
 

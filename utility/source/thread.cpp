@@ -6,6 +6,8 @@
 
 #include "thread.hpp"
 
+#include <algorithm>
+
 namespace utility::thread
 {
 //! @brief Function version number.

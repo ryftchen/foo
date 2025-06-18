@@ -485,10 +485,10 @@ JSON JSON::load(const std::string_view fmt)
     return object;
 }
 
-JSON& JSON::operator[](const std::string_view key)
+JSON& JSON::operator[](const std::string& key)
 {
     setType<Object>();
-    return std::get<Object>(data.value).operator[](key.data());
+    return std::get<Object>(data.value).operator[](key);
 }
 
 JSON& JSON::operator[](std::size_t index)
@@ -503,14 +503,14 @@ JSON& JSON::operator[](std::size_t index)
     return arrayVal.operator[](index);
 }
 
-JSON& JSON::at(const std::string_view key)
+JSON& JSON::at(const std::string& key)
 {
     return operator[](key);
 }
 
-const JSON& JSON::at(const std::string_view key) const
+const JSON& JSON::at(const std::string& key) const
 {
-    return std::get<Object>(data.value).at(key.data());
+    return std::get<Object>(data.value).at(key);
 }
 
 JSON& JSON::at(std::size_t index)
@@ -538,9 +538,9 @@ int JSON::size() const
         data.value);
 }
 
-bool JSON::hasKey(const std::string_view key) const
+bool JSON::hasKey(const std::string& key) const
 {
-    return std::holds_alternative<Object>(data.value) ? std::get<Object>(data.value).contains(key.data()) : false;
+    return std::holds_alternative<Object>(data.value) ? std::get<Object>(data.value).contains(key) : false;
 }
 
 bool JSON::isNullType() const
@@ -644,8 +644,8 @@ JSON::Integral JSON::toIntegral() const
             [](const String& val) -> Integral
             {
                 long long parsed = 0;
-                const auto result = std::from_chars(val.c_str(), val.c_str() + val.size(), parsed);
-                if (!static_cast<bool>(result.ec))
+                if (const auto result = std::from_chars(val.c_str(), val.c_str() + val.size(), parsed);
+                    result.ec == std::errc{})
                 {
                     return parsed;
                 }
@@ -674,8 +674,8 @@ JSON::Boolean JSON::toBoolean() const
                     return false;
                 }
                 int parsed = 0;
-                const auto result = std::from_chars(val.c_str(), val.c_str() + val.size(), parsed);
-                if (!static_cast<bool>(result.ec))
+                if (const auto result = std::from_chars(val.c_str(), val.c_str() + val.size(), parsed);
+                    result.ec == std::errc{})
                 {
                     return parsed;
                 }

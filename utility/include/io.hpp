@@ -20,8 +20,8 @@ namespace io
 {
 extern const char* version() noexcept;
 
-extern std::string executeCommand(const std::string_view command);
-extern void waitForUserInput(const std::function<bool(const std::string_view)>& operation, const int timeout = -1);
+extern std::string executeCommand(const std::string& command);
+extern void waitForUserInput(const std::function<bool(const std::string&)>& operation, const int timeout = -1);
 extern std::list<std::string> getFileContents(
     const std::string_view filename,
     const bool toLock = false,
@@ -51,9 +51,9 @@ private:
     //! @brief File descriptor associated with the stream buffer.
     int fileDescriptor{-1};
     //! @brief Buffer for reading data.
-    std::unique_ptr<char[]> readBuffer{};
+    std::unique_ptr<char[]> readBuffer;
     //! @brief Buffer for writing data.
-    std::unique_ptr<char[]> writeBuffer{};
+    std::unique_ptr<char[]> writeBuffer;
     //! @brief Size of the buffer.
     static constexpr std::size_t bufferSize{4096};
 
@@ -126,11 +126,11 @@ public:
 
 private:
     //! @brief Name of the file being read.
-    const std::string name{};
+    const std::string name;
     //! @brief File descriptor associated with the file.
     int fd{-1};
     //! @brief Custom stream buffer for reading.
-    FDStreamBuffer strBuf{};
+    FDStreamBuffer strBuf;
     //! @brief Input stream associated with the file.
     std::istream input{&strBuf};
 };
@@ -173,11 +173,11 @@ public:
 
 private:
     //! @brief Name of the file being written.
-    const std::string name{};
+    const std::string name;
     //! @brief File descriptor associated with the file.
     int fd{-1};
     //! @brief Custom stream buffer for writing.
-    FDStreamBuffer strBuf{};
+    FDStreamBuffer strBuf;
     //! @brief Output stream associated with the file.
     std::ostream output{&strBuf};
 };

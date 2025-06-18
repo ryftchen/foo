@@ -161,7 +161,7 @@ inline auto Curried<Callable, std::tuple<CurriedArgs...>, std::tuple<UncurriedAr
         Callable,
         TupleConcatResult<std::tuple<CurriedArgs...>, std::tuple<Args...>>,
         ArgsExclType<sizeof...(Args), UncurriedArgs...>>;
-    return OverlayCurried(callable, std::tuple_cat(curriedArgs, args));
+    return OverlayCurried(callable, std::tuple_cat(curriedArgs, std::move(args)));
 }
 
 template <typename Callable, typename... CurriedArgs, typename... UncurriedArgs>
@@ -173,7 +173,7 @@ inline auto Curried<Callable, std::tuple<CurriedArgs...>, std::tuple<UncurriedAr
         Callable,
         TupleConcatResult<std::tuple<CurriedArgs...>, std::tuple<Args...>>,
         ArgsExclType<sizeof...(Args), UncurriedArgs...>>;
-    return OverlayCurried(std::move(callable), std::tuple_cat(std::move(curriedArgs), args));
+    return OverlayCurried(std::move(callable), std::tuple_cat(std::move(curriedArgs), std::move(args)));
 }
 
 //! @brief Package curry.
@@ -197,8 +197,7 @@ struct Curry<std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>
     //! @param args - function arguments
     //! @return curried result
     template <typename Ret, typename... Args>
-    static inline auto curryForInternal(
-        const std::function<Ret(CurriedArgs..., UncurriedArgs...)>& call, Args&&... args)
+    static auto curryForInternal(const std::function<Ret(CurriedArgs..., UncurriedArgs...)>& call, Args&&... args)
     {
         using Callable = std::function<Ret(CurriedArgs..., UncurriedArgs...)>;
         using CurriedType = Curried<Callable, std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>;
@@ -211,7 +210,7 @@ struct Curry<std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>
     //! @param args - function arguments
     //! @return curried result
     template <typename Ret, typename... Args>
-    static inline auto curryForInternal(std::function<Ret(CurriedArgs..., UncurriedArgs...)>&& call, Args&&... args)
+    static auto curryForInternal(std::function<Ret(CurriedArgs..., UncurriedArgs...)>&& call, Args&&... args)
     {
         using Callable = std::function<Ret(CurriedArgs..., UncurriedArgs...)>;
         using CurriedType = Curried<Callable, std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>;
@@ -315,7 +314,7 @@ inline auto curry(const Curried<CurriedArgsList...>& curried, Args&&... args)
 template <typename... CurriedArgsList, typename... Args>
 inline auto curry(Curried<CurriedArgsList...>&& curried, Args&&... args)
 {
-    return curried.curry(std::tuple<Args...>(std::forward<Args>(args)...));
+    return std::move(curried).curry(std::tuple<Args...>(std::forward<Args>(args)...));
 }
 } // namespace currying
 } // namespace utility

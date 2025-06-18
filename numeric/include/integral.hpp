@@ -65,7 +65,7 @@ public:
 
 private:
     //! @brief Target expression.
-    const Expression expr{};
+    const Expression expr;
 };
 
 //! @brief The adaptive Simpson's 1/3 method.
@@ -85,7 +85,7 @@ public:
 
 private:
     //! @brief Target expression.
-    const Expression expr{};
+    const Expression expr;
     //! @brief Calculate the value of the definite integral with the Simpson's rule.
     //! @param left - left endpoint
     //! @param right - right endpoint
@@ -123,7 +123,7 @@ public:
 
 private:
     //! @brief Target expression.
-    const Expression expr{};
+    const Expression expr;
 };
 
 //! @brief The Gauss-Legendre's 5-points method.
@@ -143,7 +143,7 @@ public:
 
 private:
     //! @brief Target expression.
-    const Expression expr{};
+    const Expression expr;
 };
 
 //! @brief The Monte-Carlo method.
@@ -163,7 +163,7 @@ public:
 
 private:
     //! @brief Target expression.
-    const Expression expr{};
+    const Expression expr;
     //! @brief Sample from the uniform distribution.
     //! @param lower - lower endpoint
     //! @param upper - upper endpoint

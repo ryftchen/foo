@@ -37,12 +37,12 @@ const char* version() noexcept
 //! @brief Update linear-related choice.
 //! @param target - target instance
 template <>
-void updateChoice<LinearInstance>(const std::string_view target)
+void updateChoice<LinearInstance>(const std::string& target)
 {
     constexpr auto category = Category::linear;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.data()))
+    switch (utility::common::bkdrHash(target.c_str()))
     {
         case abbrValue(LinearInstance::linkedList):
             bits.set(LinearInstance::linkedList);
@@ -55,8 +55,7 @@ void updateChoice<LinearInstance>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{
-                "Unexpected " + std::string{toString<category>()} + " instance: " + target.data() + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " instance: " + target + '.'};
     }
 }
 //! @brief Run linear-related choices.
@@ -79,12 +78,12 @@ const char* version() noexcept
 //! @brief Update tree-related choice.
 //! @param target - target instance
 template <>
-void updateChoice<TreeInstance>(const std::string_view target)
+void updateChoice<TreeInstance>(const std::string& target)
 {
     constexpr auto category = Category::tree;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.data()))
+    switch (utility::common::bkdrHash(target.c_str()))
     {
         case abbrValue(TreeInstance::binarySearch):
             bits.set(TreeInstance::binarySearch);
@@ -97,8 +96,7 @@ void updateChoice<TreeInstance>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{
-                "Unexpected " + std::string{toString<category>()} + " instance: " + target.data() + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " instance: " + target + '.'};
     }
 }
 //! @brief Run tree-related choices.

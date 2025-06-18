@@ -37,12 +37,12 @@ const char* version() noexcept
 //! @brief Update arithmetic-related choice.
 //! @param target - target method
 template <>
-void updateChoice<ArithmeticMethod>(const std::string_view target)
+void updateChoice<ArithmeticMethod>(const std::string& target)
 {
     constexpr auto category = Category::arithmetic;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.data()))
+    switch (utility::common::bkdrHash(target.c_str()))
     {
         case abbrValue(ArithmeticMethod::addition):
             bits.set(ArithmeticMethod::addition);
@@ -58,8 +58,7 @@ void updateChoice<ArithmeticMethod>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{
-                "Unexpected " + std::string{toString<category>()} + " method: " + target.data() + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " method: " + target + '.'};
     }
 }
 //! @brief Run arithmetic-related choices.
@@ -82,12 +81,12 @@ const char* version() noexcept
 //! @brief Update divisor-related choice.
 //! @param target - target method
 template <>
-void updateChoice<DivisorMethod>(const std::string_view target)
+void updateChoice<DivisorMethod>(const std::string& target)
 {
     constexpr auto category = Category::divisor;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.data()))
+    switch (utility::common::bkdrHash(target.c_str()))
     {
         case abbrValue(DivisorMethod::euclidean):
             bits.set(DivisorMethod::euclidean);
@@ -97,8 +96,7 @@ void updateChoice<DivisorMethod>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{
-                "Unexpected " + std::string{toString<category>()} + " method: " + target.data() + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " method: " + target + '.'};
     }
 }
 //! @brief Run divisor-related choices.
@@ -121,12 +119,12 @@ const char* version() noexcept
 //! @brief Update integral-related choice.
 //! @param target - target method
 template <>
-void updateChoice<IntegralMethod>(const std::string_view target)
+void updateChoice<IntegralMethod>(const std::string& target)
 {
     constexpr auto category = Category::integral;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.data()))
+    switch (utility::common::bkdrHash(target.c_str()))
     {
         case abbrValue(IntegralMethod::trapezoidal):
             bits.set(IntegralMethod::trapezoidal);
@@ -145,8 +143,7 @@ void updateChoice<IntegralMethod>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{
-                "Unexpected " + std::string{toString<category>()} + " method: " + target.data() + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " method: " + target + '.'};
     }
 }
 //! @brief Run integral-related choices.
@@ -169,12 +166,12 @@ const char* version() noexcept
 //! @brief Update prime-related choice.
 //! @param target - target method
 template <>
-void updateChoice<PrimeMethod>(const std::string_view target)
+void updateChoice<PrimeMethod>(const std::string& target)
 {
     constexpr auto category = Category::prime;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.data()))
+    switch (utility::common::bkdrHash(target.c_str()))
     {
         case abbrValue(PrimeMethod::eratosthenes):
             bits.set(PrimeMethod::eratosthenes);
@@ -184,8 +181,7 @@ void updateChoice<PrimeMethod>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{
-                "Unexpected " + std::string{toString<category>()} + " method: " + target.data() + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " method: " + target + '.'};
     }
 }
 //! @brief Run prime-related choices.

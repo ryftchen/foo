@@ -162,24 +162,24 @@ public:
     };
 
     //! @brief Bit flags for managing match methods.
-    std::bitset<Bottom<MatchMethod>::value> matchOpts{};
+    std::bitset<Bottom<MatchMethod>::value> matchOpts;
     //! @brief Bit flags for managing notation methods.
-    std::bitset<Bottom<NotationMethod>::value> notationOpts{};
+    std::bitset<Bottom<NotationMethod>::value> notationOpts;
     //! @brief Bit flags for managing optimal methods.
-    std::bitset<Bottom<OptimalMethod>::value> optimalOpts{};
+    std::bitset<Bottom<OptimalMethod>::value> optimalOpts;
     //! @brief Bit flags for managing search methods.
-    std::bitset<Bottom<SearchMethod>::value> searchOpts{};
+    std::bitset<Bottom<SearchMethod>::value> searchOpts;
     //! @brief Bit flags for managing sort methods.
-    std::bitset<Bottom<SortMethod>::value> sortOpts{};
+    std::bitset<Bottom<SortMethod>::value> sortOpts;
 
     //! @brief Check whether any algorithm choices do not exist.
     //! @return any algorithm choices do not exist or exist
-    [[nodiscard]] inline bool empty() const
+    [[nodiscard]] bool empty() const
     {
         return matchOpts.none() && notationOpts.none() && optimalOpts.none() && searchOpts.none() && sortOpts.none();
     }
     //! @brief Reset bit flags that manage algorithm choices.
-    inline void reset()
+    void reset()
     {
         matchOpts.reset();
         notationOpts.reset();
@@ -225,7 +225,7 @@ extern ApplyAlgorithm& manager() noexcept;
 //! @tparam T - type of target method
 //! @param target - target method
 template <typename T>
-void updateChoice(const std::string_view target);
+void updateChoice(const std::string& target);
 //! @brief Run choices.
 //! @tparam T - type of target method
 //! @param candidates - container for the candidate target methods
@@ -238,7 +238,7 @@ namespace match
 extern const char* version() noexcept;
 } // namespace match
 template <>
-void updateChoice<MatchMethod>(const std::string_view target);
+void updateChoice<MatchMethod>(const std::string& target);
 template <>
 void runChoices<MatchMethod>(const std::vector<std::string>& candidates);
 
@@ -248,7 +248,7 @@ namespace notation
 extern const char* version() noexcept;
 } // namespace notation
 template <>
-void updateChoice<NotationMethod>(const std::string_view target);
+void updateChoice<NotationMethod>(const std::string& target);
 template <>
 void runChoices<NotationMethod>(const std::vector<std::string>& candidates);
 
@@ -258,7 +258,7 @@ namespace optimal
 extern const char* version() noexcept;
 } // namespace optimal
 template <>
-void updateChoice<OptimalMethod>(const std::string_view target);
+void updateChoice<OptimalMethod>(const std::string& target);
 template <>
 void runChoices<OptimalMethod>(const std::vector<std::string>& candidates);
 
@@ -268,7 +268,7 @@ namespace search
 extern const char* version() noexcept;
 } // namespace search
 template <>
-void updateChoice<SearchMethod>(const std::string_view target);
+void updateChoice<SearchMethod>(const std::string& target);
 template <>
 void runChoices<SearchMethod>(const std::vector<std::string>& candidates);
 
@@ -278,7 +278,7 @@ namespace sort
 extern const char* version() noexcept;
 } // namespace sort
 template <>
-void updateChoice<SortMethod>(const std::string_view target);
+void updateChoice<SortMethod>(const std::string& target);
 template <>
 void runChoices<SortMethod>(const std::vector<std::string>& candidates);
 } // namespace reg_algo
@@ -491,7 +491,7 @@ using Category = ApplyAlgorithm::Category;
 //! @tparam Cat - specific value of Category enum
 //! @return category name
 template <Category Cat>
-inline consteval std::string_view toString()
+consteval std::string_view toString()
 {
     switch (Cat)
     {
@@ -515,7 +515,7 @@ inline consteval std::string_view toString()
 //! @tparam Cat - specific value of Category enum
 //! @return reference of the category bit flags
 template <Category Cat>
-inline constexpr auto& categoryOpts()
+constexpr auto& categoryOpts()
 {
     return std::invoke(TypeInfo<ApplyAlgorithm>::fields.find(REFLECTION_STR(toString<Cat>())).value, manager());
 }
@@ -524,7 +524,7 @@ inline constexpr auto& categoryOpts()
 //! @param method - target method
 //! @return abbreviation value
 template <typename T>
-inline consteval std::size_t abbrValue(const T method)
+consteval std::size_t abbrValue(const T method)
 {
     static_assert(Bottom<T>::value == TypeInfo<T>::fields.size);
     std::size_t value = 0;
@@ -546,7 +546,7 @@ inline consteval std::size_t abbrValue(const T method)
 //! @brief Convert method enumeration to string.
 //! @param method - specific value of MatchMethod enum
 //! @return method name
-inline constexpr std::string_view toString(const MatchMethod method)
+constexpr std::string_view toString(const MatchMethod method)
 {
     constexpr std::array<std::string_view, Bottom<MatchMethod>::value> stringify = {
         MACRO_STRINGIFY(rabinKarp),
@@ -560,7 +560,7 @@ inline constexpr std::string_view toString(const MatchMethod method)
 //! @brief Convert method enumeration to string.
 //! @param method - specific value of NotationMethod enum
 //! @return method name
-inline constexpr std::string_view toString(const NotationMethod method)
+constexpr std::string_view toString(const NotationMethod method)
 {
     constexpr std::array<std::string_view, Bottom<NotationMethod>::value> stringify = {
         MACRO_STRINGIFY(prefix), MACRO_STRINGIFY(postfix)};
@@ -570,7 +570,7 @@ inline constexpr std::string_view toString(const NotationMethod method)
 //! @brief Convert method enumeration to string.
 //! @param method - specific value of OptimalMethod enum
 //! @return method name
-inline constexpr std::string_view toString(const OptimalMethod method)
+constexpr std::string_view toString(const OptimalMethod method)
 {
     constexpr std::array<std::string_view, Bottom<OptimalMethod>::value> stringify = {
         MACRO_STRINGIFY(gradient),
@@ -585,7 +585,7 @@ inline constexpr std::string_view toString(const OptimalMethod method)
 //! @brief Convert method enumeration to string.
 //! @param method - specific value of SearchMethod enum
 //! @return method name
-inline constexpr std::string_view toString(const SearchMethod method)
+constexpr std::string_view toString(const SearchMethod method)
 {
     constexpr std::array<std::string_view, Bottom<SearchMethod>::value> stringify = {
         MACRO_STRINGIFY(binary), MACRO_STRINGIFY(interpolation), MACRO_STRINGIFY(fibonacci)};
@@ -595,7 +595,7 @@ inline constexpr std::string_view toString(const SearchMethod method)
 //! @brief Convert method enumeration to string.
 //! @param method - specific value of SortMethod enum
 //! @return method name
-inline constexpr std::string_view toString(const SortMethod method)
+constexpr std::string_view toString(const SortMethod method)
 {
     constexpr std::array<std::string_view, Bottom<SortMethod>::value> stringify = {
         MACRO_STRINGIFY(bubble),

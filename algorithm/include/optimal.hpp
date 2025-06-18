@@ -69,7 +69,7 @@ public:
 
 private:
     //! @brief Target function.
-    const Function func{};
+    const Function func;
     //! @brief Initial learning rate.
     const double initialLR{0.01};
     //! @brief Decay.
@@ -126,7 +126,7 @@ public:
 
 private:
     //! @brief Target function.
-    const Function func{};
+    const Function func;
     //! @brief Tabu tenure.
     const std::uint32_t tabuTenure{50};
     //! @brief Initial step length.
@@ -193,7 +193,7 @@ public:
 
 private:
     //! @brief Target function.
-    const Function func{};
+    const Function func;
     //! @brief Initial temperature.
     const double initialT{100.0};
     //! @brief Minimal temperature.
@@ -266,7 +266,7 @@ public:
 
 private:
     //! @brief Target function.
-    const Function func{};
+    const Function func;
     //! @brief Cognitive coefficient.
     const double c1{1.5};
     //! @brief Social coefficient.
@@ -371,7 +371,7 @@ public:
 
 private:
     //! @brief Target function.
-    const Function func{};
+    const Function func;
     //! @brief Pheromone evaporation rate.
     const double rho{0.9};
     //! @brief Exploration probability.
@@ -455,7 +455,7 @@ public:
 
 private:
     //! @brief Target function.
-    const Function func{};
+    const Function func;
     //! @brief Crossover probability.
     const double crossPr{0.7};
     //! @brief Mutation probability.

@@ -71,7 +71,7 @@ public:
 
 private:
     //! @brief Coroutine handle.
-    std::coroutine_handle<promise_type> handle{};
+    std::coroutine_handle<promise_type> handle;
 };
 
 //! @brief Alias for the type information.
@@ -184,7 +184,7 @@ struct RegSelector<reg_num::PrimeMethod>
 //! @tparam T - type of sub-cli or sub-cli's category
 //! @return name field
 template <typename T>
-inline consteval std::string_view name()
+consteval std::string_view name()
 {
     return TypeInfo<T>::name;
 }
@@ -192,7 +192,7 @@ inline consteval std::string_view name()
 //! @tparam T - type of sub-cli or sub-cli's category
 //! @return description attribute
 template <typename T>
-inline consteval std::string_view descr()
+consteval std::string_view descr()
 {
     return TypeInfo<T>::attrs.find(REFLECTION_STR("descr")).value;
 }
@@ -200,7 +200,7 @@ inline consteval std::string_view descr()
 //! @tparam T - type of sub-cli's category
 //! @return alias attribute
 template <typename T>
-inline consteval std::string_view alias()
+consteval std::string_view alias()
 {
     return TypeInfo<typename RegSelector<T>::Type>::fields.find(REFLECTION_STR(TypeInfo<T>::name))
         .attrs.find(REFLECTION_STR("alias"))
@@ -213,7 +213,7 @@ template <typename Evt>
 struct UpdateChoice
 {
     //! @brief Target choice.
-    const std::string cho{};
+    const std::string cho;
 };
 //! @brief The "Run Choices" message in the applied action.
 //! @tparam Evt - type of applied action event
@@ -221,7 +221,7 @@ template <typename Evt>
 struct RunChoices
 {
     //! @brief Collection of candidates for choice.
-    const std::vector<std::string> coll{};
+    const std::vector<std::string> coll;
 };
 //! @brief Indication type of updating in the applied action.
 //! @tparam Msg - type of message

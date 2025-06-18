@@ -123,14 +123,14 @@ std::ostringstream& output() noexcept
 
 namespace interpreter
 {
-void Context::set(const std::string_view expr, const bool val)
+void Context::set(const std::string& expr, const bool val)
 {
     vars.emplace(expr, val);
 }
 
-bool Context::get(const std::string_view expr)
+bool Context::get(const std::string& expr)
 {
-    return vars.at(expr.data());
+    return vars.at(expr);
 }
 
 bool AbstractExpression::interpret(const std::shared_ptr<Context>& /*context*/)

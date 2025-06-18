@@ -6,14 +6,15 @@ RUN apt-get update \
 && DEBIAN_FRONTEND=noninteractive apt-get install --assume-yes --no-install-recommends sudo tzdata ca-certificates \
 && sudo apt-get update \
 && sudo apt-get install --assume-yes --no-install-recommends bash coreutils findutils procps grep sed mawk \
-build-essential binutils gcc-13 g++-13 binutils-gold clang-16 clang++-16 lld-16 ninja-build make cmake \
-libstdc++-13-dev libgtest-dev libssl-dev liblz4-dev libreadline-dev libmpfrc++-dev llvm-16-dev libclang-16-dev libclang-rt-16-dev \
-clang-format-16 clang-tidy-16 shfmt shellcheck black pylint rustc cargo rustfmt rust-clippy gdb ccache distcc valgrind \
+build-essential binutils gcc-14 g++-14 binutils-gold clang-19 clang++-19 lld-19 ninja-build make cmake \
+libstdc++-14-dev libgtest-dev libssl-dev liblz4-dev libreadline-dev libmpfrc++-dev llvm-19-dev libclang-19-dev libclang-rt-19-dev \
+clang-format-19 clang-tidy-19 shfmt shellcheck black pylint rustc cargo rustfmt rust-clippy gdb ccache distcc valgrind \
 cloc pre-commit doxygen doxygen-awesome-css graphviz git python3 python3-pip docker.io docker-compose-v2 npm \
 elfutils psmisc net-tools curl tar zip rsync bash-completion \
 && sudo apt-get clean \
 && sudo rm -rf /var/lib/apt/lists/* \
 && sudo pip3 install --no-cache-dir --break-system-packages compdb==0.2.0 ValgrindCI==0.3.0 sarif-tools==2.0.0 \
+git+https://github.com/yuriisk/clang-tidy-converter.git@f07de2eca78637c47893ddb0dfdf150163572ab5 \
 && sudo npm install --no-save --global --no-package-lock cspell@7.3.9 \
 && sudo npm cache clean --force \
 && cd /root \
@@ -24,14 +25,10 @@ elfutils psmisc net-tools curl tar zip rsync bash-completion \
 && sudo chmod +x /usr/local/share/codeql/codeql \
 && sudo ln -s /usr/local/share/codeql/codeql /usr/local/bin/codeql \
 && rm -rf codeql-bundle-linux64.tar.gz \
-&& git clone https://github.com/yuriisk/clang-tidy-converter.git \
-&& git -C ./clang-tidy-converter reset --hard f07de2eca78637c47893ddb0dfdf150163572ab5 \
-&& sudo pip3 install --no-cache-dir --break-system-packages ./clang-tidy-converter \
-&& rm -rf ./clang-tidy-converter \
 && sudo mkdir /usr/local/share/doxygen-tag \
-&& curl -L https://gcc.gnu.org/onlinedocs/gcc-13.3.0/libstdc++/api/libstdc++.tag | sudo tee /usr/local/share/doxygen-tag/libstdc++.tag >/dev/null \
+&& curl -L https://gcc.gnu.org/onlinedocs/gcc-14.2.0/libstdc++/api/libstdc++.tag | sudo tee /usr/local/share/doxygen-tag/libstdc++.tag >/dev/null \
 && git clone https://github.com/KDAB/codebrowser.git \
 && git -C ./codebrowser reset --hard 9c819d5072dba9ba8eb07646d712b46229f7ecb5 \
-&& cmake -S ./codebrowser -B ./codebrowser/build -DCMAKE_CXX_COMPILER=clang++-16 -DCMAKE_BUILD_TYPE=Release \
+&& cmake -S ./codebrowser -B ./codebrowser/build -DCMAKE_CXX_COMPILER=clang++-19 -DCMAKE_BUILD_TYPE=Release \
 && sudo make -C ./codebrowser/build install \
 && rm -rf ./codebrowser

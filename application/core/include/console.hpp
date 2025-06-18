@@ -42,7 +42,7 @@ public:
     Console& operator=(Console&&) = delete;
 
     //! @brief Enumerate specific return code.
-    enum class RetCode : int
+    enum class RetCode : std::int8_t
     {
         //! @brief Quit.
         quit = -1,
@@ -66,11 +66,11 @@ public:
     //! @brief Execute the target console option.
     //! @param option - option to be executed
     //! @return value of RetCode
-    [[nodiscard]] RetCode optionExecutor(const std::string_view option) const;
+    [[nodiscard]] RetCode optionExecutor(const std::string& option) const;
     //! @brief Execute all console options in the target file.
     //! @param filename - file path to be executed
     //! @return value of RetCode
-    [[nodiscard]] RetCode fileExecutor(const std::string_view filename) const;
+    [[nodiscard]] RetCode fileExecutor(const std::string& filename) const;
     //! @brief Read console option line.
     //! @return value of RetCode
     RetCode readLine();
@@ -101,18 +101,18 @@ private:
         Terminal& operator=(Terminal&&) = delete;
 
         //! @brief Greeting information.
-        std::string greeting{};
+        std::string greeting;
         //! @brief Alias for the map of option and callback in console.
         using RegisteredOption = std::unordered_map<std::string, std::pair<std::string, Callback>>;
         //! @brief Mapping table of all registered options.
-        RegisteredOption regTable{};
+        RegisteredOption regTable;
         //! @brief Register order.
-        std::list<std::string> orderList{};
+        std::list<std::string> orderList;
         //! @brief Saved history state.
         HistoryState* history{nullptr};
     };
     //! @brief Internal terminal.
-    const std::unique_ptr<Terminal> terminal{};
+    const std::unique_ptr<Terminal> terminal;
 
     //! @brief Get all registered options with help information.
     //! @return all registered options with help information

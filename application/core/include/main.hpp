@@ -59,7 +59,7 @@ static void signalHandler(const int sig)
                 sizeof(buffer),
                 "%-3d %*p %.960s + %zd\n",
                 i,
-                static_cast<int>(2 + sizeof(void*) * 2),
+                static_cast<int>(2 + (sizeof(void*) * 2)),
                 callStack[i],
                 (status == 0) ? demangle : (info.dli_sname ? info.dli_sname : symbols[i]),
                 static_cast<char*>(callStack[i]) - static_cast<char*>(info.dli_saddr));
@@ -72,13 +72,13 @@ static void signalHandler(const int sig)
                 sizeof(buffer),
                 "%-3d %*p %.960s\n",
                 i,
-                static_cast<int>(2 + sizeof(void*) * 2),
+                static_cast<int>(2 + (sizeof(void*) * 2)),
                 callStack[i],
                 symbols[i]);
         }
         detailedTrace << buffer;
     }
-    std::free(symbols);
+    std::free(static_cast<void*>(symbols));
 
     if (numOfFrame == maxFrame)
     {

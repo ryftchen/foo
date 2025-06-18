@@ -94,19 +94,19 @@ public:
 
         //! @brief Get the supported options.
         //! @return supported options
-        [[nodiscard]] inline auto getSupportedOptions() const noexcept { return inst.supportedOptions; }
+        [[nodiscard]] auto getSupportedOptions() const noexcept { return inst.supportedOptions; }
         //! @brief Get the TCP server host address.
         //! @return TCP server host address
-        [[nodiscard]] inline std::string getTCPHost() const noexcept { return inst.tcpHost; }
+        [[nodiscard]] std::string getTCPHost() const noexcept { return inst.tcpHost; }
         //! @brief Get the TCP server port number.
         //! @return TCP server port number
-        [[nodiscard]] inline std::uint16_t getTCPPort() const noexcept { return inst.tcpPort; }
+        [[nodiscard]] std::uint16_t getTCPPort() const noexcept { return inst.tcpPort; }
         //! @brief Get the UDP server host address.
         //! @return UDP server host address
-        [[nodiscard]] inline std::string getUDPHost() const noexcept { return inst.udpHost; }
+        [[nodiscard]] std::string getUDPHost() const noexcept { return inst.udpHost; }
         //! @brief Get the UDP server port number.
         //! @return UDP server port number
-        [[nodiscard]] inline std::uint16_t getUDPPort() const noexcept { return inst.udpPort; }
+        [[nodiscard]] std::uint16_t getUDPPort() const noexcept { return inst.udpPort; }
 
     private:
         //! @brief Instance to be accessed.
@@ -131,47 +131,47 @@ private:
     struct OptBase
     {
         //! @brief The option arguments.
-        const std::vector<std::string> args{};
+        const std::vector<std::string> args;
     };
     //! @brief Option attribute for the depend option.
     struct OptDepend : public OptBase
     {
         //! @brief The option name.
-        static constexpr char name[]{"depend"};
+        static constexpr const char* const name{"depend"};
         //! @brief The option description.
-        static constexpr char description[]{"list all associated libraries"};
+        static constexpr const char* const description{"list all associated libraries"};
     };
     //! @brief Option attribute for the execute option.
     struct OptExecute : public OptBase
     {
         //! @brief The option name.
-        static constexpr char name[]{"execute"};
+        static constexpr const char* const name{"execute"};
         //! @brief The option description.
-        static constexpr char description[]{"enter bash commands in quotes [inputs: 'CMD']"};
+        static constexpr const char* const description{"enter bash commands in quotes [inputs: 'CMD']"};
     };
     //! @brief Option attribute for the journal option.
     struct OptJournal : public OptBase
     {
         //! @brief The option name.
-        static constexpr char name[]{"journal"};
+        static constexpr const char* const name{"journal"};
         //! @brief The option description.
-        static constexpr char description[]{"view the log with highlights"};
+        static constexpr const char* const description{"view the log with highlights"};
     };
     //! @brief Option attribute for the monitor option.
     struct OptMonitor : public OptBase
     {
         //! @brief The option name.
-        static constexpr char name[]{"monitor"};
+        static constexpr const char* const name{"monitor"};
         //! @brief The option description.
-        static constexpr char description[]{"query process status and stacks [inputs: NUM]"};
+        static constexpr const char* const description{"query process status and stacks [inputs: NUM]"};
     };
     //! @brief Option attribute for the profile option.
     struct OptProfile : public OptBase
     {
         //! @brief The option name.
-        static constexpr char name[]{"profile"};
+        static constexpr const char* const name{"profile"};
         //! @brief The option description.
-        static constexpr char description[]{"display current configuration"};
+        static constexpr const char* const description{"display current configuration"};
     };
     //! @brief Option type object's helper type for the visitor.
     //! @tparam Ts - type of visitors
@@ -227,15 +227,15 @@ private:
     //! @param reqPlaintext - plaintext of the request
     //! @param respBuffer - buffer to store the response
     //! @return length of the response message
-    static int buildResponse(const std::string_view reqPlaintext, char* respBuffer);
+    static int buildResponse(const std::string& reqPlaintext, char* respBuffer);
     //! @brief Extract the option from the request.
     //! @param reqPlaintext - plaintext of the request
     //! @return option type
-    static OptionType extractOption(const std::string_view reqPlaintext);
+    static OptionType extractOption(const std::string& reqPlaintext);
     //! @brief Split string by space.
     //! @param str - target string
     //! @return strings after split
-    static std::vector<std::string> splitString(const std::string_view str);
+    static std::vector<std::string> splitString(const std::string& str);
     //! @brief Build the TLV packet of the response message to acknowledge only.
     //! @param buf - TLV packet buffer
     //! @return buffer length
@@ -283,7 +283,7 @@ private:
     static void printSharedMemory(const int shmId, const bool withoutPaging = true);
     //! @brief Segmented output.
     //! @param buffer - output buffer
-    static void segmentedOutput(const std::string_view buffer);
+    static void segmentedOutput(const std::string& buffer);
     //! @brief Log contents preview.
     //! @return log contents
     static std::string logContentsPreview();
@@ -293,21 +293,21 @@ private:
     static std::string statusReportsPreview(const std::uint16_t frame);
 
     //! @brief TCP server.
-    std::shared_ptr<utility::socket::TCPServer> tcpServer{};
+    std::shared_ptr<utility::socket::TCPServer> tcpServer;
     //! @brief UDP server.
-    std::shared_ptr<utility::socket::UDPServer> udpServer{};
+    std::shared_ptr<utility::socket::UDPServer> udpServer;
     //! @brief Mutex for controlling daemon.
-    mutable std::mutex daemonMtx{};
+    mutable std::mutex daemonMtx;
     //! @brief The synchronization condition for daemon. Use with daemonMtx.
-    std::condition_variable daemonCond{};
+    std::condition_variable daemonCond;
     //! @brief Flag to indicate whether it is viewing.
     std::atomic<bool> ongoing{false};
     //! @brief Flag for rollback request.
     std::atomic<bool> toReset{false};
     //! @brief Mutex for controlling output.
-    mutable std::mutex outputMtx{};
+    mutable std::mutex outputMtx;
     //! @brief The synchronization condition for output. Use with outputMtx.
-    std::condition_variable outputCond{};
+    std::condition_variable outputCond;
     //! @brief Flag to indicate whether the output is complete.
     std::atomic<bool> outputCompleted{false};
     //! @brief Renew the server.
