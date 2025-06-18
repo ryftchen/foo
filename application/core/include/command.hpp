@@ -190,18 +190,18 @@ private:
     //! @brief Check for excessive arguments.
     void checkForExcessiveArguments();
 
-    //! @brief Alias for the extend trait of the sub-cli's category.
-    struct CategoryExtTrait
+    //! @brief Alias for the trait of the registered sub-cli's category.
+    struct RegCatTrait
     {
         //! @brief The candidates for the choice.
         const std::vector<std::string> choices;
         //! @brief The internal event for applying.
         const action::EventType event;
     };
-    //! @brief Alias for the map of sub-cli's category name and CategoryExtTrait.
-    using CategoryExtMap = std::map<std::string, CategoryExtTrait>;
-    //! @brief Alias for the map of sub-cli name and CategoryExtMap.
-    using ExtraChoiceMap = std::map<std::string, CategoryExtMap>;
+    //! @brief Alias for the map of sub-cli's category name and RegCatTrait.
+    using RegCatMap = std::map<std::string, RegCatTrait>;
+    //! @brief Alias for the map of sub-cli name and RegCatMap.
+    using RegChoiceMap = std::map<std::string, RegCatMap>;
     //! @brief Get the description.
     //! @param cat - specific value of Category enum
     //! @return description
@@ -216,7 +216,7 @@ private:
     template <typename T>
     static std::vector<std::string> extractChoices();
     //! @brief Mapping table of all extra choices. Fill as needed.
-    ExtraChoiceMap extraChoices;
+    RegChoiceMap extraChoices;
 
     //! @brief Manage tasks.
     class TaskManager

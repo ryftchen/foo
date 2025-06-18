@@ -279,7 +279,7 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     subCLIAppAlgo.addDescription(descr<reg_algo::ApplyAlgorithm>());
     subCLIAppAlgo.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
     candidates = extractChoices<reg_algo::MatchMethod>();
-    algoTable.emplace(name<reg_algo::MatchMethod>(), CategoryExtTrait{candidates, reg_algo::MatchMethod{}});
+    algoTable.emplace(name<reg_algo::MatchMethod>(), RegCatTrait{candidates, reg_algo::MatchMethod{}});
     subCLIAppAlgo
         .addArgument(
             prefix1 + std::string{alias<reg_algo::MatchMethod>()}, prefix2 + std::string{name<reg_algo::MatchMethod>()})
@@ -295,7 +295,7 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     relatedVersions.emplace(
         RelVerPair{name<reg_algo::ApplyAlgorithm>(), reg_algo::match::version()}, name<reg_algo::MatchMethod>());
     candidates = extractChoices<reg_algo::NotationMethod>();
-    algoTable.emplace(name<reg_algo::NotationMethod>(), CategoryExtTrait{candidates, reg_algo::NotationMethod{}});
+    algoTable.emplace(name<reg_algo::NotationMethod>(), RegCatTrait{candidates, reg_algo::NotationMethod{}});
     subCLIAppAlgo
         .addArgument(
             prefix1 + std::string{alias<reg_algo::NotationMethod>()},
@@ -312,7 +312,7 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     relatedVersions.emplace(
         RelVerPair{name<reg_algo::ApplyAlgorithm>(), reg_algo::notation::version()}, name<reg_algo::NotationMethod>());
     candidates = extractChoices<reg_algo::OptimalMethod>();
-    algoTable.emplace(name<reg_algo::OptimalMethod>(), CategoryExtTrait{candidates, reg_algo::OptimalMethod{}});
+    algoTable.emplace(name<reg_algo::OptimalMethod>(), RegCatTrait{candidates, reg_algo::OptimalMethod{}});
     subCLIAppAlgo
         .addArgument(
             prefix1 + std::string{alias<reg_algo::OptimalMethod>()},
@@ -329,7 +329,7 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     relatedVersions.emplace(
         RelVerPair{name<reg_algo::ApplyAlgorithm>(), reg_algo::optimal::version()}, name<reg_algo::OptimalMethod>());
     candidates = extractChoices<reg_algo::SearchMethod>();
-    algoTable.emplace(name<reg_algo::SearchMethod>(), CategoryExtTrait{candidates, reg_algo::SearchMethod{}});
+    algoTable.emplace(name<reg_algo::SearchMethod>(), RegCatTrait{candidates, reg_algo::SearchMethod{}});
     subCLIAppAlgo
         .addArgument(
             prefix1 + std::string{alias<reg_algo::SearchMethod>()},
@@ -346,7 +346,7 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     relatedVersions.emplace(
         RelVerPair{name<reg_algo::ApplyAlgorithm>(), reg_algo::search::version()}, name<reg_algo::SearchMethod>());
     candidates = extractChoices<reg_algo::SortMethod>();
-    algoTable.emplace(name<reg_algo::SortMethod>(), CategoryExtTrait{candidates, reg_algo::SortMethod{}});
+    algoTable.emplace(name<reg_algo::SortMethod>(), RegCatTrait{candidates, reg_algo::SortMethod{}});
     subCLIAppAlgo
         .addArgument(
             prefix1 + std::string{alias<reg_algo::SortMethod>()}, prefix2 + std::string{name<reg_algo::SortMethod>()})
@@ -370,7 +370,7 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     subCLIAppDp.addDescription(descr<reg_dp::ApplyDesignPattern>());
     subCLIAppDp.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
     candidates = extractChoices<reg_dp::BehavioralInstance>();
-    dpTable.emplace(name<reg_dp::BehavioralInstance>(), CategoryExtTrait{candidates, reg_dp::BehavioralInstance{}});
+    dpTable.emplace(name<reg_dp::BehavioralInstance>(), RegCatTrait{candidates, reg_dp::BehavioralInstance{}});
     subCLIAppDp
         .addArgument(
             prefix1 + std::string{alias<reg_dp::BehavioralInstance>()},
@@ -388,7 +388,7 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
         RelVerPair{name<reg_dp::ApplyDesignPattern>(), reg_dp::behavioral::version()},
         name<reg_dp::BehavioralInstance>());
     candidates = extractChoices<reg_dp::CreationalInstance>();
-    dpTable.emplace(name<reg_dp::CreationalInstance>(), CategoryExtTrait{candidates, reg_dp::CreationalInstance{}});
+    dpTable.emplace(name<reg_dp::CreationalInstance>(), RegCatTrait{candidates, reg_dp::CreationalInstance{}});
     subCLIAppDp
         .addArgument(
             prefix1 + std::string{alias<reg_dp::CreationalInstance>()},
@@ -406,7 +406,7 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
         RelVerPair{name<reg_dp::ApplyDesignPattern>(), reg_dp::creational::version()},
         name<reg_dp::CreationalInstance>());
     candidates = extractChoices<reg_dp::StructuralInstance>();
-    dpTable.emplace(name<reg_dp::StructuralInstance>(), CategoryExtTrait{candidates, reg_dp::StructuralInstance{}});
+    dpTable.emplace(name<reg_dp::StructuralInstance>(), RegCatTrait{candidates, reg_dp::StructuralInstance{}});
     subCLIAppDp
         .addArgument(
             prefix1 + std::string{alias<reg_dp::StructuralInstance>()},
@@ -432,7 +432,7 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     subCLIAppDs.addDescription(descr<reg_ds::ApplyDataStructure>());
     subCLIAppDs.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
     candidates = extractChoices<reg_ds::LinearInstance>();
-    dsTable.emplace(name<reg_ds::LinearInstance>(), CategoryExtTrait{candidates, reg_ds::LinearInstance{}});
+    dsTable.emplace(name<reg_ds::LinearInstance>(), RegCatTrait{candidates, reg_ds::LinearInstance{}});
     subCLIAppDs
         .addArgument(
             prefix1 + std::string{alias<reg_ds::LinearInstance>()},
@@ -449,7 +449,7 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     relatedVersions.emplace(
         RelVerPair{name<reg_ds::ApplyDataStructure>(), reg_ds::linear::version()}, name<reg_ds::LinearInstance>());
     candidates = extractChoices<reg_ds::TreeInstance>();
-    dsTable.emplace(name<reg_ds::TreeInstance>(), CategoryExtTrait{candidates, reg_ds::TreeInstance{}});
+    dsTable.emplace(name<reg_ds::TreeInstance>(), RegCatTrait{candidates, reg_ds::TreeInstance{}});
     subCLIAppDs
         .addArgument(
             prefix1 + std::string{alias<reg_ds::TreeInstance>()}, prefix2 + std::string{name<reg_ds::TreeInstance>()})
@@ -473,7 +473,7 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     subCLIAppNum.addDescription(descr<reg_num::ApplyNumeric>());
     subCLIAppNum.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
     candidates = extractChoices<reg_num::ArithmeticMethod>();
-    numTable.emplace(name<reg_num::ArithmeticMethod>(), CategoryExtTrait{candidates, reg_num::ArithmeticMethod{}});
+    numTable.emplace(name<reg_num::ArithmeticMethod>(), RegCatTrait{candidates, reg_num::ArithmeticMethod{}});
     subCLIAppNum
         .addArgument(
             prefix1 + std::string{alias<reg_num::ArithmeticMethod>()},
@@ -490,7 +490,7 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     relatedVersions.emplace(
         RelVerPair{name<reg_num::ApplyNumeric>(), reg_num::arithmetic::version()}, name<reg_num::ArithmeticMethod>());
     candidates = extractChoices<reg_num::DivisorMethod>();
-    numTable.emplace(name<reg_num::DivisorMethod>(), CategoryExtTrait{candidates, reg_num::DivisorMethod{}});
+    numTable.emplace(name<reg_num::DivisorMethod>(), RegCatTrait{candidates, reg_num::DivisorMethod{}});
     subCLIAppNum
         .addArgument(
             prefix1 + std::string{alias<reg_num::DivisorMethod>()},
@@ -507,7 +507,7 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     relatedVersions.emplace(
         RelVerPair{name<reg_num::ApplyNumeric>(), reg_num::divisor::version()}, name<reg_num::DivisorMethod>());
     candidates = extractChoices<reg_num::IntegralMethod>();
-    numTable.emplace(name<reg_num::IntegralMethod>(), CategoryExtTrait{candidates, reg_num::IntegralMethod{}});
+    numTable.emplace(name<reg_num::IntegralMethod>(), RegCatTrait{candidates, reg_num::IntegralMethod{}});
     subCLIAppNum
         .addArgument(
             prefix1 + std::string{alias<reg_num::IntegralMethod>()},
@@ -524,7 +524,7 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     relatedVersions.emplace(
         RelVerPair{name<reg_num::ApplyNumeric>(), reg_num::integral::version()}, name<reg_num::IntegralMethod>());
     candidates = extractChoices<reg_num::PrimeMethod>();
-    numTable.emplace(name<reg_num::PrimeMethod>(), CategoryExtTrait{candidates, reg_num::PrimeMethod{}});
+    numTable.emplace(name<reg_num::PrimeMethod>(), RegCatTrait{candidates, reg_num::PrimeMethod{}});
     subCLIAppNum
         .addArgument(
             prefix1 + std::string{alias<reg_num::PrimeMethod>()}, prefix2 + std::string{name<reg_num::PrimeMethod>()})
