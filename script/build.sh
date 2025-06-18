@@ -1229,7 +1229,7 @@ function build_native_if_needed()
         exit "${STATUS}"
     fi
 
-    set_compile_condition "${FOLDER[bld]}" "256m"
+    set_compile_condition "${FOLDER[bld]}" "512m"
     if [[ -f ./${FOLDER[bld]}/${cmake_cache} ]] \
         && ! grep -Fwq "${DEV_OPT[compiler]}" "./${FOLDER[bld]}/${cmake_cache}" 2>/dev/null; then
         shell_command "rm -rf ./${FOLDER[bld]}/${cmake_cache}"
