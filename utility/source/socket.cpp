@@ -139,13 +139,13 @@ int TCPSocket::toSend(const std::string_view message)
     return toSend(message.data(), message.length());
 }
 
-void TCPSocket::toConnect(const std::string_view ip, const std::uint16_t port)
+void TCPSocket::toConnect(const std::string& ip, const std::uint16_t port)
 {
     ::addrinfo hints{}, *addrInfo = nullptr;
     hints.ai_family = AF_INET;
     hints.ai_socktype = ::SOCK_STREAM;
 
-    if (const int status = ::getaddrinfo(ip.data(), nullptr, &hints, &addrInfo); status != 0)
+    if (const int status = ::getaddrinfo(ip.c_str(), nullptr, &hints, &addrInfo); status != 0)
     {
         throw std::runtime_error{
             "Invalid address, status: " + std::string{::gai_strerror(status)} + ", errno: " + errnoString() + '.'};
@@ -237,9 +237,9 @@ TCPServer::TCPServer() : Socket(Type::tcp)
     ::setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, &opt2, sizeof(opt2));
 }
 
-void TCPServer::toBind(const std::string_view ip, const std::uint16_t port)
+void TCPServer::toBind(const std::string& ip, const std::uint16_t port)
 {
-    if (::inet_pton(AF_INET, ip.data(), &sockAddr.sin_addr) == -1)
+    if (::inet_pton(AF_INET, ip.c_str(), &sockAddr.sin_addr) == -1)
     {
         throw std::runtime_error{"Invalid address, address type is not supported, errno: " + errnoString() + '.'};
     }
@@ -326,14 +326,14 @@ void TCPServer::toAccept(const std::shared_ptr<TCPServer> server) // NOLINT(perf
 }
 
 int UDPSocket::toSendTo(
-    const char* const bytes, const std::size_t length, const std::string_view ip, const std::uint16_t port)
+    const char* const bytes, const std::size_t length, const std::string& ip, const std::uint16_t port)
 {
     ::sockaddr_in addr{};
     ::addrinfo hints{}, *addrInfo = nullptr;
     hints.ai_family = AF_INET;
     hints.ai_socktype = ::SOCK_DGRAM;
 
-    if (const int status = ::getaddrinfo(ip.data(), nullptr, &hints, &addrInfo); status != 0)
+    if (const int status = ::getaddrinfo(ip.c_str(), nullptr, &hints, &addrInfo); status != 0)
     {
         throw std::runtime_error{
             "Invalid address, status: " + std::string{::gai_strerror(status)} + ", errno: " + errnoString() + '.'};
@@ -364,7 +364,7 @@ int UDPSocket::toSendTo(
     return sent;
 }
 
-int UDPSocket::toSendTo(const std::string_view message, const std::string_view ip, const std::uint16_t port)
+int UDPSocket::toSendTo(const std::string_view message, const std::string& ip, const std::uint16_t port)
 {
     return toSendTo(message.data(), message.length(), ip, port);
 }
@@ -380,13 +380,13 @@ int UDPSocket::toSend(const std::string_view message)
     return toSend(message.data(), message.length());
 }
 
-void UDPSocket::toConnect(const std::string_view ip, const std::uint16_t port)
+void UDPSocket::toConnect(const std::string& ip, const std::uint16_t port)
 {
     ::addrinfo hints{}, *addrInfo = nullptr;
     hints.ai_family = AF_INET;
     hints.ai_socktype = ::SOCK_DGRAM;
 
-    if (const int status = ::getaddrinfo(ip.data(), nullptr, &hints, &addrInfo); status != 0)
+    if (const int status = ::getaddrinfo(ip.c_str(), nullptr, &hints, &addrInfo); status != 0)
     {
         throw std::runtime_error{
             "Invalid address, status: " + std::string{::gai_strerror(status)} + ", errno: " + errnoString() + '.'};
@@ -528,9 +528,9 @@ void UDPSocket::toRecvFrom(const std::shared_ptr<UDPSocket> socket) // NOLINT(pe
     }
 }
 
-void UDPServer::toBind(const std::string_view ip, const std::uint16_t port)
+void UDPServer::toBind(const std::string& ip, const std::uint16_t port)
 {
-    if (::inet_pton(AF_INET, ip.data(), &sockAddr.sin_addr) == -1)
+    if (::inet_pton(AF_INET, ip.c_str(), &sockAddr.sin_addr) == -1)
     {
         throw std::runtime_error{"Invalid address, address type is not supported, errno: " + errnoString() + '.'};
     }

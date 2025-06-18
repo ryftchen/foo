@@ -44,7 +44,7 @@ Console::~Console()
 
 void Console::registerOption(const std::string_view name, const std::string_view description, Callback callable)
 {
-    terminal->regTable[name.data()] = std::make_pair(description, std::move(callable));
+    terminal->regTable.emplace(name, std::make_pair(description, std::move(callable)));
     terminal->orderList.emplace_back(name);
 }
 
@@ -53,10 +53,10 @@ void Console::setGreeting(const std::string_view greeting)
     terminal->greeting = greeting;
 }
 
-Console::RetCode Console::optionExecutor(const std::string_view option) const
+Console::RetCode Console::optionExecutor(const std::string& option) const
 {
     std::vector<std::string> inputs{};
-    std::istringstream transfer(option.data());
+    std::istringstream transfer(option);
     std::copy(
         std::istream_iterator<std::string>{transfer}, std::istream_iterator<std::string>{}, std::back_inserter(inputs));
     if (inputs.empty())
@@ -74,9 +74,9 @@ Console::RetCode Console::optionExecutor(const std::string_view option) const
     return std::get<Callback>(regIter->second)(inputs);
 }
 
-Console::RetCode Console::fileExecutor(const std::string_view filename) const
+Console::RetCode Console::fileExecutor(const std::string& filename) const
 {
-    std::ifstream batch(filename.data());
+    std::ifstream batch(filename);
     if (!batch)
     {
         throw std::runtime_error{"Could not find the batch file to run."};
@@ -263,7 +263,7 @@ char* Console::customCompentry(const char* text, int state)
     {
         const auto& option = optionIterator->first;
         ++optionIterator;
-        if (const std::string_view input = text; option.compare(0, input.length(), input) == 0)
+        if (option.starts_with(text))
         {
             return ::strdup(option.c_str());
         }

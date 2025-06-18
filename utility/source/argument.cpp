@@ -157,7 +157,7 @@ std::size_t Trait::getArgumentsLength() const
         return metavarCont.empty() ? (namesSize + (names.size() - 1)) : metavarCont.length();
     }
 
-    std::size_t size = namesSize + 2 * (names.size() - 1);
+    std::size_t size = namesSize + (2 * (names.size() - 1));
     if (!metavarCont.empty() && (argsNumRange == ArgsNumRange{1, 1}))
     {
         size += metavarCont.length() + 1;
@@ -541,7 +541,8 @@ void Argument::parseArgsInternal(const std::vector<std::string>& rawArguments)
                 const auto unprocessedArgs = std::vector<std::string>(iterator, ending);
                 isParsed = true;
                 subParserUsed[maybeCommand] = true;
-                return subParserIter->second->get().parseArgs(unprocessedArgs);
+                subParserIter->second->get().parseArgs(unprocessedArgs);
+                return;
             }
             throw std::runtime_error{"Maximum number of positional arguments exceeded."};
         }

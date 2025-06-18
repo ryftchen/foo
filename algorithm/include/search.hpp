@@ -97,7 +97,7 @@ std::int64_t Search<T>::interpolation(const T* const array, const std::uint32_t 
 
     while (lower <= upper)
     {
-        std::uint32_t mid = lower + (upper - lower) * ((key - array[lower]) / (array[upper] - array[lower]));
+        std::uint32_t mid = lower + ((upper - lower) * ((key - array[lower]) / (array[upper] - array[lower])));
         if (key == array[mid])
         {
             index = mid;
@@ -175,7 +175,7 @@ std::vector<std::uint32_t> Search<T>::generateFibonacciNumber(const std::uint32_
         return {};
     }
 
-    const double phi = (1.0 + std::sqrt(5.0)) / 2.0, estimate = std::log(limit * std::sqrt(5.0)) / std::log(phi);
+    const double estimate = std::log(limit * std::sqrt(5.0)) / std::log(std::numbers::phi);
     std::vector<std::uint32_t> fibonacci{};
     fibonacci.reserve(static_cast<std::uint32_t>(estimate) + 1);
     for (std::uint32_t f1 = 0, f2 = 1;;)

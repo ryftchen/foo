@@ -611,18 +611,18 @@ function check_potential_dependencies()
     fi
 
     if [[ ${ARGS[format]} != false ]]; then
-        if ! command -v clang-format-16 >/dev/null 2>&1 || ! command -v shfmt >/dev/null 2>&1 \
+        if ! command -v clang-format-19 >/dev/null 2>&1 || ! command -v shfmt >/dev/null 2>&1 \
             || ! command -v black >/dev/null 2>&1 || ! command -v rustfmt >/dev/null 2>&1; then
             die "No clang-format, shfmt, black or rustfmt program. Please install it."
         fi
     fi
 
     if [[ ${ARGS[lint]} != false ]]; then
-        if ! command -v clang-tidy-16 >/dev/null 2>&1 || ! command -v run-clang-tidy-16 >/dev/null 2>&1 \
+        if ! command -v clang-tidy-19 >/dev/null 2>&1 || ! command -v run-clang-tidy-19 >/dev/null 2>&1 \
             || ! command -v compdb >/dev/null 2>&1 || ! pip3 show clang-tidy-converter >/dev/null 2>&1 \
             || ! command -v shellcheck >/dev/null 2>&1 || ! command -v pylint >/dev/null 2>&1 \
             || ! command -v clippy-driver >/dev/null 2>&1; then
-            die "No clang-tidy (including run-clang-tidy-16, compdb, clang-tidy-converter), shellcheck, pylint \
+            die "No clang-tidy (including run-clang-tidy-19, compdb, clang-tidy-converter), shellcheck, pylint \
 or clippy program. Please install it."
         fi
         if [[ ${DEV_OPT[pch]} = true ]] || [[ ${DEV_OPT[unity]} = true ]]; then
@@ -694,12 +694,12 @@ function perform_format_option()
         if [[ ${ARGS[quick]} = false ]]; then
             shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
 ./${FOLDER[num]} ./${FOLDER[tst]} -name '*.cpp' -o -name '*.hpp' -o -name '*.tpp' | grep -v '/${FOLDER[bld]}/' \
-| xargs clang-format-16 --Werror -i --style=file:./.clang-format --verbose"
+| xargs clang-format-19 --Werror -i --style=file:./.clang-format --verbose"
         else
             local format_changed_cpp="${GIT_CHANGE_CMD} | grep -E '\.(cpp|hpp|tpp)$'"
             if eval "${format_changed_cpp}" >/dev/null; then
                 shell_command "${format_changed_cpp} \
-| xargs clang-format-16 --Werror -i --style=file:./.clang-format --verbose"
+| xargs clang-format-19 --Werror -i --style=file:./.clang-format --verbose"
             fi
         fi
     fi
@@ -782,26 +782,26 @@ function perform_lint_option()
         if [[ ${ARGS[quick]} = false ]]; then
             shell_command "set -o pipefail && find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} \
 ./${FOLDER[ds]} ./${FOLDER[dp]} ./${FOLDER[num]} -name '*.cpp' -o -name '*.hpp' \
-| xargs run-clang-tidy-16 -config-file=./.clang-tidy -p ./${FOLDER[bld]} -quiet | tee -a ${clang_tidy_log}"
+| xargs run-clang-tidy-19 -config-file=./.clang-tidy -p ./${FOLDER[bld]} -quiet | tee -a ${clang_tidy_log}"
         else
             local lint_changed_cpp_for_app="${GIT_CHANGE_CMD} \
 | grep -E '^(${FOLDER[app]}|${FOLDER[util]}|${FOLDER[algo]}|${FOLDER[ds]}|${FOLDER[dp]}|${FOLDER[num]})/.*\.(cpp|hpp)$'"
             if eval "${lint_changed_cpp_for_app}" >/dev/null; then
                 shell_command "set -o pipefail && ${lint_changed_cpp_for_app} \
-| xargs run-clang-tidy-16 -config-file=./.clang-tidy -p ./${FOLDER[bld]} -quiet | tee -a ${clang_tidy_log}"
+| xargs run-clang-tidy-19 -config-file=./.clang-tidy -p ./${FOLDER[bld]} -quiet | tee -a ${clang_tidy_log}"
             fi
         fi
         if [[ ${exist_file_extention} = true ]]; then
             if [[ ${ARGS[quick]} = false ]]; then
                 shell_command "set -o pipefail && find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} \
 ./${FOLDER[ds]} ./${FOLDER[dp]} ./${FOLDER[num]} -name '*.tpp' \
-| xargs clang-tidy-16 --config-file=./.clang-tidy -p ./${FOLDER[bld]} --quiet | tee -a ${clang_tidy_log}"
+| xargs clang-tidy-19 --config-file=./.clang-tidy -p ./${FOLDER[bld]} --quiet | tee -a ${clang_tidy_log}"
             else
                 local lint_changed_cpp_for_app_ext="${GIT_CHANGE_CMD} \
 | grep -E '^(${FOLDER[app]}|${FOLDER[util]}|${FOLDER[algo]}|${FOLDER[ds]}|${FOLDER[dp]}|${FOLDER[num]})/.*\.tpp$'"
                 if eval "${lint_changed_cpp_for_app_ext}" >/dev/null; then
                     shell_command "set -o pipefail && ${lint_changed_cpp_for_app_ext} \
-| xargs clang-tidy-16 --config-file=./.clang-tidy -p ./${FOLDER[bld]} --quiet | tee -a ${clang_tidy_log}"
+| xargs clang-tidy-19 --config-file=./.clang-tidy -p ./${FOLDER[bld]} --quiet | tee -a ${clang_tidy_log}"
                 fi
             fi
         fi
@@ -815,13 +815,13 @@ function perform_lint_option()
 && mv ./${tst_comp_db} ./${tst_comp_db}.bak && mv ./${COMPILE_DB} ./${FOLDER[tst]}/${FOLDER[bld]}"
         if [[ ${ARGS[quick]} = false ]]; then
             shell_command "set -o pipefail && find ./${FOLDER[tst]} -name '*.cpp' \
-| xargs run-clang-tidy-16 -config-file=./.clang-tidy -p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet \
+| xargs run-clang-tidy-19 -config-file=./.clang-tidy -p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet \
 | tee -a ${clang_tidy_log}"
         else
             local lint_changed_cpp_for_tst="${GIT_CHANGE_CMD} | grep -E '^${FOLDER[tst]}/.*\.cpp$'"
             if eval "${lint_changed_cpp_for_tst}" >/dev/null; then
                 shell_command "set -o pipefail && ${lint_changed_cpp_for_tst} \
-| xargs run-clang-tidy-16 -config-file=./.clang-tidy -p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet \
+| xargs run-clang-tidy-19 -config-file=./.clang-tidy -p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet \
 | tee -a ${clang_tidy_log}"
             fi
         fi
@@ -1122,20 +1122,20 @@ function set_compile_condition()
 
     CMAKE_CACHE_ENTRY=" -D CMAKE_BUILD_TYPE=${BUILD_TYPE}"
     if [[ ${DEV_OPT[compiler]} = "gcc" ]]; then
-        local ver=13
+        local ver=14
         export CC=gcc-${ver} CXX=g++-${ver}
         if ! command -v "${CC}" >/dev/null 2>&1 || ! command -v "${CXX}" >/dev/null 2>&1; then
             die "No ${CC} or ${CXX} program. Please install it."
         fi
     elif [[ ${DEV_OPT[compiler]} = "clang" ]]; then
-        local ver=16
+        local ver=19
         export CC=clang-${ver} CXX=clang++-${ver}
         if ! command -v "${CC}" >/dev/null 2>&1 || ! command -v "${CXX}" >/dev/null 2>&1; then
             die "No ${CC} or ${CXX} program. Please install it."
         fi
     fi
     CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D CMAKE_C_COMPILER=${CC} -D CMAKE_CXX_COMPILER=${CXX}"
-    local gnu_lib_ver=13
+    local gnu_lib_ver=14
     if command -v "gcc-${gnu_lib_ver}" >/dev/null 2>&1 && command -v "g++-${gnu_lib_ver}" >/dev/null 2>&1; then
         local gcc_processor gxx_processor
         gcc_processor=$("gcc-${gnu_lib_ver}" -dumpmachine)

@@ -37,7 +37,7 @@ public:
 
 private:
     //! @brief Beginning time.
-    std::chrono::high_resolution_clock::time_point beginTime{};
+    std::chrono::high_resolution_clock::time_point beginTime;
 };
 
 template <typename Rep, typename Period>

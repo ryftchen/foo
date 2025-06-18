@@ -21,35 +21,35 @@ namespace configure
 namespace field
 {
 //! @brief The literal string of the "activateHelper" field.
-constexpr std::string_view activateHelper = MACRO_STRINGIFY(activateHelper);
+constexpr const char* const activateHelper = MACRO_STRINGIFY(activateHelper);
 //! @brief The literal string of the "helperList" field.
-constexpr std::string_view helperList = MACRO_STRINGIFY(helperList);
+constexpr const char* const helperList = MACRO_STRINGIFY(helperList);
 //! @brief The literal string of the "properties" field in the object of "helpList".
-constexpr std::string_view properties = MACRO_STRINGIFY(properties);
+constexpr const char* const properties = MACRO_STRINGIFY(properties);
 //! @brief The literal string of the "required" field in the object of "helpList".
-constexpr std::string_view required = MACRO_STRINGIFY(required);
+constexpr const char* const required = MACRO_STRINGIFY(required);
 //! @brief The literal string of the "logger" field of "helpList".
-constexpr std::string_view logger = MACRO_STRINGIFY(logger);
+constexpr const char* const logger = MACRO_STRINGIFY(logger);
 //! @brief The literal string of the "filePath" field in the properties of "logger" object of "helpList".
-constexpr std::string_view filePath = MACRO_STRINGIFY(filePath);
+constexpr const char* const filePath = MACRO_STRINGIFY(filePath);
 //! @brief The literal string of the "priorityLevel" field in the properties of "logger" object of "helpList".
-constexpr std::string_view priorityLevel = MACRO_STRINGIFY(priorityLevel);
+constexpr const char* const priorityLevel = MACRO_STRINGIFY(priorityLevel);
 //! @brief The literal string of the "targetType" field in the properties of "logger" object of "helpList".
-constexpr std::string_view targetType = MACRO_STRINGIFY(targetType);
+constexpr const char* const targetType = MACRO_STRINGIFY(targetType);
 //! @brief The literal string of the "writeMode" field in the properties of "logger" object of "helpList".
-constexpr std::string_view writeMode = MACRO_STRINGIFY(writeMode);
+constexpr const char* const writeMode = MACRO_STRINGIFY(writeMode);
 //! @brief The literal string of the "viewer" field of "helpList".
-constexpr std::string_view viewer = MACRO_STRINGIFY(viewer);
+constexpr const char* const viewer = MACRO_STRINGIFY(viewer);
 //! @brief The literal string of the "tcpHost" field in the properties of "viewer" object of "helpList".
-constexpr std::string_view tcpHost = MACRO_STRINGIFY(tcpHost);
+constexpr const char* const tcpHost = MACRO_STRINGIFY(tcpHost);
 //! @brief The literal string of the "tcpPort" field in the properties of "viewer" object of "helpList".
-constexpr std::string_view tcpPort = MACRO_STRINGIFY(tcpPort);
+constexpr const char* const tcpPort = MACRO_STRINGIFY(tcpPort);
 //! @brief The literal string of the "udpHost" field in the properties of "viewer" object of "helpList".
-constexpr std::string_view udpHost = MACRO_STRINGIFY(udpHost);
+constexpr const char* const udpHost = MACRO_STRINGIFY(udpHost);
 //! @brief The literal string of the "udpPort" field in the properties of "viewer" object of "helpList".
-constexpr std::string_view udpPort = MACRO_STRINGIFY(udpPort);
+constexpr const char* const udpPort = MACRO_STRINGIFY(udpPort);
 //! @brief The literal string of the "helperTimeout" field.
-constexpr std::string_view helperTimeout = MACRO_STRINGIFY(helperTimeout);
+constexpr const char* const helperTimeout = MACRO_STRINGIFY(helperTimeout);
 } // namespace field
 
 //! @brief Default configuration filename.
@@ -96,9 +96,9 @@ private:
     }
 
     //! @brief Full path to the configuration file.
-    const std::string filePath{};
+    const std::string filePath;
     //! @brief Configuration data repository.
-    const utility::json::JSON dataRepo{};
+    const utility::json::JSON dataRepo;
 
     //! @brief Parse the configuration file.
     //! @param configFile - configuration file
@@ -124,7 +124,7 @@ namespace detail
 //! @param json - specific JSON object
 //! @param field - field name
 //! @return const reference of the JSON object
-inline const utility::json::JSON& operator/(const utility::json::JSON& json, const std::string_view field)
+inline const utility::json::JSON& operator/(const utility::json::JSON& json, const std::string& field)
 {
     return json.at(field);
 }

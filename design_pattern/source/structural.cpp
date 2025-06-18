@@ -58,7 +58,7 @@ void ConcreteImplementorB::action()
 
 void RefinedAbstraction::operation()
 {
-    return implementor->action();
+    implementor->action();
 }
 
 //! @brief Output stream for the bridge pattern. Need to be cleared manually.

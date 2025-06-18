@@ -17,6 +17,7 @@
 
 #include "application/core/include/log.hpp"
 #include "utility/include/currying.hpp"
+#include "utility/include/time.hpp"
 
 //! @brief Title of printing when algorithm tasks are beginning.
 #define APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(category)                                                               \
@@ -251,9 +252,9 @@ namespace notation
 //! @param method - specific value of NotationMethod enum
 //! @param result - notation result
 //! @param descr - notation description
-static void showResult(const NotationMethod method, const std::string_view result, const char* const descr)
+static void showResult(const NotationMethod method, const std::string& result, const std::string& descr)
 {
-    std::printf("\n==> %-7s Method <==\n%s: %s\n", makeTitle(method).c_str(), descr, result.data());
+    std::printf("\n==> %-7s Method <==\n%s: %s\n", makeTitle(method).c_str(), descr.c_str(), result.c_str());
 }
 
 void NotationSolution::prefixMethod(const std::string_view infix)

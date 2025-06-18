@@ -144,9 +144,9 @@ private:
     Command();
 
     //! @brief Mutex for controlling parser.
-    mutable std::mutex parserMtx{};
+    mutable std::mutex parserMtx;
     //! @brief The synchronization condition for foreground and background. Use with parserMtx.
-    std::condition_variable parserCond{};
+    std::condition_variable parserCond;
     //! @brief Flag to indicate whether parsing of arguments is completed.
     std::atomic<bool> isParsed{false};
     //! @brief Parse argument helper for commander.
@@ -190,16 +190,16 @@ private:
     //! @brief Check for excessive arguments.
     void checkForExcessiveArguments();
 
-    //! @brief Alias for the extend attribute of the sub-cli's category.
-    struct CategoryExtAttr
+    //! @brief Alias for the extend trait of the sub-cli's category.
+    struct CategoryExtTrait
     {
         //! @brief The candidates for the choice.
-        const std::vector<std::string> choices{};
+        const std::vector<std::string> choices;
         //! @brief The internal event for applying.
-        const action::EventType event{};
+        const action::EventType event;
     };
-    //! @brief Alias for the map of sub-cli's category name and CategoryExtAttr.
-    using CategoryExtMap = std::map<std::string, CategoryExtAttr>;
+    //! @brief Alias for the map of sub-cli's category name and CategoryExtTrait.
+    using CategoryExtMap = std::map<std::string, CategoryExtTrait>;
     //! @brief Alias for the map of sub-cli name and CategoryExtMap.
     using ExtraChoiceMap = std::map<std::string, CategoryExtMap>;
     //! @brief Get the description.
@@ -216,7 +216,7 @@ private:
     template <typename T>
     static std::vector<std::string> extractChoices();
     //! @brief Mapping table of all extra choices. Fill as needed.
-    ExtraChoiceMap extraChoices{};
+    ExtraChoiceMap extraChoices;
 
     //! @brief Manage tasks.
     class TaskManager
@@ -236,34 +236,34 @@ private:
     {
     public:
         //! @brief Bit flags for managing native categories.
-        std::bitset<Bottom<Category>::value> nativeCategories{};
+        std::bitset<Bottom<Category>::value> nativeCategories;
 
         //! @brief Check whether any native categories do not exist.
         //! @return any native categories do not exist or exist
-        [[nodiscard]] inline bool empty() const override { return nativeCategories.none(); }
+        [[nodiscard]] bool empty() const override { return nativeCategories.none(); }
         //! @brief Reset bit flags that manage native categories.
-        inline void reset() override { nativeCategories.reset(); }
+        void reset() override { nativeCategories.reset(); }
     };
     //! @brief Manage extra choices of sub-cli.
     class ExtraManager : virtual public TaskManager
     {
     public:
         //! @brief Wrap interfaces to check for existing and reset extra choices.
-        struct WrapIntf
+        struct Intf
         {
             //! @brief Check the existence status of the extra choice.
-            const std::function<bool()> present{};
+            const std::function<bool()> present;
             //! @brief Reset control of the extra choice.
-            const std::function<void()> clear{};
+            const std::function<void()> clear;
         };
         //! @brief Flag for help only.
         bool extraHelpOnly{false};
         //! @brief Existence status and reset control of the sub-cli to which the extra choices belong.
-        std::map<std::string, WrapIntf> extraChecklist{};
+        std::map<std::string, Intf> extraChecklist;
 
         //! @brief Check whether any extra choices do not exist.
         //! @return any extra choices do not exist or exist
-        [[nodiscard]] inline bool empty() const override
+        [[nodiscard]] bool empty() const override
         {
             return !extraHelpOnly
                 && std::none_of(
@@ -272,7 +272,7 @@ private:
                     [](const auto& pair) { return pair.second.present(); });
         }
         //! @brief Reset bit flags that manage extra choices.
-        inline void reset() override
+        void reset() override
         {
             extraHelpOnly = false;
             std::for_each(
@@ -285,9 +285,9 @@ private:
     public:
         //! @brief Check whether any tasks do not exist.
         //! @return any tasks do not exist or exist
-        [[nodiscard]] inline bool empty() const final { return NativeManager::empty() && ExtraManager::empty(); }
+        [[nodiscard]] bool empty() const final { return NativeManager::empty() && ExtraManager::empty(); }
         //! @brief Reset bit flags that manage all tasks.
-        inline void reset() final
+        void reset() final
         {
             NativeManager::reset();
             ExtraManager::reset();
@@ -322,7 +322,7 @@ private:
         }
     };
     //! @brief Mapping table of related versions. Fill as needed.
-    std::unordered_multimap<RelVerPair, std::string, RelVerHash> relatedVersions{};
+    std::unordered_multimap<RelVerPair, std::string, RelVerHash> relatedVersions;
 
     //! @brief Go to console mode for troubleshooting.
     static void enterConsoleMode();

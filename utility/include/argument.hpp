@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <any>
 #include <cstdint>
 #include <functional>
@@ -203,24 +204,24 @@ private:
     //! @brief Alias for function which has void return.
     using VoidAction = std::function<void(const std::string&)>;
     //! @brief All argument names.
-    std::vector<std::string> names{};
+    std::vector<std::string> names;
     //! @brief Used argument name.
-    std::string usedName{};
+    std::string usedName;
     //! @brief Help message content.
-    std::string helpCont{};
+    std::string helpCont;
     //! @brief Metavar message content.
-    std::string metavarCont{};
+    std::string metavarCont;
     //! @brief Default value.
-    std::any defaultVal{};
+    std::any defaultVal;
     //! @brief Default value content to be represented.
-    std::string representedDefVal{};
+    std::string representedDefVal;
     //! @brief Implicit value.
-    std::any implicitVal{};
+    std::any implicitVal;
     //! @brief All actions of arguments.
     std::variant<ValuedAction, VoidAction> actions{
         std::in_place_type<ValuedAction>, [](const std::string& value) { return value; }};
     //! @brief Values from all arguments.
-    std::vector<std::any> values{};
+    std::vector<std::any> values;
     //! @brief Flag to indicate whether to accept optional like value.
     bool optionalAsValue{false};
     //! @brief Flag to indicate whether to be optional.
@@ -234,7 +235,7 @@ private:
     //! @brief End of file in arguments.
     static constexpr int eof{std::char_traits<char>::eof()};
     //! @brief Prefix characters.
-    std::string prefixChars{};
+    std::string prefixChars;
     //! @brief Maximum size for representing.
     static constexpr std::size_t maxRepresentSize{5};
 
@@ -329,7 +330,7 @@ private:
     //! @param seq - sequence which converted from bound arguments tuple
     //! @return wrapping of calls
     template <typename Func, typename Tuple, typename Extra, std::size_t... I>
-    static inline constexpr decltype(auto) applyScopedOneImpl(
+    static constexpr decltype(auto) applyScopedOneImpl(
         Func&& func, Tuple&& tup, Extra&& ext, const std::index_sequence<I...>& seq);
     //! @brief Wrap function calls that have scope.
     //! @tparam Func - type of callable function
@@ -340,7 +341,7 @@ private:
     //! @param ext - extra option
     //! @return wrapping of calls
     template <typename Func, typename Tuple, typename Extra>
-    static inline constexpr decltype(auto) applyScopedOne(Func&& func, Tuple&& tup, Extra&& ext);
+    static constexpr decltype(auto) applyScopedOne(Func&& func, Tuple&& tup, Extra&& ext);
     //! @brief Throw an exception when ArgsNumRange is invalid.
     [[noreturn]] void throwArgsNumRangeValidationException() const;
     //! @brief Find the character in the argument.
@@ -419,7 +420,7 @@ Trait::Trait(
     isUsed{false},
     prefixChars{prefix}
 {
-    (names.emplace_back(collection.at(I)), ...);
+    (names.emplace_back(std::move(collection).at(I)), ...);
     std::sort(
         names.begin(),
         names.end(),
@@ -582,14 +583,14 @@ std::string Trait::represent(const T& val)
 }
 
 template <typename Func, typename Tuple, typename Extra, std::size_t... I>
-inline constexpr decltype(auto) Trait::applyScopedOneImpl(
+constexpr decltype(auto) Trait::applyScopedOneImpl(
     Func&& func, Tuple&& tup, Extra&& ext, const std::index_sequence<I...>& /*seq*/)
 {
     return std::invoke(std::forward<Func>(func), std::get<I>(std::forward<Tuple>(tup))..., std::forward<Extra>(ext));
 }
 
 template <typename Func, typename Tuple, typename Extra>
-inline constexpr decltype(auto) Trait::applyScopedOne(Func&& func, Tuple&& tup, Extra&& ext)
+constexpr decltype(auto) Trait::applyScopedOne(Func&& func, Tuple&& tup, Extra&& ext)
 {
     return applyScopedOneImpl(
         std::forward<Func>(func),
@@ -757,16 +758,16 @@ public:
 
 private:
     //! @brief Title name.
-    std::string titleName{};
+    std::string titleName;
     //! @brief Version number.
-    std::string versionNumber{};
+    std::string versionNumber;
 
     //! @brief Alias for iterator in all Trait instances.
     using TraitIter = std::list<Trait>::iterator;
     //! @brief Alias for iterator in all Argument instances.
     using ArgumentIter = std::list<std::reference_wrapper<Argument>>::iterator;
     //! @brief Description text.
-    std::string descrText{};
+    std::string descrText;
     //! @brief Prefix characters.
     std::string prefixChars{"-"};
     //! @brief Assign characters.
@@ -774,19 +775,19 @@ private:
     //! @brief Flag to indicate whether to be parsed.
     bool isParsed{false};
     //! @brief List of optional arguments.
-    std::list<Trait> optionalArgs{};
+    std::list<Trait> optionalArgs;
     //! @brief List of positional arguments.
-    std::list<Trait> positionalArgs{};
+    std::list<Trait> positionalArgs;
     //! @brief Mapping table of argument.
-    std::unordered_map<std::string_view, TraitIter> argumentMap{};
+    std::unordered_map<std::string_view, TraitIter> argumentMap;
     //! @brief Current parser path.
-    std::string parserPath{};
+    std::string parserPath;
     //! @brief List of sub-parsers.
-    std::list<std::reference_wrapper<Argument>> subParsers{};
+    std::list<std::reference_wrapper<Argument>> subParsers;
     //! @brief Mapping table of sub-parser.
-    std::map<std::string_view, ArgumentIter> subParserMap{};
+    std::map<std::string_view, ArgumentIter> subParserMap;
     //! @brief Mapping table of sub-parser usage.
-    std::map<std::string_view, bool> subParserUsed{};
+    std::map<std::string_view, bool> subParserUsed;
 
     //! @brief Check whether the prefix character is valid.
     //! @param c - prefix character

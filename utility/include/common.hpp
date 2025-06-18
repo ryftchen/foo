@@ -54,21 +54,21 @@ extern std::size_t bkdrHash(const char* str);
 //! @param str - input data
 //! @param hash - previous hash value
 //! @return hash value
-inline constexpr std::size_t bkdrHashInCompiling(const char* const str, const std::size_t hash = 0) noexcept
+constexpr std::size_t bkdrHashInCompiling(const char* const str, const std::size_t hash = 0) noexcept
 {
     return *str ? bkdrHashInCompiling(str + 1, (hash * bkdrHashSeed + *str) & bkdrHashSize) : hash;
 }
 //! @brief The operator ("") overloading with BKDR hash function.
 //! @param str - input data
 //! @return hash value
-inline constexpr std::size_t operator""_bkdrHash(const char* str, const std::size_t /*len*/) noexcept
+constexpr std::size_t operator""_bkdrHash(const char* str, const std::size_t /*len*/) noexcept
 {
     return bkdrHashInCompiling(str);
 }
 //! @brief The operator ("") overloading with BKDR hash function.
 //! @param str - input data
 //! @return hash value
-inline constexpr std::size_t operator""_bkdrHash(const char* str) noexcept
+constexpr std::size_t operator""_bkdrHash(const char* str) noexcept
 {
     return bkdrHashInCompiling(str);
 }
@@ -85,7 +85,7 @@ extern std::string printfString(const char* const fmt, ...);
 template <typename... Args>
 inline std::string formatString(const std::string_view fmt, Args&&... args)
 {
-    return std::vformat(fmt, std::make_format_args(args...));
+    return std::vformat(fmt, std::make_format_args(std::forward<Args>(args)...));
 }
 
 //! @brief Compare whether two strings are equal.
@@ -139,7 +139,7 @@ static constexpr auto concatString = ConcatString<Strings...>::value;
 //! @tparam T - type of target class
 //! @return be stateless or not
 template <typename T>
-inline consteval bool isStatelessClass()
+consteval bool isStatelessClass()
 {
     return std::is_empty_v<T> || ((sizeof(T) == sizeof(void*) && std::is_polymorphic_v<T>));
 }
@@ -161,7 +161,7 @@ public:
     //! @tparam IntType - type of integral
     //! @return has or not has
     template <typename IntType>
-    static inline constexpr bool has(const IntType /*val*/)
+    static constexpr bool has(const IntType /*val*/)
     {
         return false;
     }
@@ -180,7 +180,7 @@ public:
     //! @param val - target value
     //! @return has or not has
     template <typename IntType>
-    static inline constexpr bool has(const IntType val)
+    static constexpr bool has(const IntType val)
     {
         return (static_cast<IntType>(Value) == val) || EnumCheck<EnumType, Next...>::has(val);
     }
@@ -194,7 +194,7 @@ public:
 //! @param args - function arguments
 //! @return function execution
 template <typename... Ts, typename Func, typename... Args>
-inline constexpr decltype(auto) invokeCallableWith(Func&& func, Args&&... args)
+constexpr decltype(auto) invokeCallableWith(Func&& func, Args&&... args)
 {
     return std::forward<Func>(func).template operator()<Ts...>(std::forward<Args>(args)...);
 }
@@ -211,7 +211,7 @@ struct WrapClosure
     //! @param closure - target closure
     //! @return original closure
     template <typename Clos>
-    static inline constexpr auto&& wrap(Clos&& closure) noexcept
+    static constexpr auto&& wrap(Clos&& closure) noexcept
     {
         return std::forward<Clos>(closure);
     }
@@ -229,7 +229,7 @@ struct WrapClosure<Func, Ret (Obj::*)(Args...), true>
     //! @param closure - target closure
     //! @return wrapped closure
     template <typename Clos>
-    static inline constexpr auto wrap(Clos&& closure)
+    static constexpr auto wrap(Clos&& closure) // NOLINT(cppcoreguidelines-missing-std-forward)
     {
         return [sharedClosure = std::make_shared<Func>(std::forward<Clos>(closure))](Args&&... args) mutable
         { return (*sharedClosure)(std::forward<Args>(args)...); };
@@ -248,7 +248,7 @@ struct WrapClosure<Func, Ret (Obj::*)(Args...) const, true>
     //! @param closure - target closure
     //! @return wrapped closure
     template <typename Clos>
-    static inline constexpr auto wrap(Clos&& closure)
+    static constexpr auto wrap(Clos&& closure) // NOLINT(cppcoreguidelines-missing-std-forward)
     {
         return [sharedClosure = std::make_shared<Func>(std::forward<Clos>(closure))](Args&&... args)
         { return (*sharedClosure)(std::forward<Args>(args)...); };
@@ -259,7 +259,7 @@ struct WrapClosure<Func, Ret (Obj::*)(Args...) const, true>
 //! @param closure - target closure
 //! @return wrapped closure
 template <typename Clos>
-inline constexpr auto wrapClosure(Clos&& closure)
+constexpr auto wrapClosure(Clos&& closure)
 {
     return WrapClosure<std::decay_t<Clos>>::wrap(std::forward<Clos>(closure));
 }
@@ -314,15 +314,15 @@ public:
 
 private:
     //! @brief Handling of shared and exclusive locks.
-    std::shared_mutex rwLock{};
+    std::shared_mutex rwLock;
     //! @brief Counter of readers that have acquired the shared lock.
     std::atomic_uint_fast16_t reader{0};
     //! @brief Counter of writers that have acquired the exclusive lock.
     std::atomic_uint_fast16_t writer{0};
     //! @brief Mutex for counters.
-    mutable std::mutex mtx{};
+    mutable std::mutex mtx;
     //! @brief The synchronization condition for counters. Use with mtx.
-    std::condition_variable cond{};
+    std::condition_variable cond;
 };
 
 //! @brief Manage the lifetime of a lock under control.

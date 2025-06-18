@@ -20,21 +20,21 @@ namespace note
 {
 //! @brief Version number.
 //! @return version
-inline constexpr std::string_view version()
+constexpr std::string_view version()
 {
     return "0.1.0";
 }
 
 //! @brief Copyright information.
 //! @return copyright
-inline constexpr std::string_view copyright()
+constexpr std::string_view copyright()
 {
     return "Copyright (c) 2022-2025 ryftchen. All rights reserved.";
 }
 
 //! @brief ASCII icon banner.
 //! @return icon banner
-inline constexpr std::string_view iconBanner()
+constexpr std::string_view iconBanner()
 {
     // clang-format off
     return R"(  ______   ______     ______    )" "\n"

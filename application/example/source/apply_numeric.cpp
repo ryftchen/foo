@@ -17,6 +17,7 @@
 
 #include "application/core/include/log.hpp"
 #include "utility/include/currying.hpp"
+#include "utility/include/time.hpp"
 
 //! @brief Title of printing when numeric tasks are beginning.
 #define APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(category)                                                               \

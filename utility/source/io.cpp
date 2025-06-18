@@ -8,6 +8,7 @@
 
 #include <sys/epoll.h>
 #include <sys/file.h>
+#include <algorithm>
 #include <filesystem>
 #include <iostream>
 
@@ -24,9 +25,9 @@ const char* version() noexcept
 //! @brief Execute the command line.
 //! @param command - target command line to be executed
 //! @return command line output
-std::string executeCommand(const std::string_view command)
+std::string executeCommand(const std::string& command)
 {
-    auto* const pipe = ::popen(command.data(), "r"); // NOLINT(cert-env33-c)
+    auto* const pipe = ::popen(command.c_str(), "r"); // NOLINT(cert-env33-c)
     if (!pipe)
     {
         throw std::runtime_error{"Could not open pipe when trying to execute command."};
@@ -59,7 +60,7 @@ std::string executeCommand(const std::string_view command)
 //! @brief Wait for input from the user.
 //! @param operation - handling for inputs (interrupt waiting if the return value is true, otherwise continue waiting)
 //! @param timeout - timeout period (ms)
-void waitForUserInput(const std::function<bool(const std::string_view)>& operation, const int timeout)
+void waitForUserInput(const std::function<bool(const std::string&)>& operation, const int timeout)
 {
     const int epollFD = ::epoll_create1(0);
     if (epollFD == -1)

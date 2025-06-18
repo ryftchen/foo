@@ -87,25 +87,21 @@ public:
     //! @tparam T - type of string value
     //! @param s - string value
     template <typename T>
-    JSON(const T s, typename std::enable_if<std::is_convertible_v<T, std::string>>::type* /*type*/ = nullptr) :
-        data{String{s}}
+    JSON(const T s, std::enable_if_t<std::is_convertible_v<T, std::string>>* /*type*/ = nullptr) : data{String{s}}
     {
     }
     //! @brief Construct a new JSON object.
     //! @tparam T - type of floating value
     //! @param f - floating value
     template <typename T>
-    JSON(const T f, typename std::enable_if<std::is_floating_point_v<T>>::type* /*type*/ = nullptr) :
-        data{static_cast<Floating>(f)}
+    JSON(const T f, std::enable_if_t<std::is_floating_point_v<T>>* /*type*/ = nullptr) : data{static_cast<Floating>(f)}
     {
     }
     //! @brief Construct a new JSON object.
     //! @tparam T - type of integral value
     //! @param i - integral value
     template <typename T>
-    JSON(
-        const T i,
-        typename std::enable_if<std::is_integral_v<T> && !std::is_same_v<T, bool>>::type* /*type*/ = nullptr) :
+    JSON(const T i, std::enable_if_t<std::is_integral_v<T> && !std::is_same_v<T, bool>>* /*type*/ = nullptr) :
         data{static_cast<Integral>(i)}
     {
     }
@@ -113,8 +109,7 @@ public:
     //! @tparam T - type of boolean value
     //! @param b - boolean value
     template <typename T>
-    JSON(const T b, typename std::enable_if<std::is_same_v<T, bool>>::type* /*type*/ = nullptr) :
-        data{static_cast<Boolean>(b)}
+    JSON(const T b, std::enable_if_t<std::is_same_v<T, bool>>* /*type*/ = nullptr) : data{static_cast<Boolean>(b)}
     {
     }
     // NOLINTEND(google-explicit-constructor)
@@ -124,25 +119,25 @@ public:
     //! @param s - string value
     //! @return reference of the JSON object
     template <typename T>
-    typename std::enable_if<std::is_convertible_v<T, std::string>, JSON&>::type operator=(const T s);
+    std::enable_if_t<std::is_convertible_v<T, std::string>, JSON&> operator=(const T s);
     //! @brief The operator (=) overloading of JSON class.
     //! @tparam T - type of floating value
     //! @param f - floating value
     //! @return reference of the JSON object
     template <typename T>
-    typename std::enable_if<std::is_floating_point_v<T>, JSON&>::type operator=(const T f);
+    std::enable_if_t<std::is_floating_point_v<T>, JSON&> operator=(const T f);
     //! @brief The operator (=) overloading of JSON class.
     //! @tparam T - type of integral value
     //! @param i - integral value
     //! @return reference of the JSON object
     template <typename T>
-    typename std::enable_if<std::is_integral_v<T> && !std::is_same_v<T, bool>, JSON&>::type operator=(const T i);
+    std::enable_if_t<std::is_integral_v<T> && !std::is_same_v<T, bool>, JSON&> operator=(const T i);
     //! @brief The operator (=) overloading of JSON class.
     //! @tparam T - type of boolean value
     //! @param b - boolean value
     //! @return reference of the JSON object
     template <typename T>
-    typename std::enable_if<std::is_same_v<T, bool>, JSON&>::type operator=(const T b);
+    std::enable_if_t<std::is_same_v<T, bool>, JSON&> operator=(const T b);
     // NOLINTEND(misc-unconventional-assign-operator)
 
     //! @brief JSON wrapper.
@@ -161,22 +156,19 @@ public:
         Container* object{nullptr};
         //! @brief Get the first iterator.
         //! @return first iterator
-        inline typename Container::iterator begin()
-        {
-            return object ? object->begin() : typename Container::iterator();
-        }
+        typename Container::iterator begin() { return object ? object->begin() : typename Container::iterator(); }
         //! @brief Get the last iterator.
         //! @return last iterator
-        inline typename Container::iterator end() { return object ? object->end() : typename Container::iterator(); }
+        typename Container::iterator end() { return object ? object->end() : typename Container::iterator(); }
         //! @brief Get the first const iterator.
         //! @return first const iterator
-        inline typename Container::const_iterator begin() const
+        typename Container::const_iterator begin() const
         {
             return object ? object->begin() : typename Container::iterator();
         }
         //! @brief Get the last const iterator.
         //! @return last const iterator
-        inline typename Container::const_iterator end() const
+        typename Container::const_iterator end() const
         {
             return object ? object->end() : typename Container::iterator();
         }
@@ -198,13 +190,13 @@ public:
         const Container* object{nullptr};
         //! @brief Get the first const iterator.
         //! @return first const iterator
-        inline typename Container::const_iterator begin() const
+        typename Container::const_iterator begin() const
         {
             return object ? object->begin() : typename Container::const_iterator();
         }
         //! @brief Get the last const iterator.
         //! @return last const iterator
-        inline typename Container::const_iterator end() const
+        typename Container::const_iterator end() const
         {
             return object ? object->end() : typename Container::const_iterator();
         }
@@ -233,7 +225,7 @@ public:
     //! @brief The operator ([]) overloading of JSON class.
     //! @param key - target key
     //! @return reference of the JSON object
-    JSON& operator[](const std::string_view key);
+    JSON& operator[](const std::string& key);
     //! @brief The operator ([]) overloading of JSON class.
     //! @param index - target index
     //! @return reference of the JSON object
@@ -241,11 +233,11 @@ public:
     //! @brief Get the JSON object by key.
     //! @param key - target key
     //! @return reference of the JSON object
-    JSON& at(const std::string_view key);
+    JSON& at(const std::string& key);
     //! @brief Get the JSON object by key.
     //! @param key - target key
     //! @return const reference of the JSON object
-    [[nodiscard]] const JSON& at(const std::string_view key) const;
+    [[nodiscard]] const JSON& at(const std::string& key) const;
     //! @brief Get the JSON object by index.
     //! @param index - target index
     //! @return reference of the JSON object
@@ -263,7 +255,7 @@ public:
     //! @brief Check whether the key exists.
     //! @param key - target key
     //! @return exist or not exist
-    [[nodiscard]] bool hasKey(const std::string_view key) const;
+    [[nodiscard]] bool hasKey(const std::string& key) const;
     //! @brief Check whether the type is null.
     //! @return be null type or not
     [[nodiscard]] bool isNullType() const;
@@ -359,8 +351,8 @@ public:
         explicit Data(const Boolean b) : value{b} {}
 
         //! @brief Value of the data.
-        Value value{};
-    } /** @brief JSON valid data. */ data{};
+        Value value;
+    } /** @brief JSON valid data. */ data;
 
 private:
     //! @brief Set the data type.
@@ -374,7 +366,7 @@ protected:
 
 // NOLINTBEGIN(misc-unconventional-assign-operator)
 template <typename T>
-typename std::enable_if<std::is_convertible_v<T, std::string>, JSON&>::type JSON::operator=(const T s)
+std::enable_if_t<std::is_convertible_v<T, std::string>, JSON&> JSON::operator=(const T s)
 {
     setType<String>();
     data.value = String{s};
@@ -383,7 +375,7 @@ typename std::enable_if<std::is_convertible_v<T, std::string>, JSON&>::type JSON
 }
 
 template <typename T>
-typename std::enable_if<std::is_floating_point_v<T>, JSON&>::type JSON::operator=(const T f)
+std::enable_if_t<std::is_floating_point_v<T>, JSON&> JSON::operator=(const T f)
 {
     setType<Floating>();
     data.value = static_cast<Floating>(f);
@@ -392,7 +384,7 @@ typename std::enable_if<std::is_floating_point_v<T>, JSON&>::type JSON::operator
 }
 
 template <typename T>
-typename std::enable_if<std::is_integral_v<T> && !std::is_same_v<T, bool>, JSON&>::type JSON::operator=(const T i)
+std::enable_if_t<std::is_integral_v<T> && !std::is_same_v<T, bool>, JSON&> JSON::operator=(const T i)
 {
     setType<Integral>();
     data.value = static_cast<Integral>(i);
@@ -401,7 +393,7 @@ typename std::enable_if<std::is_integral_v<T> && !std::is_same_v<T, bool>, JSON&
 }
 
 template <typename T>
-typename std::enable_if<std::is_same_v<T, bool>, JSON&>::type JSON::operator=(const T b)
+std::enable_if_t<std::is_same_v<T, bool>, JSON&> JSON::operator=(const T b)
 {
     setType<Boolean>();
     data.value = static_cast<Boolean>(b);

@@ -37,12 +37,12 @@ const char* version() noexcept
 //! @brief Update behavioral-related choice.
 //! @param target - target instance
 template <>
-void updateChoice<BehavioralInstance>(const std::string_view target)
+void updateChoice<BehavioralInstance>(const std::string& target)
 {
     constexpr auto category = Category::behavioral;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.data()))
+    switch (utility::common::bkdrHash(target.c_str()))
     {
         case abbrValue(BehavioralInstance::chainOfResponsibility):
             bits.set(BehavioralInstance::chainOfResponsibility);
@@ -79,8 +79,7 @@ void updateChoice<BehavioralInstance>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{
-                "Unexpected " + std::string{toString<category>()} + " instance: " + target.data() + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " instance: " + target + '.'};
     }
 }
 //! @brief Run behavioral-related choices.
@@ -103,12 +102,12 @@ const char* version() noexcept
 //! @brief Update creational-related choice.
 //! @param target - target instance
 template <>
-void updateChoice<CreationalInstance>(const std::string_view target)
+void updateChoice<CreationalInstance>(const std::string& target)
 {
     constexpr auto category = Category::creational;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.data()))
+    switch (utility::common::bkdrHash(target.c_str()))
     {
         case abbrValue(CreationalInstance::abstractFactory):
             bits.set(CreationalInstance::abstractFactory);
@@ -127,8 +126,7 @@ void updateChoice<CreationalInstance>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{
-                "Unexpected " + std::string{toString<category>()} + " instance: " + target.data() + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " instance: " + target + '.'};
     }
 }
 //! @brief Run creational-related choices.
@@ -151,12 +149,12 @@ const char* version() noexcept
 //! @brief Update structural-related choice.
 //! @param target - target instance
 template <>
-void updateChoice<StructuralInstance>(const std::string_view target)
+void updateChoice<StructuralInstance>(const std::string& target)
 {
     constexpr auto category = Category::structural;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.data()))
+    switch (utility::common::bkdrHash(target.c_str()))
     {
         case abbrValue(StructuralInstance::adapter):
             bits.set(StructuralInstance::adapter);
@@ -181,8 +179,7 @@ void updateChoice<StructuralInstance>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{
-                "Unexpected " + std::string{toString<category>()} + " instance: " + target.data() + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " instance: " + target + '.'};
     }
 }
 //! @brief Run structural-related choices.

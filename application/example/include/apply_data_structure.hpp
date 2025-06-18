@@ -7,7 +7,6 @@
 #pragma once
 
 #ifndef _PRECOMPILED_HEADER
-#include <algorithm>
 #include <cstdint>
 #include <span>
 #include <vector>
@@ -236,14 +235,11 @@ public:
         constexpr std::array<std::int16_t, 6> nodes = {1, 5, 4, 3, 2, 6};
 
         process << "insert: ";
-        std::for_each(
-            nodes.cbegin(),
-            nodes.cend(),
-            [&](const auto node)
-            {
-                process << node << ", ";
-                root = bsTreeInsert(root, node);
-            });
+        for (const auto node : nodes)
+        {
+            process << node << ", ";
+            root = bsTreeInsert(root, node);
+        }
         process.seekp(process.str().length() - 2);
 
         process << "\npre-order traversal: ";
@@ -283,14 +279,11 @@ public:
 
         process << "height: " << getHeight(root);
         process << "\ninsert: ";
-        std::for_each(
-            nodes.cbegin(),
-            nodes.cend(),
-            [&](const auto node)
-            {
-                process << node << ", ";
-                root = avlTreeInsert(root, node);
-            });
+        for (const auto node : nodes)
+        {
+            process << node << ", ";
+            root = avlTreeInsert(root, node);
+        }
         process.seekp(process.str().length() - 2);
 
         process << "\npre-order traversal: ";
@@ -331,14 +324,11 @@ public:
         constexpr std::array<std::int16_t, 7> nodes = {10, 50, 40, 70, 30, 20, 60};
 
         process << "insert: ";
-        std::for_each(
-            nodes.cbegin(),
-            nodes.cend(),
-            [&](const auto node)
-            {
-                process << node << ", ";
-                root = splayTreeInsert(root, node);
-            });
+        for (const auto node : nodes)
+        {
+            process << node << ", ";
+            root = splayTreeInsert(root, node);
+        }
         process.seekp(process.str().length() - 2);
 
         process << "\npre-order traversal: ";

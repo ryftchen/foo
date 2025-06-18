@@ -6,6 +6,7 @@
 
 #include "optimal.hpp"
 
+#include <algorithm>
 #include <stdexcept>
 
 namespace algorithm::optimal
@@ -111,10 +112,10 @@ void Tabu::updateNeighborhood(
 {
     for (std::uint32_t i = 0; i < neighborSize / 2; ++i)
     {
-        const double neighbor1 = std::min(solution + i * stepLen, right);
+        const double neighbor1 = std::min(solution + (i * stepLen), right);
         neighborhood.emplace_back(neighbor1);
 
-        const double neighbor2 = std::max(solution - i * stepLen, left);
+        const double neighbor2 = std::max(solution - (i * stepLen), left);
         neighborhood.emplace_back(neighbor2);
     }
 }
@@ -176,7 +177,7 @@ double Annealing::cauchyLikeDistribution(
     const double prev, const double min, const double max, const double temp, const double xi)
 {
     const double sgn = ((xi - 0.5) > 0) - ((xi - 0.5) < 0);
-    return prev + (temp * sgn * (1 + 1 / (std::pow(temp, 2 * xi - 1) - 1))) * (max - min);
+    return prev + ((temp * sgn * (1 + 1 / (std::pow(temp, (2 * xi) - 1) - 1))) * (max - min));
 }
 
 bool Annealing::metropolisAcceptanceCriterion(const double deltaE, const double temp, const double xi)
@@ -242,7 +243,7 @@ void Particle::updateParticles(
 
 double Particle::nonlinearDecreasingWeight(const std::uint32_t iteration) const
 {
-    return wBegin - (wBegin - wEnd) * std::pow(static_cast<double>(iteration + 1) / maxIterations, 2);
+    return wBegin - ((wBegin - wEnd) * std::pow(static_cast<double>(iteration + 1) / maxIterations, 2));
 }
 
 void Particle::updateBests(Swarm& swarm, double& gloBest, double& gloBestFitness)
@@ -389,9 +390,10 @@ double Genetic::geneticDecode(const Chromosome& chr) const
                      chr.cbegin(),
                      chr.cend(),
                      0.0,
-                     [index = 0](const auto sum, const auto bit) mutable { return sum + bit * std::pow(2, index++); }),
+                     [index = 0](const auto sum, const auto bit) mutable
+                     { return sum + (bit * std::pow(2, index++)); }),
                  maxDecoded = std::pow(2, chromosomeLength) - 1.0;
-    return property.lower + (property.upper - property.lower) * currDecoded / maxDecoded;
+    return property.lower + ((property.upper - property.lower) * currDecoded / maxDecoded);
 }
 
 Genetic::Population Genetic::populationInit()

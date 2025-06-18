@@ -28,9 +28,9 @@ using InvokeResultType = std::invoke_result_t<Func, Args...>;
 //! @param args - function arguments
 //! @return result from calls
 template <typename Func, typename... Args>
-inline constexpr InvokeResultType<Func, Args...> invokeCallable(Func&& func, Args&&... args)
+constexpr InvokeResultType<Func, Args...> invokeCallable(Func&& func, Args&&... args)
 {
-    return func(args...);
+    return std::forward<Func>(func)(std::forward<Args>(args)...);
 }
 //! @brief Invoke callable. Multiple objects.
 //! @tparam Ret - type of return value
@@ -42,9 +42,9 @@ inline constexpr InvokeResultType<Func, Args...> invokeCallable(Func&& func, Arg
 //! @param args - function arguments
 //! @return result from calls
 template <typename Ret, typename T1, typename T2, typename... Args>
-inline constexpr InvokeResultType<Ret T1::*, T2, Args...> invokeCallable(Ret T1::*func, T2&& obj, Args&&... args)
+constexpr InvokeResultType<Ret T1::*, T2, Args...> invokeCallable(Ret T1::* func, T2&& obj, Args&&... args)
 {
-    return (obj.*func)(args...);
+    return (std::forward<T2>(obj).*func)(std::forward<Args>(args)...);
 }
 
 //! @brief Flexible invoke helper.
@@ -76,9 +76,9 @@ struct FlexInvokeHelper<Func, Arg1, Arg2, true, false, false, false>
     //! @brief Invoke operation.
     //! @param func - callable function
     //! @return invoke result
-    static inline constexpr ReturnType invoke(Func&& func, Arg1&& /*arg1*/, Arg2&& /*arg2*/)
+    static constexpr ReturnType invoke(Func&& func, [[maybe_unused]] Arg1&& /*arg1*/, [[maybe_unused]] Arg2&& /*arg2*/)
     {
-        return invokeCallable(func);
+        return invokeCallable(std::move(func));
     }
 };
 //! @brief Flexible invoke helper. Include only Arg1.
@@ -94,9 +94,9 @@ struct FlexInvokeHelper<Func, Arg1, Arg2, false, true, false, false>
     //! @param func - callable function
     //! @param arg1 - function argument
     //! @return invoke result
-    static inline constexpr ReturnType invoke(Func&& func, Arg1&& arg1, Arg2&& /*arg2*/)
+    static constexpr ReturnType invoke(Func&& func, Arg1&& arg1, [[maybe_unused]] Arg2&& /*arg2*/)
     {
-        return invokeCallable(func, arg1);
+        return invokeCallable(std::move(func), std::move(arg1));
     }
 };
 //! @brief Flexible invoke helper. Include only Arg2.
@@ -112,9 +112,9 @@ struct FlexInvokeHelper<Func, Arg1, Arg2, false, false, true, false>
     //! @param func - callable function
     //! @param arg2 - function arguments
     //! @return invoke result
-    static inline constexpr ReturnType invoke(Func&& func, Arg1&& /*arg1*/, Arg2&& arg2)
+    static constexpr ReturnType invoke(Func&& func, [[maybe_unused]] Arg1&& /*arg1*/, Arg2&& arg2)
     {
-        return invokeCallable(func, arg2);
+        return invokeCallable(std::move(func), std::move(arg2));
     }
 };
 //! @brief Flexible invoke helper. Include both Arg1 and Arg2.
@@ -131,9 +131,9 @@ struct FlexInvokeHelper<Func, Arg1, Arg2, false, false, false, true>
     //! @param arg1 - function arguments
     //! @param arg2 - function arguments
     //! @return invoke result
-    static inline constexpr ReturnType invoke(Func&& func, Arg1&& arg1, Arg2&& arg2)
+    static constexpr ReturnType invoke(Func&& func, Arg1&& arg1, Arg2&& arg2)
     {
-        return invokeCallable(func, arg1, arg2);
+        return invokeCallable(std::move(func), std::move(arg1), std::move(arg2));
     }
 };
 
@@ -152,7 +152,7 @@ using AdaptInvokeResultType = typename FlexInvokeHelper<Func, Arg1, Arg2>::Retur
 //! @param arg2 - function arguments
 //! @return result from calls
 template <typename Func, typename Arg1, typename Arg2>
-inline constexpr AdaptInvokeResultType<Func, Arg1, Arg2> adaptiveInvoke(Func&& func, Arg1&& arg1, Arg2&& arg2)
+constexpr AdaptInvokeResultType<Func, Arg1, Arg2> adaptiveInvoke(Func&& func, Arg1&& arg1, Arg2&& arg2)
 {
     return FlexInvokeHelper<Func, Arg1, Arg2>::invoke(
         std::forward<Func>(func), std::forward<Arg1>(arg1), std::forward<Arg2>(arg2));
@@ -199,10 +199,10 @@ template <template <typename> class Predicate, typename T, typename... Types>
 struct Filter<Predicate, T, Types...>
 {
     //! @brief Alias for concat or filter.
-    using Type = typename std::conditional<
+    using Type = std::conditional_t<
         Predicate<T>::value,
         typename Concat<T, typename Filter<Predicate, Types...>::Type>::Type,
-        typename Filter<Predicate, Types...>::Type>::type;
+        typename Filter<Predicate, Types...>::Type>;
 };
 //! @brief The filter of behaviors.
 //! @tparam Predicate - type of predicate
@@ -250,10 +250,10 @@ private:
         using EventType = Event;
         //! @brief Get source state.
         //! @return source state
-        static inline constexpr StateType sourceValue() { return Source; }
+        static constexpr StateType sourceValue() { return Source; }
         //! @brief Get target state.
         //! @return target state
-        static inline constexpr StateType targetValue() { return Target; }
+        static constexpr StateType targetValue() { return Target; }
 
     protected:
         //! @brief Process the specific event.
@@ -262,15 +262,12 @@ private:
         //! @param self - derived object
         //! @param event - event to be processed
         template <typename Action>
-        static inline constexpr void processEvent(Action&& action, Derived& self, const Event& event)
+        static constexpr void processEvent(Action&& action, Derived& self, const Event& event)
         {
-            adaptiveInvoke(action, self, event);
+            adaptiveInvoke(std::forward<Action>(action), self, event);
         }
         //! @brief Process the specific event by default.
-        static inline constexpr void processEvent(
-            const std::nullptr_t /*null*/, Derived& /*self*/, const Event& /*event*/)
-        {
-        }
+        static constexpr void processEvent(const std::nullptr_t /*null*/, Derived& /*self*/, const Event& /*event*/) {}
 
         //! @brief Check guard condition.
         //! @tparam Guard - type of guard condition
@@ -279,14 +276,13 @@ private:
         //! @param event - event to be processed
         //! @return pass or not pass
         template <typename Guard>
-        static inline constexpr bool checkGuard(Guard&& guard, const Derived& self, const Event& event)
+        static constexpr bool checkGuard(Guard&& guard, const Derived& self, const Event& event)
         {
-            return adaptiveInvoke(guard, self, event);
+            return adaptiveInvoke(std::forward<Guard>(guard), self, event);
         }
         //! @brief Check guard condition by default.
         //! @return pass or not pass
-        static inline constexpr bool checkGuard(
-            const std::nullptr_t /*null*/, const Derived& /*self*/, const Event& /*event*/)
+        static constexpr bool checkGuard(const std::nullptr_t /*null*/, const Derived& /*self*/, const Event& /*event*/)
         {
             return true;
         }
@@ -336,7 +332,7 @@ private:
         //! @param event - event to be processed
         //! @param state - source state
         //! @return state after execute
-        static inline constexpr State execute(Derived& self, const Event& event, const State state)
+        static constexpr State execute(Derived& self, const Event& event, const State state)
         {
             return ((T::sourceValue() == state) && T::checkGuard(self, event))
                 ? (T::processEvent(self, event), T::targetValue())
@@ -352,7 +348,7 @@ private:
         //! @param self - derived object
         //! @param event - event to be processed
         //! @return state after execute
-        static inline constexpr State execute(Derived& self, const Event& event, const State /*state*/)
+        static constexpr State execute(Derived& self, const Event& event, const State /*state*/)
         {
             return self.noTransition(event);
         }
@@ -361,7 +357,7 @@ private:
     //! @brief FSM state.
     State state{};
     //! @brief Mutex for controlling state.
-    mutable std::recursive_mutex mtx{};
+    mutable std::recursive_mutex mtx;
 
 protected:
     //! @brief Alias for transition table.
@@ -396,7 +392,7 @@ protected:
         //! @brief Process the specific event.
         //! @param self - derived object
         //! @param event - event to be processed
-        static inline constexpr void processEvent(Derived& self, const Event& event)
+        static constexpr void processEvent(Derived& self, const Event& event)
         {
             RowBase<Source, Event, Target>::processEvent(action, self, event);
         }
@@ -404,7 +400,7 @@ protected:
         //! @param self - derived object
         //! @param event - event to be processed
         //! @return pass or not pass
-        static inline constexpr bool checkGuard(const Derived& self, const Event& event)
+        static constexpr bool checkGuard(const Derived& self, const Event& event)
         {
             return RowBase<Source, Event, Target>::checkGuard(guard, self, event);
         }
@@ -427,7 +423,7 @@ protected:
         //! @brief Process the specific event.
         //! @param self - derived object
         //! @param event - event to be processed
-        static inline constexpr void processEvent(Derived& self, const Event& event)
+        static constexpr void processEvent(Derived& self, const Event& event)
         {
             if (action)
             {
@@ -438,7 +434,7 @@ protected:
         //! @param self - derived object
         //! @param event - event to be processed
         //! @return pass or not pass
-        static inline constexpr bool checkGuard(const Derived& self, const Event& event)
+        static constexpr bool checkGuard(const Derived& self, const Event& event)
         {
             return guard ? RowBase<Source, Event, Target>::checkGuard(guard, self, event) : true;
         }
@@ -456,7 +452,7 @@ protected:
         //! @brief Process the specific event.
         //! @param self - derived object
         //! @param event - event to be processed
-        static inline constexpr void processEvent(Derived& self, const Event& event)
+        static constexpr void processEvent(Derived& self, const Event& event)
         {
             RowBase<Source, Event, Target>::processEvent(action, self, event);
         }
@@ -464,7 +460,7 @@ protected:
         //! @param self - derived object
         //! @param event - event to be processed
         //! @return pass or not pass
-        static inline constexpr bool checkGuard(const Derived& self, const Event& event)
+        static constexpr bool checkGuard(const Derived& self, const Event& event)
         {
             return RowBase<Source, Event, Target>::checkGuard(guard, self, event);
         }

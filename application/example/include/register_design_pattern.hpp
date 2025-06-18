@@ -128,20 +128,17 @@ public:
     };
 
     //! @brief Bit flags for managing behavioral instances.
-    std::bitset<Bottom<BehavioralInstance>::value> behavioralOpts{};
+    std::bitset<Bottom<BehavioralInstance>::value> behavioralOpts;
     //! @brief Bit flags for managing creational instances.
-    std::bitset<Bottom<CreationalInstance>::value> creationalOpts{};
+    std::bitset<Bottom<CreationalInstance>::value> creationalOpts;
     //! @brief Bit flags for managing structural instances.
-    std::bitset<Bottom<StructuralInstance>::value> structuralOpts{};
+    std::bitset<Bottom<StructuralInstance>::value> structuralOpts;
 
     //! @brief Check whether any design pattern choices do not exist.
     //! @return any design pattern choices do not exist or exist
-    [[nodiscard]] inline bool empty() const
-    {
-        return behavioralOpts.none() && creationalOpts.none() && structuralOpts.none();
-    }
+    [[nodiscard]] bool empty() const { return behavioralOpts.none() && creationalOpts.none() && structuralOpts.none(); }
     //! @brief Reset bit flags that manage design pattern choices.
-    inline void reset()
+    void reset()
     {
         behavioralOpts.reset();
         creationalOpts.reset();
@@ -180,7 +177,7 @@ extern ApplyDesignPattern& manager() noexcept;
 //! @tparam T - type of target instance
 //! @param target - target instance
 template <typename T>
-void updateChoice(const std::string_view target);
+void updateChoice(const std::string& target);
 //! @brief Run choices.
 //! @tparam T - type of target instance
 //! @param candidates - container for the candidate target instances
@@ -193,7 +190,7 @@ namespace behavioral
 extern const char* version() noexcept;
 } // namespace behavioral
 template <>
-void updateChoice<BehavioralInstance>(const std::string_view target);
+void updateChoice<BehavioralInstance>(const std::string& target);
 template <>
 void runChoices<BehavioralInstance>(const std::vector<std::string>& candidates);
 
@@ -203,7 +200,7 @@ namespace creational
 extern const char* version() noexcept;
 } // namespace creational
 template <>
-void updateChoice<CreationalInstance>(const std::string_view target);
+void updateChoice<CreationalInstance>(const std::string& target);
 template <>
 void runChoices<CreationalInstance>(const std::vector<std::string>& candidates);
 
@@ -213,7 +210,7 @@ namespace structural
 extern const char* version() noexcept;
 } // namespace structural
 template <>
-void updateChoice<StructuralInstance>(const std::string_view target);
+void updateChoice<StructuralInstance>(const std::string& target);
 template <>
 void runChoices<StructuralInstance>(const std::vector<std::string>& candidates);
 } // namespace reg_dp
@@ -380,7 +377,7 @@ using Category = ApplyDesignPattern::Category;
 //! @tparam Cat - specific value of Category enum
 //! @return category name
 template <Category Cat>
-inline consteval std::string_view toString()
+consteval std::string_view toString()
 {
     switch (Cat)
     {
@@ -400,7 +397,7 @@ inline consteval std::string_view toString()
 //! @tparam Cat - specific value of Category enum
 //! @return reference of the category bit flags
 template <Category Cat>
-inline constexpr auto& categoryOpts()
+constexpr auto& categoryOpts()
 {
     return std::invoke(TypeInfo<ApplyDesignPattern>::fields.find(REFLECTION_STR(toString<Cat>())).value, manager());
 }
@@ -409,7 +406,7 @@ inline constexpr auto& categoryOpts()
 //! @param instance - target instance
 //! @return abbreviation value
 template <typename T>
-inline consteval std::size_t abbrValue(const T instance)
+consteval std::size_t abbrValue(const T instance)
 {
     static_assert(Bottom<T>::value == TypeInfo<T>::fields.size);
     std::size_t value = 0;
@@ -431,7 +428,7 @@ inline consteval std::size_t abbrValue(const T instance)
 //! @brief Convert instance enumeration to string.
 //! @param instance - specific value of BehavioralInstance enum
 //! @return instance name
-inline constexpr std::string_view toString(const BehavioralInstance instance)
+constexpr std::string_view toString(const BehavioralInstance instance)
 {
     constexpr std::array<std::string_view, Bottom<BehavioralInstance>::value> stringify = {
         MACRO_STRINGIFY(chainOfResponsibility),
@@ -451,7 +448,7 @@ inline constexpr std::string_view toString(const BehavioralInstance instance)
 //! @brief Convert instance enumeration to string.
 //! @param instance - specific value of CreationalInstance enum
 //! @return instance name
-inline constexpr std::string_view toString(const CreationalInstance instance)
+constexpr std::string_view toString(const CreationalInstance instance)
 {
     constexpr std::array<std::string_view, Bottom<CreationalInstance>::value> stringify = {
         MACRO_STRINGIFY(abstractFactory),
@@ -465,7 +462,7 @@ inline constexpr std::string_view toString(const CreationalInstance instance)
 //! @brief Convert instance enumeration to string.
 //! @param instance - specific value of StructuralInstance enum
 //! @return instance name
-inline constexpr std::string_view toString(const StructuralInstance instance)
+constexpr std::string_view toString(const StructuralInstance instance)
 {
     constexpr std::array<std::string_view, Bottom<StructuralInstance>::value> stringify = {
         MACRO_STRINGIFY(adapter),

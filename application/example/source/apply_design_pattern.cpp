@@ -9,6 +9,7 @@
 
 #ifndef _PRECOMPILED_HEADER
 #include <cassert>
+#include <iomanip>
 #include <ranges>
 #include <syncstream>
 #else
@@ -75,9 +76,9 @@ namespace behavioral
 //! @brief Show the contents of the behavioral result.
 //! @param instance - specific value of BehavioralInstance enum
 //! @param result - behavioral result
-static void showResult(const BehavioralInstance instance, const std::string_view result)
+static void showResult(const BehavioralInstance instance, const std::string& result)
 {
-    std::printf("\n==> %-21s Instance <==\n%s", makeTitle(instance).c_str(), result.data());
+    std::printf("\n==> %-21s Instance <==\n%s", makeTitle(instance).c_str(), result.c_str());
 }
 
 void BehavioralPattern::chainOfResponsibilityInstance()
@@ -278,9 +279,9 @@ namespace creational
 //! @brief Show the contents of the creational result.
 //! @param instance - specific value of CreationalInstance enum
 //! @param result - creational result
-static void showResult(const CreationalInstance instance, const std::string_view result)
+static void showResult(const CreationalInstance instance, const std::string& result)
 {
-    std::printf("\n==> %-15s Instance <==\n%s", makeTitle(instance).c_str(), result.data());
+    std::printf("\n==> %-15s Instance <==\n%s", makeTitle(instance).c_str(), result.c_str());
 }
 
 void CreationalPattern::abstractFactoryInstance()
@@ -397,9 +398,9 @@ namespace structural
 //! @brief Show the contents of the structural result.
 //! @param instance - specific value of StructuralInstance enum
 //! @param result - structural result
-static void showResult(const StructuralInstance instance, const std::string_view result)
+static void showResult(const StructuralInstance instance, const std::string& result)
 {
-    std::printf("\n==> %-9s Instance <==\n%s", makeTitle(instance).c_str(), result.data());
+    std::printf("\n==> %-9s Instance <==\n%s", makeTitle(instance).c_str(), result.c_str());
 }
 
 void StructuralPattern::adapterInstance()

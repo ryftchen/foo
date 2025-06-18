@@ -40,15 +40,15 @@ public:
 
 private:
     //! @brief The container of target threads to join.
-    std::vector<std::thread> thdColl{};
+    std::vector<std::thread> thdColl;
     //! @brief The queue of tasks.
-    std::queue<std::pair<std::string, std::packaged_task<void()>>> taskQueue{};
+    std::queue<std::pair<std::string, std::packaged_task<void()>>> taskQueue;
     //! @brief Mutex for controlling queue.
-    mutable std::mutex mtx{};
+    mutable std::mutex mtx;
     //! @brief The synchronization condition for queue. Use with mtx.
-    std::condition_variable cond{};
+    std::condition_variable cond;
     //! @brief The synchronization condition for availability of resources.
-    std::condition_variable producer{};
+    std::condition_variable producer;
     //! @brief Flag for ready release.
     std::atomic<bool> releaseReady{false};
 

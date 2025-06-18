@@ -136,24 +136,24 @@ public:
 
     //! @brief Get the matching text.
     //! @return matching text
-    [[nodiscard]] inline const std::unique_ptr<unsigned char[]>& getMatchingText() const { return marchingText; }
+    [[nodiscard]] const std::unique_ptr<unsigned char[]>& getMatchingText() const { return marchingText; }
     //! @brief Get the length of the matching text.
     //! @return length of the matching text
-    [[nodiscard]] inline std::uint32_t getTextLength() const { return textLength; }
+    [[nodiscard]] std::uint32_t getTextLength() const { return textLength; }
     //! @brief Get the single pattern.
     //! @return single pattern
-    [[nodiscard]] inline const std::unique_ptr<unsigned char[]>& getSinglePattern() const { return singlePattern; }
+    [[nodiscard]] const std::unique_ptr<unsigned char[]>& getSinglePattern() const { return singlePattern; }
     //! @brief Get the length of the single pattern.
     //! @return length of the single pattern
-    [[nodiscard]] inline std::uint32_t getPatternLength() const { return patternLength; }
+    [[nodiscard]] std::uint32_t getPatternLength() const { return patternLength; }
 
 private:
     //! @brief Matching text.
-    const std::unique_ptr<unsigned char[]> marchingText{};
+    const std::unique_ptr<unsigned char[]> marchingText;
     //! @brief Length of the matching text.
     const std::uint32_t textLength{0};
     //! @brief Single pattern.
-    const std::unique_ptr<unsigned char[]> singlePattern{};
+    const std::unique_ptr<unsigned char[]> singlePattern;
     //! @brief Length of the single pattern.
     const std::uint32_t patternLength{0};
 
@@ -199,7 +199,7 @@ private:
     //! @brief Calculate precision by digit.
     //! @param digit - digit for the target text
     //! @return precision converted from digit
-    static inline int calculatePrecision(const std::uint32_t digit)
+    static int calculatePrecision(const std::uint32_t digit)
     {
         return 1 + static_cast<int>(std::ceil(static_cast<double>(digit) * std::log2(mpfrBase)));
     }
@@ -252,11 +252,11 @@ public:
 
     //! @brief Get the infix notation.
     //! @return infix notation
-    [[nodiscard]] inline std::string getInfixNotation() const { return infixNotation; }
+    [[nodiscard]] std::string getInfixNotation() const { return infixNotation; }
 
 private:
     //! @brief Infix notation.
-    const std::string infixNotation{};
+    const std::string infixNotation;
 };
 } // namespace notation
 extern void applyingNotation(const std::vector<std::string>& candidates);
@@ -300,7 +300,7 @@ public:
     //! @return dependent variable
     double operator()(const double x) const override
     {
-        return x * x - 10.0 * std::cos(2.0 * std::numbers::pi * x) + 10.0;
+        return (x * x) - (10.0 * std::cos(2.0 * std::numbers::pi * x)) + 10.0;
     }
 
     //! @brief Left endpoint.
@@ -374,18 +374,18 @@ public:
 
     //! @brief Get the target function.
     //! @return target function
-    [[nodiscard]] inline Function getFunction() const { return function; }
+    [[nodiscard]] Function getFunction() const { return function; }
     //! @brief Get the pair of ranges.
     //! @return pair of ranges
-    [[nodiscard]] inline std::pair<double, double> getRanges() const { return std::make_pair(range1, range2); }
+    [[nodiscard]] std::pair<double, double> getRanges() const { return std::make_pair(range1, range2); }
 
 private:
     //! @brief Target function.
-    const Function function{};
+    const Function function;
     //! @brief Left endpoint.
-    const double range1{};
+    const double range1{0.0};
     //! @brief Right endpoint.
-    const double range2{};
+    const double range2{0.0};
 };
 } // namespace optimal
 extern void applyingOptimal(const std::vector<std::string>& candidates);
@@ -483,13 +483,13 @@ public:
 
     //! @brief Get the ordered array.
     //! @return ordered array
-    inline const std::unique_ptr<T[]>& getOrderedArray() const { return orderedArray; }
+    const std::unique_ptr<T[]>& getOrderedArray() const { return orderedArray; }
     //! @brief Get the length.
     //! @return length
-    [[nodiscard]] inline std::uint32_t getLength() const { return length; }
+    [[nodiscard]] std::uint32_t getLength() const { return length; }
     //! @brief Get the search key.
     //! @return search key
-    inline T getSearchKey() const { return orderedArray[length / 2]; }
+    T getSearchKey() const { return orderedArray[length / 2]; }
     //! @brief Splice from array for printing.
     //! @tparam N - type of array
     //! @param array - target array
@@ -508,14 +508,14 @@ public:
             align = std::max(static_cast<std::uint32_t>(std::to_string(*(array + i)).length()), align);
         }
 
-        constexpr std::string_view spliceFmt =
+        constexpr const char* const spliceFmt =
             std::is_integral_v<T> ? "%*d " : (std::is_floating_point_v<T> ? "%*.5f " : " ");
         int totalLen = 0;
         std::uint32_t completeSize = 0;
         for (std::uint32_t i = 0; i < length; ++i)
         {
-            totalLen = std::snprintf(
-                buffer + completeSize, bufferSize - completeSize, spliceFmt.data(), align + 1, *(array + i));
+            totalLen =
+                std::snprintf(buffer + completeSize, bufferSize - completeSize, spliceFmt, align + 1, *(array + i));
             if ((totalLen < 0) || (totalLen >= static_cast<int>(bufferSize - completeSize)))
             {
                 break;
@@ -722,10 +722,10 @@ public:
 
     //! @brief Get the random array.
     //! @return random array
-    inline const std::unique_ptr<T[]>& getRandomArray() const { return randomArray; }
+    const std::unique_ptr<T[]>& getRandomArray() const { return randomArray; }
     //! @brief Get the length.
     //! @return length
-    [[nodiscard]] inline std::uint32_t getLength() const { return length; }
+    [[nodiscard]] std::uint32_t getLength() const { return length; }
     //! @brief Splice from array for printing.
     //! @tparam N - type of array
     //! @param array - target array
@@ -744,14 +744,14 @@ public:
             align = std::max(static_cast<std::uint32_t>(std::to_string(*(array + i)).length()), align);
         }
 
-        constexpr std::string_view spliceFmt =
+        constexpr const char* const spliceFmt =
             std::is_integral_v<T> ? "%*d " : (std::is_floating_point_v<T> ? "%*.5f " : " ");
         int totalLen = 0;
         std::uint32_t completeSize = 0;
         for (std::uint32_t i = 0; i < length; ++i)
         {
-            totalLen = std::snprintf(
-                buffer + completeSize, bufferSize - completeSize, spliceFmt.data(), align + 1, *(array + i));
+            totalLen =
+                std::snprintf(buffer + completeSize, bufferSize - completeSize, spliceFmt, align + 1, *(array + i));
             if ((totalLen < 0) || (totalLen >= static_cast<int>(bufferSize - completeSize)))
             {
                 break;

@@ -37,12 +37,12 @@ const char* version() noexcept
 //! @brief Update match-related choice.
 //! @param target - target method
 template <>
-void updateChoice<MatchMethod>(const std::string_view target)
+void updateChoice<MatchMethod>(const std::string& target)
 {
     constexpr auto category = Category::match;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.data()))
+    switch (utility::common::bkdrHash(target.c_str()))
     {
         case abbrValue(MatchMethod::rabinKarp):
             bits.set(MatchMethod::rabinKarp);
@@ -61,8 +61,7 @@ void updateChoice<MatchMethod>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{
-                "Unexpected " + std::string{toString<category>()} + " method: " + target.data() + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " method: " + target + '.'};
     }
 }
 //! @brief Run match-related choices.
@@ -85,12 +84,12 @@ const char* version() noexcept
 //! @brief Update notation-related choice.
 //! @param target - target method
 template <>
-void updateChoice<NotationMethod>(const std::string_view target)
+void updateChoice<NotationMethod>(const std::string& target)
 {
     constexpr auto category = Category::notation;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.data()))
+    switch (utility::common::bkdrHash(target.c_str()))
     {
         case abbrValue(NotationMethod::prefix):
             bits.set(NotationMethod::prefix);
@@ -100,8 +99,7 @@ void updateChoice<NotationMethod>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{
-                "Unexpected " + std::string{toString<category>()} + " method: " + target.data() + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " method: " + target + '.'};
     }
 }
 //! @brief Run notation-related choices.
@@ -124,12 +122,12 @@ const char* version() noexcept
 //! @brief Update optimal-related choice.
 //! @param target - target method
 template <>
-void updateChoice<OptimalMethod>(const std::string_view target)
+void updateChoice<OptimalMethod>(const std::string& target)
 {
     constexpr auto category = Category::optimal;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.data()))
+    switch (utility::common::bkdrHash(target.c_str()))
     {
         case abbrValue(OptimalMethod::gradient):
             bits.set(OptimalMethod::gradient);
@@ -151,8 +149,7 @@ void updateChoice<OptimalMethod>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{
-                "Unexpected " + std::string{toString<category>()} + " method: " + target.data() + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " method: " + target + '.'};
     }
 }
 //! @brief Run optimal-related choices.
@@ -175,12 +172,12 @@ const char* version() noexcept
 //! @brief Update search-related choice.
 //! @param target - target method
 template <>
-void updateChoice<SearchMethod>(const std::string_view target)
+void updateChoice<SearchMethod>(const std::string& target)
 {
     constexpr auto category = Category::search;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.data()))
+    switch (utility::common::bkdrHash(target.c_str()))
     {
         case abbrValue(SearchMethod::binary):
             bits.set(SearchMethod::binary);
@@ -193,8 +190,7 @@ void updateChoice<SearchMethod>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{
-                "Unexpected " + std::string{toString<category>()} + " method: " + target.data() + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " method: " + target + '.'};
     }
 }
 //! @brief Run search-related choices.
@@ -217,12 +213,12 @@ const char* version() noexcept
 //! @brief Update sort-related choice.
 //! @param target - target method
 template <>
-void updateChoice<SortMethod>(const std::string_view target)
+void updateChoice<SortMethod>(const std::string& target)
 {
     constexpr auto category = Category::sort;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.data()))
+    switch (utility::common::bkdrHash(target.c_str()))
     {
         case abbrValue(SortMethod::bubble):
             bits.set(SortMethod::bubble);
@@ -256,8 +252,7 @@ void updateChoice<SortMethod>(const std::string_view target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{
-                "Unexpected " + std::string{toString<category>()} + " method: " + target.data() + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " method: " + target + '.'};
     }
 }
 //! @brief Run sort-related choices.
