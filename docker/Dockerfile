@@ -18,10 +18,10 @@ git+https://github.com/yuriisk/clang-tidy-converter.git@f07de2eca78637c47893ddb0
 && sudo npm install --no-save --global --no-package-lock cspell@7.3.9 \
 && sudo npm cache clean --force \
 && cd /root \
-&& curl -L https://github.com/github/codeql-action/releases/download/codeql-bundle-v2.20.7/codeql-bundle-linux64.tar.gz | tee codeql-bundle-linux64.tar.gz >/dev/null \
+&& curl -L https://github.com/github/codeql-action/releases/download/codeql-bundle-v2.21.4/codeql-bundle-linux64.tar.gz | tee codeql-bundle-linux64.tar.gz >/dev/null \
 && sudo tar -zxvf codeql-bundle-linux64.tar.gz -C /usr/local/share >/dev/null \
-&& sudo rm -rf /usr/local/share/codeql/{actions,csharp,csv,go,html,java,javascript,properties,ruby,swift,xml,yaml} \
-&& sudo rm -rf /usr/local/share/codeql/qlpacks/codeql/{actions-*,csharp-*,go-*,java-*,javascript-*,ruby-*,swift-*} \
+&& sudo rm -rf /usr/local/share/codeql/{actions,csharp,csv,go,html,java,javascript,properties,python,ruby,swift,xml,yaml} \
+&& sudo rm -rf /usr/local/share/codeql/qlpacks/codeql/{actions-*,csharp-*,go-*,java-*,javascript-*,python-*,ruby-*,rust-*,swift-*} \
 && sudo chmod +x /usr/local/share/codeql/codeql \
 && sudo ln -s /usr/local/share/codeql/codeql /usr/local/bin/codeql \
 && rm -rf codeql-bundle-linux64.tar.gz \
