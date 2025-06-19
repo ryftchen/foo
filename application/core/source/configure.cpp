@@ -313,8 +313,8 @@ static void initializeConfiguration(const std::string_view filePath)
 static bool handleConfigurationException(const std::string_view filePath)
 {
     constexpr std::string_view prompt = "Type y to force an update to the default configuration, n to exit: ",
-                               escapeClear = "\x1b[1A\x1b[2K\r";
-    std::cout << prompt << "\n\x1b[1A\x1b[" << prompt.length() << 'C' << std::flush;
+                               escapeClear = "\x1b[1A\x1b[2K\r", escapeMoveUp = "\n\x1b[1A\x1b[";
+    std::cout << prompt << escapeMoveUp << prompt.length() << 'C' << std::flush;
 
     bool keepThrowing = true;
     constexpr std::uint16_t timeoutPeriod = 5000;

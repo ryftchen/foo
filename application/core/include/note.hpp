@@ -32,9 +32,9 @@ constexpr std::string_view copyright()
     return "Copyright (c) 2022-2025 ryftchen. All rights reserved.";
 }
 
-//! @brief ASCII icon banner.
-//! @return icon banner
-constexpr std::string_view iconBanner()
+//! @brief ASCII banner.
+//! @return banner
+constexpr std::string_view banner()
 {
     // clang-format off
     return R"(  ______   ______     ______    )" "\n"
@@ -45,8 +45,6 @@ constexpr std::string_view iconBanner()
     // clang-format on
 }
 
-extern std::string compiler();
-extern std::string processor();
-extern std::string buildDate();
+extern std::string overview();
 } // namespace note
 } // namespace application

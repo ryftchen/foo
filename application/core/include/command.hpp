@@ -234,16 +234,16 @@ private:
     class ExtraManager : virtual public TaskManager
     {
     public:
-        //! @brief Alias for the trait of the registered sub-cli's category.
-        struct Trait
+        //! @brief Alias for the attribute of the registered sub-cli's category.
+        struct Attr
         {
             //! @brief The candidates for the choice.
             const std::vector<std::string> choices;
             //! @brief The internal event for applying.
             const action::EventType event;
         };
-        //! @brief Alias for the map of sub-cli's category name and Trait.
-        using CategoryMap = std::map<std::string, Trait>;
+        //! @brief Alias for the map of sub-cli's category name and Attr.
+        using CategoryMap = std::map<std::string, Attr>;
         //! @brief Mapping table of all extra choices. Fill as needed.
         std::map<std::string, CategoryMap> extraChoiceRegistry;
 

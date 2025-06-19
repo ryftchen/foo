@@ -201,7 +201,7 @@ void Console::setDefaultOptions()
         [](const Args& /*inputs*/)
         {
             std::cout << "\033[2J\033[1;1H" << std::flush;
-            std::cout << note::iconBanner() << std::endl;
+            std::cout << note::banner() << std::endl;
             return RetCode::success;
         });
     orderList.emplace_back("clean");

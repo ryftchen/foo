@@ -23,6 +23,78 @@ namespace application::log
 //! @brief Anonymous namespace.
 inline namespace
 {
+//! @brief ANSI escape codes for red foreground color.
+constexpr std::string_view escColorRed = "\033[0;31;40m";
+//! @brief ANSI escape codes for green foreground color.
+constexpr std::string_view escColorGreen = "\033[0;32;40m";
+//! @brief ANSI escape codes for yellow foreground color.
+constexpr std::string_view escColorYellow = "\033[0;33;40m";
+//! @brief ANSI escape codes for blue foreground color.
+constexpr std::string_view escColorBlue = "\033[0;34;40m";
+//! @brief ANSI escape codes for the bold font.
+constexpr std::string_view escFontBold = "\033[1m";
+//! @brief ANSI escape codes for the dim font.
+constexpr std::string_view escFontDim = "\033[2m";
+//! @brief ANSI escape codes for the italic font.
+constexpr std::string_view escFontItalic = "\033[3m";
+//! @brief ANSI escape codes for the underline font.
+constexpr std::string_view escFontUnderline = "\033[4m";
+//! @brief ANSI escape codes for the inverse font.
+constexpr std::string_view escFontInverse = "\033[7m";
+//! @brief ANSI escape codes for default foreground color.
+constexpr std::string_view escFgColor = "\033[39m";
+//! @brief ANSI escape codes for default background color.
+constexpr std::string_view escBgColor = "\033[49m";
+//! @brief ANSI escape codes for ending.
+constexpr std::string_view escOff = "\033[0m";
+
+//! @brief Prefix of debug level in log.
+constexpr std::string_view debugLevelPrefix = "[DBG]";
+//! @brief Prefix of info level in log.
+constexpr std::string_view infoLevelPrefix = "[INF]";
+//! @brief Prefix of warning level in log.
+constexpr std::string_view warningLevelPrefix = "[WRN]";
+//! @brief Prefix of error level in log.
+constexpr std::string_view errorLevelPrefix = "[ERR]";
+//! @brief Prefix of trace level in log.
+constexpr std::string_view traceLevelPrefix = "[TRC]";
+//! @brief Regular expression of debug level in log.
+constexpr std::string_view debugLevelPrefixRegex = R"(\[DBG\])";
+//! @brief Regular expression of info level in log.
+constexpr std::string_view infoLevelPrefixRegex = R"(\[INF\])";
+//! @brief Regular expression of warning level in log.
+constexpr std::string_view warningLevelPrefixRegex = R"(\[WRN\])";
+//! @brief Regular expression of error level in log.
+constexpr std::string_view errorLevelPrefixRegex = R"(\[ERR\])";
+//! @brief Regular expression of trace level in log.
+constexpr std::string_view traceLevelPrefixRegex = R"(\[TRC\])";
+//! @brief Regular expression of date time in log.
+constexpr std::string_view dateTimeRegex = R"(\[(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})\.(\d{6}) (\w{3})\])";
+//! @brief Regular expression of code file in log.
+constexpr std::string_view codeFileRegex = R"(\[[^ ]+\.(c|h|cc|hh|cpp|hpp|tpp|cxx|hxx|C|H)#\d+\])";
+
+//! @brief Debug level prefix with color. Include ANSI escape codes.
+constexpr auto debugLevelPrefixWithColor =
+    utility::common::concatString<escColorBlue, escFontBold, escBgColor, debugLevelPrefix, escOff>;
+//! @brief Info level prefix with color. Include ANSI escape codes.
+constexpr auto infoLevelPrefixWithColor =
+    utility::common::concatString<escColorGreen, escFontBold, escBgColor, infoLevelPrefix, escOff>;
+//! @brief Warning level prefix with color. Include ANSI escape codes.
+constexpr auto warningLevelPrefixWithColor =
+    utility::common::concatString<escColorYellow, escFontBold, escBgColor, warningLevelPrefix, escOff>;
+//! @brief Error level prefix with color. Include ANSI escape codes.
+constexpr auto errorLevelPrefixWithColor =
+    utility::common::concatString<escColorRed, escFontBold, escBgColor, errorLevelPrefix, escOff>;
+//! @brief Trace level prefix with color. Include ANSI escape codes.
+constexpr auto traceLevelPrefixWithColor =
+    utility::common::concatString<escFontInverse, escFontBold, escBgColor, traceLevelPrefix, escOff>;
+//! @brief Base color of the date time. Include ANSI escape codes.
+constexpr auto dateTimeBaseColor = utility::common::concatString<escFgColor, escFontBold, escFontDim, escBgColor>;
+//! @brief Base color of the code file. Include ANSI escape codes.
+constexpr auto codeFileBaseColor = utility::common::concatString<escFgColor, escFontBold, escFontUnderline, escBgColor>;
+//! @brief Base color of the history cache. Include ANSI escape codes.
+constexpr auto historyCacheBaseColor = utility::common::concatString<escFontInverse, escFontItalic, escBgColor>;
+
 //! @brief Regular expressions for log highlighting.
 struct HlRegex
 {
@@ -374,8 +446,7 @@ void Log::startLogging()
     cacheSwitch.lock();
     while (!unprocessedCache.empty())
     {
-        std::cout << historyCacheBaseColor.data() + unprocessedCache.front() + utility::common::escOff.data()
-                  << std::endl;
+        std::cout << historyCacheBaseColor.data() + unprocessedCache.front() + escOff.data() << std::endl;
         unprocessedCache.pop_front();
     }
     cacheSwitch.unlock();
@@ -542,7 +613,7 @@ std::string& changeToLogStyle(std::string& line)
     {
         if (std::regex_search(line, match, segment))
         {
-            line = match.prefix().str() + scheme + match.str() + utility::common::escOff.data() + match.suffix().str();
+            line = match.prefix().str() + scheme + match.str() + escOff.data() + match.suffix().str();
         }
     }
 
