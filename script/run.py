@@ -95,6 +95,7 @@ class Task:
     _esc_color = {"red": "\033[0;31;40m", "green": "\033[0;32;40m", "yellow": "\033[0;33;40m", "blue": "\033[0;34;40m"}
     _tbl_key_width = 15
     _tbl_value_width = 60
+    _llvm_ver = 19
 
     def __init__(self):
         self._args = None
@@ -442,8 +443,8 @@ class Task:
         print(f"""{color}\033[1m\033[49m[ {datetime.strftime(datetime.now(), "%b %d %H:%M:%S")} # {hint} ]\033[0m""")
 
     def _initialize_for_check_coverage(self):
-        stdout, _, _ = execute_command("command -v llvm-profdata-19 llvm-cov-19 2>&1")
-        if stdout.find("llvm-profdata-19") != -1 and stdout.find("llvm-cov-19") != -1:
+        stdout, _, _ = execute_command(f"command -v llvm-profdata-{self._llvm_ver} llvm-cov-{self._llvm_ver} 2>&1")
+        if stdout.find(f"llvm-profdata-{self._llvm_ver}") != -1 and stdout.find(f"llvm-cov-{self._llvm_ver}") != -1:
             os.environ["FOO_BLD_COV"] = "llvm-cov"
             self._marked_options["chk"]["cov"] = True
             execute_command(f"rm -rf {self._report_path}/dca/chk_cov && mkdir -p {self._report_path}/dca/chk_cov")
@@ -453,30 +454,31 @@ class Task:
     def _check_coverage_handling(self):
         folder_path = f"{self._report_path}/dca/chk_cov"
         execute_command(
-            f"llvm-profdata-19 merge -sparse {folder_path}/foo_chk_cov_*.profraw -o {folder_path}/foo_chk_cov.profdata"
+            f"llvm-profdata-{self._llvm_ver} merge -sparse {folder_path}/foo_chk_cov_*.profraw \
+-o {folder_path}/foo_chk_cov.profdata"
         )
         if not self._marked_options["tst"]:
             execute_command(
-                f"llvm-cov-19 show -instr-profile={folder_path}/foo_chk_cov.profdata -show-branches=percent \
--show-expansions -show-regions -show-line-counts-or-regions -format=html -output-dir={folder_path} -Xdemangler=c++filt \
--object={self._app_bin_path}/{self._app_bin_cmd} \
+                f"llvm-cov-{self._llvm_ver} show -instr-profile={folder_path}/foo_chk_cov.profdata \
+-show-branches=percent -show-expansions -show-regions -show-line-counts-or-regions -format=html \
+-output-dir={folder_path} -Xdemangler=c++filt -object={self._app_bin_path}/{self._app_bin_cmd} \
 {' '.join([f'-object={self._lib_path}/{lib}' for lib in self._lib_list])} 2>&1"
             )
         else:
             execute_command(
-                f"llvm-cov-19 show -instr-profile={folder_path}/foo_chk_cov.profdata -show-branches=percent \
--show-expansions -show-regions -show-line-counts-or-regions -format=html -output-dir={folder_path} -Xdemangler=c++filt \
--object={self._tst_bin_path}/{self._tst_bin_cmd} 2>&1"
+                f"llvm-cov-{self._llvm_ver} show -instr-profile={folder_path}/foo_chk_cov.profdata \
+-show-branches=percent -show-expansions -show-regions -show-line-counts-or-regions -format=html \
+-output-dir={folder_path} -Xdemangler=c++filt -object={self._tst_bin_path}/{self._tst_bin_cmd} 2>&1"
             )
         stdout, _, _ = (
             execute_command(
-                f"llvm-cov-19 report -instr-profile={folder_path}/foo_chk_cov.profdata \
+                f"llvm-cov-{self._llvm_ver} report -instr-profile={folder_path}/foo_chk_cov.profdata \
 -object={self._app_bin_path}/{self._app_bin_cmd} \
 {' '.join([f'-object={self._lib_path}/{lib}' for lib in self._lib_list])} 2>&1"
             )
             if not self._marked_options["tst"]
             else execute_command(
-                f"llvm-cov-19 report -instr-profile={folder_path}/foo_chk_cov.profdata \
+                f"llvm-cov-{self._llvm_ver} report -instr-profile={folder_path}/foo_chk_cov.profdata \
 -object={self._tst_bin_path}/{self._tst_bin_cmd} 2>&1"
             )
         )
