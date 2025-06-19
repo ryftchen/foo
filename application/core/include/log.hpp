@@ -68,82 +68,8 @@ namespace application // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Log-related functions in the application module.
 namespace log
 {
-//! @brief Prefix of debug level in log.
-constexpr std::string_view debugLevelPrefix = "[DBG]";
-//! @brief Prefix of info level in log.
-constexpr std::string_view infoLevelPrefix = "[INF]";
-//! @brief Prefix of warning level in log.
-constexpr std::string_view warningLevelPrefix = "[WRN]";
-//! @brief Prefix of error level in log.
-constexpr std::string_view errorLevelPrefix = "[ERR]";
-//! @brief Prefix of trace level in log.
-constexpr std::string_view traceLevelPrefix = "[TRC]";
-//! @brief Regular expression of debug level in log.
-constexpr std::string_view debugLevelPrefixRegex = R"(\[DBG\])";
-//! @brief Regular expression of info level in log.
-constexpr std::string_view infoLevelPrefixRegex = R"(\[INF\])";
-//! @brief Regular expression of warning level in log.
-constexpr std::string_view warningLevelPrefixRegex = R"(\[WRN\])";
-//! @brief Regular expression of error level in log.
-constexpr std::string_view errorLevelPrefixRegex = R"(\[ERR\])";
-//! @brief Regular expression of trace level in log.
-constexpr std::string_view traceLevelPrefixRegex = R"(\[TRC\])";
-//! @brief Regular expression of date time in log.
-constexpr std::string_view dateTimeRegex = R"(\[(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})\.(\d{6}) (\w{3})\])";
-//! @brief Regular expression of code file in log.
-constexpr std::string_view codeFileRegex = R"(\[[^ ]+\.(c|h|cc|hh|cpp|hpp|tpp|cxx|hxx|C|H)#\d+\])";
 //! @brief Directory of the source code.
-constexpr std::string_view sourceDirectory = R"(/foo/)";
-//! @brief Debug level prefix with color. Include ANSI escape codes.
-constexpr auto debugLevelPrefixWithColor = utility::common::concatString<
-    utility::common::escColorBlue,
-    utility::common::escFontBold,
-    utility::common::escBgColor,
-    debugLevelPrefix,
-    utility::common::escOff>;
-//! @brief Info level prefix with color. Include ANSI escape codes.
-constexpr auto infoLevelPrefixWithColor = utility::common::concatString<
-    utility::common::escColorGreen,
-    utility::common::escFontBold,
-    utility::common::escBgColor,
-    infoLevelPrefix,
-    utility::common::escOff>;
-//! @brief Warning level prefix with color. Include ANSI escape codes.
-constexpr auto warningLevelPrefixWithColor = utility::common::concatString<
-    utility::common::escColorYellow,
-    utility::common::escFontBold,
-    utility::common::escBgColor,
-    warningLevelPrefix,
-    utility::common::escOff>;
-//! @brief Error level prefix with color. Include ANSI escape codes.
-constexpr auto errorLevelPrefixWithColor = utility::common::concatString<
-    utility::common::escColorRed,
-    utility::common::escFontBold,
-    utility::common::escBgColor,
-    errorLevelPrefix,
-    utility::common::escOff>;
-//! @brief Trace level prefix with color. Include ANSI escape codes.
-constexpr auto traceLevelPrefixWithColor = utility::common::concatString<
-    utility::common::escFontInverse,
-    utility::common::escFontBold,
-    utility::common::escBgColor,
-    traceLevelPrefix,
-    utility::common::escOff>;
-//! @brief Base color of the date time. Include ANSI escape codes.
-constexpr auto dateTimeBaseColor = utility::common::concatString<
-    utility::common::escFgColor,
-    utility::common::escFontBold,
-    utility::common::escFontDim,
-    utility::common::escBgColor>;
-//! @brief Base color of the code file. Include ANSI escape codes.
-constexpr auto codeFileBaseColor = utility::common::concatString<
-    utility::common::escFgColor,
-    utility::common::escFontBold,
-    utility::common::escFontUnderline,
-    utility::common::escBgColor>;
-//! @brief Base color of the history cache. Include ANSI escape codes.
-constexpr auto historyCacheBaseColor = utility::common::
-    concatString<utility::common::escFontInverse, utility::common::escFontItalic, utility::common::escBgColor>;
+constexpr std::string_view sourceDirectory = "/foo/";
 
 //! @brief Logger.
 class Log final : public utility::fsm::FSM<Log>

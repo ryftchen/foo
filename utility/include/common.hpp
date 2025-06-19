@@ -20,30 +20,6 @@ namespace common
 {
 extern const char* version() noexcept;
 
-//! @brief ANSI escape codes for red foreground color.
-inline constexpr std::string_view escColorRed = "\033[0;31;40m";
-//! @brief ANSI escape codes for green foreground color.
-inline constexpr std::string_view escColorGreen = "\033[0;32;40m";
-//! @brief ANSI escape codes for yellow foreground color.
-inline constexpr std::string_view escColorYellow = "\033[0;33;40m";
-//! @brief ANSI escape codes for blue foreground color.
-inline constexpr std::string_view escColorBlue = "\033[0;34;40m";
-//! @brief ANSI escape codes for the bold font.
-inline constexpr std::string_view escFontBold = "\033[1m";
-//! @brief ANSI escape codes for the dim font.
-inline constexpr std::string_view escFontDim = "\033[2m";
-//! @brief ANSI escape codes for the italic font.
-inline constexpr std::string_view escFontItalic = "\033[3m";
-//! @brief ANSI escape codes for the underline font.
-inline constexpr std::string_view escFontUnderline = "\033[4m";
-//! @brief ANSI escape codes for the inverse font.
-inline constexpr std::string_view escFontInverse = "\033[7m";
-//! @brief ANSI escape codes for default foreground color.
-inline constexpr std::string_view escFgColor = "\033[39m";
-//! @brief ANSI escape codes for default background color.
-inline constexpr std::string_view escBgColor = "\033[49m";
-//! @brief ANSI escape codes for ending.
-inline constexpr std::string_view escOff = "\033[0m";
 //! @brief Hash seed for BKDR hash function.
 constexpr std::size_t bkdrHashSeed = 131;
 //! @brief Hash size for BKDR hash function.

@@ -505,7 +505,7 @@ int View::buildFinTLVPacket(char* buf)
     return len;
 }
 
-int View::buildTLVPacket4Depend([[maybe_unused]] const std::vector<std::string>& args, char* buf)
+int View::buildTLVPacket4Depend(const std::vector<std::string>& /*args*/, char* buf)
 {
     int len = 0;
     tlv::TLVValue val{};
@@ -588,7 +588,7 @@ int View::buildTLVPacket4Execute(const std::vector<std::string>& args, char* buf
     return len;
 }
 
-int View::buildTLVPacket4Journal([[maybe_unused]] const std::vector<std::string>& args, char* buf)
+int View::buildTLVPacket4Journal(const std::vector<std::string>& /*args*/, char* buf)
 {
     int len = 0;
     if (const int shmId = fillSharedMemory(logContentsPreview());
@@ -622,7 +622,7 @@ int View::buildTLVPacket4Monitor(const std::vector<std::string>& args, char* buf
     return len;
 }
 
-int View::buildTLVPacket4Profile([[maybe_unused]] const std::vector<std::string>& args, char* buf)
+int View::buildTLVPacket4Profile(const std::vector<std::string>& /*args*/, char* buf)
 {
     int len = 0;
     tlv::TLVValue val{};
@@ -723,7 +723,7 @@ void View::printSharedMemory(const int shmId, const bool withoutPaging)
         {
             std::cout << line << '\n';
         }
-        std::cout << utility::common::escOff << std::flush;
+        std::cout << "\033[0m" << std::flush;
     }
     else
     {
@@ -735,7 +735,7 @@ void View::segmentedOutput(const std::string& buffer)
 {
     constexpr std::uint8_t terminalRows = 24;
     constexpr std::string_view prompt = "--- Type <CR> for more, c to continue, n to show next page, q to quit ---: ",
-                               escapeClear = "\x1b[1A\x1b[2K\r";
+                               escapeClear = "\x1b[1A\x1b[2K\r", escapeMoveUp = "\n\x1b[1A\x1b[";
     std::istringstream transfer(buffer);
     const std::size_t lineNum =
         std::count(std::istreambuf_iterator<char>(transfer), std::istreambuf_iterator<char>{}, '\n');
@@ -781,12 +781,12 @@ void View::segmentedOutput(const std::string& buffer)
         ++counter;
         if (!withoutPaging && (moreRows || (counter == terminalRows)))
         {
-            std::cout << prompt << "\n\x1b[1A\x1b[" << prompt.length() << 'C' << std::flush;
+            std::cout << prompt << escapeMoveUp << prompt.length() << 'C' << std::flush;
             utility::io::waitForUserInput(handling);
         }
     }
 
-    std::cout << utility::common::escOff << std::flush;
+    std::cout << "\033[0m" << std::flush;
     if (lineNum > terminalRows)
     {
         std::cout << std::endl;
