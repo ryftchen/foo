@@ -23,13 +23,8 @@ std::int8_t Integral::getSign(double& lower, double& upper)
     return (lower < upper) ? 1 : ((lower > upper) ? (std::swap(lower, upper), -1) : 0);
 }
 
-//! @brief Calculate the value of the definite integral with the trapezoidal rule.
-//! @param expr - target expression
-//! @param left - left endpoint
-//! @param height - height of trapezoidal
-//! @param step - number of steps
-//! @return result of definite integral
-double trapezoid(const Expression& expr, const double left, const double height, const std::uint32_t step)
+double Integral::trapezoidalRule(
+    const Expression& expr, const double left, const double height, const std::uint32_t step)
 {
     double sum = 0.0, x = left;
     const double delta = height / step;
@@ -53,7 +48,7 @@ double Trapezoidal::operator()(double lower, double upper, const double eps) con
 
     do
     {
-        sum = trapezoid(expr, lower, height, n);
+        sum = trapezoidalRule(expr, lower, height, n);
         s1 = s2;
         s2 = sum;
         n *= 2;
@@ -106,39 +101,35 @@ double Romberg::operator()(double lower, double upper, const double eps) const
     const std::int8_t sign = getSign(lower, upper);
     std::uint32_t k = 0;
     const double height = upper - lower;
-    const auto trapezoidFunctor = std::bind(trapezoid, std::ref(expr), lower, height, std::placeholders::_1);
+    const auto trapezoid = std::bind(trapezoidalRule, std::ref(expr), lower, height, std::placeholders::_1);
 
-    double t0 = trapezoidFunctor(std::pow(2, k));
+    double t0 = trapezoid(std::pow(2, k));
     k = 1;
-    double t1Zero = trapezoidFunctor(std::pow(2, k)),
-           t1 = (std::pow(4, k) / (std::pow(4, k) - 1) * trapezoidFunctor(std::pow(2, k + 1)))
-        - (1.0 / std::pow(4, k) * t1Zero);
+    double t1Zero = trapezoid(std::pow(2, k)), t1 = richardsonExtrapolation(t1Zero, trapezoid(std::pow(2, k + 1)), k);
     while (std::fabs(t1 - t0) > eps)
     {
         ++k;
         t0 = t1;
-        t1Zero = trapezoidFunctor(std::pow(2, k));
+        t1Zero = trapezoid(std::pow(2, k));
         for (std::uint32_t i = 1; i <= k; ++i)
         {
-            t1 = std::pow(4, i) / (std::pow(4, i) - 1) * trapezoidFunctor(std::pow(2, i + 1))
-                - 1.0 / std::pow(4, i) * t1Zero;
+            t1 = richardsonExtrapolation(t1Zero, trapezoid(std::pow(2, i + 1)), i);
         }
     }
-    const double sum = trapezoidFunctor(std::pow(2, k)) * sign;
+    const double sum = trapezoid(std::pow(2, k)) * sign;
 
     return sum;
+}
+
+double Romberg::richardsonExtrapolation(const double lowPrec, const double highPrec, const std::uint32_t division)
+{
+    const double weight = std::pow(4, division);
+    return (weight / (weight - 1) * highPrec) - (1.0 / weight * lowPrec);
 }
 
 double Gauss::operator()(double lower, double upper, const double eps) const
 {
     const std::int8_t sign = getSign(lower, upper);
-    constexpr std::uint32_t gaussNodes = 5, gaussCoefficient = 2;
-    constexpr std::array<std::array<double, gaussCoefficient>, gaussNodes> gaussLegendreTable = {
-        {{-0.9061798459, +0.2369268851},
-         {-0.5384693101, +0.4786286705},
-         {+0.0000000000, +0.5688888889},
-         {+0.5384693101, +0.4786286705},
-         {+0.9061798459, +0.2369268851}}};
     double sum = 0.0, s1 = 0.0, s2 = 0.0;
     std::uint32_t n = 1;
 
@@ -149,10 +140,10 @@ double Gauss::operator()(double lower, double upper, const double eps) const
         for (std::uint32_t i = 0; i < n; ++i)
         {
             const double left = lower + (i * stepLen), right = left + stepLen;
-            for (std::uint32_t j = 0; j < gaussNodes; ++j)
+            for (const auto& coeff : gaussLegendreTable)
             {
-                const double x = ((right - left) * gaussLegendreTable[j][0] + (left + right)) / 2.0,
-                             polynomial = expr(x) * gaussLegendreTable[j][1] * (right - left) / 2.0;
+                const double x = ((right - left) * coeff[0] + (left + right)) / 2.0,
+                             polynomial = expr(x) * coeff[1] * (right - left) / 2.0;
                 sum += polynomial;
             }
         }

@@ -45,7 +45,14 @@ protected:
     //! @param upper - upper endpoint
     //! @return sign
     static std::int8_t getSign(double& lower, double& upper);
-    friend double trapezoid(const Expression& expr, const double left, const double height, const std::uint32_t step);
+    //! @brief Calculate the value of the definite integral with the trapezoidal rule.
+    //! @param expr - target expression
+    //! @param left - left endpoint
+    //! @param height - height of trapezoidal
+    //! @param step - number of steps
+    //! @return result of definite integral
+    static double trapezoidalRule(
+        const Expression& expr, const double left, const double height, const std::uint32_t step);
 };
 
 //! @brief The trapezoidal method.
@@ -124,6 +131,12 @@ public:
 private:
     //! @brief Target expression.
     const Expression expr;
+    //! @brief The Richardson extrapolation.
+    //! @param lowPrec - numerical result obtained with low precision
+    //! @param highPrec - numerical result obtained with high precision
+    //! @param division - division level
+    //! @return extrapolation
+    static double richardsonExtrapolation(const double lowPrec, const double highPrec, const std::uint32_t division);
 };
 
 //! @brief The Gauss-Legendre's 5-points method.
@@ -144,6 +157,17 @@ public:
 private:
     //! @brief Target expression.
     const Expression expr;
+    //! @brief Number of Gauss nodes.
+    static constexpr std::uint32_t nodeSize{5};
+    //! @brief Number of Gauss coefficients.
+    static constexpr std::uint32_t coeffSize{2};
+    //! @brief Table of Gauss-Legendre quadrature.
+    static constexpr std::array<std::array<double, coeffSize>, nodeSize> gaussLegendreTable{
+        {{-0.9061798459, +0.2369268851},
+         {-0.5384693101, +0.4786286705},
+         {+0.0000000000, +0.5688888889},
+         {+0.5384693101, +0.4786286705},
+         {+0.9061798459, +0.2369268851}}};
 };
 
 //! @brief The Monte-Carlo method.
