@@ -162,7 +162,7 @@ private:
     //! @brief Number of Gauss coefficients.
     static constexpr std::uint32_t coeffSize{2};
     //! @brief Table of Gauss-Legendre quadrature.
-    static constexpr std::array<std::array<double, coeffSize>, nodeSize> gaussLegendreTable{
+    static constexpr std::array<std::array<double, coeffSize>, nodeSize> gaussLegendreTbl{
         {{-0.9061798459, +0.2369268851},
          {-0.5384693101, +0.4786286705},
          {+0.0000000000, +0.5688888889},
