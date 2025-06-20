@@ -142,7 +142,7 @@ double Gauss::operator()(double lower, double upper, const double eps) const
         for (std::uint32_t i = 0; i < n; ++i)
         {
             const double left = lower + (i * stepLen), right = left + stepLen;
-            for (const auto& coeff : gaussLegendreTable)
+            for (const auto& coeff : gaussLegendreTbl)
             {
                 const double x = ((right - left) * coeff[0] + (left + right)) / 2.0,
                              polynomial = expr(x) * coeff[1] * (right - left) / 2.0;
@@ -198,9 +198,9 @@ double MonteCarlo::sampleFromNormalDistribution(const double lower, const double
             x = mag * std::sin(2.0 * std::numbers::pi * u2) + mu;
         }
         while ((x < lower) || (x > upper));
-        const double probabilityDensityFunction = (1.0 / std::sqrt(2.0 * std::numbers::pi * sigma * sigma))
+        const double probabilityDensity = (1.0 / std::sqrt(2.0 * std::numbers::pi * sigma * sigma))
             * std::pow(std::numbers::e, (-(x - mu) * (x - mu)) / (2.0 * sigma * sigma));
-        sum += expr(x) / probabilityDensityFunction;
+        sum += expr(x) / probabilityDensity;
     }
     sum /= n;
 
