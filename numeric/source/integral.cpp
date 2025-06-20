@@ -99,32 +99,34 @@ double Simpson::simpsonOneThird(const double left, const double right) const
 double Romberg::operator()(double lower, double upper, const double eps) const
 {
     const std::int8_t sign = getSign(lower, upper);
-    std::uint32_t k = 0;
     const double height = upper - lower;
     const auto trapezoid = std::bind(trapezoidalRule, std::ref(expr), lower, height, std::placeholders::_1);
 
-    double t0 = trapezoid(std::pow(2, k));
-    k = 1;
-    double t1Zero = trapezoid(std::pow(2, k)), t1 = richardsonExtrapolation(t1Zero, trapezoid(std::pow(2, k + 1)), k);
-    while (std::fabs(t1 - t0) > eps)
+    std::vector<std::vector<double>> rombergTbl{};
+    rombergTbl.emplace_back(std::vector<double>{trapezoid(1)});
+    std::uint32_t k = 0;
+    do
     {
         ++k;
-        t0 = t1;
-        t1Zero = trapezoid(std::pow(2, k));
+        rombergTbl.emplace_back();
+        rombergTbl[k].reserve(k + 1);
+        rombergTbl[k].emplace_back(trapezoid(std::pow(2, k)));
+
         for (std::uint32_t i = 1; i <= k; ++i)
         {
-            t1 = richardsonExtrapolation(t1Zero, trapezoid(std::pow(2, i + 1)), i);
+            rombergTbl[k].emplace_back(
+                richardsonExtrapolation(rombergTbl[k - 1][i - 1], rombergTbl[k][i - 1], std::pow(4, i)));
         }
     }
-    const double sum = trapezoid(std::pow(2, k)) * sign;
+    while (std::fabs(rombergTbl[k][k] - rombergTbl[k - 1][k - 1]) > eps);
+    const double sum = rombergTbl[k][k] * sign;
 
     return sum;
 }
 
-double Romberg::richardsonExtrapolation(const double lowPrec, const double highPrec, const std::uint32_t division)
+double Romberg::richardsonExtrapolation(const double lowPrec, const double highPrec, const double weight)
 {
-    const double weight = std::pow(4, division);
-    return (weight / (weight - 1) * highPrec) - (1.0 / weight * lowPrec);
+    return (weight * highPrec - lowPrec) / (weight - 1.0);
 }
 
 double Gauss::operator()(double lower, double upper, const double eps) const
