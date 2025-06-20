@@ -134,9 +134,9 @@ private:
     //! @brief The Richardson extrapolation.
     //! @param lowPrec - numerical result obtained with low precision
     //! @param highPrec - numerical result obtained with high precision
-    //! @param division - division level
+    //! @param weight - weight factor
     //! @return extrapolation
-    static double richardsonExtrapolation(const double lowPrec, const double highPrec, const std::uint32_t division);
+    static double richardsonExtrapolation(const double lowPrec, const double highPrec, const double weight);
 };
 
 //! @brief The Gauss-Legendre's 5-points method.
