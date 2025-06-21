@@ -18,11 +18,6 @@ const char* version() noexcept
     return ver;
 }
 
-std::int8_t Integral::getSign(double& lower, double& upper)
-{
-    return (lower < upper) ? 1 : ((lower > upper) ? (std::swap(lower, upper), -1) : 0);
-}
-
 double Integral::trapezoidalRule(
     const Expression& expr, const double left, const double height, const std::uint32_t step)
 {
@@ -38,33 +33,26 @@ double Integral::trapezoidalRule(
     return sum;
 }
 
-double Trapezoidal::operator()(double lower, double upper, const double eps) const
+double Trapezoidal::operator()(const double lower, const double upper, const double eps) const
 {
-    const std::int8_t sign = getSign(lower, upper);
-    const std::uint32_t minStep = std::pow(2, 3);
     const double height = upper - lower;
-    double sum = 0.0, s1 = 0.0, s2 = 0.0;
+    double s1 = 0.0, s2 = 0.0;
     std::uint32_t n = 1;
-
     do
     {
-        sum = trapezoidalRule(expr, lower, height, n);
+        const double sum = trapezoidalRule(expr, lower, height, n);
         s1 = s2;
         s2 = sum;
         n *= 2;
     }
-    while ((std::fabs(s1 - s2) > eps) || (n < minStep));
-    sum = s2 * sign;
+    while (std::fabs(s1 - s2) > eps);
 
-    return sum;
+    return s2;
 }
 
-double Simpson::operator()(double lower, double upper, const double eps) const
+double Simpson::operator()(const double lower, const double upper, const double eps) const
 {
-    const std::int8_t sign = getSign(lower, upper);
-    double sum = simpsonIntegral(lower, upper, eps);
-    sum *= sign;
-
+    const double sum = simpsonIntegral(lower, upper, eps);
     return sum;
 }
 
@@ -96,15 +84,14 @@ double Simpson::simpsonOneThird(const double left, const double right) const
     return (expr(left) + 4.0 * expr((left + right) / 2.0) + expr(right)) / 6.0 * (right - left);
 }
 
-double Romberg::operator()(double lower, double upper, const double eps) const
+double Romberg::operator()(const double lower, const double upper, const double eps) const
 {
-    const std::int8_t sign = getSign(lower, upper);
     const double height = upper - lower;
     const auto trapezoid = std::bind(trapezoidalRule, std::ref(expr), lower, height, std::placeholders::_1);
+    std::uint32_t k = 0;
 
     std::vector<std::vector<double>> rombergTbl{};
     rombergTbl.emplace_back(std::vector<double>{trapezoid(1)});
-    std::uint32_t k = 0;
     do
     {
         ++k;
@@ -119,9 +106,8 @@ double Romberg::operator()(double lower, double upper, const double eps) const
         }
     }
     while (std::fabs(rombergTbl[k][k] - rombergTbl[k - 1][k - 1]) > eps);
-    const double sum = rombergTbl[k][k] * sign;
 
-    return sum;
+    return rombergTbl[k][k];
 }
 
 double Romberg::richardsonExtrapolation(const double lowPrec, const double highPrec, const double weight)
@@ -129,15 +115,13 @@ double Romberg::richardsonExtrapolation(const double lowPrec, const double highP
     return (weight * highPrec - lowPrec) / (weight - 1.0);
 }
 
-double Gauss::operator()(double lower, double upper, const double eps) const
+double Gauss::operator()(const double lower, const double upper, const double eps) const
 {
-    const std::int8_t sign = getSign(lower, upper);
-    double sum = 0.0, s1 = 0.0, s2 = 0.0;
+    double s1 = 0.0, s2 = 0.0;
     std::uint32_t n = 1;
-
     do
     {
-        sum = 0.0;
+        double sum = 0.0;
         const double stepLen = (upper - lower) / n;
         for (std::uint32_t i = 0; i < n; ++i)
         {
@@ -154,17 +138,13 @@ double Gauss::operator()(double lower, double upper, const double eps) const
         n *= 2;
     }
     while (std::fabs(s1 - s2) > eps);
-    sum = s2 * sign;
 
-    return sum;
+    return s2;
 }
 
-double MonteCarlo::operator()(double lower, double upper, const double eps) const
+double MonteCarlo::operator()(const double lower, const double upper, const double eps) const
 {
-    const std::int8_t sign = getSign(lower, upper);
-    double sum = sampleFromUniformDistribution(lower, upper, eps);
-    sum *= sign;
-
+    const double sum = sampleFromUniformDistribution(lower, upper, eps);
     return sum;
 }
 

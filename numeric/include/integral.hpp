@@ -34,17 +34,12 @@ public:
     //! @param upper - upper endpoint
     //! @param eps - precision of calculation
     //! @return result of integral
-    virtual double operator()(double lower, double upper, const double eps) const = 0;
+    virtual double operator()(const double lower, const double upper, const double eps) const = 0;
 
 protected:
     //! @brief Construct a new Integral object.
     Integral() = default;
 
-    //! @brief Get the sign.
-    //! @param lower - lower endpoint
-    //! @param upper - upper endpoint
-    //! @return sign
-    static std::int8_t getSign(double& lower, double& upper);
     //! @brief Calculate the value of the definite integral with the trapezoidal rule.
     //! @param expr - target expression
     //! @param left - left endpoint
@@ -68,7 +63,7 @@ public:
     //! @param upper - upper endpoint
     //! @param eps - precision of calculation
     //! @return result of integral
-    double operator()(double lower, double upper, const double eps) const override;
+    double operator()(const double lower, const double upper, const double eps) const override;
 
 private:
     //! @brief Target expression.
@@ -88,7 +83,7 @@ public:
     //! @param upper - upper endpoint
     //! @param eps - precision of calculation
     //! @return result of integral
-    double operator()(double lower, double upper, const double eps) const override;
+    double operator()(const double lower, const double upper, const double eps) const override;
 
 private:
     //! @brief Target expression.
@@ -126,7 +121,7 @@ public:
     //! @param upper - upper endpoint
     //! @param eps - precision of calculation
     //! @return result of integral
-    double operator()(double lower, double upper, const double eps) const override;
+    double operator()(const double lower, const double upper, const double eps) const override;
 
 private:
     //! @brief Target expression.
@@ -152,7 +147,7 @@ public:
     //! @param upper - upper endpoint
     //! @param eps - precision of calculation
     //! @return result of integral
-    double operator()(double lower, double upper, const double eps) const override;
+    double operator()(const double lower, const double upper, const double eps) const override;
 
 private:
     //! @brief Target expression.
@@ -183,7 +178,7 @@ public:
     //! @param upper - upper endpoint
     //! @param eps - precision of calculation
     //! @return result of integral
-    double operator()(double lower, double upper, const double eps) const override;
+    double operator()(const double lower, const double upper, const double eps) const override;
 
 private:
     //! @brief Target expression.
