@@ -432,16 +432,7 @@ public:
 //! @brief Maximum alignment length per element of printing.
 constexpr std::uint8_t maxAlignOfPrint = 16;
 //! @brief Maximum columns per row of printing.
-constexpr std::uint8_t maxColumnOfPrint = 10;
-
-//! @brief Check whether it is the real number type.
-//! @tparam T - type of inspection to be performed
-//! @return be number or not
-template <typename T>
-consteval bool isRealNumber()
-{
-    return std::is_integral_v<T> || std::is_floating_point_v<T>;
-}
+constexpr std::uint8_t maxColumnOfPrint = 5;
 
 //! @brief Builder for the input.
 //! @tparam T - type of builder for the target
@@ -496,7 +487,7 @@ public:
     //! @param bufferSize - size of the buffer
     //! @return buffer after splicing
     template <typename N>
-    requires (isRealNumber<N>())
+    requires std::is_integral_v<T> || std::is_floating_point_v<T>
     static char* spliceAll(
         const T* const array, const std::uint32_t length, char* const fmtBuffer, const std::uint32_t bufferSize)
     {
@@ -506,29 +497,29 @@ public:
             align = std::max(static_cast<std::uint32_t>(std::to_string(*(array + i)).length()), align);
         }
 
-        constexpr const char* const spliceFmt =
-            std::is_integral_v<T> ? "%*d " : (std::is_floating_point_v<T> ? "%*.5f " : " ");
-        int totalLen = 0;
-        std::uint32_t completeSize = 0;
-        for (std::uint32_t i = 0; i < length; ++i)
+        char spliceFmt[16] = {'\0'};
+        if constexpr (std::is_integral_v<T>)
         {
-            totalLen =
-                std::snprintf(fmtBuffer + completeSize, bufferSize - completeSize, spliceFmt, align + 1, *(array + i));
-            if ((totalLen < 0) || (totalLen >= static_cast<int>(bufferSize - completeSize)))
+            std::snprintf(spliceFmt, sizeof(spliceFmt), "%%%dd%%c", align + 1);
+        }
+        else if constexpr (std::is_floating_point_v<T>)
+        {
+            std::snprintf(spliceFmt, sizeof(spliceFmt), "%%%d.5f%%c", align + 1);
+        }
+        else
+        {
+            return fmtBuffer;
+        }
+
+        for (std::uint32_t i = 0, offset = 0; i < length; ++i)
+        {
+            const char sep = (((i + 1) % maxColumnOfPrint == 0) && ((i + 1) != length)) ? '\n' : ' ';
+            const int written = std::snprintf(fmtBuffer + offset, bufferSize - offset, spliceFmt, *(array + i), sep);
+            if ((written < 0) || (written >= static_cast<int>(bufferSize - offset)))
             {
                 break;
             }
-            completeSize += totalLen;
-
-            if ((((i + 1) % maxColumnOfPrint) == 0) && ((i + 1) != length))
-            {
-                totalLen = std::snprintf(fmtBuffer + completeSize, bufferSize - completeSize, "\n");
-                if ((totalLen < 0) || (totalLen >= static_cast<int>(bufferSize - completeSize)))
-                {
-                    break;
-                }
-                completeSize += totalLen;
-            }
+            offset += written;
         }
 
         return fmtBuffer;
@@ -673,15 +664,6 @@ constexpr std::uint8_t maxAlignOfPrint = 16;
 //! @brief Maximum columns per row of printing.
 constexpr std::uint8_t maxColumnOfPrint = 10;
 
-//! @brief Check whether it is the real number type.
-//! @tparam T - type of inspection to be performed
-//! @return be number or not
-template <typename T>
-consteval bool isRealNumber()
-{
-    return std::is_integral_v<T> || std::is_floating_point_v<T>;
-}
-
 //! @brief Builder for the input.
 //! @tparam T - type of builder for the target
 template <typename T>
@@ -732,7 +714,7 @@ public:
     //! @param bufferSize - size of the buffer
     //! @return buffer after splicing
     template <typename N>
-    requires (isRealNumber<N>())
+    requires std::is_integral_v<T> || std::is_floating_point_v<T>
     static char* spliceAll(
         const T* const array, const std::uint32_t length, char* const fmtBuffer, const std::uint32_t bufferSize)
     {
@@ -742,29 +724,29 @@ public:
             align = std::max(static_cast<std::uint32_t>(std::to_string(*(array + i)).length()), align);
         }
 
-        constexpr const char* const spliceFmt =
-            std::is_integral_v<T> ? "%*d " : (std::is_floating_point_v<T> ? "%*.5f " : " ");
-        int totalLen = 0;
-        std::uint32_t completeSize = 0;
-        for (std::uint32_t i = 0; i < length; ++i)
+        char spliceFmt[16] = {'\0'};
+        if constexpr (std::is_integral_v<T>)
         {
-            totalLen =
-                std::snprintf(fmtBuffer + completeSize, bufferSize - completeSize, spliceFmt, align + 1, *(array + i));
-            if ((totalLen < 0) || (totalLen >= static_cast<int>(bufferSize - completeSize)))
+            std::snprintf(spliceFmt, sizeof(spliceFmt), "%%%dd%%c", align + 1);
+        }
+        else if constexpr (std::is_floating_point_v<T>)
+        {
+            std::snprintf(spliceFmt, sizeof(spliceFmt), "%%%d.5f%%c", align + 1);
+        }
+        else
+        {
+            return fmtBuffer;
+        }
+
+        for (std::uint32_t i = 0, offset = 0; i < length; ++i)
+        {
+            const char sep = (((i + 1) % maxColumnOfPrint == 0) && ((i + 1) != length)) ? '\n' : ' ';
+            const int written = std::snprintf(fmtBuffer + offset, bufferSize - offset, spliceFmt, *(array + i), sep);
+            if ((written < 0) || (written >= static_cast<int>(bufferSize - offset)))
             {
                 break;
             }
-            completeSize += totalLen;
-
-            if ((((i + 1) % maxColumnOfPrint) == 0) && ((i + 1) != length))
-            {
-                totalLen = std::snprintf(fmtBuffer + completeSize, bufferSize - completeSize, "\n");
-                if ((totalLen < 0) || (totalLen >= static_cast<int>(bufferSize - completeSize)))
-                {
-                    break;
-                }
-                completeSize += totalLen;
-            }
+            offset += written;
         }
 
         return fmtBuffer;
