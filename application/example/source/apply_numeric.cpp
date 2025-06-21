@@ -201,7 +201,7 @@ static void showResult(const DivisorMethod method, const std::set<std::int32_t>&
         interval);
 }
 
-void DivisorCalculation::euclideanMethod(std::int32_t a, std::int32_t b)
+void DivisorCalculation::euclideanMethod(const std::int32_t a, const std::int32_t b)
 try
 {
     const utility::time::Time timer{};
@@ -213,7 +213,7 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in calculation (%s): %s", __func__, err.what());
 }
 
-void DivisorCalculation::steinMethod(std::int32_t a, std::int32_t b)
+void DivisorCalculation::steinMethod(const std::int32_t a, const std::int32_t b)
 try
 {
     const utility::time::Time timer{};
@@ -246,7 +246,7 @@ void applyingDivisor(const std::vector<std::string>& candidates)
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = utility::common::wrapClosure(
         [allocatedJob, &inputData, &taskNamer](
-            const std::string_view subTask, void (*targetMethod)(std::int32_t, std::int32_t))
+            const std::string_view subTask, void (*targetMethod)(const std::int32_t, const std::int32_t))
         {
             allocatedJob->enqueue(
                 taskNamer(subTask), targetMethod, inputData->getIntegers().first, inputData->getIntegers().second);
