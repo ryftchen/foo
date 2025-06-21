@@ -7,7 +7,7 @@ RUN apt-get update \
 && sudo apt-get update \
 && sudo apt-get install --assume-yes --no-install-recommends bash coreutils findutils procps grep sed mawk \
 build-essential binutils gcc-14 g++-14 binutils-gold clang-19 clang++-19 lld-19 ninja-build make cmake \
-libstdc++-14-dev libgtest-dev libssl-dev liblz4-dev libreadline-dev libmpfrc++-dev llvm-19-dev libclang-19-dev libclang-rt-19-dev \
+libstdc++-14-dev libgtest-dev libssl-dev liblz4-dev libreadline-dev libgsl-dev libmpfrc++-dev llvm-19-dev libclang-19-dev libclang-rt-19-dev \
 clang-format-19 clang-tidy-19 shfmt shellcheck black pylint rustc cargo rustfmt rust-clippy gdb ccache distcc valgrind \
 cloc pre-commit doxygen doxygen-awesome-css graphviz git python3 python3-pip docker.io docker-compose-v2 npm \
 elfutils psmisc net-tools curl tar zip rsync bash-completion \

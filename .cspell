@@ -19,6 +19,7 @@ words:
   - Adelson
   - asan
   - BKDR
+  - CBLAS
   - chrono
   - CLICOLOR
   - codebrowser
@@ -37,7 +38,6 @@ words:
   - filedir
   - fuser
   - gdbinit
-  - Griewank
   - gtest
   - indexgenerator
   - inorder

@@ -5,11 +5,12 @@ project(foo)
 include(CheckCXXCompilerFlag)
 include(CheckIncludeFile)
 check_cxx_compiler_flag(-std=c++20 COMPILER_SUPPORTS_CXX20)
-check_include_file("openssl/evp.h" EXIST_OPENSSL_EVP_HEADER)
-check_include_file("lz4.h" EXIST_LZ4_HEADER)
-check_include_file("readline/readline.h" EXIST_READLINE_READLINE_HEADER)
-check_include_file("readline/history.h" EXIST_READLINE_HISTORY_HEADER)
-check_include_file("mpfr.h" EXIST_MPFR_HEADER)
+check_include_file("openssl/evp.h" HAS_OPENSSL_EVP_HEADER)
+check_include_file("lz4.h" HAS_LZ4_HEADER)
+check_include_file("readline/readline.h" HAS_READLINE_READLINE_HEADER)
+check_include_file("readline/history.h" HAS_READLINE_HISTORY_HEADER)
+check_include_file("gsl/gsl_sf.h" HAS_GSL_GSL_SF_HEADER)
+check_include_file("mpfr.h" HAS_MPFR_HEADER)
 
 if(DEFINED ENV{FOO_ENV})
     message(STATUS "The project env: FOO_ENV=$ENV{FOO_ENV}")
@@ -63,7 +64,7 @@ target_include_directories(
     PRIVATE ${CMAKE_SOURCE_DIR}/application/core/source ${CMAKE_SOURCE_DIR}/application/example/source)
 target_link_libraries(
     ${BIN_NAME}
-    PUBLIC crypto lz4 readline mpfr
+    PUBLIC crypto lz4 readline gsl mpfr
     PRIVATE foo::foo_util foo::foo_algo foo::foo_dp foo::foo_ds foo::foo_num)
 
 if(PRECOMPILED_HEADER)

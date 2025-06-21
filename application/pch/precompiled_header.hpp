@@ -7,6 +7,10 @@
 #ifndef APPLICATION_PCH_H
 #define APPLICATION_PCH_H
 
+#include <gsl/gsl_sf.h>
+#if __has_include(<gsl/gsl_version.h>)
+#include <gsl/gsl_version.h>
+#endif // __has_include(<gsl/gsl_version.h>)
 #include <netinet/in.h>
 #include <openssl/evp.h>
 #include <readline/history.h>
@@ -18,6 +22,9 @@
 #include <cxxabi.h>
 #include <dlfcn.h>
 #include <execinfo.h>
+#if __has_include(<gmp.h>)
+#include <gmp.h>
+#endif // __has_include(<gmp.h>)
 #include <lz4.h>
 #include <mpfr.h>
 #if __has_include(<ncurses.h>)

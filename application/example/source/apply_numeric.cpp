@@ -363,10 +363,9 @@ void applyingIntegral(const std::vector<std::string>& candidates)
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newElement(bits.count());
-    using integral::InputBuilder, integral::input::Griewank, integral::Expression;
+    using integral::InputBuilder, integral::input::Bessel, integral::Expression;
     static_assert(numeric::integral::epsilon >= std::numeric_limits<double>::epsilon());
-    const auto inputData =
-        std::make_shared<InputBuilder>(Griewank{}, Griewank::range1, Griewank::range2, Griewank::exprDescr);
+    const auto inputData = std::make_shared<InputBuilder>(Bessel{}, Bessel::range1, Bessel::range2, Bessel::exprDescr);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = utility::common::wrapClosure(
         [allocatedJob, &inputData, &taskNamer](
