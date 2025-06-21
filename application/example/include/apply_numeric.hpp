@@ -122,11 +122,11 @@ public:
     //! @brief The Euclidean method.
     //! @param a - first integer
     //! @param b - second integer
-    static void euclideanMethod(std::int32_t a, std::int32_t b);
+    static void euclideanMethod(const std::int32_t a, const std::int32_t b);
     //! @brief The Stein method.
     //! @param a - first integer
     //! @param b - second integer
-    static void steinMethod(std::int32_t a, std::int32_t b);
+    static void steinMethod(const std::int32_t a, const std::int32_t b);
 };
 
 //! @brief Maximum alignment length per element of printing.
