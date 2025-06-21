@@ -492,13 +492,13 @@ public:
     //! @tparam N - type of array
     //! @param array - target array
     //! @param length - length of array
-    //! @param buffer - buffer for printing
+    //! @param fmtBuffer - buffer for printing
     //! @param bufferSize - size of the buffer
     //! @return buffer after splicing
     template <typename N>
     requires (isRealNumber<N>())
     static char* spliceAll(
-        const T* const array, const std::uint32_t length, char* const buffer, const std::uint32_t bufferSize)
+        const T* const array, const std::uint32_t length, char* const fmtBuffer, const std::uint32_t bufferSize)
     {
         std::uint32_t align = 0;
         for (std::uint32_t i = 0; i < length; ++i)
@@ -513,7 +513,7 @@ public:
         for (std::uint32_t i = 0; i < length; ++i)
         {
             totalLen =
-                std::snprintf(buffer + completeSize, bufferSize - completeSize, spliceFmt, align + 1, *(array + i));
+                std::snprintf(fmtBuffer + completeSize, bufferSize - completeSize, spliceFmt, align + 1, *(array + i));
             if ((totalLen < 0) || (totalLen >= static_cast<int>(bufferSize - completeSize)))
             {
                 break;
@@ -522,7 +522,7 @@ public:
 
             if ((((i + 1) % maxColumnOfPrint) == 0) && ((i + 1) != length))
             {
-                totalLen = std::snprintf(buffer + completeSize, bufferSize - completeSize, "\n");
+                totalLen = std::snprintf(fmtBuffer + completeSize, bufferSize - completeSize, "\n");
                 if ((totalLen < 0) || (totalLen >= static_cast<int>(bufferSize - completeSize)))
                 {
                     break;
@@ -531,7 +531,7 @@ public:
             }
         }
 
-        return buffer;
+        return fmtBuffer;
     }
 
 private:
@@ -567,10 +567,10 @@ private:
         }
         std::sort(array, array + length);
 #ifdef _RUNTIME_PRINTING
-        const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;
-        std::vector<char> arrayBuffer(arrayBufferSize + 1);
+        const std::uint32_t bufferSize = length * maxAlignOfPrint;
+        std::vector<char> fmtBuffer(bufferSize + 1);
         std::cout << "\nGenerate " << length << " ordered integral numbers from " << left << " to " << right << ":\n"
-                  << spliceAll<T>(array, length, arrayBuffer.data(), arrayBufferSize + 1) << std::endl;
+                  << spliceAll<T>(array, length, fmtBuffer.data(), bufferSize + 1) << std::endl;
 #endif // _RUNTIME_PRINTING
     }
     //! @brief Set the ordered array.
@@ -591,11 +591,11 @@ private:
         }
         std::sort(array, array + length);
 #ifdef _RUNTIME_PRINTING
-        const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;
-        std::vector<char> arrayBuffer(arrayBufferSize + 1);
+        const std::uint32_t bufferSize = length * maxAlignOfPrint;
+        std::vector<char> fmtBuffer(bufferSize + 1);
         std::cout << "\nGenerate " << length << " ordered floating point numbers from " << left << " to " << right
                   << ":\n"
-                  << spliceAll<T>(array, length, arrayBuffer.data(), arrayBufferSize + 1) << std::endl;
+                  << spliceAll<T>(array, length, fmtBuffer.data(), bufferSize + 1) << std::endl;
 #endif // _RUNTIME_PRINTING
     }
 };
@@ -728,13 +728,13 @@ public:
     //! @tparam N - type of array
     //! @param array - target array
     //! @param length - length of array
-    //! @param buffer - buffer for printing
+    //! @param fmtBuffer - buffer for printing
     //! @param bufferSize - size of the buffer
     //! @return buffer after splicing
     template <typename N>
     requires (isRealNumber<N>())
     static char* spliceAll(
-        const T* const array, const std::uint32_t length, char* const buffer, const std::uint32_t bufferSize)
+        const T* const array, const std::uint32_t length, char* const fmtBuffer, const std::uint32_t bufferSize)
     {
         std::uint32_t align = 0;
         for (std::uint32_t i = 0; i < length; ++i)
@@ -749,7 +749,7 @@ public:
         for (std::uint32_t i = 0; i < length; ++i)
         {
             totalLen =
-                std::snprintf(buffer + completeSize, bufferSize - completeSize, spliceFmt, align + 1, *(array + i));
+                std::snprintf(fmtBuffer + completeSize, bufferSize - completeSize, spliceFmt, align + 1, *(array + i));
             if ((totalLen < 0) || (totalLen >= static_cast<int>(bufferSize - completeSize)))
             {
                 break;
@@ -758,7 +758,7 @@ public:
 
             if ((((i + 1) % maxColumnOfPrint) == 0) && ((i + 1) != length))
             {
-                totalLen = std::snprintf(buffer + completeSize, bufferSize - completeSize, "\n");
+                totalLen = std::snprintf(fmtBuffer + completeSize, bufferSize - completeSize, "\n");
                 if ((totalLen < 0) || (totalLen >= static_cast<int>(bufferSize - completeSize)))
                 {
                     break;
@@ -767,7 +767,7 @@ public:
             }
         }
 
-        return buffer;
+        return fmtBuffer;
     }
 
 private:
@@ -802,10 +802,10 @@ private:
             array[i] = dist(engine);
         }
 #ifdef _RUNTIME_PRINTING
-        const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;
-        std::vector<char> arrayBuffer(arrayBufferSize + 1);
+        const std::uint32_t bufferSize = length * maxAlignOfPrint;
+        std::vector<char> fmtBuffer(bufferSize + 1);
         std::cout << "\nGenerate " << length << " random integral numbers from " << left << " to " << right << ":\n"
-                  << spliceAll<T>(array, length, arrayBuffer.data(), arrayBufferSize + 1) << std::endl;
+                  << spliceAll<T>(array, length, fmtBuffer.data(), bufferSize + 1) << std::endl;
 #endif // _RUNTIME_PRINTING
     }
     //! @brief Set the random array.
@@ -825,11 +825,11 @@ private:
             array[i] = dist(engine);
         }
 #ifdef _RUNTIME_PRINTING
-        const std::uint32_t arrayBufferSize = length * maxAlignOfPrint;
-        std::vector<char> arrayBuffer(arrayBufferSize + 1);
+        const std::uint32_t bufferSize = length * maxAlignOfPrint;
+        std::vector<char> fmtBuffer(bufferSize + 1);
         std::cout << "\nGenerate " << length << " random floating point numbers from " << left << " to " << right
                   << ":\n"
-                  << spliceAll<T>(array, length, arrayBuffer.data(), arrayBufferSize + 1) << std::endl;
+                  << spliceAll<T>(array, length, fmtBuffer.data(), bufferSize + 1) << std::endl;
 #endif // _RUNTIME_PRINTING
     }
 };

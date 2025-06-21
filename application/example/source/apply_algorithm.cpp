@@ -623,13 +623,13 @@ namespace sort
 //! @param interval - time interval
 static void showResult(const SortMethod method, const std::vector<std::int32_t>& result, const double interval)
 {
-    const std::uint32_t arrayBufferSize = result.size() * maxAlignOfPrint;
-    std::vector<char> arrayBuffer(arrayBufferSize + 1);
+    const std::uint32_t bufferSize = result.size() * maxAlignOfPrint;
+    std::vector<char> fmtBuffer(bufferSize + 1);
     std::printf(
         "\n==> %-9s Method <==\n%s\n(asc) run time: %8.5f ms\n",
         makeTitle(method).c_str(),
         InputBuilder<std::int32_t>::template spliceAll<std::int32_t>(
-            result.data(), result.size(), arrayBuffer.data(), arrayBufferSize + 1),
+            result.data(), result.size(), fmtBuffer.data(), bufferSize + 1),
         interval);
 }
 
