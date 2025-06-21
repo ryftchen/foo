@@ -132,7 +132,7 @@ public:
 //! @brief Maximum alignment length per element of printing.
 constexpr std::uint8_t maxAlignOfPrint = 16;
 //! @brief Maximum columns per row of printing.
-constexpr std::uint8_t maxColumnOfPrint = 10;
+constexpr std::uint8_t maxColumnOfPrint = 5;
 
 //! @brief Builder for the input.
 class InputBuilder
@@ -172,28 +172,18 @@ public:
             0,
             [](const auto max, const auto elem)
             { return std::max<std::uint32_t>(std::to_string(elem).length(), max); });
-        int formatSize = 0;
-        std::uint32_t completeSize = 0;
+        std::uint32_t offset = 0;
         for (auto iterator = container.cbegin(); iterator != container.cend(); ++iterator)
         {
-            formatSize =
-                std::snprintf(fmtBuffer + completeSize, bufferSize - completeSize, "%*d ", align + 1, *iterator);
-            if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))
+            const std::uint32_t nextIdx = std::distance(container.cbegin(), iterator) + 1;
+            const char sep = ((nextIdx % maxColumnOfPrint == 0) && (nextIdx != container.size())) ? '\n' : ' ';
+            const int written =
+                std::snprintf(fmtBuffer + offset, bufferSize - offset, "%*d%c", align + 1, *iterator, sep);
+            if ((written < 0) || (written >= static_cast<int>(bufferSize - offset)))
             {
                 break;
             }
-            completeSize += formatSize;
-
-            if (const std::uint32_t nextIdx = std::distance(container.cbegin(), iterator) + 1;
-                ((nextIdx % maxColumnOfPrint) == 0) && (nextIdx != container.size()))
-            {
-                formatSize = std::snprintf(fmtBuffer + completeSize, bufferSize - completeSize, "\n");
-                if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))
-                {
-                    break;
-                }
-                completeSize += formatSize;
-            }
+            offset += written;
         }
 
         return fmtBuffer;
@@ -396,27 +386,16 @@ public:
             0,
             [](const auto max, const auto elem)
             { return std::max<std::uint32_t>(std::to_string(elem).length(), max); });
-        int formatSize = 0;
-        std::uint32_t completeSize = 0;
-        for (std::uint32_t i = 0; i < container.size(); ++i)
+        for (std::uint32_t i = 0, offset = 0; i < container.size(); ++i)
         {
-            formatSize =
-                std::snprintf(fmtBuffer + completeSize, bufferSize - completeSize, "%*d ", align + 1, container.at(i));
-            if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))
+            const char sep = (((i + 1) % maxColumnOfPrint == 0) && ((i + 1) != container.size())) ? '\n' : ' ';
+            const int written =
+                std::snprintf(fmtBuffer + offset, bufferSize - offset, "%*d%c", align + 1, container.at(i), sep);
+            if ((written < 0) || (written >= static_cast<int>(bufferSize - offset)))
             {
                 break;
             }
-            completeSize += formatSize;
-
-            if ((((i + 1) % maxColumnOfPrint) == 0) && ((i + 1) != container.size()))
-            {
-                formatSize = std::snprintf(fmtBuffer + completeSize, bufferSize - completeSize, "\n");
-                if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))
-                {
-                    break;
-                }
-                completeSize += formatSize;
-            }
+            offset += written;
         }
 
         return fmtBuffer;
