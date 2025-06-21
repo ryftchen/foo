@@ -35,7 +35,6 @@
 #include <barrier>
 #include <bitset>
 #include <cassert>
-#include <cmath>
 #include <coroutine>
 #include <csignal>
 #include <cstdint>

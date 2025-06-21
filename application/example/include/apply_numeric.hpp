@@ -8,7 +8,6 @@
 
 #ifndef _PRECOMPILED_HEADER
 #include <gsl/gsl_sf.h>
-#include <cmath>
 #include <iostream>
 #include <numeric>
 #else
