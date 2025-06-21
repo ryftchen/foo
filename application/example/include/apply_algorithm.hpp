@@ -7,6 +7,7 @@
 #pragma once
 
 #ifndef _PRECOMPILED_HEADER
+#include <gsl/gsl_sf.h>
 #include <mpfr.h>
 #include <cstring>
 #include <iostream>
@@ -298,10 +299,7 @@ public:
     //! @brief The operator (()) overloading of Rastrigin class.
     //! @param x - independent variable
     //! @return dependent variable
-    double operator()(const double x) const override
-    {
-        return (x * x) - (10.0 * std::cos(2.0 * std::numbers::pi * x)) + 10.0;
-    }
+    double operator()(const double x) const override { return (x * x) - (10.0 * ::gsl_sf_cos_pi(2.0 * x)) + 10.0; }
 
     //! @brief Left endpoint.
     static constexpr double range1{-5.12};

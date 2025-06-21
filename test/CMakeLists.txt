@@ -5,8 +5,9 @@ project(foo_test)
 include(CheckCXXCompilerFlag)
 include(CheckIncludeFile)
 check_cxx_compiler_flag(-std=c++20 COMPILER_SUPPORTS_CXX20)
-check_include_file("gtest/gtest.h" EXIST_GTEST_GTEST_HEADER)
-check_include_file("mpfr.h" EXIST_MPFR_HEADER)
+check_include_file("gtest/gtest.h" HAS_GTEST_GTEST_HEADER)
+check_include_file("gsl/gsl_sf.h" HAS_GSL_GSL_SF_HEADER)
+check_include_file("mpfr.h" HAS_MPFR_HEADER)
 find_package(GTest REQUIRED)
 
 if(DEFINED ENV{FOO_ENV})
@@ -53,7 +54,7 @@ include_directories(
 add_executable(${BIN_NAME} ${TEST_LIST})
 target_link_libraries(
     ${BIN_NAME}
-    PUBLIC gtest mpfr
+    PUBLIC gtest gsl mpfr
     PRIVATE foo_test::foo_test_algo foo_test::foo_test_dp foo_test::foo_test_ds foo_test::foo_test_num)
 
 if(PRECOMPILED_HEADER)

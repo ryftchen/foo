@@ -7,6 +7,7 @@
 #pragma once
 
 #ifndef _PRECOMPILED_HEADER
+#include <gsl/gsl_sf.h>
 #include <cmath>
 #include <iostream>
 #include <numeric>
@@ -237,22 +238,21 @@ public:
 //! @brief Set input parameters.
 namespace input
 {
-//! @brief Griewank expression.
-class Griewank : public ExprBase
+//! @brief Bessel expression.
+class Bessel : public ExprBase
 {
 public:
-    //! @brief The operator (()) overloading of Griewank class.
+    //! @brief The operator (()) overloading of Bessel class.
     //! @param x - independent variable
     //! @return dependent variable
-    double operator()(const double x) const override { return 1.0 + (1.0 / 4000.0 * x * x) - std::cos(x); }
+    double operator()(const double x) const override { return ::gsl_sf_bessel_J0(x); }
 
     //! @brief Left endpoint.
-    static constexpr double range1{-600.0};
+    static constexpr double range1{0.0};
     //! @brief Right endpoint.
-    static constexpr double range2{600.0};
-    //! @brief One-dimensional Griewank.
-    static constexpr std::string_view exprDescr{
-        "f(x)=1+(1/4000)*Σ(i=1→n)[(Xi)^2]-Π(i=1→n)[cos(Xi/(i^(1/2)))],x∈[-600,600] (one-dimensional Griewank)"};
+    static constexpr double range2{20.0};
+    //! @brief Bessel function of the first kind.
+    static constexpr std::string_view exprDescr{"f(x)=J₀(x),x∈[0,20] (Bessel function of the first kind)"};
 };
 } // namespace input
 

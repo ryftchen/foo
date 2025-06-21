@@ -151,9 +151,8 @@ protected:
     static void SetUpTestSuite()
     {
         TST_NUM_PRINT_TASK_TITLE("INTEGRAL", "BEGIN");
-        using Griewank = integral::input::Griewank;
-        fixture = std::make_shared<integral::InputBuilder>(
-            Griewank{}, Griewank::range1, Griewank::range2, Griewank::exprDescr);
+        using Bessel = integral::input::Bessel;
+        fixture = std::make_shared<integral::InputBuilder>(Bessel{}, Bessel::range1, Bessel::range2, Bessel::exprDescr);
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
@@ -177,9 +176,9 @@ protected:
     //! @brief Fixture data.
     static std::shared_ptr<integral::InputBuilder> fixture;
     //! @brief Expected result.
-    static constexpr double expRes{+37199.91164};
+    static constexpr double expRes{1.05838};
     //! @brief Allowable error.
-    static constexpr double error{1e3};
+    static constexpr double error{1e-1};
 };
 std::shared_ptr<integral::InputBuilder> IntegralTestBase::fixture = {};
 
