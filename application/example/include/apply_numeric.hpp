@@ -159,12 +159,12 @@ public:
     //! @brief Splice all integers for printing.
     //! @tparam T - type of container
     //! @param container - integer container
-    //! @param buffer - buffer for printing
+    //! @param fmtBuffer - buffer for printing
     //! @param bufferSize - size of the buffer
     //! @return buffer after splicing
     template <typename T>
     requires std::is_integral_v<T>
-    static char* spliceAllIntegers(const std::set<T>& container, char* const buffer, const std::uint32_t bufferSize)
+    static char* spliceAllIntegers(const std::set<T>& container, char* const fmtBuffer, const std::uint32_t bufferSize)
     {
         const std::uint32_t align = std::reduce(
             container.cbegin(),
@@ -176,7 +176,8 @@ public:
         std::uint32_t completeSize = 0;
         for (auto iterator = container.cbegin(); iterator != container.cend(); ++iterator)
         {
-            formatSize = std::snprintf(buffer + completeSize, bufferSize - completeSize, "%*d ", align + 1, *iterator);
+            formatSize =
+                std::snprintf(fmtBuffer + completeSize, bufferSize - completeSize, "%*d ", align + 1, *iterator);
             if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))
             {
                 break;
@@ -186,7 +187,7 @@ public:
             if (const std::uint32_t nextIdx = std::distance(container.cbegin(), iterator) + 1;
                 ((nextIdx % maxColumnOfPrint) == 0) && (nextIdx != container.size()))
             {
-                formatSize = std::snprintf(buffer + completeSize, bufferSize - completeSize, "\n");
+                formatSize = std::snprintf(fmtBuffer + completeSize, bufferSize - completeSize, "\n");
                 if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))
                 {
                     break;
@@ -195,7 +196,7 @@ public:
             }
         }
 
-        return buffer;
+        return fmtBuffer;
     }
 
 private:
@@ -381,12 +382,13 @@ public:
     //! @brief Splice all integers for printing.
     //! @tparam T - type of container
     //! @param container - integer container
-    //! @param buffer - buffer for printing
+    //! @param fmtBuffer - buffer for printing
     //! @param bufferSize - size of the buffer
     //! @return buffer after splicing
     template <typename T>
     requires std::is_integral_v<T>
-    static char* spliceAllIntegers(const std::vector<T>& container, char* const buffer, const std::uint32_t bufferSize)
+    static char* spliceAllIntegers(
+        const std::vector<T>& container, char* const fmtBuffer, const std::uint32_t bufferSize)
     {
         const std::uint32_t align = std::reduce(
             container.cbegin(),
@@ -399,7 +401,7 @@ public:
         for (std::uint32_t i = 0; i < container.size(); ++i)
         {
             formatSize =
-                std::snprintf(buffer + completeSize, bufferSize - completeSize, "%*d ", align + 1, container.at(i));
+                std::snprintf(fmtBuffer + completeSize, bufferSize - completeSize, "%*d ", align + 1, container.at(i));
             if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))
             {
                 break;
@@ -408,7 +410,7 @@ public:
 
             if ((((i + 1) % maxColumnOfPrint) == 0) && ((i + 1) != container.size()))
             {
-                formatSize = std::snprintf(buffer + completeSize, bufferSize - completeSize, "\n");
+                formatSize = std::snprintf(fmtBuffer + completeSize, bufferSize - completeSize, "\n");
                 if ((formatSize < 0) || (formatSize >= static_cast<int>(bufferSize - completeSize)))
                 {
                     break;
@@ -417,7 +419,7 @@ public:
             }
         }
 
-        return buffer;
+        return fmtBuffer;
     }
 
 private:

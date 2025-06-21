@@ -192,12 +192,12 @@ namespace divisor
 //! @param interval - time interval
 static void showResult(const DivisorMethod method, const std::set<std::int32_t>& result, const double interval)
 {
-    const std::uint32_t arrayBufferSize = result.size() * maxAlignOfPrint;
-    std::vector<char> arrayBuffer(arrayBufferSize + 1);
+    const std::uint32_t bufferSize = result.size() * maxAlignOfPrint;
+    std::vector<char> fmtBuffer(bufferSize + 1);
     std::printf(
         "\n==> %-9s Method <==\n%s\nrun time: %8.5f ms\n",
         makeTitle(method).c_str(),
-        InputBuilder::template spliceAllIntegers<std::int32_t>(result, arrayBuffer.data(), arrayBufferSize + 1),
+        InputBuilder::template spliceAllIntegers<std::int32_t>(result, fmtBuffer.data(), bufferSize + 1),
         interval);
 }
 
@@ -419,12 +419,12 @@ namespace prime
 //! @param interval - time interval
 static void showResult(const PrimeMethod method, const std::vector<std::uint32_t>& result, const double interval)
 {
-    const std::uint32_t arrayBufferSize = result.size() * maxAlignOfPrint;
-    std::vector<char> arrayBuffer(arrayBufferSize + 1);
+    const std::uint32_t bufferSize = result.size() * maxAlignOfPrint;
+    std::vector<char> fmtBuffer(bufferSize + 1);
     std::printf(
         "\n==> %-9s Method <==\n%s\nrun time: %8.5f ms\n",
         makeTitle(method).c_str(),
-        InputBuilder::template spliceAllIntegers<std::uint32_t>(result, arrayBuffer.data(), arrayBufferSize + 1),
+        InputBuilder::template spliceAllIntegers<std::uint32_t>(result, fmtBuffer.data(), bufferSize + 1),
         interval);
 }
 
