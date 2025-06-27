@@ -42,6 +42,7 @@ void Thread::workLoop()
             taskQueue.pop();
             if (taskQueue.empty())
             {
+                lock.unlock();
                 producer.notify_one();
             }
         }
