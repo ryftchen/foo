@@ -63,14 +63,13 @@ decltype(auto) Thread::enqueue(const std::string_view name, Func&& func, Args&&.
         std::bind(std::forward<Func>(func), std::forward<Args>(args)...));
     auto future = task.get_future();
 
-    if (const std::unique_lock<std::mutex> lock(mtx); true)
+    std::unique_lock<std::mutex> lock(mtx);
+    if (releaseReady.load())
     {
-        if (releaseReady.load())
-        {
-            throw std::logic_error{"Coming to destructure."};
-        }
-        taskQueue.emplace(std::make_pair(name, std::move(task)));
+        throw std::logic_error{"The thread resource is coming to be released."};
     }
+    taskQueue.emplace(std::make_pair(name, std::move(task)));
+    lock.unlock();
     cond.notify_one();
 
     return future;
