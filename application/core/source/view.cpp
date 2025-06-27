@@ -966,10 +966,10 @@ void View::createViewServer()
 void View::destroyViewServer()
 {
     tcpServer->toClose();
-    tcpServer->waitIfAlive();
+    tcpServer->toJoin();
     tcpServer.reset();
     udpServer->toClose();
-    udpServer->waitIfAlive();
+    udpServer->toJoin();
     udpServer.reset();
 }
 
@@ -1004,7 +1004,7 @@ void View::doRollback()
         try
         {
             tcpServer->toClose();
-            tcpServer->waitIfAlive();
+            tcpServer->toJoin();
         }
         catch (...) // NOLINT(bugprone-empty-catch)
         {
@@ -1016,7 +1016,7 @@ void View::doRollback()
         try
         {
             udpServer->toClose();
-            udpServer->waitIfAlive();
+            udpServer->toJoin();
         }
         catch (...) // NOLINT(bugprone-empty-catch)
         {
