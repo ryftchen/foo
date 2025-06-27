@@ -6,7 +6,7 @@
 
 #include "time.hpp"
 
-#include <thread>
+#include <chrono>
 
 namespace utility::time
 {
@@ -18,67 +18,82 @@ const char* version() noexcept
     return ver;
 }
 
-Time::Time()
+Timer::~Timer()
+{
+    stop();
+}
+
+void Timer::start(const std::chrono::milliseconds& interval, const bool isPeriodic)
+{
+    if (isRunning())
+    {
+        return;
+    }
+
+    worker = std::jthread(
+        [this, interval, isPeriodic](const std::stop_token& token)
+        {
+            std::unique_lock<std::recursive_mutex> lock(mtx);
+            if (const auto waitTimeout = [this, interval, &token](std::unique_lock<std::recursive_mutex>& lock)
+                { return !cond.wait_for(lock, interval, [&token]() { return token.stop_requested(); }); };
+                !isPeriodic)
+            {
+                if (waitTimeout(lock))
+                {
+                    callback();
+                }
+            }
+            else
+            {
+                while (waitTimeout(lock))
+                {
+                    callback();
+                }
+            }
+        });
+}
+
+void Timer::stop()
+{
+    if (!isRunning())
+    {
+        return;
+    }
+
+    worker.request_stop();
+    cond.notify_all();
+    if (worker.joinable())
+    {
+        worker.join();
+    }
+}
+
+bool Timer::isRunning() const
+{
+    return worker.joinable();
+}
+
+Stopwatch::Stopwatch()
 {
     reset();
 }
 
-void Time::reset()
+void Stopwatch::reset()
 {
     beginTime = std::chrono::high_resolution_clock::now();
 }
 
-//! @brief Create a one-shot timer with blocking.
-//! @param termination - termination condition
-//! @param timeout - timeout period (ms)
-//! @return 0 if the termination condition is met, otherwise -1 on timeout
-int blockingTimer(const std::function<bool()>& termination, const int timeout)
+//! @brief Perform a generic sleep.
+//! @param duration - time duration
+void genericSleep(const std::chrono::milliseconds& duration)
 {
-    for (const Time timer{}; (timeout < 0) || (timer.elapsedTime() <= timeout);)
-    {
-        if (termination())
-        {
-            return 0;
-        }
-        std::this_thread::yield();
-    }
-
-    return -1;
+    std::this_thread::sleep_for(duration);
 }
 
-//! @brief Perform millisecond-level sleep.
-//! @param duration - sleep duration
-void millisecondLevelSleep(const std::size_t duration)
+//! @brief Get the current standard time (ISO 8601), like "1970-01-01T00:00:00.000000Z".
+//! @return current standard time
+std::string currentStandardTime()
 {
-    std::this_thread::sleep_for(std::chrono::operator""ms(duration));
-}
-
-//! @brief Get the current system time, like "1970-01-01 00:00:00.000000 UTC".
-//! @return current system time
-std::string currentSystemTime()
-{
-    constexpr std::uint16_t dateLen = 32, sinceWhen = 1900;
-    char date[dateLen] = {'\0'};
-    const auto now = std::chrono::system_clock::now();
-    const auto microsec =
-        (std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()) % 1000000).count();
-    const std::time_t tt = std::chrono::system_clock::to_time_t(now);
-    std::tm tm{};
-
-    ::localtime_r(&tt, &tm);
-    std::snprintf(
-        date,
-        dateLen,
-        "%04u-%02u-%02u %02u:%02u:%02u.%06lu %.3s",
-        tm.tm_year + sinceWhen,
-        tm.tm_mon + 1,
-        tm.tm_mday,
-        tm.tm_hour,
-        tm.tm_min,
-        tm.tm_sec,
-        microsec,
-        tm.tm_zone);
-
-    return std::string{date};
+    return std::format("{:%FT%TZ}", std::chrono::system_clock::now());
 }
 } // namespace utility::time

@@ -287,15 +287,15 @@ retry:
 void View::Access::startup() const
 try
 {
-    utility::time::blockingTimer(
-        [this]()
+    do
+    {
+        if (inst.isInServingState(State::hold))
         {
-            if (inst.isInServingState(State::hold))
-            {
-                throw std::runtime_error{"The " + std::string{name} + " did not initialize successfully ..."};
-            }
-            return inst.isInServingState(State::idle);
-        });
+            throw std::runtime_error{"The " + std::string{name} + " did not initialize successfully ..."};
+        }
+        std::this_thread::yield();
+    }
+    while (!inst.isInServingState(State::idle));
 
     if (std::unique_lock<std::mutex> daemonLock(inst.daemonMtx); true)
     {
@@ -304,15 +304,15 @@ try
         inst.daemonCond.notify_one();
     }
 
-    utility::time::blockingTimer(
-        [this]()
+    do
+    {
+        if (inst.isInServingState(State::hold))
         {
-            if (inst.isInServingState(State::hold))
-            {
-                throw std::runtime_error{"The " + std::string{name} + " did not start successfully ..."};
-            }
-            return inst.isInServingState(State::work);
-        });
+            throw std::runtime_error{"The " + std::string{name} + " did not start successfully ..."};
+        }
+        std::this_thread::yield();
+    }
+    while (!inst.isInServingState(State::work));
 }
 catch (const std::exception& err)
 {
@@ -329,15 +329,15 @@ try
         inst.daemonCond.notify_one();
     }
 
-    utility::time::blockingTimer(
-        [this]()
+    do
+    {
+        if (inst.isInServingState(State::hold))
         {
-            if (inst.isInServingState(State::hold))
-            {
-                throw std::runtime_error{"The " + std::string{name} + " did not stop successfully ..."};
-            }
-            return inst.isInServingState(State::done);
-        });
+            throw std::runtime_error{"The " + std::string{name} + " did not stop successfully ..."};
+        }
+        std::this_thread::yield();
+    }
+    while (!inst.isInServingState(State::done));
 }
 catch (const std::exception& err)
 {
@@ -354,12 +354,16 @@ try
         inst.daemonCond.notify_one();
     }
 
-    if (utility::time::blockingTimer([this]() { return !inst.toReset.load(); }, inst.timeoutPeriod))
+    for (const utility::time::Stopwatch timing{}; timing.elapsedTime() <= inst.timeoutPeriod;)
     {
-        throw std::runtime_error{
-            "The " + std::string{name} + " did not reset properly in " + std::to_string(inst.timeoutPeriod)
-            + " ms ..."};
+        if (!inst.toReset.load())
+        {
+            return;
+        }
+        std::this_thread::yield();
     }
+    throw std::runtime_error{
+        "The " + std::string{name} + " did not reset properly in " + std::to_string(inst.timeoutPeriod) + " ms ..."};
 }
 catch (const std::exception& err)
 {
@@ -403,16 +407,22 @@ bool View::Access::onParsing(char* buffer, const int length) const
 
 void View::Access::enableWait() const
 {
-    if (inst.isInServingState(State::work))
+    if (const auto maxWaitTime = std::chrono::milliseconds{inst.timeoutPeriod}; inst.isInServingState(State::work))
     {
         std::unique_lock<std::mutex> outputLock(inst.outputMtx);
+        inst.outputCompleted.store(false);
+
+        utility::time::Timer expiryTimer([]() { Access().disableWait(); });
+        expiryTimer.start(maxWaitTime);
+
         inst.outputCond.wait(outputLock, [this]() { return inst.outputCompleted.load(); });
         inst.outputCompleted.store(false);
+
+        expiryTimer.stop();
     }
     else
     {
-        const std::uint32_t maxWaitTime = inst.timeoutPeriod;
-        utility::time::millisecondLevelSleep(maxWaitTime);
+        utility::time::genericSleep(maxWaitTime);
     }
 }
 

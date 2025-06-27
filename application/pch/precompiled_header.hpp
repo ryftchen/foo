@@ -58,7 +58,6 @@
 #include <sstream>
 #include <string>
 #include <syncstream>
-#include <thread>
 #include <vector>
 
 #endif // APPLICATION_PCH_H
