@@ -13,7 +13,6 @@
 #include <latch>
 #include <numeric>
 #include <ranges>
-#include <thread>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // _PRECOMPILED_HEADER
@@ -1005,7 +1004,7 @@ std::string Command::buildExitRequest4Client()
 void Command::interactionLatency()
 {
     constexpr std::uint16_t latency = 10;
-    utility::time::millisecondLevelSleep(latency);
+    utility::time::genericSleep(std::chrono::milliseconds{latency});
 }
 
 void Command::validateDependenciesVersion() const

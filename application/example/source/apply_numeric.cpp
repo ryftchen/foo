@@ -9,6 +9,7 @@
 
 #ifndef _PRECOMPILED_HEADER
 #include <cassert>
+#include <iomanip>
 #include <ranges>
 #include <syncstream>
 #else
@@ -204,9 +205,9 @@ static void showResult(const DivisorMethod method, const std::set<std::int32_t>&
 void DivisorCalculation::euclideanMethod(const std::int32_t a, const std::int32_t b)
 try
 {
-    const utility::time::Time timer{};
+    const utility::time::Stopwatch timing{};
     const auto coll = numeric::divisor::Divisor().euclidean(a, b);
-    showResult(DivisorMethod::euclidean, coll, timer.elapsedTime());
+    showResult(DivisorMethod::euclidean, coll, timing.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -216,9 +217,9 @@ catch (const std::exception& err)
 void DivisorCalculation::steinMethod(const std::int32_t a, const std::int32_t b)
 try
 {
-    const utility::time::Time timer{};
+    const utility::time::Stopwatch timing{};
     const auto coll = numeric::divisor::Divisor().stein(a, b);
-    showResult(DivisorMethod::stein, coll, timer.elapsedTime());
+    showResult(DivisorMethod::stein, coll, timing.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -290,9 +291,9 @@ static void showResult(const IntegralMethod method, const double result, const d
 void IntegralCalculation::trapezoidalMethod(const Expression& expr, const double lower, const double upper)
 try
 {
-    const utility::time::Time timer{};
+    const utility::time::Stopwatch timing{};
     const auto sum = numeric::integral::Trapezoidal(expr)(lower, upper, numeric::integral::epsilon);
-    showResult(IntegralMethod::trapezoidal, sum, timer.elapsedTime());
+    showResult(IntegralMethod::trapezoidal, sum, timing.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -302,9 +303,9 @@ catch (const std::exception& err)
 void IntegralCalculation::adaptiveSimpsonMethod(const Expression& expr, const double lower, const double upper)
 try
 {
-    const utility::time::Time timer{};
+    const utility::time::Stopwatch timing{};
     const auto sum = numeric::integral::Simpson(expr)(lower, upper, numeric::integral::epsilon);
-    showResult(IntegralMethod::simpson, sum, timer.elapsedTime());
+    showResult(IntegralMethod::simpson, sum, timing.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -314,9 +315,9 @@ catch (const std::exception& err)
 void IntegralCalculation::rombergMethod(const Expression& expr, const double lower, const double upper)
 try
 {
-    const utility::time::Time timer{};
+    const utility::time::Stopwatch timing{};
     const auto sum = numeric::integral::Romberg(expr)(lower, upper, numeric::integral::epsilon);
-    showResult(IntegralMethod::romberg, sum, timer.elapsedTime());
+    showResult(IntegralMethod::romberg, sum, timing.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -326,9 +327,9 @@ catch (const std::exception& err)
 void IntegralCalculation::gaussLegendreMethod(const Expression& expr, const double lower, const double upper)
 try
 {
-    const utility::time::Time timer{};
+    const utility::time::Stopwatch timing{};
     const auto sum = numeric::integral::Gauss(expr)(lower, upper, numeric::integral::epsilon);
-    showResult(IntegralMethod::gauss, sum, timer.elapsedTime());
+    showResult(IntegralMethod::gauss, sum, timing.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -338,9 +339,9 @@ catch (const std::exception& err)
 void IntegralCalculation::monteCarloMethod(const Expression& expr, const double lower, const double upper)
 try
 {
-    const utility::time::Time timer{};
+    const utility::time::Stopwatch timing{};
     const auto sum = numeric::integral::MonteCarlo(expr)(lower, upper, numeric::integral::epsilon);
-    showResult(IntegralMethod::monteCarlo, sum, timer.elapsedTime());
+    showResult(IntegralMethod::monteCarlo, sum, timing.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -431,9 +432,9 @@ static void showResult(const PrimeMethod method, const std::vector<std::uint32_t
 void PrimeCalculation::eratosthenesMethod(const std::uint32_t max)
 try
 {
-    const utility::time::Time timer{};
+    const utility::time::Stopwatch timing{};
     const auto coll = numeric::prime::Prime().eratosthenes(max);
-    showResult(PrimeMethod::eratosthenes, coll, timer.elapsedTime());
+    showResult(PrimeMethod::eratosthenes, coll, timing.elapsedTime());
 }
 catch (const std::exception& err)
 {
@@ -443,9 +444,9 @@ catch (const std::exception& err)
 void PrimeCalculation::eulerMethod(const std::uint32_t max)
 try
 {
-    const utility::time::Time timer{};
+    const utility::time::Stopwatch timing{};
     const auto coll = numeric::prime::Prime().euler(max);
-    showResult(PrimeMethod::euler, coll, timer.elapsedTime());
+    showResult(PrimeMethod::euler, coll, timing.elapsedTime());
 }
 catch (const std::exception& err)
 {

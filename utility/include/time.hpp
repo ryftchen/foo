@@ -6,8 +6,10 @@
 
 #pragma once
 
-#include <chrono>
+#include <condition_variable>
 #include <functional>
+#include <mutex>
+#include <thread>
 
 //! @brief The utility module.
 namespace utility // NOLINT(modernize-concat-nested-namespaces)
@@ -17,14 +19,45 @@ namespace time
 {
 extern const char* version() noexcept;
 
-//! @brief Timing.
-class Time
+//! @brief Timer.
+class Timer
 {
 public:
-    //! @brief Construct a new Time object.
-    Time();
-    //! @brief Destroy the Time object.
-    virtual ~Time() = default;
+    //! @brief Construct a new Timer object.
+    //! @param callback - timeout callback function
+    explicit Timer(std::function<void()> callback) : callback{std::move(callback)} {}
+    //! @brief Destroy the Timer object.
+    virtual ~Timer();
+
+    //! @brief Start the timer.
+    //! @param interval - time interval
+    //! @param isPeriodic - whether to repeat periodically or not
+    void start(const std::chrono::milliseconds& interval, const bool isPeriodic = false);
+    //! @brief Stop the timer.
+    void stop();
+    //! @brief Check if the timer is running.
+    //! @return be running or not
+    bool isRunning() const;
+
+private:
+    //! @brief The callback function that is executed on the timer trigger.
+    const std::function<void()> callback;
+    //! @brief Mutex for controlling thread.
+    mutable std::recursive_mutex mtx;
+    //! @brief The synchronization condition for queue. Use with mtx.
+    std::condition_variable_any cond;
+    //! @brief Working thread.
+    std::jthread worker;
+};
+
+//! @brief Stopwatch.
+class Stopwatch
+{
+public:
+    //! @brief Construct a new Stopwatch object.
+    Stopwatch();
+    //! @brief Destroy the Stopwatch object.
+    virtual ~Stopwatch() = default;
 
     //! @brief Reset the beginning time.
     void reset();
@@ -41,13 +74,12 @@ private:
 };
 
 template <typename Rep, typename Period>
-Rep Time::elapsedTime() const
+Rep Stopwatch::elapsedTime() const
 {
     return std::chrono::duration<Rep, Period>(std::chrono::high_resolution_clock::now() - beginTime).count();
 }
 
-extern int blockingTimer(const std::function<bool()>& termination, const int timeout = -1);
-extern void millisecondLevelSleep(const std::size_t duration);
-extern std::string currentSystemTime();
+extern void genericSleep(const std::chrono::milliseconds&);
+extern std::string currentStandardTime();
 } // namespace time
 } // namespace utility
