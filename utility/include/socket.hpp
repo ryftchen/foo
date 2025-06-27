@@ -23,13 +23,13 @@ class Socket
 public:
     //! @brief Close the socket.
     void toClose();
-    //! @brief Set the flag to indicate that an asynchronous exit has been requested.
-    void signalExit();
-    //! @brief Check whether an asynchronous exit has been requested.
+    //! @brief Wait for the task to be done and then exit.
+    void toJoin();
+    //! @brief Set the flag to indicate that a stop has been requested.
+    void requestStop();
+    //! @brief Check whether a stop has been requested.
     //! @return has been requested or not
-    bool exitSignaled() const;
-    //! @brief When using asynchronous, wait for the non-detached thread to exit.
-    void waitIfAlive();
+    bool stopRequested() const;
     //! @brief Get the transport ip address.
     //! @return transport ip address
     std::string transportAddress() const;
@@ -51,7 +51,7 @@ public:
     };
 
 private:
-    //! @brief Flag for asynchronous exit.
+    //! @brief Flag for request of stop.
     std::atomic<bool> exitReady{false};
     //! @brief Result of asynchronous operations for the non-detached thread.
     std::future<void> asyncTask;

@@ -694,9 +694,9 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
     {
         try
         {
-            if (!client->exitSignaled() && onParsing4Client(buffer, length))
+            if (!client->stopRequested() && onParsing4Client(buffer, length))
             {
-                client->signalExit();
+                client->requestStop();
             }
         }
         catch (const std::exception& err)
@@ -718,9 +718,9 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
     {
         try
         {
-            if (!client->exitSignaled() && onParsing4Client(buffer, length))
+            if (!client->stopRequested() && onParsing4Client(buffer, length))
             {
-                client->signalExit();
+                client->requestStop();
             }
         }
         catch (const std::exception& err)
@@ -771,7 +771,7 @@ void Command::executeInConsole() const
         }
     }
     udpClient->toSend(buildExitRequest4Client());
-    udpClient->waitIfAlive();
+    udpClient->toJoin();
     interactionLatency();
 }
 
@@ -875,7 +875,7 @@ try
     }
     while (retCode != RetCode::quit);
     tcpClient->toSend(buildExitRequest4Client());
-    tcpClient->waitIfAlive();
+    tcpClient->toJoin();
     interactionLatency();
 
     LOG_DBG << "Exit console mode.";
@@ -946,7 +946,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
             try
             {
                 client->toSend(buildExitRequest4Client());
-                client->waitIfAlive();
+                client->toJoin();
                 interactionLatency();
                 client.reset();
 

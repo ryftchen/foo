@@ -72,34 +72,34 @@ Socket::~Socket()
 
 void Socket::toClose()
 {
-    signalExit();
+    requestStop();
 
     const SockGuard lock(*this);
     ::shutdown(sock, ::SHUT_RDWR);
     ::close(sock);
 }
 
-void Socket::signalExit()
-{
-    exitReady.store(true);
-}
-
-bool Socket::exitSignaled() const
-{
-    return exitReady.load();
-}
-
-void Socket::waitIfAlive()
+void Socket::toJoin()
 {
     if (asyncTask.valid() && (asyncTask.wait_until(std::chrono::system_clock::now()) != std::future_status::ready))
     {
         asyncTask.wait();
     }
 
-    while (!exitSignaled())
+    while (!stopRequested())
     {
         std::this_thread::yield();
     }
+}
+
+void Socket::requestStop()
+{
+    exitReady.store(true);
+}
+
+bool Socket::stopRequested() const
+{
+    return exitReady.load();
 }
 
 std::string Socket::transportAddress() const
@@ -191,7 +191,7 @@ void TCPSocket::toRecv(const std::shared_ptr<TCPSocket> socket) // NOLINT(perfor
     std::vector<::pollfd> pollFDs(1);
     pollFDs.at(0).fd = socket->sock;
     pollFDs.at(0).events = POLLIN;
-    for (constexpr int timeout = 10; !socket->exitSignaled();)
+    for (constexpr int timeout = 10; !socket->stopRequested();)
     {
         const int status = ::poll(pollFDs.data(), pollFDs.size(), timeout);
         if (status == -1)
@@ -305,7 +305,7 @@ void TCPServer::toAccept(const std::shared_ptr<TCPServer> server) // NOLINT(perf
         if (newSock == -1)
         {
             std::for_each(
-                activeSockets.cbegin(), activeSockets.cend(), [](const auto& socket) { socket->signalExit(); });
+                activeSockets.cbegin(), activeSockets.cend(), [](const auto& socket) { socket->requestStop(); });
             if ((errno == EBADF) || (errno == EINVAL))
             {
                 return;
@@ -443,7 +443,7 @@ void UDPSocket::toRecv(const std::shared_ptr<UDPSocket> socket) // NOLINT(perfor
     std::vector<::pollfd> pollFDs(1);
     pollFDs.at(0).fd = socket->sock;
     pollFDs.at(0).events = POLLIN;
-    for (constexpr int timeout = 10; !socket->exitSignaled();)
+    for (constexpr int timeout = 10; !socket->stopRequested();)
     {
         const int status = ::poll(pollFDs.data(), pollFDs.size(), timeout);
         if (status == -1)
@@ -490,7 +490,7 @@ void UDPSocket::toRecvFrom(const std::shared_ptr<UDPSocket> socket) // NOLINT(pe
     std::vector<::pollfd> pollFDs(1);
     pollFDs.at(0).fd = socket->sock;
     pollFDs.at(0).events = POLLIN;
-    for (constexpr int timeout = 10; !socket->exitSignaled();)
+    for (constexpr int timeout = 10; !socket->stopRequested();)
     {
         const int status = ::poll(pollFDs.data(), pollFDs.size(), timeout);
         if (status == -1)
