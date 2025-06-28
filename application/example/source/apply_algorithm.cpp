@@ -442,10 +442,10 @@ void applyingOptimal(const std::vector<std::string>& candidates)
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newElement(bits.count());
-    using optimal::InputBuilder, optimal::input::Rastrigin, optimal::Function;
+    using optimal::InputBuilder, optimal::input::SphericalBessel, optimal::Function;
     static_assert(algorithm::optimal::epsilon >= std::numeric_limits<double>::epsilon());
-    const auto inputData =
-        std::make_shared<InputBuilder>(Rastrigin{}, Rastrigin::range1, Rastrigin::range2, Rastrigin::funcDescr);
+    const auto inputData = std::make_shared<InputBuilder>(
+        SphericalBessel{}, SphericalBessel::range1, SphericalBessel::range2, SphericalBessel::funcDescr);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = utility::common::wrapClosure(
         [allocatedJob, &inputData, &taskNamer](

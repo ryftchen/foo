@@ -54,7 +54,7 @@ public:
     //! @param decay - predefined decay
     //! @param loopTime - predefined loop time
     explicit Gradient(
-        Function func, const double initialLR = 0.01, const double decay = 0.001, const std::uint32_t loopTime = 1000) :
+        Function func, const double initialLR = 0.01, const double decay = 0.1, const std::uint32_t loopTime = 500) :
         func{std::move(func)}, initialLR{initialLR}, decay{decay}, loopTime{loopTime}
     {
     }
@@ -73,9 +73,9 @@ private:
     //! @brief Initial learning rate.
     const double initialLR{0.01};
     //! @brief Decay.
-    const double decay{0.001};
+    const double decay{0.1};
     //! @brief Loop time.
-    const std::uint32_t loopTime{1000};
+    const std::uint32_t loopTime{500};
 
     //! @brief Create climbers.
     //! @param left - left endpoint
@@ -106,7 +106,7 @@ public:
         const double initialStep = 1.0,
         const double expDecay = 0.95,
         const std::uint32_t neighborSize = 100,
-        const std::uint32_t maxIterations = 1000) :
+        const std::uint32_t maxIterations = 500) :
         func{std::move(func)},
         tabuTenure{tabuTenure},
         initialStep{initialStep},
@@ -136,7 +136,7 @@ private:
     //! @brief Neighborhood size.
     const std::uint32_t neighborSize{100};
     //! @brief Maximum number of iterations.
-    const std::uint32_t maxIterations{1000};
+    const std::uint32_t maxIterations{500};
 
     //! @brief Update the neighborhood.
     //! @param neighborhood - neighborhood of solution
@@ -174,7 +174,7 @@ public:
         const double initialT = 100.0,
         const double minimalT = 0.01,
         const double coolingRate = 0.99,
-        const std::uint32_t markovChainLength = 200) :
+        const std::uint32_t markovChainLength = 100) :
         func{std::move(func)},
         initialT{initialT},
         minimalT{minimalT},
@@ -201,7 +201,7 @@ private:
     //! @brief Cooling rate.
     const double coolingRate{0.99};
     //! @brief Length of Markov chain.
-    const std::uint32_t markovChainLength{200};
+    const std::uint32_t markovChainLength{100};
 
     //! @brief Temperature-dependent Cauchy-like distribution.
     //! @param prev - current model
@@ -351,7 +351,7 @@ public:
         const double p0 = 0.2,
         const double initialStep = 1.0,
         const std::uint32_t numOfAnts = 500,
-        const std::uint32_t maxIterations = 500) :
+        const std::uint32_t maxIterations = 100) :
         func{std::move(func)},
         rho{rho},
         p0{p0},
@@ -381,7 +381,7 @@ private:
     //! @brief Number of ants.
     const std::uint32_t numOfAnts{500};
     //! @brief Maximum number of iterations.
-    const std::uint32_t maxIterations{500};
+    const std::uint32_t maxIterations{100};
     //! @brief Random engine.
     std::mt19937_64 engine{std::random_device{}()};
     //! @brief Coefficient of the step length for the local search.
@@ -436,7 +436,7 @@ public:
         const double crossPr = 0.7,
         const double mutatePr = 0.001,
         const std::uint32_t popSize = 500,
-        const std::uint32_t numOfGenerations = 30) :
+        const std::uint32_t numOfGenerations = 10) :
         func{std::move(func)},
         crossPr{crossPr},
         mutatePr{mutatePr},
@@ -463,7 +463,7 @@ private:
     //! @brief Population size.
     const std::uint32_t popSize{500};
     //! @brief Number of generations.
-    const std::uint32_t numOfGenerations{30};
+    const std::uint32_t numOfGenerations{10};
     //! @brief Random engine.
     std::mt19937_64 engine{std::random_device{}()};
     //! @brief The probability of a possible event (from 0 to 1).

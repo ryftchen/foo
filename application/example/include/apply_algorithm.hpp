@@ -281,7 +281,7 @@ public:
     //! @param x - independent variable
     //! @return dependent variable
     virtual double operator()(const double x) const = 0;
-    //! @brief The operator (Function) overloading of Rastrigin class.
+    //! @brief The operator (Function) overloading of FuncBase class.
     //! @return Function object
     virtual explicit operator Function() const
     {
@@ -292,22 +292,21 @@ public:
 //! @brief Set input parameters.
 namespace input
 {
-//! @brief Rastrigin function.
-class Rastrigin : public FuncBase
+//! @brief Spherical Bessel.
+class SphericalBessel : public FuncBase
 {
 public:
-    //! @brief The operator (()) overloading of Rastrigin class.
+    //! @brief The operator (()) overloading of SphericalBessel class.
     //! @param x - independent variable
     //! @return dependent variable
-    double operator()(const double x) const override { return (x * x) - (10.0 * ::gsl_sf_cos_pi(2.0 * x)) + 10.0; }
+    double operator()(const double x) const override { return ::gsl_sf_bessel_j0(x); }
 
     //! @brief Left endpoint.
-    static constexpr double range1{-5.12};
+    static constexpr double range1{0.0};
     //! @brief Right endpoint.
-    static constexpr double range2{5.12};
-    //! @brief One-dimensional Rastrigin.
-    static constexpr std::string_view funcDescr{
-        "f(x)=A*n+Σ(i=1→n)[(Xi)^2-A*cos(2π*Xi)],A=10,x∈[-5.12,5.12] (one-dimensional Rastrigin)"};
+    static constexpr double range2{20.0};
+    //! @brief Spherical Bessel function of the first kind.
+    static constexpr std::string_view funcDescr{"f(x)=j₀(x),x∈[0,20] (Spherical Bessel function of the first kind)"};
 };
 } // namespace input
 
@@ -550,7 +549,7 @@ private:
     requires std::is_integral_v<N>
     static void setOrderedArray(T array[], const std::uint32_t length, const T left, const T right)
     {
-        std::mt19937 engine(std::random_device{}());
+        std::ranlux48 engine(std::random_device{}());
         std::uniform_int_distribution<T> dist(left, right);
         for (std::uint32_t i = 0; i < length; ++i)
         {
@@ -574,7 +573,7 @@ private:
     requires std::is_floating_point_v<N>
     static void setOrderedArray(T array[], const std::uint32_t length, const T left, const T right)
     {
-        std::mt19937 engine(std::random_device{}());
+        std::ranlux48 engine(std::random_device{}());
         std::uniform_real_distribution<T> dist(left, right);
         for (std::uint32_t i = 0; i < length; ++i)
         {
@@ -777,7 +776,7 @@ private:
     requires std::is_integral_v<N>
     static void setRandomArray(T array[], const std::uint32_t length, const T left, const T right)
     {
-        std::mt19937 engine(std::random_device{}());
+        std::ranlux48 engine(std::random_device{}());
         std::uniform_int_distribution<T> dist(left, right);
         for (std::uint32_t i = 0; i < length; ++i)
         {
@@ -800,7 +799,7 @@ private:
     requires std::is_floating_point_v<N>
     static void setRandomArray(T array[], const std::uint32_t length, const T left, const T right)
     {
-        std::mt19937 engine(std::random_device{}());
+        std::ranlux48 engine(std::random_device{}());
         std::uniform_real_distribution<T> dist(left, right);
         for (std::uint32_t i = 0; i < length; ++i)
         {

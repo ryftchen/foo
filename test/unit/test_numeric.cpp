@@ -151,8 +151,9 @@ protected:
     static void SetUpTestSuite()
     {
         TST_NUM_PRINT_TASK_TITLE("INTEGRAL", "BEGIN");
-        using Bessel = integral::input::Bessel;
-        fixture = std::make_shared<integral::InputBuilder>(Bessel{}, Bessel::range1, Bessel::range2, Bessel::exprDescr);
+        using CylindricalBessel = integral::input::CylindricalBessel;
+        fixture = std::make_shared<integral::InputBuilder>(
+            CylindricalBessel{}, CylindricalBessel::range1, CylindricalBessel::range2, CylindricalBessel::exprDescr);
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
@@ -177,8 +178,8 @@ protected:
     static std::shared_ptr<integral::InputBuilder> fixture;
     //! @brief Expected result.
     static constexpr double expRes{1.05838};
-    //! @brief Allowable error.
-    static constexpr double error{1e-1};
+    //! @brief Allowable absolute error.
+    static constexpr double absErr{0.1 * ((expRes < 0.0) ? -expRes : expRes)};
 };
 std::shared_ptr<integral::InputBuilder> IntegralTestBase::fixture = {};
 
@@ -187,8 +188,8 @@ TEST_F(IntegralTestBase, trapezoidalMethod)
 {
     const auto result = (*sut<numeric::integral::Trapezoidal>())(
         fixture->getRanges().first, fixture->getRanges().second, numeric::integral::epsilon);
-    EXPECT_GT(result, expRes - error);
-    EXPECT_LT(result, expRes + error);
+    EXPECT_GT(result, expRes - absErr);
+    EXPECT_LT(result, expRes + absErr);
 }
 
 //! @brief Test for the adaptive Simpson's 1/3 method in the calculation of integral.
@@ -196,8 +197,8 @@ TEST_F(IntegralTestBase, adaptiveSimpsonMethod)
 {
     const auto result = (*sut<numeric::integral::Simpson>())(
         fixture->getRanges().first, fixture->getRanges().second, numeric::integral::epsilon);
-    EXPECT_GT(result, expRes - error);
-    EXPECT_LT(result, expRes + error);
+    EXPECT_GT(result, expRes - absErr);
+    EXPECT_LT(result, expRes + absErr);
 }
 
 //! @brief Test for the Romberg method in the calculation of integral.
@@ -205,8 +206,8 @@ TEST_F(IntegralTestBase, rombergMethod)
 {
     const auto result = (*sut<numeric::integral::Romberg>())(
         fixture->getRanges().first, fixture->getRanges().second, numeric::integral::epsilon);
-    EXPECT_GT(result, expRes - error);
-    EXPECT_LT(result, expRes + error);
+    EXPECT_GT(result, expRes - absErr);
+    EXPECT_LT(result, expRes + absErr);
 }
 
 //! @brief Test for the Gauss-Legendre's 5-points method in the calculation of integral.
@@ -214,8 +215,8 @@ TEST_F(IntegralTestBase, gaussLegendreMethod)
 {
     const auto result = (*sut<numeric::integral::Gauss>())(
         fixture->getRanges().first, fixture->getRanges().second, numeric::integral::epsilon);
-    EXPECT_GT(result, expRes - error);
-    EXPECT_LT(result, expRes + error);
+    EXPECT_GT(result, expRes - absErr);
+    EXPECT_LT(result, expRes + absErr);
 }
 
 //! @brief Test for the Monte-Carlo method in the calculation of integral.
@@ -223,8 +224,8 @@ TEST_F(IntegralTestBase, monteCarloMethod)
 {
     const auto result = (*sut<numeric::integral::MonteCarlo>())(
         fixture->getRanges().first, fixture->getRanges().second, numeric::integral::epsilon);
-    EXPECT_GT(result, expRes - error);
-    EXPECT_LT(result, expRes + error);
+    EXPECT_GT(result, expRes - absErr);
+    EXPECT_LT(result, expRes + absErr);
 }
 
 //! @brief Test base of prime.

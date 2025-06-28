@@ -183,9 +183,9 @@ protected:
     static void SetUpTestSuite()
     {
         TST_ALGO_PRINT_TASK_TITLE("OPTIMAL", "BEGIN");
-        using Rastrigin = optimal::input::Rastrigin;
+        using SphericalBessel = optimal::input::SphericalBessel;
         fixture = std::make_shared<optimal::InputBuilder>(
-            Rastrigin{}, Rastrigin::range1, Rastrigin::range2, Rastrigin::funcDescr);
+            SphericalBessel{}, SphericalBessel::range1, SphericalBessel::range2, SphericalBessel::funcDescr);
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
@@ -209,9 +209,9 @@ protected:
     //! @brief Fixture data.
     static std::shared_ptr<optimal::InputBuilder> fixture;
     //! @brief Expected result.
-    static constexpr double expRes{0.0};
-    //! @brief Allowable error.
-    static constexpr double error{1e-3};
+    static constexpr double expRes{-0.21723};
+    //! @brief Allowable absolute error.
+    static constexpr double absErr{0.1 * ((expRes < 0.0) ? -expRes : expRes)};
 };
 std::shared_ptr<optimal::InputBuilder> OptimalTestBase::fixture = {};
 
@@ -221,8 +221,8 @@ TEST_F(OptimalTestBase, gradientDescentMethod)
     const auto result = (*sut<algorithm::optimal::Gradient>())(
         fixture->getRanges().first, fixture->getRanges().second, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
-    EXPECT_GT(std::get<0>(result.value()), expRes - error);
-    EXPECT_LT(std::get<0>(result.value()), expRes + error);
+    EXPECT_GT(std::get<0>(result.value()), expRes - absErr);
+    EXPECT_LT(std::get<0>(result.value()), expRes + absErr);
 }
 
 //! @brief Test for the tabu method in the solution of optimal.
@@ -231,8 +231,8 @@ TEST_F(OptimalTestBase, tabuMethod)
     const auto result = (*sut<algorithm::optimal::Tabu>())(
         fixture->getRanges().first, fixture->getRanges().second, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
-    EXPECT_GT(std::get<0>(result.value()), expRes - error);
-    EXPECT_LT(std::get<0>(result.value()), expRes + error);
+    EXPECT_GT(std::get<0>(result.value()), expRes - absErr);
+    EXPECT_LT(std::get<0>(result.value()), expRes + absErr);
 }
 
 //! @brief Test for the simulated annealing method in the solution of optimal.
@@ -241,8 +241,8 @@ TEST_F(OptimalTestBase, simulatedAnnealingMethod)
     const auto result = (*sut<algorithm::optimal::Annealing>())(
         fixture->getRanges().first, fixture->getRanges().second, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
-    EXPECT_GT(std::get<0>(result.value()), expRes - error);
-    EXPECT_LT(std::get<0>(result.value()), expRes + error);
+    EXPECT_GT(std::get<0>(result.value()), expRes - absErr);
+    EXPECT_LT(std::get<0>(result.value()), expRes + absErr);
 }
 
 //! @brief Test for the particle swarm method in the solution of optimal.
@@ -251,8 +251,8 @@ TEST_F(OptimalTestBase, particleSwarmMethod)
     const auto result = (*sut<algorithm::optimal::Particle>())(
         fixture->getRanges().first, fixture->getRanges().second, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
-    EXPECT_GT(std::get<0>(result.value()), expRes - error);
-    EXPECT_LT(std::get<0>(result.value()), expRes + error);
+    EXPECT_GT(std::get<0>(result.value()), expRes - absErr);
+    EXPECT_LT(std::get<0>(result.value()), expRes + absErr);
 }
 
 //! @brief Test for the ant colony method in the solution of optimal.
@@ -261,8 +261,8 @@ TEST_F(OptimalTestBase, antColonyMethod)
     const auto result = (*sut<algorithm::optimal::Ant>())(
         fixture->getRanges().first, fixture->getRanges().second, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
-    EXPECT_GT(std::get<0>(result.value()), expRes - error);
-    EXPECT_LT(std::get<0>(result.value()), expRes + error);
+    EXPECT_GT(std::get<0>(result.value()), expRes - absErr);
+    EXPECT_LT(std::get<0>(result.value()), expRes + absErr);
 }
 
 //! @brief Test for the genetic method in the solution of optimal.
@@ -271,8 +271,8 @@ TEST_F(OptimalTestBase, geneticMethod)
     const auto result = (*sut<algorithm::optimal::Genetic>())(
         fixture->getRanges().first, fixture->getRanges().second, algorithm::optimal::epsilon);
     ASSERT_TRUE(result.has_value());
-    EXPECT_GT(std::get<0>(result.value()), expRes - error);
-    EXPECT_LT(std::get<0>(result.value()), expRes + error);
+    EXPECT_GT(std::get<0>(result.value()), expRes - absErr);
+    EXPECT_LT(std::get<0>(result.value()), expRes + absErr);
 }
 
 //! @brief Test base of search.
