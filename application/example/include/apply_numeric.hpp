@@ -217,7 +217,7 @@ public:
     //! @param x - independent variable
     //! @return dependent variable
     virtual double operator()(const double x) const = 0;
-    //! @brief The operator (Expression) overloading of Rastrigin class.
+    //! @brief The operator (Expression) overloading of ExprBase class.
     //! @return Expression object
     virtual explicit operator Expression() const
     {
@@ -228,11 +228,11 @@ public:
 //! @brief Set input parameters.
 namespace input
 {
-//! @brief Bessel expression.
-class Bessel : public ExprBase
+//! @brief Cylindrical Bessel.
+class CylindricalBessel : public ExprBase
 {
 public:
-    //! @brief The operator (()) overloading of Bessel class.
+    //! @brief The operator (()) overloading of CylindricalBessel class.
     //! @param x - independent variable
     //! @return dependent variable
     double operator()(const double x) const override { return ::gsl_sf_bessel_J0(x); }
@@ -241,8 +241,8 @@ public:
     static constexpr double range1{0.0};
     //! @brief Right endpoint.
     static constexpr double range2{20.0};
-    //! @brief Bessel function of the first kind.
-    static constexpr std::string_view exprDescr{"f(x)=J₀(x),x∈[0,20] (Bessel function of the first kind)"};
+    //! @brief Cylindrical Bessel function of the first kind.
+    static constexpr std::string_view exprDescr{"f(x)=J₀(x),x∈[0,20] (Cylindrical Bessel function of the first kind)"};
 };
 } // namespace input
 
