@@ -238,32 +238,32 @@ public:
         for (const auto node : nodes)
         {
             process << node << ", ";
-            root = bsTreeInsert(root, node);
+            root = insertion(root, node);
         }
         process.seekp(process.str().length() - 2);
 
         process << "\npre-order traversal: ";
-        tracker.preorderBSTree(root);
+        tracker.preorderTraversal(root);
         process << "\nin-order traversal: ";
-        tracker.inorderBSTree(root);
+        tracker.inorderTraversal(root);
         process << "\npost-order traversal: ";
-        tracker.postorderBSTree(root);
+        tracker.postorderTraversal(root);
 
         process << "\nminimum: " << getMinimum(root)->key;
         process << "\nmaximum: " << getMaximum(root)->key;
         process << "\ntree details:\n";
-        tracker.printBSTree(root, root->key, 0);
+        tracker.traverse(root, root->key, 0);
 
         constexpr std::int16_t deleteNode = 3;
         process << "delete root node: " << deleteNode;
-        root = bsTreeDelete(root, deleteNode);
+        root = deletion(root, deleteNode);
 
         process << "\nin-order traversal: ";
-        tracker.inorderBSTree(root);
+        tracker.inorderTraversal(root);
         process << "\ntree details:\n";
-        tracker.printBSTree(root, root->key, 0);
+        tracker.traverse(root, root->key, 0);
 
-        destroyBSTree(root);
+        destruction(root);
 
         return std::ostringstream{process.str()};
     }
@@ -282,34 +282,34 @@ public:
         for (const auto node : nodes)
         {
             process << node << ", ";
-            root = avlTreeInsert(root, node);
+            root = insertion(root, node);
         }
         process.seekp(process.str().length() - 2);
 
         process << "\npre-order traversal: ";
-        tracker.preorderAVLTree(root);
+        tracker.preorderTraversal(root);
         process << "\nin-order traversal: ";
-        tracker.inorderAVLTree(root);
+        tracker.inorderTraversal(root);
         process << "\npost-order traversal: ";
-        tracker.postorderAVLTree(root);
+        tracker.postorderTraversal(root);
 
         process << "\nheight: " << getHeight(root);
         process << "\nminimum: " << getMinimum(root)->key;
         process << "\nmaximum: " << getMaximum(root)->key;
         process << "\ntree details:\n";
-        tracker.printAVLTree(root, root->key, 0);
+        tracker.traverse(root, root->key, 0);
 
         constexpr std::int16_t deleteNode = 8;
         process << "delete root node: " << deleteNode;
-        root = avlTreeDelete(root, deleteNode);
+        root = deletion(root, deleteNode);
 
         process << "\nheight: " << getHeight(root);
         process << "\nin-order traversal: ";
-        tracker.inorderAVLTree(root);
+        tracker.inorderTraversal(root);
         process << "\ntree details:\n";
-        tracker.printAVLTree(root, root->key, 0);
+        tracker.traverse(root, root->key, 0);
 
-        destroyAVLTree(root);
+        destruction(root);
 
         return std::ostringstream{process.str()};
     }
@@ -327,39 +327,39 @@ public:
         for (const auto node : nodes)
         {
             process << node << ", ";
-            root = splayTreeInsert(root, node);
+            root = insertion(root, node);
         }
         process.seekp(process.str().length() - 2);
 
         process << "\npre-order traversal: ";
-        tracker.preorderSplayTree(root);
+        tracker.preorderTraversal(root);
         process << "\nin-order traversal: ";
-        tracker.inorderSplayTree(root);
+        tracker.inorderTraversal(root);
         process << "\npost-order traversal: ";
-        tracker.postorderSplayTree(root);
+        tracker.postorderTraversal(root);
 
         process << "\nminimum: " << getMinimum(root)->key;
         process << "\nmaximum: " << getMaximum(root)->key;
         process << "\ntree details:\n";
-        tracker.printSplayTree(root, root->key, 0);
+        tracker.traverse(root, root->key, 0);
 
         constexpr std::int16_t deleteNode = 70;
         process << "delete root node: " << deleteNode;
-        root = splayTreeDelete(root, deleteNode);
+        root = deletion(root, deleteNode);
 
         process << "\nin-order traversal: ";
-        tracker.inorderSplayTree(root);
+        tracker.inorderTraversal(root);
         process << "\ntree details:\n";
-        tracker.printSplayTree(root, root->key, 0);
+        tracker.traverse(root, root->key, 0);
 
         constexpr std::int16_t splayNode = 30;
         process << "splay node as root node: " << splayNode;
-        root = splayTreeSplay(root, splayNode);
+        root = splaying(root, splayNode);
 
         process << "\ntree details:\n";
-        tracker.printSplayTree(root, root->key, 0);
+        tracker.traverse(root, root->key, 0);
 
-        destroySplayTree(root);
+        destruction(root);
 
         return std::ostringstream{process.str()};
     }

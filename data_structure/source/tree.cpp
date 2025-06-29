@@ -103,7 +103,7 @@ Node* getSuccessor(const Node* x)
 //! @param left - left child node of the node to be created
 //! @param right - right child node of the node to be created
 //! @return new node after creating
-Node* createNode(const Type key, Node* const parent, Node* const left, Node* const right)
+static Node* createNode(const Type key, Node* const parent, Node* const left, Node* const right)
 {
     auto* const node = ::new (std::nothrow) Node;
     if (!node)
@@ -123,7 +123,7 @@ Node* createNode(const Type key, Node* const parent, Node* const left, Node* con
 //! @param tree - tree root, the target binary search tree has this node as the root node
 //! @param z - target node
 //! @return root node after inserting
-Node* insertNode(BSTree tree, Node* const z)
+static Node* insertNode(BSTree tree, Node* const z)
 {
     Node *x = tree, *y = nullptr;
     while (x)
@@ -153,7 +153,7 @@ Node* insertNode(BSTree tree, Node* const z)
 //! @param tree - tree root, the target binary search tree has this node as the root node
 //! @param z - target node
 //! @return root node after deleting
-Node* deleteNode(BSTree tree, Node* const z)
+static Node* deleteNode(BSTree tree, Node* const z)
 {
     Node *y = (!z->left || !z->right) ? z : getSuccessor(z), *x = y->left ? y->left : y->right;
     if (x)
@@ -194,21 +194,21 @@ Node* deleteNode(BSTree tree, Node* const z)
 //! @param tree - tree root, the target binary search tree has this node as the root node
 //! @param key - key of the node
 //! @return node where the key is located
-Node* bsTreeSearch(BSTree tree, const Type key)
+Node* search(BSTree tree, const Type key)
 {
     if (!tree || (tree->key == key))
     {
         return tree;
     }
 
-    return bsTreeSearch((key < tree->key) ? tree->left : tree->right, key);
+    return search((key < tree->key) ? tree->left : tree->right, key);
 }
 
 //! @brief Insert target node into the binary search tree. Allow inserting node with the same key.
 //! @param tree - tree root, the target binary search tree has this node as the root node
 //! @param key - key of the target node
 //! @return root node after inserting
-Node* bsTreeInsert(BSTree tree, const Type key)
+Node* insertion(BSTree tree, const Type key)
 {
     Node* const z = createNode(key, nullptr, nullptr, nullptr);
     return z ? insertNode(tree, z) : tree;
@@ -218,9 +218,9 @@ Node* bsTreeInsert(BSTree tree, const Type key)
 //! @param tree - tree root, the target binary search tree has this node as the root node
 //! @param key - key of the target node
 //! @return root node after deleting
-Node* bsTreeDelete(BSTree tree, const Type key)
+Node* deletion(BSTree tree, const Type key)
 {
-    if (Node* const z = bsTreeSearch(tree, key))
+    if (Node* const z = search(tree, key))
     {
         tree = deleteNode(tree, z);
     }
@@ -230,7 +230,7 @@ Node* bsTreeDelete(BSTree tree, const Type key)
 
 //! @brief Destroy the the binary search tree.
 //! @param tree - tree root, the target binary search tree has this node as the root node
-void destroyBSTree(BSTree tree)
+void destruction(BSTree tree)
 {
     if (!tree)
     {
@@ -239,11 +239,11 @@ void destroyBSTree(BSTree tree)
 
     if (tree->left)
     {
-        destroyBSTree(tree->left);
+        destruction(tree->left);
     }
     if (tree->right)
     {
-        destroyBSTree(tree->right);
+        destruction(tree->right);
     }
 
     ::delete tree;
@@ -254,37 +254,37 @@ std::ostringstream& Output::output() noexcept
     return process;
 }
 
-void Output::preorderBSTree(BSTree tree)
+void Output::preorderTraversal(BSTree tree)
 {
     if (tree)
     {
         output() << tree->key << " ... ";
-        preorderBSTree(tree->left);
-        preorderBSTree(tree->right);
+        preorderTraversal(tree->left);
+        preorderTraversal(tree->right);
     }
 }
 
-void Output::inorderBSTree(BSTree tree)
+void Output::inorderTraversal(BSTree tree)
 {
     if (tree)
     {
-        inorderBSTree(tree->left);
+        inorderTraversal(tree->left);
         output() << tree->key << " ... ";
-        inorderBSTree(tree->right);
+        inorderTraversal(tree->right);
     }
 }
 
-void Output::postorderBSTree(BSTree tree)
+void Output::postorderTraversal(BSTree tree)
 {
     if (tree)
     {
-        postorderBSTree(tree->left);
-        postorderBSTree(tree->right);
+        postorderTraversal(tree->left);
+        postorderTraversal(tree->right);
         output() << tree->key << " ... ";
     }
 }
 
-void Output::printBSTree(BSTree tree, const Type key, const int direction)
+void Output::traverse(BSTree tree, const Type key, const int direction)
 {
     if (tree)
     {
@@ -301,8 +301,8 @@ void Output::printBSTree(BSTree tree, const Type key, const int direction)
         }
 
         indent += 2;
-        printBSTree(tree->left, tree->key, -1);
-        printBSTree(tree->right, tree->key, 1);
+        traverse(tree->left, tree->key, -1);
+        traverse(tree->right, tree->key, 1);
         indent = currInd;
     }
 }
@@ -357,7 +357,7 @@ Node* getMaximum(AVLTree tree)
 //! @brief LL rotation. A single left rotation.
 //! @param k2 - root node of the unbalanced AVL tree
 //! @return root node after rotation
-Node* leftLeftRotation(AVLTree k2)
+static Node* leftLeftRotation(AVLTree k2)
 {
     AVLTree k1 = k2->left;
     k2->left = k1->right;
@@ -372,7 +372,7 @@ Node* leftLeftRotation(AVLTree k2)
 //! @brief RR rotation. A single right rotation.
 //! @param k1 - root node of the unbalanced AVL tree
 //! @return root node after rotation
-Node* rightRightRotation(AVLTree k1)
+static Node* rightRightRotation(AVLTree k1)
 {
     AVLTree k2 = k1->right;
     k1->right = k2->left;
@@ -387,7 +387,7 @@ Node* rightRightRotation(AVLTree k1)
 //! @brief LR rotation. A double left rotation.
 //! @param k3 - root node of the unbalanced AVL tree
 //! @return root node after rotation
-Node* leftRightRotation(AVLTree k3)
+static Node* leftRightRotation(AVLTree k3)
 {
     k3->left = rightRightRotation(k3->left);
     return leftLeftRotation(k3);
@@ -396,7 +396,7 @@ Node* leftRightRotation(AVLTree k3)
 //! @brief RL rotation. A double right rotation.
 //! @param k1 - root node of the unbalanced AVL tree
 //! @return root node after rotation
-Node* rightLeftRotation(AVLTree k1)
+static Node* rightLeftRotation(AVLTree k1)
 {
     k1->right = leftLeftRotation(k1->right);
     return rightRightRotation(k1);
@@ -407,7 +407,7 @@ Node* rightLeftRotation(AVLTree k1)
 //! @param left - left child node of the node to be created
 //! @param right - right child node of the node to be created
 //! @return new node after creating
-Node* createNode(const Type key, Node* const left, Node* const right)
+static Node* createNode(const Type key, Node* const left, Node* const right)
 {
     auto* const node = ::new (std::nothrow) Node;
     if (!node)
@@ -427,7 +427,7 @@ Node* createNode(const Type key, Node* const left, Node* const right)
 //! @param tree - tree root, the target AVL tree has this node as the root node
 //! @param z - target node
 //! @return root node after deleting
-Node* deleteNode(AVLTree tree, const Node* const z)
+static Node* deleteNode(AVLTree tree, const Node* const z)
 {
     if (!tree || !z)
     {
@@ -485,21 +485,21 @@ Node* deleteNode(AVLTree tree, const Node* const z)
 //! @param tree - tree root, the target AVL tree has this node as the root node
 //! @param key - key of the node
 //! @return node where the key is located
-Node* avlTreeSearch(AVLTree tree, const Type key)
+Node* search(AVLTree tree, const Type key)
 {
     if (!tree || (tree->key == key))
     {
         return tree;
     }
 
-    return avlTreeSearch((key < tree->key) ? tree->left : tree->right, key);
+    return search((key < tree->key) ? tree->left : tree->right, key);
 }
 
 //! @brief Insert target node into the AVL tree. Not allow inserting node with the same key.
 //! @param tree - tree root, the target AVL tree has this node as the root node
 //! @param key - key of the target node
 //! @return root node after inserting
-Node* avlTreeInsert(AVLTree tree, const Type key)
+Node* insertion(AVLTree tree, const Type key)
 {
     if (!tree)
     {
@@ -511,7 +511,7 @@ Node* avlTreeInsert(AVLTree tree, const Type key)
     }
     else if (key < tree->key)
     {
-        tree->left = avlTreeInsert(tree->left, key);
+        tree->left = insertion(tree->left, key);
         if ((getHeight(tree->left) - getHeight(tree->right)) == 2)
         {
             tree = (key < tree->left->key) ? leftLeftRotation(tree) : leftRightRotation(tree);
@@ -519,7 +519,7 @@ Node* avlTreeInsert(AVLTree tree, const Type key)
     }
     else if (key > tree->key)
     {
-        tree->right = avlTreeInsert(tree->right, key);
+        tree->right = insertion(tree->right, key);
         if ((getHeight(tree->right) - getHeight(tree->left)) == 2)
         {
             tree = (key > tree->right->key) ? rightRightRotation(tree) : rightLeftRotation(tree);
@@ -535,9 +535,9 @@ Node* avlTreeInsert(AVLTree tree, const Type key)
 //! @param tree - tree root, the target AVL tree has this node as the root node
 //! @param key - key of the target node
 //! @return root node after deleting
-Node* avlTreeDelete(AVLTree tree, const Type key)
+Node* deletion(AVLTree tree, const Type key)
 {
-    if (const Node* const z = avlTreeSearch(tree, key))
+    if (const Node* const z = search(tree, key))
     {
         tree = deleteNode(tree, z);
     }
@@ -547,7 +547,7 @@ Node* avlTreeDelete(AVLTree tree, const Type key)
 
 //! @brief Destroy the the AVL tree.
 //! @param tree - tree root, the target AVL tree has this node as the root node
-void destroyAVLTree(AVLTree tree)
+void destruction(AVLTree tree)
 {
     if (!tree)
     {
@@ -556,11 +556,11 @@ void destroyAVLTree(AVLTree tree)
 
     if (tree->left)
     {
-        destroyAVLTree(tree->left);
+        destruction(tree->left);
     }
     if (tree->right)
     {
-        destroyAVLTree(tree->right);
+        destruction(tree->right);
     }
 
     ::delete tree;
@@ -571,37 +571,37 @@ std::ostringstream& Output::output() noexcept
     return process;
 }
 
-void Output::preorderAVLTree(AVLTree tree)
+void Output::preorderTraversal(AVLTree tree)
 {
     if (tree)
     {
         output() << tree->key << " ... ";
-        preorderAVLTree(tree->left);
-        preorderAVLTree(tree->right);
+        preorderTraversal(tree->left);
+        preorderTraversal(tree->right);
     }
 }
 
-void Output::inorderAVLTree(AVLTree tree)
+void Output::inorderTraversal(AVLTree tree)
 {
     if (tree)
     {
-        inorderAVLTree(tree->left);
+        inorderTraversal(tree->left);
         output() << tree->key << " ... ";
-        inorderAVLTree(tree->right);
+        inorderTraversal(tree->right);
     }
 }
 
-void Output::postorderAVLTree(AVLTree tree)
+void Output::postorderTraversal(AVLTree tree)
 {
     if (tree)
     {
-        postorderAVLTree(tree->left);
-        postorderAVLTree(tree->right);
+        postorderTraversal(tree->left);
+        postorderTraversal(tree->right);
         output() << tree->key << " ... ";
     }
 }
 
-void Output::printAVLTree(AVLTree tree, const Type key, const int direction)
+void Output::traverse(AVLTree tree, const Type key, const int direction)
 {
     if (tree)
     {
@@ -618,8 +618,8 @@ void Output::printAVLTree(AVLTree tree, const Type key, const int direction)
         }
 
         indent += 2;
-        printAVLTree(tree->left, tree->key, -1);
-        printAVLTree(tree->right, tree->key, 1);
+        traverse(tree->left, tree->key, -1);
+        traverse(tree->right, tree->key, 1);
         indent = currInd;
     }
 }
@@ -668,7 +668,7 @@ Node* getMaximum(SplayTree tree)
 //! @param left - left child node of the node to be created
 //! @param right - right child node of the node to be created
 //! @return new node after creating
-Node* createNode(const Type key, Node* const left, Node* const right)
+static Node* createNode(const Type key, Node* const left, Node* const right)
 {
     auto* const node = ::new (std::nothrow) Node;
     if (!node)
@@ -687,7 +687,7 @@ Node* createNode(const Type key, Node* const left, Node* const right)
 //! @param tree - tree root, the target splay tree has this node as the root node
 //! @param z - target node
 //! @return root node after inserting
-Node* insertNode(SplayTree tree, Node* const z)
+static Node* insertNode(SplayTree tree, Node* const z)
 {
     Node *x = tree, *y = nullptr;
     while (x)
@@ -728,21 +728,21 @@ Node* insertNode(SplayTree tree, Node* const z)
 //! @param tree - tree root, the target splay tree has this node as the root node
 //! @param key - key of the node
 //! @return node where the key is located
-Node* splayTreeSearch(SplayTree tree, const Type key)
+Node* search(SplayTree tree, const Type key)
 {
     if (!tree || (key == tree->key))
     {
         return tree;
     }
 
-    return splayTreeSearch((key < tree->key) ? tree->left : tree->right, key);
+    return search((key < tree->key) ? tree->left : tree->right, key);
 }
 
 //! @brief Splay target node in the splay tree. Make to be the root node.
 //! @param tree - tree root, the target splay tree has this node as the root node
 //! @param key - key of the target node
 //! @return root node after splaying
-Node* splayTreeSplay(SplayTree tree, const Type key)
+Node* splaying(SplayTree tree, const Type key)
 {
     if (!tree)
     {
@@ -804,7 +804,7 @@ Node* splayTreeSplay(SplayTree tree, const Type key)
 //! @param tree - tree root, the target splay tree has this node as the root node
 //! @param key - key of the target node
 //! @return root node after inserting
-Node* splayTreeInsert(SplayTree tree, const Type key)
+Node* insertion(SplayTree tree, const Type key)
 {
     Node* const z = createNode(key, nullptr, nullptr);
     if (!z)
@@ -813,7 +813,7 @@ Node* splayTreeInsert(SplayTree tree, const Type key)
     }
 
     tree = insertNode(tree, z);
-    tree = splayTreeSplay(tree, key);
+    tree = splaying(tree, key);
 
     return tree;
 }
@@ -822,23 +822,23 @@ Node* splayTreeInsert(SplayTree tree, const Type key)
 //! @param tree - tree root, the target splay tree has this node as the root node
 //! @param key - key of the target node
 //! @return root node after deleting
-Node* splayTreeDelete(SplayTree tree, const Type key)
+Node* deletion(SplayTree tree, const Type key)
 {
     if (!tree)
     {
         return nullptr;
     }
 
-    if (!splayTreeSearch(tree, key))
+    if (!search(tree, key))
     {
         return tree;
     }
 
     Node* x = nullptr;
-    tree = splayTreeSplay(tree, key);
+    tree = splaying(tree, key);
     if (tree->left)
     {
-        x = splayTreeSplay(tree->left, key);
+        x = splaying(tree->left, key);
         x->right = tree->right;
     }
     else
@@ -852,7 +852,7 @@ Node* splayTreeDelete(SplayTree tree, const Type key)
 
 //! @brief Destroy the the splay tree.
 //! @param tree - tree root, the target splay tree has this node as the root node
-void destroySplayTree(SplayTree tree)
+void destruction(SplayTree tree)
 {
     if (!tree)
     {
@@ -861,11 +861,11 @@ void destroySplayTree(SplayTree tree)
 
     if (tree->left)
     {
-        destroySplayTree(tree->left);
+        destruction(tree->left);
     }
     if (tree->right)
     {
-        destroySplayTree(tree->right);
+        destruction(tree->right);
     }
 
     ::delete tree;
@@ -876,37 +876,37 @@ std::ostringstream& Output::output() noexcept
     return process;
 }
 
-void Output::preorderSplayTree(SplayTree tree)
+void Output::preorderTraversal(SplayTree tree)
 {
     if (tree)
     {
         output() << tree->key << " ... ";
-        preorderSplayTree(tree->left);
-        preorderSplayTree(tree->right);
+        preorderTraversal(tree->left);
+        preorderTraversal(tree->right);
     }
 }
 
-void Output::inorderSplayTree(SplayTree tree)
+void Output::inorderTraversal(SplayTree tree)
 {
     if (tree)
     {
-        inorderSplayTree(tree->left);
+        inorderTraversal(tree->left);
         output() << tree->key << " ... ";
-        inorderSplayTree(tree->right);
+        inorderTraversal(tree->right);
     }
 }
 
-void Output::postorderSplayTree(SplayTree tree)
+void Output::postorderTraversal(SplayTree tree)
 {
     if (tree)
     {
-        postorderSplayTree(tree->left);
-        postorderSplayTree(tree->right);
+        postorderTraversal(tree->left);
+        postorderTraversal(tree->right);
         output() << tree->key << " ... ";
     }
 }
 
-void Output::printSplayTree(SplayTree tree, const Type key, const int direction)
+void Output::traverse(SplayTree tree, const Type key, const int direction)
 {
     if (tree)
     {
@@ -923,8 +923,8 @@ void Output::printSplayTree(SplayTree tree, const Type key, const int direction)
         }
 
         indent += 2;
-        printSplayTree(tree->left, tree->key, -1);
-        printSplayTree(tree->right, tree->key, 1);
+        traverse(tree->left, tree->key, -1);
+        traverse(tree->right, tree->key, 1);
         indent = currInd;
     }
 }

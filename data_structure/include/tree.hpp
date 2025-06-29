@@ -47,14 +47,11 @@ extern Node* getMinimum(BSTree tree);
 extern Node* getMaximum(BSTree tree);
 extern Node* getPredecessor(const Node* x);
 extern Node* getSuccessor(const Node* x);
-extern Node* createNode(const Type key, Node* const parent, Node* const left, Node* const right);
-extern Node* insertNode(BSTree tree, Node* const z);
-extern Node* deleteNode(BSTree tree, Node* const z);
 
-extern Node* bsTreeSearch(BSTree tree, const Type key);
-extern Node* bsTreeInsert(BSTree tree, const Type key);
-extern Node* bsTreeDelete(BSTree tree, const Type key);
-extern void destroyBSTree(BSTree tree);
+extern Node* search(BSTree tree, const Type key);
+extern Node* insertion(BSTree tree, const Type key);
+extern Node* deletion(BSTree tree, const Type key);
+extern void destruction(BSTree tree);
 
 //! @brief Output helper for the binary search tree structure.
 class Output
@@ -68,18 +65,18 @@ public:
     std::ostringstream& output() noexcept;
     //! @brief The pre-order traversal of the binary search tree.
     //! @param tree - tree root, the target binary search tree has this node as the root node
-    void preorderBSTree(BSTree tree);
+    void preorderTraversal(BSTree tree);
     //! @brief The in-order traversal of the binary search tree.
     //! @param tree - tree root, the target binary search tree has this node as the root node
-    void inorderBSTree(BSTree tree);
+    void inorderTraversal(BSTree tree);
     //! @brief The post-order traversal of the binary search tree.
     //! @param tree - tree root, the target binary search tree has this node as the root node
-    void postorderBSTree(BSTree tree);
-    //! @brief Print the binary search tree.
+    void postorderTraversal(BSTree tree);
+    //! @brief Traverse the binary search tree.
     //! @param tree - tree root, the target binary search tree has this node as the root node
     //! @param key - key of the node
     //! @param direction - node type, the left is -1, the root is 0, and the right is 1
-    void printBSTree(BSTree tree, const Type key, const int direction);
+    void traverse(BSTree tree, const Type key, const int direction);
 
 private:
     //! @brief Output stream of the binary search tree structure.
@@ -119,17 +116,11 @@ extern "C"
 extern int getHeight(AVLTree tree);
 extern Node* getMinimum(AVLTree tree);
 extern Node* getMaximum(AVLTree tree);
-extern Node* leftLeftRotation(AVLTree k2);
-extern Node* rightRightRotation(AVLTree k1);
-extern Node* leftRightRotation(AVLTree k3);
-extern Node* rightLeftRotation(AVLTree k1);
-extern Node* createNode(const Type key, Node* const left, Node* const right);
-extern Node* deleteNode(AVLTree tree, const Node* const z);
 
-extern Node* avlTreeSearch(AVLTree tree, const Type key);
-extern Node* avlTreeInsert(AVLTree tree, const Type key);
-extern Node* avlTreeDelete(AVLTree tree, const Type key);
-extern void destroyAVLTree(AVLTree tree);
+extern Node* search(AVLTree tree, const Type key);
+extern Node* insertion(AVLTree tree, const Type key);
+extern Node* deletion(AVLTree tree, const Type key);
+extern void destruction(AVLTree tree);
 
 //! @brief Output helper for the AVL tree structure.
 class Output
@@ -143,18 +134,18 @@ public:
     std::ostringstream& output() noexcept;
     //! @brief The pre-order traversal of the AVL tree.
     //! @param tree - tree root, the target AVL tree has this node as the root node
-    void preorderAVLTree(AVLTree tree);
+    void preorderTraversal(AVLTree tree);
     //! @brief The in-order traversal of the AVL tree.
     //! @param tree - tree root, the target AVL tree has this node as the root node
-    void inorderAVLTree(AVLTree tree);
+    void inorderTraversal(AVLTree tree);
     //! @brief The post-order traversal of the AVL tree.
     //! @param tree - tree root, the target AVL tree has this node as the root node
-    void postorderAVLTree(AVLTree tree);
-    //! @brief Print the AVL tree.
+    void postorderTraversal(AVLTree tree);
+    //! @brief Traverse the AVL tree.
     //! @param tree - tree root, the target AVL tree has this node as the root node
     //! @param key - key of the node
     //! @param direction - node type, the left is -1, the root is 0, and the right is 1
-    void printAVLTree(AVLTree tree, const Type key, const int direction);
+    void traverse(AVLTree tree, const Type key, const int direction);
 
 private:
     //! @brief Output stream of the AVL tree structure.
@@ -191,14 +182,12 @@ extern "C"
 
 extern Node* getMinimum(SplayTree tree);
 extern Node* getMaximum(SplayTree tree);
-extern Node* createNode(const Type key, Node* const left, Node* const right);
-extern Node* insertNode(SplayTree tree, Node* const z);
 
-extern Node* splayTreeSearch(SplayTree tree, const Type key);
-extern Node* splayTreeSplay(SplayTree tree, const Type key);
-extern Node* splayTreeInsert(SplayTree tree, const Type key);
-extern Node* splayTreeDelete(SplayTree tree, const Type key);
-extern void destroySplayTree(SplayTree tree);
+extern Node* search(SplayTree tree, const Type key);
+extern Node* splaying(SplayTree tree, const Type key);
+extern Node* insertion(SplayTree tree, const Type key);
+extern Node* deletion(SplayTree tree, const Type key);
+extern void destruction(SplayTree tree);
 
 //! @brief Output helper for the splay tree structure.
 class Output
@@ -212,18 +201,18 @@ public:
     std::ostringstream& output() noexcept;
     //! @brief The pre-order traversal of the splay tree.
     //! @param tree - tree root, the target splay tree has this node as the root node
-    void preorderSplayTree(SplayTree tree);
+    void preorderTraversal(SplayTree tree);
     //! @brief The in-order traversal of the splay tree.
     //! @param tree - tree root, the target splay tree has this node as the root node
-    void inorderSplayTree(SplayTree tree);
+    void inorderTraversal(SplayTree tree);
     //! @brief The post-order traversal of the splay tree.
     //! @param tree - tree root, the target splay tree has this node as the root node
-    void postorderSplayTree(SplayTree tree);
-    //! @brief Print the splay tree.
+    void postorderTraversal(SplayTree tree);
+    //! @brief Traverse the splay tree.
     //! @param tree - tree root, the target splay tree has this node as the root node
     //! @param key - key of the node
     //! @param direction - node type, the left is -1, the root is 0, and the right is 1
-    void printSplayTree(SplayTree tree, const Type key, const int direction);
+    void traverse(SplayTree tree, const Type key, const int direction);
 
 private:
     //! @brief Output stream of the splay tree structure.
