@@ -83,13 +83,6 @@ void Stopwatch::reset()
     beginTime = std::chrono::high_resolution_clock::now();
 }
 
-//! @brief Perform a generic sleep.
-//! @param duration - time duration
-void genericSleep(const std::chrono::milliseconds& duration)
-{
-    std::this_thread::sleep_for(duration);
-}
-
 //! @brief Get the current standard time (ISO 8601), like "1970-01-01T00:00:00.000000Z".
 //! @return current standard time
 std::string currentStandardTime()

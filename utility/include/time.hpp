@@ -79,7 +79,6 @@ Rep Stopwatch::elapsedTime() const
     return std::chrono::duration<Rep, Period>(std::chrono::high_resolution_clock::now() - beginTime).count();
 }
 
-extern void genericSleep(const std::chrono::milliseconds&);
 extern std::string currentStandardTime();
 } // namespace time
 } // namespace utility
