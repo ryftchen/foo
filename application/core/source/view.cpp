@@ -422,7 +422,7 @@ void View::Access::enableWait() const
     }
     else
     {
-        utility::time::genericSleep(maxWaitTime);
+        std::this_thread::sleep_for(maxWaitTime);
     }
 }
 
