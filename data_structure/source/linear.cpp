@@ -81,7 +81,7 @@ static Node* getNode(DLL head, const int index)
 //! @brief Create a doubly linked list.
 //! @param dll - doubly linked list
 //! @return 0 if successful, otherwise -1
-int createDll(DLL* const dll)
+int create(DLL* const dll)
 {
     return ((*dll = createNode(nullptr)) != nullptr) ? 0 : -1;
 }
@@ -89,7 +89,7 @@ int createDll(DLL* const dll)
 //! @brief Destroy a doubly linked list.
 //! @param dll - doubly linked list
 //! @return 0 if successful, otherwise -1
-int destroyDll(DLL* const dll)
+int destroy(DLL* const dll)
 {
     if (!*dll)
     {
@@ -113,7 +113,7 @@ int destroyDll(DLL* const dll)
 //! @brief Get the size of the doubly linked list.
 //! @param head - head of the list
 //! @return size of the doubly linked list
-int dllSize(DLL head)
+int size(DLL head)
 {
     int counter = 0;
     const Node* node = head->next;
@@ -129,16 +129,16 @@ int dllSize(DLL head)
 //! @brief Check whether any nodes do not exist in the doubly linked list.
 //! @param head - head of the list
 //! @return any nodes do not exist or exist
-bool dllIsEmpty(DLL head)
+bool empty(DLL head)
 {
-    return dllSize(head) == 0;
+    return size(head) == 0;
 }
 
 //! @brief Get the node of the doubly linked list by index.
 //! @param head - head of the list
 //! @param index - node index
 //! @return node of the doubly linked list
-void* dllGet(DLL head, const int index)
+void* get(DLL head, const int index)
 {
     const Node* const node = getNode(head, index);
     return node ? node->p : nullptr;
@@ -147,17 +147,17 @@ void* dllGet(DLL head, const int index)
 //! @brief Get the first node of the doubly linked list.
 //! @param head - head of the list
 //! @return first node of the doubly linked list
-void* dllGetFirst(DLL head)
+void* getFirst(DLL head)
 {
-    return dllGet(head, 0);
+    return get(head, 0);
 }
 
 //! @brief Get the last node of the doubly linked list.
 //! @param head - head of the list
 //! @return last node of the doubly linked list
-void* dllGetLast(DLL head)
+void* getLast(DLL head)
 {
-    return dllGet(head, dllSize(head) - 1);
+    return get(head, size(head) - 1);
 }
 
 //! @brief Insert the target node into the doubly linked list by index.
@@ -165,11 +165,11 @@ void* dllGetLast(DLL head)
 //! @param index - node index
 //! @param val - value of the target node
 //! @return 0 if successful, otherwise -1
-int dllInsert(DLL head, const int index, void* const val)
+int insert(DLL head, const int index, void* const val)
 {
     if (index == 0)
     {
-        return dllInsertFirst(head, val);
+        return insertFirst(head, val);
     }
 
     Node* const node = getNode(head, index);
@@ -196,7 +196,7 @@ int dllInsert(DLL head, const int index, void* const val)
 //! @param head - head of the list
 //! @param val - value of the target node
 //! @return 0 if successful, otherwise -1
-int dllInsertFirst(DLL head, void* const val)
+int insertFirst(DLL head, void* const val)
 {
     Node* const node = createNode(val);
     if (!node)
@@ -216,7 +216,7 @@ int dllInsertFirst(DLL head, void* const val)
 //! @param head - head of the list
 //! @param val - value of the target node
 //! @return 0 if successful, otherwise -1
-int dllInsertLast(DLL head, void* const val)
+int insertLast(DLL head, void* const val)
 {
     Node* const node = createNode(val);
     if (!node)
@@ -232,11 +232,11 @@ int dllInsertLast(DLL head, void* const val)
     return 0;
 }
 
-//! @brief Delete the target node from the doubly linked list by index.
+//! @brief Remove the target node from the doubly linked list by index.
 //! @param head - head of the list
 //! @param index - node index
 //! @return 0 if successful, otherwise -1
-int dllDelete(DLL head, const int index)
+int remove(DLL head, const int index)
 {
     const Node* const node = getNode(head, index);
     if (!node)
@@ -251,144 +251,152 @@ int dllDelete(DLL head, const int index)
     return 0;
 }
 
-//! @brief Delete the first node from the doubly linked list.
+//! @brief Remove the first node from the doubly linked list.
 //! @param head - head of the list
 //! @return 0 if successful, otherwise -1
-int dllDeleteFirst(DLL head)
+int removeFirst(DLL head)
 {
-    return dllDelete(head, 0);
+    return remove(head, 0);
 }
 
-//! @brief Delete the last node from the doubly linked list.
+//! @brief Remove the last node from the doubly linked list.
 //! @param head - head of the list
 //! @return 0 if successful, otherwise -1
-int dllDeleteLast(DLL head)
+int removeLast(DLL head)
 {
-    return dllDelete(head, dllSize(head) - 1);
+    return remove(head, size(head) - 1);
 }
 } // namespace doubly_linked_list
 
 namespace stack
 {
+//! @brief Alias for the namespace of the doubly linked list.
+namespace dll = doubly_linked_list;
+
 //! @brief Create a stack.
 //! @param stack - stack
 //! @return 0 if successful, otherwise -1
-int createStack(Stack* const stack)
+int create(Stack* const stack)
 {
-    return createDll(stack);
+    return dll::create(stack);
 }
 
 //! @brief Destroy a stack.
 //! @param stack - stack
 //! @return 0 if successful, otherwise -1
-int destroyStack(Stack* const stack)
+int destroy(Stack* const stack)
 {
-    return destroyDll(stack);
+    return dll::destroy(stack);
 }
 
 //! @brief Push operation of the stack.
 //! @param head - head of the stack
 //! @param val - value of the target node
 //! @return 0 if successful, otherwise -1
-int stackPush(Stack head, void* const val)
+int push(Stack head, void* const val)
 {
-    return dllInsertFirst(head, val);
+    return dll::insertFirst(head, val);
 }
 
 //! @brief Top operation of the stack.
 //! @param head - head of the stack
 //! @return target node
-void* stackTop(Stack head)
+void* top(Stack head)
 {
-    return dllGetFirst(head);
+    return dll::getFirst(head);
 }
 
 //! @brief Pop operation of the stack.
 //! @param head - head of the stack
 //! @return target node
-void* stackPop(Stack head)
+void* pop(Stack head)
 {
-    void* const p = stackTop(head);
-    dllDeleteFirst(head);
+    void* const p = top(head);
+    dll::removeFirst(head);
+
     return p;
 }
 
 //! @brief Get the size of the stack.
 //! @param head - head of the stack
 //! @return size of the stack
-int stackSize(Stack head)
+int size(Stack head)
 {
-    return dllSize(head);
+    return dll::size(head);
 }
 
 //! @brief Check whether any nodes do not exist in the stack.
 //! @param head - head of the stack
 //! @return any nodes do not exist or exist
-bool stackIsEmpty(Stack head)
+bool empty(Stack head)
 {
-    return dllIsEmpty(head);
+    return dll::empty(head);
 }
 } // namespace stack
 
 namespace queue
 {
+//! @brief Alias for the namespace of the doubly linked list.
+namespace dll = doubly_linked_list;
+
 //! @brief Create a queue.
 //! @param queue - queue
 //! @return 0 if successful, otherwise -1
-int createQueue(Queue* const queue)
+int create(Queue* const queue)
 {
-    return createDll(queue);
+    return dll::create(queue);
 }
 
 //! @brief Destroy a queue.
 //! @param queue - queue
 //! @return 0 if successful, otherwise -1
-int destroyQueue(Queue* const queue)
+int destroy(Queue* const queue)
 {
-    return destroyDll(queue);
+    return dll::destroy(queue);
 }
 
 //! @brief Push operation of the queue.
 //! @param head - head of the queue
 //! @param val - value of the target node
 //! @return 0 if successful, otherwise -1
-int queuePush(Queue head, void* const val)
+int push(Queue head, void* const val)
 {
-    return dllInsertLast(head, val);
+    return dll::insertLast(head, val);
 }
 
 //! @brief Front operation of the queue.
 //! @param head - head of the queue
 //! @return target node
-void* queueFront(Queue head)
+void* front(Queue head)
 {
-    return dllGetFirst(head);
+    return dll::getFirst(head);
 }
 
 //! @brief Pop operation of the queue.
 //! @param head - head of the queue
 //! @return target node
-void* queuePop(Queue head)
+void* pop(Queue head)
 {
-    void* const p = dllGetFirst(head);
-    dllDeleteFirst(head);
+    void* const p = dll::getFirst(head);
+    dll::removeFirst(head);
+
     return p;
 }
 
 //! @brief Get the size of the queue.
 //! @param head - head of the queue
 //! @return size of the queue
-int queueSize(Queue head)
+int size(Queue head)
 {
-    return dllSize(head);
+    return dll::size(head);
 }
 
 //! @brief Check whether any nodes do not exist in the queue.
 //! @param head - head of the queue
 //! @return any nodes do not exist or exist
-bool queueIsEmpty(Queue head)
+bool empty(Queue head)
 {
-    return dllIsEmpty(head);
+    return dll::empty(head);
 }
 } // namespace queue
 

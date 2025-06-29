@@ -16,15 +16,12 @@ namespace linear
 {
 extern const char* version() noexcept;
 
-//! @brief The doubly linked list structure.
-namespace doubly_linked_list
-{
 #ifdef __cplusplus
 extern "C"
 {
 #endif // __cplusplus
 #pragma pack(push, 8)
-    //! @brief The node of the doubly linked list.
+    //! @brief The node of the linear data structure.
     typedef struct TagNode
     {
         //! @brief Pointer to the previous node.
@@ -33,55 +30,61 @@ extern "C"
         struct TagNode* next;
         //! @brief Pointer to node content.
         void* p;
-    } Node, *DLL;
+    } Node, *Linear;
 #pragma pack(pop)
 #ifdef __cplusplus
 }
 #endif // __cplusplus
 
-extern int createDll(DLL* const dll);
-extern int destroyDll(DLL* const dll);
-extern int dllSize(DLL head);
-extern bool dllIsEmpty(DLL head);
-extern void* dllGet(DLL head, const int index);
-extern void* dllGetFirst(DLL head);
-extern void* dllGetLast(DLL head);
-extern int dllInsert(DLL head, const int index, void* const val);
-extern int dllInsertFirst(DLL head, void* const val);
-extern int dllInsertLast(DLL head, void* const val);
-extern int dllDelete(DLL head, const int index);
-extern int dllDeleteFirst(DLL head);
-extern int dllDeleteLast(DLL head);
+//! @brief The doubly linked list structure.
+namespace doubly_linked_list
+{
+//! @brief Alias for the linear data structure. Used for the doubly linked list.
+using DLL = Linear;
+
+extern int create(DLL* const dll);
+extern int destroy(DLL* const dll);
+extern int size(DLL head);
+extern bool empty(DLL head);
+extern void* get(DLL head, const int index);
+extern void* getFirst(DLL head);
+extern void* getLast(DLL head);
+extern int insert(DLL head, const int index, void* const val);
+extern int insertFirst(DLL head, void* const val);
+extern int insertLast(DLL head, void* const val);
+extern int remove(DLL head, const int index);
+extern int removeFirst(DLL head);
+extern int removeLast(DLL head);
 } // namespace doubly_linked_list
 
 //! @brief The stack structure (FILO/LIFO).
 namespace stack
 {
-//! @brief Alias for the doubly linked list. Used for the stack.
-using Stack = doubly_linked_list::DLL;
+//! @brief Alias for the linked list. Used for the stack.
+using Stack = Linear;
 
-extern int createStack(Stack* const stack);
-extern int destroyStack(Stack* const stack);
-extern int stackPush(Stack head, void* const val);
-extern void* stackTop(Stack head);
-extern void* stackPop(Stack head);
-extern int stackSize(Stack head);
-extern bool stackIsEmpty(Stack head);
+extern int create(Stack* const stack);
+extern int destroy(Stack* const stack);
+extern int push(Stack head, void* const val);
+extern void* top(Stack head);
+extern void* pop(Stack head);
+extern int size(Stack head);
+extern bool empty(Stack head);
 } // namespace stack
 
 //! @brief The queue structure (FIFO/LILO).
 namespace queue
 {
-//! @brief Alias for the doubly linked list. Used for the queue.
-using Queue = doubly_linked_list::DLL;
+//! @brief Alias for the linked list. Used for the queue.
+using Queue = Linear;
 
-extern int createQueue(Queue* const queue);
-extern int destroyQueue(Queue* const queue);
-extern int queuePush(Queue head, void* const val);
-extern void* queueFront(Queue head);
-extern void* queuePop(Queue head);
-extern int queueSize(Queue head);
-extern bool queueIsEmpty(Queue head);
+extern int create(Queue* const queue);
+extern int destroy(Queue* const queue);
+extern int push(Queue head, void* const val);
+extern void* front(Queue head);
+extern void* pop(Queue head);
+extern int size(Queue head);
+extern bool empty(Queue head);
 } // namespace queue
 
 //! @brief Output helper for the data structure.
