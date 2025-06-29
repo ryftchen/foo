@@ -63,48 +63,48 @@ public:
         date_structure::linear::Output tracker{};
         auto& process = tracker.output();
         process << std::boolalpha;
+
+        constexpr std::string_view separator = " <-> ";
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
         const std::span<Meta> nodes(meta);
-        constexpr std::string_view separator = " <-> ";
-
         const Meta* val = nullptr;
         DLL dll = nullptr;
-        createDll(&dll);
-        dllInsert(dll, 0, nodes.data());
+        create(&dll);
+        insert(dll, 0, nodes.data());
         process << "insert (0): " << nodes[0] << '\n';
-        dllInsert(dll, 0, &nodes[1]);
+        insert(dll, 0, &nodes[1]);
         process << "insert (0): " << nodes[1] << '\n';
-        dllInsert(dll, 1, &nodes[2]);
+        insert(dll, 1, &nodes[2]);
         process << "insert (1): " << nodes[2] << '\n';
-        dllDelete(dll, 2);
-        process << "delete (2)\n";
+        remove(dll, 2);
+        process << "remove (2)\n";
 
-        dllInsertFirst(dll, &nodes.front());
+        insertFirst(dll, &nodes.front());
         process << "insert first: " << nodes.front() << '\n';
-        dllInsertLast(dll, &nodes.back());
+        insertLast(dll, &nodes.back());
         process << "insert last: " << nodes.back() << '\n';
-        val = static_cast<Meta*>(dllGetFirst(dll));
+        val = static_cast<Meta*>(getFirst(dll));
         process << "get first: " << *val << '\n';
-        val = static_cast<Meta*>(dllGetLast(dll));
+        val = static_cast<Meta*>(getLast(dll));
         process << "get last: " << *val << '\n';
-        dllDeleteFirst(dll);
-        process << "delete first\n";
-        dllDeleteLast(dll);
-        process << "delete last\n";
-        dllInsert(dll, 1, nodes.data());
+        removeFirst(dll);
+        process << "remove first\n";
+        removeLast(dll);
+        process << "remove last\n";
+        insert(dll, 1, nodes.data());
         process << "insert (1): " << nodes[0] << '\n';
 
-        process << "whether it is empty: " << dllIsEmpty(dll) << '\n';
-        process << "size: " << dllSize(dll) << '\n';
+        process << "whether it is empty: " << empty(dll) << '\n';
+        process << "size: " << size(dll) << '\n';
         process << "linear details: HEAD -> ";
-        for (int i = 0; i < dllSize(dll); ++i)
+        for (int i = 0; i < size(dll); ++i)
         {
-            val = static_cast<Meta*>(dllGet(dll, i));
+            val = static_cast<Meta*>(get(dll, i));
             process << *val << separator;
         }
         process.seekp(process.str().length() - separator.length());
         process << " -> NULL\n";
-        destroyDll(&dll);
+        destroy(&dll);
 
         return std::ostringstream{process.str()};
     }
@@ -116,36 +116,36 @@ public:
         date_structure::linear::Output tracker{};
         auto& process = tracker.output();
         process << std::boolalpha;
+
+        constexpr std::string_view separator = ", ";
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
         const std::span<Meta> nodes(meta);
-        constexpr std::string_view separator = ", ";
-
         const Meta* val = nullptr;
         Stack stacks = nullptr;
-        for (createStack(&stacks); auto& node : nodes)
+        for (create(&stacks); auto& node : nodes)
         {
-            stackPush(stacks, &node);
+            push(stacks, &node);
             process << "push: " << node << '\n';
         }
 
-        val = static_cast<Meta*>(stackPop(stacks));
+        val = static_cast<Meta*>(pop(stacks));
         process << "pop: " << *val << '\n';
-        val = static_cast<Meta*>(stackTop(stacks));
+        val = static_cast<Meta*>(top(stacks));
         process << "top: " << *val << '\n';
-        stackPush(stacks, &nodes.back());
+        push(stacks, &nodes.back());
         process << "push: " << nodes.back() << '\n';
 
-        process << "whether it is empty: " << stackIsEmpty(stacks) << '\n';
-        process << "size: " << stackSize(stacks) << '\n';
+        process << "whether it is empty: " << empty(stacks) << '\n';
+        process << "size: " << size(stacks) << '\n';
         process << "linear details: TOP [";
-        while (!stackIsEmpty(stacks))
+        while (!empty(stacks))
         {
-            val = static_cast<Meta*>(stackPop(stacks));
+            val = static_cast<Meta*>(pop(stacks));
             process << *val << separator;
         }
         process.seekp(process.str().length() - separator.length());
         process << "] BOTTOM\n";
-        destroyStack(&stacks);
+        destroy(&stacks);
 
         return std::ostringstream{process.str()};
     }
@@ -157,36 +157,36 @@ public:
         date_structure::linear::Output tracker{};
         auto& process = tracker.output();
         process << std::boolalpha;
+
+        constexpr std::string_view separator = ", ";
         Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
         const std::span<Meta> nodes(meta);
-        constexpr std::string_view separator = ", ";
-
         const Meta* val = nullptr;
         Queue queues = nullptr;
-        for (createQueue(&queues); auto& node : nodes)
+        for (create(&queues); auto& node : nodes)
         {
-            queuePush(queues, &node);
+            push(queues, &node);
             process << "push: " << node << '\n';
         }
 
-        val = static_cast<Meta*>(queuePop(queues));
+        val = static_cast<Meta*>(pop(queues));
         process << "pop: " << *val << '\n';
-        val = static_cast<Meta*>(queueFront(queues));
+        val = static_cast<Meta*>(front(queues));
         process << "front: " << *val << '\n';
-        queuePush(queues, &nodes.front());
+        push(queues, &nodes.front());
         process << "push: " << nodes.front() << '\n';
 
-        process << "whether it is empty: " << queueIsEmpty(queues) << '\n';
-        process << "size: " << queueSize(queues) << '\n';
+        process << "whether it is empty: " << empty(queues) << '\n';
+        process << "size: " << size(queues) << '\n';
         process << "linear details: FRONT [";
-        while (!queueIsEmpty(queues))
+        while (!empty(queues))
         {
-            val = static_cast<Meta*>(queuePop(queues));
+            val = static_cast<Meta*>(pop(queues));
             process << *val << separator;
         }
         process.seekp(process.str().length() - separator.length());
         process << "] REAR\n";
-        destroyQueue(&queues);
+        destroy(&queues);
 
         return std::ostringstream{process.str()};
     }
