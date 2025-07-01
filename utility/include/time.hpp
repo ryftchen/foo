@@ -43,7 +43,7 @@ private:
     //! @brief The callback function that is executed on the timer trigger.
     const std::function<void()> callback;
     //! @brief Mutex for controlling thread.
-    mutable std::recursive_mutex mtx;
+    mutable std::mutex mtx;
     //! @brief The synchronization condition for queue. Use with mtx.
     std::condition_variable_any cond;
     //! @brief Working thread.
