@@ -33,8 +33,8 @@ void Timer::start(const std::chrono::milliseconds& interval, const bool isPeriod
     worker = std::jthread(
         [this, interval, isPeriodic](const std::stop_token& token)
         {
-            std::unique_lock<std::recursive_mutex> lock(mtx);
-            if (const auto waitTimeout = [this, interval, &token](std::unique_lock<std::recursive_mutex>& lock)
+            std::unique_lock<std::mutex> lock(mtx);
+            if (const auto waitTimeout = [this, interval, &token](std::unique_lock<std::mutex>& lock)
                 { return !cond.wait_for(lock, interval, [&token]() { return token.stop_requested(); }); };
                 !isPeriodic)
             {
