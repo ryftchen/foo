@@ -297,9 +297,9 @@ public:
     virtual ~Showcase() = default;
 
     // NOLINTBEGIN(google-build-using-namespace)
-    //! @brief Linked list.
+    //! @brief Doubly linked list.
     //! @return procedure output
-    static std::ostringstream linkedList()
+    static std::ostringstream dll()
     {
         using namespace date_structure::linear::doubly_linked_list;
         date_structure::linear::Output tracker{};
@@ -442,8 +442,8 @@ public:
     //! @brief Destroy the LinearStructure object.
     virtual ~LinearStructure() = default;
 
-    //! @brief The linked list instance.
-    static void linkedListInstance();
+    //! @brief The doubly linked list instance.
+    static void dllInstance();
     //! @brief The stack instance.
     static void stackInstance();
     //! @brief The queue instance.

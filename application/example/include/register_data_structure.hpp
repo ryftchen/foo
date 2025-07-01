@@ -51,8 +51,8 @@ struct Bottom<CacheInstance>
 //! @brief Enumerate specific linear instances.
 enum LinearInstance : std::uint8_t
 {
-    //! @brief Linked list.
-    linkedList,
+    //! @brief Doubly linked list.
+    doublyLinkedList,
     //! @brief Stack.
     stack,
     //! @brief Queue.
@@ -267,16 +267,16 @@ struct utility::reflection::TypeInfo<application::reg_ds::LinearInstance>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        REG_DS_REFLECT_SECOND_LEVEL_FIELD(linkedList, lin),
-        REG_DS_REFLECT_SECOND_LEVEL_FIELD(stack     , sta),
-        REG_DS_REFLECT_SECOND_LEVEL_FIELD(queue     , que),
+        REG_DS_REFLECT_SECOND_LEVEL_FIELD(doublyLinkedList, lin),
+        REG_DS_REFLECT_SECOND_LEVEL_FIELD(stack           , sta),
+        REG_DS_REFLECT_SECOND_LEVEL_FIELD(queue           , que),
     };
     // clang-format on
     //! @brief Attribute list.
     static constexpr AttrList attrs{Attr{
         REFLECTION_STR("descr"),
         "linear-related choices\n"
-        "- lin    Linked List\n"
+        "- lin    Doubly Linked List\n"
         "- sta    Stack\n"
         "- que    Queue\n"
         "add the choices listed above"}};
@@ -385,7 +385,7 @@ constexpr std::string_view toString(const CacheInstance instance)
 constexpr std::string_view toString(const LinearInstance instance)
 {
     constexpr std::array<std::string_view, Bottom<LinearInstance>::value> stringify = {
-        MACRO_STRINGIFY(linkedList), MACRO_STRINGIFY(stack), MACRO_STRINGIFY(queue)};
+        MACRO_STRINGIFY(doublyLinkedList), MACRO_STRINGIFY(stack), MACRO_STRINGIFY(queue)};
     return stringify.at(instance);
 }
 

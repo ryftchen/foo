@@ -169,14 +169,14 @@ namespace linear
 //! @param result - linear result
 static void showResult(const LinearInstance instance, const std::string& result)
 {
-    std::printf("\n==> %-10s Instance <==\n%s", makeTitle(instance).c_str(), result.c_str());
+    std::printf("\n==> %-16s Instance <==\n%s", makeTitle(instance).c_str(), result.c_str());
 }
 
-void LinearStructure::linkedListInstance()
+void LinearStructure::dllInstance()
 try
 {
-    const auto output = Showcase().linkedList();
-    showResult(LinearInstance::linkedList, output.str());
+    const auto output = Showcase().dll();
+    showResult(LinearInstance::doublyLinkedList, output.str());
 }
 catch (const std::exception& err)
 {
@@ -236,8 +236,8 @@ void applyingLinear(const std::vector<std::string>& candidates)
         {
             using linear::LinearStructure;
             static_assert(utility::common::isStatelessClass<LinearStructure>());
-            case abbrValue(LinearInstance::linkedList):
-                addTask(target, &LinearStructure::linkedListInstance);
+            case abbrValue(LinearInstance::doublyLinkedList):
+                addTask(target, &LinearStructure::dllInstance);
                 break;
             case abbrValue(LinearInstance::stack):
                 addTask(target, &LinearStructure::stackInstance);

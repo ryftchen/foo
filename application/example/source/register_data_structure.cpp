@@ -85,8 +85,8 @@ void updateChoice<LinearInstance>(const std::string& target)
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case abbrValue(LinearInstance::linkedList):
-            bits.set(LinearInstance::linkedList);
+        case abbrValue(LinearInstance::doublyLinkedList):
+            bits.set(LinearInstance::doublyLinkedList);
             break;
         case abbrValue(LinearInstance::stack):
             bits.set(LinearInstance::stack);

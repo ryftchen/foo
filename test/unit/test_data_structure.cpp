@@ -209,11 +209,11 @@ protected:
     // clang-format on
 };
 
-//! @brief Test for the linked list instance in the structure of linear.
-TEST_F(LinearTestBase, linkedListInstance)
+//! @brief Test for the doubly linked list instance in the structure of linear.
+TEST_F(LinearTestBase, dllInstance)
 {
     std::ostringstream result{};
-    ASSERT_NO_THROW(result = sut.linkedList());
+    ASSERT_NO_THROW(result = sut.dll());
     ASSERT_EQ(expRes1, result.str());
 }
 
