@@ -135,14 +135,14 @@ public:
         process << "\ninsert range: " << insertedRange;
         process.seekp(process.str().length() - separator.length());
         fifoCache.insertRange(std::move(insertedRange));
-        process << "\nfind range {A, B, C, D}: " << fifoCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
-        process.seekp(process.str().length() - separator.length());
 
         process << "\nwhether it is empty: " << fifoCache.empty() << '\n';
         process << "size: " << fifoCache.size() << '\n';
         process << "capacity: " << fifoCache.capacity() << '\n';
+        process << "cache detail: " << fifoCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
+        process.seekp(process.str().length() - separator.length());
 
-        return process;
+        return std::ostringstream{process.str().substr(0, process.tellp()) + '\n'};
     }
 
     //! @brief Least frequently used.
@@ -154,58 +154,7 @@ public:
         std::ostringstream process{};
         process << std::boolalpha;
 
-        date_structure::cache::LFU<Key, Value> lruCache{3};
-        process << "insert: " << keyValueA << '\n';
-        lruCache.insert('A', "foo");
-        process << "insert: " << keyValueB << '\n';
-        lruCache.insert('B', "bar");
-        process << "insert: " << keyValueC << '\n';
-        lruCache.insert('C', "baz");
-        process << "find A: " << lruCache.find('A').has_value() << '\n';
-        process << "find B: " << lruCache.find('B').has_value() << '\n';
-        process << "find B: " << lruCache.find('B').has_value() << '\n';
-        process << "find C: " << lruCache.find('C').has_value() << '\n';
-        process << "find A: " << lruCache.find('A').has_value() << '\n';
-        process << "erase D: " << lruCache.erase('D') << '\n';
-        process << "insert: " << keyValueD << '\n';
-        lruCache.insert('D', "qux");
-        process << "find range {A, B, C, D}: " << lruCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
-        process.seekp(process.str().length() - separator.length());
-
-        process << "\nerase range {B, C}: " << lruCache.eraseRange(std::vector<Key>{'B', 'C'}) << '\n';
-        auto resolvedRange =
-            KeyOptValueRange{{'A', std::nullopt}, {'B', std::nullopt}, {'C', std::nullopt}, {'D', std::nullopt}};
-        process << "resolve range " << resolvedRange;
-        process.seekp(process.str().length() - separator.length());
-        process << ": ";
-        lruCache.resolveRange(resolvedRange);
-        process << resolvedRange;
-        process.seekp(process.str().length() - separator.length());
-
-        auto insertedRange = KeyValueRange{keyValueA, keyValueB, keyValueC, keyValueD};
-        process << "\ninsert range: " << insertedRange;
-        process.seekp(process.str().length() - separator.length());
-        lruCache.insertRange(std::move(insertedRange));
-        process << "\nfind range {A, B, C, D}: " << lruCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
-        process.seekp(process.str().length() - separator.length());
-
-        process << "\nwhether it is empty: " << lruCache.empty() << '\n';
-        process << "size: " << lruCache.size() << '\n';
-        process << "capacity: " << lruCache.capacity() << '\n';
-
-        return process;
-    }
-
-    //! @brief Least recently used.
-    //! @return procedure output
-    static std::ostringstream lru()
-    {
-        const KeyValue keyValueA = {'A', "foo"}, keyValueB = {'B', "bar"}, keyValueC = {'C', "baz"},
-                       keyValueD = {'D', "qux"};
-        std::ostringstream process{};
-        process << std::boolalpha;
-
-        date_structure::cache::LRU<Key, Value> lfuCache{3};
+        date_structure::cache::LFU<Key, Value> lfuCache{3};
         process << "insert: " << keyValueA << '\n';
         lfuCache.insert('A', "foo");
         process << "insert: " << keyValueB << '\n';
@@ -237,14 +186,65 @@ public:
         process << "\ninsert range: " << insertedRange;
         process.seekp(process.str().length() - separator.length());
         lfuCache.insertRange(std::move(insertedRange));
-        process << "\nfind range {A, B, C, D}: " << lfuCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
-        process.seekp(process.str().length() - separator.length());
 
         process << "\nwhether it is empty: " << lfuCache.empty() << '\n';
         process << "size: " << lfuCache.size() << '\n';
         process << "capacity: " << lfuCache.capacity() << '\n';
+        process << "cache detail: " << lfuCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
+        process.seekp(process.str().length() - separator.length());
 
-        return process;
+        return std::ostringstream{process.str().substr(0, process.tellp()) + '\n'};
+    }
+
+    //! @brief Least recently used.
+    //! @return procedure output
+    static std::ostringstream lru()
+    {
+        const KeyValue keyValueA = {'A', "foo"}, keyValueB = {'B', "bar"}, keyValueC = {'C', "baz"},
+                       keyValueD = {'D', "qux"};
+        std::ostringstream process{};
+        process << std::boolalpha;
+
+        date_structure::cache::LRU<Key, Value> lruCache{3};
+        process << "insert: " << keyValueA << '\n';
+        lruCache.insert('A', "foo");
+        process << "insert: " << keyValueB << '\n';
+        lruCache.insert('B', "bar");
+        process << "insert: " << keyValueC << '\n';
+        lruCache.insert('C', "baz");
+        process << "find A: " << lruCache.find('A').has_value() << '\n';
+        process << "find B: " << lruCache.find('B').has_value() << '\n';
+        process << "find B: " << lruCache.find('B').has_value() << '\n';
+        process << "find C: " << lruCache.find('C').has_value() << '\n';
+        process << "find A: " << lruCache.find('A').has_value() << '\n';
+        process << "erase D: " << lruCache.erase('D') << '\n';
+        process << "insert: " << keyValueD << '\n';
+        lruCache.insert('D', "qux");
+        process << "find range {A, B, C, D}: " << lruCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
+        process.seekp(process.str().length() - separator.length());
+
+        process << "\nerase range {B, C}: " << lruCache.eraseRange(std::vector<Key>{'B', 'C'}) << '\n';
+        auto resolvedRange =
+            KeyOptValueRange{{'A', std::nullopt}, {'B', std::nullopt}, {'C', std::nullopt}, {'D', std::nullopt}};
+        process << "resolve range " << resolvedRange;
+        process.seekp(process.str().length() - separator.length());
+        process << ": ";
+        lruCache.resolveRange(resolvedRange);
+        process << resolvedRange;
+        process.seekp(process.str().length() - separator.length());
+
+        auto insertedRange = KeyValueRange{keyValueA, keyValueB, keyValueC, keyValueD};
+        process << "\ninsert range: " << insertedRange;
+        process.seekp(process.str().length() - separator.length());
+        lruCache.insertRange(std::move(insertedRange));
+
+        process << "\nwhether it is empty: " << lruCache.empty() << '\n';
+        process << "size: " << lruCache.size() << '\n';
+        process << "capacity: " << lruCache.capacity() << '\n';
+        process << "cache detail: " << lruCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
+        process.seekp(process.str().length() - separator.length());
+
+        return std::ostringstream{process.str().substr(0, process.tellp()) + '\n'};
     }
 };
 
