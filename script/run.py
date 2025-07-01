@@ -74,7 +74,12 @@ class Task:
             "--creational": ["abs", "bui", "fac", "pro", "sin"],
             "--structural": ["ada", "bri", "com", "dec", "fac", "fly", "pro"],
         },
-        "app-ds": {"--help": [], "--linear": ["lin", "sta", "que"], "--tree": ["bin", "ade", "spl"]},
+        "app-ds": {
+            "--help": [],
+            "--cache": ["fir", "fre", "rec"],
+            "--linear": ["lin", "sta", "que"],
+            "--tree": ["bin", "ade", "spl"],
+        },
         "app-num": {
             "--help": [],
             "--arithmetic": ["add", "sub", "mul", "div"],

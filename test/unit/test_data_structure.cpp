@@ -23,6 +23,121 @@ namespace tst_ds
 {
 using namespace application::app_ds; // NOLINT(google-build-using-namespace)
 
+//! @brief Test base of cache.
+class CacheTestBase : public ::testing::Test
+{
+public:
+    //! @brief Construct a new CacheTestBase object.
+    CacheTestBase() = default;
+    //! @brief Destroy the CacheTestBase object.
+    ~CacheTestBase() override = default;
+
+protected:
+    //! @brief Set up the test case.
+    static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE("CACHE", "BEGIN"); }
+    //! @brief Tear down the test case.
+    static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE("CACHE", "END"); }
+    //! @brief Set up.
+    void SetUp() override {}
+    //! @brief Tear down.
+    void TearDown() override {}
+
+    //! @brief System under test.
+    const cache::Showcase sut{};
+    // clang-format off
+    //! @brief Expected result 1.
+    static constexpr std::string_view expRes1
+    {
+        "insert: {A: foo}\n"
+        "insert: {B: bar}\n"
+        "insert: {C: baz}\n"
+        "find A: true\n"
+        "find B: true\n"
+        "find B: true\n"
+        "find C: true\n"
+        "find A: true\n"
+        "erase D: false\n"
+        "insert: {D: qux}\n"
+        "find range {A, B, C, D}: {A: ---}, {B: bar}, {C: baz}, {D: qux}\n"
+        "erase range {B, C}: 2\n"
+        "resolve range {A: ---}, {B: ---}, {C: ---}, {D: ---}: {A: ---}, {B: ---}, {C: ---}, {D: qux}\n"
+        "insert range: {A: foo}, {B: bar}, {C: baz}, {D: qux}\n"
+        "find range {A, B, C, D}: {A: ---}, {B: bar}, {C: baz}, {D: qux}\n"
+        "whether it is empty: false\n"
+        "size: 3\n"
+        "capacity: 3\n"
+    };
+    //! @brief Expected result 2.
+    static constexpr std::string_view expRes2
+    {
+        "insert: {A: foo}\n"
+        "insert: {B: bar}\n"
+        "insert: {C: baz}\n"
+        "find A: true\n"
+        "find B: true\n"
+        "find B: true\n"
+        "find C: true\n"
+        "find A: true\n"
+        "erase D: false\n"
+        "insert: {D: qux}\n"
+        "find range {A, B, C, D}: {A: foo}, {B: bar}, {C: ---}, {D: qux}\n"
+        "erase range {B, C}: 1\n"
+        "resolve range {A: ---}, {B: ---}, {C: ---}, {D: ---}: {A: foo}, {B: ---}, {C: ---}, {D: qux}\n"
+        "insert range: {A: foo}, {B: bar}, {C: baz}, {D: qux}\n"
+        "find range {A, B, C, D}: {A: foo}, {B: ---}, {C: baz}, {D: qux}\n"
+        "whether it is empty: false\n"
+        "size: 3\n"
+        "capacity: 3\n"
+    };
+    //! @brief Expected result 3.
+    static constexpr std::string_view expRes3
+    {
+        "insert: {A: foo}\n"
+        "insert: {B: bar}\n"
+        "insert: {C: baz}\n"
+        "find A: true\n"
+        "find B: true\n"
+        "find B: true\n"
+        "find C: true\n"
+        "find A: true\n"
+        "erase D: false\n"
+        "insert: {D: qux}\n"
+        "find range {A, B, C, D}: {A: foo}, {B: ---}, {C: baz}, {D: qux}\n"
+        "erase range {B, C}: 1\n"
+        "resolve range {A: ---}, {B: ---}, {C: ---}, {D: ---}: {A: foo}, {B: ---}, {C: ---}, {D: qux}\n"
+        "insert range: {A: foo}, {B: bar}, {C: baz}, {D: qux}\n"
+        "find range {A, B, C, D}: {A: ---}, {B: bar}, {C: baz}, {D: qux}\n"
+        "whether it is empty: false\n"
+        "size: 3\n"
+        "capacity: 3\n"
+    };
+    // clang-format on
+};
+
+//! @brief Test for the first in first out instance in the structure of cache.
+TEST_F(CacheTestBase, fifoInstance)
+{
+    std::ostringstream result{};
+    ASSERT_NO_THROW(result = sut.fifo());
+    ASSERT_EQ(expRes1, result.str());
+}
+
+//! @brief Test for the least frequently used instance in the structure of cache.
+TEST_F(CacheTestBase, lfuInstance)
+{
+    std::ostringstream result{};
+    ASSERT_NO_THROW(result = sut.lfu());
+    ASSERT_EQ(expRes2, result.str());
+}
+
+//! @brief Test for the least recently used instance in the structure of cache.
+TEST_F(CacheTestBase, lruInstance)
+{
+    std::ostringstream result{};
+    ASSERT_NO_THROW(result = sut.lru());
+    ASSERT_EQ(expRes3, result.str());
+}
+
 //! @brief Test base of linear.
 class LinearTestBase : public ::testing::Test
 {

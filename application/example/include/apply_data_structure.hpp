@@ -7,13 +7,12 @@
 #pragma once
 
 #ifndef _PRECOMPILED_HEADER
-#include <cstdint>
 #include <span>
-#include <vector>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // _PRECOMPILED_HEADER
 
+#include "data_structure/include/cache.hpp"
 #include "data_structure/include/linear.hpp"
 #include "data_structure/include/tree.hpp"
 
@@ -23,6 +22,249 @@ namespace application // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Data-structure-applying-related functions in the application module.
 namespace app_ds
 {
+//! @brief Apply cache.
+namespace cache
+{
+//! @brief The version used to apply.
+const char* const version = date_structure::cache::version();
+
+//! @brief Separator for each KeyValue or KeyOptValue.
+static constexpr std::string_view separator = ", ";
+//! @brief Alias for the key.
+using Key = char;
+//! @brief Alias for the value.
+using Value = std::string;
+//! @brief Alias for the pair of key and value.
+using KeyValue = std::pair<Key, Value>;
+//! @brief The operator (<<) overloading of the KeyValue type.
+//! @param os - output stream object
+//! @param keyValue - specific KeyValue object
+//! @return reference of the output stream object
+static std::ostream& operator<<(std::ostream& os, const KeyValue& keyValue)
+{
+    os << '{' << keyValue.first << ": " << keyValue.second << '}';
+    return os;
+}
+//! @brief Alias for the range of KeyValue.
+using KeyValueRange = std::vector<KeyValue>;
+//! @brief The operator (<<) overloading of the KeyValueRange type.
+//! @param os - output stream object
+//! @param keyValueRange - specific KeyValueRange object
+//! @return reference of the output stream object
+static std::ostream& operator<<(std::ostream& os, const KeyValueRange& keyValueRange)
+{
+    for (const auto& keyValue : keyValueRange)
+    {
+        os << keyValue << separator;
+    }
+
+    return os;
+}
+//! @brief Alias for the pair of key and optional value.
+using KeyOptValue = std::pair<Key, std::optional<Value>>;
+//! @brief The operator (<<) overloading of the KeyOptValue type.
+//! @param os - output stream object
+//! @param keyOptValue - specific KeyOptValue object
+//! @return reference of the output stream object
+static std::ostream& operator<<(std::ostream& os, const KeyOptValue& keyOptValue)
+{
+    os << '{' << keyOptValue.first << ": " << (keyOptValue.second.has_value() ? *keyOptValue.second : "---") << '}';
+    return os;
+}
+//! @brief Alias for the range of KeyOptValue.
+using KeyOptValueRange = std::vector<KeyOptValue>;
+//! @brief The operator (<<) overloading of the KeyOptValueRange type.
+//! @param os - output stream object
+//! @param keyOptValueRange - specific KeyOptValueRange object
+//! @return reference of the output stream object
+static std::ostream& operator<<(std::ostream& os, const KeyOptValueRange& keyOptValueRange)
+{
+    for (const auto& keyOptValue : keyOptValueRange)
+    {
+        os << keyOptValue << separator;
+    }
+
+    return os;
+}
+
+//! @brief Showcase for cache instances.
+class Showcase
+{
+public:
+    //! @brief Destroy the Showcase object.
+    virtual ~Showcase() = default;
+
+    //! @brief First in first out.
+    //! @return procedure output
+    static std::ostringstream fifo()
+    {
+        const KeyValue keyValueA = {'A', "foo"}, keyValueB = {'B', "bar"}, keyValueC = {'C', "baz"},
+                       keyValueD = {'D', "qux"};
+        std::ostringstream process{};
+        process << std::boolalpha;
+
+        date_structure::cache::FIFO<Key, Value> fifoCache{3};
+        process << "insert: " << keyValueA << '\n';
+        fifoCache.insert('A', "foo");
+        process << "insert: " << keyValueB << '\n';
+        fifoCache.insert('B', "bar");
+        process << "insert: " << keyValueC << '\n';
+        fifoCache.insert('C', "baz");
+        process << "find A: " << fifoCache.find('A').has_value() << '\n';
+        process << "find B: " << fifoCache.find('B').has_value() << '\n';
+        process << "find B: " << fifoCache.find('B').has_value() << '\n';
+        process << "find C: " << fifoCache.find('C').has_value() << '\n';
+        process << "find A: " << fifoCache.find('A').has_value() << '\n';
+        process << "erase D: " << fifoCache.erase('D') << '\n';
+        process << "insert: " << keyValueD << '\n';
+        fifoCache.insert('D', "qux");
+        process << "find range {A, B, C, D}: " << fifoCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
+        process.seekp(process.str().length() - separator.length());
+
+        process << "\nerase range {B, C}: " << fifoCache.eraseRange(std::vector<Key>{'B', 'C'}) << '\n';
+        auto resolvedRange =
+            KeyOptValueRange{{'A', std::nullopt}, {'B', std::nullopt}, {'C', std::nullopt}, {'D', std::nullopt}};
+        process << "resolve range " << resolvedRange;
+        process.seekp(process.str().length() - separator.length());
+        process << ": ";
+        fifoCache.resolveRange(resolvedRange);
+        process << resolvedRange;
+        process.seekp(process.str().length() - separator.length());
+
+        auto insertedRange = KeyValueRange{keyValueA, keyValueB, keyValueC, keyValueD};
+        process << "\ninsert range: " << insertedRange;
+        process.seekp(process.str().length() - separator.length());
+        fifoCache.insertRange(std::move(insertedRange));
+        process << "\nfind range {A, B, C, D}: " << fifoCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
+        process.seekp(process.str().length() - separator.length());
+
+        process << "\nwhether it is empty: " << fifoCache.empty() << '\n';
+        process << "size: " << fifoCache.size() << '\n';
+        process << "capacity: " << fifoCache.capacity() << '\n';
+
+        return process;
+    }
+
+    //! @brief Least frequently used.
+    //! @return procedure output
+    static std::ostringstream lfu()
+    {
+        const KeyValue keyValueA = {'A', "foo"}, keyValueB = {'B', "bar"}, keyValueC = {'C', "baz"},
+                       keyValueD = {'D', "qux"};
+        std::ostringstream process{};
+        process << std::boolalpha;
+
+        date_structure::cache::LFU<Key, Value> lruCache{3};
+        process << "insert: " << keyValueA << '\n';
+        lruCache.insert('A', "foo");
+        process << "insert: " << keyValueB << '\n';
+        lruCache.insert('B', "bar");
+        process << "insert: " << keyValueC << '\n';
+        lruCache.insert('C', "baz");
+        process << "find A: " << lruCache.find('A').has_value() << '\n';
+        process << "find B: " << lruCache.find('B').has_value() << '\n';
+        process << "find B: " << lruCache.find('B').has_value() << '\n';
+        process << "find C: " << lruCache.find('C').has_value() << '\n';
+        process << "find A: " << lruCache.find('A').has_value() << '\n';
+        process << "erase D: " << lruCache.erase('D') << '\n';
+        process << "insert: " << keyValueD << '\n';
+        lruCache.insert('D', "qux");
+        process << "find range {A, B, C, D}: " << lruCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
+        process.seekp(process.str().length() - separator.length());
+
+        process << "\nerase range {B, C}: " << lruCache.eraseRange(std::vector<Key>{'B', 'C'}) << '\n';
+        auto resolvedRange =
+            KeyOptValueRange{{'A', std::nullopt}, {'B', std::nullopt}, {'C', std::nullopt}, {'D', std::nullopt}};
+        process << "resolve range " << resolvedRange;
+        process.seekp(process.str().length() - separator.length());
+        process << ": ";
+        lruCache.resolveRange(resolvedRange);
+        process << resolvedRange;
+        process.seekp(process.str().length() - separator.length());
+
+        auto insertedRange = KeyValueRange{keyValueA, keyValueB, keyValueC, keyValueD};
+        process << "\ninsert range: " << insertedRange;
+        process.seekp(process.str().length() - separator.length());
+        lruCache.insertRange(std::move(insertedRange));
+        process << "\nfind range {A, B, C, D}: " << lruCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
+        process.seekp(process.str().length() - separator.length());
+
+        process << "\nwhether it is empty: " << lruCache.empty() << '\n';
+        process << "size: " << lruCache.size() << '\n';
+        process << "capacity: " << lruCache.capacity() << '\n';
+
+        return process;
+    }
+
+    //! @brief Least recently used.
+    //! @return procedure output
+    static std::ostringstream lru()
+    {
+        const KeyValue keyValueA = {'A', "foo"}, keyValueB = {'B', "bar"}, keyValueC = {'C', "baz"},
+                       keyValueD = {'D', "qux"};
+        std::ostringstream process{};
+        process << std::boolalpha;
+
+        date_structure::cache::LRU<Key, Value> lfuCache{3};
+        process << "insert: " << keyValueA << '\n';
+        lfuCache.insert('A', "foo");
+        process << "insert: " << keyValueB << '\n';
+        lfuCache.insert('B', "bar");
+        process << "insert: " << keyValueC << '\n';
+        lfuCache.insert('C', "baz");
+        process << "find A: " << lfuCache.find('A').has_value() << '\n';
+        process << "find B: " << lfuCache.find('B').has_value() << '\n';
+        process << "find B: " << lfuCache.find('B').has_value() << '\n';
+        process << "find C: " << lfuCache.find('C').has_value() << '\n';
+        process << "find A: " << lfuCache.find('A').has_value() << '\n';
+        process << "erase D: " << lfuCache.erase('D') << '\n';
+        process << "insert: " << keyValueD << '\n';
+        lfuCache.insert('D', "qux");
+        process << "find range {A, B, C, D}: " << lfuCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
+        process.seekp(process.str().length() - separator.length());
+
+        process << "\nerase range {B, C}: " << lfuCache.eraseRange(std::vector<Key>{'B', 'C'}) << '\n';
+        auto resolvedRange =
+            KeyOptValueRange{{'A', std::nullopt}, {'B', std::nullopt}, {'C', std::nullopt}, {'D', std::nullopt}};
+        process << "resolve range " << resolvedRange;
+        process.seekp(process.str().length() - separator.length());
+        process << ": ";
+        lfuCache.resolveRange(resolvedRange);
+        process << resolvedRange;
+        process.seekp(process.str().length() - separator.length());
+
+        auto insertedRange = KeyValueRange{keyValueA, keyValueB, keyValueC, keyValueD};
+        process << "\ninsert range: " << insertedRange;
+        process.seekp(process.str().length() - separator.length());
+        lfuCache.insertRange(std::move(insertedRange));
+        process << "\nfind range {A, B, C, D}: " << lfuCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
+        process.seekp(process.str().length() - separator.length());
+
+        process << "\nwhether it is empty: " << lfuCache.empty() << '\n';
+        process << "size: " << lfuCache.size() << '\n';
+        process << "capacity: " << lfuCache.capacity() << '\n';
+
+        return process;
+    }
+};
+
+//! @brief Structure of cache.
+class CacheStructure
+{
+public:
+    //! @brief Destroy the CacheStructure object.
+    virtual ~CacheStructure() = default;
+
+    //! @brief The first in first out instance.
+    static void fifoInstance();
+    //! @brief The least frequently used instance.
+    static void lfuInstance();
+    //! @brief The least recently used instance.
+    static void lruInstance();
+};
+} // namespace cache
+extern void applyingCache(const std::vector<std::string>& candidates);
+
 //! @brief Apply linear.
 namespace linear
 {
@@ -39,7 +281,7 @@ struct Meta
 
     //! @brief The operator (<<) overloading of the Meta struct.
     //! @param os - output stream object
-    //! @param meta - specific value of Meta enum
+    //! @param meta - specific Meta object
     //! @return reference of the output stream object
     friend std::ostream& operator<<(std::ostream& os, const Meta& meta)
     {

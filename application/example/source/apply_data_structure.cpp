@@ -71,6 +71,97 @@ static consteval std::string_view categoryAlias()
     return attr.value;
 }
 
+namespace cache
+{
+//! @brief Show the contents of the cache result.
+//! @param instance - specific value of CacheInstance enum
+//! @param result - cache result
+static void showResult(const CacheInstance instance, const std::string& result)
+{
+    std::printf("\n==> %-19s Instance <==\n%s", makeTitle(instance).c_str(), result.c_str());
+}
+
+void CacheStructure::fifoInstance()
+try
+{
+    const auto output = Showcase().fifo();
+    showResult(CacheInstance::firstInFirstOut, output.str());
+}
+catch (const std::exception& err)
+{
+    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
+}
+
+void CacheStructure::lfuInstance()
+try
+{
+    const auto output = Showcase().lfu();
+    showResult(CacheInstance::leastFrequentlyUsed, output.str());
+}
+catch (const std::exception& err)
+{
+    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
+}
+
+void CacheStructure::lruInstance()
+try
+{
+    const auto output = Showcase().lru();
+    showResult(CacheInstance::leastRecentlyUsed, output.str());
+}
+catch (const std::exception& err)
+{
+    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
+}
+} // namespace cache
+//! @brief To apply cache-related instances.
+//! @param candidates - container for the candidate target instances
+void applyingCache(const std::vector<std::string>& candidates)
+{
+    constexpr auto category = Category::cache;
+    const auto& bits = categoryOpts<category>();
+    if (bits.none())
+    {
+        return;
+    }
+    assert(bits.size() == candidates.size());
+
+    APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
+
+    auto& pooling = configure::task::resourcePool();
+    auto* const allocatedJob = pooling.newElement(bits.count());
+    const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
+    const auto addTask = utility::common::wrapClosure(
+        [allocatedJob, &taskNamer](const std::string_view subTask, void (*targetInstance)())
+        { allocatedJob->enqueue(taskNamer(subTask), targetInstance); });
+    MACRO_DEFER([&]() { pooling.deleteElement(allocatedJob); });
+
+    std::cout << "\nInstances of the " << toString<category>() << " structure:" << std::endl;
+    for (const auto index :
+         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
+    {
+        const auto& target = candidates.at(index);
+        switch (utility::common::bkdrHash(target.c_str()))
+        {
+            using cache::CacheStructure;
+            static_assert(utility::common::isStatelessClass<CacheStructure>());
+            case abbrValue(CacheInstance::firstInFirstOut):
+                addTask(target, &CacheStructure::fifoInstance);
+                break;
+            case abbrValue(CacheInstance::leastFrequentlyUsed):
+                addTask(target, &CacheStructure::lfuInstance);
+                break;
+            case abbrValue(CacheInstance::leastRecentlyUsed):
+                addTask(target, &CacheStructure::lruInstance);
+                break;
+            default:
+                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " instance: " + target + '.'};
+        }
+    }
+
+    APP_DS_PRINT_TASK_TITLE_SCOPE_END(category);
+}
+
 namespace linear
 {
 //! @brief Show the contents of the linear result.

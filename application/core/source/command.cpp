@@ -431,6 +431,22 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
         subCLIAppDs.title(), Intf{[]() { return !reg_ds::manager().empty(); }, []() { reg_ds::manager().reset(); }});
     subCLIAppDs.addDescription(descr<reg_ds::ApplyDataStructure>());
     subCLIAppDs.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
+    candidates = extractChoices<reg_ds::CacheInstance>();
+    dsTable.emplace(name<reg_ds::CacheInstance>(), Attr{candidates, reg_ds::CacheInstance{}});
+    subCLIAppDs
+        .addArgument(
+            prefix1 + std::string{alias<reg_ds::CacheInstance>()}, prefix2 + std::string{name<reg_ds::CacheInstance>()})
+        .argsNum(0, candidates.size())
+        .defaultValue<std::vector<std::string>>(std::move(candidates))
+        .remaining()
+        .metavar(optMetavar)
+        .help(descr<reg_ds::CacheInstance>());
+    applyingForwarder.registerHandler([](const action::UpdateChoice<reg_ds::CacheInstance>& msg)
+                                      { reg_ds::updateChoice<reg_ds::CacheInstance>(msg.cho); });
+    applyingForwarder.registerHandler([](const action::RunChoices<reg_ds::CacheInstance>& msg)
+                                      { reg_ds::runChoices<reg_ds::CacheInstance>(msg.coll); });
+    versionLinks.emplace(
+        VerLinkKey{name<reg_ds::ApplyDataStructure>(), reg_ds::cache::version()}, name<reg_ds::CacheInstance>());
     candidates = extractChoices<reg_ds::LinearInstance>();
     dsTable.emplace(name<reg_ds::LinearInstance>(), Attr{candidates, reg_ds::LinearInstance{}});
     subCLIAppDs
