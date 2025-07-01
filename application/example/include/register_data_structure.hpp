@@ -30,6 +30,24 @@ extern const char* version() noexcept;
 template <typename T>
 struct Bottom;
 
+//! @brief Enumerate specific cache instances.
+enum CacheInstance : std::uint8_t
+{
+    //! @brief First in first out.
+    firstInFirstOut,
+    //! @brief Least frequently used.
+    leastFrequentlyUsed,
+    //! @brief Least recently used.
+    leastRecentlyUsed
+};
+//! @brief Store the maximum value of the CacheInstance enum.
+template <>
+struct Bottom<CacheInstance>
+{
+    //! @brief Maximum value of the CacheInstance enum.
+    static constexpr std::uint8_t value{3};
+};
+
 //! @brief Enumerate specific linear instances.
 enum LinearInstance : std::uint8_t
 {
@@ -73,12 +91,16 @@ public:
     //! @brief Enumerate specific data structure choices.
     enum Category : std::uint8_t
     {
+        //! @brief Cache.
+        cache,
         //! @brief Linear.
         linear,
         //! @brief Tree.
         tree
     };
 
+    //! @brief Bit flags for managing cache instances.
+    std::bitset<Bottom<CacheInstance>::value> cacheOpts;
     //! @brief Bit flags for managing linear instances.
     std::bitset<Bottom<LinearInstance>::value> linearOpts;
     //! @brief Bit flags for managing tree instances.
@@ -86,10 +108,11 @@ public:
 
     //! @brief Check whether any data structure choices do not exist.
     //! @return any data structure choices do not exist or exist
-    [[nodiscard]] bool empty() const { return linearOpts.none() && treeOpts.none(); }
+    [[nodiscard]] bool empty() const { return cacheOpts.none() && linearOpts.none() && treeOpts.none(); }
     //! @brief Reset bit flags that manage data structure choices.
     void reset()
     {
+        cacheOpts.reset();
         linearOpts.reset();
         treeOpts.reset();
     }
@@ -103,6 +126,9 @@ protected:
     {
         switch (cat)
         {
+            case Category::cache:
+                os << "CACHE";
+                break;
             case Category::linear:
                 os << "LINEAR";
                 break;
@@ -129,6 +155,16 @@ void updateChoice(const std::string& target);
 //! @param candidates - container for the candidate target instances
 template <typename T>
 void runChoices(const std::vector<std::string>& candidates);
+
+//! @brief Register cache.
+namespace cache
+{
+extern const char* version() noexcept;
+} // namespace cache
+template <>
+void updateChoice<CacheInstance>(const std::string& target);
+template <>
+void runChoices<CacheInstance>(const std::vector<std::string>& candidates);
 
 //! @brief Register linear.
 namespace linear
@@ -187,12 +223,38 @@ struct utility::reflection::TypeInfo<application::reg_ds::ApplyDataStructure>
     //! @brief Field list.
     static constexpr FieldList fields
     {
+        REG_DS_REFLECT_FIRST_LEVEL_FIELD(cache , c),
         REG_DS_REFLECT_FIRST_LEVEL_FIELD(linear, l),
         REG_DS_REFLECT_FIRST_LEVEL_FIELD(tree  , t),
     };
     // clang-format on
     //! @brief Attribute list.
     static constexpr AttrList attrs{Attr{REFLECTION_STR("descr"), "apply data structure"}};
+};
+//! @brief Static reflection for CacheInstance. Used to map command line arguments.
+template <>
+struct utility::reflection::TypeInfo<application::reg_ds::CacheInstance>
+    : TypeInfoBase<application::reg_ds::CacheInstance>
+{
+    //! @brief Name.
+    static constexpr std::string_view name{"cache"};
+    // clang-format off
+    //! @brief Field list.
+    static constexpr FieldList fields
+    {
+        REG_DS_REFLECT_SECOND_LEVEL_FIELD(firstInFirstOut    , fir),
+        REG_DS_REFLECT_SECOND_LEVEL_FIELD(leastFrequentlyUsed, fre),
+        REG_DS_REFLECT_SECOND_LEVEL_FIELD(leastRecentlyUsed  , rec),
+    };
+    // clang-format on
+    //! @brief Attribute list.
+    static constexpr AttrList attrs{Attr{
+        REFLECTION_STR("descr"),
+        "cache-related choices\n"
+        "- fir    First In First Out\n"
+        "- fre    Least Frequently Used\n"
+        "- rec    Least Recently Used\n"
+        "add the choices listed above"}};
 };
 //! @brief Static reflection for LinearInstance. Used to map command line arguments.
 template <>
@@ -263,6 +325,8 @@ consteval std::string_view toString()
 {
     switch (Cat)
     {
+        case Category::cache:
+            return TypeInfo<CacheInstance>::name;
         case Category::linear:
             return TypeInfo<LinearInstance>::name;
         case Category::tree:
@@ -303,6 +367,16 @@ consteval std::size_t abbrValue(const T instance)
         });
 
     return value;
+}
+
+//! @brief Convert instance enumeration to string.
+//! @param instance - specific value of CacheInstance enum
+//! @return instance name
+constexpr std::string_view toString(const CacheInstance instance)
+{
+    constexpr std::array<std::string_view, Bottom<CacheInstance>::value> stringify = {
+        MACRO_STRINGIFY(firstInFirstOut), MACRO_STRINGIFY(leastFrequentlyUsed), MACRO_STRINGIFY(leastRecentlyUsed)};
+    return stringify.at(instance);
 }
 
 //! @brief Convert instance enumeration to string.

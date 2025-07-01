@@ -25,6 +25,47 @@ ApplyDataStructure& manager() noexcept
     return manager;
 }
 
+namespace cache
+{
+//! @brief Register version number.
+//! @return version number (major.minor.patch)
+const char* version() noexcept
+{
+    return app_ds::cache::version;
+}
+} // namespace cache
+//! @brief Update cache-related choice.
+//! @param target - target instance
+template <>
+void updateChoice<CacheInstance>(const std::string& target)
+{
+    constexpr auto category = Category::cache;
+    auto& bits = categoryOpts<category>();
+
+    switch (utility::common::bkdrHash(target.c_str()))
+    {
+        case abbrValue(CacheInstance::firstInFirstOut):
+            bits.set(CacheInstance::firstInFirstOut);
+            break;
+        case abbrValue(CacheInstance::leastFrequentlyUsed):
+            bits.set(CacheInstance::leastFrequentlyUsed);
+            break;
+        case abbrValue(CacheInstance::leastRecentlyUsed):
+            bits.set(CacheInstance::leastRecentlyUsed);
+            break;
+        default:
+            bits.reset();
+            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " instance: " + target + '.'};
+    }
+}
+//! @brief Run cache-related choices.
+//! @param candidates - container for the candidate target instances
+template <>
+void runChoices<CacheInstance>(const std::vector<std::string>& candidates)
+{
+    app_ds::applyingCache(candidates);
+}
+
 namespace linear
 {
 //! @brief Register version number.
