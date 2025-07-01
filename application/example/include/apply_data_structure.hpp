@@ -104,11 +104,11 @@ public:
         process << std::boolalpha;
 
         date_structure::cache::FIFO<Key, Value> fifoCache{3};
-        process << "insert: " << keyValueA << '\n';
+        process << "insert " << keyValueA << '\n';
         fifoCache.insert('A', "foo");
-        process << "insert: " << keyValueB << '\n';
+        process << "insert " << keyValueB << '\n';
         fifoCache.insert('B', "bar");
-        process << "insert: " << keyValueC << '\n';
+        process << "insert " << keyValueC << '\n';
         fifoCache.insert('C', "baz");
         process << "find A: " << fifoCache.find('A').has_value() << '\n';
         process << "find B: " << fifoCache.find('B').has_value() << '\n';
@@ -116,7 +116,7 @@ public:
         process << "find C: " << fifoCache.find('C').has_value() << '\n';
         process << "find A: " << fifoCache.find('A').has_value() << '\n';
         process << "erase D: " << fifoCache.erase('D') << '\n';
-        process << "insert: " << keyValueD << '\n';
+        process << "insert " << keyValueD << '\n';
         fifoCache.insert('D', "qux");
         process << "find range {A, B, C, D}: " << fifoCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
         process.seekp(process.str().length() - separator.length());
@@ -132,7 +132,7 @@ public:
         process.seekp(process.str().length() - separator.length());
 
         auto insertedRange = KeyValueRange{keyValueA, keyValueB, keyValueC, keyValueD};
-        process << "\ninsert range: " << insertedRange;
+        process << "\ninsert range " << insertedRange;
         process.seekp(process.str().length() - separator.length());
         fifoCache.insertRange(std::move(insertedRange));
 
@@ -155,11 +155,11 @@ public:
         process << std::boolalpha;
 
         date_structure::cache::LFU<Key, Value> lfuCache{3};
-        process << "insert: " << keyValueA << '\n';
+        process << "insert " << keyValueA << '\n';
         lfuCache.insert('A', "foo");
-        process << "insert: " << keyValueB << '\n';
+        process << "insert " << keyValueB << '\n';
         lfuCache.insert('B', "bar");
-        process << "insert: " << keyValueC << '\n';
+        process << "insert " << keyValueC << '\n';
         lfuCache.insert('C', "baz");
         process << "find A: " << lfuCache.find('A').has_value() << '\n';
         process << "find B: " << lfuCache.find('B').has_value() << '\n';
@@ -167,7 +167,7 @@ public:
         process << "find C: " << lfuCache.find('C').has_value() << '\n';
         process << "find A: " << lfuCache.find('A').has_value() << '\n';
         process << "erase D: " << lfuCache.erase('D') << '\n';
-        process << "insert: " << keyValueD << '\n';
+        process << "insert " << keyValueD << '\n';
         lfuCache.insert('D', "qux");
         process << "find range {A, B, C, D}: " << lfuCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
         process.seekp(process.str().length() - separator.length());
@@ -183,7 +183,7 @@ public:
         process.seekp(process.str().length() - separator.length());
 
         auto insertedRange = KeyValueRange{keyValueA, keyValueB, keyValueC, keyValueD};
-        process << "\ninsert range: " << insertedRange;
+        process << "\ninsert range " << insertedRange;
         process.seekp(process.str().length() - separator.length());
         lfuCache.insertRange(std::move(insertedRange));
 
@@ -206,11 +206,11 @@ public:
         process << std::boolalpha;
 
         date_structure::cache::LRU<Key, Value> lruCache{3};
-        process << "insert: " << keyValueA << '\n';
+        process << "insert " << keyValueA << '\n';
         lruCache.insert('A', "foo");
-        process << "insert: " << keyValueB << '\n';
+        process << "insert " << keyValueB << '\n';
         lruCache.insert('B', "bar");
-        process << "insert: " << keyValueC << '\n';
+        process << "insert " << keyValueC << '\n';
         lruCache.insert('C', "baz");
         process << "find A: " << lruCache.find('A').has_value() << '\n';
         process << "find B: " << lruCache.find('B').has_value() << '\n';
@@ -218,7 +218,7 @@ public:
         process << "find C: " << lruCache.find('C').has_value() << '\n';
         process << "find A: " << lruCache.find('A').has_value() << '\n';
         process << "erase D: " << lruCache.erase('D') << '\n';
-        process << "insert: " << keyValueD << '\n';
+        process << "insert " << keyValueD << '\n';
         lruCache.insert('D', "qux");
         process << "find range {A, B, C, D}: " << lruCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
         process.seekp(process.str().length() - separator.length());
@@ -234,7 +234,7 @@ public:
         process.seekp(process.str().length() - separator.length());
 
         auto insertedRange = KeyValueRange{keyValueA, keyValueB, keyValueC, keyValueD};
-        process << "\ninsert range: " << insertedRange;
+        process << "\ninsert range " << insertedRange;
         process.seekp(process.str().length() - separator.length());
         lruCache.insertRange(std::move(insertedRange));
 
@@ -313,18 +313,18 @@ public:
         DLL dll = nullptr;
         create(&dll);
         insert(dll, 0, nodes.data());
-        process << "insert (0): " << nodes[0] << '\n';
+        process << "insert (0) " << nodes[0] << '\n';
         insert(dll, 0, &nodes[1]);
-        process << "insert (0): " << nodes[1] << '\n';
+        process << "insert (0) " << nodes[1] << '\n';
         insert(dll, 1, &nodes[2]);
-        process << "insert (1): " << nodes[2] << '\n';
+        process << "insert (1) " << nodes[2] << '\n';
         remove(dll, 2);
         process << "remove (2)\n";
 
         insertFirst(dll, &nodes.front());
-        process << "insert first: " << nodes.front() << '\n';
+        process << "insert first " << nodes.front() << '\n';
         insertLast(dll, &nodes.back());
-        process << "insert last: " << nodes.back() << '\n';
+        process << "insert last " << nodes.back() << '\n';
         val = static_cast<Meta*>(getFirst(dll));
         process << "get first: " << *val << '\n';
         val = static_cast<Meta*>(getLast(dll));
@@ -334,7 +334,7 @@ public:
         removeLast(dll);
         process << "remove last\n";
         insert(dll, 1, nodes.data());
-        process << "insert (1): " << nodes[0] << '\n';
+        process << "insert (1) " << nodes[0] << '\n';
 
         process << "whether it is empty: " << empty(dll) << '\n';
         process << "size: " << size(dll) << '\n';
@@ -367,7 +367,7 @@ public:
         for (create(&stacks); auto& node : nodes)
         {
             push(stacks, &node);
-            process << "push: " << node << '\n';
+            process << "push " << node << '\n';
         }
 
         val = static_cast<Meta*>(pop(stacks));
@@ -375,7 +375,7 @@ public:
         val = static_cast<Meta*>(top(stacks));
         process << "top: " << *val << '\n';
         push(stacks, &nodes.back());
-        process << "push: " << nodes.back() << '\n';
+        process << "push " << nodes.back() << '\n';
 
         process << "whether it is empty: " << empty(stacks) << '\n';
         process << "size: " << size(stacks) << '\n';
@@ -408,7 +408,7 @@ public:
         for (create(&queues); auto& node : nodes)
         {
             push(queues, &node);
-            process << "push: " << node << '\n';
+            process << "push " << node << '\n';
         }
 
         val = static_cast<Meta*>(pop(queues));
@@ -416,7 +416,7 @@ public:
         val = static_cast<Meta*>(front(queues));
         process << "front: " << *val << '\n';
         push(queues, &nodes.front());
-        process << "push: " << nodes.front() << '\n';
+        process << "push " << nodes.front() << '\n';
 
         process << "whether it is empty: " << empty(queues) << '\n';
         process << "size: " << size(queues) << '\n';
@@ -476,7 +476,7 @@ public:
         BSTree root = nullptr;
         constexpr std::array<std::int16_t, 6> nodes = {1, 5, 4, 3, 2, 6};
 
-        process << "insert: ";
+        process << "insertion ";
         for (const auto node : nodes)
         {
             process << node << ", ";
@@ -497,7 +497,7 @@ public:
         tracker.traverse(root, root->key, 0);
 
         constexpr std::int16_t deleteNode = 3;
-        process << "delete root node: " << deleteNode;
+        process << "deletion " << deleteNode;
         root = deletion(root, deleteNode);
 
         process << "\nin-order traversal: ";
@@ -520,7 +520,7 @@ public:
         constexpr std::array<std::int16_t, 16> nodes = {3, 2, 1, 4, 5, 6, 7, 16, 15, 14, 13, 12, 11, 10, 8, 9};
 
         process << "height: " << getHeight(root);
-        process << "\ninsert: ";
+        process << "\ninsertion ";
         for (const auto node : nodes)
         {
             process << node << ", ";
@@ -542,7 +542,7 @@ public:
         tracker.traverse(root, root->key, 0);
 
         constexpr std::int16_t deleteNode = 8;
-        process << "delete root node: " << deleteNode;
+        process << "deletion " << deleteNode;
         root = deletion(root, deleteNode);
 
         process << "\nheight: " << getHeight(root);
@@ -565,7 +565,7 @@ public:
         SplayTree root = nullptr;
         constexpr std::array<std::int16_t, 7> nodes = {10, 50, 40, 70, 30, 20, 60};
 
-        process << "insert: ";
+        process << "insertion ";
         for (const auto node : nodes)
         {
             process << node << ", ";
@@ -586,7 +586,7 @@ public:
         tracker.traverse(root, root->key, 0);
 
         constexpr std::int16_t deleteNode = 70;
-        process << "delete root node: " << deleteNode;
+        process << "deletion " << deleteNode;
         root = deletion(root, deleteNode);
 
         process << "\nin-order traversal: ";
@@ -595,7 +595,7 @@ public:
         tracker.traverse(root, root->key, 0);
 
         constexpr std::int16_t splayNode = 30;
-        process << "splay node as root node: " << splayNode;
+        process << "splaying " << splayNode;
         root = splaying(root, splayNode);
 
         process << "\ntree details:\n";
