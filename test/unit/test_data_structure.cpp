@@ -62,10 +62,10 @@ protected:
         "erase range {B, C}: 2\n"
         "resolve range {A: ---}, {B: ---}, {C: ---}, {D: ---}: {A: ---}, {B: ---}, {C: ---}, {D: qux}\n"
         "insert range: {A: foo}, {B: bar}, {C: baz}, {D: qux}\n"
-        "find range {A, B, C, D}: {A: ---}, {B: bar}, {C: baz}, {D: qux}\n"
         "whether it is empty: false\n"
         "size: 3\n"
         "capacity: 3\n"
+        "cache detail: {A: ---}, {B: bar}, {C: baz}, {D: qux}\n"
     };
     //! @brief Expected result 2.
     static constexpr std::string_view expRes2
@@ -84,10 +84,10 @@ protected:
         "erase range {B, C}: 1\n"
         "resolve range {A: ---}, {B: ---}, {C: ---}, {D: ---}: {A: foo}, {B: ---}, {C: ---}, {D: qux}\n"
         "insert range: {A: foo}, {B: bar}, {C: baz}, {D: qux}\n"
-        "find range {A, B, C, D}: {A: foo}, {B: ---}, {C: baz}, {D: qux}\n"
         "whether it is empty: false\n"
         "size: 3\n"
         "capacity: 3\n"
+        "cache detail: {A: foo}, {B: ---}, {C: baz}, {D: qux}\n"
     };
     //! @brief Expected result 3.
     static constexpr std::string_view expRes3
@@ -106,10 +106,10 @@ protected:
         "erase range {B, C}: 1\n"
         "resolve range {A: ---}, {B: ---}, {C: ---}, {D: ---}: {A: foo}, {B: ---}, {C: ---}, {D: qux}\n"
         "insert range: {A: foo}, {B: bar}, {C: baz}, {D: qux}\n"
-        "find range {A, B, C, D}: {A: ---}, {B: bar}, {C: baz}, {D: qux}\n"
         "whether it is empty: false\n"
         "size: 3\n"
         "capacity: 3\n"
+        "cache detail: {A: ---}, {B: bar}, {C: baz}, {D: qux}\n"
     };
     // clang-format on
 };
