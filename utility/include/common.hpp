@@ -295,7 +295,7 @@ private:
     std::atomic_uint_fast16_t reader{0};
     //! @brief Counter of writers that have acquired the exclusive lock.
     std::atomic_uint_fast16_t writer{0};
-    //! @brief Mutex for counters.
+    //! @brief Mutex for controlling counters.
     mutable std::mutex mtx;
     //! @brief The synchronization condition for counters. Use with mtx.
     std::condition_variable cond;
