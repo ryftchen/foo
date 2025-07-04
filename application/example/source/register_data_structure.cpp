@@ -66,6 +66,44 @@ void runChoices<CacheInstance>(const std::vector<std::string>& candidates)
     app_ds::applyingCache(candidates);
 }
 
+namespace filter
+{
+//! @brief Register version number.
+//! @return version number (major.minor.patch)
+const char* version() noexcept
+{
+    return app_ds::filter::version;
+}
+} // namespace filter
+//! @brief Update filter-related choice.
+//! @param target - target instance
+template <>
+void updateChoice<FilterInstance>(const std::string& target)
+{
+    constexpr auto category = Category::filter;
+    auto& bits = categoryOpts<category>();
+
+    switch (utility::common::bkdrHash(target.c_str()))
+    {
+        case abbrValue(FilterInstance::bloom):
+            bits.set(FilterInstance::bloom);
+            break;
+        case abbrValue(FilterInstance::quotient):
+            bits.set(FilterInstance::quotient);
+            break;
+        default:
+            bits.reset();
+            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " instance: " + target + '.'};
+    }
+}
+//! @brief Run filter-related choices.
+//! @param candidates - container for the candidate target instances
+template <>
+void runChoices<FilterInstance>(const std::vector<std::string>& candidates)
+{
+    app_ds::applyingFilter(candidates);
+}
+
 namespace linear
 {
 //! @brief Register version number.

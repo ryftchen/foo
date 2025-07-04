@@ -138,6 +138,64 @@ TEST_F(CacheTestBase, lruInstance)
     ASSERT_EQ(expRes3, result.str());
 }
 
+//! @brief Test base of filter.
+class FilterTestBase : public ::testing::Test
+{
+public:
+    //! @brief Construct a new FilterTestBase object.
+    FilterTestBase() = default;
+    //! @brief Destroy the FilterTestBase object.
+    ~FilterTestBase() override = default;
+
+protected:
+    //! @brief Set up the test case.
+    static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE("Filter", "BEGIN"); }
+    //! @brief Tear down the test case.
+    static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE("Filter", "END"); }
+    //! @brief Set up.
+    void SetUp() override {}
+    //! @brief Tear down.
+    void TearDown() override {}
+
+    //! @brief System under test.
+    const filter::Showcase sut{};
+    // clang-format off
+    //! @brief Expected result 1.
+    static constexpr std::string_view expRes1
+    {
+        "insert {foo://bar/0/baz.qux ... foo://bar/999/baz.qux}: 1000\n"
+        "may contain {foo://bar/0/baz.qux ... foo://bar/999/baz.qux}: 1000\n"
+        "may not contain {foo://bar/1000/baz.qux ... foo://bar/1999/baz.qux}: 1000\n"
+    };
+    //! @brief Expected result 2.
+    static constexpr std::string_view expRes2
+    {
+        "A insert {foo://bar/0/baz.qux ... foo://bar/499/baz.qux}: 500\n"
+        "B insert {foo://bar/500/baz.qux ... foo://bar/999/baz.qux}: 500\n"
+        "C merge A and B: true\n"
+        "C remove {foo://bar/500/baz.qux ... foo://bar/999/baz.qux}: 500\n"
+        "C may contain {foo://bar/0/baz.qux ... foo://bar/499/baz.qux}: 500\n"
+        "C may not contain {foo://bar/500/baz.qux ... foo://bar/999/baz.qux}: 500\n"
+    };
+    // clang-format on
+};
+
+//! @brief Test for the Bloom instance in the structure of filter.
+TEST_F(FilterTestBase, bloomInstance)
+{
+    std::ostringstream result{};
+    ASSERT_NO_THROW(result = sut.bloom());
+    ASSERT_EQ(expRes1, result.str());
+}
+
+//! @brief Test for the quotient instance in the structure of filter.
+TEST_F(FilterTestBase, quotientInstance)
+{
+    std::ostringstream result{};
+    ASSERT_NO_THROW(result = sut.quotient());
+    ASSERT_EQ(expRes2, result.str());
+}
+
 //! @brief Test base of linear.
 class LinearTestBase : public ::testing::Test
 {

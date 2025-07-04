@@ -447,6 +447,23 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
                                       { reg_ds::runChoices<reg_ds::CacheInstance>(msg.coll); });
     versionLinks.emplace(
         VerLinkKey{name<reg_ds::ApplyDataStructure>(), reg_ds::cache::version()}, name<reg_ds::CacheInstance>());
+    candidates = extractChoices<reg_ds::FilterInstance>();
+    dsTable.emplace(name<reg_ds::FilterInstance>(), Attr{candidates, reg_ds::FilterInstance{}});
+    subCLIAppDs
+        .addArgument(
+            prefix1 + std::string{alias<reg_ds::FilterInstance>()},
+            prefix2 + std::string{name<reg_ds::FilterInstance>()})
+        .argsNum(0, candidates.size())
+        .defaultValue<std::vector<std::string>>(std::move(candidates))
+        .remaining()
+        .metavar(optMetavar)
+        .help(descr<reg_ds::FilterInstance>());
+    applyingForwarder.registerHandler([](const action::UpdateChoice<reg_ds::FilterInstance>& msg)
+                                      { reg_ds::updateChoice<reg_ds::FilterInstance>(msg.cho); });
+    applyingForwarder.registerHandler([](const action::RunChoices<reg_ds::FilterInstance>& msg)
+                                      { reg_ds::runChoices<reg_ds::FilterInstance>(msg.coll); });
+    versionLinks.emplace(
+        VerLinkKey{name<reg_ds::ApplyDataStructure>(), reg_ds::filter::version()}, name<reg_ds::FilterInstance>());
     candidates = extractChoices<reg_ds::LinearInstance>();
     dsTable.emplace(name<reg_ds::LinearInstance>(), Attr{candidates, reg_ds::LinearInstance{}});
     subCLIAppDs
