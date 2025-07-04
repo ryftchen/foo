@@ -71,6 +71,83 @@ static consteval std::string_view categoryAlias()
     return attr.value;
 }
 
+namespace filter
+{
+//! @brief Show the contents of the filter result.
+//! @param instance - specific value of FilterInstance enum
+//! @param result - filter result
+static void showResult(const FilterInstance instance, const std::string& result)
+{
+    std::printf("\n==> %-8s Instance <==\n%s", makeTitle(instance).c_str(), result.c_str());
+}
+
+void FilterStructure::bloomInstance()
+try
+{
+    const auto output = Showcase().bloom();
+    showResult(FilterInstance::bloom, output.str());
+}
+catch (const std::exception& err)
+{
+    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
+}
+
+void FilterStructure::quotientInstance()
+try
+{
+    const auto output = Showcase().quotient();
+    showResult(FilterInstance::quotient, output.str());
+}
+catch (const std::exception& err)
+{
+    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
+}
+} // namespace filter
+//! @brief To apply filter-related instances.
+//! @param candidates - container for the candidate target instances
+void applyingFilter(const std::vector<std::string>& candidates)
+{
+    constexpr auto category = Category::filter;
+    const auto& bits = categoryOpts<category>();
+    if (bits.none())
+    {
+        return;
+    }
+    assert(bits.size() == candidates.size());
+
+    APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
+
+    auto& pooling = configure::task::resourcePool();
+    auto* const allocatedJob = pooling.newElement(bits.count());
+    const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
+    const auto addTask = utility::common::wrapClosure(
+        [allocatedJob, &taskNamer](const std::string_view subTask, void (*targetInstance)())
+        { allocatedJob->enqueue(taskNamer(subTask), targetInstance); });
+    MACRO_DEFER([&]() { pooling.deleteElement(allocatedJob); });
+
+    std::cout << "\nInstances of the " << toString<category>() << " structure:" << std::endl;
+    for (const auto index :
+         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
+    {
+        const auto& target = candidates.at(index);
+        switch (utility::common::bkdrHash(target.c_str()))
+        {
+            using filter::FilterStructure;
+            static_assert(utility::common::isStatelessClass<FilterStructure>());
+            case abbrValue(FilterInstance::bloom):
+                addTask(target, &FilterStructure::bloomInstance);
+                break;
+            case abbrValue(FilterInstance::quotient):
+                addTask(target, &FilterStructure::quotientInstance);
+                break;
+            default:
+                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " instance: " + target + '.'};
+        }
+    }
+
+    APP_DS_PRINT_TASK_TITLE_SCOPE_END(category);
+}
+
 namespace cache
 {
 //! @brief Show the contents of the cache result.

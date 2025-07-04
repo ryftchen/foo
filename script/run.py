@@ -77,6 +77,7 @@ class Task:
         "app-ds": {
             "--help": [],
             "--cache": ["fir", "fre", "rec"],
+            "--filter": ["blo", "quo"],
             "--linear": ["lin", "sta", "que"],
             "--tree": ["bin", "ade", "spl"],
         },

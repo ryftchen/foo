@@ -13,6 +13,7 @@
 #endif // _PRECOMPILED_HEADER
 
 #include "data_structure/include/cache.hpp"
+#include "data_structure/include/filter.hpp"
 #include "data_structure/include/linear.hpp"
 #include "data_structure/include/tree.hpp"
 
@@ -265,6 +266,173 @@ public:
 } // namespace cache
 extern void applyingCache(const std::vector<std::string>& candidates);
 
+//! @brief Apply filter.
+namespace filter
+{
+//! @brief The version used to apply.
+const char* const version = date_structure::filter::version();
+
+//! @brief Showcase for filter instances.
+class Showcase
+{
+public:
+    //! @brief Destroy the Showcase object.
+    virtual ~Showcase() = default;
+
+    // NOLINTBEGIN(google-build-using-namespace)
+    //! @brief Bloom.
+    //! @return procedure output
+    static std::ostringstream bloom()
+    {
+        using namespace date_structure::filter::bloom;
+        std::ostringstream process{};
+
+        constexpr std::uint32_t totalSize = 1000;
+        const std::string keyPart1 = "foo://bar/", keyPart2 = "/baz.qux";
+        std::vector<std::string> urls1{}, urls2{};
+        urls1.reserve(totalSize);
+        urls1.reserve(totalSize);
+        for (std::uint32_t i = 0; i < totalSize; ++i)
+        {
+            auto url1 = keyPart1;
+            url1 += std::to_string(i);
+            url1 += keyPart2;
+            urls1.emplace_back(std::move(url1));
+
+            auto url2 = keyPart1;
+            url2 += std::to_string(i + totalSize);
+            url2 += keyPart2;
+            urls2.emplace_back(std::move(url2));
+        }
+
+        BloomFilter bf{};
+        init(&bf, 0, 1e5, 1e-5);
+        const std::uint32_t inserted = std::accumulate(
+            urls1.cbegin(),
+            urls1.cend(),
+            0,
+            [&bf](const auto acc, const auto& url) { return acc + (insert(&bf, url.c_str(), url.length()) ? 1 : 0); });
+        process << "insert {" << urls1.at(0) << " ... " << urls1.at(urls1.size() - 1) << "}: " << inserted << '\n';
+
+        const std::uint32_t mayContained = std::accumulate(
+            urls1.cbegin(),
+            urls1.cend(),
+            0,
+            [&bf](const auto acc, const auto& url)
+            { return acc + (mayContain(&bf, url.c_str(), url.length()) ? 1 : 0); });
+        process << "may contain {" << urls1.at(0) << " ... " << urls1.at(urls1.size() - 1) << "}: " << mayContained
+                << '\n';
+        const std::uint32_t mayNotContained = std::accumulate(
+            urls2.cbegin(),
+            urls2.cend(),
+            0,
+            [&bf](const auto acc, const auto& url)
+            { return acc + (!mayContain(&bf, url.c_str(), url.length()) ? 1 : 0); });
+        process << "may not contain {" << urls2.at(0) << " ... " << urls2.at(urls2.size() - 1)
+                << "}: " << mayNotContained << '\n';
+        clear(&bf);
+        deinit(&bf);
+
+        return process;
+    }
+
+    //! @brief Quotient.
+    //! @return procedure output
+    static std::ostringstream quotient()
+    {
+        using namespace date_structure::filter::quotient;
+        std::ostringstream process{};
+        process << std::boolalpha;
+
+        constexpr std::uint32_t totalSize = 500;
+        const std::string keyPart1 = "foo://bar/", keyPart2 = "/baz.qux";
+        std::vector<std::string> urls1{}, urls2{};
+        urls1.reserve(totalSize);
+        urls1.reserve(totalSize);
+        for (std::uint32_t i = 0; i < totalSize; ++i)
+        {
+            auto url1 = keyPart1;
+            url1 += std::to_string(i);
+            url1 += keyPart2;
+            urls1.emplace_back(std::move(url1));
+
+            auto url2 = keyPart1;
+            url2 += std::to_string(i + totalSize);
+            url2 += keyPart2;
+            urls2.emplace_back(std::move(url2));
+        }
+
+        QuotientFilter qfA{}, qfB{};
+        init(&qfA, 0, 16, 8);
+        init(&qfB, 0, 16, 8);
+        const std::uint32_t insertedA = std::accumulate(
+            urls1.cbegin(),
+            urls1.cend(),
+            0,
+            [&qfA](const auto acc, const auto& url)
+            { return acc + (insert(&qfA, url.c_str(), url.length()) ? 1 : 0); });
+        process << "A insert {" << urls1.at(0) << " ... " << urls1.at(urls1.size() - 1) << "}: " << insertedA << '\n';
+        const std::uint32_t insertedB = std::accumulate(
+            urls2.cbegin(),
+            urls2.cend(),
+            0,
+            [&qfB](const auto acc, const auto& url)
+            { return acc + (insert(&qfB, url.c_str(), url.length()) ? 1 : 0); });
+        process << "B insert {" << urls2.at(0) << " ... " << urls2.at(urls2.size() - 1) << "}: " << insertedB << '\n';
+
+        QuotientFilter qfC{};
+        process << "C merge A and B: " << merge(&qfA, &qfB, &qfC) << '\n';
+        clear(&qfA);
+        deinit(&qfA);
+        clear(&qfB);
+        deinit(&qfB);
+
+        const std::uint32_t removedC = std::accumulate(
+            urls2.cbegin(),
+            urls2.cend(),
+            0,
+            [&qfC](const auto acc, const auto& url)
+            { return acc + (remove(&qfC, url.c_str(), url.length()) ? 1 : 0); });
+        process << "C remove {" << urls2.at(0) << " ... " << urls2.at(urls2.size() - 1) << "}: " << removedC << '\n';
+        const std::uint32_t mayContainedC = std::accumulate(
+            urls1.cbegin(),
+            urls1.cend(),
+            0,
+            [&qfC](const auto acc, const auto& url)
+            { return acc + (mayContain(&qfC, url.c_str(), url.length()) ? 1 : 0); });
+        process << "C may contain {" << urls1.at(0) << " ... " << urls1.at(urls1.size() - 1) << "}: " << mayContainedC
+                << '\n';
+        const std::uint32_t mayNotContainedC = std::accumulate(
+            urls2.cbegin(),
+            urls2.cend(),
+            0,
+            [&qfC](const auto acc, const auto& url)
+            { return acc + (!mayContain(&qfC, url.c_str(), url.length()) ? 1 : 0); });
+        process << "C may not contain {" << urls2.at(0) << " ... " << urls2.at(urls2.size() - 1)
+                << "}: " << mayNotContainedC << '\n';
+        clear(&qfC);
+        deinit(&qfC);
+
+        return process;
+    }
+    // NOLINTEND(google-build-using-namespace)
+};
+
+//! @brief Structure of filter.
+class FilterStructure
+{
+public:
+    //! @brief Destroy the FilterStructure object.
+    virtual ~FilterStructure() = default;
+
+    //! @brief The Bloom instance.
+    static void bloomInstance();
+    //! @brief The quotient instance.
+    static void quotientInstance();
+};
+} // namespace filter
+extern void applyingFilter(const std::vector<std::string>& candidates);
+
 //! @brief Apply linear.
 namespace linear
 {
@@ -289,6 +457,7 @@ struct Meta
         return os;
     }
 };
+
 //! @brief Showcase for linear instances.
 class Showcase
 {
