@@ -476,9 +476,10 @@ public:
         process << std::boolalpha;
 
         constexpr std::string_view separator = " <-> ";
-        Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
-        const std::span<Meta> nodes(meta);
+        constexpr Meta meta[] = {{'a', "'a'"}, {'b', "'b'"}, {'c', "'c'"}, {'d', "'d'"}};
+        const std::span<const Meta> nodes(meta);
         const Meta* val = nullptr;
+
         DLL dll = nullptr;
         create(&dll);
         insert(dll, 0, nodes.data());
@@ -529,34 +530,35 @@ public:
         process << std::boolalpha;
 
         constexpr std::string_view separator = ", ";
-        Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
-        const std::span<Meta> nodes(meta);
+        constexpr Meta meta[] = {{'a', "'a'"}, {'b', "'b'"}, {'c', "'c'"}, {'d', "'d'"}};
+        const std::span<const Meta> nodes(meta);
         const Meta* val = nullptr;
-        Stack stacks = nullptr;
-        for (create(&stacks); auto& node : nodes)
+
+        Stack stk = nullptr;
+        for (create(&stk); const auto& node : nodes)
         {
-            push(stacks, &node);
+            push(stk, &node);
             process << "push " << node << '\n';
         }
 
-        val = static_cast<Meta*>(pop(stacks));
+        val = static_cast<Meta*>(pop(stk));
         process << "pop: " << *val << '\n';
-        val = static_cast<Meta*>(top(stacks));
+        val = static_cast<Meta*>(top(stk));
         process << "top: " << *val << '\n';
-        push(stacks, &nodes.back());
+        push(stk, &nodes.back());
         process << "push " << nodes.back() << '\n';
 
-        process << "whether it is empty: " << empty(stacks) << '\n';
-        process << "size: " << size(stacks) << '\n';
+        process << "whether it is empty: " << empty(stk) << '\n';
+        process << "size: " << size(stk) << '\n';
         process << "linear details: TOP [";
-        while (!empty(stacks))
+        while (!empty(stk))
         {
-            val = static_cast<Meta*>(pop(stacks));
+            val = static_cast<Meta*>(pop(stk));
             process << *val << separator;
         }
         process.seekp(process.str().length() - separator.length());
         process << "] BOTTOM\n";
-        destroy(&stacks);
+        destroy(&stk);
 
         return std::ostringstream{process.str()};
     }
@@ -570,34 +572,35 @@ public:
         process << std::boolalpha;
 
         constexpr std::string_view separator = ", ";
-        Meta meta[] = {{'A', "foo"}, {'B', "bar"}, {'C', "baz"}, {'D', "qux"}};
-        const std::span<Meta> nodes(meta);
+        constexpr Meta meta[] = {{'a', "'a'"}, {'b', "'b'"}, {'c', "'c'"}, {'d', "'d'"}};
+        const std::span<const Meta> nodes(meta);
         const Meta* val = nullptr;
-        Queue queues = nullptr;
-        for (create(&queues); auto& node : nodes)
+
+        Queue que = nullptr;
+        for (create(&que); const auto& node : nodes)
         {
-            push(queues, &node);
+            push(que, &node);
             process << "push " << node << '\n';
         }
 
-        val = static_cast<Meta*>(pop(queues));
+        val = static_cast<Meta*>(pop(que));
         process << "pop: " << *val << '\n';
-        val = static_cast<Meta*>(front(queues));
+        val = static_cast<Meta*>(front(que));
         process << "front: " << *val << '\n';
-        push(queues, &nodes.front());
+        push(que, &nodes.front());
         process << "push " << nodes.front() << '\n';
 
-        process << "whether it is empty: " << empty(queues) << '\n';
-        process << "size: " << size(queues) << '\n';
+        process << "whether it is empty: " << empty(que) << '\n';
+        process << "size: " << size(que) << '\n';
         process << "linear details: FRONT [";
-        while (!empty(queues))
+        while (!empty(que))
         {
-            val = static_cast<Meta*>(pop(queues));
+            val = static_cast<Meta*>(pop(que));
             process << *val << separator;
         }
         process.seekp(process.str().length() - separator.length());
         process << "] REAR\n";
-        destroy(&queues);
+        destroy(&que);
 
         return std::ostringstream{process.str()};
     }
