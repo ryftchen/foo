@@ -217,33 +217,35 @@ catch (const std::exception& err)
     return !isFaulty.load();
 }
 
-void Command::initializeNativeCLI()
+void Command::setupMainCLI()
 {
     using ArgsNumPattern = utility::argument::ArgsNumPattern;
-    const std::string prefix1 = "-", prefix2 = "--";
-
     mainCLI
-        .addArgument(prefix1 + std::string{getAlias(Category::help)}, prefix2 + std::string{toString(Category::help)})
+        .addArgument(
+            shortPrefix + std::string{getAlias(Category::help)}, longPrefix + std::string{toString(Category::help)})
         .argsNum(0)
         .implicitValue(true)
         .help(getDescr(Category::help));
     builtInNotifier.attach(Category::help, std::make_shared<LocalNotifier::Handler<Category::help>>(*this));
     mainCLI
         .addArgument(
-            prefix1 + std::string{getAlias(Category::version)}, prefix2 + std::string{toString(Category::version)})
+            shortPrefix + std::string{getAlias(Category::version)},
+            longPrefix + std::string{toString(Category::version)})
         .argsNum(0)
         .implicitValue(true)
         .help(getDescr(Category::version));
     builtInNotifier.attach(Category::version, std::make_shared<LocalNotifier::Handler<Category::version>>(*this));
     mainCLI
-        .addArgument(prefix1 + std::string{getAlias(Category::dump)}, prefix2 + std::string{toString(Category::dump)})
+        .addArgument(
+            shortPrefix + std::string{getAlias(Category::dump)}, longPrefix + std::string{toString(Category::dump)})
         .argsNum(0)
         .implicitValue(true)
         .help(getDescr(Category::dump));
     builtInNotifier.attach(Category::dump, std::make_shared<LocalNotifier::Handler<Category::dump>>(*this));
     mainCLI
         .addArgument(
-            prefix1 + std::string{getAlias(Category::console)}, prefix2 + std::string{toString(Category::console)})
+            shortPrefix + std::string{getAlias(Category::console)},
+            longPrefix + std::string{toString(Category::console)})
         .argsNum(ArgsNumPattern::any)
         .defaultValue<std::vector<std::string>>({"usage"})
         .appending()
@@ -262,20 +264,20 @@ void Command::initializeNativeCLI()
     builtInNotifier.attach(Category::console, std::make_shared<LocalNotifier::Handler<Category::console>>(*this));
 }
 
-void Command::initializeExtraCLI() // NOLINT(readability-function-size)
+//! @brief Setup the sub-command line interface (algorithm module).
+template <>
+void Command::setupSubCLI<reg_algo::ApplyAlgorithm>() // NOLINT(readability-function-size)
 {
     using Intf = ExtraManager::Intf;
     using Attr = ExtraManager::Attr;
     using action::name, action::descr, action::alias;
     constexpr std::string_view helpDescr = getDescr(Category::help), optMetavar = "OPT";
-    const std::string prefix1 = "-", prefix2 = "--", helpArg1 = prefix1 + std::string{getAlias(Category::help)},
-                      helpArg2 = prefix2 + std::string{toString(Category::help)};
-    auto& choiceRegistry = taskDispatcher.extraChoiceRegistry;
-    auto& checklist = taskDispatcher.extraChecklist;
+    const std::string helpArg1 = shortPrefix + std::string{getAlias(Category::help)},
+                      helpArg2 = longPrefix + std::string{toString(Category::help)};
     std::vector<std::string> candidates{};
 
-    auto& algoTable = choiceRegistry[subCLIAppAlgo.title()];
-    checklist.emplace(
+    auto& algoTable = taskDispatcher.extraChoiceRegistry[subCLIAppAlgo.title()];
+    taskDispatcher.extraChecklist.emplace(
         subCLIAppAlgo.title(),
         Intf{[]() { return !reg_algo::manager().empty(); }, []() { reg_algo::manager().reset(); }});
     subCLIAppAlgo.addDescription(descr<reg_algo::ApplyAlgorithm>());
@@ -284,7 +286,8 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     algoTable.emplace(name<reg_algo::MatchMethod>(), Attr{candidates, reg_algo::MatchMethod{}});
     subCLIAppAlgo
         .addArgument(
-            prefix1 + std::string{alias<reg_algo::MatchMethod>()}, prefix2 + std::string{name<reg_algo::MatchMethod>()})
+            shortPrefix + std::string{alias<reg_algo::MatchMethod>()},
+            longPrefix + std::string{name<reg_algo::MatchMethod>()})
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
@@ -300,8 +303,8 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     algoTable.emplace(name<reg_algo::NotationMethod>(), Attr{candidates, reg_algo::NotationMethod{}});
     subCLIAppAlgo
         .addArgument(
-            prefix1 + std::string{alias<reg_algo::NotationMethod>()},
-            prefix2 + std::string{name<reg_algo::NotationMethod>()})
+            shortPrefix + std::string{alias<reg_algo::NotationMethod>()},
+            longPrefix + std::string{name<reg_algo::NotationMethod>()})
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
@@ -317,8 +320,8 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     algoTable.emplace(name<reg_algo::OptimalMethod>(), Attr{candidates, reg_algo::OptimalMethod{}});
     subCLIAppAlgo
         .addArgument(
-            prefix1 + std::string{alias<reg_algo::OptimalMethod>()},
-            prefix2 + std::string{name<reg_algo::OptimalMethod>()})
+            shortPrefix + std::string{alias<reg_algo::OptimalMethod>()},
+            longPrefix + std::string{name<reg_algo::OptimalMethod>()})
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
@@ -334,8 +337,8 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     algoTable.emplace(name<reg_algo::SearchMethod>(), Attr{candidates, reg_algo::SearchMethod{}});
     subCLIAppAlgo
         .addArgument(
-            prefix1 + std::string{alias<reg_algo::SearchMethod>()},
-            prefix2 + std::string{name<reg_algo::SearchMethod>()})
+            shortPrefix + std::string{alias<reg_algo::SearchMethod>()},
+            longPrefix + std::string{name<reg_algo::SearchMethod>()})
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
@@ -351,7 +354,8 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     algoTable.emplace(name<reg_algo::SortMethod>(), Attr{candidates, reg_algo::SortMethod{}});
     subCLIAppAlgo
         .addArgument(
-            prefix1 + std::string{alias<reg_algo::SortMethod>()}, prefix2 + std::string{name<reg_algo::SortMethod>()})
+            shortPrefix + std::string{alias<reg_algo::SortMethod>()},
+            longPrefix + std::string{name<reg_algo::SortMethod>()})
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
@@ -364,9 +368,22 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     versionLinks.emplace(
         VerLinkKey{name<reg_algo::ApplyAlgorithm>(), reg_algo::sort::version()}, name<reg_algo::SortMethod>());
     mainCLI.addSubParser(subCLIAppAlgo);
+}
 
-    auto& dpTable = choiceRegistry[subCLIAppDp.title()];
-    checklist.emplace(
+//! @brief Setup the sub-command line interface (design pattern module).
+template <>
+void Command::setupSubCLI<reg_dp::ApplyDesignPattern>()
+{
+    using Intf = ExtraManager::Intf;
+    using Attr = ExtraManager::Attr;
+    using action::name, action::descr, action::alias;
+    constexpr std::string_view helpDescr = getDescr(Category::help), optMetavar = "OPT";
+    const std::string helpArg1 = shortPrefix + std::string{getAlias(Category::help)},
+                      helpArg2 = longPrefix + std::string{toString(Category::help)};
+    std::vector<std::string> candidates{};
+
+    auto& dpTable = taskDispatcher.extraChoiceRegistry[subCLIAppDp.title()];
+    taskDispatcher.extraChecklist.emplace(
         subCLIAppDp.title(), Intf{[]() { return !reg_dp::manager().empty(); }, []() { reg_dp::manager().reset(); }});
     subCLIAppDp.addDescription(descr<reg_dp::ApplyDesignPattern>());
     subCLIAppDp.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
@@ -374,8 +391,8 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     dpTable.emplace(name<reg_dp::BehavioralInstance>(), Attr{candidates, reg_dp::BehavioralInstance{}});
     subCLIAppDp
         .addArgument(
-            prefix1 + std::string{alias<reg_dp::BehavioralInstance>()},
-            prefix2 + std::string{name<reg_dp::BehavioralInstance>()})
+            shortPrefix + std::string{alias<reg_dp::BehavioralInstance>()},
+            longPrefix + std::string{name<reg_dp::BehavioralInstance>()})
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
@@ -392,8 +409,8 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     dpTable.emplace(name<reg_dp::CreationalInstance>(), Attr{candidates, reg_dp::CreationalInstance{}});
     subCLIAppDp
         .addArgument(
-            prefix1 + std::string{alias<reg_dp::CreationalInstance>()},
-            prefix2 + std::string{name<reg_dp::CreationalInstance>()})
+            shortPrefix + std::string{alias<reg_dp::CreationalInstance>()},
+            longPrefix + std::string{name<reg_dp::CreationalInstance>()})
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
@@ -410,8 +427,8 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     dpTable.emplace(name<reg_dp::StructuralInstance>(), Attr{candidates, reg_dp::StructuralInstance{}});
     subCLIAppDp
         .addArgument(
-            prefix1 + std::string{alias<reg_dp::StructuralInstance>()},
-            prefix2 + std::string{name<reg_dp::StructuralInstance>()})
+            shortPrefix + std::string{alias<reg_dp::StructuralInstance>()},
+            longPrefix + std::string{name<reg_dp::StructuralInstance>()})
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
@@ -425,9 +442,22 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
         VerLinkKey{name<reg_dp::ApplyDesignPattern>(), reg_dp::structural::version()},
         name<reg_dp::StructuralInstance>());
     mainCLI.addSubParser(subCLIAppDp);
+}
 
-    auto& dsTable = choiceRegistry[subCLIAppDs.title()];
-    checklist.emplace(
+//! @brief Setup the sub-command line interface (data structure module).
+template <>
+void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
+{
+    using Intf = ExtraManager::Intf;
+    using Attr = ExtraManager::Attr;
+    using action::name, action::descr, action::alias;
+    constexpr std::string_view helpDescr = getDescr(Category::help), optMetavar = "OPT";
+    const std::string helpArg1 = shortPrefix + std::string{getAlias(Category::help)},
+                      helpArg2 = longPrefix + std::string{toString(Category::help)};
+    std::vector<std::string> candidates{};
+
+    auto& dsTable = taskDispatcher.extraChoiceRegistry[subCLIAppDs.title()];
+    taskDispatcher.extraChecklist.emplace(
         subCLIAppDs.title(), Intf{[]() { return !reg_ds::manager().empty(); }, []() { reg_ds::manager().reset(); }});
     subCLIAppDs.addDescription(descr<reg_ds::ApplyDataStructure>());
     subCLIAppDs.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
@@ -435,7 +465,8 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     dsTable.emplace(name<reg_ds::CacheInstance>(), Attr{candidates, reg_ds::CacheInstance{}});
     subCLIAppDs
         .addArgument(
-            prefix1 + std::string{alias<reg_ds::CacheInstance>()}, prefix2 + std::string{name<reg_ds::CacheInstance>()})
+            shortPrefix + std::string{alias<reg_ds::CacheInstance>()},
+            longPrefix + std::string{name<reg_ds::CacheInstance>()})
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
@@ -451,8 +482,8 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     dsTable.emplace(name<reg_ds::FilterInstance>(), Attr{candidates, reg_ds::FilterInstance{}});
     subCLIAppDs
         .addArgument(
-            prefix1 + std::string{alias<reg_ds::FilterInstance>()},
-            prefix2 + std::string{name<reg_ds::FilterInstance>()})
+            shortPrefix + std::string{alias<reg_ds::FilterInstance>()},
+            longPrefix + std::string{name<reg_ds::FilterInstance>()})
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
@@ -468,8 +499,8 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     dsTable.emplace(name<reg_ds::LinearInstance>(), Attr{candidates, reg_ds::LinearInstance{}});
     subCLIAppDs
         .addArgument(
-            prefix1 + std::string{alias<reg_ds::LinearInstance>()},
-            prefix2 + std::string{name<reg_ds::LinearInstance>()})
+            shortPrefix + std::string{alias<reg_ds::LinearInstance>()},
+            longPrefix + std::string{name<reg_ds::LinearInstance>()})
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
@@ -485,7 +516,8 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     dsTable.emplace(name<reg_ds::TreeInstance>(), Attr{candidates, reg_ds::TreeInstance{}});
     subCLIAppDs
         .addArgument(
-            prefix1 + std::string{alias<reg_ds::TreeInstance>()}, prefix2 + std::string{name<reg_ds::TreeInstance>()})
+            shortPrefix + std::string{alias<reg_ds::TreeInstance>()},
+            longPrefix + std::string{name<reg_ds::TreeInstance>()})
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
@@ -498,9 +530,22 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     versionLinks.emplace(
         VerLinkKey{name<reg_ds::ApplyDataStructure>(), reg_ds::tree::version()}, name<reg_ds::TreeInstance>());
     mainCLI.addSubParser(subCLIAppDs);
+}
 
-    auto& numTable = choiceRegistry[subCLIAppNum.title()];
-    checklist.emplace(
+//! @brief Setup the sub-command line interface (numeric module).
+template <>
+void Command::setupSubCLI<reg_num::ApplyNumeric>()
+{
+    using Intf = ExtraManager::Intf;
+    using Attr = ExtraManager::Attr;
+    using action::name, action::descr, action::alias;
+    constexpr std::string_view helpDescr = getDescr(Category::help), optMetavar = "OPT";
+    const std::string helpArg1 = shortPrefix + std::string{getAlias(Category::help)},
+                      helpArg2 = longPrefix + std::string{toString(Category::help)};
+    std::vector<std::string> candidates{};
+
+    auto& numTable = taskDispatcher.extraChoiceRegistry[subCLIAppNum.title()];
+    taskDispatcher.extraChecklist.emplace(
         subCLIAppNum.title(), Intf{[]() { return !reg_num::manager().empty(); }, []() { reg_num::manager().reset(); }});
     subCLIAppNum.addDescription(descr<reg_num::ApplyNumeric>());
     subCLIAppNum.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
@@ -508,8 +553,8 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     numTable.emplace(name<reg_num::ArithmeticMethod>(), Attr{candidates, reg_num::ArithmeticMethod{}});
     subCLIAppNum
         .addArgument(
-            prefix1 + std::string{alias<reg_num::ArithmeticMethod>()},
-            prefix2 + std::string{name<reg_num::ArithmeticMethod>()})
+            shortPrefix + std::string{alias<reg_num::ArithmeticMethod>()},
+            longPrefix + std::string{name<reg_num::ArithmeticMethod>()})
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
@@ -525,8 +570,8 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     numTable.emplace(name<reg_num::DivisorMethod>(), Attr{candidates, reg_num::DivisorMethod{}});
     subCLIAppNum
         .addArgument(
-            prefix1 + std::string{alias<reg_num::DivisorMethod>()},
-            prefix2 + std::string{name<reg_num::DivisorMethod>()})
+            shortPrefix + std::string{alias<reg_num::DivisorMethod>()},
+            longPrefix + std::string{name<reg_num::DivisorMethod>()})
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
@@ -542,8 +587,8 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     numTable.emplace(name<reg_num::IntegralMethod>(), Attr{candidates, reg_num::IntegralMethod{}});
     subCLIAppNum
         .addArgument(
-            prefix1 + std::string{alias<reg_num::IntegralMethod>()},
-            prefix2 + std::string{name<reg_num::IntegralMethod>()})
+            shortPrefix + std::string{alias<reg_num::IntegralMethod>()},
+            longPrefix + std::string{name<reg_num::IntegralMethod>()})
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
@@ -559,7 +604,8 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     numTable.emplace(name<reg_num::PrimeMethod>(), Attr{candidates, reg_num::PrimeMethod{}});
     subCLIAppNum
         .addArgument(
-            prefix1 + std::string{alias<reg_num::PrimeMethod>()}, prefix2 + std::string{name<reg_num::PrimeMethod>()})
+            shortPrefix + std::string{alias<reg_num::PrimeMethod>()},
+            longPrefix + std::string{name<reg_num::PrimeMethod>()})
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
@@ -572,6 +618,19 @@ void Command::initializeExtraCLI() // NOLINT(readability-function-size)
     versionLinks.emplace(
         VerLinkKey{name<reg_num::ApplyNumeric>(), reg_num::prime::version()}, name<reg_num::PrimeMethod>());
     mainCLI.addSubParser(subCLIAppNum);
+}
+
+void Command::initializeNativeCLI()
+{
+    setupMainCLI();
+}
+
+void Command::initializeExtraCLI()
+{
+    setupSubCLI<reg_algo::ApplyAlgorithm>();
+    setupSubCLI<reg_dp::ApplyDesignPattern>();
+    setupSubCLI<reg_ds::ApplyDataStructure>();
+    setupSubCLI<reg_num::ApplyNumeric>();
 }
 
 void Command::frontEndHandler(const int argc, const char* const argv[])
