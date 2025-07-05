@@ -640,41 +640,46 @@ public:
     static std::ostringstream bs()
     {
         using namespace date_structure::tree::bs;
-        Output tracker{};
+        auto tracker = Output<std::int16_t>{};
         auto& process = tracker.output();
-        BSTree root = nullptr;
         constexpr std::array<std::int16_t, 6> nodes = {1, 5, 4, 3, 2, 6};
 
+        BSTree tree{};
+        tree.root = nullptr;
+        tree.compare = [](const void* const a, const void* const b) -> int
+        {
+            const auto l = *static_cast<const std::int16_t*>(a), r = *static_cast<const std::int16_t*>(b);
+            return (l > r) - (l < r);
+        };
         process << "insertion ";
-        for (const auto node : nodes)
+        for (const auto& node : nodes)
         {
             process << node << ", ";
-            root = insertion(root, node);
+            insertion(&tree, &node);
         }
         process.seekp(process.str().length() - 2);
 
         process << "\npre-order traversal: ";
-        tracker.preorderTraversal(root);
+        tracker.preOrderTraversal(tree.root);
         process << "\nin-order traversal: ";
-        tracker.inorderTraversal(root);
+        tracker.inOrderTraversal(tree.root);
         process << "\npost-order traversal: ";
-        tracker.postorderTraversal(root);
+        tracker.postOrderTraversal(tree.root);
 
-        process << "\nminimum: " << getMinimum(root)->key;
-        process << "\nmaximum: " << getMaximum(root)->key;
+        process << "\nminimum: " << *static_cast<std::int16_t*>(getMinimum(&tree)->key);
+        process << "\nmaximum: " << *static_cast<std::int16_t*>(getMaximum(&tree)->key);
         process << "\ntree details:\n";
-        tracker.traverse(root, root->key, 0);
+        tracker.traverse(tree.root, tree.root->key, 0);
 
         constexpr std::int16_t deleteNode = 3;
         process << "deletion " << deleteNode;
-        root = deletion(root, deleteNode);
+        deletion(&tree, &deleteNode);
 
         process << "\nin-order traversal: ";
-        tracker.inorderTraversal(root);
+        tracker.inOrderTraversal(tree.root);
         process << "\ntree details:\n";
-        tracker.traverse(root, root->key, 0);
-
-        destruction(root);
+        tracker.traverse(tree.root, tree.root->key, 0);
+        destruction(&tree);
 
         return std::ostringstream{process.str()};
     }
@@ -683,44 +688,49 @@ public:
     static std::ostringstream avl()
     {
         using namespace date_structure::tree::avl;
-        Output tracker{};
+        auto tracker = Output<std::int16_t>{};
         auto& process = tracker.output();
-        AVLTree root = nullptr;
         constexpr std::array<std::int16_t, 16> nodes = {3, 2, 1, 4, 5, 6, 7, 16, 15, 14, 13, 12, 11, 10, 8, 9};
 
-        process << "height: " << getHeight(root);
+        AVLTree tree{};
+        tree.root = nullptr;
+        tree.compare = [](const void* const a, const void* const b) -> int
+        {
+            const auto l = *static_cast<const std::int16_t*>(a), r = *static_cast<const std::int16_t*>(b);
+            return (l > r) - (l < r);
+        };
+        process << "height: " << getHeight(&tree);
         process << "\ninsertion ";
-        for (const auto node : nodes)
+        for (const auto& node : nodes)
         {
             process << node << ", ";
-            root = insertion(root, node);
+            insertion(&tree, &node);
         }
         process.seekp(process.str().length() - 2);
 
         process << "\npre-order traversal: ";
-        tracker.preorderTraversal(root);
+        tracker.preOrderTraversal(tree.root);
         process << "\nin-order traversal: ";
-        tracker.inorderTraversal(root);
+        tracker.inOrderTraversal(tree.root);
         process << "\npost-order traversal: ";
-        tracker.postorderTraversal(root);
+        tracker.postOrderTraversal(tree.root);
 
-        process << "\nheight: " << getHeight(root);
-        process << "\nminimum: " << getMinimum(root)->key;
-        process << "\nmaximum: " << getMaximum(root)->key;
+        process << "\nheight: " << getHeight(&tree);
+        process << "\nminimum: " << *static_cast<std::int16_t*>(getMinimum(&tree)->key);
+        process << "\nmaximum: " << *static_cast<std::int16_t*>(getMaximum(&tree)->key);
         process << "\ntree details:\n";
-        tracker.traverse(root, root->key, 0);
+        tracker.traverse(tree.root, tree.root->key, 0);
 
         constexpr std::int16_t deleteNode = 8;
         process << "deletion " << deleteNode;
-        root = deletion(root, deleteNode);
+        deletion(&tree, &deleteNode);
 
-        process << "\nheight: " << getHeight(root);
+        process << "\nheight: " << getHeight(&tree);
         process << "\nin-order traversal: ";
-        tracker.inorderTraversal(root);
+        tracker.inOrderTraversal(tree.root);
         process << "\ntree details:\n";
-        tracker.traverse(root, root->key, 0);
-
-        destruction(root);
+        tracker.traverse(tree.root, tree.root->key, 0);
+        destruction(&tree);
 
         return std::ostringstream{process.str()};
     }
@@ -729,48 +739,53 @@ public:
     static std::ostringstream splay()
     {
         using namespace date_structure::tree::splay;
-        Output tracker{};
+        auto tracker = Output<std::int16_t>{};
         auto& process = tracker.output();
-        SplayTree root = nullptr;
         constexpr std::array<std::int16_t, 7> nodes = {10, 50, 40, 70, 30, 20, 60};
 
+        SplayTree tree{};
+        tree.root = nullptr;
+        tree.compare = [](const void* const a, const void* const b) -> int
+        {
+            const auto l = *static_cast<const std::int16_t*>(a), r = *static_cast<const std::int16_t*>(b);
+            return (l > r) - (l < r);
+        };
         process << "insertion ";
-        for (const auto node : nodes)
+        for (const auto& node : nodes)
         {
             process << node << ", ";
-            root = insertion(root, node);
+            insertion(&tree, &node);
         }
         process.seekp(process.str().length() - 2);
 
         process << "\npre-order traversal: ";
-        tracker.preorderTraversal(root);
+        tracker.preOrderTraversal(tree.root);
         process << "\nin-order traversal: ";
-        tracker.inorderTraversal(root);
+        tracker.inOrderTraversal(tree.root);
         process << "\npost-order traversal: ";
-        tracker.postorderTraversal(root);
+        tracker.postOrderTraversal(tree.root);
 
-        process << "\nminimum: " << getMinimum(root)->key;
-        process << "\nmaximum: " << getMaximum(root)->key;
+        process << "\nminimum: " << *static_cast<std::int16_t*>(getMinimum(&tree)->key);
+        process << "\nmaximum: " << *static_cast<std::int16_t*>(getMaximum(&tree)->key);
         process << "\ntree details:\n";
-        tracker.traverse(root, root->key, 0);
+        tracker.traverse(tree.root, tree.root->key, 0);
 
         constexpr std::int16_t deleteNode = 70;
         process << "deletion " << deleteNode;
-        root = deletion(root, deleteNode);
+        deletion(&tree, &deleteNode);
 
         process << "\nin-order traversal: ";
-        tracker.inorderTraversal(root);
+        tracker.inOrderTraversal(tree.root);
         process << "\ntree details:\n";
-        tracker.traverse(root, root->key, 0);
+        tracker.traverse(tree.root, tree.root->key, 0);
 
         constexpr std::int16_t splayNode = 30;
         process << "splaying " << splayNode;
-        root = splaying(root, splayNode);
+        splaying(&tree, &splayNode);
 
         process << "\ntree details:\n";
-        tracker.traverse(root, root->key, 0);
-
-        destruction(root);
+        tracker.traverse(tree.root, tree.root->key, 0);
+        destruction(&tree);
 
         return std::ostringstream{process.str()};
     }
