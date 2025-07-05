@@ -99,10 +99,10 @@ public:
     //! @return procedure output
     static std::ostringstream fifo()
     {
-        const KeyValue keyValueA = {'A', "foo"}, keyValueB = {'B', "bar"}, keyValueC = {'C', "baz"},
-                       keyValueD = {'D', "qux"};
         std::ostringstream process{};
         process << std::boolalpha;
+        const KeyValue keyValueA = {'A', "foo"}, keyValueB = {'B', "bar"}, keyValueC = {'C', "baz"},
+                       keyValueD = {'D', "qux"};
 
         date_structure::cache::FIFO<Key, Value> fifoCache{3};
         process << "insert " << keyValueA << '\n';
@@ -150,10 +150,10 @@ public:
     //! @return procedure output
     static std::ostringstream lfu()
     {
-        const KeyValue keyValueA = {'A', "foo"}, keyValueB = {'B', "bar"}, keyValueC = {'C', "baz"},
-                       keyValueD = {'D', "qux"};
         std::ostringstream process{};
         process << std::boolalpha;
+        const KeyValue keyValueA = {'A', "foo"}, keyValueB = {'B', "bar"}, keyValueC = {'C', "baz"},
+                       keyValueD = {'D', "qux"};
 
         date_structure::cache::LFU<Key, Value> lfuCache{3};
         process << "insert " << keyValueA << '\n';
@@ -201,10 +201,10 @@ public:
     //! @return procedure output
     static std::ostringstream lru()
     {
-        const KeyValue keyValueA = {'A', "foo"}, keyValueB = {'B', "bar"}, keyValueC = {'C', "baz"},
-                       keyValueD = {'D', "qux"};
         std::ostringstream process{};
         process << std::boolalpha;
+        const KeyValue keyValueA = {'A', "foo"}, keyValueB = {'B', "bar"}, keyValueC = {'C', "baz"},
+                       keyValueD = {'D', "qux"};
 
         date_structure::cache::LRU<Key, Value> lruCache{3};
         process << "insert " << keyValueA << '\n';
@@ -474,7 +474,6 @@ public:
         date_structure::linear::Output tracker{};
         auto& process = tracker.output();
         process << std::boolalpha;
-
         constexpr std::string_view separator = " <-> ";
         constexpr Meta meta[] = {{'a', "'a'"}, {'b', "'b'"}, {'c', "'c'"}, {'d', "'d'"}};
         const std::span<const Meta> nodes(meta);
@@ -528,7 +527,6 @@ public:
         date_structure::linear::Output tracker{};
         auto& process = tracker.output();
         process << std::boolalpha;
-
         constexpr std::string_view separator = ", ";
         constexpr Meta meta[] = {{'a', "'a'"}, {'b', "'b'"}, {'c', "'c'"}, {'d', "'d'"}};
         const std::span<const Meta> nodes(meta);
@@ -570,7 +568,6 @@ public:
         date_structure::linear::Output tracker{};
         auto& process = tracker.output();
         process << std::boolalpha;
-
         constexpr std::string_view separator = ", ";
         constexpr Meta meta[] = {{'a', "'a'"}, {'b', "'b'"}, {'c', "'c'"}, {'d', "'d'"}};
         const std::span<const Meta> nodes(meta);
@@ -645,7 +642,8 @@ public:
         using namespace date_structure::tree::bs;
         auto tracker = Output<std::int16_t>{};
         auto& process = tracker.output();
-        constexpr std::array<std::int16_t, 6> nodes = {1, 5, 4, 3, 2, 6};
+        process << std::boolalpha;
+        constexpr std::array<std::int16_t, 6> keys = {1, 5, 4, 3, 2, 6};
 
         BSTree tree{};
         tree.root = nullptr;
@@ -655,10 +653,10 @@ public:
             return (l > r) - (l < r);
         };
         process << "insertion ";
-        for (const auto& node : nodes)
+        for (const auto& key : keys)
         {
-            process << node << ", ";
-            insertion(&tree, &node);
+            process << key << ", ";
+            insertion(&tree, &key);
         }
         process.seekp(process.str().length() - 2);
 
@@ -669,16 +667,22 @@ public:
         process << "\npost-order traversal: ";
         tracker.postOrderTraversal(tree.root);
 
-        process << "\nminimum: " << *static_cast<std::int16_t*>(getMinimum(&tree)->key);
-        process << "\nmaximum: " << *static_cast<std::int16_t*>(getMaximum(&tree)->key);
-        process << "\ntree details:\n";
+        process << "\nminimum: " << *static_cast<std::int16_t*>(getMinimum(&tree)->key) << '\n';
+        process << "maximum: " << *static_cast<std::int16_t*>(getMaximum(&tree)->key) << '\n';
+        process << "tree details:\n";
         tracker.traverse(tree.root, tree.root->key, 0);
 
-        constexpr std::int16_t deleteNode = 3;
-        process << "deletion " << deleteNode;
-        deletion(&tree, &deleteNode);
+        constexpr std::int16_t searchKey = 3;
+        const Node* const searchNode = search(&tree, &searchKey);
+        process << "search " << searchKey << ": " << static_cast<bool>(searchNode) << '\n';
+        process << "predecessor of " << searchKey << ": "
+                << *static_cast<std::int16_t*>(getPredecessor(searchNode)->key) << '\n';
+        process << "successor of " << searchKey << ": " << *static_cast<std::int16_t*>(getSuccessor(searchNode)->key)
+                << '\n';
+        process << "deletion " << searchKey << '\n';
+        deletion(&tree, &searchKey);
 
-        process << "\nin-order traversal: ";
+        process << "in-order traversal: ";
         tracker.inOrderTraversal(tree.root);
         process << "\ntree details:\n";
         tracker.traverse(tree.root, tree.root->key, 0);
@@ -693,7 +697,8 @@ public:
         using namespace date_structure::tree::avl;
         auto tracker = Output<std::int16_t>{};
         auto& process = tracker.output();
-        constexpr std::array<std::int16_t, 16> nodes = {3, 2, 1, 4, 5, 6, 7, 16, 15, 14, 13, 12, 11, 10, 8, 9};
+        process << std::boolalpha;
+        constexpr std::array<std::int16_t, 16> keys = {3, 2, 1, 4, 5, 6, 7, 16, 15, 14, 13, 12, 11, 10, 8, 9};
 
         AVLTree tree{};
         tree.root = nullptr;
@@ -702,12 +707,12 @@ public:
             const auto l = *static_cast<const std::int16_t*>(a), r = *static_cast<const std::int16_t*>(b);
             return (l > r) - (l < r);
         };
-        process << "height: " << getHeight(&tree);
-        process << "\ninsertion ";
-        for (const auto& node : nodes)
+        process << "height: " << getHeight(&tree) << '\n';
+        process << "insertion ";
+        for (const auto& key : keys)
         {
-            process << node << ", ";
-            insertion(&tree, &node);
+            process << key << ", ";
+            insertion(&tree, &key);
         }
         process.seekp(process.str().length() - 2);
 
@@ -718,18 +723,20 @@ public:
         process << "\npost-order traversal: ";
         tracker.postOrderTraversal(tree.root);
 
-        process << "\nheight: " << getHeight(&tree);
-        process << "\nminimum: " << *static_cast<std::int16_t*>(getMinimum(&tree)->key);
-        process << "\nmaximum: " << *static_cast<std::int16_t*>(getMaximum(&tree)->key);
-        process << "\ntree details:\n";
+        process << "\nheight: " << getHeight(&tree) << '\n';
+        process << "minimum: " << *static_cast<std::int16_t*>(getMinimum(&tree)->key) << '\n';
+        process << "maximum: " << *static_cast<std::int16_t*>(getMaximum(&tree)->key) << '\n';
+        process << "tree details:\n";
         tracker.traverse(tree.root, tree.root->key, 0);
 
-        constexpr std::int16_t deleteNode = 8;
-        process << "deletion " << deleteNode;
-        deletion(&tree, &deleteNode);
+        constexpr std::int16_t searchKey = 13;
+        const Node* const searchNode = search(&tree, &searchKey);
+        process << "search " << searchKey << ": " << static_cast<bool>(searchNode) << '\n';
+        process << "deletion " << searchKey << '\n';
+        deletion(&tree, &searchKey);
 
-        process << "\nheight: " << getHeight(&tree);
-        process << "\nin-order traversal: ";
+        process << "height: " << getHeight(&tree) << '\n';
+        process << "in-order traversal: ";
         tracker.inOrderTraversal(tree.root);
         process << "\ntree details:\n";
         tracker.traverse(tree.root, tree.root->key, 0);
@@ -744,7 +751,8 @@ public:
         using namespace date_structure::tree::splay;
         auto tracker = Output<std::int16_t>{};
         auto& process = tracker.output();
-        constexpr std::array<std::int16_t, 7> nodes = {10, 50, 40, 70, 30, 20, 60};
+        process << std::boolalpha;
+        constexpr std::array<std::int16_t, 7> keys = {10, 50, 40, 70, 30, 20, 60};
 
         SplayTree tree{};
         tree.root = nullptr;
@@ -754,10 +762,10 @@ public:
             return (l > r) - (l < r);
         };
         process << "insertion ";
-        for (const auto& node : nodes)
+        for (const auto& key : keys)
         {
-            process << node << ", ";
-            insertion(&tree, &node);
+            process << key << ", ";
+            insertion(&tree, &key);
         }
         process.seekp(process.str().length() - 2);
 
@@ -768,25 +776,27 @@ public:
         process << "\npost-order traversal: ";
         tracker.postOrderTraversal(tree.root);
 
-        process << "\nminimum: " << *static_cast<std::int16_t*>(getMinimum(&tree)->key);
-        process << "\nmaximum: " << *static_cast<std::int16_t*>(getMaximum(&tree)->key);
-        process << "\ntree details:\n";
+        process << "\nminimum: " << *static_cast<std::int16_t*>(getMinimum(&tree)->key) << '\n';
+        process << "maximum: " << *static_cast<std::int16_t*>(getMaximum(&tree)->key) << '\n';
+        process << "tree details:\n";
         tracker.traverse(tree.root, tree.root->key, 0);
 
-        constexpr std::int16_t deleteNode = 70;
-        process << "deletion " << deleteNode;
-        deletion(&tree, &deleteNode);
+        constexpr std::int16_t searchKey = 70;
+        const Node* const searchNode = search(&tree, &searchKey);
+        process << "search " << searchKey << ": " << static_cast<bool>(searchNode) << '\n';
+        process << "deletion " << searchKey << '\n';
+        deletion(&tree, &searchKey);
 
-        process << "\nin-order traversal: ";
+        process << "in-order traversal: ";
         tracker.inOrderTraversal(tree.root);
         process << "\ntree details:\n";
         tracker.traverse(tree.root, tree.root->key, 0);
 
-        constexpr std::int16_t splayNode = 30;
-        process << "splaying " << splayNode;
-        splaying(&tree, &splayNode);
+        constexpr std::int16_t splayKey = 30;
+        process << "splaying " << splayKey << '\n';
+        splaying(&tree, &splayKey);
 
-        process << "\ntree details:\n";
+        process << "tree details:\n";
         tracker.traverse(tree.root, tree.root->key, 0);
         destruction(&tree);
 
