@@ -29,14 +29,14 @@ extern "C"
     //! @brief The node of the BS tree.
     typedef struct BSTreeNode
     {
-        //! @brief Key value.
-        void* key;
         //! @brief Pointer to the left child node.
         struct BSTreeNode* left;
         //! @brief Pointer to the right child node.
         struct BSTreeNode* right;
         //! @brief Pointer to the parent node.
         struct BSTreeNode* parent;
+        //! @brief Key value.
+        void* key;
     } Node;
 
     //! @brief The BS tree structure.
@@ -181,14 +181,14 @@ extern "C"
     //! @brief The node of the AVL tree.
     typedef struct AVLTreeNode
     {
-        //! @brief Key value.
-        void* key;
-        //! @brief The height of an empty tree is 0, and the height of a non-empty tree is equal to its maximum level.
-        int height;
         //! @brief Pointer to the left child node.
         struct AVLTreeNode* left;
         //! @brief Pointer to the right child node.
         struct AVLTreeNode* right;
+        //! @brief Key value.
+        void* key;
+        //! @brief The height of an empty tree is 0, and the height of a non-empty tree is equal to its maximum level.
+        int height;
     } Node;
 
     //! @brief The AVL tree structure.
@@ -332,12 +332,12 @@ extern "C"
     //! @brief The node of the splay tree.
     typedef struct SplayTreeNode
     {
-        //! @brief Key value.
-        void* key;
         //! @brief Pointer to the left child node.
         struct SplayTreeNode* left;
         //! @brief Pointer to the right child node.
         struct SplayTreeNode* right;
+        //! @brief Key value.
+        void* key;
     } Node;
 
     //! @brief The splay tree structure.
