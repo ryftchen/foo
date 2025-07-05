@@ -221,48 +221,48 @@ protected:
     //! @brief Expected result 1.
     static constexpr std::string_view expRes1
     {
-        "insert (0) {65, foo}\n"
-        "insert (0) {66, bar}\n"
-        "insert (1) {67, baz}\n"
+        "insert (0) {97, 'a'}\n"
+        "insert (0) {98, 'b'}\n"
+        "insert (1) {99, 'c'}\n"
         "remove (2)\n"
-        "insert first {65, foo}\n"
-        "insert last {68, qux}\n"
-        "get first: {65, foo}\n"
-        "get last: {68, qux}\n"
+        "insert first {97, 'a'}\n"
+        "insert last {100, 'd'}\n"
+        "get first: {97, 'a'}\n"
+        "get last: {100, 'd'}\n"
         "remove first\n"
         "remove last\n"
-        "insert (1) {65, foo}\n"
+        "insert (1) {97, 'a'}\n"
         "whether it is empty: false\n"
         "size: 3\n"
-        "linear details: HEAD -> {66, bar} <-> {65, foo} <-> {67, baz} -> NULL\n"
+        "linear details: HEAD -> {98, 'b'} <-> {97, 'a'} <-> {99, 'c'} -> NULL\n"
     };
     //! @brief Expected result 2.
     static constexpr std::string_view expRes2
     {
-        "push {65, foo}\n"
-        "push {66, bar}\n"
-        "push {67, baz}\n"
-        "push {68, qux}\n"
-        "pop: {68, qux}\n"
-        "top: {67, baz}\n"
-        "push {68, qux}\n"
+        "push {97, 'a'}\n"
+        "push {98, 'b'}\n"
+        "push {99, 'c'}\n"
+        "push {100, 'd'}\n"
+        "pop: {100, 'd'}\n"
+        "top: {99, 'c'}\n"
+        "push {100, 'd'}\n"
         "whether it is empty: false\n"
         "size: 4\n"
-        "linear details: TOP [{68, qux}, {67, baz}, {66, bar}, {65, foo}] BOTTOM\n"
+        "linear details: TOP [{100, 'd'}, {99, 'c'}, {98, 'b'}, {97, 'a'}] BOTTOM\n"
     };
     //! @brief Expected result 3.
     static constexpr std::string_view expRes3
     {
-        "push {65, foo}\n"
-        "push {66, bar}\n"
-        "push {67, baz}\n"
-        "push {68, qux}\n"
-        "pop: {65, foo}\n"
-        "front: {66, bar}\n"
-        "push {65, foo}\n"
+        "push {97, 'a'}\n"
+        "push {98, 'b'}\n"
+        "push {99, 'c'}\n"
+        "push {100, 'd'}\n"
+        "pop: {97, 'a'}\n"
+        "front: {98, 'b'}\n"
+        "push {97, 'a'}\n"
         "whether it is empty: false\n"
         "size: 4\n"
-        "linear details: FRONT [{66, bar}, {67, baz}, {68, qux}, {65, foo}] REAR\n"
+        "linear details: FRONT [{98, 'b'}, {99, 'c'}, {100, 'd'}, {97, 'a'}] REAR\n"
     };
     // clang-format on
 };
