@@ -102,6 +102,7 @@ bool destroy(DLL* const dll)
         temp = node;
         node = node->next;
         ::delete temp;
+        temp = nullptr;
     }
 
     ::delete *dll;
@@ -238,7 +239,7 @@ bool insertLast(const DLL head, const void* const val)
 //! @return success or failure
 bool remove(const DLL head, const int index)
 {
-    const Node* const node = getNode(head, index);
+    const Node* node = getNode(head, index);
     if (!node)
     {
         return false;
@@ -247,6 +248,7 @@ bool remove(const DLL head, const int index)
     node->next->prev = node->prev;
     node->prev->next = node->next;
     ::delete node;
+    node = nullptr;
 
     return true;
 }
