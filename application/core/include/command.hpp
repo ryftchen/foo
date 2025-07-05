@@ -159,6 +159,10 @@ private:
     utility::argument::Argument subCLIAppDs{action::name<reg_ds::ApplyDataStructure>(), reg_ds::version()};
     //! @brief Parse argument helper to apply numeric.
     utility::argument::Argument subCLIAppNum{action::name<reg_num::ApplyNumeric>(), reg_num::version()};
+    //! @brief The short prefix for the option.
+    const std::string shortPrefix{"-"};
+    //! @brief The Long prefix for the option.
+    const std::string longPrefix{"--"};
     //! @brief Flag to indicate whether the command is faulty.
     std::atomic<bool> isFaulty{false};
 
@@ -166,6 +170,12 @@ private:
     void initializeNativeCLI();
     //! @brief Initialize the parse argument helpers for extra.
     void initializeExtraCLI();
+    //! @brief Setup the main command line interface.
+    void setupMainCLI();
+    //! @brief Setup the sub-command line interface.
+    //! @tparam T - type of type of sub-cli
+    template <typename T>
+    void setupSubCLI();
     //! @brief Front-end handler for parsing command line arguments.
     //! @param argc - argument count
     //! @param argv - argument vector
