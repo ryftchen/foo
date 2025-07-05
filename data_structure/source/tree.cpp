@@ -150,10 +150,12 @@ static Node* createNode(const void* const key, Node* const parent, Node* const l
 //! @param z - target node
 //! @param cmp - compare function to compare keys
 //! @return root node after inserting
-static Node* insertNode(Node* node, Node* const z, const Compare cmp)
+static Node* insertNode(Node* node, Node* z, const Compare cmp)
 {
     if (!z || !cmp)
     {
+        ::delete z;
+        z = nullptr;
         return node;
     }
 
@@ -192,7 +194,12 @@ static Node* deleteNode(Node* node, Node* const z)
         return node;
     }
 
-    Node *y = (!z->left || !z->right) ? z : getSuccessor(z), *x = y->left ? y->left : y->right;
+    Node* y = (!z->left || !z->right) ? z : getSuccessor(z);
+    if (!y)
+    {
+        return node;
+    }
+    Node* const x = y->left ? y->left : y->right;
     if (x)
     {
         x->parent = y->parent;
@@ -216,14 +223,11 @@ static Node* deleteNode(Node* node, Node* const z)
         z->key = y->key;
     }
 
-    if (node == y)
-    {
-        ::delete y;
-        return nullptr;
-    }
+    const bool yIsRoot = (node == y);
     ::delete y;
+    y = nullptr;
 
-    return node;
+    return !yIsRoot ? node : nullptr;
 }
 
 //! @brief Search the node of BS subtree by key.
@@ -284,7 +288,7 @@ void deletion(Tree* const tree, const void* const key)
 
 //! @brief Destroy the the BS subtree.
 //! @param node - root of the subtree
-static void destruction(const Node* const node)
+static void destruction(const Node* node)
 {
     if (!node)
     {
@@ -299,7 +303,9 @@ static void destruction(const Node* const node)
     {
         destruction(node->right);
     }
+
     ::delete node;
+    node = nullptr;
 }
 
 //! @brief Destroy the the BS tree.
@@ -527,9 +533,10 @@ static Node* deleteNode(Node* node, const Node* const z, const Compare cmp)
     }
     else
     {
-        const Node* const temp = node;
+        const Node* temp = node;
         node = node->left ? node->left : node->right;
         ::delete temp;
+        temp = nullptr;
     }
 
     return node;
@@ -644,7 +651,7 @@ void deletion(Tree* const tree, const void* const key)
 
 //! @brief Destroy the the AVL subtree.
 //! @param node - root of the subtree
-static void destruction(const Node* const node)
+static void destruction(const Node* node)
 {
     if (!node)
     {
@@ -659,7 +666,9 @@ static void destruction(const Node* const node)
     {
         destruction(node->right);
     }
+
     ::delete node;
+    node = nullptr;
 }
 
 //! @brief Destroy the the AVL tree.
@@ -754,10 +763,12 @@ static Node* createNode(const void* const key, Node* const left, Node* const rig
 //! @param z - target node
 //! @param cmp - compare function to compare keys
 //! @return root node after inserting
-static Node* insertNode(Node* node, Node* const z, const Compare cmp)
+static Node* insertNode(Node* node, Node* z, const Compare cmp)
 {
     if (!z || !cmp)
     {
+        ::delete z;
+        z = nullptr;
         return node;
     }
 
@@ -776,6 +787,7 @@ static Node* insertNode(Node* node, Node* const z, const Compare cmp)
         else
         {
             ::delete z;
+            z = nullptr;
             return node;
         }
     }
@@ -951,7 +963,9 @@ static Node* deletion(Node* node, const void* const key, const Compare cmp)
     {
         x = node->right;
     }
+
     ::delete node;
+    node = nullptr;
 
     return x;
 }
@@ -971,7 +985,7 @@ void deletion(Tree* const tree, const void* const key)
 
 //! @brief Destroy the the splay subtree.
 //! @param node - root of the subtree
-static void destruction(const Node* const node)
+static void destruction(const Node* node)
 {
     if (!node)
     {
@@ -986,7 +1000,9 @@ static void destruction(const Node* const node)
     {
         destruction(node->right);
     }
+
     ::delete node;
+    node = nullptr;
 }
 
 //! @brief Destroy the the splay tree.
