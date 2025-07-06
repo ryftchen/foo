@@ -65,7 +65,7 @@ protected:
         "whether it is empty: false\n"
         "size: 3\n"
         "capacity: 3\n"
-        "cache detail: {A: ---}, {B: bar}, {C: baz}, {D: qux}\n"
+        "current status: {A: ---}, {B: bar}, {C: baz}, {D: qux}\n"
     };
     //! @brief Expected result 2.
     static constexpr std::string_view expRes2
@@ -87,7 +87,7 @@ protected:
         "whether it is empty: false\n"
         "size: 3\n"
         "capacity: 3\n"
-        "cache detail: {A: foo}, {B: ---}, {C: baz}, {D: qux}\n"
+        "current status: {A: foo}, {B: ---}, {C: baz}, {D: qux}\n"
     };
     //! @brief Expected result 3.
     static constexpr std::string_view expRes3
@@ -109,7 +109,7 @@ protected:
         "whether it is empty: false\n"
         "size: 3\n"
         "capacity: 3\n"
-        "cache detail: {A: ---}, {B: bar}, {C: baz}, {D: qux}\n"
+        "current status: {A: ---}, {B: bar}, {C: baz}, {D: qux}\n"
     };
     // clang-format on
 };
@@ -234,7 +234,7 @@ protected:
         "insert (1) {97, 'a'}\n"
         "whether it is empty: false\n"
         "size: 3\n"
-        "linear details: HEAD -> {98, 'b'} <-> {97, 'a'} <-> {99, 'c'} -> NULL\n"
+        "all details: HEAD -> {98, 'b'} <-> {97, 'a'} <-> {99, 'c'} -> NULL\n"
     };
     //! @brief Expected result 2.
     static constexpr std::string_view expRes2
@@ -248,7 +248,7 @@ protected:
         "push {100, 'd'}\n"
         "whether it is empty: false\n"
         "size: 4\n"
-        "linear details: TOP [{100, 'd'}, {99, 'c'}, {98, 'b'}, {97, 'a'}] BOTTOM\n"
+        "all details: TOP [{100, 'd'}, {99, 'c'}, {98, 'b'}, {97, 'a'}] BOTTOM\n"
     };
     //! @brief Expected result 3.
     static constexpr std::string_view expRes3
@@ -262,7 +262,7 @@ protected:
         "push {97, 'a'}\n"
         "whether it is empty: false\n"
         "size: 4\n"
-        "linear details: FRONT [{98, 'b'}, {99, 'c'}, {100, 'd'}, {97, 'a'}] REAR\n"
+        "all details: FRONT [{98, 'b'}, {99, 'c'}, {100, 'd'}, {97, 'a'}] REAR\n"
     };
     // clang-format on
 };
@@ -322,7 +322,7 @@ protected:
         "post-order traversal: 2 ... 3 ... 4 ... 6 ... 5 ... 1 ... \n"
         "minimum: 1\n"
         "maximum: 6\n"
-        "tree details:\n"
+        "all details:\n"
         "+ 1 -> root\n"
         "+   5 -> 1's right child\n"
         "+     4 -> 5's left child\n"
@@ -334,7 +334,7 @@ protected:
         "successor of 3: 4\n"
         "deletion 3\n"
         "in-order traversal: 1 ... 2 ... 4 ... 5 ... 6 ... \n"
-        "tree details:\n"
+        "all details:\n"
         "+ 1 -> root\n"
         "+   5 -> 1's right child\n"
         "+     4 -> 5's left child\n"
@@ -352,7 +352,7 @@ protected:
         "height: 5\n"
         "minimum: 1\n"
         "maximum: 16\n"
-        "tree details:\n"
+        "all details:\n"
         "+ 7 -> root\n"
         "+   4 -> 7's left child\n"
         "+     2 -> 4's left child\n"
@@ -373,7 +373,7 @@ protected:
         "deletion 13\n"
         "height: 5\n"
         "in-order traversal: 1 ... 2 ... 3 ... 4 ... 5 ... 6 ... 7 ... 8 ... 9 ... 10 ... 11 ... 12 ... 14 ... 15 ... 16 ... \n"
-        "tree details:\n"
+        "all details:\n"
         "+ 7 -> root\n"
         "+   4 -> 7's left child\n"
         "+     2 -> 4's left child\n"
@@ -399,7 +399,7 @@ protected:
         "post-order traversal: 10 ... 20 ... 40 ... 50 ... 30 ... 70 ... 60 ... \n"
         "minimum: 10\n"
         "maximum: 70\n"
-        "tree details:\n"
+        "all details:\n"
         "+ 60 -> root\n"
         "+   30 -> 60's left child\n"
         "+     20 -> 30's left child\n"
@@ -410,7 +410,7 @@ protected:
         "search 70: true\n"
         "deletion 70\n"
         "in-order traversal: 10 ... 20 ... 30 ... 40 ... 50 ... 60 ... \n"
-        "tree details:\n"
+        "all details:\n"
         "+ 60 -> root\n"
         "+   30 -> 60's left child\n"
         "+     20 -> 30's left child\n"
@@ -418,7 +418,7 @@ protected:
         "+     50 -> 30's right child\n"
         "+       40 -> 50's left child\n"
         "splaying 30\n"
-        "tree details:\n"
+        "all details:\n"
         "+ 30 -> root\n"
         "+   20 -> 30's left child\n"
         "+     10 -> 20's left child\n"
