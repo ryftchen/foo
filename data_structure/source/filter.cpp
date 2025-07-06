@@ -213,28 +213,6 @@ void Quotient::clear()
     std::memset(filter.get(), 0, filterSize * sizeof(std::uint64_t));
 }
 
-bool Quotient::merge(const Quotient& qfIn1, const Quotient& qfIn2)
-{
-    if ((qfIn1.hashSeed != qfIn2.hashSeed) || (qfIn1.qBits != qfIn2.qBits) || (qfIn1.rBits != qfIn2.rBits))
-    {
-        return false;
-    }
-
-    Iterator iter{};
-    start(qfIn1, iter);
-    while (!done(qfIn1, iter))
-    {
-        insert(next(qfIn1, iter));
-    }
-    start(qfIn2, iter);
-    while (!done(qfIn2, iter))
-    {
-        insert(next(qfIn2, iter));
-    }
-
-    return true;
-}
-
 bool Quotient::insert(const std::uint64_t hash)
 {
     if (entries >= capacity)
@@ -250,7 +228,6 @@ bool Quotient::insert(const std::uint64_t hash)
         ++entries;
         return true;
     }
-
     if (!isOccupied(hqElem))
     {
         setElement(*this, hq, setOccupied(hqElem));
@@ -291,34 +268,49 @@ bool Quotient::insert(const std::uint64_t hash)
         entry = setShifted(entry);
     }
 
-    insertInto(slot, entry);
+    insertAt(slot, entry);
     ++entries;
 
     return true;
 }
 
-void Quotient::insertInto(std::uint64_t start, const std::uint64_t elem)
+void Quotient::insertAt(const std::uint64_t start, const std::uint64_t elem)
 {
-    bool empty = false;
-    std::uint64_t curr = elem;
+    bool isEmpty = false;
+    std::uint64_t slot = start, currElem = elem;
     do
     {
-        std::uint64_t prev = getElement(*this, start);
-        empty = isEmptyElement(prev);
-        if (!empty)
+        std::uint64_t prevElem = getElement(*this, slot);
+        isEmpty = isEmptyElement(prevElem);
+        if (!isEmpty)
         {
-            prev = setShifted(prev);
-            if (isOccupied(prev))
+            prevElem = setShifted(prevElem);
+            if (isOccupied(prevElem))
             {
-                curr = setOccupied(curr);
-                prev = clearOccupied(prev);
+                currElem = setOccupied(currElem);
+                prevElem = clearOccupied(prevElem);
             }
         }
-        setElement(*this, start, curr);
-        curr = prev;
-        start = increase(*this, start);
+        setElement(*this, slot, currElem);
+        currElem = prevElem;
+        slot = increase(*this, slot);
     }
-    while (!empty);
+    while (!isEmpty);
+}
+
+void Quotient::insertFrom(const Quotient& qf)
+{
+    Iterator iter{};
+    start(qf, iter);
+    while (!done(qf, iter))
+    {
+        insert(next(qf, iter));
+    }
+}
+
+bool Quotient::isCompatibleWith(const Quotient& qf) const
+{
+    return (qf.qBits == qBits) && (qf.rBits == rBits) && (qf.hashSeed == hashSeed);
 }
 
 bool Quotient::mayContain(const std::uint64_t hash)
@@ -380,29 +372,29 @@ bool Quotient::remove(const std::uint64_t hash)
     }
 
     const std::uint64_t entryToRemove = (slot == hq) ? hqElem : getElement(*this, slot);
-    const bool replaceRunStart = isRunStart(entryToRemove);
-    if (replaceRunStart)
+    const bool toReplaceRunStart = isRunStart(entryToRemove);
+    if (toReplaceRunStart)
     {
-        const std::uint64_t next = getElement(*this, increase(*this, slot));
-        if (!isContinuation(next))
+        const std::uint64_t nextElem = getElement(*this, increase(*this, slot));
+        if (!isContinuation(nextElem))
         {
             hqElem = clearOccupied(hqElem);
             setElement(*this, hq, hqElem);
         }
     }
 
-    deleteEntry(slot, hq);
-    if (replaceRunStart)
+    removeAt(slot, hq);
+    if (toReplaceRunStart)
     {
-        const std::uint64_t next = getElement(*this, slot);
-        std::uint64_t updatedNext = isContinuation(next) ? clearContinuation(next) : next;
-        if ((slot == hq) && isRunStart(updatedNext))
+        const std::uint64_t nextElem = getElement(*this, slot);
+        std::uint64_t updatedNextElem = isContinuation(nextElem) ? clearContinuation(nextElem) : nextElem;
+        if ((slot == hq) && isRunStart(updatedNextElem))
         {
-            updatedNext = clearShifted(updatedNext);
+            updatedNextElem = clearShifted(updatedNextElem);
         }
-        if (updatedNext != next)
+        if (updatedNextElem != nextElem)
         {
-            setElement(*this, slot, updatedNext);
+            setElement(*this, slot, updatedNextElem);
         }
     }
     --entries;
@@ -410,23 +402,22 @@ bool Quotient::remove(const std::uint64_t hash)
     return true;
 }
 
-void Quotient::deleteEntry(std::uint64_t start, std::uint64_t quotient)
+void Quotient::removeAt(const std::uint64_t start, const std::uint64_t quot)
 {
     const std::uint64_t orig = start;
-    std::uint64_t curr = getElement(*this, start), scanPos = increase(*this, start);
-
+    std::uint64_t slot = start, currElem = getElement(*this, slot), scanPos = increase(*this, slot), quotient = quot;
     for (;;)
     {
-        const std::uint64_t next = getElement(*this, scanPos);
-        if (isEmptyElement(next) || isClusterStart(next) || (scanPos == orig))
+        const std::uint64_t nextElem = getElement(*this, scanPos);
+        if (isEmptyElement(nextElem) || isClusterStart(nextElem) || (scanPos == orig))
         {
-            setElement(*this, start, 0);
+            setElement(*this, slot, 0);
             return;
         }
 
-        const bool currOccupied = isOccupied(curr);
-        std::uint64_t updatedNext = next;
-        if (isRunStart(next))
+        const bool isCurrOccupied = isOccupied(currElem);
+        std::uint64_t updatedNextElem = nextElem;
+        if (isRunStart(nextElem))
         {
             do
             {
@@ -434,16 +425,16 @@ void Quotient::deleteEntry(std::uint64_t start, std::uint64_t quotient)
             }
             while (!isOccupied(getElement(*this, quotient)));
 
-            if (currOccupied && (quotient == start))
+            if (isCurrOccupied && (slot == quotient))
             {
-                updatedNext = clearShifted(next);
+                updatedNextElem = clearShifted(nextElem);
             }
         }
 
-        setElement(*this, start, currOccupied ? setOccupied(updatedNext) : clearOccupied(updatedNext));
-        start = scanPos;
+        setElement(*this, slot, isCurrOccupied ? setOccupied(updatedNextElem) : clearOccupied(updatedNextElem));
+        slot = scanPos;
         scanPos = increase(*this, scanPos);
-        curr = next;
+        currElem = nextElem;
     }
 }
 
@@ -462,16 +453,16 @@ std::uint64_t Quotient::hashToRemainder(const std::uint64_t hash) const
     return hash & rMask;
 }
 
-std::uint64_t Quotient::findRunIndex(const std::uint64_t quotient) const
+std::uint64_t Quotient::findRunIndex(const std::uint64_t quot) const
 {
-    std::uint64_t start = quotient;
+    std::uint64_t start = quot;
     while (isShifted(getElement(*this, start)))
     {
         start = decrease(*this, start);
     }
 
     std::uint64_t slot = start;
-    while (start != quotient)
+    while (start != quot)
     {
         do
         {
@@ -519,26 +510,27 @@ std::uint64_t Quotient::next(const Quotient& qf, Iterator& iter)
 {
     while (!done(qf, iter))
     {
-        const std::uint64_t elem = getElement(qf, iter.index);
-        if (isClusterStart(elem))
+        const std::uint64_t entry = getElement(qf, iter.index);
+        if (isClusterStart(entry))
         {
             iter.quotient = iter.index;
         }
-        else if (isRunStart(elem))
+        else if (isRunStart(entry))
         {
-            std::uint64_t quot = iter.quotient;
+            std::uint64_t quotient = iter.quotient;
             do
             {
-                quot = increase(qf, quot);
+                quotient = increase(qf, quotient);
             }
-            while (!isOccupied(getElement(qf, quot)));
-            iter.quotient = quot;
+            while (!isOccupied(getElement(qf, quotient)));
+            iter.quotient = quotient;
         }
 
         iter.index = increase(qf, iter.index);
-        if (!isEmptyElement(elem))
+        if (!isEmptyElement(entry))
         {
-            const std::uint64_t quot = iter.quotient, rem = getRemainder(elem), hash = (quot << qf.rBits) | rem;
+            const std::uint64_t quotient = iter.quotient, rem = getRemainder(entry),
+                                hash = (quotient << qf.rBits) | rem;
             ++iter.visited;
             return hash;
         }
