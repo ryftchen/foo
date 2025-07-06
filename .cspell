@@ -38,6 +38,7 @@ words:
   - filedir
   - fuser
   - gdbinit
+  - gitmessage
   - gtest
   - indexgenerator
   - jcvf

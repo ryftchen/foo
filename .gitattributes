@@ -21,14 +21,14 @@
 .editorconfig text eol=lf
 .gdbinit text eol=lf
 .gitattributes text eol=lf
-.gitcommit.template text eol=lf
 .gitignore text eol=lf
+.gitmessage text eol=lf
 .pre-commit text eol=lf
 .pylintrc text eol=lf
 .shellcheckrc text eol=lf
-.supp text eol=lf
 .toml text eol=lf
 .valgrindrc text eol=lf
+.valgrindsupp text eol=lf
 Dockerfile text eol=lf
 Doxyfile text eol=lf
 LICENSE text eol=lf

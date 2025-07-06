@@ -348,7 +348,7 @@ EOF"
         shell_command "echo '${gdb_load_cmd}' >>~/${gdb_config_folder}/gdbinit"
     fi
     shell_command "echo 'core.%s.%e.%p' | ${SUDO_PREFIX}tee /proc/sys/kernel/core_pattern"
-    shell_command "git config --local commit.template ./.gitcommit.template"
+    shell_command "git config --local commit.template ./.gitmessage"
 
     echo "To initialize for effect, type \"exec bash\" manually."
 
