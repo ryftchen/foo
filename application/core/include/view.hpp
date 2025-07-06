@@ -87,11 +87,6 @@ public:
         //! @param length - buffer length
         //! @return need to stop the connection or not
         bool onParsing(char* buffer, const int length) const;
-        //! @brief Await depending on the output state.
-        void enableWait() const;
-        //! @brief Awaken depending on the output state.
-        void disableWait() const;
-
         //! @brief Get the supported options.
         //! @return supported options
         [[nodiscard]] auto getSupportedOptions() const noexcept { return inst.supportedOptions; }
@@ -110,6 +105,24 @@ public:
 
     private:
         //! @brief Instance to be accessed.
+        View& inst;
+    };
+    //! @brief Synchronization for the instance.
+    class Sync
+    {
+    public:
+        //! @brief Construct a new Sync object.
+        Sync() : inst{getInstance()} {}
+        //! @brief Destroy the Sync object.
+        virtual ~Sync() = default;
+
+        //! @brief Block the caller until the output task is marked as done.
+        void waitTaskDone() const;
+        //! @brief Notify that the output task has been completed and unblock any waiters.
+        void notifyTaskDone() const;
+
+    private:
+        //! @brief Instance to be synchronized.
         View& inst;
     };
 
