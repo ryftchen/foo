@@ -16,22 +16,22 @@ const char* version() noexcept
     return ver;
 }
 
-// NOLINTBEGIN(cppcoreguidelines-owning-memory)
+// NOLINTBEGIN(cppcoreguidelines-owning-memory, cppcoreguidelines-pro-type-const-cast)
 namespace doubly_linked_list
 {
 //! @brief Create a node of the doubly linked list.
-//! @param val - value of the target node
+//! @param value - value of the target node
 //! @return new node
-static Node* createNode(const void* const val)
+static Node* createNode(const void* const value)
 {
-    auto* const node = ::new (std::nothrow) Node;
+    Node* const node = ::new (std::nothrow) Node;
     if (!node)
     {
         return nullptr;
     }
 
     node->prev = node->next = node;
-    node->p = const_cast<void*>(val); // NOLINT(cppcoreguidelines-pro-type-const-cast);;
+    node->p = const_cast<void*>(value);
 
     return node;
 }
@@ -164,13 +164,13 @@ void* getLast(const DLL head)
 //! @brief Insert the target node into the doubly linked list by index.
 //! @param head - head of the list
 //! @param index - node index
-//! @param val - value of the target node
+//! @param value - value of the target node
 //! @return success or failure
-bool insert(const DLL head, const int index, const void* const val)
+bool insert(const DLL head, const int index, const void* const value)
 {
     if (index == 0)
     {
-        return insertFirst(head, val);
+        return insertFirst(head, value);
     }
 
     Node* const node = getNode(head, index);
@@ -179,7 +179,7 @@ bool insert(const DLL head, const int index, const void* const val)
         return false;
     }
 
-    Node* const newNode = createNode(val);
+    Node* const newNode = createNode(value);
     if (!newNode)
     {
         return false;
@@ -195,11 +195,11 @@ bool insert(const DLL head, const int index, const void* const val)
 
 //! @brief Insert the target node into the doubly linked list as the first node.
 //! @param head - head of the list
-//! @param val - value of the target node
+//! @param value - value of the target node
 //! @return success or failure
-bool insertFirst(const DLL head, const void* const val)
+bool insertFirst(const DLL head, const void* const value)
 {
-    Node* const node = createNode(val);
+    Node* const node = createNode(value);
     if (!node)
     {
         return false;
@@ -215,11 +215,11 @@ bool insertFirst(const DLL head, const void* const val)
 
 //! @brief Insert the target node into the doubly linked list as the last node.
 //! @param head - head of the list
-//! @param val - value of the target node
+//! @param value - value of the target node
 //! @return success or failure
-bool insertLast(const DLL head, const void* const val)
+bool insertLast(const DLL head, const void* const value)
 {
-    Node* const node = createNode(val);
+    Node* const node = createNode(value);
     if (!node)
     {
         return false;
@@ -309,11 +309,11 @@ bool empty(const Stack head)
 
 //! @brief Push operation of the stack.
 //! @param head - head of the stack
-//! @param val - value of the target node
+//! @param value - value of the target node
 //! @return success or failure
-bool push(const Stack head, const void* const val)
+bool push(const Stack head, const void* const value)
 {
-    return dll::insertFirst(head, val);
+    return dll::insertFirst(head, value);
 }
 
 //! @brief Top operation of the stack.
@@ -375,11 +375,11 @@ bool empty(const Queue head)
 
 //! @brief Push operation of the queue.
 //! @param head - head of the queue
-//! @param val - value of the target node
+//! @param value - value of the target node
 //! @return success or failure
-bool push(const Queue head, const void* const val)
+bool push(const Queue head, const void* const value)
 {
-    return dll::insertLast(head, val);
+    return dll::insertLast(head, value);
 }
 
 //! @brief Front operation of the queue.
@@ -406,5 +406,5 @@ std::ostringstream& Output::output() noexcept
 {
     return process;
 }
-// NOLINTEND(cppcoreguidelines-owning-memory)
+// NOLINTEND(cppcoreguidelines-owning-memory, cppcoreguidelines-pro-type-const-cast)
 } // namespace date_structure::linear
