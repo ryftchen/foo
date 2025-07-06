@@ -21,7 +21,7 @@ extern "C"
 {
 #endif // __cplusplus
 #pragma pack(push, 8)
-    //! @brief The node of the linear data structure.
+    //! @brief The node of the linear structure.
     typedef struct TagNode
     {
         //! @brief Pointer to the previous node.
@@ -39,7 +39,7 @@ extern "C"
 //! @brief The doubly linked list structure.
 namespace doubly_linked_list
 {
-//! @brief Alias for the linear data structure. Used for the doubly linked list.
+//! @brief Alias for the linear structure. Used for the doubly linked list.
 using DLL = Linear;
 
 extern bool create(DLL* const dll);
@@ -49,9 +49,9 @@ extern bool empty(const DLL head);
 extern void* get(const DLL head, const int index);
 extern void* getFirst(const DLL head);
 extern void* getLast(const DLL head);
-extern bool insert(const DLL head, const int index, const void* const val);
-extern bool insertFirst(const DLL head, const void* const val);
-extern bool insertLast(const DLL head, const void* const val);
+extern bool insert(const DLL head, const int index, const void* const value);
+extern bool insertFirst(const DLL head, const void* const value);
+extern bool insertLast(const DLL head, const void* const value);
 extern bool remove(const DLL head, const int index);
 extern bool removeFirst(const DLL head);
 extern bool removeLast(const DLL head);
@@ -60,14 +60,14 @@ extern bool removeLast(const DLL head);
 //! @brief The stack structure (FILO/LIFO).
 namespace stack
 {
-//! @brief Alias for the linked list. Used for the stack.
+//! @brief Alias for the linear structure. Used for the stack.
 using Stack = Linear;
 
 extern bool create(Stack* const stack);
 extern bool destroy(Stack* const stack);
 extern int size(const Stack head);
 extern bool empty(const Stack head);
-extern bool push(const Stack head, const void* const val);
+extern bool push(const Stack head, const void* const value);
 extern void* top(const Stack head);
 extern void* pop(const Stack head);
 } // namespace stack
@@ -75,14 +75,14 @@ extern void* pop(const Stack head);
 //! @brief The queue structure (FIFO/LILO).
 namespace queue
 {
-//! @brief Alias for the linked list. Used for the queue.
+//! @brief Alias for the linear structure. Used for the queue.
 using Queue = Linear;
 
 extern bool create(Queue* const queue);
 extern bool destroy(Queue* const queue);
 extern int size(const Queue head);
 extern bool empty(const Queue head);
-extern bool push(const Queue head, const void* const val);
+extern bool push(const Queue head, const void* const value);
 extern void* front(const Queue head);
 extern void* pop(const Queue head);
 } // namespace queue

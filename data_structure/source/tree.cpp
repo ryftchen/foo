@@ -16,7 +16,7 @@ const char* version() noexcept
     return ver;
 }
 
-// NOLINTBEGIN(cppcoreguidelines-owning-memory)
+// NOLINTBEGIN(cppcoreguidelines-owning-memory, cppcoreguidelines-pro-type-const-cast)
 namespace bs
 {
 //! @brief Get the node where the minimum key is located in the BS subtree.
@@ -37,14 +37,6 @@ static Node* getMinimum(Node* node)
     return node;
 }
 
-//! @brief Get the node where the minimum key is located in the BS tree.
-//! @param tree - BS tree
-//! @return node where the minimum key is located
-Node* getMinimum(const Tree* const tree)
-{
-    return tree ? getMinimum(tree->root) : nullptr;
-}
-
 //! @brief Get the node where the maximum key is located in the BS subtree.
 //! @param node - root of the subtree
 //! @return node where the maximum key is located
@@ -63,66 +55,6 @@ static Node* getMaximum(Node* node)
     return node;
 }
 
-//! @brief Get the node where the maximum key is located in the BS tree.
-//! @param tree - BS tree
-//! @return node where the maximum key is located
-Node* getMaximum(const Tree* const tree)
-{
-    return tree ? getMaximum(tree->root) : nullptr;
-}
-
-//! @brief Get the predecessor node of the current node.
-//!        The precursor of a node is the node that has the maximum key in that node's left subtree.
-//! @param x - current node
-//! @return predecessor node
-Node* getPredecessor(const Node* x)
-{
-    if (!x)
-    {
-        return nullptr;
-    }
-
-    if (x->left)
-    {
-        return getMaximum(x->left);
-    }
-
-    Node* y = x->parent;
-    while (y && (y->left == x))
-    {
-        x = y;
-        y = y->parent;
-    }
-
-    return y;
-}
-
-//! @brief Get the successor node of the current node.
-//!        The precursor of a node is the node that has the minimum key in that node's right subtree.
-//! @param x - current node
-//! @return successor node
-Node* getSuccessor(const Node* x)
-{
-    if (!x)
-    {
-        return nullptr;
-    }
-
-    if (x->right)
-    {
-        return getMinimum(x->right);
-    }
-
-    Node* y = x->parent;
-    while (y && (y->right == x))
-    {
-        x = y;
-        y = y->parent;
-    }
-
-    return y;
-}
-
 //! @brief Create a node of the BS tree.
 //! @param key - key of the node to be created
 //! @param parent - parent node of the node to be created
@@ -131,13 +63,13 @@ Node* getSuccessor(const Node* x)
 //! @return new node after creating
 static Node* createNode(const void* const key, Node* const parent, Node* const left, Node* const right)
 {
-    auto* const node = ::new (std::nothrow) Node;
+    Node* const node = ::new (std::nothrow) Node;
     if (!node)
     {
         return nullptr;
     }
 
-    node->key = const_cast<void*>(key); // NOLINT(cppcoreguidelines-pro-type-const-cast)
+    node->key = const_cast<void*>(key);
     node->left = left;
     node->right = right;
     node->parent = parent;
@@ -245,6 +177,96 @@ static Node* search(Node* const node, const void* const key, const Compare cmp)
     return (cmp(node->key, key) == 0) ? node : search((cmp(key, node->key) < 0) ? node->left : node->right, key, cmp);
 }
 
+//! @brief Destroy the the BS subtree.
+//! @param node - root of the subtree
+static void destruction(const Node* node)
+{
+    if (!node)
+    {
+        return;
+    }
+
+    if (node->left)
+    {
+        destruction(node->left);
+    }
+    if (node->right)
+    {
+        destruction(node->right);
+    }
+
+    ::delete node;
+    node = nullptr;
+}
+
+//! @brief Get the node where the minimum key is located in the BS tree.
+//! @param tree - BS tree
+//! @return node where the minimum key is located
+Node* getMinimum(const Tree* const tree)
+{
+    return tree ? getMinimum(tree->root) : nullptr;
+}
+
+//! @brief Get the node where the maximum key is located in the BS tree.
+//! @param tree - BS tree
+//! @return node where the maximum key is located
+Node* getMaximum(const Tree* const tree)
+{
+    return tree ? getMaximum(tree->root) : nullptr;
+}
+
+//! @brief Get the predecessor node of the current node.
+//!        The precursor of a node is the node that has the maximum key in that node's left subtree.
+//! @param x - current node
+//! @return predecessor node
+Node* getPredecessor(const Node* x)
+{
+    if (!x)
+    {
+        return nullptr;
+    }
+
+    if (x->left)
+    {
+        return getMaximum(x->left);
+    }
+
+    Node* y = x->parent;
+    while (y && (y->left == x))
+    {
+        x = y;
+        y = y->parent;
+    }
+
+    return y;
+}
+
+//! @brief Get the successor node of the current node.
+//!        The precursor of a node is the node that has the minimum key in that node's right subtree.
+//! @param x - current node
+//! @return successor node
+Node* getSuccessor(const Node* x)
+{
+    if (!x)
+    {
+        return nullptr;
+    }
+
+    if (x->right)
+    {
+        return getMinimum(x->right);
+    }
+
+    Node* y = x->parent;
+    while (y && (y->right == x))
+    {
+        x = y;
+        y = y->parent;
+    }
+
+    return y;
+}
+
 //! @brief Search the node of BS tree by key.
 //! @param tree - BS tree
 //! @param key - key of the node
@@ -286,28 +308,6 @@ void deletion(Tree* const tree, const void* const key)
     }
 }
 
-//! @brief Destroy the the BS subtree.
-//! @param node - root of the subtree
-static void destruction(const Node* node)
-{
-    if (!node)
-    {
-        return;
-    }
-
-    if (node->left)
-    {
-        destruction(node->left);
-    }
-    if (node->right)
-    {
-        destruction(node->right);
-    }
-
-    ::delete node;
-    node = nullptr;
-}
-
 //! @brief Destroy the the BS tree.
 //! @param tree - BS tree
 void destruction(const Tree* const tree)
@@ -331,14 +331,6 @@ static int getHeight(const Node* const node)
     return node ? node->height : 0;
 }
 
-//! @brief Get the height of the AVL tree.
-//! @param tree - AVL tree
-//! @return height of the AVL tree
-int getHeight(const Tree* const tree)
-{
-    return (tree && tree->root) ? tree->root->height : 0;
-}
-
 //! @brief Get the node where the minimum key is located in the AVL subtree.
 //! @param node - root of the subtree
 //! @return node where the minimum key is located
@@ -357,14 +349,6 @@ static Node* getMinimum(Node* node)
     return node;
 }
 
-//! @brief Get the node where the minimum key is located in the AVL tree.
-//! @param tree - AVL tree
-//! @return node where the minimum key is located
-Node* getMinimum(const Tree* const tree)
-{
-    return tree ? getMinimum(tree->root) : nullptr;
-}
-
 //! @brief Get the node where the maximum key is located in the AVL subtree.
 //! @param node - root of the subtree
 //! @return node where the maximum key is located
@@ -381,14 +365,6 @@ static Node* getMaximum(Node* node)
     }
 
     return node;
-}
-
-//! @brief Get the node where the maximum key is located in the AVL tree.
-//! @param tree - AVL tree
-//! @return node where the maximum key is located
-Node* getMaximum(const Tree* const tree)
-{
-    return tree ? getMaximum(tree->root) : nullptr;
 }
 
 //! @brief LL rotation. A single left rotation.
@@ -468,13 +444,13 @@ static Node* rightLeftRotation(Node* const k1)
 //! @return new node after creating
 static Node* createNode(const void* const key, Node* const left, Node* const right)
 {
-    auto* const node = ::new (std::nothrow) Node;
+    Node* const node = ::new (std::nothrow) Node;
     if (!node)
     {
         return nullptr;
     }
 
-    node->key = const_cast<void*>(key); // NOLINT(cppcoreguidelines-pro-type-const-cast);
+    node->key = const_cast<void*>(key);
     node->height = 0;
     node->left = left;
     node->right = right;
@@ -557,15 +533,6 @@ static Node* search(Node* const node, const void* const key, const Compare cmp)
     return (cmp(node->key, key) == 0) ? node : search((cmp(key, node->key) < 0) ? node->left : node->right, key, cmp);
 }
 
-//! @brief Search the node of AVL tree by key.
-//! @param tree - AVL tree
-//! @param key - key of the node
-//! @return node where the key is located
-Node* search(const Tree* const tree, const void* const key)
-{
-    return tree ? search(tree->root, key, tree->compare) : nullptr;
-}
-
 //! @brief Insert target node into the AVL subtree. Not allow inserting node with the same key.
 //! @param node - root of the subtree
 //! @param key - key of the target node
@@ -608,19 +575,6 @@ static Node* insertion(Node* node, const void* const key, const Compare cmp)
     return node;
 }
 
-//! @brief Insert target node into the AVL tree. Not allow inserting node with the same key.
-//! @param tree - AVL tree
-//! @param key - key of the target node
-void insertion(Tree* const tree, const void* const key)
-{
-    if (!tree)
-    {
-        return;
-    }
-
-    tree->root = insertion(tree->root, key, tree->compare);
-}
-
 //! @brief Delete target node from the AVL subtree.
 //! @param node - root of the subtree
 //! @param key - key of the target node
@@ -634,19 +588,6 @@ static Node* deletion(Node* node, const void* const key, const Compare cmp)
     }
 
     return node;
-}
-
-//! @brief Delete target node from the AVL tree.
-//! @param tree - AVL tree
-//! @param key - key of the target node
-void deletion(Tree* const tree, const void* const key)
-{
-    if (!tree)
-    {
-        return;
-    }
-
-    tree->root = deletion(tree->root, key, tree->compare);
 }
 
 //! @brief Destroy the the AVL subtree.
@@ -669,6 +610,65 @@ static void destruction(const Node* node)
 
     ::delete node;
     node = nullptr;
+}
+
+//! @brief Get the height of the AVL tree.
+//! @param tree - AVL tree
+//! @return height of the AVL tree
+int getHeight(const Tree* const tree)
+{
+    return (tree && tree->root) ? tree->root->height : 0;
+}
+
+//! @brief Get the node where the minimum key is located in the AVL tree.
+//! @param tree - AVL tree
+//! @return node where the minimum key is located
+Node* getMinimum(const Tree* const tree)
+{
+    return tree ? getMinimum(tree->root) : nullptr;
+}
+
+//! @brief Get the node where the maximum key is located in the AVL tree.
+//! @param tree - AVL tree
+//! @return node where the maximum key is located
+Node* getMaximum(const Tree* const tree)
+{
+    return tree ? getMaximum(tree->root) : nullptr;
+}
+
+//! @brief Search the node of AVL tree by key.
+//! @param tree - AVL tree
+//! @param key - key of the node
+//! @return node where the key is located
+Node* search(const Tree* const tree, const void* const key)
+{
+    return tree ? search(tree->root, key, tree->compare) : nullptr;
+}
+
+//! @brief Insert target node into the AVL tree. Not allow inserting node with the same key.
+//! @param tree - AVL tree
+//! @param key - key of the target node
+void insertion(Tree* const tree, const void* const key)
+{
+    if (!tree)
+    {
+        return;
+    }
+
+    tree->root = insertion(tree->root, key, tree->compare);
+}
+
+//! @brief Delete target node from the AVL tree.
+//! @param tree - AVL tree
+//! @param key - key of the target node
+void deletion(Tree* const tree, const void* const key)
+{
+    if (!tree)
+    {
+        return;
+    }
+
+    tree->root = deletion(tree->root, key, tree->compare);
 }
 
 //! @brief Destroy the the AVL tree.
@@ -704,14 +704,6 @@ static Node* getMinimum(Node* node)
     return node;
 }
 
-//! @brief Get the node where the minimum key is located in the splay tree.
-//! @param tree - splay tree
-//! @return node where the minimum key is located
-Node* getMinimum(const Tree* const tree)
-{
-    return tree ? getMinimum(tree->root) : nullptr;
-}
-
 //! @brief Get the node where the maximum key is located in the splay subtree.
 //! @param node - root of the subtree
 //! @return node where the maximum key is located
@@ -730,14 +722,6 @@ static Node* getMaximum(Node* node)
     return node;
 }
 
-//! @brief Get the node where the maximum key is located in the splay tree.
-//! @param tree - splay tree
-//! @return node where the maximum key is located
-Node* getMaximum(const Tree* const tree)
-{
-    return tree ? getMaximum(tree->root) : nullptr;
-}
-
 //! @brief Create a node of the splay tree.
 //! @param key - key of the node to be created
 //! @param left - left child node of the node to be created
@@ -745,13 +729,13 @@ Node* getMaximum(const Tree* const tree)
 //! @return new node after creating
 static Node* createNode(const void* const key, Node* const left, Node* const right)
 {
-    auto* const node = ::new (std::nothrow) Node;
+    Node* const node = ::new (std::nothrow) Node;
     if (!node)
     {
         return nullptr;
     }
 
-    node->key = const_cast<void*>(key); // NOLINT(cppcoreguidelines-pro-type-const-cast);
+    node->key = const_cast<void*>(key);
     node->left = left;
     node->right = right;
 
@@ -823,15 +807,6 @@ static Node* search(Node* const node, const void* const key, const Compare cmp)
     return (cmp(node->key, key) == 0) ? node : search((cmp(key, node->key) < 0) ? node->left : node->right, key, cmp);
 }
 
-//! @brief Search the node of splay tree by key.
-//! @param tree - splay tree
-//! @param key - key of the node
-//! @return node where the key is located
-Node* search(const Tree* const tree, const void* const key)
-{
-    return tree ? search(tree->root, key, tree->compare) : nullptr;
-}
-
 //! @brief Splay target node in the splay subtree. Make to be the root node.
 //! @param node - root of the subtree
 //! @param key - key of the target node
@@ -895,19 +870,6 @@ static Node* splaying(Node* node, const void* const key, const Compare cmp)
     return node;
 }
 
-//! @brief Splay target node in the splay tree. Make to be the root node.
-//! @param tree - splay tree
-//! @param key - key of the target node
-void splaying(Tree* const tree, const void* const key)
-{
-    if (!tree)
-    {
-        return;
-    }
-
-    tree->root = splaying(tree->root, key, tree->compare);
-}
-
 //! @brief Insert target node into the splay subtree. Not allow inserting node with the same key.
 //! @param node - root of the subtree
 //! @param key - key of the target node
@@ -925,19 +887,6 @@ static Node* insertion(Node* node, const void* const key, const Compare cmp)
     node = splaying(node, key, cmp);
 
     return node;
-}
-
-//! @brief Insert target node into the splay tree. Not allow inserting node with the same key.
-//! @param tree - splay tree
-//! @param key - key of the target node
-void insertion(Tree* const tree, const void* const key)
-{
-    if (!tree)
-    {
-        return;
-    }
-
-    tree->root = insertion(tree->root, key, tree->compare);
 }
 
 //! @brief Delete target node from the splay subtree.
@@ -970,19 +919,6 @@ static Node* deletion(Node* node, const void* const key, const Compare cmp)
     return x;
 }
 
-//! @brief Delete target node from the splay tree.
-//! @param tree - splay tree
-//! @param key - key of the target node
-void deletion(Tree* const tree, const void* const key)
-{
-    if (!tree)
-    {
-        return;
-    }
-
-    tree->root = deletion(tree->root, key, tree->compare);
-}
-
 //! @brief Destroy the the splay subtree.
 //! @param node - root of the subtree
 static void destruction(const Node* node)
@@ -1005,6 +941,70 @@ static void destruction(const Node* node)
     node = nullptr;
 }
 
+//! @brief Get the node where the minimum key is located in the splay tree.
+//! @param tree - splay tree
+//! @return node where the minimum key is located
+Node* getMinimum(const Tree* const tree)
+{
+    return tree ? getMinimum(tree->root) : nullptr;
+}
+
+//! @brief Get the node where the maximum key is located in the splay tree.
+//! @param tree - splay tree
+//! @return node where the maximum key is located
+Node* getMaximum(const Tree* const tree)
+{
+    return tree ? getMaximum(tree->root) : nullptr;
+}
+
+//! @brief Search the node of splay tree by key.
+//! @param tree - splay tree
+//! @param key - key of the node
+//! @return node where the key is located
+Node* search(const Tree* const tree, const void* const key)
+{
+    return tree ? search(tree->root, key, tree->compare) : nullptr;
+}
+
+//! @brief Splay target node in the splay tree. Make to be the root node.
+//! @param tree - splay tree
+//! @param key - key of the target node
+void splaying(Tree* const tree, const void* const key)
+{
+    if (!tree)
+    {
+        return;
+    }
+
+    tree->root = splaying(tree->root, key, tree->compare);
+}
+
+//! @brief Insert target node into the splay tree. Not allow inserting node with the same key.
+//! @param tree - splay tree
+//! @param key - key of the target node
+void insertion(Tree* const tree, const void* const key)
+{
+    if (!tree)
+    {
+        return;
+    }
+
+    tree->root = insertion(tree->root, key, tree->compare);
+}
+
+//! @brief Delete target node from the splay tree.
+//! @param tree - splay tree
+//! @param key - key of the target node
+void deletion(Tree* const tree, const void* const key)
+{
+    if (!tree)
+    {
+        return;
+    }
+
+    tree->root = deletion(tree->root, key, tree->compare);
+}
+
 //! @brief Destroy the the splay tree.
 //! @param tree - splay tree
 void destruction(const Tree* const tree)
@@ -1017,5 +1017,5 @@ void destruction(const Tree* const tree)
     destruction(tree->root);
 }
 } // namespace splay
-// NOLINTEND(cppcoreguidelines-owning-memory)
+// NOLINTEND(cppcoreguidelines-owning-memory, cppcoreguidelines-pro-type-const-cast)
 } // namespace date_structure::tree
