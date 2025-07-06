@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <cstdint>
+#include <memory>
 
 //! @brief The data structure module.
 namespace date_structure // NOLINT(modernize-concat-nested-namespaces)
@@ -16,161 +16,279 @@ namespace filter
 {
 extern const char* version() noexcept;
 
-// NOLINTBEGIN(readability-magic-numbers)
-//! @brief The MurmurHash2 (64-bit) function.
-//! @param key - key to hash
-//! @param length - length of the key
-//! @param seed - hash seed
-//! @return hash value
-inline std::uint64_t murmurHash2X64(const void* const key, const int length, const std::uint32_t seed) noexcept
-{
-    constexpr std::uint64_t mix = 0xc6a4a7935bd1e995;
-    constexpr int shift = 47;
-    const auto* data1 = static_cast<const std::uint64_t*>(key);
-    const std::uint64_t* end = data1 + (length / 8);
-    std::uint64_t hash = seed ^ (length * mix);
-    while (data1 != end)
-    {
-        std::uint64_t block = *data1++;
-        block *= mix;
-        block ^= block >> shift;
-        block *= mix;
-
-        hash ^= block;
-        hash *= mix;
-    }
-
-    const auto* data2 =
-        reinterpret_cast<const std::uint8_t*>(data1); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-    switch (length & 7)
-    {
-        case 7:
-            hash ^= static_cast<std::uint64_t>(data2[6]) << 48;
-            [[fallthrough]];
-        case 6:
-            hash ^= static_cast<std::uint64_t>(data2[5]) << 40;
-            [[fallthrough]];
-        case 5:
-            hash ^= static_cast<std::uint64_t>(data2[4]) << 32;
-            [[fallthrough]];
-        case 4:
-            hash ^= static_cast<std::uint64_t>(data2[3]) << 24;
-            [[fallthrough]];
-        case 3:
-            hash ^= static_cast<std::uint64_t>(data2[2]) << 16;
-            [[fallthrough]];
-        case 2:
-            hash ^= static_cast<std::uint64_t>(data2[1]) << 8;
-            [[fallthrough]];
-        case 1:
-            hash ^= static_cast<std::uint64_t>(data2[0]);
-            hash *= mix;
-            [[fallthrough]];
-        default:
-            break;
-    };
-
-    hash ^= hash >> shift;
-    hash *= mix;
-    hash ^= hash >> shift;
-
-    return hash;
-}
-// NOLINTEND(readability-magic-numbers)
-
 //! @brief The Bloom filter structure.
-namespace bloom
+class Bloom
 {
-#ifdef __cplusplus
-extern "C"
-{
-#endif // __cplusplus
-#pragma pack(push, 1)
-    //! @brief The Bloom filter data.
-    typedef struct TagFilter
-    {
-        //! @brief Whether the filter is initialized.
-        bool isInitialized;
-        //! @brief Padding of reserved bytes for alignment.
-        std::uint8_t padding[3];
-        //! @brief The capacity of the filter.
-        std::uint32_t capacity;
-        //! @brief The false positive probability of the filter.
-        double falsePositiveProb;
-        //! @brief Number of elements.
-        std::uint32_t counter;
-        //! @brief Number of bits.
-        std::uint32_t filterBitNum;
-        //! @brief Size of the filter in bytes.
-        std::uint32_t filterSize;
-        //! @brief Number of hash functions.
-        std::uint32_t hashFuncNum;
-        //! @brief The hash seed.
-        std::uint32_t hashSeed;
-        //! @brief The filter data.
-        std::uint8_t* filter;
-        //! @brief The position of the hash values.
-        std::uint32_t* hashPos;
-    } BloomFilter;
-#pragma pack(pop)
-#ifdef __cplusplus
-}
-#endif // __cplusplus
+public:
+    //! @brief Construct a new Bloom object.
+    //! @param capacity -  expected number of elements in the filter
+    //! @param falsePositiveProb - desired false positive probability
+    //! @param hashSeed - hash seed
+    Bloom(const std::uint32_t capacity, const double falsePositiveProb, const std::uint32_t hashSeed);
+    //! @brief Destroy the Bloom object.
+    virtual ~Bloom() = default;
 
-extern bool init(
-    BloomFilter* const bf, const std::uint32_t hashSeed, const std::uint32_t capacity, const double falsePositiveProb);
-extern bool deinit(BloomFilter* const bf);
-extern bool clear(BloomFilter* const bf);
-extern bool insert(BloomFilter* const bf, const void* const key, const int length);
-extern bool mayContain(BloomFilter* const bf, const void* const key, const int length);
-} // namespace bloom
+    //! @brief Insert a key into the filter.
+    //! @param key - key to hash
+    //! @param length - length of the key
+    //! @return success or failure
+    bool insert(const void* const key, const int length);
+    //! @brief Check whether a key may be in the filter.
+    //! @param key - key to hash
+    //! @param length - length of the key
+    //! @return may contain or not
+    bool mayContain(const void* const key, const int length);
+    //! @brief Clear the filter.
+    void clear();
+
+private:
+    //! @brief The capacity of the filter.
+    const std::uint32_t capacity{0};
+    //! @brief Number of bits.
+    const std::uint32_t filterBitsNum{0};
+    //! @brief Number of hash functions.
+    const std::uint32_t hashFuncNum{0};
+    //! @brief The hash seed.
+    const std::uint32_t hashSeed{0};
+    //! @brief Size of the filter in bytes.
+    const std::uint32_t filterSize{0};
+    //! @brief The filter data.
+    const std::unique_ptr<std::uint8_t[]> filter;
+    //! @brief The position of the hash values.
+    const std::unique_ptr<std::uint32_t[]> hashPos;
+    //! @brief Total number of entries.
+    std::uint32_t entries{0};
+    //! @brief Number of bits in a byte.
+    static constexpr std::uint8_t byteBits{8};
+
+    //! @brief Hash a key and calculate the positions in the filter.
+    //! @param key - key to hash
+    //! @param length - length of the key
+    void bloomHash(const void* const key, const int length);
+    //! @brief Set a bit in the filter.
+    //! @param filter - filter to set the bit in
+    //! @param hashPos - hash position to set the bit
+    static void setBit(std::uint8_t* const filter, const std::uint32_t hashPos);
+    //! @brief Get a bit from the filter.
+    //! @param filter - filter to get the bit from
+    //! @param hashPos - hash position to get the bit
+    //! @return bit from the filter
+    static std::uint8_t getBit(const std::uint8_t* const filter, const std::uint32_t hashPos);
+    //! @brief Calculate the parameter m.
+    //! @param n - expected number of elements in the filter
+    //! @param p - desired false positive probability
+    //! @return number of bits in the filter
+    static std::uint32_t calculateParamM(const std::uint32_t n, const double p);
+    //! @brief Calculate the parameter k.
+    //! @param m - number of bits in the filter
+    //! @param n - expected number of elements in the filter
+    //! @return number of hash functions to use
+    static std::uint32_t calculateParamK(const std::uint32_t m, const std::uint32_t n);
+};
 
 //! @brief The quotient filter structure.
-namespace quotient
+class Quotient
 {
-#ifdef __cplusplus
-extern "C"
-{
-#endif // __cplusplus
-#pragma pack(push, 1)
-    //! @brief The quotient filter data.
-    typedef struct TagFilter
-    {
-        //! @brief Number of quotient bits.
-        std::uint8_t qBits;
-        //! @brief Number of reminder bits.
-        std::uint8_t rBits;
-        //! @brief Number of bits per element.
-        std::uint8_t elemBits;
-        //! @brief The capacity of the filter.
-        std::uint8_t padding[1];
-        //! @brief Total number of entries.
-        std::uint32_t entries;
-        //! @brief The hash seed.
-        std::uint32_t hashSeed;
-        //! @brief Mask for extracting the index.
-        std::uint64_t indexMask;
-        //! @brief Mask for extracting the reminder.
-        std::uint64_t rMask;
-        //! @brief Mask for extracting the element.
-        std::uint64_t elemMask;
-        //! @brief Padding of reserved bytes for alignment.
-        std::uint64_t capacity;
-        //! @brief Table of the filter data.
-        std::uint64_t* table;
-    } QuotientFilter;
-#pragma pack(pop)
-#ifdef __cplusplus
-}
-#endif // __cplusplus
+public:
+    //! @brief Construct a new Quotient object.
+    //! @param qBits - number of quotient bits
+    //! @param rBits - number of reminder bits
+    //! @param hashSeed - hash seed
+    Quotient(const std::uint8_t qBits, const std::uint8_t rBits, const std::uint32_t hashSeed);
+    //! @brief Destroy the Quotient object.
+    virtual ~Quotient() = default;
 
-extern bool init(QuotientFilter* const qf, const std::uint32_t hashSeed, const std::uint32_t q, const std::uint32_t r);
-extern bool deinit(QuotientFilter* const qf);
-extern bool clear(QuotientFilter* const qf);
-extern bool insert(QuotientFilter* const qf, const void* const key, const int length);
-extern bool mayContain(const QuotientFilter* const qf, const void* const key, const int length);
-extern bool remove(QuotientFilter* const qf, const void* const key, const int length);
-extern bool merge(const QuotientFilter* const qfIn1, const QuotientFilter* const qfIn2, QuotientFilter* const qfOut);
-} // namespace quotient
+    //! @brief Insert a key into the filter.
+    //! @param key - key to hash
+    //! @param length - length of the key
+    //! @return success or failure
+    bool insert(const void* const key, const int length);
+    //! @brief Check whether a key may be in the filter.
+    //! @param key - key to hash
+    //! @param length - length of the key
+    //! @return may contain or not
+    bool mayContain(const void* const key, const int length);
+    //! @brief Clear the filter.
+    void clear();
+    //! @brief Remove a key from the filter.
+    //! @param key - key to hash
+    //! @param length - length of the key
+    //! @return success or failure
+    bool remove(const void* const key, const int length);
+    //! @brief Merge two quotient filters into self.
+    //! @param qfIn1 - first input quotient filter
+    //! @param qfIn2 - second input quotient filter
+    //! @return success or failure
+    bool merge(const Quotient& qfIn1, const Quotient& qfIn2);
+
+private:
+    //! @brief Number of quotient bits.
+    const std::uint8_t qBits{0};
+    //! @brief Number of reminder bits.
+    const std::uint8_t rBits{0};
+    //! @brief Number of bits per element.
+    const std::uint8_t elemBits{0};
+    //! @brief Mask for extracting the index.
+    const std::uint64_t indexMask{0};
+    //! @brief Mask for extracting the reminder.
+    const std::uint64_t rMask{0};
+    //! @brief Mask for extracting the element.
+    const std::uint64_t elemMask{0};
+    //! @brief The capacity of the filter.
+    const std::uint64_t capacity{0};
+    //! @brief The hash seed.
+    const std::uint32_t hashSeed{0};
+    //! @brief Size of the filter in bytes.
+    const std::uint64_t filterSize{0};
+    //! @brief The filter data.
+    const std::unique_ptr<std::uint64_t[]> filter;
+    //! @brief Total number of entries.
+    std::uint64_t entries{0};
+
+    //! @brief The iterator for the filter.
+    struct Iterator
+    {
+        //! @brief Current index in the filter.
+        std::uint64_t index{0};
+        //! @brief Current quotient value.
+        std::uint64_t quotient{0};
+        //! @brief Number of visited elements.
+        std::uint64_t visited{0};
+    };
+
+    //! @brief Insert a hash value into the filter.
+    //! @param hash - hash value
+    //! @return success or failure
+    bool insert(const std::uint64_t hash);
+    //! @brief Insert an element into the filter at a given start index.
+    //! @param start - start index to insert the element
+    //! @param elem - element to insert
+    void insertInto(std::uint64_t start, const std::uint64_t elem);
+    //! @brief Check whether a hash value may be in the filter.
+    //! @param hash - hash value
+    //! @return may contain or not
+    bool mayContain(const std::uint64_t hash);
+    //! @brief Remove a hash value from the filter.
+    //! @param hash - hash value
+    //! @return success or failure
+    bool remove(const std::uint64_t hash);
+    //! @brief Delete an entry.
+    //! @param start - start index of the entry to delete
+    //! @param quotient - quotient of the entry to delete
+    void deleteEntry(std::uint64_t start, std::uint64_t quotient);
+    //! @brief Hash a key for the filter.
+    //! @param key - key to hash
+    //! @param length - length of the key
+    //! @return hash value
+    std::uint64_t quotientHash(const void* const key, const int length) const;
+    //! @brief Convert the hash value into a quotient.
+    //! @param hash - hash value
+    //! @return quotient
+    [[nodiscard]] std::uint64_t hashToQuotient(const std::uint64_t hash) const;
+    //! @brief Convert the hash value into a reminder.
+    //! @param hash - hash value
+    //! @return reminder
+    [[nodiscard]] std::uint64_t hashToRemainder(const std::uint64_t hash) const;
+    //! @brief Find the start index of a run.
+    //! @param quotient - quotient converted from hash value
+    //! @return start index of a run
+    [[nodiscard]] std::uint64_t findRunIndex(const std::uint64_t quotient) const;
+
+    //! @brief Start iterating over the filter.
+    //! @param qf - quotient filter
+    //! @param iter - filter iterator
+    static void start(const Quotient& qf, Iterator& iter);
+    //! @brief Check whether the iterator has visited all entries.
+    //! @param qf - quotient filter
+    //! @param iter - filter iterator
+    //! @return be done or not
+    static bool done(const Quotient& qf, const Iterator& iter);
+    //! @brief Get the next hash value from the filter.
+    //! @param qf - quotient filter
+    //! @param iter - filter iterator
+    //! @return next hash value
+    static std::uint64_t next(const Quotient& qf, Iterator& iter);
+    //! @brief Set the element at a given index.
+    //! @param qf - quotient filter
+    //! @param index - index of the element
+    //! @param elem - element to set
+    static void setElement(Quotient& qf, const std::uint64_t index, std::uint64_t elem);
+    //! @brief Get the element at a given index.
+    //! @param qf - quotient filter
+    //! @param index - index of the element
+    //! @return element at the index
+    static std::uint64_t getElement(const Quotient& qf, const std::uint64_t index);
+    //! @brief Increase an index.
+    //! @param qf - quotient filter
+    //! @param index - index to increment
+    //! @return increased index
+    static std::uint64_t increase(const Quotient& qf, const std::uint64_t index);
+    //! @brief Decrease an index.
+    //! @param qf - quotient filter
+    //! @param index - index to decrement
+    //! @return decreased index
+    static std::uint64_t decrease(const Quotient& qf, const std::uint64_t index);
+    //! @brief Check whether an element is occupied.
+    //! @param elem - element to check
+    //! @return be occupied or not
+    static bool isOccupied(const std::uint64_t elem);
+    //! @brief Set an element as occupied.
+    //! @param elem - element to set
+    //! @return element with occupied status set
+    static std::uint64_t setOccupied(const std::uint64_t elem);
+    //! @brief Clear the occupied status of an element.
+    //! @param elem - element to clear
+    //! @return element with occupied status cleared
+    static std::uint64_t clearOccupied(const std::uint64_t elem);
+    //! @brief Check whether an element is a continuation.
+    //! @param elem - element to check
+    //! @return be a continuation or not
+    static bool isContinuation(const std::uint64_t elem);
+    //! @brief Set an element as a continuation.
+    //! @param elem - element to set
+    //! @return element with continuation status set
+    static std::uint64_t setContinuation(const std::uint64_t elem);
+    //! @brief Clear the continuation status of an element.
+    //! @param elem - element to clear
+    //! @return element with continuation status cleared
+    static std::uint64_t clearContinuation(const std::uint64_t elem);
+    //! @brief Check whether an element is shifted.
+    //! @param elem - element to check
+    //! @return be shifted or not
+    static bool isShifted(const std::uint64_t elem);
+    //! @brief Set an element as shifted.
+    //! @param elem - element to set
+    //! @return element with shifted status set
+    static std::uint64_t setShifted(const std::uint64_t elem);
+    //! @brief Clear the shifted status of an element.
+    //! @param elem - element to clear
+    //! @return element with shifted status cleared
+    static std::uint64_t clearShifted(const std::uint64_t elem);
+    //! @brief Get the remainder from an element.
+    //! @param elem - element to get the remainder from
+    //! @return remainder of the element
+    static std::uint64_t getRemainder(const std::uint64_t elem);
+    //! @brief Check whether an element is empty.
+    //! @param elem - element to check
+    //! @return be empty or not
+    static bool isEmptyElement(const std::uint64_t elem);
+    //! @brief Check whether an element is a cluster start.
+    //! @param elem - element to check
+    //! @return be a cluster start or not
+    static bool isClusterStart(const std::uint64_t elem);
+    //! @brief Check whether an element is a run start.
+    //! @param elem - element to check
+    //! @return be a run start or not
+    static bool isRunStart(const std::uint64_t elem);
+    //! @brief Get the low mask for a given number of bits.
+    //! @param n - number of bits
+    //! @return low mask
+    static std::uint64_t lowMask(const std::uint64_t n);
+    //! @brief Get the size of the filter in bytes.
+    //! @param q - number of quotient bits
+    //! @param r - number of reminder bits
+    //! @return size of the filter in bytes
+    static std::uint64_t filterSizeInBytes(const std::uint8_t q, const std::uint8_t r);
+};
 } // namespace filter
 } // namespace date_structure
