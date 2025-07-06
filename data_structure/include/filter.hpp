@@ -115,11 +115,13 @@ public:
     //! @param length - length of the key
     //! @return success or failure
     bool remove(const void* const key, const int length);
-    //! @brief Merge two quotient filters into self.
-    //! @param qfIn1 - first input quotient filter
-    //! @param qfIn2 - second input quotient filter
+    //! @brief Merge other quotient filters into self.
+    //! @tparam QFs - type of other input quotient filters
+    //! @param qf - first input quotient filter
+    //! @param others - other input quotient filters
     //! @return success or failure
-    bool merge(const Quotient& qfIn1, const Quotient& qfIn2);
+    template <typename... QFs>
+    bool merge(const Quotient& qf, const QFs&... others);
 
 private:
     //! @brief Number of quotient bits.
@@ -163,7 +165,14 @@ private:
     //! @brief Insert an element into the filter at a given start index.
     //! @param start - start index to insert the element
     //! @param elem - element to insert
-    void insertInto(std::uint64_t start, const std::uint64_t elem);
+    void insertAt(const std::uint64_t start, const std::uint64_t elem);
+    //! @brief Insert all the hash values from the other quotient filter.
+    //! @param qf - other quotient filter
+    void insertFrom(const Quotient& qf);
+    //! @brief Check whether it is compatible with the other quotient filter.
+    //! @param qf - other quotient filter
+    //! @return be compatible or not
+    [[nodiscard]] bool isCompatibleWith(const Quotient& qf) const;
     //! @brief Check whether a hash value may be in the filter.
     //! @param hash - hash value
     //! @return may contain or not
@@ -172,10 +181,10 @@ private:
     //! @param hash - hash value
     //! @return success or failure
     bool remove(const std::uint64_t hash);
-    //! @brief Delete an entry.
-    //! @param start - start index of the entry to delete
-    //! @param quotient - quotient of the entry to delete
-    void deleteEntry(std::uint64_t start, std::uint64_t quotient);
+    //! @brief Remove an element from the filter at a given start index.
+    //! @param start - start index to remove the element
+    //! @param quot - quotient involving the element to be removed
+    void removeAt(const std::uint64_t start, const std::uint64_t quot);
     //! @brief Hash a key for the filter.
     //! @param key - key to hash
     //! @param length - length of the key
@@ -190,9 +199,9 @@ private:
     //! @return reminder
     [[nodiscard]] std::uint64_t hashToRemainder(const std::uint64_t hash) const;
     //! @brief Find the start index of a run.
-    //! @param quotient - quotient converted from hash value
+    //! @param quot - quotient converted from hash value
     //! @return start index of a run
-    [[nodiscard]] std::uint64_t findRunIndex(const std::uint64_t quotient) const;
+    [[nodiscard]] std::uint64_t findRunIndex(const std::uint64_t quot) const;
 
     //! @brief Start iterating over the filter.
     //! @param qf - quotient filter
@@ -290,5 +299,19 @@ private:
     //! @return size of the filter in bytes
     static std::uint64_t filterSizeInBytes(const std::uint8_t q, const std::uint8_t r);
 };
+
+template <typename... QFs>
+bool Quotient::merge(const Quotient& qf, const QFs&... others)
+{
+    if (!isCompatibleWith(qf) || !(isCompatibleWith(others) && ...))
+    {
+        return false;
+    }
+
+    insertFrom(qf);
+    (insertFrom(others), ...);
+
+    return true;
+}
 } // namespace filter
 } // namespace date_structure
