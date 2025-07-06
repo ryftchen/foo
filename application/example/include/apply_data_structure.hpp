@@ -140,7 +140,7 @@ public:
         process << "\nwhether it is empty: " << fifoCache.empty() << '\n';
         process << "size: " << fifoCache.size() << '\n';
         process << "capacity: " << fifoCache.capacity() << '\n';
-        process << "cache detail: " << fifoCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
+        process << "current status: " << fifoCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
         process.seekp(process.str().length() - separator.length());
 
         return std::ostringstream{process.str().substr(0, process.tellp()) + '\n'};
@@ -191,7 +191,7 @@ public:
         process << "\nwhether it is empty: " << lfuCache.empty() << '\n';
         process << "size: " << lfuCache.size() << '\n';
         process << "capacity: " << lfuCache.capacity() << '\n';
-        process << "cache detail: " << lfuCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
+        process << "current status: " << lfuCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
         process.seekp(process.str().length() - separator.length());
 
         return std::ostringstream{process.str().substr(0, process.tellp()) + '\n'};
@@ -242,7 +242,7 @@ public:
         process << "\nwhether it is empty: " << lruCache.empty() << '\n';
         process << "size: " << lruCache.size() << '\n';
         process << "capacity: " << lruCache.capacity() << '\n';
-        process << "cache detail: " << lruCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
+        process << "current status: " << lruCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
         process.seekp(process.str().length() - separator.length());
 
         return std::ostringstream{process.str().substr(0, process.tellp()) + '\n'};
@@ -494,7 +494,7 @@ public:
 
         process << "whether it is empty: " << empty(dll) << '\n';
         process << "size: " << size(dll) << '\n';
-        process << "linear details: HEAD -> ";
+        process << "all details: HEAD -> ";
         for (int i = 0; i < size(dll); ++i)
         {
             val = static_cast<Meta*>(get(dll, i));
@@ -535,7 +535,7 @@ public:
 
         process << "whether it is empty: " << empty(stk) << '\n';
         process << "size: " << size(stk) << '\n';
-        process << "linear details: TOP [";
+        process << "all details: TOP [";
         while (!empty(stk))
         {
             val = static_cast<Meta*>(pop(stk));
@@ -576,7 +576,7 @@ public:
 
         process << "whether it is empty: " << empty(que) << '\n';
         process << "size: " << size(que) << '\n';
-        process << "linear details: FRONT [";
+        process << "all details: FRONT [";
         while (!empty(que))
         {
             val = static_cast<Meta*>(pop(que));
@@ -656,7 +656,7 @@ public:
 
         process << "\nminimum: " << *static_cast<std::int16_t*>(getMinimum(&tree)->key) << '\n';
         process << "maximum: " << *static_cast<std::int16_t*>(getMaximum(&tree)->key) << '\n';
-        process << "tree details:\n";
+        process << "all details:\n";
         tracker.traverse(tree.root, tree.root->key, 0);
 
         constexpr std::int16_t searchKey = 3;
@@ -671,7 +671,7 @@ public:
 
         process << "in-order traversal: ";
         tracker.inOrderTraversal(tree.root);
-        process << "\ntree details:\n";
+        process << "\nall details:\n";
         tracker.traverse(tree.root, tree.root->key, 0);
         destruction(&tree);
 
@@ -713,7 +713,7 @@ public:
         process << "\nheight: " << getHeight(&tree) << '\n';
         process << "minimum: " << *static_cast<std::int16_t*>(getMinimum(&tree)->key) << '\n';
         process << "maximum: " << *static_cast<std::int16_t*>(getMaximum(&tree)->key) << '\n';
-        process << "tree details:\n";
+        process << "all details:\n";
         tracker.traverse(tree.root, tree.root->key, 0);
 
         constexpr std::int16_t searchKey = 13;
@@ -725,7 +725,7 @@ public:
         process << "height: " << getHeight(&tree) << '\n';
         process << "in-order traversal: ";
         tracker.inOrderTraversal(tree.root);
-        process << "\ntree details:\n";
+        process << "\nall details:\n";
         tracker.traverse(tree.root, tree.root->key, 0);
         destruction(&tree);
 
@@ -765,7 +765,7 @@ public:
 
         process << "\nminimum: " << *static_cast<std::int16_t*>(getMinimum(&tree)->key) << '\n';
         process << "maximum: " << *static_cast<std::int16_t*>(getMaximum(&tree)->key) << '\n';
-        process << "tree details:\n";
+        process << "all details:\n";
         tracker.traverse(tree.root, tree.root->key, 0);
 
         constexpr std::int16_t searchKey = 70;
@@ -776,14 +776,14 @@ public:
 
         process << "in-order traversal: ";
         tracker.inOrderTraversal(tree.root);
-        process << "\ntree details:\n";
+        process << "\nall details:\n";
         tracker.traverse(tree.root, tree.root->key, 0);
 
         constexpr std::int16_t splayKey = 30;
         process << "splaying " << splayKey << '\n';
         splaying(&tree, &splayKey);
 
-        process << "tree details:\n";
+        process << "all details:\n";
         tracker.traverse(tree.root, tree.root->key, 0);
         destruction(&tree);
 
