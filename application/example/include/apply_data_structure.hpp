@@ -284,7 +284,6 @@ public:
     //! @return procedure output
     static std::ostringstream bloom()
     {
-        using namespace date_structure::filter::bloom;
         std::ostringstream process{};
 
         constexpr std::uint32_t totalSize = 1000;
@@ -305,13 +304,12 @@ public:
             urls2.emplace_back(std::move(url2));
         }
 
-        BloomFilter bf{};
-        init(&bf, 0, 1e5, 1e-5);
+        date_structure::filter::Bloom bf(1e5, 1e-5, 0);
         const std::uint32_t inserted = std::accumulate(
             urls1.cbegin(),
             urls1.cend(),
             0,
-            [&bf](const auto acc, const auto& url) { return acc + (insert(&bf, url.c_str(), url.length()) ? 1 : 0); });
+            [&bf](const auto acc, const auto& url) { return acc + (bf.insert(url.c_str(), url.length()) ? 1 : 0); });
         process << "insert {" << urls1.at(0) << " ... " << urls1.at(urls1.size() - 1) << "}: " << inserted << '\n';
 
         const std::uint32_t mayContained = std::accumulate(
@@ -319,7 +317,7 @@ public:
             urls1.cend(),
             0,
             [&bf](const auto acc, const auto& url)
-            { return acc + (mayContain(&bf, url.c_str(), url.length()) ? 1 : 0); });
+            { return acc + (bf.mayContain(url.c_str(), url.length()) ? 1 : 0); });
         process << "may contain {" << urls1.at(0) << " ... " << urls1.at(urls1.size() - 1) << "}: " << mayContained
                 << '\n';
         const std::uint32_t mayNotContained = std::accumulate(
@@ -327,11 +325,10 @@ public:
             urls2.cend(),
             0,
             [&bf](const auto acc, const auto& url)
-            { return acc + (!mayContain(&bf, url.c_str(), url.length()) ? 1 : 0); });
+            { return acc + (!bf.mayContain(url.c_str(), url.length()) ? 1 : 0); });
         process << "may not contain {" << urls2.at(0) << " ... " << urls2.at(urls2.size() - 1)
                 << "}: " << mayNotContained << '\n';
-        clear(&bf);
-        deinit(&bf);
+        bf.clear();
 
         return process;
     }
@@ -340,7 +337,6 @@ public:
     //! @return procedure output
     static std::ostringstream quotient()
     {
-        using namespace date_structure::filter::quotient;
         std::ostringstream process{};
         process << std::boolalpha;
 
@@ -362,44 +358,36 @@ public:
             urls2.emplace_back(std::move(url2));
         }
 
-        QuotientFilter qfA{}, qfB{};
-        init(&qfA, 0, 16, 8);
-        init(&qfB, 0, 16, 8);
+        date_structure::filter::Quotient qfA(16, 8, 0), qfB(16, 8, 0), qfC(16, 8, 0);
         const std::uint32_t insertedA = std::accumulate(
             urls1.cbegin(),
             urls1.cend(),
             0,
-            [&qfA](const auto acc, const auto& url)
-            { return acc + (insert(&qfA, url.c_str(), url.length()) ? 1 : 0); });
+            [&qfA](const auto acc, const auto& url) { return acc + (qfA.insert(url.c_str(), url.length()) ? 1 : 0); });
         process << "A insert {" << urls1.at(0) << " ... " << urls1.at(urls1.size() - 1) << "}: " << insertedA << '\n';
         const std::uint32_t insertedB = std::accumulate(
             urls2.cbegin(),
             urls2.cend(),
             0,
-            [&qfB](const auto acc, const auto& url)
-            { return acc + (insert(&qfB, url.c_str(), url.length()) ? 1 : 0); });
+            [&qfB](const auto acc, const auto& url) { return acc + (qfB.insert(url.c_str(), url.length()) ? 1 : 0); });
         process << "B insert {" << urls2.at(0) << " ... " << urls2.at(urls2.size() - 1) << "}: " << insertedB << '\n';
 
-        QuotientFilter qfC{};
-        process << "C merge A and B: " << merge(&qfA, &qfB, &qfC) << '\n';
-        clear(&qfA);
-        deinit(&qfA);
-        clear(&qfB);
-        deinit(&qfB);
+        process << "C merge A and B: " << qfC.merge(qfA, qfB) << '\n';
+        qfA.clear();
+        qfB.clear();
 
         const std::uint32_t removedC = std::accumulate(
             urls2.cbegin(),
             urls2.cend(),
             0,
-            [&qfC](const auto acc, const auto& url)
-            { return acc + (remove(&qfC, url.c_str(), url.length()) ? 1 : 0); });
+            [&qfC](const auto acc, const auto& url) { return acc + (qfC.remove(url.c_str(), url.length()) ? 1 : 0); });
         process << "C remove {" << urls2.at(0) << " ... " << urls2.at(urls2.size() - 1) << "}: " << removedC << '\n';
         const std::uint32_t mayContainedC = std::accumulate(
             urls1.cbegin(),
             urls1.cend(),
             0,
             [&qfC](const auto acc, const auto& url)
-            { return acc + (mayContain(&qfC, url.c_str(), url.length()) ? 1 : 0); });
+            { return acc + (qfC.mayContain(url.c_str(), url.length()) ? 1 : 0); });
         process << "C may contain {" << urls1.at(0) << " ... " << urls1.at(urls1.size() - 1) << "}: " << mayContainedC
                 << '\n';
         const std::uint32_t mayNotContainedC = std::accumulate(
@@ -407,11 +395,10 @@ public:
             urls2.cend(),
             0,
             [&qfC](const auto acc, const auto& url)
-            { return acc + (!mayContain(&qfC, url.c_str(), url.length()) ? 1 : 0); });
+            { return acc + (!qfC.mayContain(url.c_str(), url.length()) ? 1 : 0); });
         process << "C may not contain {" << urls2.at(0) << " ... " << urls2.at(urls2.size() - 1)
                 << "}: " << mayNotContainedC << '\n';
-        clear(&qfC);
-        deinit(&qfC);
+        qfC.clear();
 
         return process;
     }
