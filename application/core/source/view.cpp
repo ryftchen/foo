@@ -405,14 +405,14 @@ bool View::Access::onParsing(char* buffer, const int length) const
     return value.stopTag;
 }
 
-void View::Access::enableWait() const
+void View::Sync::waitTaskDone() const
 {
     if (const auto maxWaitTime = std::chrono::milliseconds{inst.timeoutPeriod}; inst.isInServingState(State::work))
     {
         std::unique_lock<std::mutex> outputLock(inst.outputMtx);
         inst.outputCompleted.store(false);
 
-        utility::time::Timer expiryTimer([]() { Access().disableWait(); });
+        utility::time::Timer expiryTimer([]() { Sync().notifyTaskDone(); });
         expiryTimer.start(maxWaitTime);
 
         inst.outputCond.wait(outputLock, [this]() { return inst.outputCompleted.load(); });
@@ -426,7 +426,7 @@ void View::Access::enableWait() const
     }
 }
 
-void View::Access::disableWait() const
+void View::Sync::notifyTaskDone() const
 {
     std::unique_lock<std::mutex> outputLock(inst.outputMtx);
     inst.outputCompleted.store(true);

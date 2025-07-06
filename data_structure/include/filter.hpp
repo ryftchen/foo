@@ -16,7 +16,7 @@ namespace filter
 {
 extern const char* version() noexcept;
 
-//! @brief The Bloom filter structure.
+//! @brief The Bloom filter. A space-efficient probabilistic data structure.
 class Bloom
 {
 public:
@@ -86,7 +86,7 @@ private:
     static std::uint32_t calculateParamK(const std::uint32_t m, const std::uint32_t n);
 };
 
-//! @brief The quotient filter structure.
+//! @brief The quotient filter. A space-efficient probabilistic data structure.
 class Quotient
 {
 public:

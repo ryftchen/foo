@@ -29,7 +29,7 @@ inline namespace
 //! @tparam T - type of helper
 template <typename T>
 concept HelperType = !std::is_constructible_v<T> && !std::is_copy_constructible_v<T> && !std::is_copy_assignable_v<T>
-    && !std::is_move_constructible_v<T> && !std::is_move_assignable_v<T> && requires (T /*helper*/) {
+    && !std::is_move_constructible_v<T> && !std::is_move_assignable_v<T> && requires (const T& /*helper*/) {
            { T::getInstance() } -> std::same_as<T&>;
        };
 
@@ -795,7 +795,7 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
         {
             LOG_WRN << err.what();
         }
-        disableWait4Client();
+        notifyClientOutputDone();
     };
     client->toConnect(view::info::viewerTCPHost(), view::info::viewerTCPPort());
 }
@@ -819,7 +819,7 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
         {
             LOG_WRN << err.what();
         }
-        disableWait4Client();
+        notifyClientOutputDone();
     };
     client->toReceive();
     client->toConnect(view::info::viewerUDPHost(), view::info::viewerUDPPort());
@@ -862,7 +862,7 @@ void Command::executeInConsole() const
             interactionLatency();
         }
     }
-    udpClient->toSend(buildExitRequest4Client());
+    udpClient->toSend(buildDisconnectReq());
     udpClient->toJoin();
     interactionLatency();
 }
@@ -966,7 +966,7 @@ try
         interactionLatency();
     }
     while (retCode != RetCode::quit);
-    tcpClient->toSend(buildExitRequest4Client());
+    tcpClient->toSend(buildDisconnectReq());
     tcpClient->toJoin();
     interactionLatency();
 
@@ -997,7 +997,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
                 std::string{},
                 [](const auto& acc, const auto& token) { return acc.empty() ? token : (acc + ' ' + token); }));
             client->toSend(std::move(reqBuffer));
-            enableWait4Client();
+            waitClientOutputDone();
         }
         catch (const std::exception& err)
         {
@@ -1037,7 +1037,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
             auto retCode = RetCode::success;
             try
             {
-                client->toSend(buildExitRequest4Client());
+                client->toSend(buildDisconnectReq());
                 client->toJoin();
                 interactionLatency();
                 client.reset();
@@ -1078,25 +1078,25 @@ bool Command::onParsing4Client(char* buffer, const int length)
     return (length != 0) ? view::View::Access().onParsing(buffer, length) : false;
 }
 
-void Command::enableWait4Client()
+void Command::waitClientOutputDone()
 {
-    view::View::Access().enableWait();
+    view::View::Sync().waitTaskDone();
 }
 
-void Command::disableWait4Client()
+void Command::notifyClientOutputDone()
 {
-    view::View::Access().disableWait();
+    view::View::Sync().notifyTaskDone();
 }
 
-std::string Command::buildExitRequest4Client()
+std::string Command::buildDisconnectReq()
 {
     return utility::common::base64Encode(view::exitSymbol);
 }
 
 void Command::interactionLatency()
 {
-    constexpr std::uint16_t latency = 10;
-    std::this_thread::sleep_for(std::chrono::milliseconds{latency});
+    constexpr auto latency = std::chrono::milliseconds{10};
+    std::this_thread::sleep_for(latency);
 }
 
 void Command::validateDependenciesVersion() const

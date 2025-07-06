@@ -351,12 +351,12 @@ private:
     //! @return need to stop the client connection or not
     static bool onParsing4Client(char* buffer, const int length);
     //! @brief Await outside the client in console mode.
-    static void enableWait4Client();
+    static void waitClientOutputDone();
     //! @brief Awaken inside the client in console mode.
-    static void disableWait4Client();
+    static void notifyClientOutputDone();
     //! @brief Build the exit request message in console mode.
     //! @return exit request message
-    static std::string buildExitRequest4Client();
+    static std::string buildDisconnectReq();
     //! @brief Console latency in the millisecond range.
     static void interactionLatency();
     //! @brief Validate dependencies version.
