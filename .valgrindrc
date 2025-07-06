@@ -2,4 +2,4 @@
 --memcheck:leak-resolution=high
 --memcheck:show-reachable=yes
 --log-fd=1
---suppressions=.supp
+--suppressions=.valgrindsupp
