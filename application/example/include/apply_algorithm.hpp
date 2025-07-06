@@ -186,7 +186,7 @@ private:
                       << brief.substr(0, std::min(textLen, maxNumPerLineOfPrint)) << std::endl;
             if (textLen > maxNumPerLineOfPrint)
             {
-                std::cout << "...\n...\n...\n"
+                std::cout << "...\n"
                           << ((textLen > (maxNumPerLineOfPrint * 2))
                                   ? brief.substr(brief.length() - maxNumPerLineOfPrint, brief.length())
                                   : brief.substr(maxNumPerLineOfPrint + 1, brief.length()))
@@ -245,7 +245,7 @@ public:
     explicit InputBuilder(const std::string_view infixNotation) : infixNotation{infixNotation}
     {
 #ifdef _RUNTIME_PRINTING
-        std::cout << "\nInfix notation: " << infixNotation << std::endl;
+        std::cout << "\nInfix notation:\n" << infixNotation << std::endl;
 #endif // _RUNTIME_PRINTING
     }
     //! @brief Destroy the InputBuilder object.
