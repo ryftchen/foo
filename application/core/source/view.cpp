@@ -521,8 +521,10 @@ int View::buildFinTLVPacket(char* buf)
     return len;
 }
 
-int View::buildTLVPacket4Depend(const std::vector<std::string>& /*args*/, char* buf)
+int View::buildTLVPacket4Depend(const std::vector<std::string>& args, char* buf)
 {
+    MACRO_IGNORE(args);
+
     int len = 0;
     tlv::TLVValue val{};
     std::string extLibraries{};
@@ -609,8 +611,10 @@ int View::buildTLVPacket4Execute(const std::vector<std::string>& args, char* buf
     return len;
 }
 
-int View::buildTLVPacket4Journal(const std::vector<std::string>& /*args*/, char* buf)
+int View::buildTLVPacket4Journal(const std::vector<std::string>& args, char* buf)
 {
+    MACRO_IGNORE(args);
+
     int len = 0;
     if (const int shmId = fillSharedMemory(logContentsPreview());
         tlv::encodeTLV(buf, len, tlv::TLVValue{.logShmId = shmId}) < 0)
@@ -643,8 +647,10 @@ int View::buildTLVPacket4Monitor(const std::vector<std::string>& args, char* buf
     return len;
 }
 
-int View::buildTLVPacket4Profile(const std::vector<std::string>& /*args*/, char* buf)
+int View::buildTLVPacket4Profile(const std::vector<std::string>& args, char* buf)
 {
+    MACRO_IGNORE(args);
+
     int len = 0;
     tlv::TLVValue val{};
     std::strncpy(
