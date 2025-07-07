@@ -6,10 +6,9 @@
 
 #pragma once
 
-#include <cstdint>
 #include <deque>
 #include <map>
-#include <string>
+#include <memory>
 #include <variant>
 
 //! @brief The utility module.
@@ -324,22 +323,22 @@ public:
     //! @tparam Ts - type of visitors
     template <typename... Ts>
     DataVisitor(Ts...) -> DataVisitor<Ts...>;
+    //! @brief Alias for the pointer of Object. Non-fundamental type.
+    using ObjectPtr = std::shared_ptr<Object>;
+    //! @brief Alias for the pointer of Array. Non-fundamental type.
+    using ArrayPtr = std::shared_ptr<Array>;
+    //! @brief Alias for the pointer of String. Non-fundamental type.
+    using StringPtr = std::shared_ptr<String>;
     //! @brief Alias for the value in the data.
-    using Value = std::variant<std::monostate, Null, Object, Array, String, Floating, Integral, Boolean>;
+    using Value = std::variant<std::monostate, Null, ObjectPtr, ArrayPtr, StringPtr, Floating, Integral, Boolean>;
     //! @brief The data that stores JSON information.
     struct Data
     {
         //! @brief Construct a new Data object.
         Data() : value{nullptr} {}
         //! @brief Construct a new Data object.
-        //! @param o - object value
-        explicit Data(const Object& o) : value{o} {}
-        //! @brief Construct a new Data object.
-        //! @param a - array value
-        explicit Data(const Array& a) : value{a} {}
-        //! @brief Construct a new Data object.
         //! @param s - string value
-        explicit Data(const String& s) : value{s} {}
+        explicit Data(const String& s) : value{std::make_shared<String>(s)} {};
         //! @brief Construct a new Data object.
         //! @param f - floating value
         explicit Data(const Floating f) : value{f} {}
@@ -359,17 +358,48 @@ private:
     //! @tparam T - type of data
     template <typename T>
     void setType();
+    //! @brief Check whether it holds data.
+    //! @tparam T - type of data
+    //! @return holds or not holds
+    template <typename T>
+    [[nodiscard]] bool holdsData() const;
+    //! @brief Get the data.
+    //! @tparam T - type of data
+    //! @return data value
+    template <typename T>
+    [[nodiscard]] auto getData() const;
 
 protected:
     friend std::ostream& operator<<(std::ostream& os, const JSON& json);
 };
+
+template <typename T>
+auto JSON::getData() const
+{
+    if constexpr (std::is_same_v<T, Object>)
+    {
+        return std::get<ObjectPtr>(data.value);
+    }
+    else if constexpr (std::is_same_v<T, Array>)
+    {
+        return std::get<ArrayPtr>(data.value);
+    }
+    else if constexpr (std::is_same_v<T, String>)
+    {
+        return std::get<StringPtr>(data.value);
+    }
+    else
+    {
+        return std::get<T>(data.value);
+    }
+}
 
 // NOLINTBEGIN(misc-unconventional-assign-operator)
 template <typename T>
 std::enable_if_t<std::is_convertible_v<T, std::string>, JSON&> JSON::operator=(const T s)
 {
     setType<String>();
-    data.value = String{s};
+    *getData<String>() = String{s};
 
     return *this;
 }
@@ -406,7 +436,7 @@ template <typename T>
 void JSON::append(const T arg)
 {
     setType<Array>();
-    std::get<Array>(data.value).emplace_back(arg);
+    getData<Array>()->emplace_back(arg);
 }
 
 template <typename T, typename... U>
@@ -419,7 +449,7 @@ void JSON::append(const T arg, const U... args)
 template <typename T>
 void JSON::setType()
 {
-    if (std::holds_alternative<T>(data.value))
+    if (holdsData<T>())
     {
         return;
     }
@@ -430,15 +460,15 @@ void JSON::setType()
     }
     else if constexpr (std::is_same_v<T, Object>)
     {
-        data.value = Object{};
+        data.value = std::make_shared<Object>();
     }
     else if constexpr (std::is_same_v<T, Array>)
     {
-        data.value = Array{};
+        data.value = std::make_shared<Array>();
     }
     else if constexpr (std::is_same_v<T, String>)
     {
-        data.value = String{};
+        data.value = std::make_shared<String>();
     }
     else if constexpr (std::is_same_v<T, Floating>)
     {
@@ -451,6 +481,27 @@ void JSON::setType()
     else if constexpr (std::is_same_v<T, Boolean>)
     {
         data.value = static_cast<Boolean>(false);
+    }
+}
+
+template <typename T>
+bool JSON::holdsData() const
+{
+    if constexpr (std::is_same_v<T, Object>)
+    {
+        return std::holds_alternative<ObjectPtr>(data.value);
+    }
+    else if constexpr (std::is_same_v<T, Array>)
+    {
+        return std::holds_alternative<ArrayPtr>(data.value);
+    }
+    else if constexpr (std::is_same_v<T, String>)
+    {
+        return std::holds_alternative<StringPtr>(data.value);
+    }
+    else
+    {
+        return std::holds_alternative<T>(data.value);
     }
 }
 

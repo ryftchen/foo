@@ -8,7 +8,6 @@
 
 #include <charconv>
 #include <cmath>
-#include <stdexcept>
 
 namespace utility::json
 {
@@ -452,17 +451,16 @@ JSON::JSON(const std::initializer_list<JSON>& list)
     }
 }
 
-JSON::JSON(JSON&& json) noexcept : data{std::move(json.data)} // NOLINT(bugprone-exception-escape)
+JSON::JSON(JSON&& json) noexcept : data{std::move(json.data)}
 {
     json.data = Data{};
 }
 
-JSON& JSON::operator=(JSON&& json) noexcept // NOLINT(bugprone-exception-escape)
+JSON& JSON::operator=(JSON&& json) noexcept
 {
     if (&json != this)
     {
-        data = std::move(json.data);
-        json.data = Data{};
+        std::swap(data, json.data);
     }
 
     return *this;
@@ -488,19 +486,19 @@ JSON JSON::load(const std::string_view fmt)
 JSON& JSON::operator[](const std::string& key)
 {
     setType<Object>();
-    return std::get<Object>(data.value).operator[](key);
+    return getData<Object>()->operator[](key);
 }
 
 JSON& JSON::operator[](std::size_t index)
 {
     setType<Array>();
-    auto& arrayVal = std::get<Array>(data.value);
-    if (index >= arrayVal.size())
+    const auto& arrayVal = getData<Array>();
+    if (index >= arrayVal->size())
     {
-        arrayVal.resize(index + 1);
+        arrayVal->resize(index + 1);
     }
 
-    return arrayVal.operator[](index);
+    return arrayVal->operator[](index);
 }
 
 JSON& JSON::at(const std::string& key)
@@ -510,7 +508,7 @@ JSON& JSON::at(const std::string& key)
 
 const JSON& JSON::at(const std::string& key) const
 {
-    return std::get<Object>(data.value).at(key);
+    return getData<Object>()->at(key);
 }
 
 JSON& JSON::at(std::size_t index)
@@ -520,71 +518,71 @@ JSON& JSON::at(std::size_t index)
 
 const JSON& JSON::at(std::size_t index) const
 {
-    return std::get<Array>(data.value).at(index);
+    return getData<Array>()->at(index);
 }
 
 int JSON::length() const
 {
-    return std::holds_alternative<Array>(data.value) ? static_cast<int>(std::get<Array>(data.value).size()) : -1;
+    return holdsData<Array>() ? static_cast<int>(getData<Array>()->size()) : -1;
 }
 
 int JSON::size() const
 {
     return std::visit(
         DataVisitor{
-            [](const Object& val) { return static_cast<int>(val.size()); },
-            [](const Array& val) { return static_cast<int>(val.size()); },
+            [](const ObjectPtr& val) { return static_cast<int>(val->size()); },
+            [](const ArrayPtr& val) { return static_cast<int>(val->size()); },
             [](const auto& /*val*/) { return -1; }},
         data.value);
 }
 
 bool JSON::hasKey(const std::string& key) const
 {
-    return std::holds_alternative<Object>(data.value) ? std::get<Object>(data.value).contains(key) : false;
+    return holdsData<Object>() ? getData<Object>()->contains(key) : false;
 }
 
 bool JSON::isNullType() const
 {
-    return std::holds_alternative<Null>(data.value);
+    return holdsData<Null>();
 }
 
 bool JSON::isObjectType() const
 {
-    return std::holds_alternative<Object>(data.value);
+    return holdsData<Object>();
 }
 
 bool JSON::isArrayType() const
 {
-    return std::holds_alternative<Array>(data.value);
+    return holdsData<Array>();
 }
 
 bool JSON::isStringType() const
 {
-    return std::holds_alternative<String>(data.value);
+    return holdsData<String>();
 }
 
 bool JSON::isFloatingType() const
 {
-    return std::holds_alternative<Floating>(data.value);
+    return holdsData<Floating>();
 }
 
 bool JSON::isIntegralType() const
 {
-    return std::holds_alternative<Integral>(data.value);
+    return holdsData<Integral>();
 }
 
 bool JSON::isBooleanType() const
 {
-    return std::holds_alternative<Boolean>(data.value);
+    return holdsData<Boolean>();
 }
 
 JSON::String JSON::toString() const
 {
     return std::visit(
         DataVisitor{
-            [](const String& val) -> String { return jsonEscape(val); },
-            [this](const Object& /*val*/) -> String { return dumpMinified(); },
-            [this](const Array& /*val*/) -> String { return dumpMinified(); },
+            [](const StringPtr& val) -> String { return jsonEscape(*val); },
+            [this](const ObjectPtr& /*val*/) -> String { return dumpMinified(); },
+            [this](const ArrayPtr& /*val*/) -> String { return dumpMinified(); },
             [](const Floating& val) -> String { return std::to_string(val); },
             [](const Integral& val) -> String { return std::to_string(val); },
             [](const Boolean& val) -> String { return val ? "true" : "false"; },
@@ -597,9 +595,9 @@ JSON::String JSON::toUnescapedString() const
 {
     return std::visit(
         DataVisitor{
-            [](const String& val) -> String { return val; },
-            [this](const Object& /*val*/) -> String { return dumpMinified(); },
-            [this](const Array& /*val*/) -> String { return dumpMinified(); },
+            [](const StringPtr& val) -> String { return *val; },
+            [this](const ObjectPtr& /*val*/) -> String { return dumpMinified(); },
+            [this](const ArrayPtr& /*val*/) -> String { return dumpMinified(); },
             [](const Floating& val) -> String { return std::to_string(val); },
             [](const Integral& val) -> String { return std::to_string(val); },
             [](const Boolean& val) -> String { return val ? "true" : "false"; },
@@ -615,12 +613,12 @@ JSON::Floating JSON::toFloating() const
             [](const Floating& val) -> Floating { return val; },
             [](const Integral& val) -> Floating { return val; },
             [](const Boolean& val) -> Floating { return val; },
-            [](const String& val) -> Floating
+            [](const StringPtr& val) -> Floating
             {
                 double parsed = 0.0;
                 try
                 {
-                    parsed = std::stod(val);
+                    parsed = std::stod(*val);
                 }
                 catch (const std::exception& err)
                 {
@@ -641,10 +639,10 @@ JSON::Integral JSON::toIntegral() const
             [](const Integral& val) -> Integral { return val; },
             [](const Boolean& val) -> Integral { return val; },
             [](const Floating& val) -> Integral { return val; },
-            [](const String& val) -> Integral
+            [](const StringPtr& val) -> Integral
             {
                 long long parsed = 0;
-                if (const auto result = std::from_chars(val.c_str(), val.c_str() + val.size(), parsed);
+                if (const auto result = std::from_chars(val->c_str(), val->c_str() + val->size(), parsed);
                     result.ec == std::errc{})
                 {
                     return parsed;
@@ -663,18 +661,18 @@ JSON::Boolean JSON::toBoolean() const
             [](const Boolean& val) -> Boolean { return val; },
             [](const Floating& val) -> Boolean { return val; },
             [](const Integral& val) -> Boolean { return val; },
-            [](const String& val) -> Boolean
+            [](const StringPtr& val) -> Boolean
             {
-                if (val.find("true") != std::string::npos)
+                if (val->find("true") != std::string::npos)
                 {
                     return true;
                 }
-                if (val.find("false") != std::string::npos)
+                if (val->find("false") != std::string::npos)
                 {
                     return false;
                 }
                 int parsed = 0;
-                if (const auto result = std::from_chars(val.c_str(), val.c_str() + val.size(), parsed);
+                if (const auto result = std::from_chars(val->c_str(), val->c_str() + val->size(), parsed);
                     result.ec == std::errc{})
                 {
                     return parsed;
@@ -688,26 +686,22 @@ JSON::Boolean JSON::toBoolean() const
 
 JSON::JSONWrapper<JSON::Object> JSON::objectRange()
 {
-    return std::holds_alternative<Object>(data.value) ? JSONWrapper<Object>{&std::get<Object>(data.value)}
-                                                      : JSONWrapper<Object>{nullptr};
+    return holdsData<Object>() ? JSONWrapper<Object>{getData<Object>().get()} : JSONWrapper<Object>{nullptr};
 }
 
 JSON::JSONWrapper<JSON::Array> JSON::arrayRange()
 {
-    return std::holds_alternative<Array>(data.value) ? JSONWrapper<Array>{&std::get<Array>(data.value)}
-                                                     : JSONWrapper<Array>{nullptr};
+    return holdsData<Array>() ? JSONWrapper<Array>{getData<Array>().get()} : JSONWrapper<Array>{nullptr};
 }
 
 JSON::JSONConstWrapper<JSON::Object> JSON::objectRange() const
 {
-    return std::holds_alternative<Object>(data.value) ? JSONConstWrapper<Object>{&std::get<Object>(data.value)}
-                                                      : JSONConstWrapper<Object>{nullptr};
+    return holdsData<Object>() ? JSONConstWrapper<Object>{getData<Object>().get()} : JSONConstWrapper<Object>{nullptr};
 }
 
 JSON::JSONConstWrapper<JSON::Array> JSON::arrayRange() const
 {
-    return std::holds_alternative<Array>(data.value) ? JSONConstWrapper<Array>{&std::get<Array>(data.value)}
-                                                     : JSONConstWrapper<Array>{nullptr};
+    return holdsData<Array>() ? JSONConstWrapper<Array>{getData<Array>().get()} : JSONConstWrapper<Array>{nullptr};
 }
 
 std::string JSON::dump(const std::uint32_t depth, const std::string_view tab) const
@@ -715,7 +709,7 @@ std::string JSON::dump(const std::uint32_t depth, const std::string_view tab) co
     return std::visit(
         DataVisitor{
             [](const Null& /*val*/) -> std::string { return "null"; },
-            [depth, &tab](const Object& val) -> std::string
+            [depth, &tab](const ObjectPtr& val) -> std::string
             {
                 std::string pad{};
                 for (std::uint32_t i = 0; i < depth; ++i)
@@ -723,7 +717,7 @@ std::string JSON::dump(const std::uint32_t depth, const std::string_view tab) co
                     pad += tab;
                 }
                 std::string s("{\n");
-                for (bool skip = true; const auto& p : val)
+                for (bool skip = true; const auto& p : *val)
                 {
                     if (!skip)
                     {
@@ -735,10 +729,10 @@ std::string JSON::dump(const std::uint32_t depth, const std::string_view tab) co
                 s += ('\n' + pad.erase(0, tab.length()) + '}');
                 return s;
             },
-            [depth, &tab](const Array& val) -> std::string
+            [depth, &tab](const ArrayPtr& val) -> std::string
             {
                 std::string s("[");
-                for (bool skip = true; const auto& p : val)
+                for (bool skip = true; const auto& p : *val)
                 {
                     if (!skip)
                     {
@@ -750,7 +744,7 @@ std::string JSON::dump(const std::uint32_t depth, const std::string_view tab) co
                 s += ']';
                 return s;
             },
-            [](const String& val) -> std::string { return '\"' + jsonEscape(val) + '\"'; },
+            [](const StringPtr& val) -> std::string { return '\"' + jsonEscape(*val) + '\"'; },
             [](const Floating& val) -> std::string { return std::to_string(val); },
             [](const Integral& val) -> std::string { return std::to_string(val); },
             [](const Boolean& val) -> std::string { return val ? "true" : "false"; },
@@ -763,10 +757,10 @@ std::string JSON::dumpMinified() const
     return std::visit(
         DataVisitor{
             [](const Null& /*val*/) -> std::string { return "null"; },
-            [](const Object& val) -> std::string
+            [](const ObjectPtr& val) -> std::string
             {
                 std::string s("{");
-                for (bool skip = true; const auto& p : val)
+                for (bool skip = true; const auto& p : *val)
                 {
                     if (!skip)
                     {
@@ -778,10 +772,10 @@ std::string JSON::dumpMinified() const
                 s += '}';
                 return s;
             },
-            [](const Array& val) -> std::string
+            [](const ArrayPtr& val) -> std::string
             {
                 std::string s("[");
-                for (bool skip = true; const auto& p : val)
+                for (bool skip = true; const auto& p : *val)
                 {
                     if (!skip)
                     {
@@ -793,7 +787,7 @@ std::string JSON::dumpMinified() const
                 s += ']';
                 return s;
             },
-            [](const String& val) -> std::string { return '\"' + jsonEscape(val) + '\"'; },
+            [](const StringPtr& val) -> std::string { return '\"' + jsonEscape(*val) + '\"'; },
             [](const Floating& val) -> std::string { return std::to_string(val); },
             [](const Integral& val) -> std::string { return std::to_string(val); },
             [](const Boolean& val) -> std::string { return val ? "true" : "false"; },
