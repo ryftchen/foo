@@ -118,12 +118,12 @@ void applyingFilter(const std::vector<std::string>& candidates)
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
     auto& pooling = configure::task::resourcePool();
-    auto* const allocatedJob = pooling.newElement(bits.count());
+    auto* const allocatedJob = pooling.newEntry(bits.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = utility::common::wrapClosure(
         [allocatedJob, &taskNamer](const std::string_view subTask, void (*targetInstance)())
         { allocatedJob->enqueue(taskNamer(subTask), targetInstance); });
-    MACRO_DEFER([&]() { pooling.deleteElement(allocatedJob); });
+    MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
 
     std::cout << "\nInstances of the " << toString<category>() << " structure:" << std::endl;
     for (const auto index :
@@ -206,12 +206,12 @@ void applyingCache(const std::vector<std::string>& candidates)
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
     auto& pooling = configure::task::resourcePool();
-    auto* const allocatedJob = pooling.newElement(bits.count());
+    auto* const allocatedJob = pooling.newEntry(bits.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = utility::common::wrapClosure(
         [allocatedJob, &taskNamer](const std::string_view subTask, void (*targetInstance)())
         { allocatedJob->enqueue(taskNamer(subTask), targetInstance); });
-    MACRO_DEFER([&]() { pooling.deleteElement(allocatedJob); });
+    MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
 
     std::cout << "\nInstances of the " << toString<category>() << " structure:" << std::endl;
     for (const auto index :
@@ -297,12 +297,12 @@ void applyingLinear(const std::vector<std::string>& candidates)
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
     auto& pooling = configure::task::resourcePool();
-    auto* const allocatedJob = pooling.newElement(bits.count());
+    auto* const allocatedJob = pooling.newEntry(bits.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = utility::common::wrapClosure(
         [allocatedJob, &taskNamer](const std::string_view subTask, void (*targetInstance)())
         { allocatedJob->enqueue(taskNamer(subTask), targetInstance); });
-    MACRO_DEFER([&]() { pooling.deleteElement(allocatedJob); });
+    MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
 
     std::cout << "\nInstances of the " << toString<category>() << " structure:" << std::endl;
     for (const auto index :
@@ -388,12 +388,12 @@ void applyingTree(const std::vector<std::string>& candidates)
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
     auto& pooling = configure::task::resourcePool();
-    auto* const allocatedJob = pooling.newElement(bits.count());
+    auto* const allocatedJob = pooling.newEntry(bits.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = utility::common::wrapClosure(
         [allocatedJob, &taskNamer](const std::string_view subTask, void (*targetInstance)())
         { allocatedJob->enqueue(taskNamer(subTask), targetInstance); });
-    MACRO_DEFER([&]() { pooling.deleteElement(allocatedJob); });
+    MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
 
     std::cout << "\nInstances of the " << toString<category>() << " structure:" << std::endl;
     for (const auto index :

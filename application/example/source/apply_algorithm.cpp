@@ -195,7 +195,7 @@ void applyingMatch(const std::vector<std::string>& candidates)
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
     auto& pooling = configure::task::resourcePool();
-    auto* const allocatedJob = pooling.newElement(bits.count());
+    auto* const allocatedJob = pooling.newEntry(bits.count());
     using match::InputBuilder, match::input::patternString;
     static_assert(InputBuilder::maxDigit > patternString.length());
     const auto inputData = std::make_shared<InputBuilder>(patternString);
@@ -214,7 +214,7 @@ void applyingMatch(const std::vector<std::string>& candidates)
                 inputData->getTextLength(),
                 inputData->getPatternLength());
         });
-    MACRO_DEFER([&]() { pooling.deleteElement(allocatedJob); });
+    MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
@@ -295,7 +295,7 @@ void applyingNotation(const std::vector<std::string>& candidates)
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
     auto& pooling = configure::task::resourcePool();
-    auto* const allocatedJob = pooling.newElement(bits.count());
+    auto* const allocatedJob = pooling.newEntry(bits.count());
     using notation::InputBuilder, notation::input::infixString;
     const auto inputData = std::make_shared<InputBuilder>(infixString);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
@@ -303,7 +303,7 @@ void applyingNotation(const std::vector<std::string>& candidates)
         [allocatedJob, &inputData, &taskNamer](
             const std::string_view subTask, void (*targetMethod)(const std::string_view))
         { allocatedJob->enqueue(taskNamer(subTask), targetMethod, inputData->getInfixNotation()); });
-    MACRO_DEFER([&]() { pooling.deleteElement(allocatedJob); });
+    MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
@@ -441,7 +441,7 @@ void applyingOptimal(const std::vector<std::string>& candidates)
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
     auto& pooling = configure::task::resourcePool();
-    auto* const allocatedJob = pooling.newElement(bits.count());
+    auto* const allocatedJob = pooling.newEntry(bits.count());
     using optimal::InputBuilder, optimal::input::SphericalBessel, optimal::Function;
     static_assert(algorithm::optimal::epsilon >= std::numeric_limits<double>::epsilon());
     const auto inputData = std::make_shared<InputBuilder>(
@@ -458,7 +458,7 @@ void applyingOptimal(const std::vector<std::string>& candidates)
                 inputData->getRanges().first,
                 inputData->getRanges().second);
         });
-    MACRO_DEFER([&]() { pooling.deleteElement(allocatedJob); });
+    MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
@@ -573,7 +573,7 @@ void applyingSearch(const std::vector<std::string>& candidates)
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
     auto& pooling = configure::task::resourcePool();
-    auto* const allocatedJob = pooling.newElement(bits.count());
+    auto* const allocatedJob = pooling.newEntry(bits.count());
     using search::InputBuilder, search::input::arrayLength, search::input::arrayRangeMin, search::input::arrayRangeMax;
     static_assert((arrayRangeMin < arrayRangeMax) && (arrayLength > 0));
     const auto inputData = std::make_shared<InputBuilder<float>>(arrayLength, arrayRangeMin, arrayRangeMax);
@@ -589,7 +589,7 @@ void applyingSearch(const std::vector<std::string>& candidates)
                 inputData->getLength(),
                 inputData->getSearchKey());
         });
-    MACRO_DEFER([&]() { pooling.deleteElement(allocatedJob); });
+    MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
@@ -769,7 +769,7 @@ void applyingSort(const std::vector<std::string>& candidates)
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
     auto& pooling = configure::task::resourcePool();
-    auto* const allocatedJob = pooling.newElement(bits.count());
+    auto* const allocatedJob = pooling.newEntry(bits.count());
     using sort::InputBuilder, sort::input::arrayLength, sort::input::arrayRangeMin, sort::input::arrayRangeMax;
     static_assert((arrayRangeMin < arrayRangeMax) && (arrayLength > 0));
     const auto inputData = std::make_shared<InputBuilder<std::int32_t>>(arrayLength, arrayRangeMin, arrayRangeMax);
@@ -781,7 +781,7 @@ void applyingSort(const std::vector<std::string>& candidates)
             allocatedJob->enqueue(
                 taskNamer(subTask), targetMethod, inputData->getRandomArray().get(), inputData->getLength());
         });
-    MACRO_DEFER([&]() { pooling.deleteElement(allocatedJob); });
+    MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
