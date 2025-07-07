@@ -237,7 +237,7 @@ struct NamedValue : NamedValueBase<Name>
     //! @brief The operator (==) overloading of NamedValue struct.
     //! @tparam U - type of value
     //! @param val - named value
-    //! @return be equal or not equal
+    //! @return be equal or not
     template <typename U>
     constexpr bool operator==(const U val) const
     {
@@ -264,7 +264,7 @@ struct NamedValue<Name, void> : NamedValueBase<Name>
 {
     //! @brief The operator (==) overloading of NamedValue struct.
     //! @tparam U - type of value
-    //! @return be equal or not equal
+    //! @return be equal or not
     template <typename U>
     constexpr bool operator==(const U /*val*/) const
     {
@@ -316,7 +316,7 @@ struct ElemList
     }
     //! @brief Check whether it contains the custom string.
     //! @tparam Str - type of custom string
-    //! @return contain or not contain
+    //! @return contain or not
     template <typename Str>
     static constexpr bool contain(const Str /*str*/ = {})
     {

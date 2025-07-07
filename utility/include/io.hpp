@@ -110,7 +110,7 @@ public:
     FileReader& operator=(FileReader&&) = delete;
 
     //! @brief Checks if the file is currently open.
-    //! @return be open or not open
+    //! @return be open or not
     bool isOpen() const;
     //! @brief Open the file for reading.
     void open();
@@ -156,7 +156,7 @@ public:
     FileWriter& operator=(FileWriter&&) = delete;
 
     //! @brief Checks if the file is currently open.
-    //! @return be open or not open
+    //! @return be open or not
     bool isOpen() const;
     //! @brief Open the file for reading.
     //! @param overwrite - overwrite or not
