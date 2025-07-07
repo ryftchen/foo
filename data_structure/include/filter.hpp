@@ -67,13 +67,13 @@ private:
     void bloomHash(const void* const key, const int length);
     //! @brief Set a bit in the filter.
     //! @param filter - filter to set the bit in
-    //! @param hashPos - hash position to set the bit
-    static void setBit(std::uint8_t* const filter, const std::uint32_t hashPos);
+    //! @param pos - hash position to set the bit
+    static void setBit(std::uint8_t filter[], const std::uint32_t pos);
     //! @brief Get a bit from the filter.
     //! @param filter - filter to get the bit from
-    //! @param hashPos - hash position to get the bit
+    //! @param pos - hash position to get the bit
     //! @return bit from the filter
-    static std::uint8_t getBit(const std::uint8_t* const filter, const std::uint32_t hashPos);
+    static std::uint8_t getBit(const std::uint8_t filter[], const std::uint32_t pos);
     //! @brief Calculate the parameter m.
     //! @param n - expected number of elements in the filter
     //! @param p - desired false positive probability
