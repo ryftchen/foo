@@ -123,10 +123,10 @@ private:
 template <typename T, std::size_t BlockSize>
 Memory<T, BlockSize>::~Memory()
 {
-    Slot* curr = currentBlock;
+    auto* curr = currentBlock;
     while (curr)
     {
-        Slot* const prev = curr->next;
+        auto* const prev = curr->next;
         operator delete(reinterpret_cast<void*>(curr));
         curr = prev;
     }
@@ -164,7 +164,7 @@ template <typename... Args>
 inline T* Memory<T, BlockSize>::newEntry(Args&&... args)
 {
     const std::lock_guard<std::recursive_mutex> lock(mtx);
-    T* const res = allocate();
+    auto* const res = allocate();
     construct<T>(res, std::forward<Args>(args)...);
 
     return res;
@@ -219,7 +219,7 @@ inline T* Memory<T, BlockSize>::allocate(const std::size_t /*size*/, const T* /*
 {
     if (freeSlots)
     {
-        T* const res = std::launder(reinterpret_cast<T*>(freeSlots));
+        auto* const res = std::launder(reinterpret_cast<T*>(freeSlots));
         freeSlots = freeSlots->next;
         return res;
     }
@@ -249,7 +249,7 @@ inline void Memory<T, BlockSize>::createBlock()
     reinterpret_cast<Slot*>(newBlock)->next = currentBlock;
     currentBlock = reinterpret_cast<Slot*>(newBlock);
 
-    std::byte* const body = newBlock + sizeof(Slot*);
+    auto* const body = std::next(newBlock, sizeof(Slot*));
     const std::size_t offset = pointerPadding(body, alignof(Slot));
     currentSlot = reinterpret_cast<Slot*>(body + offset);
     lastSlot = reinterpret_cast<Slot*>(newBlock + BlockSize);
