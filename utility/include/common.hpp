@@ -67,7 +67,7 @@ inline std::string formatString(const std::string_view fmt, Args&&... args)
 //! @brief Compare whether two strings are equal.
 //! @param str1 - string 1
 //! @param str2 - string 2
-//! @return be equal or not equal
+//! @return be equal or not
 inline bool areStringsEqual(const char* const str1, const char* const str2)
 {
     return std::strcmp(str1, str2) == 0;
@@ -77,7 +77,7 @@ inline bool areStringsEqual(const char* const str1, const char* const str2)
 //! @param str1 - string 1
 //! @param str2 - string 2
 //! @param others - arguments of string
-//! @return be equal or not equal
+//! @return be equal or not
 template <typename... Others>
 inline bool areStringsEqual(const char* const str1, const char* const str2, Others&&... others)
 {
@@ -135,7 +135,7 @@ class EnumCheck<EnumType>
 public:
     //! @brief Check whether it contains the value as an enumeration.
     //! @tparam IntType - type of integral
-    //! @return has or not has
+    //! @return has or not
     template <typename IntType>
     static constexpr bool has(const IntType /*val*/)
     {
@@ -154,7 +154,7 @@ public:
     //! @brief Check whether it contains the value as an enumeration.
     //! @tparam IntType - type of integral
     //! @param val - target value
-    //! @return has or not has
+    //! @return has or not
     template <typename IntType>
     static constexpr bool has(const IntType val)
     {

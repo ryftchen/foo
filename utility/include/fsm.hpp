@@ -274,14 +274,14 @@ private:
         //! @param guard - guard condition
         //! @param self - derived object
         //! @param event - event to be processed
-        //! @return pass or not pass
+        //! @return pass or not
         template <typename Guard>
         static constexpr bool checkGuard(Guard&& guard, const Derived& self, const Event& event)
         {
             return adaptiveInvoke(std::forward<Guard>(guard), self, event);
         }
         //! @brief Check guard condition by default.
-        //! @return pass or not pass
+        //! @return pass or not
         static constexpr bool checkGuard(const std::nullptr_t /*null*/, const Derived& /*self*/, const Event& /*event*/)
         {
             return true;
@@ -399,7 +399,7 @@ protected:
         //! @brief Check guard condition.
         //! @param self - derived object
         //! @param event - event to be processed
-        //! @return pass or not pass
+        //! @return pass or not
         static constexpr bool checkGuard(const Derived& self, const Event& event)
         {
             return RowBase<Source, Event, Target>::checkGuard(guard, self, event);
@@ -433,7 +433,7 @@ protected:
         //! @brief Check guard condition.
         //! @param self - derived object
         //! @param event - event to be processed
-        //! @return pass or not pass
+        //! @return pass or not
         static constexpr bool checkGuard(const Derived& self, const Event& event)
         {
             return guard ? RowBase<Source, Event, Target>::checkGuard(guard, self, event) : true;
@@ -459,7 +459,7 @@ protected:
         //! @brief Check guard condition.
         //! @param self - derived object
         //! @param event - event to be processed
-        //! @return pass or not pass
+        //! @return pass or not
         static constexpr bool checkGuard(const Derived& self, const Event& event)
         {
             return RowBase<Source, Event, Target>::checkGuard(guard, self, event);

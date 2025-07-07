@@ -117,13 +117,13 @@ public:
     //! @brief The operator (==) overloading of Trait class.
     //! @tparam T - type of right-hand side
     //! @param rhs - right-hand side
-    //! @return be equal or not equal
+    //! @return be equal or not
     template <typename T>
     bool operator==(const T& rhs) const;
     //! @brief The operator (!=) overloading of Trait class.
     //! @tparam T - type of right-hand side
     //! @param rhs - right-hand side
-    //! @return be not equal or equal
+    //! @return be unequal or not
     template <typename T>
     bool operator!=(const T& rhs) const;
 
@@ -256,22 +256,22 @@ private:
 
         //! @brief The operator (==) overloading of Trait class.
         //! @param rhs - right-hand side
-        //! @return be equal or not equal
+        //! @return be equal or not
         bool operator==(const ArgsNumRange& rhs) const { return std::tie(rhs.min, rhs.max) == std::tie(min, max); }
         //! @brief The operator (!=) overloading of Trait class.
         //! @param rhs - right-hand side
-        //! @return be not equal or equal
+        //! @return be unequal or not
         bool operator!=(const ArgsNumRange& rhs) const { return !(rhs == *this); }
 
         //! @brief Check whether the number of arguments is within the range.
         //! @param value - number of arguments
-        //! @return within or not within
+        //! @return within or not
         [[nodiscard]] bool within(const std::size_t value) const { return (value >= min) && (value <= max); }
         //! @brief Check whether the number of arguments is exact.
-        //! @return be exact or not exact
+        //! @return be exact or not
         [[nodiscard]] bool isExact() const { return min == max; }
         //! @brief Check whether the maximum of the range is set.
-        //! @return exist or not exist
+        //! @return exist or not
         [[nodiscard]] bool existRightBound() const { return max < std::numeric_limits<std::size_t>::max(); }
         //! @brief Get the minimum of the range.
         //! @return minimum of range
@@ -351,12 +351,12 @@ private:
     //! @brief Check whether the argument is optional.
     //! @param name - name of argument
     //! @param prefix - prefix characters
-    //! @return be optional or not optional
+    //! @return be optional or not
     static bool checkIfOptional(const std::string_view name, const std::string_view prefix);
     //! @brief Check whether the argument is positional.
     //! @param name - name of argument
     //! @param prefix - prefix characters
-    //! @return be positional or not positional
+    //! @return be positional or not
     static bool checkIfPositional(const std::string_view name, const std::string_view prefix);
     //! @brief Get the member.
     //! @tparam T - type of member to be got
@@ -730,15 +730,15 @@ public:
     std::optional<T> present(const std::string_view argName) const;
     //! @brief Check whether the argument is used.
     //! @param argName - target argument name
-    //! @return be used or not used
+    //! @return be used or not
     bool isUsed(const std::string_view argName) const;
     //! @brief Check whether the sub-command is used.
     //! @param subCommandName - target sub-command name
-    //! @return be used or not used
+    //! @return be used or not
     inline auto isSubCommandUsed(const std::string_view subCommandName) const;
     //! @brief Check whether the sub-command is used.
     //! @param subParser - target sub-parser
-    //! @return be used or not used
+    //! @return be used or not
     inline auto isSubCommandUsed(const Argument& subParser) const;
     //! @brief Get the title name.
     //! @return title name

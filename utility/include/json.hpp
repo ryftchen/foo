@@ -253,7 +253,7 @@ public:
     [[nodiscard]] int size() const;
     //! @brief Check whether the key exists.
     //! @param key - target key
-    //! @return exist or not exist
+    //! @return exist or not
     [[nodiscard]] bool hasKey(const std::string& key) const;
     //! @brief Check whether the type is null.
     //! @return be null type or not
@@ -360,7 +360,7 @@ private:
     void setType();
     //! @brief Check whether it holds data.
     //! @tparam T - type of data
-    //! @return holds or not holds
+    //! @return holds or not
     template <typename T>
     [[nodiscard]] bool holdsData() const;
     //! @brief Get the data.
