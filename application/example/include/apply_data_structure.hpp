@@ -660,7 +660,7 @@ public:
         tracker.traverse(tree.root, tree.root->key, 0);
 
         constexpr std::int16_t searchKey = 3;
-        const Node* const searchNode = search(&tree, &searchKey);
+        const auto* const searchNode = search(&tree, &searchKey);
         process << "search " << searchKey << ": " << static_cast<bool>(searchNode) << '\n';
         process << "predecessor of " << searchKey << ": "
                 << *static_cast<std::int16_t*>(getPredecessor(searchNode)->key) << '\n';
@@ -717,7 +717,7 @@ public:
         tracker.traverse(tree.root, tree.root->key, 0);
 
         constexpr std::int16_t searchKey = 13;
-        const Node* const searchNode = search(&tree, &searchKey);
+        const auto* const searchNode = search(&tree, &searchKey);
         process << "search " << searchKey << ": " << static_cast<bool>(searchNode) << '\n';
         process << "deletion " << searchKey << '\n';
         deletion(&tree, &searchKey);
@@ -769,7 +769,7 @@ public:
         tracker.traverse(tree.root, tree.root->key, 0);
 
         constexpr std::int16_t searchKey = 70;
-        const Node* const searchNode = search(&tree, &searchKey);
+        const auto* const searchNode = search(&tree, &searchKey);
         process << "search " << searchKey << ": " << static_cast<bool>(searchNode) << '\n';
         process << "deletion " << searchKey << '\n';
         deletion(&tree, &searchKey);
