@@ -44,7 +44,7 @@ static std::uint64_t murmurHash2X64(const void* const key, const int length, con
     }
 
     const auto* data2 =
-        reinterpret_cast<const std::uint8_t*>(data1); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+        reinterpret_cast<const unsigned char*>(data1); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
     switch (length & 7)
     {
         case 7:
@@ -149,14 +149,14 @@ void Bloom::bloomHash(const void* const key, const int length)
     }
 }
 
-void Bloom::setBit(std::uint8_t* const filter, const std::uint32_t hashPos)
+void Bloom::setBit(std::uint8_t filter[], const std::uint32_t pos)
 {
-    filter[hashPos / byteBits] |= 1 << (hashPos % byteBits);
+    filter[pos / byteBits] |= 1 << (pos % byteBits);
 }
 
-std::uint8_t Bloom::getBit(const std::uint8_t* const filter, const std::uint32_t hashPos)
+std::uint8_t Bloom::getBit(const std::uint8_t filter[], const std::uint32_t pos)
 {
-    return filter[hashPos / byteBits] & (1 << (hashPos % byteBits));
+    return filter[pos / byteBits] & (1 << (pos % byteBits));
 }
 
 std::uint32_t Bloom::calculateParamM(const std::uint32_t n, const double p)
