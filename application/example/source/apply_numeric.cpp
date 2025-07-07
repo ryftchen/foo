@@ -144,7 +144,7 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
     auto& pooling = configure::task::resourcePool();
-    auto* const allocatedJob = pooling.newElement(bits.count());
+    auto* const allocatedJob = pooling.newEntry(bits.count());
     using arithmetic::InputBuilder, arithmetic::input::integerA, arithmetic::input::integerB;
     const auto inputData = std::make_shared<InputBuilder>(integerA, integerB);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
@@ -155,7 +155,7 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
             allocatedJob->enqueue(
                 taskNamer(subTask), targetMethod, inputData->getIntegers().first, inputData->getIntegers().second);
         });
-    MACRO_DEFER([&]() { pooling.deleteElement(allocatedJob); });
+    MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
@@ -241,7 +241,7 @@ void applyingDivisor(const std::vector<std::string>& candidates)
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
     auto& pooling = configure::task::resourcePool();
-    auto* const allocatedJob = pooling.newElement(bits.count());
+    auto* const allocatedJob = pooling.newEntry(bits.count());
     using divisor::InputBuilder, divisor::input::integerA, divisor::input::integerB;
     const auto inputData = std::make_shared<InputBuilder>(integerA, integerB);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
@@ -252,7 +252,7 @@ void applyingDivisor(const std::vector<std::string>& candidates)
             allocatedJob->enqueue(
                 taskNamer(subTask), targetMethod, inputData->getIntegers().first, inputData->getIntegers().second);
         });
-    MACRO_DEFER([&]() { pooling.deleteElement(allocatedJob); });
+    MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
@@ -363,7 +363,7 @@ void applyingIntegral(const std::vector<std::string>& candidates)
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
     auto& pooling = configure::task::resourcePool();
-    auto* const allocatedJob = pooling.newElement(bits.count());
+    auto* const allocatedJob = pooling.newEntry(bits.count());
     using integral::InputBuilder, integral::input::CylindricalBessel, integral::Expression;
     static_assert(numeric::integral::epsilon >= std::numeric_limits<double>::epsilon());
     const auto inputData = std::make_shared<InputBuilder>(
@@ -380,7 +380,7 @@ void applyingIntegral(const std::vector<std::string>& candidates)
                 inputData->getRanges().first,
                 inputData->getRanges().second);
         });
-    MACRO_DEFER([&]() { pooling.deleteElement(allocatedJob); });
+    MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
@@ -469,7 +469,7 @@ void applyingPrime(const std::vector<std::string>& candidates)
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
     auto& pooling = configure::task::resourcePool();
-    auto* const allocatedJob = pooling.newElement(bits.count());
+    auto* const allocatedJob = pooling.newEntry(bits.count());
     using prime::InputBuilder, prime::input::maxPositiveInteger;
     const auto inputData = std::make_shared<InputBuilder>(maxPositiveInteger);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
@@ -477,7 +477,7 @@ void applyingPrime(const std::vector<std::string>& candidates)
         [allocatedJob, &inputData, &taskNamer](
             const std::string_view subTask, void (*targetMethod)(const std::uint32_t))
         { allocatedJob->enqueue(taskNamer(subTask), targetMethod, inputData->getMaxPositiveInteger()); });
-    MACRO_DEFER([&]() { pooling.deleteElement(allocatedJob); });
+    MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
