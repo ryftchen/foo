@@ -218,12 +218,12 @@ private:
     //! @brief Maximum size of the shared memory.
     static constexpr std::uint64_t maxShmSize{static_cast<std::uint64_t>(65536) * 10};
     //! @brief Memory that can be accessed by multiple programs simultaneously.
-    struct alignas(64) SharedMemory
+    struct SharedMemory
     {
         //! @brief Shared memory buffer.
-        char buffer[sizeof(int) + maxShmSize]{'\0'};
+        alignas(64) char buffer[sizeof(int) + maxShmSize]{'\0'};
         //! @brief Flag for operable.
-        std::atomic<bool> signal{false};
+        alignas(64) std::atomic<bool> signal{false};
     };
 
     //! @brief TCP server host address.
