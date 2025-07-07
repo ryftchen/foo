@@ -9,7 +9,6 @@
 #include "view.hpp"
 
 #ifndef _PRECOMPILED_HEADER
-#include <cassert>
 #include <filesystem>
 #include <iterator>
 #else
@@ -250,7 +249,6 @@ utility::json::JSON getDefaultConfiguration()
     loggerProperties.at(field::writeMode) = static_cast<int>(Log::OutputMode::append);
     auto loggerRequired = utility::json::array();
     loggerRequired.append(field::filePath, field::priorityLevel, field::targetType, field::writeMode);
-    assert(loggerProperties.size() == loggerRequired.length());
 
     auto viewerProperties = utility::json::object();
     viewerProperties.at(field::tcpHost) = "localhost";
@@ -259,7 +257,6 @@ utility::json::JSON getDefaultConfiguration()
     viewerProperties.at(field::udpPort) = 61502;
     auto viewerRequired = utility::json::array();
     viewerRequired.append(field::tcpHost, field::tcpPort, field::udpHost, field::udpPort);
-    assert(viewerProperties.size() == viewerRequired.length());
 
     // clang-format off
     return utility::json::JSON
