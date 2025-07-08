@@ -54,7 +54,6 @@
 #include <ranges>
 #include <regex>
 #include <source_location>
-#include <span>
 #include <sstream>
 #include <string>
 #include <syncstream>

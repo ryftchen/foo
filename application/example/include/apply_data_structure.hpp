@@ -7,7 +7,7 @@
 #pragma once
 
 #ifndef _PRECOMPILED_HEADER
-#include <span>
+#include <array>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // _PRECOMPILED_HEADER
@@ -426,25 +426,6 @@ namespace linear
 //! @brief The version used to apply.
 const char* const version = date_structure::linear::version();
 
-//! @brief Metadata, which is used in the instance.
-struct Meta
-{
-    //! @brief Id of the metadata.
-    int id{0};
-    //! @brief Name of the metadata.
-    char name[4]{'\0'};
-
-    //! @brief The operator (<<) overloading of the Meta struct.
-    //! @param os - output stream object
-    //! @param meta - specific Meta object
-    //! @return reference of the output stream object
-    friend std::ostream& operator<<(std::ostream& os, const Meta& meta)
-    {
-        os << '{' << meta.id << ", " << meta.name << '}';
-        return os;
-    }
-};
-
 //! @brief Showcase for linear instances.
 class Showcase
 {
@@ -462,43 +443,37 @@ public:
         auto& process = tracker.output();
         process << std::boolalpha;
         constexpr std::string_view separator = " <-> ";
-        constexpr Meta meta[] = {{'a', "'a'"}, {'b', "'b'"}, {'c', "'c'"}, {'d', "'d'"}};
-        const std::span<const Meta> nodes(meta);
-        const Meta* val = nullptr;
+        constexpr std::array<std::int16_t, 4> items = {'a', 'b', 'c', 'd'};
 
-        DLL dll = nullptr;
-        create(&dll);
-        insert(dll, 0, nodes.data());
-        process << "insert (0) " << nodes[0] << '\n';
-        insert(dll, 0, &nodes[1]);
-        process << "insert (0) " << nodes[1] << '\n';
-        insert(dll, 1, &nodes[2]);
-        process << "insert (1) " << nodes[2] << '\n';
-        remove(dll, 2);
-        process << "remove (2)\n";
+        DLL dll{};
+        for (create(&dll); const auto& item : items)
+        {
+            insert(dll, 0, &item);
+            process << "insert (0) " << item << '\n';
+        }
 
-        insertFirst(dll, &nodes.front());
-        process << "insert first " << nodes.front() << '\n';
-        insertLast(dll, &nodes.back());
-        process << "insert last " << nodes.back() << '\n';
-        val = static_cast<Meta*>(getFirst(dll));
-        process << "get first: " << *val << '\n';
-        val = static_cast<Meta*>(getLast(dll));
-        process << "get last: " << *val << '\n';
+        remove(dll, 1);
+        process << "remove (1)\n";
+        insert(dll, 2, &items[2]);
+        process << "insert (2) " << items[2] << '\n';
+
+        insertFirst(dll, items.data());
+        process << "insert first " << items[0] << '\n';
+        insertLast(dll, &items[3]);
+        process << "insert last " << items[3] << '\n';
+        process << "get first: " << *static_cast<std::int16_t*>(getFirst(dll)) << '\n';
+        process << "get last: " << *static_cast<std::int16_t*>(getLast(dll)) << '\n';
         removeFirst(dll);
         process << "remove first\n";
         removeLast(dll);
         process << "remove last\n";
-        insert(dll, 1, nodes.data());
-        process << "insert (1) " << nodes[0] << '\n';
 
         process << "whether it is empty: " << empty(dll) << '\n';
         process << "size: " << size(dll) << '\n';
         process << "all details: HEAD -> ";
         for (int i = 0; i < size(dll); ++i)
         {
-            val = static_cast<Meta*>(get(dll, i));
-            process << *val << separator;
+            process << *static_cast<std::int16_t*>(get(dll, i)) << separator;
         }
         process.seekp(process.str().length() - separator.length());
         process << " -> NULL\n";
@@ -515,31 +490,26 @@ public:
         auto& process = tracker.output();
         process << std::boolalpha;
         constexpr std::string_view separator = ", ";
-        constexpr Meta meta[] = {{'a', "'a'"}, {'b', "'b'"}, {'c', "'c'"}, {'d', "'d'"}};
-        const std::span<const Meta> nodes(meta);
-        const Meta* val = nullptr;
+        constexpr std::array<std::int16_t, 4> items = {'a', 'b', 'c', 'd'};
 
-        Stack stk = nullptr;
-        for (create(&stk); const auto& node : nodes)
+        Stack stk{};
+        for (create(&stk); const auto& item : items)
         {
-            push(stk, &node);
-            process << "push " << node << '\n';
+            push(stk, &item);
+            process << "push " << item << '\n';
         }
 
-        val = static_cast<Meta*>(pop(stk));
-        process << "pop: " << *val << '\n';
-        val = static_cast<Meta*>(top(stk));
-        process << "top: " << *val << '\n';
-        push(stk, &nodes.back());
-        process << "push " << nodes.back() << '\n';
+        process << "pop: " << *static_cast<std::int16_t*>(pop(stk)) << '\n';
+        process << "top: " << *static_cast<std::int16_t*>(top(stk)) << '\n';
+        push(stk, &items[3]);
+        process << "push " << items[3] << '\n';
 
         process << "whether it is empty: " << empty(stk) << '\n';
         process << "size: " << size(stk) << '\n';
         process << "all details: TOP [";
         while (!empty(stk))
         {
-            val = static_cast<Meta*>(pop(stk));
-            process << *val << separator;
+            process << *static_cast<std::int16_t*>(pop(stk)) << separator;
         }
         process.seekp(process.str().length() - separator.length());
         process << "] BOTTOM\n";
@@ -556,31 +526,26 @@ public:
         auto& process = tracker.output();
         process << std::boolalpha;
         constexpr std::string_view separator = ", ";
-        constexpr Meta meta[] = {{'a', "'a'"}, {'b', "'b'"}, {'c', "'c'"}, {'d', "'d'"}};
-        const std::span<const Meta> nodes(meta);
-        const Meta* val = nullptr;
+        constexpr std::array<std::int16_t, 4> items = {'a', 'b', 'c', 'd'};
 
-        Queue que = nullptr;
-        for (create(&que); const auto& node : nodes)
+        Queue que{};
+        for (create(&que); const auto& item : items)
         {
-            push(que, &node);
-            process << "push " << node << '\n';
+            push(que, &item);
+            process << "push " << item << '\n';
         }
 
-        val = static_cast<Meta*>(pop(que));
-        process << "pop: " << *val << '\n';
-        val = static_cast<Meta*>(front(que));
-        process << "front: " << *val << '\n';
-        push(que, &nodes.front());
-        process << "push " << nodes.front() << '\n';
+        process << "pop: " << *static_cast<std::int16_t*>(pop(que)) << '\n';
+        process << "front: " << *static_cast<std::int16_t*>(front(que)) << '\n';
+        push(que, items.data());
+        process << "push " << items[0] << '\n';
 
         process << "whether it is empty: " << empty(que) << '\n';
         process << "size: " << size(que) << '\n';
         process << "all details: FRONT [";
         while (!empty(que))
         {
-            val = static_cast<Meta*>(pop(que));
-            process << *val << separator;
+            process << *static_cast<std::int16_t*>(pop(que)) << separator;
         }
         process.seekp(process.str().length() - separator.length());
         process << "] REAR\n";
