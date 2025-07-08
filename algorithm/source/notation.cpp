@@ -50,7 +50,7 @@ std::string Notation::infixToPostfix(const std::string_view infix)
     std::string postfix{};
     std::stack<char> charStack{};
 
-    for (auto c : infix)
+    for (const auto c : infix)
     {
         if (!isOperator(c))
         {

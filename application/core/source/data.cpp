@@ -46,23 +46,25 @@ void encryptMessage(char* buffer, const int length)
         if (constexpr std::array<unsigned char, 16> key =
                 {0x37, 0x47, 0x10, 0x33, 0x6F, 0x18, 0xC8, 0x9A, 0x4B, 0xC1, 0x2B, 0x97, 0x92, 0x19, 0x25, 0x6D},
             iv = {0x9F, 0x7B, 0x0E, 0x68, 0x2D, 0x2F, 0x4E, 0x7F, 0x1A, 0xFA, 0x61, 0xD3, 0xC6, 0x18, 0xF4, 0xC1};
-            !::EVP_EncryptInit_ex(ctx, ::EVP_aes_128_cfb128(), nullptr, key.data(), iv.data()))
+            ::EVP_EncryptInit_ex(ctx, ::EVP_aes_128_cfb128(), nullptr, key.data(), iv.data()) == 0)
         {
             break;
         }
 
         int outLen = 0;
-        if (!::EVP_EncryptUpdate(
+        if (::EVP_EncryptUpdate(
                 ctx,
                 reinterpret_cast<unsigned char*>(buffer),
                 &outLen,
                 reinterpret_cast<unsigned char*>(buffer),
-                length))
+                length)
+            == 0)
         {
             break;
         }
 
-        if (int tempLen = 0; !::EVP_EncryptFinal_ex(ctx, reinterpret_cast<unsigned char*>(buffer) + outLen, &tempLen))
+        if (int tempLen = 0;
+            ::EVP_EncryptFinal_ex(ctx, reinterpret_cast<unsigned char*>(buffer) + outLen, &tempLen) == 0)
         {
             break;
         }
@@ -82,23 +84,25 @@ void decryptMessage(char* buffer, const int length)
         if (constexpr std::array<unsigned char, 16> key =
                 {0x37, 0x47, 0x10, 0x33, 0x6F, 0x18, 0xC8, 0x9A, 0x4B, 0xC1, 0x2B, 0x97, 0x92, 0x19, 0x25, 0x6D},
             iv = {0x9F, 0x7B, 0x0E, 0x68, 0x2D, 0x2F, 0x4E, 0x7F, 0x1A, 0xFA, 0x61, 0xD3, 0xC6, 0x18, 0xF4, 0xC1};
-            !::EVP_DecryptInit_ex(ctx, ::EVP_aes_128_cfb128(), nullptr, key.data(), iv.data()))
+            ::EVP_DecryptInit_ex(ctx, ::EVP_aes_128_cfb128(), nullptr, key.data(), iv.data()) == 0)
         {
             break;
         }
 
         int outLen = 0;
-        if (!::EVP_DecryptUpdate(
+        if (::EVP_DecryptUpdate(
                 ctx,
                 reinterpret_cast<unsigned char*>(buffer),
                 &outLen,
                 reinterpret_cast<unsigned char*>(buffer),
-                length))
+                length)
+            == 0)
         {
             break;
         }
 
-        if (int tempLen = 0; !::EVP_DecryptFinal_ex(ctx, reinterpret_cast<unsigned char*>(buffer) + outLen, &tempLen))
+        if (int tempLen = 0;
+            ::EVP_DecryptFinal_ex(ctx, reinterpret_cast<unsigned char*>(buffer) + outLen, &tempLen) == 0)
         {
             break;
         }
