@@ -185,7 +185,7 @@ template <typename T, std::size_t BlockSize>
 inline std::size_t Memory<T, BlockSize>::capacity() const noexcept
 {
     constexpr std::size_t max = std::numeric_limits<std::size_t>::max() / BlockSize;
-    return ((BlockSize - sizeof(Slot*)) / sizeof(Slot)) * max;
+    return (BlockSize - sizeof(Slot*)) / sizeof(Slot) * max;
 }
 
 template <typename T, std::size_t BlockSize>

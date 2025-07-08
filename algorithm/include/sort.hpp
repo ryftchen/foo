@@ -267,7 +267,7 @@ void Sort<T>::quickSortRecursive(T* const sorting, const std::uint32_t begin, co
         ++leftIdx;
     }
 
-    if (leftIdx)
+    if (leftIdx != 0)
     {
         quickSortRecursive(sorting, begin, leftIdx - 1);
     }
