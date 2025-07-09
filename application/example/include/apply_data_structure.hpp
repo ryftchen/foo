@@ -426,6 +426,9 @@ namespace linear
 //! @brief The version used to apply.
 const char* const version = date_structure::linear::version();
 
+//! @brief Alias for the item.
+using Item = std::int16_t;
+
 //! @brief Showcase for linear instances.
 class Showcase
 {
@@ -443,7 +446,7 @@ public:
         auto& process = tracker.output();
         process << std::boolalpha;
         constexpr std::string_view separator = " <-> ";
-        constexpr std::array<std::int16_t, 4> items = {'a', 'b', 'c', 'd'};
+        constexpr std::array<Item, 4> items = {'a', 'b', 'c', 'd'};
 
         DLL dll{};
         for (create(&dll); const auto& item : items)
@@ -461,8 +464,8 @@ public:
         process << "insert first " << items[0] << '\n';
         insertLast(dll, &items[3]);
         process << "insert last " << items[3] << '\n';
-        process << "get first: " << *static_cast<std::int16_t*>(getFirst(dll)) << '\n';
-        process << "get last: " << *static_cast<std::int16_t*>(getLast(dll)) << '\n';
+        process << "get first: " << *static_cast<Item*>(getFirst(dll)) << '\n';
+        process << "get last: " << *static_cast<Item*>(getLast(dll)) << '\n';
         removeFirst(dll);
         process << "remove first\n";
         removeLast(dll);
@@ -473,7 +476,7 @@ public:
         process << "all details: HEAD -> ";
         for (int i = 0; i < size(dll); ++i)
         {
-            process << *static_cast<std::int16_t*>(get(dll, i)) << separator;
+            process << *static_cast<Item*>(get(dll, i)) << separator;
         }
         process.seekp(process.str().length() - separator.length());
         process << " -> NULL\n";
@@ -490,7 +493,7 @@ public:
         auto& process = tracker.output();
         process << std::boolalpha;
         constexpr std::string_view separator = ", ";
-        constexpr std::array<std::int16_t, 4> items = {'a', 'b', 'c', 'd'};
+        constexpr std::array<Item, 4> items = {'a', 'b', 'c', 'd'};
 
         Stack stk{};
         for (create(&stk); const auto& item : items)
@@ -499,8 +502,8 @@ public:
             process << "push " << item << '\n';
         }
 
-        process << "pop: " << *static_cast<std::int16_t*>(pop(stk)) << '\n';
-        process << "top: " << *static_cast<std::int16_t*>(top(stk)) << '\n';
+        process << "pop: " << *static_cast<Item*>(pop(stk)) << '\n';
+        process << "top: " << *static_cast<Item*>(top(stk)) << '\n';
         push(stk, &items[3]);
         process << "push " << items[3] << '\n';
 
@@ -509,7 +512,7 @@ public:
         process << "all details: TOP [";
         while (!empty(stk))
         {
-            process << *static_cast<std::int16_t*>(pop(stk)) << separator;
+            process << *static_cast<Item*>(pop(stk)) << separator;
         }
         process.seekp(process.str().length() - separator.length());
         process << "] BOTTOM\n";
@@ -526,7 +529,7 @@ public:
         auto& process = tracker.output();
         process << std::boolalpha;
         constexpr std::string_view separator = ", ";
-        constexpr std::array<std::int16_t, 4> items = {'a', 'b', 'c', 'd'};
+        constexpr std::array<Item, 4> items = {'a', 'b', 'c', 'd'};
 
         Queue que{};
         for (create(&que); const auto& item : items)
@@ -535,8 +538,8 @@ public:
             process << "push " << item << '\n';
         }
 
-        process << "pop: " << *static_cast<std::int16_t*>(pop(que)) << '\n';
-        process << "front: " << *static_cast<std::int16_t*>(front(que)) << '\n';
+        process << "pop: " << *static_cast<Item*>(pop(que)) << '\n';
+        process << "front: " << *static_cast<Item*>(front(que)) << '\n';
         push(que, items.data());
         process << "push " << items[0] << '\n';
 
@@ -545,7 +548,7 @@ public:
         process << "all details: FRONT [";
         while (!empty(que))
         {
-            process << *static_cast<std::int16_t*>(pop(que)) << separator;
+            process << *static_cast<Item*>(pop(que)) << separator;
         }
         process.seekp(process.str().length() - separator.length());
         process << "] REAR\n";
@@ -579,6 +582,9 @@ namespace tree
 //! @brief The version used to apply.
 const char* const version = date_structure::tree::version();
 
+//! @brief Alias for the key.
+using Key = std::int16_t;
+
 //! @brief Showcase for tree instances.
 class Showcase
 {
@@ -592,16 +598,16 @@ public:
     static std::ostringstream bs()
     {
         using namespace date_structure::tree::bs;
-        auto tracker = Output<std::int16_t>{};
+        auto tracker = Output<Key>{};
         auto& process = tracker.output();
         process << std::boolalpha;
-        constexpr std::array<std::int16_t, 6> keys = {1, 5, 4, 3, 2, 6};
+        constexpr std::array<Key, 6> keys = {1, 5, 4, 3, 2, 6};
 
         BSTree tree{};
         tree.root = nullptr;
         tree.compare = [](const void* const a, const void* const b) -> int
         {
-            const auto l = *static_cast<const std::int16_t*>(a), r = *static_cast<const std::int16_t*>(b);
+            const auto l = *static_cast<const Key*>(a), r = *static_cast<const Key*>(b);
             return (l > r) - (l < r);
         };
         process << "insertion ";
@@ -619,18 +625,17 @@ public:
         process << "\npost-order traversal: ";
         tracker.postOrderTraversal(tree.root);
 
-        process << "\nminimum: " << *static_cast<std::int16_t*>(getMinimum(&tree)->key) << '\n';
-        process << "maximum: " << *static_cast<std::int16_t*>(getMaximum(&tree)->key) << '\n';
+        process << "\nminimum: " << *static_cast<Key*>(getMinimum(&tree)->key) << '\n';
+        process << "maximum: " << *static_cast<Key*>(getMaximum(&tree)->key) << '\n';
         process << "all details:\n";
         tracker.traverse(tree.root, tree.root->key, 0);
 
-        constexpr std::int16_t searchKey = 3;
+        constexpr Key searchKey = 3;
         const auto* const searchNode = search(&tree, &searchKey);
         process << "search " << searchKey << ": " << static_cast<bool>(searchNode) << '\n';
-        process << "predecessor of " << searchKey << ": "
-                << *static_cast<std::int16_t*>(getPredecessor(searchNode)->key) << '\n';
-        process << "successor of " << searchKey << ": " << *static_cast<std::int16_t*>(getSuccessor(searchNode)->key)
+        process << "predecessor of " << searchKey << ": " << *static_cast<Key*>(getPredecessor(searchNode)->key)
                 << '\n';
+        process << "successor of " << searchKey << ": " << *static_cast<Key*>(getSuccessor(searchNode)->key) << '\n';
         process << "deletion " << searchKey << '\n';
         deletion(&tree, &searchKey);
 
@@ -647,16 +652,16 @@ public:
     static std::ostringstream avl()
     {
         using namespace date_structure::tree::avl;
-        auto tracker = Output<std::int16_t>{};
+        auto tracker = Output<Key>{};
         auto& process = tracker.output();
         process << std::boolalpha;
-        constexpr std::array<std::int16_t, 16> keys = {3, 2, 1, 4, 5, 6, 7, 16, 15, 14, 13, 12, 11, 10, 8, 9};
+        constexpr std::array<Key, 16> keys = {3, 2, 1, 4, 5, 6, 7, 16, 15, 14, 13, 12, 11, 10, 8, 9};
 
         AVLTree tree{};
         tree.root = nullptr;
         tree.compare = [](const void* const a, const void* const b) -> int
         {
-            const auto l = *static_cast<const std::int16_t*>(a), r = *static_cast<const std::int16_t*>(b);
+            const auto l = *static_cast<const Key*>(a), r = *static_cast<const Key*>(b);
             return (l > r) - (l < r);
         };
         process << "height: " << getHeight(&tree) << '\n';
@@ -676,12 +681,12 @@ public:
         tracker.postOrderTraversal(tree.root);
 
         process << "\nheight: " << getHeight(&tree) << '\n';
-        process << "minimum: " << *static_cast<std::int16_t*>(getMinimum(&tree)->key) << '\n';
-        process << "maximum: " << *static_cast<std::int16_t*>(getMaximum(&tree)->key) << '\n';
+        process << "minimum: " << *static_cast<Key*>(getMinimum(&tree)->key) << '\n';
+        process << "maximum: " << *static_cast<Key*>(getMaximum(&tree)->key) << '\n';
         process << "all details:\n";
         tracker.traverse(tree.root, tree.root->key, 0);
 
-        constexpr std::int16_t searchKey = 13;
+        constexpr Key searchKey = 13;
         const auto* const searchNode = search(&tree, &searchKey);
         process << "search " << searchKey << ": " << static_cast<bool>(searchNode) << '\n';
         process << "deletion " << searchKey << '\n';
@@ -701,16 +706,16 @@ public:
     static std::ostringstream splay()
     {
         using namespace date_structure::tree::splay;
-        auto tracker = Output<std::int16_t>{};
+        auto tracker = Output<Key>{};
         auto& process = tracker.output();
         process << std::boolalpha;
-        constexpr std::array<std::int16_t, 7> keys = {10, 50, 40, 70, 30, 20, 60};
+        constexpr std::array<Key, 7> keys = {10, 50, 40, 70, 30, 20, 60};
 
         SplayTree tree{};
         tree.root = nullptr;
         tree.compare = [](const void* const a, const void* const b) -> int
         {
-            const auto l = *static_cast<const std::int16_t*>(a), r = *static_cast<const std::int16_t*>(b);
+            const auto l = *static_cast<const Key*>(a), r = *static_cast<const Key*>(b);
             return (l > r) - (l < r);
         };
         process << "insertion ";
@@ -728,12 +733,12 @@ public:
         process << "\npost-order traversal: ";
         tracker.postOrderTraversal(tree.root);
 
-        process << "\nminimum: " << *static_cast<std::int16_t*>(getMinimum(&tree)->key) << '\n';
-        process << "maximum: " << *static_cast<std::int16_t*>(getMaximum(&tree)->key) << '\n';
+        process << "\nminimum: " << *static_cast<Key*>(getMinimum(&tree)->key) << '\n';
+        process << "maximum: " << *static_cast<Key*>(getMaximum(&tree)->key) << '\n';
         process << "all details:\n";
         tracker.traverse(tree.root, tree.root->key, 0);
 
-        constexpr std::int16_t searchKey = 70;
+        constexpr Key searchKey = 70;
         const auto* const searchNode = search(&tree, &searchKey);
         process << "search " << searchKey << ": " << static_cast<bool>(searchNode) << '\n';
         process << "deletion " << searchKey << '\n';
@@ -744,7 +749,7 @@ public:
         process << "\nall details:\n";
         tracker.traverse(tree.root, tree.root->key, 0);
 
-        constexpr std::int16_t splayKey = 30;
+        constexpr Key splayKey = 30;
         process << "splaying " << splayKey << '\n';
         splaying(&tree, &splayKey);
 
