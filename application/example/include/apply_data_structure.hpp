@@ -441,7 +441,7 @@ public:
     //! @return procedure output
     static std::ostringstream dll()
     {
-        using namespace date_structure::linear::doubly_linked_list;
+        using namespace date_structure::linear::dll;
         date_structure::linear::Output tracker{};
         auto& process = tracker.output();
         process << std::boolalpha;

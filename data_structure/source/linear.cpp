@@ -17,7 +17,7 @@ const char* version() noexcept
 }
 
 // NOLINTBEGIN(cppcoreguidelines-owning-memory, cppcoreguidelines-pro-type-const-cast)
-namespace doubly_linked_list
+namespace dll
 {
 //! @brief Create a node of the doubly linked list.
 //! @param value - value of the target node
@@ -268,13 +268,10 @@ bool removeLast(const DLL head)
 {
     return remove(head, size(head) - 1);
 }
-} // namespace doubly_linked_list
+} // namespace dll
 
 namespace stack
 {
-//! @brief Alias for the namespace of the doubly linked list.
-namespace dll = doubly_linked_list;
-
 //! @brief Create a stack.
 //! @param stack - stack
 //! @return success or failure
@@ -338,9 +335,6 @@ void* pop(const Stack head)
 
 namespace queue
 {
-//! @brief Alias for the namespace of the doubly linked list.
-namespace dll = doubly_linked_list;
-
 //! @brief Create a queue.
 //! @param queue - queue
 //! @return success or failure
