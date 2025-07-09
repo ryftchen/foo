@@ -584,6 +584,15 @@ const char* const version = date_structure::tree::version();
 
 //! @brief Alias for the key.
 using Key = std::int16_t;
+//! @brief Compare function for the key.
+//! @param a - first key
+//! @param b - second key
+//! @return a is less than b if returns -1, a is greater than b if returns 1, and a is equal to b if returns 0
+static int compareKey(const void* const a, const void* const b)
+{
+    const auto l = *static_cast<const Key*>(a), r = *static_cast<const Key*>(b);
+    return (l > r) - (l < r);
+}
 
 //! @brief Showcase for tree instances.
 class Showcase
@@ -603,13 +612,7 @@ public:
         process << std::boolalpha;
         constexpr std::array<Key, 6> keys = {1, 5, 4, 3, 2, 6};
 
-        BSTree tree{};
-        tree.root = nullptr;
-        tree.compare = [](const void* const a, const void* const b) -> int
-        {
-            const auto l = *static_cast<const Key*>(a), r = *static_cast<const Key*>(b);
-            return (l > r) - (l < r);
-        };
+        BSTree tree{nullptr, &compareKey};
         process << "insertion ";
         for (const auto& key : keys)
         {
@@ -657,13 +660,7 @@ public:
         process << std::boolalpha;
         constexpr std::array<Key, 16> keys = {3, 2, 1, 4, 5, 6, 7, 16, 15, 14, 13, 12, 11, 10, 8, 9};
 
-        AVLTree tree{};
-        tree.root = nullptr;
-        tree.compare = [](const void* const a, const void* const b) -> int
-        {
-            const auto l = *static_cast<const Key*>(a), r = *static_cast<const Key*>(b);
-            return (l > r) - (l < r);
-        };
+        AVLTree tree{nullptr, &compareKey};
         process << "height: " << getHeight(&tree) << '\n';
         process << "insertion ";
         for (const auto& key : keys)
@@ -711,13 +708,7 @@ public:
         process << std::boolalpha;
         constexpr std::array<Key, 7> keys = {10, 50, 40, 70, 30, 20, 60};
 
-        SplayTree tree{};
-        tree.root = nullptr;
-        tree.compare = [](const void* const a, const void* const b) -> int
-        {
-            const auto l = *static_cast<const Key*>(a), r = *static_cast<const Key*>(b);
-            return (l > r) - (l < r);
-        };
+        SplayTree tree{nullptr, &compareKey};
         process << "insertion ";
         for (const auto& key : keys)
         {
