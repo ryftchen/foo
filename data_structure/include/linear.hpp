@@ -37,7 +37,7 @@ extern "C"
 #endif // __cplusplus
 
 //! @brief The doubly linked list structure.
-namespace doubly_linked_list
+namespace dll
 {
 //! @brief Alias for the linear structure. Used for the doubly linked list.
 using DLL = Linear;
@@ -55,7 +55,7 @@ extern bool insertLast(const DLL head, const void* const value);
 extern bool remove(const DLL head, const int index);
 extern bool removeFirst(const DLL head);
 extern bool removeLast(const DLL head);
-} // namespace doubly_linked_list
+} // namespace dll
 
 //! @brief The stack structure (FILO/LIFO).
 namespace stack
