@@ -64,6 +64,22 @@ struct Bottom<FilterInstance>
     static constexpr std::uint8_t value{2};
 };
 
+//! @brief Enumerate specific graph instances.
+enum GraphInstance : std::uint8_t
+{
+    //! @brief Undirected.
+    undirected,
+    //! @brief Directed.
+    directed
+};
+//! @brief Store the maximum value of the GraphInstance enum.
+template <>
+struct Bottom<GraphInstance>
+{
+    //! @brief Maximum value of the GraphInstance enum.
+    static constexpr std::uint8_t value{2};
+};
+
 //! @brief Enumerate specific linear instances.
 enum LinearInstance : std::uint8_t
 {
@@ -111,6 +127,8 @@ public:
         cache,
         //! @brief Filter.
         filter,
+        //! @brief Graph.
+        graph,
         //! @brief Linear.
         linear,
         //! @brief Tree.
@@ -121,6 +139,8 @@ public:
     std::bitset<Bottom<CacheInstance>::value> cacheOpts;
     //! @brief Bit flags for managing filter instances.
     std::bitset<Bottom<FilterInstance>::value> filterOpts;
+    //! @brief Bit flags for managing graph instances.
+    std::bitset<Bottom<GraphInstance>::value> graphOpts;
     //! @brief Bit flags for managing linear instances.
     std::bitset<Bottom<LinearInstance>::value> linearOpts;
     //! @brief Bit flags for managing tree instances.
@@ -130,13 +150,14 @@ public:
     //! @return any data structure choices do not exist or exist
     [[nodiscard]] bool empty() const
     {
-        return cacheOpts.none() && filterOpts.none() && linearOpts.none() && treeOpts.none();
+        return cacheOpts.none() && filterOpts.none() && graphOpts.none() && linearOpts.none() && treeOpts.none();
     }
     //! @brief Reset bit flags that manage data structure choices.
     void reset()
     {
         cacheOpts.reset();
         filterOpts.reset();
+        graphOpts.reset();
         linearOpts.reset();
         treeOpts.reset();
     }
@@ -155,6 +176,9 @@ protected:
                 break;
             case Category::filter:
                 os << "FILTER";
+                break;
+            case Category::graph:
+                os << "GRAPH";
                 break;
             case Category::linear:
                 os << "LINEAR";
@@ -202,6 +226,16 @@ template <>
 void updateChoice<FilterInstance>(const std::string& target);
 template <>
 void runChoices<FilterInstance>(const std::vector<std::string>& candidates);
+
+//! @brief Register graph.
+namespace graph
+{
+extern const char* version() noexcept;
+} // namespace graph
+template <>
+void updateChoice<GraphInstance>(const std::string& target);
+template <>
+void runChoices<GraphInstance>(const std::vector<std::string>& candidates);
 
 //! @brief Register linear.
 namespace linear
@@ -262,6 +296,7 @@ struct utility::reflection::TypeInfo<application::reg_ds::ApplyDataStructure>
     {
         REG_DS_REFLECT_FIRST_LEVEL_FIELD(cache , c),
         REG_DS_REFLECT_FIRST_LEVEL_FIELD(filter, f),
+        REG_DS_REFLECT_FIRST_LEVEL_FIELD(graph , g),
         REG_DS_REFLECT_FIRST_LEVEL_FIELD(linear, l),
         REG_DS_REFLECT_FIRST_LEVEL_FIELD(tree  , t),
     };
@@ -315,6 +350,29 @@ struct utility::reflection::TypeInfo<application::reg_ds::FilterInstance>
         "filter-related choices\n"
         "- blo    Bloom\n"
         "- quo    Quotient\n"
+        "add the choices listed above"}};
+};
+//! @brief Static reflection for GraphInstance. Used to map command line arguments.
+template <>
+struct utility::reflection::TypeInfo<application::reg_ds::GraphInstance>
+    : TypeInfoBase<application::reg_ds::GraphInstance>
+{
+    //! @brief Name.
+    static constexpr std::string_view name{"graph"};
+    // clang-format off
+    //! @brief Field list.
+    static constexpr FieldList fields
+    {
+        REG_DS_REFLECT_SECOND_LEVEL_FIELD(undirected, und),
+        REG_DS_REFLECT_SECOND_LEVEL_FIELD(directed  , dir),
+    };
+    // clang-format on
+    //! @brief Attribute list.
+    static constexpr AttrList attrs{Attr{
+        REFLECTION_STR("descr"),
+        "graph-related choices\n"
+        "- und    Undirected\n"
+        "- dir    Directed\n"
         "add the choices listed above"}};
 };
 //! @brief Static reflection for LinearInstance. Used to map command line arguments.
@@ -390,6 +448,8 @@ consteval std::string_view toString()
             return TypeInfo<CacheInstance>::name;
         case Category::filter:
             return TypeInfo<FilterInstance>::name;
+        case Category::graph:
+            return TypeInfo<GraphInstance>::name;
         case Category::linear:
             return TypeInfo<LinearInstance>::name;
         case Category::tree:
@@ -449,6 +509,16 @@ constexpr std::string_view toString(const FilterInstance instance)
 {
     constexpr std::array<std::string_view, Bottom<FilterInstance>::value> stringify = {
         MACRO_STRINGIFY(bloom), MACRO_STRINGIFY(quotient)};
+    return stringify.at(instance);
+}
+
+//! @brief Convert instance enumeration to string.
+//! @param instance - specific value of GraphInstance enum
+//! @return instance name
+constexpr std::string_view toString(const GraphInstance instance)
+{
+    constexpr std::array<std::string_view, Bottom<GraphInstance>::value> stringify = {
+        MACRO_STRINGIFY(undirected), MACRO_STRINGIFY(directed)};
     return stringify.at(instance);
 }
 

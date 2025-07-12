@@ -196,6 +196,103 @@ TEST_F(FilterTestBase, quotientInstance)
     ASSERT_EQ(expRes2, result.str());
 }
 
+//! @brief Test base of graph.
+class GraphTestBase : public ::testing::Test
+{
+public:
+    //! @brief Construct a new GraphTestBase object.
+    GraphTestBase() = default;
+    //! @brief Destroy the GraphTestBase object.
+    ~GraphTestBase() override = default;
+
+protected:
+    //! @brief Set up the test case.
+    static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE("GRAPH", "BEGIN"); }
+    //! @brief Tear down the test case.
+    static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE("GRAPH", "END"); }
+    //! @brief Set up.
+    void SetUp() override {}
+    //! @brief Tear down.
+    void TearDown() override {}
+
+    //! @brief System under test.
+    const graph::Showcase sut{};
+    // clang-format off
+    //! @brief Expected result 1.
+    static constexpr std::string_view expRes1
+    {
+        "insert vertex A: true\n"
+        "insert vertex B: true\n"
+        "insert vertex C: true\n"
+        "insert vertex D: true\n"
+        "insert vertex E: true\n"
+        "insert vertex F: true\n"
+        "insert vertex G: true\n"
+        "insert edge A-C: true\n"
+        "insert edge A-D: true\n"
+        "insert edge A-F: true\n"
+        "insert edge B-C: true\n"
+        "insert edge C-D: true\n"
+        "insert edge E-G: true\n"
+        "insert edge F-G: true\n"
+        "DFS traversal from A: A C B D F G E \n"
+        "BFS traversal from A: A C D F B G E \n"
+        "delete edge A-D: true\n"
+        "delete vertex A: true\n"
+        "DFS traversal from B: B C D \n"
+        "BFS traversal from B: B C D \n"
+        "DFS traversal from F: F G E \n"
+        "BFS traversal from F: F G E \n"
+    };
+    //! @brief Expected result 2.
+    static constexpr std::string_view expRes2
+    {
+        "insert vertex A: true\n"
+        "insert vertex B: true\n"
+        "insert vertex C: true\n"
+        "insert vertex D: true\n"
+        "insert vertex E: true\n"
+        "insert vertex F: true\n"
+        "insert vertex G: true\n"
+        "insert arc A-B: true\n"
+        "insert arc B-C: true\n"
+        "insert arc B-E: true\n"
+        "insert arc B-F: true\n"
+        "insert arc C-E: true\n"
+        "insert arc D-C: true\n"
+        "insert arc E-B: true\n"
+        "insert arc E-D: true\n"
+        "insert arc F-G: true\n"
+        "DFS traversal from A: A B C E D F G \n"
+        "BFS traversal from A: A B C E F D G \n"
+        "delete arc E-B: true\n"
+        "delete vertex B: true\n"
+        "DFS traversal from A: A \n"
+        "BFS traversal from A: A \n"
+        "DFS traversal from C: C E D \n"
+        "BFS traversal from C: C E D \n"
+        "DFS traversal from F: F G \n"
+        "BFS traversal from F: F G \n"
+    };
+    // clang-format on
+};
+
+//! @brief Test for the undirected instance in the structure of graph.
+TEST_F(GraphTestBase, undirectedInstance)
+{
+    std::ostringstream result{};
+    ASSERT_NO_THROW(result = sut.undirected());
+    ASSERT_EQ(expRes1, result.str());
+}
+
+//! @brief Test for the directed instance in the structure of graph.
+TEST_F(GraphTestBase, directedInstance)
+{
+    std::ostringstream result{};
+    ASSERT_NO_THROW(result = sut.directed());
+    ASSERT_EQ(expRes2, result.str());
+}
+
 //! @brief Test base of linear.
 class LinearTestBase : public ::testing::Test
 {

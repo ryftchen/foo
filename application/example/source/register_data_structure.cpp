@@ -104,6 +104,44 @@ void runChoices<FilterInstance>(const std::vector<std::string>& candidates)
     app_ds::applyingFilter(candidates);
 }
 
+namespace graph
+{
+//! @brief Register version number.
+//! @return version number (major.minor.patch)
+const char* version() noexcept
+{
+    return app_ds::graph::version;
+}
+} // namespace graph
+//! @brief Update graph-related choice.
+//! @param target - target instance
+template <>
+void updateChoice<GraphInstance>(const std::string& target)
+{
+    constexpr auto category = Category::graph;
+    auto& bits = categoryOpts<category>();
+
+    switch (utility::common::bkdrHash(target.c_str()))
+    {
+        case abbrValue(GraphInstance::undirected):
+            bits.set(GraphInstance::undirected);
+            break;
+        case abbrValue(GraphInstance::directed):
+            bits.set(GraphInstance::directed);
+            break;
+        default:
+            bits.reset();
+            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " instance: " + target + '.'};
+    }
+}
+//! @brief Run graph-related choices.
+//! @param candidates - container for the candidate target instances
+template <>
+void runChoices<GraphInstance>(const std::vector<std::string>& candidates)
+{
+    app_ds::applyingGraph(candidates);
+}
+
 namespace linear
 {
 //! @brief Register version number.

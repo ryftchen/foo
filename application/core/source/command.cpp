@@ -495,6 +495,23 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
                                       { reg_ds::runChoices<reg_ds::FilterInstance>(msg.coll); });
     versionLinks.emplace(
         VerLinkKey{name<reg_ds::ApplyDataStructure>(), reg_ds::filter::version()}, name<reg_ds::FilterInstance>());
+    candidates = extractChoices<reg_ds::GraphInstance>();
+    dsTable.emplace(name<reg_ds::GraphInstance>(), Attr{candidates, reg_ds::GraphInstance{}});
+    subCLIAppDs
+        .addArgument(
+            shortPrefix + std::string{alias<reg_ds::GraphInstance>()},
+            longPrefix + std::string{name<reg_ds::GraphInstance>()})
+        .argsNum(0, candidates.size())
+        .defaultValue<std::vector<std::string>>(std::move(candidates))
+        .remaining()
+        .metavar(optMetavar)
+        .help(descr<reg_ds::GraphInstance>());
+    applyingForwarder.registerHandler([](const action::UpdateChoice<reg_ds::GraphInstance>& msg)
+                                      { reg_ds::updateChoice<reg_ds::GraphInstance>(msg.cho); });
+    applyingForwarder.registerHandler([](const action::RunChoices<reg_ds::GraphInstance>& msg)
+                                      { reg_ds::runChoices<reg_ds::GraphInstance>(msg.coll); });
+    versionLinks.emplace(
+        VerLinkKey{name<reg_ds::ApplyDataStructure>(), reg_ds::graph::version()}, name<reg_ds::GraphInstance>());
     candidates = extractChoices<reg_ds::LinearInstance>();
     dsTable.emplace(name<reg_ds::LinearInstance>(), Attr{candidates, reg_ds::LinearInstance{}});
     subCLIAppDs
