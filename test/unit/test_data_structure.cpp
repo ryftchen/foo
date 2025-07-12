@@ -293,6 +293,83 @@ TEST_F(GraphTestBase, directedInstance)
     ASSERT_EQ(expRes2, result.str());
 }
 
+//! @brief Test base of heap.
+class HeapTestBase : public ::testing::Test
+{
+public:
+    //! @brief Construct a new HeapTestBase object.
+    HeapTestBase() = default;
+    //! @brief Destroy the HeapTestBase object.
+    ~HeapTestBase() override = default;
+
+protected:
+    //! @brief Set up the test case.
+    static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE("HEAP", "BEGIN"); }
+    //! @brief Tear down the test case.
+    static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE("HEAP", "END"); }
+    //! @brief Set up.
+    void SetUp() override {}
+    //! @brief Tear down.
+    void TearDown() override {}
+
+    //! @brief System under test.
+    const heap::Showcase sut{};
+    // clang-format off
+    //! @brief Expected result 1.
+    static constexpr std::string_view expRes1
+    {
+        "insert 10: true\n"
+        "insert 40: true\n"
+        "insert 30: true\n"
+        "insert 60: true\n"
+        "insert 90: true\n"
+        "insert 70: true\n"
+        "insert 20: true\n"
+        "insert 50: true\n"
+        "insert 80: true\n"
+        "traverse: 90 ... 80 ... 70 ... 60 ... 40 ... 30 ... 20 ... 10 ... 50 ... \n"
+        "insert 85: true\n"
+        "traverse: 90 ... 85 ... 70 ... 60 ... 80 ... 30 ... 20 ... 10 ... 50 ... 40 ... \n"
+        "remove 90: true\n"
+        "traverse: 85 ... 80 ... 70 ... 60 ... 40 ... 30 ... 20 ... 10 ... 50 ... \n"
+    };
+    //! @brief Expected result 2.
+    static constexpr std::string_view expRes2
+    {
+        "insert 80: true\n"
+        "insert 40: true\n"
+        "insert 30: true\n"
+        "insert 60: true\n"
+        "insert 90: true\n"
+        "insert 70: true\n"
+        "insert 10: true\n"
+        "insert 50: true\n"
+        "insert 20: true\n"
+        "traverse: 10 ... 20 ... 30 ... 50 ... 90 ... 70 ... 40 ... 80 ... 60 ... \n"
+        "insert 15: true\n"
+        "traverse: 10 ... 15 ... 30 ... 50 ... 20 ... 70 ... 40 ... 80 ... 60 ... 90 ... \n"
+        "remove 10: true\n"
+        "traverse: 15 ... 20 ... 30 ... 50 ... 90 ... 70 ... 40 ... 80 ... 60 ... \n"
+    };
+    // clang-format on
+};
+
+//! @brief Test for the max instance in the structure of heap.
+TEST_F(HeapTestBase, maxInstance)
+{
+    std::ostringstream result{};
+    ASSERT_NO_THROW(result = sut.max());
+    ASSERT_EQ(expRes1, result.str());
+}
+
+//! @brief Test for the min instance in the structure of heap.
+TEST_F(HeapTestBase, minInstance)
+{
+    std::ostringstream result{};
+    ASSERT_NO_THROW(result = sut.min());
+    ASSERT_EQ(expRes2, result.str());
+}
+
 //! @brief Test base of linear.
 class LinearTestBase : public ::testing::Test
 {

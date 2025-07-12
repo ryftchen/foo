@@ -80,6 +80,22 @@ struct Bottom<GraphInstance>
     static constexpr std::uint8_t value{2};
 };
 
+//! @brief Enumerate specific heap instances.
+enum HeapInstance : std::uint8_t
+{
+    //! @brief Max.
+    max,
+    //! @brief Min.
+    min
+};
+//! @brief Store the maximum value of the HeapInstance enum.
+template <>
+struct Bottom<HeapInstance>
+{
+    //! @brief Maximum value of the HeapInstance enum.
+    static constexpr std::uint8_t value{2};
+};
+
 //! @brief Enumerate specific linear instances.
 enum LinearInstance : std::uint8_t
 {
@@ -129,6 +145,8 @@ public:
         filter,
         //! @brief Graph.
         graph,
+        //! @brief Heap.
+        heap,
         //! @brief Linear.
         linear,
         //! @brief Tree.
@@ -141,6 +159,8 @@ public:
     std::bitset<Bottom<FilterInstance>::value> filterOpts;
     //! @brief Bit flags for managing graph instances.
     std::bitset<Bottom<GraphInstance>::value> graphOpts;
+    //! @brief Bit flags for managing heap instances.
+    std::bitset<Bottom<HeapInstance>::value> heapOpts;
     //! @brief Bit flags for managing linear instances.
     std::bitset<Bottom<LinearInstance>::value> linearOpts;
     //! @brief Bit flags for managing tree instances.
@@ -150,7 +170,8 @@ public:
     //! @return any data structure choices do not exist or exist
     [[nodiscard]] bool empty() const
     {
-        return cacheOpts.none() && filterOpts.none() && graphOpts.none() && linearOpts.none() && treeOpts.none();
+        return cacheOpts.none() && filterOpts.none() && graphOpts.none() && heapOpts.none() && linearOpts.none()
+            && treeOpts.none();
     }
     //! @brief Reset bit flags that manage data structure choices.
     void reset()
@@ -158,6 +179,7 @@ public:
         cacheOpts.reset();
         filterOpts.reset();
         graphOpts.reset();
+        heapOpts.reset();
         linearOpts.reset();
         treeOpts.reset();
     }
@@ -179,6 +201,9 @@ protected:
                 break;
             case Category::graph:
                 os << "GRAPH";
+                break;
+            case Category::heap:
+                os << "HEAP";
                 break;
             case Category::linear:
                 os << "LINEAR";
@@ -236,6 +261,16 @@ template <>
 void updateChoice<GraphInstance>(const std::string& target);
 template <>
 void runChoices<GraphInstance>(const std::vector<std::string>& candidates);
+
+//! @brief Register heap.
+namespace heap
+{
+extern const char* version() noexcept;
+} // namespace heap
+template <>
+void updateChoice<HeapInstance>(const std::string& target);
+template <>
+void runChoices<HeapInstance>(const std::vector<std::string>& candidates);
 
 //! @brief Register linear.
 namespace linear
@@ -297,6 +332,7 @@ struct utility::reflection::TypeInfo<application::reg_ds::ApplyDataStructure>
         REG_DS_REFLECT_FIRST_LEVEL_FIELD(cache , c),
         REG_DS_REFLECT_FIRST_LEVEL_FIELD(filter, f),
         REG_DS_REFLECT_FIRST_LEVEL_FIELD(graph , g),
+        REG_DS_REFLECT_FIRST_LEVEL_FIELD(heap  , H),
         REG_DS_REFLECT_FIRST_LEVEL_FIELD(linear, l),
         REG_DS_REFLECT_FIRST_LEVEL_FIELD(tree  , t),
     };
@@ -375,6 +411,29 @@ struct utility::reflection::TypeInfo<application::reg_ds::GraphInstance>
         "- dir    Directed\n"
         "add the choices listed above"}};
 };
+//! @brief Static reflection for HeapInstance. Used to map command line arguments.
+template <>
+struct utility::reflection::TypeInfo<application::reg_ds::HeapInstance>
+    : TypeInfoBase<application::reg_ds::HeapInstance>
+{
+    //! @brief Name.
+    static constexpr std::string_view name{"heap"};
+    // clang-format off
+    //! @brief Field list.
+    static constexpr FieldList fields
+    {
+        REG_DS_REFLECT_SECOND_LEVEL_FIELD(max, max),
+        REG_DS_REFLECT_SECOND_LEVEL_FIELD(min, min),
+    };
+    // clang-format on
+    //! @brief Attribute list.
+    static constexpr AttrList attrs{Attr{
+        REFLECTION_STR("descr"),
+        "heap-related choices\n"
+        "- max    Max\n"
+        "- min    Min\n"
+        "add the choices listed above"}};
+};
 //! @brief Static reflection for LinearInstance. Used to map command line arguments.
 template <>
 struct utility::reflection::TypeInfo<application::reg_ds::LinearInstance>
@@ -450,6 +509,8 @@ consteval std::string_view toString()
             return TypeInfo<FilterInstance>::name;
         case Category::graph:
             return TypeInfo<GraphInstance>::name;
+        case Category::heap:
+            return TypeInfo<HeapInstance>::name;
         case Category::linear:
             return TypeInfo<LinearInstance>::name;
         case Category::tree:
@@ -519,6 +580,16 @@ constexpr std::string_view toString(const GraphInstance instance)
 {
     constexpr std::array<std::string_view, Bottom<GraphInstance>::value> stringify = {
         MACRO_STRINGIFY(undirected), MACRO_STRINGIFY(directed)};
+    return stringify.at(instance);
+}
+
+//! @brief Convert instance enumeration to string.
+//! @param instance - specific value of HeapInstance enum
+//! @return instance name
+constexpr std::string_view toString(const HeapInstance instance)
+{
+    constexpr std::array<std::string_view, Bottom<HeapInstance>::value> stringify = {
+        MACRO_STRINGIFY(max), MACRO_STRINGIFY(min)};
     return stringify.at(instance);
 }
 

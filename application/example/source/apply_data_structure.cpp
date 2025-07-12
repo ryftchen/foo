@@ -224,6 +224,83 @@ void applyingGraph(const std::vector<std::string>& candidates)
     APP_DS_PRINT_TASK_TITLE_SCOPE_END(category);
 }
 
+namespace heap
+{
+//! @brief Show the contents of the heap result.
+//! @param instance - specific value of HeapInstance enum
+//! @param result - heap result
+static void showResult(const HeapInstance instance, const std::string& result)
+{
+    std::printf("\n==> %-3s Instance <==\n%s", makeTitle(instance).c_str(), result.c_str());
+}
+
+void HeapStructure::maxInstance()
+try
+{
+    const auto output = Showcase().max();
+    showResult(HeapInstance::max, output.str());
+}
+catch (const std::exception& err)
+{
+    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
+}
+
+void HeapStructure::minInstance()
+try
+{
+    const auto output = Showcase().min();
+    showResult(HeapInstance::min, output.str());
+}
+catch (const std::exception& err)
+{
+    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
+}
+} // namespace heap
+//! @brief To apply heap-related instances.
+//! @param candidates - container for the candidate target instances
+void applyingHeap(const std::vector<std::string>& candidates)
+{
+    constexpr auto category = Category::heap;
+    const auto& bits = categoryOpts<category>();
+    if (bits.none())
+    {
+        return;
+    }
+    MACRO_ASSERT(bits.size() == candidates.size());
+
+    APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
+
+    auto& pooling = configure::task::resourcePool();
+    auto* const allocatedJob = pooling.newEntry(bits.count());
+    const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
+    const auto addTask = utility::common::wrapClosure(
+        [allocatedJob, &taskNamer](const std::string_view subTask, void (*targetInstance)())
+        { allocatedJob->enqueue(taskNamer(subTask), targetInstance); });
+    MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
+
+    std::cout << "\nInstances of the " << toString<category>() << " structure:" << std::endl;
+    for (const auto index :
+         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
+    {
+        const auto& target = candidates.at(index);
+        switch (utility::common::bkdrHash(target.c_str()))
+        {
+            using heap::HeapStructure;
+            static_assert(utility::common::isStatelessClass<HeapStructure>());
+            case abbrValue(HeapInstance::max):
+                addTask(target, &HeapStructure::maxInstance);
+                break;
+            case abbrValue(HeapInstance::min):
+                addTask(target, &HeapStructure::minInstance);
+                break;
+            default:
+                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " instance: " + target + '.'};
+        }
+    }
+
+    APP_DS_PRINT_TASK_TITLE_SCOPE_END(category);
+}
+
 namespace cache
 {
 //! @brief Show the contents of the cache result.

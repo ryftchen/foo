@@ -446,7 +446,7 @@ void Command::setupSubCLI<reg_dp::ApplyDesignPattern>()
 
 //! @brief Setup the sub-command line interface (data structure module).
 template <>
-void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
+void Command::setupSubCLI<reg_ds::ApplyDataStructure>() // NOLINT(readability-function-size)
 {
     using Intf = ExtraManager::Intf;
     using Attr = ExtraManager::Attr;
@@ -512,6 +512,23 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
                                       { reg_ds::runChoices<reg_ds::GraphInstance>(msg.coll); });
     versionLinks.emplace(
         VerLinkKey{name<reg_ds::ApplyDataStructure>(), reg_ds::graph::version()}, name<reg_ds::GraphInstance>());
+    candidates = extractChoices<reg_ds::HeapInstance>();
+    dsTable.emplace(name<reg_ds::HeapInstance>(), Attr{candidates, reg_ds::HeapInstance{}});
+    subCLIAppDs
+        .addArgument(
+            shortPrefix + std::string{alias<reg_ds::HeapInstance>()},
+            longPrefix + std::string{name<reg_ds::HeapInstance>()})
+        .argsNum(0, candidates.size())
+        .defaultValue<std::vector<std::string>>(std::move(candidates))
+        .remaining()
+        .metavar(optMetavar)
+        .help(descr<reg_ds::HeapInstance>());
+    applyingForwarder.registerHandler([](const action::UpdateChoice<reg_ds::HeapInstance>& msg)
+                                      { reg_ds::updateChoice<reg_ds::HeapInstance>(msg.cho); });
+    applyingForwarder.registerHandler([](const action::RunChoices<reg_ds::HeapInstance>& msg)
+                                      { reg_ds::runChoices<reg_ds::HeapInstance>(msg.coll); });
+    versionLinks.emplace(
+        VerLinkKey{name<reg_ds::ApplyDataStructure>(), reg_ds::heap::version()}, name<reg_ds::HeapInstance>());
     candidates = extractChoices<reg_ds::LinearInstance>();
     dsTable.emplace(name<reg_ds::LinearInstance>(), Attr{candidates, reg_ds::LinearInstance{}});
     subCLIAppDs
