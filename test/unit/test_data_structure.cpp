@@ -327,11 +327,11 @@ protected:
         "insert 20: true\n"
         "insert 50: true\n"
         "insert 80: true\n"
-        "traverse: 90 ... 80 ... 70 ... 60 ... 40 ... 30 ... 20 ... 10 ... 50 ... \n"
+        "traversal: 90 ... 80 ... 70 ... 60 ... 40 ... 30 ... 20 ... 10 ... 50 ... \n"
         "insert 85: true\n"
-        "traverse: 90 ... 85 ... 70 ... 60 ... 80 ... 30 ... 20 ... 10 ... 50 ... 40 ... \n"
+        "traversal: 90 ... 85 ... 70 ... 60 ... 80 ... 30 ... 20 ... 10 ... 50 ... 40 ... \n"
         "remove 90: true\n"
-        "traverse: 85 ... 80 ... 70 ... 60 ... 40 ... 30 ... 20 ... 10 ... 50 ... \n"
+        "traversal: 85 ... 80 ... 70 ... 60 ... 40 ... 30 ... 20 ... 10 ... 50 ... \n"
     };
     //! @brief Expected result 2.
     static constexpr std::string_view expRes2
@@ -345,11 +345,11 @@ protected:
         "insert 10: true\n"
         "insert 50: true\n"
         "insert 20: true\n"
-        "traverse: 10 ... 20 ... 30 ... 50 ... 90 ... 70 ... 40 ... 80 ... 60 ... \n"
+        "traversal: 10 ... 20 ... 30 ... 50 ... 90 ... 70 ... 40 ... 80 ... 60 ... \n"
         "insert 15: true\n"
-        "traverse: 10 ... 15 ... 30 ... 50 ... 20 ... 70 ... 40 ... 80 ... 60 ... 90 ... \n"
+        "traversal: 10 ... 15 ... 30 ... 50 ... 20 ... 70 ... 40 ... 80 ... 60 ... 90 ... \n"
         "remove 10: true\n"
-        "traverse: 15 ... 20 ... 30 ... 50 ... 90 ... 70 ... 40 ... 80 ... 60 ... \n"
+        "traversal: 15 ... 20 ... 30 ... 50 ... 90 ... 70 ... 40 ... 80 ... 60 ... \n"
     };
     // clang-format on
 };
@@ -399,7 +399,7 @@ protected:
         "insert (0) 98: true\n"
         "insert (0) 99: true\n"
         "insert (0) 100: true\n"
-        "traverse: 100 ... 99 ... 98 ... 97 ... \n"
+        "traversal: 100 ... 99 ... 98 ... 97 ... \n"
         "remove (1): true\n"
         "insert (2) 99: true\n"
         "insert first 97: true\n"
@@ -419,7 +419,7 @@ protected:
         "push 98: true\n"
         "push 99: true\n"
         "push 100: true\n"
-        "traverse: 100 ... 99 ... 98 ... 97 ... \n"
+        "traversal: 100 ... 99 ... 98 ... 97 ... \n"
         "pop: 100\n"
         "top: 99\n"
         "push 100: true\n"
@@ -434,7 +434,7 @@ protected:
         "push 98: true\n"
         "push 99: true\n"
         "push 100: true\n"
-        "traverse: 97 ... 98 ... 99 ... 100 ... \n"
+        "traversal: 97 ... 98 ... 99 ... 100 ... \n"
         "pop: 97\n"
         "front: 98\n"
         "push 97: true\n"

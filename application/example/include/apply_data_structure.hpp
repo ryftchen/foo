@@ -457,17 +457,16 @@ public:
         const auto opInTraversal = [&process](const void* const data)
         { process << *static_cast<const Data*>(data) << ' '; };
 
-        AMLGraph graph{};
-        create(&graph, &compareData);
-        const auto traverse = Traverse(&graph);
+        AMLGraph* const graph = create(&compareData);
+        const auto traverse = Traverse(graph);
         process << std::boolalpha;
         for (const auto& vertex : vertices)
         {
-            process << "insert vertex " << vertex << ": " << insertVertex(&graph, &vertex) << '\n';
+            process << "insert vertex " << vertex << ": " << insertVertex(graph, &vertex) << '\n';
         }
         for (const auto& edge : edges)
         {
-            process << "insert edge " << edge[0] << '-' << edge[1] << ": " << insertEdge(&graph, edge.data(), &edge[1])
+            process << "insert edge " << edge[0] << '-' << edge[1] << ": " << insertEdge(graph, edge.data(), &edge[1])
                     << '\n';
         }
 
@@ -477,8 +476,8 @@ public:
         traverse.bfs(vertices.data(), opInTraversal);
 
         process << "\ndelete edge " << edges[1][0] << '-' << edges[1][1] << ": "
-                << deleteEdge(&graph, edges[1].data(), &edges[1][1]) << '\n';
-        process << "delete vertex " << vertices[0] << ": " << deleteVertex(&graph, vertices.data()) << '\n';
+                << deleteEdge(graph, edges[1].data(), &edges[1][1]) << '\n';
+        process << "delete vertex " << vertices[0] << ": " << deleteVertex(graph, vertices.data()) << '\n';
 
         process << "DFS traversal from " << vertices[1] << ": ";
         traverse.dfs(&vertices[1], opInTraversal);
@@ -490,7 +489,7 @@ public:
         process << "\nBFS traversal from " << vertices[5] << ": ";
         traverse.bfs(&vertices[5], opInTraversal);
         process << '\n';
-        destroy(&graph);
+        destroy(graph);
 
         return std::ostringstream{process.str()};
     }
@@ -515,17 +514,16 @@ public:
         const auto opInTraversal = [&process](const void* const data)
         { process << *static_cast<const Data*>(data) << ' '; };
 
-        OLGraph graph{};
-        create(&graph, &compareData);
-        const auto traverse = Traverse(&graph);
+        OLGraph* const graph = create(&compareData);
+        const auto traverse = Traverse(graph);
         process << std::boolalpha;
         for (const auto& vertex : vertices)
         {
-            process << "insert vertex " << vertex << ": " << insertVertex(&graph, &vertex) << '\n';
+            process << "insert vertex " << vertex << ": " << insertVertex(graph, &vertex) << '\n';
         }
         for (const auto& edge : edges)
         {
-            process << "insert arc " << edge[0] << '-' << edge[1] << ": " << insertArc(&graph, edge.data(), &edge[1])
+            process << "insert arc " << edge[0] << '-' << edge[1] << ": " << insertArc(graph, edge.data(), &edge[1])
                     << '\n';
         }
 
@@ -535,8 +533,8 @@ public:
         traverse.bfs(vertices.data(), opInTraversal);
 
         process << "\ndelete arc " << edges[6][0] << '-' << edges[6][1] << ": "
-                << deleteArc(&graph, edges[6].data(), &edges[6][1]) << '\n';
-        process << "delete vertex " << vertices[1] << ": " << deleteVertex(&graph, &vertices[1]) << '\n';
+                << deleteArc(graph, edges[6].data(), &edges[6][1]) << '\n';
+        process << "delete vertex " << vertices[1] << ": " << deleteVertex(graph, &vertices[1]) << '\n';
 
         process << "DFS traversal from " << vertices[0] << ": ";
         traverse.dfs(vertices.data(), opInTraversal);
@@ -553,7 +551,7 @@ public:
         process << "\nBFS traversal from " << vertices[5] << ": ";
         traverse.bfs(&vertices[5], opInTraversal);
         process << '\n';
-        destroy(&graph);
+        destroy(graph);
 
         return std::ostringstream{process.str()};
     }
@@ -620,20 +618,19 @@ public:
         {
             process << "insert " << key << ": " << insertion(heap, &key) << '\n';
         }
-        process << "traverse: ";
+        process << "traversal: ";
         traverse.order(opInTraversal);
 
         constexpr Key insertedKey = 85;
         process << "\ninsert " << insertedKey << ": " << insertion(heap, &insertedKey) << '\n';
-        process << "traverse: ";
+        process << "traversal: ";
         traverse.order(opInTraversal);
 
         constexpr Key removedKey = 90;
         process << "\nremove " << removedKey << ": " << deletion(heap, &removedKey) << '\n';
-        process << "traverse: ";
+        process << "traversal: ";
         traverse.order(opInTraversal);
         process << '\n';
-
         destruction(heap);
 
         return std::ostringstream{process.str()};
@@ -658,20 +655,19 @@ public:
         {
             process << "insert " << key << ": " << insertion(heap, &key) << '\n';
         }
-        process << "traverse: ";
+        process << "traversal: ";
         traverse.order(opInTraversal);
 
         constexpr Key insertedKey = 15;
         process << "\ninsert " << insertedKey << ": " << insertion(heap, &insertedKey) << '\n';
-        process << "traverse: ";
+        process << "traversal: ";
         traverse.order(opInTraversal);
 
         constexpr Key removedKey = 10;
         process << "\nremove " << removedKey << ": " << deletion(heap, &removedKey) << '\n';
-        process << "traverse: ";
+        process << "traversal: ";
         traverse.order(opInTraversal);
         process << '\n';
-
         destruction(heap);
 
         return std::ostringstream{process.str()};
@@ -728,7 +724,7 @@ public:
         {
             process << "insert (0) " << elem << ": " << insert(dll, 0, &elem) << '\n';
         }
-        process << "traverse: ";
+        process << "traversal: ";
         Traverse(&dll).order([&process](const void* const elem)
                              { process << *static_cast<const Elem*>(elem) << " ... "; });
 
@@ -766,7 +762,7 @@ public:
         {
             process << "push " << elem << ": " << push(stk, &elem) << '\n';
         }
-        process << "traverse: ";
+        process << "traversal: ";
         Traverse(&stk).order([&process](const void* const elem)
                              { process << *static_cast<const Elem*>(elem) << " ... "; });
 
@@ -798,7 +794,7 @@ public:
         {
             process << "push " << elem << ": " << push(que, &elem) << '\n';
         }
-        process << "traverse: ";
+        process << "traversal: ";
         Traverse(&que).order([&process](const void* const elem)
                              { process << *static_cast<const Elem*>(elem) << " ... "; });
 
@@ -864,22 +860,21 @@ public:
     static std::ostringstream bs()
     {
         using namespace date_structure::tree::bs;
-        using Traverse = date_structure::tree::Traverse<Tree, Node>;
+        using Traverse = date_structure::tree::Traverse<BSTree, Node>;
         using Printer = date_structure::tree::Printer<Node, Key>;
         constexpr std::array<Key, 6> keys = {1, 5, 4, 3, 2, 6};
         std::ostringstream process{};
         const auto opInTraversal = [&process](const void* const key)
         { process << *static_cast<const Key*>(key) << " ... "; };
 
-        BSTree tree{};
-        creation(&tree, &compareKey);
-        const auto traverse = Traverse(&tree);
+        BSTree* const tree = creation(&compareKey);
+        const auto traverse = Traverse(tree);
         process << std::boolalpha;
         process << "insertion ";
         for (const auto& key : keys)
         {
             process << key << ", ";
-            insertion(&tree, &key);
+            insertion(tree, &key);
         }
         process.seekp(process.str().length() - 2);
 
@@ -890,23 +885,23 @@ public:
         process << "\npost-order traversal: ";
         traverse.postOrder(opInTraversal);
 
-        process << "\nminimum: " << *static_cast<Key*>(getMinimum(&tree)->key) << '\n';
-        process << "maximum: " << *static_cast<Key*>(getMaximum(&tree)->key) << '\n';
-        process << "all details:\n" << Printer(tree.root);
+        process << "\nminimum: " << *static_cast<Key*>(getMinimum(tree)->key) << '\n';
+        process << "maximum: " << *static_cast<Key*>(getMaximum(tree)->key) << '\n';
+        process << "all details:\n" << Printer(tree->root);
 
         constexpr Key searchKey = 3;
-        const auto* const searchNode = search(&tree, &searchKey);
+        const auto* const searchNode = search(tree, &searchKey);
         process << "search " << searchKey << ": " << static_cast<bool>(searchNode) << '\n';
         process << "predecessor of " << searchKey << ": " << *static_cast<Key*>(getPredecessor(searchNode)->key)
                 << '\n';
         process << "successor of " << searchKey << ": " << *static_cast<Key*>(getSuccessor(searchNode)->key) << '\n';
         process << "deletion " << searchKey << '\n';
-        deletion(&tree, &searchKey);
+        deletion(tree, &searchKey);
 
         process << "in-order traversal: ";
         traverse.inOrder(opInTraversal);
-        process << "\nall details:\n" << Printer(tree.root);
-        destruction(&tree);
+        process << "\nall details:\n" << Printer(tree->root);
+        destruction(tree);
 
         return std::ostringstream{process.str()};
     }
@@ -915,23 +910,22 @@ public:
     static std::ostringstream avl()
     {
         using namespace date_structure::tree::avl;
-        using Traverse = date_structure::tree::Traverse<Tree, Node>;
+        using Traverse = date_structure::tree::Traverse<AVLTree, Node>;
         using Printer = date_structure::tree::Printer<Node, Key>;
         constexpr std::array<Key, 16> keys = {3, 2, 1, 4, 5, 6, 7, 16, 15, 14, 13, 12, 11, 10, 8, 9};
         std::ostringstream process{};
         const auto opInTraversal = [&process](const void* const key)
         { process << *static_cast<const Key*>(key) << " ... "; };
 
-        AVLTree tree{};
-        creation(&tree, &compareKey);
-        const auto traverse = Traverse(&tree);
+        AVLTree* const tree = creation(&compareKey);
+        const auto traverse = Traverse(tree);
         process << std::boolalpha;
-        process << "height: " << getHeight(&tree) << '\n';
+        process << "height: " << getHeight(tree) << '\n';
         process << "insertion ";
         for (const auto& key : keys)
         {
             process << key << ", ";
-            insertion(&tree, &key);
+            insertion(tree, &key);
         }
         process.seekp(process.str().length() - 2);
 
@@ -942,21 +936,21 @@ public:
         process << "\npost-order traversal: ";
         traverse.postOrder(opInTraversal);
 
-        process << "\nheight: " << getHeight(&tree) << '\n';
-        process << "minimum: " << *static_cast<Key*>(getMinimum(&tree)->key) << '\n';
-        process << "maximum: " << *static_cast<Key*>(getMaximum(&tree)->key) << '\n';
-        process << "all details:\n" << Printer(tree.root);
+        process << "\nheight: " << getHeight(tree) << '\n';
+        process << "minimum: " << *static_cast<Key*>(getMinimum(tree)->key) << '\n';
+        process << "maximum: " << *static_cast<Key*>(getMaximum(tree)->key) << '\n';
+        process << "all details:\n" << Printer(tree->root);
         constexpr Key searchKey = 13;
-        const auto* const searchNode = search(&tree, &searchKey);
+        const auto* const searchNode = search(tree, &searchKey);
         process << "search " << searchKey << ": " << static_cast<bool>(searchNode) << '\n';
         process << "deletion " << searchKey << '\n';
-        deletion(&tree, &searchKey);
+        deletion(tree, &searchKey);
 
-        process << "height: " << getHeight(&tree) << '\n';
+        process << "height: " << getHeight(tree) << '\n';
         process << "in-order traversal: ";
         traverse.inOrder(opInTraversal);
-        process << "\nall details:\n" << Printer(tree.root);
-        destruction(&tree);
+        process << "\nall details:\n" << Printer(tree->root);
+        destruction(tree);
 
         return std::ostringstream{process.str()};
     }
@@ -965,22 +959,21 @@ public:
     static std::ostringstream splay()
     {
         using namespace date_structure::tree::splay;
-        using Traverse = date_structure::tree::Traverse<Tree, Node>;
+        using Traverse = date_structure::tree::Traverse<SplayTree, Node>;
         using Printer = date_structure::tree::Printer<Node, Key>;
         constexpr std::array<Key, 7> keys = {10, 50, 40, 70, 30, 20, 60};
         std::ostringstream process{};
         const auto opInTraversal = [&process](const void* const key)
         { process << *static_cast<const Key*>(key) << " ... "; };
 
-        SplayTree tree{};
-        creation(&tree, &compareKey);
-        const auto traverse = Traverse(&tree);
+        SplayTree* const tree = creation(&compareKey);
+        const auto traverse = Traverse(tree);
         process << std::boolalpha;
         process << "insertion ";
         for (const auto& key : keys)
         {
             process << key << ", ";
-            insertion(&tree, &key);
+            insertion(tree, &key);
         }
         process.seekp(process.str().length() - 2);
 
@@ -991,26 +984,26 @@ public:
         process << "\npost-order traversal: ";
         traverse.postOrder(opInTraversal);
 
-        process << "\nminimum: " << *static_cast<Key*>(getMinimum(&tree)->key) << '\n';
-        process << "maximum: " << *static_cast<Key*>(getMaximum(&tree)->key) << '\n';
-        process << "all details:\n" << Printer(tree.root);
+        process << "\nminimum: " << *static_cast<Key*>(getMinimum(tree)->key) << '\n';
+        process << "maximum: " << *static_cast<Key*>(getMaximum(tree)->key) << '\n';
+        process << "all details:\n" << Printer(tree->root);
 
         constexpr Key searchKey = 70;
-        const auto* const searchNode = search(&tree, &searchKey);
+        const auto* const searchNode = search(tree, &searchKey);
         process << "search " << searchKey << ": " << static_cast<bool>(searchNode) << '\n';
         process << "deletion " << searchKey << '\n';
-        deletion(&tree, &searchKey);
+        deletion(tree, &searchKey);
 
         process << "in-order traversal: ";
         traverse.inOrder(opInTraversal);
-        process << "\nall details:\n" << Printer(tree.root);
+        process << "\nall details:\n" << Printer(tree->root);
 
         constexpr Key splayKey = 30;
         process << "splaying " << splayKey << '\n';
-        splaying(&tree, &splayKey);
+        splaying(tree, &splayKey);
 
-        process << "all details:\n" << Printer(tree.root);
-        destruction(&tree);
+        process << "all details:\n" << Printer(tree->root);
+        destruction(tree);
 
         return std::ostringstream{process.str()};
     }

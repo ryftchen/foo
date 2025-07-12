@@ -30,46 +30,46 @@ extern "C"
 
 #pragma pack(push, 8)
     //! @brief The edge structure in the graph.
-    typedef struct TagEdge
+    struct EdgeNode
     {
         //! @brief The one endpoint vertex index in the edge.
         int iVex;
         //! @brief The other endpoint vertex index in the edge.
         int jVex;
         //! @brief Pointer to the next edge in the adjacency list of the one endpoint vertex.
-        struct TagEdge* iLink;
+        struct EdgeNode* iLink;
         //! @brief Pointer to the next edge in the adjacency list of the other endpoint vertex.
-        struct TagEdge* jLink;
-    } EdgeNode;
+        struct EdgeNode* jLink;
+    };
 
     //! @brief The vertex structure in the graph.
-    typedef struct TagVertex
+    struct VertexNode
     {
         //! @brief Pointer to the first incident edge in the adjacency list.
-        struct TagEdge* firstEdge;
+        struct EdgeNode* firstEdge;
         //! @brief Vertex data.
         void* data;
-    } VertexNode;
+    };
 
     //! @brief The undirected graph structure using an adjacency multi-list.
-    typedef struct TagGraph
+    struct AMLGraph
     {
         //! @brief Number of vertices.
         int vexNum;
         //! @brief Number of edges.
         int edgeNum;
         //! @brief Vertex list in the adjacency multi-list representation.
-        struct TagVertex adjMultiList[maxVertexNum];
+        struct VertexNode adjMultiList[maxVertexNum];
         //! @brief The data's compare function.
         Compare compare;
-    } AMLGraph;
+    };
 #pragma pack(pop)
 #ifdef __cplusplus
 }
 #endif // __cplusplus
 
-extern void create(AMLGraph* const graph, const Compare cmp);
-extern void destroy(AMLGraph* const graph);
+extern AMLGraph* create(const Compare cmp);
+extern void destroy(AMLGraph* graph);
 extern bool insertVertex(AMLGraph* const graph, const void* const vert);
 extern bool insertEdge(AMLGraph* const graph, const void* const vert1, const void* const vert2);
 extern bool deleteVertex(AMLGraph* const graph, const void* const vert);
@@ -125,48 +125,48 @@ extern "C"
 
 #pragma pack(push, 8)
     //! @brief The arc structure in the graph.
-    typedef struct TagArc
+    struct ArcNode
     {
         //! @brief The head vertex index of the arc.
         int headVex;
         //! @brief The tail vertex index of the arc.
         int tailVex;
         //! @brief Pointer to the next arc in the incoming arcs list.
-        struct TagArc* headLink;
+        struct ArcNode* headLink;
         //! @brief Pointer to the next arc in the outgoing arcs list.
-        struct TagArc* tailLink;
-    } ArcNode;
+        struct ArcNode* tailLink;
+    };
 
     //! @brief The vertex structure in the graph.
-    typedef struct TagVertex
+    struct VertexNode
     {
         //! @brief Pointer to the first incoming arc.
-        struct TagArc* firstIn;
+        struct ArcNode* firstIn;
         //! @brief Pointer to the first outgoing arc.
-        struct TagArc* firstOut;
+        struct ArcNode* firstOut;
         //! @brief Vertex data.
         void* data;
-    } VertexNode;
+    };
 
     //! @brief The directed graph structure using an orthogonal linked list.
-    typedef struct TagGraph
+    struct OLGraph
     {
         //! @brief Number of vertices.
         int vexNum;
         //! @brief Number of arcs.
         int arcNum;
         //! @brief Vertex list in the orthogonal linked list representation.
-        struct TagVertex xList[maxVertexNum];
+        struct VertexNode xList[maxVertexNum];
         //! @brief The data's compare function.
         Compare compare;
-    } OLGraph;
+    };
 #pragma pack(pop)
 #ifdef __cplusplus
 }
 #endif // __cplusplus
 
-extern void create(OLGraph* const graph, const Compare cmp);
-extern void destroy(OLGraph* const graph);
+extern OLGraph* create(const Compare cmp);
+extern void destroy(OLGraph* graph);
 extern bool insertVertex(OLGraph* const graph, const void* const vert);
 extern bool insertArc(OLGraph* const graph, const void* const vert1, const void* const vert2);
 extern bool deleteVertex(OLGraph* const graph, const void* const vert);
