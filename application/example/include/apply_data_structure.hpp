@@ -6,14 +6,9 @@
 
 #pragma once
 
-#ifndef _PRECOMPILED_HEADER
-#include <array>
-#else
-#include "application/pch/precompiled_header.hpp"
-#endif // _PRECOMPILED_HEADER
-
 #include "data_structure/include/cache.hpp"
 #include "data_structure/include/filter.hpp"
+#include "data_structure/include/graph.hpp"
 #include "data_structure/include/linear.hpp"
 #include "data_structure/include/tree.hpp"
 
@@ -279,7 +274,6 @@ public:
     //! @brief Destroy the Showcase object.
     virtual ~Showcase() = default;
 
-    // NOLINTBEGIN(google-build-using-namespace)
     //! @brief Bloom.
     //! @return procedure output
     static std::ostringstream bloom()
@@ -402,7 +396,6 @@ public:
 
         return process;
     }
-    // NOLINTEND(google-build-using-namespace)
 };
 
 //! @brief Structure of filter.
@@ -419,6 +412,162 @@ public:
 };
 } // namespace filter
 extern void applyingFilter(const std::vector<std::string>& candidates);
+
+//! @brief Apply graph.
+namespace graph
+{
+//! @brief The version used to apply.
+const char* const version = date_structure::graph::version();
+
+//! @brief Alias for the data.
+using Data = char;
+//! @brief Compare function for the data.
+//! @param a - first data
+//! @param b - second data
+//! @return a is less than b if returns -1, a is greater than b if returns 1, and a is equal to b if returns 0
+static int compareData(const void* const a, const void* const b)
+{
+    const auto l = *static_cast<const Data*>(a), r = *static_cast<const Data*>(b);
+    return (l > r) - (l < r);
+}
+
+//! @brief Showcase for graph instances.
+class Showcase
+{
+public:
+    //! @brief Destroy the Showcase object.
+    virtual ~Showcase() = default;
+
+    // NOLINTBEGIN(google-build-using-namespace, readability-magic-numbers)
+    //! @brief Undirected.
+    //! @return procedure output
+    static std::ostringstream undirected()
+    {
+        using namespace date_structure::graph::undirected;
+        std::ostringstream process{};
+        const auto opInTraversal = [&process](const void* const data)
+        { process << *static_cast<const Data*>(data) << ' '; };
+        constexpr std::array<Data, 7> vertices = {'A', 'B', 'C', 'D', 'E', 'F', 'G'};
+
+        AMLGraph graph{};
+        const auto traverse = Traverse(&graph);
+        create(&graph, &compareData);
+        process << std::boolalpha;
+        process << "insert vertex A: " << insertVertex(&graph, vertices.data()) << '\n';
+        process << "insert vertex B: " << insertVertex(&graph, &vertices[1]) << '\n';
+        process << "insert vertex C: " << insertVertex(&graph, &vertices[2]) << '\n';
+        process << "insert vertex D: " << insertVertex(&graph, &vertices[3]) << '\n';
+        process << "insert vertex E: " << insertVertex(&graph, &vertices[4]) << '\n';
+        process << "insert vertex F: " << insertVertex(&graph, &vertices[5]) << '\n';
+        process << "insert vertex G: " << insertVertex(&graph, &vertices[6]) << '\n';
+
+        process << "insert edge A-C: " << insertEdge(&graph, vertices.data(), &vertices[2]) << '\n';
+        process << "insert edge A-D: " << insertEdge(&graph, vertices.data(), &vertices[3]) << '\n';
+        process << "insert edge A-F: " << insertEdge(&graph, vertices.data(), &vertices[5]) << '\n';
+        process << "insert edge B-C: " << insertEdge(&graph, &vertices[1], &vertices[2]) << '\n';
+        process << "insert edge C-D: " << insertEdge(&graph, &vertices[2], &vertices[3]) << '\n';
+        process << "insert edge E-G: " << insertEdge(&graph, &vertices[4], &vertices[6]) << '\n';
+        process << "insert edge F-G: " << insertEdge(&graph, &vertices[5], &vertices[6]) << '\n';
+
+        process << "DFS traversal from A: ";
+        traverse.dfs(vertices.data(), opInTraversal);
+        process << "\nBFS traversal from A: ";
+        traverse.bfs(vertices.data(), opInTraversal);
+
+        process << "\ndelete edge A-D: " << deleteEdge(&graph, vertices.data(), &vertices[3]) << '\n';
+        process << "delete vertex A: " << deleteVertex(&graph, vertices.data()) << '\n';
+
+        process << "DFS traversal from B: ";
+        traverse.dfs(&vertices[1], opInTraversal);
+        process << "\nBFS traversal from B: ";
+        traverse.bfs(&vertices[1], opInTraversal);
+
+        process << "\nDFS traversal from F: ";
+        traverse.dfs(&vertices[5], opInTraversal);
+        process << "\nBFS traversal from F: ";
+        traverse.bfs(&vertices[5], opInTraversal);
+        process << '\n';
+        destroy(&graph);
+
+        return std::ostringstream{process.str()};
+    }
+
+    //! @brief Directed.
+    //! @return procedure output
+    static std::ostringstream directed()
+    {
+        using namespace date_structure::graph::directed;
+        std::ostringstream process{};
+        const auto opInTraversal = [&process](const void* const data)
+        { process << *static_cast<const Data*>(data) << ' '; };
+        constexpr std::array<Data, 7> vertices = {'A', 'B', 'C', 'D', 'E', 'F', 'G'};
+
+        OLGraph graph{};
+        const auto traverse = Traverse(&graph);
+        create(&graph, &compareData);
+        process << std::boolalpha;
+        process << "insert vertex A: " << insertVertex(&graph, vertices.data()) << '\n';
+        process << "insert vertex B: " << insertVertex(&graph, &vertices[1]) << '\n';
+        process << "insert vertex C: " << insertVertex(&graph, &vertices[2]) << '\n';
+        process << "insert vertex D: " << insertVertex(&graph, &vertices[3]) << '\n';
+        process << "insert vertex E: " << insertVertex(&graph, &vertices[4]) << '\n';
+        process << "insert vertex F: " << insertVertex(&graph, &vertices[5]) << '\n';
+        process << "insert vertex G: " << insertVertex(&graph, &vertices[6]) << '\n';
+
+        process << "insert arc A-B: " << insertArc(&graph, vertices.data(), &vertices[1]) << '\n';
+        process << "insert arc B-C: " << insertArc(&graph, &vertices[1], &vertices[2]) << '\n';
+        process << "insert arc B-E: " << insertArc(&graph, &vertices[1], &vertices[4]) << '\n';
+        process << "insert arc B-F: " << insertArc(&graph, &vertices[1], &vertices[5]) << '\n';
+        process << "insert arc C-E: " << insertArc(&graph, &vertices[2], &vertices[4]) << '\n';
+        process << "insert arc D-C: " << insertArc(&graph, &vertices[3], &vertices[2]) << '\n';
+        process << "insert arc E-B: " << insertArc(&graph, &vertices[4], &vertices[1]) << '\n';
+        process << "insert arc E-D: " << insertArc(&graph, &vertices[4], &vertices[3]) << '\n';
+        process << "insert arc F-G: " << insertArc(&graph, &vertices[5], &vertices[6]) << '\n';
+
+        process << "DFS traversal from A: ";
+        traverse.dfs(vertices.data(), opInTraversal);
+        process << "\nBFS traversal from A: ";
+        traverse.bfs(vertices.data(), opInTraversal);
+
+        process << "\ndelete arc E-B: " << deleteArc(&graph, &vertices[4], &vertices[1]) << '\n';
+        process << "delete vertex B: " << deleteVertex(&graph, &vertices[1]) << '\n';
+
+        process << "DFS traversal from A: ";
+        traverse.dfs(vertices.data(), opInTraversal);
+        process << "\nBFS traversal from A: ";
+        traverse.bfs(vertices.data(), opInTraversal);
+
+        process << "\nDFS traversal from C: ";
+        traverse.dfs(&vertices[2], opInTraversal);
+        process << "\nBFS traversal from C: ";
+        traverse.bfs(&vertices[2], opInTraversal);
+
+        process << "\nDFS traversal from F: ";
+        traverse.dfs(&vertices[5], opInTraversal);
+        process << "\nBFS traversal from F: ";
+        traverse.bfs(&vertices[5], opInTraversal);
+        process << '\n';
+        destroy(&graph);
+
+        return std::ostringstream{process.str()};
+    }
+    // NOLINTEND(google-build-using-namespace, readability-magic-numbers)
+};
+
+//! @brief Structure of graph.
+class GraphStructure
+{
+public:
+    //! @brief Destroy the GraphStructure object.
+    virtual ~GraphStructure() = default;
+
+    //! @brief The undirected instance.
+    static void undirectedInstance();
+    //! @brief The directed instance.
+    static void directedInstance();
+};
+} // namespace graph
+extern void applyingGraph(const std::vector<std::string>& candidates);
 
 //! @brief Apply linear.
 namespace linear

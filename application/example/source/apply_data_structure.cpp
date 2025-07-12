@@ -147,6 +147,83 @@ void applyingFilter(const std::vector<std::string>& candidates)
     APP_DS_PRINT_TASK_TITLE_SCOPE_END(category);
 }
 
+namespace graph
+{
+//! @brief Show the contents of the graph result.
+//! @param instance - specific value of GraphInstance enum
+//! @param result - graph result
+static void showResult(const GraphInstance instance, const std::string& result)
+{
+    std::printf("\n==> %-10s Instance <==\n%s", makeTitle(instance).c_str(), result.c_str());
+}
+
+void GraphStructure::undirectedInstance()
+try
+{
+    const auto output = Showcase().undirected();
+    showResult(GraphInstance::undirected, output.str());
+}
+catch (const std::exception& err)
+{
+    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
+}
+
+void GraphStructure::directedInstance()
+try
+{
+    const auto output = Showcase().directed();
+    showResult(GraphInstance::directed, output.str());
+}
+catch (const std::exception& err)
+{
+    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
+}
+} // namespace graph
+//! @brief To apply graph-related instances.
+//! @param candidates - container for the candidate target instances
+void applyingGraph(const std::vector<std::string>& candidates)
+{
+    constexpr auto category = Category::graph;
+    const auto& bits = categoryOpts<category>();
+    if (bits.none())
+    {
+        return;
+    }
+    MACRO_ASSERT(bits.size() == candidates.size());
+
+    APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
+
+    auto& pooling = configure::task::resourcePool();
+    auto* const allocatedJob = pooling.newEntry(bits.count());
+    const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
+    const auto addTask = utility::common::wrapClosure(
+        [allocatedJob, &taskNamer](const std::string_view subTask, void (*targetInstance)())
+        { allocatedJob->enqueue(taskNamer(subTask), targetInstance); });
+    MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
+
+    std::cout << "\nInstances of the " << toString<category>() << " structure:" << std::endl;
+    for (const auto index :
+         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
+    {
+        const auto& target = candidates.at(index);
+        switch (utility::common::bkdrHash(target.c_str()))
+        {
+            using graph::GraphStructure;
+            static_assert(utility::common::isStatelessClass<GraphStructure>());
+            case abbrValue(GraphInstance::undirected):
+                addTask(target, &GraphStructure::undirectedInstance);
+                break;
+            case abbrValue(GraphInstance::directed):
+                addTask(target, &GraphStructure::directedInstance);
+                break;
+            default:
+                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " instance: " + target + '.'};
+        }
+    }
+
+    APP_DS_PRINT_TASK_TITLE_SCOPE_END(category);
+}
+
 namespace cache
 {
 //! @brief Show the contents of the cache result.
