@@ -38,7 +38,7 @@ static Node* createNode(const void* const value)
 
 //! @brief Get the node of the doubly linked list by index.
 //! @param head - head of the list
-//! @param index - node index
+//! @param index - target index
 //! @return node at the index
 static Node* getNode(const DLL head, const int index)
 {
@@ -137,7 +137,7 @@ bool empty(const DLL head)
 
 //! @brief Get the node of the doubly linked list by index.
 //! @param head - head of the list
-//! @param index - node index
+//! @param index - target index
 //! @return node of the doubly linked list
 void* get(const DLL head, const int index)
 {
@@ -161,9 +161,9 @@ void* getLast(const DLL head)
     return get(head, size(head) - 1);
 }
 
-//! @brief Insert the target node into the doubly linked list by index.
+//! @brief Insert the node into the doubly linked list by index.
 //! @param head - head of the list
-//! @param index - node index
+//! @param index - target index
 //! @param value - value of the target node
 //! @return success or failure
 bool insert(const DLL head, const int index, const void* const value)
@@ -193,7 +193,7 @@ bool insert(const DLL head, const int index, const void* const value)
     return true;
 }
 
-//! @brief Insert the target node into the doubly linked list as the first node.
+//! @brief Insert the node into the doubly linked list as the first node.
 //! @param head - head of the list
 //! @param value - value of the target node
 //! @return success or failure
@@ -213,7 +213,7 @@ bool insertFirst(const DLL head, const void* const value)
     return true;
 }
 
-//! @brief Insert the target node into the doubly linked list as the last node.
+//! @brief Insert the node into the doubly linked list as the last node.
 //! @param head - head of the list
 //! @param value - value of the target node
 //! @return success or failure
@@ -233,9 +233,9 @@ bool insertLast(const DLL head, const void* const value)
     return true;
 }
 
-//! @brief Remove the target node from the doubly linked list by index.
+//! @brief Remove the node from the doubly linked list by index.
 //! @param head - head of the list
-//! @param index - node index
+//! @param index - target index
 //! @return success or failure
 bool remove(const DLL head, const int index)
 {

@@ -17,7 +17,7 @@ namespace tree
 {
 extern const char* version() noexcept;
 
-//! @brief The binary search tree structure.
+//! @brief The binary search tree.
 namespace bs
 {
 #ifdef __cplusplus
@@ -42,31 +42,31 @@ extern "C"
     } Node;
 
     //! @brief The BS tree structure.
-    typedef struct BSTree
+    struct BSTree
     {
         //! @brief Pointer to the root node.
         struct BSTreeNode* root;
         //! @brief The key's compare function.
         Compare compare;
-    } Tree;
+    };
 #pragma pack(pop)
 #ifdef __cplusplus
 }
 #endif // __cplusplus
 
-extern Node* getMinimum(const Tree* const tree);
-extern Node* getMaximum(const Tree* const tree);
+extern Node* getMinimum(const BSTree* const tree);
+extern Node* getMaximum(const BSTree* const tree);
 extern Node* getPredecessor(const Node* x);
 extern Node* getSuccessor(const Node* x);
 
-extern void creation(Tree* const tree, const Compare cmp);
-extern Node* search(const Tree* const tree, const void* const key);
-extern void insertion(Tree* const tree, const void* const key);
-extern void deletion(Tree* const tree, const void* const key);
-extern void destruction(const Tree* const tree);
+extern BSTree* creation(const Compare cmp);
+extern void destruction(const BSTree* tree);
+extern Node* search(const BSTree* const tree, const void* const key);
+extern void insertion(BSTree* const tree, const void* const key);
+extern void deletion(BSTree* const tree, const void* const key);
 } // namespace bs
 
-//! @brief The Adelson-Velsky-Landis tree structure.
+//! @brief The Adelson-Velsky-Landis tree.
 namespace avl
 {
 #ifdef __cplusplus
@@ -91,30 +91,30 @@ extern "C"
     } Node;
 
     //! @brief The AVL tree structure.
-    typedef struct AVLTree
+    struct AVLTree
     {
         //! @brief Pointer to the root node.
         struct AVLTreeNode* root;
         //! @brief The key's compare function.
         Compare compare;
-    } Tree;
+    };
 #pragma pack(pop)
 #ifdef __cplusplus
 }
 #endif // __cplusplus
 
-extern int getHeight(const Tree* const tree);
-extern Node* getMinimum(const Tree* const tree);
-extern Node* getMaximum(const Tree* const tree);
+extern int getHeight(const AVLTree* const tree);
+extern Node* getMinimum(const AVLTree* const tree);
+extern Node* getMaximum(const AVLTree* const tree);
 
-extern void creation(Tree* const tree, const Compare cmp);
-extern Node* search(const Tree* const tree, const void* const key);
-extern void insertion(Tree* const tree, const void* const key);
-extern void deletion(Tree* const tree, const void* const key);
-extern void destruction(const Tree* const tree);
+extern AVLTree* creation(const Compare cmp);
+extern void destruction(const AVLTree* tree);
+extern Node* search(const AVLTree* const tree, const void* const key);
+extern void insertion(AVLTree* const tree, const void* const key);
+extern void deletion(AVLTree* const tree, const void* const key);
 } // namespace avl
 
-//! @brief The splay tree structure.
+//! @brief The splay tree.
 namespace splay
 {
 #ifdef __cplusplus
@@ -137,27 +137,27 @@ extern "C"
     } Node;
 
     //! @brief The splay tree structure.
-    typedef struct SplayTree
+    struct SplayTree
     {
         //! @brief Pointer to the root node.
         struct SplayTreeNode* root;
         //! @brief The key's compare function.
         Compare compare;
-    } Tree;
+    };
 #pragma pack(pop)
 #ifdef __cplusplus
 }
 #endif // __cplusplus
 
-extern Node* getMinimum(const Tree* const tree);
-extern Node* getMaximum(const Tree* const tree);
+extern Node* getMinimum(const SplayTree* const tree);
+extern Node* getMaximum(const SplayTree* const tree);
 
-extern void creation(Tree* const tree, const Compare cmp);
-extern Node* search(const Tree* const tree, const void* const key);
-extern void splaying(Tree* const tree, const void* const key);
-extern void insertion(Tree* const tree, const void* const key);
-extern void deletion(Tree* const tree, const void* const key);
-extern void destruction(const Tree* const tree);
+extern SplayTree* creation(const Compare cmp);
+extern void destruction(const SplayTree* tree);
+extern Node* search(const SplayTree* const tree, const void* const key);
+extern void splaying(SplayTree* const tree, const void* const key);
+extern void insertion(SplayTree* const tree, const void* const key);
+extern void deletion(SplayTree* const tree, const void* const key);
 } // namespace splay
 
 //! @brief Do traversing.

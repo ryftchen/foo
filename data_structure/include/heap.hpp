@@ -28,7 +28,7 @@ extern "C"
 
 #pragma pack(push, 8)
     //! @brief The max heap structure.
-    typedef struct TagMaxHeap
+    struct MaxHeap
     {
         //! @brief Pointer to the data array.
         void** data;
@@ -38,7 +38,7 @@ extern "C"
         int size;
         //! @brief The key's compare function.
         Compare compare;
-    } MaxHeap;
+    };
 #pragma pack(pop)
 #ifdef __cplusplus
 }
@@ -83,7 +83,7 @@ extern "C"
 
 #pragma pack(push, 8)
     //! @brief The min heap structure.
-    typedef struct TagMinHeap
+    struct MinHeap
     {
         //! @brief Pointer to the data array.
         void** data;
@@ -93,7 +93,7 @@ extern "C"
         int size;
         //! @brief The key's compare function.
         Compare compare;
-    } MinHeap;
+    };
 #pragma pack(pop)
 #ifdef __cplusplus
 }

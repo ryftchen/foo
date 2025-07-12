@@ -77,18 +77,21 @@ static bool removeEdgeFromList(VertexNode* const vNode, const int index, const E
 }
 
 //! @brief Create the undirected graph.
-//! @param graph - graph to create
 //! @param cmp - compare function to compare data
-void create(AMLGraph* const graph, const Compare cmp)
+//! @return new undirected graph
+AMLGraph* create(const Compare cmp)
 {
+    auto* const graph = ::new (std::nothrow) AMLGraph;
     graph->vexNum = 0;
     graph->edgeNum = 0;
     graph->compare = cmp;
+
+    return graph;
 }
 
 //! @brief Destroy the undirected graph.
 //! @param graph - graph to destroy
-void destroy(AMLGraph* const graph)
+void destroy(AMLGraph* graph)
 {
     if (!graph)
     {
@@ -107,8 +110,8 @@ void destroy(AMLGraph* const graph)
         }
     }
 
-    graph->vexNum = 0;
-    graph->edgeNum = 0;
+    ::delete graph;
+    graph = nullptr;
 }
 
 //! @brief Insert a vertex into the undirected graph.
@@ -448,18 +451,21 @@ static void deleteIncomingArcs(OLGraph* const graph, const int index)
 }
 
 //! @brief Create the directed graph.
-//! @param graph - graph to create
 //! @param cmp - compare function to compare data
-void create(OLGraph* const graph, const Compare cmp)
+//! @return new directed graph
+OLGraph* create(const Compare cmp)
 {
+    auto* const graph = ::new (std::nothrow) OLGraph;
     graph->vexNum = 0;
     graph->arcNum = 0;
     graph->compare = cmp;
+
+    return graph;
 }
 
 //! @brief Destroy the directed graph.
 //! @param graph - graph to destroy
-void destroy(OLGraph* const graph)
+void destroy(OLGraph* graph)
 {
     if (!graph)
     {
@@ -481,8 +487,8 @@ void destroy(OLGraph* const graph)
         graph->xList[i].firstOut = nullptr;
     }
 
-    graph->vexNum = 0;
-    graph->arcNum = 0;
+    ::delete graph;
+    graph = nullptr;
 }
 
 //! @brief Insert a vertex into the directed graph.

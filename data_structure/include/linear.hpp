@@ -23,15 +23,15 @@ extern "C"
 #endif // __cplusplus
 #pragma pack(push, 8)
     //! @brief The node of the linear structure.
-    typedef struct TagNode
+    typedef struct Node
     {
         //! @brief Pointer to the previous node.
-        struct TagNode* prev;
+        struct Node* prev;
         //! @brief Pointer to the next node.
-        struct TagNode* next;
+        struct Node* next;
         //! @brief Node element.
         void* elem;
-    } Node, *Linear;
+    }* Linear;
 #pragma pack(pop)
 #ifdef __cplusplus
 }
