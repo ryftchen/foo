@@ -23,9 +23,10 @@ namespace bs
 extern "C"
 {
 #endif // __cplusplus
-#pragma pack(push, 8)
     //! @brief Alias for the compare function type.
     typedef int (*Compare)(const void* const, const void* const);
+
+#pragma pack(push, 8)
     //! @brief The node of the BS tree.
     typedef struct BSTreeNode
     {
@@ -177,6 +178,7 @@ extern "C"
 #endif // __cplusplus
     //! @brief Alias for the compare function type.
     typedef int (*Compare)(const void* const, const void* const);
+
 #pragma pack(push, 8)
     //! @brief The node of the AVL tree.
     typedef struct AVLTreeNode
@@ -328,6 +330,7 @@ extern "C"
 #endif // __cplusplus
     //! @brief Alias for the compare function type.
     typedef int (*Compare)(const void* const, const void* const);
+
 #pragma pack(push, 8)
     //! @brief The node of the splay tree.
     typedef struct SplayTreeNode

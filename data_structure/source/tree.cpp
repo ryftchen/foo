@@ -473,24 +473,10 @@ static Node* deleteNode(Node* node, const Node* const z, const Compare cmp)
     if (cmp(z->key, node->key) < 0)
     {
         node->left = deleteNode(node->left, z, cmp);
-        if ((getHeight(node->right) - getHeight(node->left)) != 2)
-        {
-            return node;
-        }
-
-        const Node* const r = node->right;
-        node = (getHeight(r->left) > getHeight(r->right)) ? rightLeftRotation(node) : rightRightRotation(node);
     }
     else if (cmp(z->key, node->key) > 0)
     {
         node->right = deleteNode(node->right, z, cmp);
-        if ((getHeight(node->left) - getHeight(node->right)) != 2)
-        {
-            return node;
-        }
-
-        const Node* const l = node->left;
-        node = (getHeight(l->right) > getHeight(l->left)) ? leftRightRotation(node) : leftLeftRotation(node);
     }
     else if (node->left && node->right)
     {
@@ -502,7 +488,7 @@ static Node* deleteNode(Node* node, const Node* const z, const Compare cmp)
         }
         else
         {
-            const Node* const min = getMaximum(node->right);
+            const Node* const min = getMinimum(node->right);
             node->key = min->key;
             node->right = deleteNode(node->right, min, cmp);
         }
@@ -513,6 +499,24 @@ static Node* deleteNode(Node* node, const Node* const z, const Compare cmp)
         node = node->left ? node->left : node->right;
         ::delete temp;
         temp = nullptr;
+    }
+
+    if (!node)
+    {
+        return nullptr;
+    }
+    node->height = std::max(getHeight(node->left), getHeight(node->right)) + 1;
+
+    const int balance = getHeight(node->left) - getHeight(node->right);
+    if (balance > 1)
+    {
+        const Node* const l = node->left;
+        node = (getHeight(l->right) > getHeight(l->left)) ? leftRightRotation(node) : leftLeftRotation(node);
+    }
+    else if (balance < -1)
+    {
+        const Node* const r = node->right;
+        node = (getHeight(r->left) > getHeight(r->right)) ? rightLeftRotation(node) : rightRightRotation(node);
     }
 
     return node;
@@ -556,7 +560,7 @@ static Node* insertion(Node* node, const void* const key, const Compare cmp)
     else if (cmp(key, node->key) < 0)
     {
         node->left = insertion(node->left, key, cmp);
-        if ((getHeight(node->left) - getHeight(node->right)) == 2)
+        if ((getHeight(node->left) - getHeight(node->right)) > 1)
         {
             node = (cmp(key, node->left->key) < 0) ? leftLeftRotation(node) : leftRightRotation(node);
         }
@@ -564,7 +568,7 @@ static Node* insertion(Node* node, const void* const key, const Compare cmp)
     else if (cmp(key, node->key) > 0)
     {
         node->right = insertion(node->right, key, cmp);
-        if ((getHeight(node->right) - getHeight(node->left)) == 2)
+        if ((getHeight(node->left) - getHeight(node->right)) < -1)
         {
             node = (cmp(key, node->right->key) > 0) ? rightRightRotation(node) : rightLeftRotation(node);
         }
