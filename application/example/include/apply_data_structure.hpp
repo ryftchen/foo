@@ -15,6 +15,7 @@
 #include "data_structure/include/cache.hpp"
 #include "data_structure/include/filter.hpp"
 #include "data_structure/include/graph.hpp"
+#include "data_structure/include/heap.hpp"
 #include "data_structure/include/linear.hpp"
 #include "data_structure/include/tree.hpp"
 
@@ -573,6 +574,125 @@ public:
 };
 } // namespace graph
 extern void applyingGraph(const std::vector<std::string>& candidates);
+
+//! @brief Apply heap.
+namespace heap
+{
+//! @brief The version used to apply.
+const char* const version = date_structure::heap::version();
+
+//! @brief Alias for the key.
+using Key = std::int16_t;
+//! @brief Compare function for the key.
+//! @param a - first key
+//! @param b - second key
+//! @return a is less than b if returns -1, a is greater than b if returns 1, and a is equal to b if returns 0
+static int compareData(const void* const a, const void* const b)
+{
+    const auto l = *static_cast<const Key*>(a), r = *static_cast<const Key*>(b);
+    return (l > r) - (l < r);
+}
+
+//! @brief Showcase for heap instances.
+class Showcase
+{
+public:
+    //! @brief Destroy the Showcase object.
+    virtual ~Showcase() = default;
+
+    // NOLINTBEGIN(google-build-using-namespace)
+    //! @brief Max.
+    //! @return procedure output
+    static std::ostringstream max()
+    {
+        using namespace date_structure::heap::max;
+        using date_structure::heap::max::Traverse;
+        constexpr std::array<Key, 9> keys = {10, 40, 30, 60, 90, 70, 20, 50, 80};
+        constexpr int capacity = 30;
+        std::ostringstream process{};
+        const auto opInTraversal = [&process](const void* const key)
+        { process << *static_cast<const Key*>(key) << " ... "; };
+
+        MaxHeap* const heap = creation(capacity, &compareData);
+        const auto traverse = Traverse(heap);
+        process << std::boolalpha;
+        for (const auto& key : keys)
+        {
+            process << "insert " << key << ": " << insertion(heap, &key) << '\n';
+        }
+        process << "traverse: ";
+        traverse.order(opInTraversal);
+
+        constexpr Key insertedKey = 85;
+        process << "\ninsert " << insertedKey << ": " << insertion(heap, &insertedKey) << '\n';
+        process << "traverse: ";
+        traverse.order(opInTraversal);
+
+        constexpr Key removedKey = 90;
+        process << "\nremove " << removedKey << ": " << deletion(heap, &removedKey) << '\n';
+        process << "traverse: ";
+        traverse.order(opInTraversal);
+        process << '\n';
+
+        destruction(heap);
+
+        return std::ostringstream{process.str()};
+    }
+
+    //! @brief Min.
+    //! @return procedure output
+    static std::ostringstream min()
+    {
+        using namespace date_structure::heap::min;
+        using date_structure::heap::min::Traverse;
+        constexpr std::array<Key, 9> keys = {80, 40, 30, 60, 90, 70, 10, 50, 20};
+        constexpr int capacity = 30;
+        std::ostringstream process{};
+        const auto opInTraversal = [&process](const void* const key)
+        { process << *static_cast<const Key*>(key) << " ... "; };
+
+        MinHeap* const heap = creation(capacity, &compareData);
+        const auto traverse = Traverse(heap);
+        process << std::boolalpha;
+        for (const auto& key : keys)
+        {
+            process << "insert " << key << ": " << insertion(heap, &key) << '\n';
+        }
+        process << "traverse: ";
+        traverse.order(opInTraversal);
+
+        constexpr Key insertedKey = 15;
+        process << "\ninsert " << insertedKey << ": " << insertion(heap, &insertedKey) << '\n';
+        process << "traverse: ";
+        traverse.order(opInTraversal);
+
+        constexpr Key removedKey = 10;
+        process << "\nremove " << removedKey << ": " << deletion(heap, &removedKey) << '\n';
+        process << "traverse: ";
+        traverse.order(opInTraversal);
+        process << '\n';
+
+        destruction(heap);
+
+        return std::ostringstream{process.str()};
+    }
+    // NOLINTEND(google-build-using-namespace)
+};
+
+//! @brief Structure of heap.
+class HeapStructure
+{
+public:
+    //! @brief Destroy the HeapStructure object.
+    virtual ~HeapStructure() = default;
+
+    //! @brief The max instance.
+    static void maxInstance();
+    //! @brief The min instance.
+    static void minInstance();
+};
+} // namespace heap
+extern void applyingHeap(const std::vector<std::string>& candidates);
 
 //! @brief Apply linear.
 namespace linear

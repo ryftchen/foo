@@ -142,6 +142,44 @@ void runChoices<GraphInstance>(const std::vector<std::string>& candidates)
     app_ds::applyingGraph(candidates);
 }
 
+namespace heap
+{
+//! @brief Register version number.
+//! @return version number (major.minor.patch)
+const char* version() noexcept
+{
+    return app_ds::heap::version;
+}
+} // namespace heap
+//! @brief Update heap-related choice.
+//! @param target - target instance
+template <>
+void updateChoice<HeapInstance>(const std::string& target)
+{
+    constexpr auto category = Category::heap;
+    auto& bits = categoryOpts<category>();
+
+    switch (utility::common::bkdrHash(target.c_str()))
+    {
+        case abbrValue(HeapInstance::max):
+            bits.set(HeapInstance::max);
+            break;
+        case abbrValue(HeapInstance::min):
+            bits.set(HeapInstance::min);
+            break;
+        default:
+            bits.reset();
+            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " instance: " + target + '.'};
+    }
+}
+//! @brief Run heap-related choices.
+//! @param candidates - container for the candidate target instances
+template <>
+void runChoices<HeapInstance>(const std::vector<std::string>& candidates)
+{
+    app_ds::applyingHeap(candidates);
+}
+
 namespace linear
 {
 //! @brief Register version number.

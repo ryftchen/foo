@@ -124,8 +124,8 @@ consteval std::string_view alias()
 //! @return alias attribute
 template <typename T>
 requires std::is_same_v<T, reg_ds::CacheInstance> || std::is_same_v<T, reg_ds::FilterInstance>
-    || std::is_same_v<T, reg_ds::GraphInstance> || std::is_same_v<T, reg_ds::LinearInstance>
-    || std::is_same_v<T, reg_ds::TreeInstance>
+    || std::is_same_v<T, reg_ds::GraphInstance> || std::is_same_v<T, reg_ds::HeapInstance>
+    || std::is_same_v<T, reg_ds::LinearInstance> || std::is_same_v<T, reg_ds::TreeInstance>
 consteval std::string_view alias()
 {
     return TypeInfo<reg_ds::ApplyDataStructure>::fields.find(REFLECTION_STR(TypeInfo<T>::name))
@@ -212,6 +212,8 @@ using MessageTypes = MessageTypeList<
     RunningIndication<RunChoices<reg_ds::FilterInstance>>,
     UpdatingIndication<UpdateChoice<reg_ds::GraphInstance>>,
     RunningIndication<RunChoices<reg_ds::GraphInstance>>,
+    UpdatingIndication<UpdateChoice<reg_ds::HeapInstance>>,
+    RunningIndication<RunChoices<reg_ds::HeapInstance>>,
     UpdatingIndication<UpdateChoice<reg_ds::LinearInstance>>,
     RunningIndication<RunChoices<reg_ds::LinearInstance>>,
     UpdatingIndication<UpdateChoice<reg_ds::TreeInstance>>,
@@ -406,6 +408,7 @@ using EventType = std::variant<
     reg_ds::CacheInstance,
     reg_ds::FilterInstance,
     reg_ds::GraphInstance,
+    reg_ds::HeapInstance,
     reg_ds::LinearInstance,
     reg_ds::TreeInstance,
     reg_num::ArithmeticMethod,
