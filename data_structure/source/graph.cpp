@@ -1,4 +1,4 @@
-//! @file tree.cpp
+//! @file graph.cpp
 //! @author ryftchen
 //! @brief The definitions (graph) in the data structure module.
 //! @version 0.1.0

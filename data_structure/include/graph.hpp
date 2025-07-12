@@ -20,7 +20,7 @@ extern const char* version() noexcept;
 namespace undirected
 {
 //! @brief The maximum number of vertices in the graph.
-constexpr int maxVertexNum = 128;
+constexpr int maxVertexNum = 256;
 #ifdef __cplusplus
 extern "C"
 {
@@ -115,7 +115,7 @@ private:
 namespace directed
 {
 //! @brief The maximum number of vertices in the graph.
-constexpr int maxVertexNum = 128;
+constexpr int maxVertexNum = 256;
 #ifdef __cplusplus
 extern "C"
 {
