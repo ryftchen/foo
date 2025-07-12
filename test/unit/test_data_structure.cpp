@@ -318,49 +318,52 @@ protected:
     //! @brief Expected result 1.
     static constexpr std::string_view expRes1
     {
-        "insert (0) 97\n"
-        "insert (0) 98\n"
-        "insert (0) 99\n"
-        "insert (0) 100\n"
-        "remove (1)\n"
-        "insert (2) 99\n"
-        "insert first 97\n"
-        "insert last 100\n"
+        "insert (0) 97: true\n"
+        "insert (0) 98: true\n"
+        "insert (0) 99: true\n"
+        "insert (0) 100: true\n"
+        "traverse: 100 ... 99 ... 98 ... 97 ... \n"
+        "remove (1): true\n"
+        "insert (2) 99: true\n"
+        "insert first 97: true\n"
+        "insert last 100: true\n"
         "get first: 97\n"
         "get last: 100\n"
-        "remove first\n"
-        "remove last\n"
+        "remove first: true\n"
+        "remove last: true\n"
         "whether it is empty: false\n"
         "size: 4\n"
-        "all details: HEAD -> 100 <-> 98 <-> 99 <-> 97 -> NULL\n"
+        "all details: HEAD -> 100 <-> 98 <-> 99 <-> 97 <- TAIL\n"
     };
     //! @brief Expected result 2.
     static constexpr std::string_view expRes2
     {
-        "push 97\n"
-        "push 98\n"
-        "push 99\n"
-        "push 100\n"
+        "push 97: true\n"
+        "push 98: true\n"
+        "push 99: true\n"
+        "push 100: true\n"
+        "traverse: 100 ... 99 ... 98 ... 97 ... \n"
         "pop: 100\n"
         "top: 99\n"
-        "push 100\n"
+        "push 100: true\n"
         "whether it is empty: false\n"
         "size: 4\n"
-        "all details: TOP [100, 99, 98, 97] BOTTOM\n"
+        "all details: TOP [ 100 | 99 | 98 | 97 ] BOTTOM\n"
     };
     //! @brief Expected result 3.
     static constexpr std::string_view expRes3
     {
-        "push 97\n"
-        "push 98\n"
-        "push 99\n"
-        "push 100\n"
+        "push 97: true\n"
+        "push 98: true\n"
+        "push 99: true\n"
+        "push 100: true\n"
+        "traverse: 97 ... 98 ... 99 ... 100 ... \n"
         "pop: 97\n"
         "front: 98\n"
-        "push 97\n"
+        "push 97: true\n"
         "whether it is empty: false\n"
         "size: 4\n"
-        "all details: FRONT [98, 99, 100, 97] REAR\n"
+        "all details: FRONT [ 98 | 99 | 100 | 97 ] REAR\n"
     };
     // clang-format on
 };
