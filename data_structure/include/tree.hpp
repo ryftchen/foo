@@ -6,7 +6,8 @@
 
 #pragma once
 
-#include <sstream>
+#include <functional>
+#include <ostream>
 
 //! @brief The data structure module.
 namespace date_structure // NOLINT(modernize-concat-nested-namespaces)
@@ -58,115 +59,11 @@ extern Node* getMaximum(const Tree* const tree);
 extern Node* getPredecessor(const Node* x);
 extern Node* getSuccessor(const Node* x);
 
-extern Node* search(const Tree* const, const void* const key);
+extern void creation(Tree* const tree, const Compare cmp);
+extern Node* search(const Tree* const tree, const void* const key);
 extern void insertion(Tree* const tree, const void* const key);
 extern void deletion(Tree* const tree, const void* const key);
 extern void destruction(const Tree* const tree);
-
-//! @brief Output helper for the BS tree structure.
-//! @tparam T - type of key
-template <typename BSKey>
-class Output
-{
-public:
-    //! @brief Destroy the Output object.
-    virtual ~Output() = default;
-
-    //! @brief Flush the output stream.
-    //! @return reference of the output stream object, which is on string based
-    std::ostringstream& output() noexcept;
-    //! @brief The pre-order traversal of the BS subtree.
-    //! @param node - root of the subtree
-    void preOrderTraversal(const Node* const node);
-    //! @brief The in-order traversal of the BS subtree.
-    //! @param node - root of the subtree
-    void inOrderTraversal(const Node* const node);
-    //! @brief The post-order traversal of the BS subtree.
-    //! @param node - root of the subtree
-    void postOrderTraversal(const Node* const node);
-    //! @brief Traverse the BS subtree.
-    //! @param node - root of the subtree
-    //! @param key - key of the node
-    //! @param direction - node type, the left is -1, the root is 0, and the right is 1
-    void traverse(const Node* const node, void* const key, const int direction);
-
-private:
-    //! @brief Output stream of the BS tree structure.
-    std::ostringstream process;
-    //! @brief Indentation size.
-    int indent{0};
-};
-
-template <typename BSKey>
-std::ostringstream& Output<BSKey>::output() noexcept
-{
-    return process;
-}
-
-template <typename BSKey>
-void Output<BSKey>::preOrderTraversal(const Node* const node)
-{
-    if (!node)
-    {
-        return;
-    }
-
-    output() << *static_cast<BSKey*>(node->key) << " ... ";
-    preOrderTraversal(node->left);
-    preOrderTraversal(node->right);
-}
-
-template <typename BSKey>
-void Output<BSKey>::inOrderTraversal(const Node* const node)
-{
-    if (!node)
-    {
-        return;
-    }
-
-    inOrderTraversal(node->left);
-    output() << *static_cast<BSKey*>(node->key) << " ... ";
-    inOrderTraversal(node->right);
-}
-
-template <typename BSKey>
-void Output<BSKey>::postOrderTraversal(const Node* const node)
-{
-    if (!node)
-    {
-        return;
-    }
-
-    postOrderTraversal(node->left);
-    postOrderTraversal(node->right);
-    output() << *static_cast<BSKey*>(node->key) << " ... ";
-}
-
-template <typename BSKey>
-void Output<BSKey>::traverse(const Node* const node, void* const key, const int direction)
-{
-    if (!node || !key)
-    {
-        return;
-    }
-
-    const int currInd = indent;
-    if (direction == 0)
-    {
-        indent = 0;
-        output() << "+ " << *static_cast<BSKey*>(node->key) << " -> root\n";
-    }
-    else
-    {
-        output() << "+ " << std::string(currInd, ' ') << *static_cast<BSKey*>(node->key) << " -> "
-                 << *static_cast<BSKey*>(key) << "'s " << ((direction == 1) ? "right" : "left") << " child\n";
-    }
-
-    indent += 2;
-    traverse(node->left, node->key, -1);
-    traverse(node->right, node->key, 1);
-    indent = currInd;
-}
 } // namespace bs
 
 //! @brief The Adelson-Velsky-Landis tree structure.
@@ -210,115 +107,11 @@ extern int getHeight(const Tree* const tree);
 extern Node* getMinimum(const Tree* const tree);
 extern Node* getMaximum(const Tree* const tree);
 
+extern void creation(Tree* const tree, const Compare cmp);
 extern Node* search(const Tree* const tree, const void* const key);
 extern void insertion(Tree* const tree, const void* const key);
 extern void deletion(Tree* const tree, const void* const key);
 extern void destruction(const Tree* const tree);
-
-//! @brief Output helper for the AVL tree structure.
-//! @tparam AVLKey - type of key
-template <typename AVLKey>
-class Output
-{
-public:
-    //! @brief Destroy the Output object.
-    virtual ~Output() = default;
-
-    //! @brief Flush the output stream.
-    //! @return reference of the output stream object, which is on string based
-    std::ostringstream& output() noexcept;
-    //! @brief The pre-order traversal of the AVL subtree.
-    //! @param node - root of the subtree
-    void preOrderTraversal(const Node* const node);
-    //! @brief The in-order traversal of the AVL subtree.
-    //! @param node - root of the subtree
-    void inOrderTraversal(const Node* const node);
-    //! @brief The post-order traversal of the AVL subtree.
-    //! @param node - root of the subtree
-    void postOrderTraversal(const Node* const node);
-    //! @brief Traverse the AVL subtree.
-    //! @param node - root of the subtree
-    //! @param key - key of the node
-    //! @param direction - node type, the left is -1, the root is 0, and the right is 1
-    void traverse(const Node* const node, void* const key, const int direction);
-
-private:
-    //! @brief Output stream of the AVL tree structure.
-    std::ostringstream process;
-    //! @brief Indentation size.
-    int indent{0};
-};
-
-template <typename AVLKey>
-std::ostringstream& Output<AVLKey>::output() noexcept
-{
-    return process;
-}
-
-template <typename AVLKey>
-void Output<AVLKey>::preOrderTraversal(const Node* const node)
-{
-    if (!node)
-    {
-        return;
-    }
-
-    output() << *static_cast<AVLKey*>(node->key) << " ... ";
-    preOrderTraversal(node->left);
-    preOrderTraversal(node->right);
-}
-
-template <typename AVLKey>
-void Output<AVLKey>::inOrderTraversal(const Node* const node)
-{
-    if (!node)
-    {
-        return;
-    }
-
-    inOrderTraversal(node->left);
-    output() << *static_cast<AVLKey*>(node->key) << " ... ";
-    inOrderTraversal(node->right);
-}
-
-template <typename AVLKey>
-void Output<AVLKey>::postOrderTraversal(const Node* const node)
-{
-    if (!node)
-    {
-        return;
-    }
-
-    postOrderTraversal(node->left);
-    postOrderTraversal(node->right);
-    output() << *static_cast<AVLKey*>(node->key) << " ... ";
-}
-
-template <typename AVLKey>
-void Output<AVLKey>::traverse(const Node* const node, void* const key, const int direction)
-{
-    if (!node || !key)
-    {
-        return;
-    }
-
-    const int currInd = indent;
-    if (direction == 0)
-    {
-        indent = 0;
-        output() << "+ " << *static_cast<AVLKey*>(node->key) << " -> root\n";
-    }
-    else
-    {
-        output() << "+ " << std::string(currInd, ' ') << *static_cast<AVLKey*>(node->key) << " -> "
-                 << *static_cast<AVLKey*>(key) << "'s " << ((direction == 1) ? "right" : "left") << " child\n";
-    }
-
-    indent += 2;
-    traverse(node->left, node->key, -1);
-    traverse(node->right, node->key, 1);
-    indent = currInd;
-}
 } // namespace avl
 
 //! @brief The splay tree structure.
@@ -359,93 +152,161 @@ extern "C"
 extern Node* getMinimum(const Tree* const tree);
 extern Node* getMaximum(const Tree* const tree);
 
+extern void creation(Tree* const tree, const Compare cmp);
 extern Node* search(const Tree* const tree, const void* const key);
 extern void splaying(Tree* const tree, const void* const key);
 extern void insertion(Tree* const tree, const void* const key);
 extern void deletion(Tree* const tree, const void* const key);
 extern void destruction(const Tree* const tree);
+} // namespace splay
 
-//! @brief Output helper for the splay tree structure.
-//! @tparam SplayKey - type of key
-template <typename SplayKey>
-class Output
+//! @brief Do traversing.
+//! @tparam Node - type of tree node
+template <typename Tree, typename Node>
+class Traverse
 {
 public:
-    //! @brief Destroy the Output object.
-    virtual ~Output() = default;
+    //! @brief Construct a new Traverse object.
+    //! @param tree - tree to be traversed
+    explicit Traverse(const Tree* const tree) : tree{tree} {}
+    //! @brief Destroy the Traverse object.
+    virtual ~Traverse() = default;
 
-    //! @brief Flush the output stream.
-    //! @return reference of the output stream object, which is on string based
-    std::ostringstream& output() noexcept;
-    //! @brief The pre-order traversal of the splay subtree.
+    //! @brief Alias for the operation when traversing.
+    using Operation = std::function<void(const void* const)>;
+    //! @brief Perform a pre-order traversal of the tree.
+    //! @param op - operation on each node
+    void preOrder(const Operation& op) const;
+    //! @brief Perform a in-order traversal of the tree.
+    //! @param op - operation on each node
+    void inOrder(const Operation& op) const;
+    //! @brief Perform a post-order traversal of the tree.
+    //! @param op - operation on each node
+    void postOrder(const Operation& op) const;
+
+private:
+    //! @brief The tree to be traversed.
+    const Tree* const tree{nullptr};
+    //! @brief Perform a pre-order traversal of the subtree.
     //! @param node - root of the subtree
-    void preOrderTraversal(const Node* const node);
-    //! @brief The in-order traversal of the splay subtree.
+    //! @param op - operation on each node
+    static void preOrderTraversal(const Node* const node, const Operation& op);
+    //! @brief Perform a in-order traversal of the subtree.
     //! @param node - root of the subtree
-    void inOrderTraversal(const Node* const node);
-    //! @brief The post-order traversal of the splay subtree.
+    //! @param op - operation on each node
+    static void inOrderTraversal(const Node* const node, const Operation& op);
+    //! @brief Perform a post-order traversal of the subtree.
     //! @param node - root of the subtree
-    void postOrderTraversal(const Node* const node);
-    //! @brief Traverse the splay subtree.
+    //! @param op - operation on each node
+    static void postOrderTraversal(const Node* const node, const Operation& op);
+};
+
+template <typename Tree, typename Node>
+void Traverse<Tree, Node>::preOrder(const Operation& op) const
+{
+    if (!tree)
+    {
+        return;
+    }
+
+    preOrderTraversal(tree->root, op);
+}
+
+template <typename Tree, typename Node>
+void Traverse<Tree, Node>::inOrder(const Operation& op) const
+{
+    if (!tree)
+    {
+        return;
+    }
+
+    inOrderTraversal(tree->root, op);
+}
+
+template <typename Tree, typename Node>
+void Traverse<Tree, Node>::postOrder(const Operation& op) const
+{
+    if (!tree)
+    {
+        return;
+    }
+
+    postOrderTraversal(tree->root, op);
+}
+
+template <typename Tree, typename Node>
+void Traverse<Tree, Node>::preOrderTraversal(const Node* const node, const Operation& op)
+{
+    if (!node)
+    {
+        return;
+    }
+
+    op(node->key);
+    preOrderTraversal(node->left, op);
+    preOrderTraversal(node->right, op);
+}
+
+template <typename Tree, typename Node>
+void Traverse<Tree, Node>::inOrderTraversal(const Node* const node, const Operation& op)
+{
+    if (!node)
+    {
+        return;
+    }
+
+    inOrderTraversal(node->left, op);
+    op(node->key);
+    inOrderTraversal(node->right, op);
+}
+
+template <typename Tree, typename Node>
+void Traverse<Tree, Node>::postOrderTraversal(const Node* const node, const Operation& op)
+{
+    if (!node)
+    {
+        return;
+    }
+
+    postOrderTraversal(node->left, op);
+    postOrderTraversal(node->right, op);
+    op(node->key);
+}
+
+//! @brief Print the tree structure.
+//! @tparam Node - type of tree node
+//! @tparam Key - type of key
+template <typename Node, typename Key>
+class Printer
+{
+public:
+    //! @brief Construct a new Printer object.
+    //! @param root - root of the tree
+    explicit Printer(const Node* const root) : root{root} {}
+    //! @brief Destroy the Printer object.
+    virtual ~Printer() = default;
+
+    //! @brief Print the node in the tree.
+    //! @param os - output stream object
     //! @param node - root of the subtree
     //! @param key - key of the node
     //! @param direction - node type, the left is -1, the root is 0, and the right is 1
-    void traverse(const Node* const node, void* const key, const int direction);
+    void printNode(std::ostream& os, const Node* const node, const void* const key, const int direction) const;
 
 private:
-    //! @brief Output stream of the splay tree structure.
-    std::ostringstream process;
+    //! @brief The root of the tree.
+    const Node* const root{nullptr};
     //! @brief Indentation size.
-    int indent{0};
+    mutable int indent{0};
+
+protected:
+    template <typename N, typename K>
+    friend std::ostream& operator<<(std::ostream&, const Printer<N, K>&);
 };
 
-template <typename SplayKey>
-std::ostringstream& Output<SplayKey>::output() noexcept
-{
-    return process;
-}
-
-template <typename SplayKey>
-void Output<SplayKey>::preOrderTraversal(const Node* const node)
-{
-    if (!node)
-    {
-        return;
-    }
-
-    output() << *static_cast<SplayKey*>(node->key) << " ... ";
-    preOrderTraversal(node->left);
-    preOrderTraversal(node->right);
-}
-
-template <typename SplayKey>
-void Output<SplayKey>::inOrderTraversal(const Node* const node)
-{
-    if (!node)
-    {
-        return;
-    }
-
-    inOrderTraversal(node->left);
-    output() << *static_cast<SplayKey*>(node->key) << " ... ";
-    inOrderTraversal(node->right);
-}
-
-template <typename SplayKey>
-void Output<SplayKey>::postOrderTraversal(const Node* const node)
-{
-    if (!node)
-    {
-        return;
-    }
-
-    postOrderTraversal(node->left);
-    postOrderTraversal(node->right);
-    output() << *static_cast<SplayKey*>(node->key) << " ... ";
-}
-
-template <typename SplayKey>
-void Output<SplayKey>::traverse(const Node* const node, void* const key, const int direction)
+template <typename Node, typename Key>
+void Printer<Node, Key>::printNode(
+    std::ostream& os, const Node* const node, const void* const key, const int direction) const
 {
     if (!node || !key)
     {
@@ -456,19 +317,35 @@ void Output<SplayKey>::traverse(const Node* const node, void* const key, const i
     if (direction == 0)
     {
         indent = 0;
-        output() << "+ " << *static_cast<SplayKey*>(node->key) << " -> root\n";
+        os << "+ " << *static_cast<const Key*>(node->key) << " -> root\n";
     }
     else
     {
-        output() << "+ " << std::string(currInd, ' ') << *static_cast<SplayKey*>(node->key) << " -> "
-                 << *static_cast<SplayKey*>(key) << "'s " << ((direction == 1) ? "right" : "left") << " child\n";
+        os << "+ " << std::string(currInd, ' ') << *static_cast<const Key*>(node->key) << " -> "
+           << *static_cast<const Key*>(key) << "'s " << ((direction == 1) ? "right" : "left") << " child\n";
     }
 
     indent += 2;
-    traverse(node->left, node->key, -1);
-    traverse(node->right, node->key, 1);
+    printNode(os, node->left, node->key, -1);
+    printNode(os, node->right, node->key, 1);
     indent = currInd;
 }
-} // namespace splay
+
+//! @brief The operator (<<) overloading of the Printer class.
+//! @tparam N - type of tree node
+//! @tparam K - type of key
+//! @param os - output stream object
+//! @param printer - specific Printer object
+//! @return reference of the output stream object
+template <typename N, typename K>
+std::ostream& operator<<(std::ostream& os, const Printer<N, K>& printer)
+{
+    if (printer.root)
+    {
+        printer.printNode(os, printer.root, printer.root->key, 0);
+    }
+
+    return os;
+}
 } // namespace tree
 } // namespace date_structure

@@ -267,6 +267,15 @@ Node* getSuccessor(const Node* x)
     return y;
 }
 
+//! @brief Create the the BS tree.
+//! @param tree - BS tree
+//! @param cmp - compare function to compare keys
+void creation(Tree* const tree, const Compare cmp)
+{
+    tree->root = nullptr;
+    tree->compare = cmp;
+}
+
 //! @brief Search the node of BS tree by key.
 //! @param tree - BS tree
 //! @param key - key of the node
@@ -640,6 +649,15 @@ Node* getMaximum(const Tree* const tree)
     return tree ? getMaximum(tree->root) : nullptr;
 }
 
+//! @brief Create the the AVL tree.
+//! @param tree - AVL tree
+//! @param cmp - compare function to compare keys
+void creation(Tree* const tree, const Compare cmp)
+{
+    tree->root = nullptr;
+    tree->compare = cmp;
+}
+
 //! @brief Search the node of AVL tree by key.
 //! @param tree - AVL tree
 //! @param key - key of the node
@@ -959,6 +977,15 @@ Node* getMinimum(const Tree* const tree)
 Node* getMaximum(const Tree* const tree)
 {
     return tree ? getMaximum(tree->root) : nullptr;
+}
+
+//! @brief Create the the splay tree.
+//! @param tree - splay tree
+//! @param cmp - compare function to compare keys
+void creation(Tree* const tree, const Compare cmp)
+{
+    tree->root = nullptr;
+    tree->compare = cmp;
 }
 
 //! @brief Search the node of splay tree by key.

@@ -31,7 +31,7 @@ static Node* createNode(const void* const value)
     }
 
     node->prev = node->next = node;
-    node->p = const_cast<void*>(value);
+    node->elem = const_cast<void*>(value);
 
     return node;
 }
@@ -83,7 +83,7 @@ static Node* getNode(const DLL head, const int index)
 //! @return success or failure
 bool create(DLL* const dll)
 {
-    return (*dll = createNode(nullptr)) != nullptr;
+    return dll ? (*dll = createNode(nullptr)) != nullptr : false;
 }
 
 //! @brief Destroy a doubly linked list.
@@ -91,7 +91,7 @@ bool create(DLL* const dll)
 //! @return success or failure
 bool destroy(DLL* const dll)
 {
-    if (!*dll)
+    if (!dll || !*dll)
     {
         return false;
     }
@@ -142,7 +142,7 @@ bool empty(const DLL head)
 void* get(const DLL head, const int index)
 {
     const Node* const node = getNode(head, index);
-    return node ? node->p : nullptr;
+    return node ? node->elem : nullptr;
 }
 
 //! @brief Get the first node of the doubly linked list.
@@ -395,10 +395,31 @@ void* pop(const Queue head)
     return p;
 }
 } // namespace queue
-
-std::ostringstream& Output::output() noexcept
-{
-    return process;
-}
 // NOLINTEND(cppcoreguidelines-owning-memory, cppcoreguidelines-pro-type-const-cast)
+
+void Traverse::order(const Operation& op) const
+{
+    if (!head || !*head)
+    {
+        return;
+    }
+
+    for (int i = 0; i < dll::size(*head); ++i)
+    {
+        op(dll::get(*head, i));
+    }
+}
+
+void Traverse::reverse(const Operation& op) const
+{
+    if (!head || !*head)
+    {
+        return;
+    }
+
+    for (int i = (dll::size(*head) - 1); i >= 0; --i)
+    {
+        op(dll::get(*head, i));
+    }
+}
 } // namespace date_structure::linear
