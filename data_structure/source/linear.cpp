@@ -409,17 +409,4 @@ void Traverse::order(const Operation& op) const
         op(dll::get(*head, i));
     }
 }
-
-void Traverse::reverse(const Operation& op) const
-{
-    if (!head || !*head)
-    {
-        return;
-    }
-
-    for (int i = (dll::size(*head) - 1); i >= 0; --i)
-    {
-        op(dll::get(*head, i));
-    }
-}
 } // namespace date_structure::linear

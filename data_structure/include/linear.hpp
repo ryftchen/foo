@@ -247,9 +247,6 @@ public:
     //! @brief Perform a order traversal starting from head.
     //! @param op - operation on each node
     void order(const Operation& op) const;
-    //! @brief Perform a reverse traversal starting from tail.
-    //! @param op - operation on each node
-    void reverse(const Operation& op) const;
 
 private:
     //! @brief The head of linear structure for traversing.
