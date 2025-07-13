@@ -29,13 +29,13 @@ static Node* getMinimum(Node* const root)
         return nullptr;
     }
 
-    Node* node = root;
-    while (node->left)
+    Node* curr = root;
+    while (curr->left)
     {
-        node = node->left;
+        curr = curr->left;
     }
 
-    return node;
+    return curr;
 }
 
 //! @brief Get the node where the maximum key is located in the BS subtree.
@@ -48,13 +48,13 @@ static Node* getMaximum(Node* const root)
         return nullptr;
     }
 
-    Node* node = root;
-    while (node->right)
+    Node* curr = root;
+    while (curr->right)
     {
-        node = node->right;
+        curr = curr->right;
     }
 
-    return node;
+    return curr;
 }
 
 //! @brief Create a node of the BS tree.
@@ -117,11 +117,11 @@ static Node* insertNode(Node* root, Node* node, const Compare cmp)
     return root;
 }
 
-//! @brief Delete the node from the BS subtree.
+//! @brief Remove the node from the BS subtree.
 //! @param root - root of the subtree
 //! @param node - target node
-//! @return root node after deleting
-static Node* deleteNode(Node* root, Node* const node)
+//! @return root node after removing
+static Node* removeNode(Node* root, Node* const node)
 {
     if (!node)
     {
@@ -325,7 +325,7 @@ void insert(BSTree* const tree, const void* const key)
     }
 }
 
-//! @brief Delete the node from the BS tree.
+//! @brief Remove the node from the BS tree.
 //! @param tree - BS tree
 //! @param key - key of the target node
 void remove(BSTree* const tree, const void* const key)
@@ -337,7 +337,7 @@ void remove(BSTree* const tree, const void* const key)
 
     if (Node* const z = search(tree, key))
     {
-        tree->root = deleteNode(tree->root, z);
+        tree->root = removeNode(tree->root, z);
     }
 }
 } // namespace bs
@@ -362,13 +362,13 @@ static Node* getMinimum(Node* const root)
         return nullptr;
     }
 
-    Node* node = root;
-    while (node->left)
+    Node* curr = root;
+    while (curr->left)
     {
-        node = node->left;
+        curr = curr->left;
     }
 
-    return node;
+    return curr;
 }
 
 //! @brief Get the node where the maximum key is located in the AVL subtree.
@@ -381,13 +381,13 @@ static Node* getMaximum(Node* const root)
         return nullptr;
     }
 
-    Node* node = root;
-    while (node->right)
+    Node* curr = root;
+    while (curr->right)
     {
-        node = node->right;
+        curr = curr->right;
     }
 
-    return node;
+    return curr;
 }
 
 //! @brief LL rotation. A single left rotation.
@@ -439,7 +439,6 @@ static Node* leftRightRotation(Node* const k3)
     {
         return nullptr;
     }
-
     k3->left = rightRightRotation(k3->left);
 
     return leftLeftRotation(k3);
@@ -454,7 +453,6 @@ static Node* rightLeftRotation(Node* const k1)
     {
         return nullptr;
     }
-
     k1->right = leftLeftRotation(k1->right);
 
     return rightRightRotation(k1);
@@ -481,12 +479,12 @@ static Node* createNode(const void* const key, Node* const left, Node* const rig
     return newNode;
 }
 
-//! @brief Delete the node from the AVL subtree.
+//! @brief Remove the node from the AVL subtree.
 //! @param root - root of the subtree
 //! @param node - target node
 //! @param cmp - compare function to compare keys
-//! @return root node after deleting
-static Node* deleteNode(Node* root, const Node* const node, const Compare cmp)
+//! @return root node after removing
+static Node* removeNode(Node* root, const Node* const node, const Compare cmp)
 {
     if (!root || !node || !cmp)
     {
@@ -495,11 +493,11 @@ static Node* deleteNode(Node* root, const Node* const node, const Compare cmp)
 
     if (cmp(node->key, root->key) < 0)
     {
-        root->left = deleteNode(root->left, node, cmp);
+        root->left = removeNode(root->left, node, cmp);
     }
     else if (cmp(node->key, root->key) > 0)
     {
-        root->right = deleteNode(root->right, node, cmp);
+        root->right = removeNode(root->right, node, cmp);
     }
     else if (root->left && root->right)
     {
@@ -507,13 +505,13 @@ static Node* deleteNode(Node* root, const Node* const node, const Compare cmp)
         {
             const Node* const max = getMaximum(root->left);
             root->key = max->key;
-            root->left = deleteNode(root->left, max, cmp);
+            root->left = removeNode(root->left, max, cmp);
         }
         else
         {
             const Node* const min = getMinimum(root->right);
             root->key = min->key;
-            root->right = deleteNode(root->right, min, cmp);
+            root->right = removeNode(root->right, min, cmp);
         }
     }
     else
@@ -624,16 +622,16 @@ static Node* insert(Node* root, const void* const key, const Compare cmp)
     return root;
 }
 
-//! @brief Delete the node from the AVL subtree.
+//! @brief Remove the node from the AVL subtree.
 //! @param root - root of the subtree
 //! @param key - key of the target node
 //! @param cmp - compare function to compare keys
-//! @return root node after deleting
+//! @return root node after removing
 static Node* remove(Node* root, const void* const key, const Compare cmp)
 {
     if (const Node* const z = search(root, key, cmp))
     {
-        root = deleteNode(root, z, cmp);
+        root = removeNode(root, z, cmp);
     }
 
     return root;
@@ -716,7 +714,7 @@ void insert(AVLTree* const tree, const void* const key)
     tree->root = insert(tree->root, key, tree->compare);
 }
 
-//! @brief Delete the node from the AVL tree.
+//! @brief Remove the node from the AVL tree.
 //! @param tree - AVL tree
 //! @param key - key of the target node
 void remove(AVLTree* const tree, const void* const key)
@@ -742,13 +740,13 @@ static Node* getMinimum(Node* const root)
         return nullptr;
     }
 
-    Node* node = root;
-    while (node->left)
+    Node* curr = root;
+    while (curr->left)
     {
-        node = node->left;
+        curr = curr->left;
     }
 
-    return node;
+    return curr;
 }
 
 //! @brief Get the node where the maximum key is located in the splay subtree.
@@ -761,13 +759,13 @@ static Node* getMaximum(Node* const root)
         return nullptr;
     }
 
-    Node* node = root;
-    while (node->right)
+    Node* curr = root;
+    while (curr->right)
     {
-        node = node->right;
+        curr = curr->right;
     }
 
-    return node;
+    return curr;
 }
 
 //! @brief Create a node of the splay tree.
@@ -959,11 +957,11 @@ static Node* insert(Node* root, const void* const key, const Compare cmp)
     return root;
 }
 
-//! @brief Delete the node from the splay subtree.
+//! @brief Remove the node from the splay subtree.
 //! @param root - root of the subtree
 //! @param key - key of the target node
 //! @param cmp - compare function to compare keys
-//! @return root node after deleting
+//! @return root node after removing
 static Node* remove(Node* root, const void* const key, const Compare cmp)
 {
     if (!root || !search(root, key, cmp))
@@ -1071,7 +1069,7 @@ void insert(SplayTree* const tree, const void* const key)
     tree->root = insert(tree->root, key, tree->compare);
 }
 
-//! @brief Delete the node from the splay tree.
+//! @brief Remove the node from the splay tree.
 //! @param tree - splay tree
 //! @param key - key of the target node
 void remove(SplayTree* const tree, const void* const key)

@@ -463,12 +463,12 @@ public:
         process << std::boolalpha;
         for (const auto& vertex : vertices)
         {
-            process << "insert vertex " << vertex << ": " << undirected::insertVertex(graph, &vertex) << '\n';
+            process << "add vertex " << vertex << ": " << undirected::addVertex(graph, &vertex) << '\n';
         }
         for (const auto& edge : edges)
         {
-            process << "insert edge " << edge[0] << '-' << edge[1] << ": "
-                    << undirected::insertEdge(graph, edge.data(), &edge[1]) << '\n';
+            process << "add edge " << edge[0] << '-' << edge[1] << ": "
+                    << undirected::addEdge(graph, edge.data(), &edge[1]) << '\n';
         }
 
         process << "DFS traversal from " << vertices[0] << ": ";
@@ -521,12 +521,12 @@ public:
         process << std::boolalpha;
         for (const auto& vertex : vertices)
         {
-            process << "insert vertex " << vertex << ": " << directed::insertVertex(graph, &vertex) << '\n';
+            process << "add vertex " << vertex << ": " << directed::addVertex(graph, &vertex) << '\n';
         }
         for (const auto& edge : edges)
         {
-            process << "insert arc " << edge[0] << '-' << edge[1] << ": "
-                    << directed::insertArc(graph, edge.data(), &edge[1]) << '\n';
+            process << "add arc " << edge[0] << '-' << edge[1] << ": " << directed::addArc(graph, edge.data(), &edge[1])
+                    << '\n';
         }
 
         process << "DFS traversal from " << vertices[0] << ": ";

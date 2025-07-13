@@ -153,8 +153,8 @@ bool insert(MaxHeap* const heap, const void* const key)
     return true;
 }
 
-//! @brief Delete the data from the max heap.
-//! @param heap - heap to delete from
+//! @brief Remove the data from the max heap.
+//! @param heap - heap to remove from
 //! @param key - key of the data
 //! @return success or failure
 bool remove(MaxHeap* const heap, const void* const key)
@@ -324,8 +324,8 @@ bool insert(MinHeap* const heap, const void* const key)
     return true;
 }
 
-//! @brief Delete the data from the min heap.
-//! @param heap - heap to delete from
+//! @brief Remove the data from the min heap.
+//! @param heap - heap to remove from
 //! @param key - key of the data
 //! @return success or failure
 bool remove(MinHeap* const heap, const void* const key)
