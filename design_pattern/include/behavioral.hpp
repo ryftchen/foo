@@ -441,7 +441,7 @@ public:
     //! @brief Set the state of originator by memento.
     //! @param memento - target memento
     void setMemento(const std::shared_ptr<Memento>& memento);
-    //! @brief Create a memento.
+    //! @brief Create the memento.
     //! @return memento
     [[nodiscard]] std::shared_ptr<Memento> createMemento() const;
 
