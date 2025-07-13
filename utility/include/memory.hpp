@@ -108,7 +108,7 @@ private:
     //! @param res - pointer of the allocated resource
     //! @param size - resource size
     inline void deallocate(T* const res, const std::size_t size = 1);
-    //! @brief Create a block.
+    //! @brief Create the block.
     inline void createBlock();
     //! @brief Calculate the padding size for the pointer of data in the element.
     //! @param data - pointer of data in the element
