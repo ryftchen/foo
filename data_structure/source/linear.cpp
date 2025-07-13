@@ -24,16 +24,16 @@ namespace dll
 //! @return new node
 static Node* createNode(const void* const value)
 {
-    Node* const node = ::new (std::nothrow) Node;
-    if (!node)
+    Node* const newNode = ::new (std::nothrow) Node;
+    if (!newNode)
     {
         return nullptr;
     }
 
-    node->prev = node->next = node;
-    node->elem = const_cast<void*>(value);
+    newNode->prev = newNode->next = newNode;
+    newNode->value = const_cast<void*>(value);
 
-    return node;
+    return newNode;
 }
 
 //! @brief Get the node of the doubly linked list by index.
@@ -42,43 +42,47 @@ static Node* createNode(const void* const value)
 //! @return node at the index
 static Node* getNode(const DLL head, const int index)
 {
-    int counter = 0;
-    Node* node = head->next;
-    while (node != head)
+    if (!head || (index < 0))
     {
-        ++counter;
-        node = node->next;
+        return nullptr;
     }
 
-    if ((index < 0) || (index >= counter))
+    Node* nNext = head->next;
+    int counter = 0;
+    while (nNext != head)
+    {
+        ++counter;
+        nNext = nNext->next;
+    }
+    if (index >= counter)
     {
         return nullptr;
     }
 
     if (index <= (counter / 2))
     {
+        nNext = head->next;
         int i = 0;
-        node = head->next;
         while ((i++) < index)
         {
-            node = node->next;
+            nNext = nNext->next;
         }
 
-        return node;
+        return nNext;
     }
 
-    int j = 0;
+    Node* pNode = head->prev;
     const int rIndex = counter - index - 1;
-    Node* rNode = head->prev;
+    int j = 0;
     while ((j++) < rIndex)
     {
-        rNode = rNode->prev;
+        pNode = pNode->prev;
     }
 
-    return rNode;
+    return pNode;
 }
 
-//! @brief Create a doubly linked list.
+//! @brief Create the doubly linked list.
 //! @param dll - doubly linked list
 //! @return success or failure
 bool create(DLL* const dll)
@@ -86,7 +90,7 @@ bool create(DLL* const dll)
     return dll ? (*dll = createNode(nullptr)) != nullptr : false;
 }
 
-//! @brief Destroy a doubly linked list.
+//! @brief Destroy the doubly linked list.
 //! @param dll - doubly linked list
 //! @return success or failure
 bool destroy(DLL* const dll)
@@ -96,11 +100,11 @@ bool destroy(DLL* const dll)
         return false;
     }
 
-    const Node *node = (*dll)->next, *temp = nullptr;
-    while (node != *dll)
+    const Node *nNode = (*dll)->next, *temp = nullptr;
+    while (nNode != *dll)
     {
-        temp = node;
-        node = node->next;
+        temp = nNode;
+        nNode = nNode->next;
         ::delete temp;
         temp = nullptr;
     }
@@ -116,12 +120,17 @@ bool destroy(DLL* const dll)
 //! @return size of the doubly linked list
 int size(const DLL head)
 {
+    if (!head)
+    {
+        return 0;
+    }
+
+    const Node* nNode = head->next;
     int counter = 0;
-    const Node* node = head->next;
-    while (node != head)
+    while (nNode != head)
     {
         ++counter;
-        node = node->next;
+        nNode = nNode->next;
     }
 
     return counter;
@@ -135,27 +144,27 @@ bool empty(const DLL head)
     return size(head) == 0;
 }
 
-//! @brief Get the node of the doubly linked list by index.
+//! @brief Get the node value of the doubly linked list by index.
 //! @param head - head of the list
 //! @param index - target index
-//! @return node of the doubly linked list
+//! @return node value
 void* get(const DLL head, const int index)
 {
-    const Node* const node = getNode(head, index);
-    return node ? node->elem : nullptr;
+    const Node* const iNode = getNode(head, index);
+    return iNode ? iNode->value : nullptr;
 }
 
-//! @brief Get the first node of the doubly linked list.
+//! @brief Get the first node value of the doubly linked list.
 //! @param head - head of the list
-//! @return first node of the doubly linked list
+//! @return first node value
 void* getFirst(const DLL head)
 {
     return get(head, 0);
 }
 
-//! @brief Get the last node of the doubly linked list.
+//! @brief Get the last node value of the doubly linked list.
 //! @param head - head of the list
-//! @return last node of the doubly linked list
+//! @return last node value
 void* getLast(const DLL head)
 {
     return get(head, size(head) - 1);
@@ -173,8 +182,8 @@ bool insert(const DLL head, const int index, const void* const value)
         return insertFirst(head, value);
     }
 
-    Node* const node = getNode(head, index);
-    if (!node)
+    Node* const iNode = getNode(head, index);
+    if (!iNode)
     {
         return false;
     }
@@ -185,10 +194,10 @@ bool insert(const DLL head, const int index, const void* const value)
         return false;
     }
 
-    newNode->prev = node->prev;
-    newNode->next = node;
-    node->prev->next = newNode;
-    node->prev = newNode;
+    newNode->prev = iNode->prev;
+    newNode->next = iNode;
+    iNode->prev->next = newNode;
+    iNode->prev = newNode;
 
     return true;
 }
@@ -199,16 +208,21 @@ bool insert(const DLL head, const int index, const void* const value)
 //! @return success or failure
 bool insertFirst(const DLL head, const void* const value)
 {
-    Node* const node = createNode(value);
-    if (!node)
+    if (!head)
     {
         return false;
     }
 
-    node->prev = head;
-    node->next = head->next;
-    head->next->prev = node;
-    head->next = node;
+    Node* const newNode = createNode(value);
+    if (!newNode)
+    {
+        return false;
+    }
+
+    newNode->prev = head;
+    newNode->next = head->next;
+    head->next->prev = newNode;
+    head->next = newNode;
 
     return true;
 }
@@ -219,16 +233,21 @@ bool insertFirst(const DLL head, const void* const value)
 //! @return success or failure
 bool insertLast(const DLL head, const void* const value)
 {
-    Node* const node = createNode(value);
-    if (!node)
+    if (!head)
     {
         return false;
     }
 
-    node->next = head;
-    node->prev = head->prev;
-    head->prev->next = node;
-    head->prev = node;
+    Node* const newNode = createNode(value);
+    if (!newNode)
+    {
+        return false;
+    }
+
+    newNode->next = head;
+    newNode->prev = head->prev;
+    head->prev->next = newNode;
+    head->prev = newNode;
 
     return true;
 }
@@ -239,16 +258,16 @@ bool insertLast(const DLL head, const void* const value)
 //! @return success or failure
 bool remove(const DLL head, const int index)
 {
-    const Node* node = getNode(head, index);
-    if (!node)
+    const Node* iNode = getNode(head, index);
+    if (!iNode)
     {
         return false;
     }
 
-    node->next->prev = node->prev;
-    node->prev->next = node->next;
-    ::delete node;
-    node = nullptr;
+    iNode->next->prev = iNode->prev;
+    iNode->prev->next = iNode->next;
+    ::delete iNode;
+    iNode = nullptr;
 
     return true;
 }
@@ -272,20 +291,20 @@ bool removeLast(const DLL head)
 
 namespace stack
 {
-//! @brief Create a stack.
-//! @param stack - stack
+//! @brief Create the stack.
+//! @param stk - stack
 //! @return success or failure
-bool create(Stack* const stack)
+bool create(Stack* const stk)
 {
-    return dll::create(stack);
+    return dll::create(stk);
 }
 
-//! @brief Destroy a stack.
-//! @param stack - stack
+//! @brief Destroy the stack.
+//! @param stk - stack
 //! @return success or failure
-bool destroy(Stack* const stack)
+bool destroy(Stack* const stk)
 {
-    return dll::destroy(stack);
+    return dll::destroy(stk);
 }
 
 //! @brief Get the size of the stack.
@@ -315,7 +334,7 @@ bool push(const Stack head, const void* const value)
 
 //! @brief Top operation of the stack.
 //! @param head - head of the stack
-//! @return target node
+//! @return node value
 void* top(const Stack head)
 {
     return dll::getFirst(head);
@@ -323,32 +342,32 @@ void* top(const Stack head)
 
 //! @brief Pop operation of the stack.
 //! @param head - head of the stack
-//! @return target node
+//! @return node value
 void* pop(const Stack head)
 {
-    void* const p = top(head);
+    void* const value = top(head);
     dll::removeFirst(head);
 
-    return p;
+    return value;
 }
 } // namespace stack
 
 namespace queue
 {
-//! @brief Create a queue.
-//! @param queue - queue
+//! @brief Create the queue.
+//! @param que - queue
 //! @return success or failure
-bool create(Queue* const queue)
+bool create(Queue* const que)
 {
-    return dll::create(queue);
+    return dll::create(que);
 }
 
-//! @brief Destroy a queue.
-//! @param queue - queue
+//! @brief Destroy the queue.
+//! @param que - queue
 //! @return success or failure
-bool destroy(Queue* const queue)
+bool destroy(Queue* const que)
 {
-    return dll::destroy(queue);
+    return dll::destroy(que);
 }
 
 //! @brief Get the size of the queue.
@@ -378,7 +397,7 @@ bool push(const Queue head, const void* const value)
 
 //! @brief Front operation of the queue.
 //! @param head - head of the queue
-//! @return target node
+//! @return node value
 void* front(const Queue head)
 {
     return dll::getFirst(head);
@@ -386,27 +405,27 @@ void* front(const Queue head)
 
 //! @brief Pop operation of the queue.
 //! @param head - head of the queue
-//! @return target node
+//! @return node value
 void* pop(const Queue head)
 {
-    void* const p = dll::getFirst(head);
+    void* const value = dll::getFirst(head);
     dll::removeFirst(head);
 
-    return p;
+    return value;
 }
 } // namespace queue
 // NOLINTEND(cppcoreguidelines-owning-memory, cppcoreguidelines-pro-type-const-cast)
 
 void Traverse::order(const Operation& op) const
 {
-    if (!head || !*head)
+    if (!linear || !*linear)
     {
         return;
     }
 
-    for (int i = 0; i < dll::size(*head); ++i)
+    for (int i = 0; i < dll::size(*linear); ++i)
     {
-        op(dll::get(*head, i));
+        op(dll::get(*linear, i));
     }
 }
 } // namespace date_structure::linear

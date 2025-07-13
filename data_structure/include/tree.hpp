@@ -59,11 +59,11 @@ extern Node* getMaximum(const BSTree* const tree);
 extern Node* getPredecessor(const Node* x);
 extern Node* getSuccessor(const Node* x);
 
-extern BSTree* creation(const Compare cmp);
-extern void destruction(const BSTree* tree);
+extern BSTree* create(const Compare cmp);
+extern void destroy(const BSTree* tree);
 extern Node* search(const BSTree* const tree, const void* const key);
-extern void insertion(BSTree* const tree, const void* const key);
-extern void deletion(BSTree* const tree, const void* const key);
+extern void insert(BSTree* const tree, const void* const key);
+extern void remove(BSTree* const tree, const void* const key);
 } // namespace bs
 
 //! @brief The Adelson-Velsky-Landis tree.
@@ -107,11 +107,11 @@ extern int getHeight(const AVLTree* const tree);
 extern Node* getMinimum(const AVLTree* const tree);
 extern Node* getMaximum(const AVLTree* const tree);
 
-extern AVLTree* creation(const Compare cmp);
-extern void destruction(const AVLTree* tree);
+extern AVLTree* create(const Compare cmp);
+extern void destroy(const AVLTree* tree);
 extern Node* search(const AVLTree* const tree, const void* const key);
-extern void insertion(AVLTree* const tree, const void* const key);
-extern void deletion(AVLTree* const tree, const void* const key);
+extern void insert(AVLTree* const tree, const void* const key);
+extern void remove(AVLTree* const tree, const void* const key);
 } // namespace avl
 
 //! @brief The splay tree.
@@ -152,12 +152,12 @@ extern "C"
 extern Node* getMinimum(const SplayTree* const tree);
 extern Node* getMaximum(const SplayTree* const tree);
 
-extern SplayTree* creation(const Compare cmp);
-extern void destruction(const SplayTree* tree);
+extern SplayTree* create(const Compare cmp);
+extern void destroy(const SplayTree* tree);
 extern Node* search(const SplayTree* const tree, const void* const key);
-extern void splaying(SplayTree* const tree, const void* const key);
-extern void insertion(SplayTree* const tree, const void* const key);
-extern void deletion(SplayTree* const tree, const void* const key);
+extern void splay(SplayTree* const tree, const void* const key);
+extern void insert(SplayTree* const tree, const void* const key);
+extern void remove(SplayTree* const tree, const void* const key);
 } // namespace splay
 
 //! @brief Do traversing.
@@ -167,7 +167,7 @@ class Traverse
 {
 public:
     //! @brief Construct a new Traverse object.
-    //! @param tree - tree to be traversed
+    //! @param tree - tree structure to be traversed
     explicit Traverse(const Tree* const tree) : tree{tree} {}
     //! @brief Destroy the Traverse object.
     virtual ~Traverse() = default;
@@ -185,7 +185,7 @@ public:
     void postOrder(const Operation& op) const;
 
 private:
-    //! @brief The tree to be traversed.
+    //! @brief The tree structure to be traversed.
     const Tree* const tree{nullptr};
     //! @brief Perform a pre-order traversal of the subtree.
     //! @param node - root of the subtree

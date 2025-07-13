@@ -6,6 +6,8 @@
 
 #include "graph.hpp"
 
+#include <cstring>
+
 namespace date_structure::graph
 {
 //! @brief Function version number.
@@ -25,7 +27,7 @@ namespace undirected
 //! @return index of the vertex if found, otherwise -1
 static int locateVertex(const AMLGraph* const graph, const void* const vert)
 {
-    if (!graph->compare)
+    if (!graph || !vert)
     {
         return -1;
     }
@@ -41,39 +43,50 @@ static int locateVertex(const AMLGraph* const graph, const void* const vert)
     return -1;
 }
 
+//! @brief Get the next edge from the given edge node at the given vertex index.
+//! @param eNode - current edge node
+//! @param index - index of the vertex
+static EdgeNode* getNextEdge(const EdgeNode* const eNode, const int index)
+{
+    if (!eNode)
+    {
+        return nullptr;
+    }
+
+    return (eNode->iVex == index) ? eNode->iLink : eNode->jLink;
+}
+
 //! @brief Remove the given edge from a vertex's adjacency list in the undirected graph.
 //! @param vNode - vertex node whose adjacency list will be modified
 //! @param index - index of the vertex
 //! @param eNode - edge node to be removed
-//! @return success or failure
-static bool removeEdgeFromList(VertexNode* const vNode, const int index, const EdgeNode* const eNode)
+static void removeEdgeFromList(VertexNode* const vNode, const int index, const EdgeNode* const eNode)
 {
+    if (!vNode || !eNode)
+    {
+        return;
+    }
+
     EdgeNode *curr = vNode->firstEdge, *prev = nullptr;
     while (curr)
     {
         if (curr != eNode)
         {
             prev = curr;
-            curr = (curr->iVex == index) ? curr->iLink : curr->jLink;
+            curr = getNextEdge(curr, index);
             continue;
         }
 
         if (!prev)
         {
-            vNode->firstEdge = (curr->iVex == index) ? curr->iLink : curr->jLink;
-        }
-        else if (prev->iVex == index)
-        {
-            prev->iLink = (curr->iVex == index) ? curr->iLink : curr->jLink;
+            vNode->firstEdge = getNextEdge(curr, index);
         }
         else
         {
-            prev->jLink = (curr->iVex == index) ? curr->iLink : curr->jLink;
+            (prev->iVex == index) ? prev->iLink = getNextEdge(curr, index) : prev->jLink = getNextEdge(curr, index);
         }
-        return true;
+        break;
     }
-
-    return false;
 }
 
 //! @brief Create the undirected graph.
@@ -81,9 +94,15 @@ static bool removeEdgeFromList(VertexNode* const vNode, const int index, const E
 //! @return new undirected graph
 AMLGraph* create(const Compare cmp)
 {
+    if (!cmp)
+    {
+        return nullptr;
+    }
+
     auto* const graph = ::new (std::nothrow) AMLGraph;
     graph->vexNum = 0;
     graph->edgeNum = 0;
+    std::memset(graph->adjMultiList, 0, sizeof(graph->adjMultiList));
     graph->compare = cmp;
 
     return graph;
@@ -120,7 +139,7 @@ void destroy(AMLGraph* graph)
 //! @return success or failure
 bool insertVertex(AMLGraph* const graph, const void* const vert)
 {
-    if (!graph || (graph->vexNum >= maxVertexNum) || (locateVertex(graph, vert) >= 0))
+    if (!graph || !vert || (graph->vexNum >= maxVertexNum) || (locateVertex(graph, vert) >= 0))
     {
         return false;
     }
@@ -139,7 +158,7 @@ bool insertVertex(AMLGraph* const graph, const void* const vert)
 //! @return success or failure
 bool insertEdge(AMLGraph* const graph, const void* const vert1, const void* const vert2)
 {
-    if (!graph)
+    if (!graph || !vert1 || !vert2)
     {
         return false;
     }
@@ -178,7 +197,7 @@ bool insertEdge(AMLGraph* const graph, const void* const vert1, const void* cons
 //! @return success or failure
 bool deleteVertex(AMLGraph* const graph, const void* const vert)
 {
-    if (!graph)
+    if (!graph || !vert)
     {
         return false;
     }
@@ -233,7 +252,7 @@ bool deleteVertex(AMLGraph* const graph, const void* const vert)
 //! @return success or failure
 bool deleteEdge(AMLGraph* const graph, const void* const vert1, const void* const vert2)
 {
-    if (!graph)
+    if (!graph || !vert1 || !vert2)
     {
         return false;
     }
@@ -271,7 +290,7 @@ bool deleteEdge(AMLGraph* const graph, const void* const vert1, const void* cons
 
 void Traverse::dfs(const void* const vert, const Operation& op) const
 {
-    if (!graph)
+    if (!graph || !vert)
     {
         return;
     }
@@ -288,7 +307,7 @@ void Traverse::dfs(const void* const vert, const Operation& op) const
 
 void Traverse::bfs(const void* const vert, const Operation& op) const
 {
-    if (!graph)
+    if (!graph || !vert)
     {
         return;
     }
@@ -335,6 +354,11 @@ void Traverse::bfs(const void* const vert, const Operation& op) const
 
 void Traverse::dfsRecursive(const int index, bool visited[], const Operation& op) const
 {
+    if (!graph || (index < 0))
+    {
+        return;
+    }
+
     visited[index] = true;
     op(graph->adjMultiList[index].data);
 
@@ -362,7 +386,7 @@ void Traverse::dfsRecursive(const int index, bool visited[], const Operation& op
 
 void Traverse::sortNeighbors(int neighbors[], const int size) const
 {
-    if (!graph->compare)
+    if (!graph)
     {
         return;
     }
@@ -389,7 +413,7 @@ namespace directed
 //! @return index of the vertex if found, otherwise -1
 static int locateVertex(const OLGraph* const graph, const void* const vert)
 {
-    if (!graph->compare)
+    if (!graph || !vert)
     {
         return -1;
     }
@@ -410,6 +434,11 @@ static int locateVertex(const OLGraph* const graph, const void* const vert)
 //! @param index - index of the vertex
 static void deleteOutgoingArcs(OLGraph* const graph, const int index)
 {
+    if (!graph || (index < 0))
+    {
+        return;
+    }
+
     const ArcNode *curr = graph->xList[index].firstOut, *del = nullptr;
     while (curr)
     {
@@ -428,6 +457,11 @@ static void deleteOutgoingArcs(OLGraph* const graph, const int index)
 //! @param index - index of the vertex
 static void deleteIncomingArcs(OLGraph* const graph, const int index)
 {
+    if (!graph || (index < 0))
+    {
+        return;
+    }
+
     for (int i = 0; i < graph->vexNum; ++i)
     {
         ArcNode *curr = graph->xList[i].firstOut, *prev = nullptr;
@@ -455,9 +489,15 @@ static void deleteIncomingArcs(OLGraph* const graph, const int index)
 //! @return new directed graph
 OLGraph* create(const Compare cmp)
 {
+    if (!cmp)
+    {
+        return nullptr;
+    }
+
     auto* const graph = ::new (std::nothrow) OLGraph;
     graph->vexNum = 0;
     graph->arcNum = 0;
+    std::memset(graph->xList, 0, sizeof(graph->xList));
     graph->compare = cmp;
 
     return graph;
@@ -497,7 +537,7 @@ void destroy(OLGraph* graph)
 //! @return success or failure
 bool insertVertex(OLGraph* const graph, const void* const vert)
 {
-    if (!graph || (graph->vexNum >= maxVertexNum) || (locateVertex(graph, vert) >= 0))
+    if (!graph || !vert || (graph->vexNum >= maxVertexNum) || (locateVertex(graph, vert) >= 0))
     {
         return false;
     }
@@ -517,7 +557,7 @@ bool insertVertex(OLGraph* const graph, const void* const vert)
 //! @return success or failure
 bool insertArc(OLGraph* const graph, const void* const vert1, const void* const vert2)
 {
-    if (!graph)
+    if (!graph || !vert1 || !vert2)
     {
         return false;
     }
@@ -555,7 +595,7 @@ bool insertArc(OLGraph* const graph, const void* const vert1, const void* const 
 //! @return success or failure
 bool deleteVertex(OLGraph* const graph, const void* const vert)
 {
-    if (!graph)
+    if (!graph || !vert)
     {
         return false;
     }
@@ -602,7 +642,7 @@ bool deleteVertex(OLGraph* const graph, const void* const vert)
 //! @return success or failure
 bool deleteArc(OLGraph* const graph, const void* const vert1, const void* const vert2)
 {
-    if (!graph)
+    if (!graph || !vert1 || !vert2)
     {
         return false;
     }
@@ -636,7 +676,7 @@ bool deleteArc(OLGraph* const graph, const void* const vert1, const void* const 
 
 void Traverse::dfs(const void* const vert, const Operation& op) const
 {
-    if (!graph)
+    if (!graph || !vert)
     {
         return;
     }
@@ -653,7 +693,7 @@ void Traverse::dfs(const void* const vert, const Operation& op) const
 
 void Traverse::bfs(const void* const vert, const Operation& op) const
 {
-    if (!graph)
+    if (!graph || !vert)
     {
         return;
     }
@@ -696,6 +736,11 @@ void Traverse::bfs(const void* const vert, const Operation& op) const
 
 void Traverse::dfsRecursive(const int index, bool visited[], const Operation& op) const
 {
+    if (!graph || (index < 0))
+    {
+        return;
+    }
+
     visited[index] = true;
     op(graph->xList[index].data);
 
@@ -719,7 +764,7 @@ void Traverse::dfsRecursive(const int index, bool visited[], const Operation& op
 
 void Traverse::sortNeighbors(int neighbors[], const int size) const
 {
-    if (!graph->compare)
+    if (!graph)
     {
         return;
     }

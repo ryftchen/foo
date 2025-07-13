@@ -80,7 +80,7 @@ class Traverse
 {
 public:
     //! @brief Construct a new Traverse object.
-    //! @param graph - graph to be traversed
+    //! @param graph - graph structure to be traversed
     explicit Traverse(const AMLGraph* const graph) : graph{graph} {}
     //! @brief Destroy the Traverse object.
     virtual ~Traverse() = default;
@@ -97,11 +97,11 @@ public:
     void bfs(const void* const vert, const Operation& op) const;
 
 private:
-    //! @brief The graph to be traversed.
+    //! @brief The graph structure to be traversed.
     const AMLGraph* const graph{nullptr};
     //! @brief Perform a depth-first search (DFS) traversal recursively.
     //! @param index - index of the starting vertex
-    //! @param visited - to track visited vertices
+    //! @param visited - track visited vertices
     //! @param op - operation on each vertex
     void dfsRecursive(const int index, bool visited[], const Operation& op) const;
     //! @brief Sort the neighbors of a vertex based on their data in ascending order.
@@ -177,7 +177,7 @@ class Traverse
 {
 public:
     //! @brief Construct a new Traverse object.
-    //! @param graph - graph to be traversed
+    //! @param graph - graph structure to be traversed
     explicit Traverse(const OLGraph* const graph) : graph{graph} {}
     //! @brief Destroy the Traverse object.
     virtual ~Traverse() = default;
@@ -194,11 +194,11 @@ public:
     void bfs(const void* const vert, const Operation& op) const;
 
 private:
-    //! @brief The graph to be traversed.
+    //! @brief The graph structure to be traversed.
     const OLGraph* const graph{nullptr};
     //! @brief Perform a depth-first search (DFS) traversal recursively.
     //! @param index - index of the starting vertex
-    //! @param visited - to track visited vertices
+    //! @param visited - track visited vertices
     //! @param op - operation on each vertex
     void dfsRecursive(const int index, bool visited[], const Operation& op) const;
     //! @brief Sort the neighbors of a vertex based on their data in ascending order.

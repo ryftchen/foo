@@ -63,18 +63,18 @@ static Node* getMaximum(Node* node)
 //! @return new node after creating
 static Node* createNode(const void* const key, Node* const parent, Node* const left, Node* const right)
 {
-    Node* const node = ::new (std::nothrow) Node;
-    if (!node)
+    Node* const newNode = ::new (std::nothrow) Node;
+    if (!newNode)
     {
         return nullptr;
     }
 
-    node->key = const_cast<void*>(key);
-    node->left = left;
-    node->right = right;
-    node->parent = parent;
+    newNode->left = left;
+    newNode->right = right;
+    newNode->parent = parent;
+    newNode->key = const_cast<void*>(key);
 
-    return node;
+    return newNode;
 }
 
 //! @brief Insert the node into the BS subtree. Allow inserting node with the same key.
@@ -164,7 +164,7 @@ static Node* deleteNode(Node* node, Node* const z)
 
 //! @brief Destroy the the BS subtree.
 //! @param node - root of the subtree
-static void destruction(const Node* node)
+static void destroy(const Node* node)
 {
     if (!node)
     {
@@ -173,11 +173,11 @@ static void destruction(const Node* node)
 
     if (node->left)
     {
-        destruction(node->left);
+        destroy(node->left);
     }
     if (node->right)
     {
-        destruction(node->right);
+        destroy(node->right);
     }
 
     ::delete node;
@@ -270,8 +270,13 @@ Node* getSuccessor(const Node* x)
 //! @brief Create the the BS tree.
 //! @param cmp - compare function to compare keys
 //! @return new BS tree
-BSTree* creation(const Compare cmp)
+BSTree* create(const Compare cmp)
 {
+    if (!cmp)
+    {
+        return nullptr;
+    }
+
     auto* const tree = ::new (std::nothrow) BSTree;
     tree->root = nullptr;
     tree->compare = cmp;
@@ -281,14 +286,14 @@ BSTree* creation(const Compare cmp)
 
 //! @brief Destroy the the BS tree.
 //! @param tree - BS tree
-void destruction(const BSTree* tree)
+void destroy(const BSTree* tree)
 {
     if (!tree)
     {
         return;
     }
 
-    destruction(tree->root);
+    destroy(tree->root);
     ::delete tree;
     tree = nullptr;
 }
@@ -305,7 +310,7 @@ Node* search(const BSTree* const tree, const void* const key)
 //! @brief Insert the node into the BS tree. Allow inserting node with the same key.
 //! @param tree - BS tree
 //! @param key - key of the target node
-void insertion(BSTree* const tree, const void* const key)
+void insert(BSTree* const tree, const void* const key)
 {
     if (!tree)
     {
@@ -321,7 +326,7 @@ void insertion(BSTree* const tree, const void* const key)
 //! @brief Delete the node from the BS tree.
 //! @param tree - BS tree
 //! @param key - key of the target node
-void deletion(BSTree* const tree, const void* const key)
+void remove(BSTree* const tree, const void* const key)
 {
     if (!tree)
     {
@@ -458,18 +463,18 @@ static Node* rightLeftRotation(Node* const k1)
 //! @return new node after creating
 static Node* createNode(const void* const key, Node* const left, Node* const right)
 {
-    Node* const node = ::new (std::nothrow) Node;
-    if (!node)
+    Node* const newNode = ::new (std::nothrow) Node;
+    if (!newNode)
     {
         return nullptr;
     }
 
-    node->key = const_cast<void*>(key);
-    node->height = 0;
-    node->left = left;
-    node->right = right;
+    newNode->left = left;
+    newNode->right = right;
+    newNode->key = const_cast<void*>(key);
+    newNode->height = 0;
 
-    return node;
+    return newNode;
 }
 
 //! @brief Delete the node from the AVL subtree.
@@ -538,7 +543,7 @@ static Node* deleteNode(Node* node, const Node* const z, const Compare cmp)
 
 //! @brief Destroy the the AVL subtree.
 //! @param node - root of the subtree
-static void destruction(const Node* node)
+static void destroy(const Node* node)
 {
     if (!node)
     {
@@ -547,11 +552,11 @@ static void destruction(const Node* node)
 
     if (node->left)
     {
-        destruction(node->left);
+        destroy(node->left);
     }
     if (node->right)
     {
-        destruction(node->right);
+        destroy(node->right);
     }
 
     ::delete node;
@@ -578,7 +583,7 @@ static Node* search(Node* const node, const void* const key, const Compare cmp)
 //! @param key - key of the target node
 //! @param cmp - compare function to compare keys
 //! @return root node after inserting
-static Node* insertion(Node* node, const void* const key, const Compare cmp)
+static Node* insert(Node* node, const void* const key, const Compare cmp)
 {
     if (!key || !cmp)
     {
@@ -595,7 +600,7 @@ static Node* insertion(Node* node, const void* const key, const Compare cmp)
     }
     else if (cmp(key, node->key) < 0)
     {
-        node->left = insertion(node->left, key, cmp);
+        node->left = insert(node->left, key, cmp);
         if ((getHeight(node->left) - getHeight(node->right)) > 1)
         {
             node = (cmp(key, node->left->key) < 0) ? leftLeftRotation(node) : leftRightRotation(node);
@@ -603,7 +608,7 @@ static Node* insertion(Node* node, const void* const key, const Compare cmp)
     }
     else if (cmp(key, node->key) > 0)
     {
-        node->right = insertion(node->right, key, cmp);
+        node->right = insert(node->right, key, cmp);
         if ((getHeight(node->left) - getHeight(node->right)) < -1)
         {
             node = (cmp(key, node->right->key) > 0) ? rightRightRotation(node) : rightLeftRotation(node);
@@ -620,7 +625,7 @@ static Node* insertion(Node* node, const void* const key, const Compare cmp)
 //! @param key - key of the target node
 //! @param cmp - compare function to compare keys
 //! @return root node after deleting
-static Node* deletion(Node* node, const void* const key, const Compare cmp)
+static Node* remove(Node* node, const void* const key, const Compare cmp)
 {
     if (const Node* const z = search(node, key, cmp))
     {
@@ -657,8 +662,13 @@ Node* getMaximum(const AVLTree* const tree)
 //! @brief Create the the AVL tree.
 //! @param cmp - compare function to compare keys
 //! @return new AVL tree
-AVLTree* creation(const Compare cmp)
+AVLTree* create(const Compare cmp)
 {
+    if (!cmp)
+    {
+        return nullptr;
+    }
+
     auto* const tree = ::new (std::nothrow) AVLTree;
     tree->root = nullptr;
     tree->compare = cmp;
@@ -668,14 +678,14 @@ AVLTree* creation(const Compare cmp)
 
 //! @brief Destroy the the AVL tree.
 //! @param tree - AVL tree
-void destruction(const AVLTree* tree)
+void destroy(const AVLTree* tree)
 {
     if (!tree)
     {
         return;
     }
 
-    destruction(tree->root);
+    destroy(tree->root);
     ::delete tree;
     tree = nullptr;
 }
@@ -692,27 +702,27 @@ Node* search(const AVLTree* const tree, const void* const key)
 //! @brief Insert the node into the AVL tree. Not allow inserting node with the same key.
 //! @param tree - AVL tree
 //! @param key - key of the target node
-void insertion(AVLTree* const tree, const void* const key)
+void insert(AVLTree* const tree, const void* const key)
 {
     if (!tree)
     {
         return;
     }
 
-    tree->root = insertion(tree->root, key, tree->compare);
+    tree->root = insert(tree->root, key, tree->compare);
 }
 
 //! @brief Delete the node from the AVL tree.
 //! @param tree - AVL tree
 //! @param key - key of the target node
-void deletion(AVLTree* const tree, const void* const key)
+void remove(AVLTree* const tree, const void* const key)
 {
     if (!tree)
     {
         return;
     }
 
-    tree->root = deletion(tree->root, key, tree->compare);
+    tree->root = remove(tree->root, key, tree->compare);
 }
 } // namespace avl
 
@@ -761,17 +771,17 @@ static Node* getMaximum(Node* node)
 //! @return new node after creating
 static Node* createNode(const void* const key, Node* const left, Node* const right)
 {
-    Node* const node = ::new (std::nothrow) Node;
-    if (!node)
+    Node* const newNode = ::new (std::nothrow) Node;
+    if (!newNode)
     {
         return nullptr;
     }
 
-    node->key = const_cast<void*>(key);
-    node->left = left;
-    node->right = right;
+    newNode->left = left;
+    newNode->right = right;
+    newNode->key = const_cast<void*>(key);
 
-    return node;
+    return newNode;
 }
 
 //! @brief Insert the node into the splay subtree. Not splay. Not allow inserting node with the same key.
@@ -826,7 +836,7 @@ static Node* insertNode(Node* node, Node* z, const Compare cmp)
 
 //! @brief Destroy the the splay subtree.
 //! @param node - root of the subtree
-static void destruction(const Node* node)
+static void destroy(const Node* node)
 {
     if (!node)
     {
@@ -835,11 +845,11 @@ static void destruction(const Node* node)
 
     if (node->left)
     {
-        destruction(node->left);
+        destroy(node->left);
     }
     if (node->right)
     {
-        destruction(node->right);
+        destroy(node->right);
     }
 
     ::delete node;
@@ -866,7 +876,7 @@ static Node* search(Node* const node, const void* const key, const Compare cmp)
 //! @param key - key of the target node
 //! @param cmp - compare function to compare keys
 //! @return root node after splaying
-static Node* splaying(Node* node, const void* const key, const Compare cmp)
+static Node* splay(Node* node, const void* const key, const Compare cmp)
 {
     if (!node || !key || !cmp)
     {
@@ -929,7 +939,7 @@ static Node* splaying(Node* node, const void* const key, const Compare cmp)
 //! @param key - key of the target node
 //! @param cmp - compare function to compare keys
 //! @return root node after inserting
-static Node* insertion(Node* node, const void* const key, const Compare cmp)
+static Node* insert(Node* node, const void* const key, const Compare cmp)
 {
     Node* const z = createNode(key, nullptr, nullptr);
     if (!z)
@@ -938,7 +948,7 @@ static Node* insertion(Node* node, const void* const key, const Compare cmp)
     }
 
     node = insertNode(node, z, cmp);
-    node = splaying(node, key, cmp);
+    node = splay(node, key, cmp);
 
     return node;
 }
@@ -948,7 +958,7 @@ static Node* insertion(Node* node, const void* const key, const Compare cmp)
 //! @param key - key of the target node
 //! @param cmp - compare function to compare keys
 //! @return root node after deleting
-static Node* deletion(Node* node, const void* const key, const Compare cmp)
+static Node* remove(Node* node, const void* const key, const Compare cmp)
 {
     if (!node || !search(node, key, cmp))
     {
@@ -956,10 +966,10 @@ static Node* deletion(Node* node, const void* const key, const Compare cmp)
     }
 
     Node* x = nullptr;
-    node = splaying(node, key, cmp);
+    node = splay(node, key, cmp);
     if (node->left)
     {
-        x = splaying(node->left, key, cmp);
+        x = splay(node->left, key, cmp);
         x->right = node->right;
     }
     else
@@ -992,8 +1002,13 @@ Node* getMaximum(const SplayTree* const tree)
 //! @brief Create the the splay tree.
 //! @param cmp - compare function to compare keys
 //! @return new splay tree
-SplayTree* creation(const Compare cmp)
+SplayTree* create(const Compare cmp)
 {
+    if (!cmp)
+    {
+        return nullptr;
+    }
+
     auto* const tree = ::new (std::nothrow) SplayTree;
     tree->root = nullptr;
     tree->compare = cmp;
@@ -1003,14 +1018,14 @@ SplayTree* creation(const Compare cmp)
 
 //! @brief Destroy the the splay tree.
 //! @param tree - splay tree
-void destruction(const SplayTree* tree)
+void destroy(const SplayTree* tree)
 {
     if (!tree)
     {
         return;
     }
 
-    destruction(tree->root);
+    destroy(tree->root);
     ::delete tree;
     tree = nullptr;
 }
@@ -1027,40 +1042,40 @@ Node* search(const SplayTree* const tree, const void* const key)
 //! @brief Splay the node in the splay tree. Make to be the root node.
 //! @param tree - splay tree
 //! @param key - key of the target node
-void splaying(SplayTree* const tree, const void* const key)
+void splay(SplayTree* const tree, const void* const key)
 {
     if (!tree)
     {
         return;
     }
 
-    tree->root = splaying(tree->root, key, tree->compare);
+    tree->root = splay(tree->root, key, tree->compare);
 }
 
 //! @brief Insert the node into the splay tree. Not allow inserting node with the same key.
 //! @param tree - splay tree
 //! @param key - key of the target node
-void insertion(SplayTree* const tree, const void* const key)
+void insert(SplayTree* const tree, const void* const key)
 {
     if (!tree)
     {
         return;
     }
 
-    tree->root = insertion(tree->root, key, tree->compare);
+    tree->root = insert(tree->root, key, tree->compare);
 }
 
 //! @brief Delete the node from the splay tree.
 //! @param tree - splay tree
 //! @param key - key of the target node
-void deletion(SplayTree* const tree, const void* const key)
+void remove(SplayTree* const tree, const void* const key)
 {
     if (!tree)
     {
         return;
     }
 
-    tree->root = deletion(tree->root, key, tree->compare);
+    tree->root = remove(tree->root, key, tree->compare);
 }
 } // namespace splay
 // NOLINTEND(cppcoreguidelines-owning-memory, cppcoreguidelines-pro-type-const-cast)
