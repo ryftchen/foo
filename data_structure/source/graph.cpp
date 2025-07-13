@@ -133,11 +133,11 @@ void destroy(AMLGraph* graph)
     graph = nullptr;
 }
 
-//! @brief Insert a vertex into the undirected graph.
-//! @param graph - graph to insert into
-//! @param vert - vert to insert
+//! @brief Add a vertex into the undirected graph.
+//! @param graph - graph to add into
+//! @param vert - vert to add
 //! @return success or failure
-bool insertVertex(AMLGraph* const graph, const void* const vert)
+bool addVertex(AMLGraph* const graph, const void* const vert)
 {
     if (!graph || !vert || (graph->vexNum >= maxVertexNum) || (locateVertex(graph, vert) >= 0))
     {
@@ -151,12 +151,12 @@ bool insertVertex(AMLGraph* const graph, const void* const vert)
     return true;
 }
 
-//! @brief Insert an edge between two vertices into the undirected graph.
-//! @param graph - graph to insert into
+//! @brief Add an edge between two vertices into the undirected graph.
+//! @param graph - graph to add into
 //! @param vert1 - vertex at the one endpoint of the edge
 //! @param vert2 - vertex at the other endpoint of the edge
 //! @return success or failure
-bool insertEdge(AMLGraph* const graph, const void* const vert1, const void* const vert2)
+bool addEdge(AMLGraph* const graph, const void* const vert1, const void* const vert2)
 {
     if (!graph || !vert1 || !vert2)
     {
@@ -531,11 +531,11 @@ void destroy(OLGraph* graph)
     graph = nullptr;
 }
 
-//! @brief Insert a vertex into the directed graph.
-//! @param graph - graph to insert into
-//! @param vert - vert to insert
+//! @brief Add a vertex into the directed graph.
+//! @param graph - graph to add into
+//! @param vert - vert to add
 //! @return success or failure
-bool insertVertex(OLGraph* const graph, const void* const vert)
+bool addVertex(OLGraph* const graph, const void* const vert)
 {
     if (!graph || !vert || (graph->vexNum >= maxVertexNum) || (locateVertex(graph, vert) >= 0))
     {
@@ -550,12 +550,12 @@ bool insertVertex(OLGraph* const graph, const void* const vert)
     return true;
 }
 
-//! @brief Insert an arc between two vertices into the directed graph.
-//! @param graph - graph to insert into
+//! @brief Add an arc between two vertices into the directed graph.
+//! @param graph - graph to add into
 //! @param vert1 - vertex at the tail (source) of the arc
 //! @param vert2 - vertex at the head (destination) of the arc
 //! @return success or failure
-bool insertArc(OLGraph* const graph, const void* const vert1, const void* const vert2)
+bool addArc(OLGraph* const graph, const void* const vert1, const void* const vert2)
 {
     if (!graph || !vert1 || !vert2)
     {

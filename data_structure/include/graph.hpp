@@ -70,8 +70,8 @@ extern "C"
 
 extern AMLGraph* create(const Compare cmp);
 extern void destroy(AMLGraph* graph);
-extern bool insertVertex(AMLGraph* const graph, const void* const vert);
-extern bool insertEdge(AMLGraph* const graph, const void* const vert1, const void* const vert2);
+extern bool addVertex(AMLGraph* const graph, const void* const vert);
+extern bool addEdge(AMLGraph* const graph, const void* const vert1, const void* const vert2);
 extern bool deleteVertex(AMLGraph* const graph, const void* const vert);
 extern bool deleteEdge(AMLGraph* const graph, const void* const vert1, const void* const vert2);
 
@@ -167,8 +167,8 @@ extern "C"
 
 extern OLGraph* create(const Compare cmp);
 extern void destroy(OLGraph* graph);
-extern bool insertVertex(OLGraph* const graph, const void* const vert);
-extern bool insertArc(OLGraph* const graph, const void* const vert1, const void* const vert2);
+extern bool addVertex(OLGraph* const graph, const void* const vert);
+extern bool addArc(OLGraph* const graph, const void* const vert1, const void* const vert2);
 extern bool deleteVertex(OLGraph* const graph, const void* const vert);
 extern bool deleteArc(OLGraph* const graph, const void* const vert1, const void* const vert2);
 
