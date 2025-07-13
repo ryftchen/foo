@@ -135,13 +135,14 @@ static constexpr std::string_view toString(const Category cat)
 
 // clang-format off
 //! @brief Mapping table for enum and attribute about command categories. X macro.
-#define COMMAND_CATEGORY_X_MACRO_MAPPING                                                    \
-    X(Category::console, "run options in console mode and exit\nseparate with quotes", "c") \
-    X(Category::dump   , "dump default configuration and exit"                       , "d") \
-    X(Category::help   , "show this help message and exit"                           , "h") \
-    X(Category::version, "show version information and exit"                         , "v")
+#define COMMAND_CATEGORY_X_MACRO_MAPPING                                \
+    X(Category::console, "c", "run options in console mode and exit\n"  \
+                              "separate with quotes"                  ) \
+    X(Category::dump   , "d", "dump default configuration and exit"   ) \
+    X(Category::help   , "h", "show this help message and exit"       ) \
+    X(Category::version, "v", "show version information and exit"     )
 // clang-format on
-consteval std::string_view Command::getDescr(const Category cat)
+consteval std::string_view Command::getAlias(const Category cat)
 {
 //! @cond
 #define X(enum, descr, alias) {descr, alias},
@@ -152,7 +153,7 @@ consteval std::string_view Command::getDescr(const Category cat)
 #undef X
 }
 
-consteval std::string_view Command::getAlias(const Category cat)
+consteval std::string_view Command::getDescr(const Category cat)
 {
 //! @cond
 #define X(enum, descr, alias) {descr, alias},
@@ -270,7 +271,7 @@ void Command::setupSubCLI<reg_algo::ApplyAlgorithm>() // NOLINT(readability-func
 {
     using Intf = ExtraManager::Intf;
     using Attr = ExtraManager::Attr;
-    using action::name, action::descr, action::alias;
+    using action::name, action::alias, action::descr;
     constexpr std::string_view helpDescr = getDescr(Category::help), optMetavar = "OPT";
     const std::string helpArg1 = shortPrefix + std::string{getAlias(Category::help)},
                       helpArg2 = longPrefix + std::string{toString(Category::help)};
@@ -376,7 +377,7 @@ void Command::setupSubCLI<reg_dp::ApplyDesignPattern>()
 {
     using Intf = ExtraManager::Intf;
     using Attr = ExtraManager::Attr;
-    using action::name, action::descr, action::alias;
+    using action::name, action::alias, action::descr;
     constexpr std::string_view helpDescr = getDescr(Category::help), optMetavar = "OPT";
     const std::string helpArg1 = shortPrefix + std::string{getAlias(Category::help)},
                       helpArg2 = longPrefix + std::string{toString(Category::help)};
@@ -450,7 +451,7 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>() // NOLINT(readability-fu
 {
     using Intf = ExtraManager::Intf;
     using Attr = ExtraManager::Attr;
-    using action::name, action::descr, action::alias;
+    using action::name, action::alias, action::descr;
     constexpr std::string_view helpDescr = getDescr(Category::help), optMetavar = "OPT";
     const std::string helpArg1 = shortPrefix + std::string{getAlias(Category::help)},
                       helpArg2 = longPrefix + std::string{toString(Category::help)};
@@ -572,7 +573,7 @@ void Command::setupSubCLI<reg_num::ApplyNumeric>()
 {
     using Intf = ExtraManager::Intf;
     using Attr = ExtraManager::Attr;
-    using action::name, action::descr, action::alias;
+    using action::name, action::alias, action::descr;
     constexpr std::string_view helpDescr = getDescr(Category::help), optMetavar = "OPT";
     const std::string helpArg1 = shortPrefix + std::string{getAlias(Category::help)},
                       helpArg2 = longPrefix + std::string{toString(Category::help)};
