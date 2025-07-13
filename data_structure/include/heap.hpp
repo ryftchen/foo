@@ -44,10 +44,10 @@ extern "C"
 }
 #endif // __cplusplus
 
-extern MaxHeap* creation(const int cap, const Compare cmp);
-extern void destruction(const MaxHeap* heap);
-extern bool insertion(MaxHeap* const heap, const void* const key);
-extern bool deletion(MaxHeap* const heap, const void* const key);
+extern MaxHeap* create(const int cap, const Compare cmp);
+extern void destroy(const MaxHeap* heap);
+extern bool insert(MaxHeap* const heap, const void* const key);
+extern bool remove(MaxHeap* const heap, const void* const key);
 
 //! @brief Do traversing.
 class Traverse
@@ -99,17 +99,17 @@ extern "C"
 }
 #endif // __cplusplus
 
-extern MinHeap* creation(const int cap, const Compare cmp);
-extern void destruction(const MinHeap* heap);
-extern bool insertion(MinHeap* const heap, const void* const key);
-extern bool deletion(MinHeap* const heap, const void* const key);
+extern MinHeap* create(const int cap, const Compare cmp);
+extern void destroy(const MinHeap* heap);
+extern bool insert(MinHeap* const heap, const void* const key);
+extern bool remove(MinHeap* const heap, const void* const key);
 
 //! @brief Do traversing.
 class Traverse
 {
 public:
     //! @brief Construct a new Traverse object.
-    //! @param heap - heap to be traversed
+    //! @param heap - heap structure to be traversed
     explicit Traverse(const MinHeap* const heap) : heap{heap} {}
     //! @brief Destroy the Traverse object.
     virtual ~Traverse() = default;
@@ -121,7 +121,7 @@ public:
     void order(const Operation& op) const;
 
 private:
-    //! @brief The heap to be traversed.
+    //! @brief The heap structure to be traversed.
     const MinHeap* const heap{nullptr};
 };
 } // namespace min

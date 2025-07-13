@@ -444,12 +444,13 @@ public:
     //! @brief Destroy the Showcase object.
     virtual ~Showcase() = default;
 
-    // NOLINTBEGIN(google-build-using-namespace, readability-magic-numbers)
+    // NOLINTBEGIN(readability-magic-numbers)
     //! @brief Undirected.
     //! @return procedure output
     static std::ostringstream undirected()
     {
-        using namespace date_structure::graph::undirected;
+        namespace undirected = date_structure::graph::undirected;
+        using undirected::Traverse;
         constexpr std::array<Data, 7> vertices = {'A', 'B', 'C', 'D', 'E', 'F', 'G'};
         constexpr std::array<std::array<Data, 2>, 7> edges = {
             {{{'A', 'C'}}, {{'A', 'D'}}, {{'A', 'F'}}, {{'B', 'C'}}, {{'C', 'D'}}, {{'E', 'G'}}, {{'F', 'G'}}}};
@@ -457,17 +458,17 @@ public:
         const auto opInTraversal = [&process](const void* const data)
         { process << *static_cast<const Data*>(data) << ' '; };
 
-        AMLGraph* const graph = create(&compareData);
+        undirected::AMLGraph* const graph = undirected::create(&compareData);
         const auto traverse = Traverse(graph);
         process << std::boolalpha;
         for (const auto& vertex : vertices)
         {
-            process << "insert vertex " << vertex << ": " << insertVertex(graph, &vertex) << '\n';
+            process << "insert vertex " << vertex << ": " << undirected::insertVertex(graph, &vertex) << '\n';
         }
         for (const auto& edge : edges)
         {
-            process << "insert edge " << edge[0] << '-' << edge[1] << ": " << insertEdge(graph, edge.data(), &edge[1])
-                    << '\n';
+            process << "insert edge " << edge[0] << '-' << edge[1] << ": "
+                    << undirected::insertEdge(graph, edge.data(), &edge[1]) << '\n';
         }
 
         process << "DFS traversal from " << vertices[0] << ": ";
@@ -476,8 +477,8 @@ public:
         traverse.bfs(vertices.data(), opInTraversal);
 
         process << "\ndelete edge " << edges[1][0] << '-' << edges[1][1] << ": "
-                << deleteEdge(graph, edges[1].data(), &edges[1][1]) << '\n';
-        process << "delete vertex " << vertices[0] << ": " << deleteVertex(graph, vertices.data()) << '\n';
+                << undirected::deleteEdge(graph, edges[1].data(), &edges[1][1]) << '\n';
+        process << "delete vertex " << vertices[0] << ": " << undirected::deleteVertex(graph, vertices.data()) << '\n';
 
         process << "DFS traversal from " << vertices[1] << ": ";
         traverse.dfs(&vertices[1], opInTraversal);
@@ -489,7 +490,7 @@ public:
         process << "\nBFS traversal from " << vertices[5] << ": ";
         traverse.bfs(&vertices[5], opInTraversal);
         process << '\n';
-        destroy(graph);
+        undirected::destroy(graph);
 
         return std::ostringstream{process.str()};
     }
@@ -498,7 +499,8 @@ public:
     //! @return procedure output
     static std::ostringstream directed()
     {
-        using namespace date_structure::graph::directed;
+        namespace directed = date_structure::graph::directed;
+        using directed::Traverse;
         constexpr std::array<Data, 7> vertices = {'A', 'B', 'C', 'D', 'E', 'F', 'G'};
         constexpr std::array<std::array<Data, 2>, 9> edges = {
             {{{'A', 'B'}},
@@ -514,17 +516,17 @@ public:
         const auto opInTraversal = [&process](const void* const data)
         { process << *static_cast<const Data*>(data) << ' '; };
 
-        OLGraph* const graph = create(&compareData);
+        directed::OLGraph* const graph = directed::create(&compareData);
         const auto traverse = Traverse(graph);
         process << std::boolalpha;
         for (const auto& vertex : vertices)
         {
-            process << "insert vertex " << vertex << ": " << insertVertex(graph, &vertex) << '\n';
+            process << "insert vertex " << vertex << ": " << directed::insertVertex(graph, &vertex) << '\n';
         }
         for (const auto& edge : edges)
         {
-            process << "insert arc " << edge[0] << '-' << edge[1] << ": " << insertArc(graph, edge.data(), &edge[1])
-                    << '\n';
+            process << "insert arc " << edge[0] << '-' << edge[1] << ": "
+                    << directed::insertArc(graph, edge.data(), &edge[1]) << '\n';
         }
 
         process << "DFS traversal from " << vertices[0] << ": ";
@@ -533,8 +535,8 @@ public:
         traverse.bfs(vertices.data(), opInTraversal);
 
         process << "\ndelete arc " << edges[6][0] << '-' << edges[6][1] << ": "
-                << deleteArc(graph, edges[6].data(), &edges[6][1]) << '\n';
-        process << "delete vertex " << vertices[1] << ": " << deleteVertex(graph, &vertices[1]) << '\n';
+                << directed::deleteArc(graph, edges[6].data(), &edges[6][1]) << '\n';
+        process << "delete vertex " << vertices[1] << ": " << directed::deleteVertex(graph, &vertices[1]) << '\n';
 
         process << "DFS traversal from " << vertices[0] << ": ";
         traverse.dfs(vertices.data(), opInTraversal);
@@ -551,11 +553,11 @@ public:
         process << "\nBFS traversal from " << vertices[5] << ": ";
         traverse.bfs(&vertices[5], opInTraversal);
         process << '\n';
-        destroy(graph);
+        directed::destroy(graph);
 
         return std::ostringstream{process.str()};
     }
-    // NOLINTEND(google-build-using-namespace, readability-magic-numbers)
+    // NOLINTEND(readability-magic-numbers)
 };
 
 //! @brief Structure of graph.
@@ -598,40 +600,41 @@ public:
     //! @brief Destroy the Showcase object.
     virtual ~Showcase() = default;
 
-    // NOLINTBEGIN(google-build-using-namespace)
     //! @brief Max.
     //! @return procedure output
     static std::ostringstream max()
     {
-        using namespace date_structure::heap::max;
-        using date_structure::heap::max::Traverse;
+        namespace max = date_structure::heap::max;
         constexpr std::array<Key, 9> keys = {10, 40, 30, 60, 90, 70, 20, 50, 80};
         constexpr int capacity = 30;
         std::ostringstream process{};
         const auto opInTraversal = [&process](const void* const key)
         { process << *static_cast<const Key*>(key) << " ... "; };
 
-        MaxHeap* const heap = creation(capacity, &compareData);
-        const auto traverse = Traverse(heap);
+        max::MaxHeap* const heap = max::create(capacity, &compareData);
+        const auto traverse = max::Traverse(heap);
         process << std::boolalpha;
+        process << "insert ";
         for (const auto& key : keys)
         {
-            process << "insert " << key << ": " << insertion(heap, &key) << '\n';
+            process << key << ", ";
+            max::insert(heap, &key);
         }
+        process.seekp(process.str().length() - 2);
+        process << "\ntraversal: ";
+        traverse.order(opInTraversal);
+
+        constexpr Key insertKey = 85;
+        process << "\ninsert " << insertKey << ": " << max::insert(heap, &insertKey) << '\n';
         process << "traversal: ";
         traverse.order(opInTraversal);
 
-        constexpr Key insertedKey = 85;
-        process << "\ninsert " << insertedKey << ": " << insertion(heap, &insertedKey) << '\n';
-        process << "traversal: ";
-        traverse.order(opInTraversal);
-
-        constexpr Key removedKey = 90;
-        process << "\nremove " << removedKey << ": " << deletion(heap, &removedKey) << '\n';
+        constexpr Key removeKey = 90;
+        process << "\nremove " << removeKey << ": " << max::remove(heap, &removeKey) << '\n';
         process << "traversal: ";
         traverse.order(opInTraversal);
         process << '\n';
-        destruction(heap);
+        max::destroy(heap);
 
         return std::ostringstream{process.str()};
     }
@@ -640,39 +643,40 @@ public:
     //! @return procedure output
     static std::ostringstream min()
     {
-        using namespace date_structure::heap::min;
-        using date_structure::heap::min::Traverse;
+        namespace min = date_structure::heap::min;
         constexpr std::array<Key, 9> keys = {80, 40, 30, 60, 90, 70, 10, 50, 20};
         constexpr int capacity = 30;
         std::ostringstream process{};
         const auto opInTraversal = [&process](const void* const key)
         { process << *static_cast<const Key*>(key) << " ... "; };
 
-        MinHeap* const heap = creation(capacity, &compareData);
-        const auto traverse = Traverse(heap);
+        min::MinHeap* const heap = min::create(capacity, &compareData);
+        const auto traverse = min::Traverse(heap);
         process << std::boolalpha;
+        process << "insert ";
         for (const auto& key : keys)
         {
-            process << "insert " << key << ": " << insertion(heap, &key) << '\n';
+            process << key << ", ";
+            min::insert(heap, &key);
         }
+        process.seekp(process.str().length() - 2);
+        process << "\ntraversal: ";
+        traverse.order(opInTraversal);
+
+        constexpr Key insertKey = 15;
+        process << "\ninsert " << insertKey << ": " << min::insert(heap, &insertKey) << '\n';
         process << "traversal: ";
         traverse.order(opInTraversal);
 
-        constexpr Key insertedKey = 15;
-        process << "\ninsert " << insertedKey << ": " << insertion(heap, &insertedKey) << '\n';
-        process << "traversal: ";
-        traverse.order(opInTraversal);
-
-        constexpr Key removedKey = 10;
-        process << "\nremove " << removedKey << ": " << deletion(heap, &removedKey) << '\n';
+        constexpr Key removeKey = 10;
+        process << "\nremove " << removeKey << ": " << min::remove(heap, &removeKey) << '\n';
         process << "traversal: ";
         traverse.order(opInTraversal);
         process << '\n';
-        destruction(heap);
+        min::destroy(heap);
 
         return std::ostringstream{process.str()};
     }
-    // NOLINTEND(google-build-using-namespace)
 };
 
 //! @brief Structure of heap.
@@ -696,8 +700,8 @@ namespace linear
 //! @brief The version used to apply.
 const char* const version = date_structure::linear::version();
 
-//! @brief Alias for the element.
-using Elem = std::int16_t;
+//! @brief Alias for the value.
+using Value = std::int16_t;
 
 //! @brief Showcase for linear instances.
 class Showcase
@@ -706,42 +710,41 @@ public:
     //! @brief Destroy the Showcase object.
     virtual ~Showcase() = default;
 
-    // NOLINTBEGIN(google-build-using-namespace)
     //! @brief Doubly linked list.
     //! @return procedure output
     static std::ostringstream dll()
     {
-        using namespace date_structure::linear::dll;
+        namespace dll = date_structure::linear::dll;
         using date_structure::linear::Traverse;
-        using Printer = Printer<Elem>;
-        constexpr std::array<Elem, 4> elems = {'a', 'b', 'c', 'd'};
+        using Printer = dll::Printer<Value>;
+        constexpr std::array<Value, 4> values = {'a', 'b', 'c', 'd'};
         std::ostringstream process{};
 
-        DLL dll{};
-        create(&dll);
+        dll::DLL linear{};
+        dll::create(&linear);
         process << std::boolalpha;
-        for (const auto& elem : elems)
+        for (const auto& value : values)
         {
-            process << "insert (0) " << elem << ": " << insert(dll, 0, &elem) << '\n';
+            process << "insert (0) " << value << ": " << dll::insert(linear, 0, &value) << '\n';
         }
         process << "traversal: ";
-        Traverse(&dll).order([&process](const void* const elem)
-                             { process << *static_cast<const Elem*>(elem) << " ... "; });
+        Traverse(&linear).order([&process](const void* const value)
+                                { process << *static_cast<const Value*>(value) << " ... "; });
 
-        process << "\nremove (1): " << remove(dll, 1) << '\n';
-        process << "insert (2) " << elems[2] << ": " << insert(dll, 2, &elems[2]) << '\n';
+        process << "\nremove (1): " << dll::remove(linear, 1) << '\n';
+        process << "insert (2) " << values[2] << ": " << dll::insert(linear, 2, &values[2]) << '\n';
 
-        process << "insert first " << elems[0] << ": " << insertFirst(dll, elems.data()) << '\n';
-        process << "insert last " << elems[3] << ": " << insertLast(dll, &elems[3]) << '\n';
-        process << "get first: " << *static_cast<Elem*>(getFirst(dll)) << '\n';
-        process << "get last: " << *static_cast<Elem*>(getLast(dll)) << '\n';
-        process << "remove first: " << removeFirst(dll) << '\n';
-        process << "remove last: " << removeLast(dll) << '\n';
+        process << "insert first " << values[0] << ": " << dll::insertFirst(linear, values.data()) << '\n';
+        process << "insert last " << values[3] << ": " << dll::insertLast(linear, &values[3]) << '\n';
+        process << "get first: " << *static_cast<Value*>(dll::getFirst(linear)) << '\n';
+        process << "get last: " << *static_cast<Value*>(dll::getLast(linear)) << '\n';
+        process << "remove first: " << dll::removeFirst(linear) << '\n';
+        process << "remove last: " << dll::removeLast(linear) << '\n';
 
-        process << "whether it is empty: " << empty(dll) << '\n';
-        process << "size: " << size(dll) << '\n';
-        process << "all details: " << Printer(&dll) << '\n';
-        destroy(&dll);
+        process << "whether it is empty: " << dll::empty(linear) << '\n';
+        process << "size: " << dll::size(linear) << '\n';
+        process << "all details: " << Printer(&linear) << '\n';
+        dll::destroy(&linear);
 
         return std::ostringstream{process.str()};
     }
@@ -749,31 +752,31 @@ public:
     //! @return procedure output
     static std::ostringstream stack()
     {
-        using namespace date_structure::linear::stack;
+        namespace stack = date_structure::linear::stack;
         using date_structure::linear::Traverse;
-        using Printer = Printer<Elem>;
-        constexpr std::array<Elem, 4> elems = {'a', 'b', 'c', 'd'};
+        using Printer = stack::Printer<Value>;
+        constexpr std::array<Value, 4> values = {'a', 'b', 'c', 'd'};
         std::ostringstream process{};
 
-        Stack stk{};
-        create(&stk);
+        stack::Stack linear{};
+        stack::create(&linear);
         process << std::boolalpha;
-        for (const auto& elem : elems)
+        for (const auto& value : values)
         {
-            process << "push " << elem << ": " << push(stk, &elem) << '\n';
+            process << "push " << value << ": " << stack::push(linear, &value) << '\n';
         }
         process << "traversal: ";
-        Traverse(&stk).order([&process](const void* const elem)
-                             { process << *static_cast<const Elem*>(elem) << " ... "; });
+        Traverse(&linear).order([&process](const void* const value)
+                                { process << *static_cast<const Value*>(value) << " ... "; });
 
-        process << "\npop: " << *static_cast<Elem*>(pop(stk)) << '\n';
-        process << "top: " << *static_cast<Elem*>(top(stk)) << '\n';
-        process << "push " << elems[3] << ": " << push(stk, &elems[3]) << '\n';
+        process << "\npop: " << *static_cast<Value*>(stack::pop(linear)) << '\n';
+        process << "top: " << *static_cast<Value*>(stack::top(linear)) << '\n';
+        process << "push " << values[3] << ": " << stack::push(linear, &values[3]) << '\n';
 
-        process << "whether it is empty: " << empty(stk) << '\n';
-        process << "size: " << size(stk) << '\n';
-        process << "all details: " << Printer(&stk) << '\n';
-        destroy(&stk);
+        process << "whether it is empty: " << stack::empty(linear) << '\n';
+        process << "size: " << stack::size(linear) << '\n';
+        process << "all details: " << Printer(&linear) << '\n';
+        stack::destroy(&linear);
 
         return std::ostringstream{process.str()};
     }
@@ -781,35 +784,34 @@ public:
     //! @return procedure output
     static std::ostringstream queue()
     {
-        using namespace date_structure::linear::queue;
+        namespace queue = date_structure::linear::queue;
         using date_structure::linear::Traverse;
-        using Printer = Printer<Elem>;
-        constexpr std::array<Elem, 4> elems = {'a', 'b', 'c', 'd'};
+        using Printer = queue::Printer<Value>;
+        constexpr std::array<Value, 4> values = {'a', 'b', 'c', 'd'};
         std::ostringstream process{};
 
-        Queue que{};
-        create(&que);
+        queue::Queue linear{};
+        queue::create(&linear);
         process << std::boolalpha;
-        for (const auto& elem : elems)
+        for (const auto& value : values)
         {
-            process << "push " << elem << ": " << push(que, &elem) << '\n';
+            process << "push " << value << ": " << queue::push(linear, &value) << '\n';
         }
         process << "traversal: ";
-        Traverse(&que).order([&process](const void* const elem)
-                             { process << *static_cast<const Elem*>(elem) << " ... "; });
+        Traverse(&linear).order([&process](const void* const value)
+                                { process << *static_cast<const Value*>(value) << " ... "; });
 
-        process << "\npop: " << *static_cast<Elem*>(pop(que)) << '\n';
-        process << "front: " << *static_cast<Elem*>(front(que)) << '\n';
-        process << "push " << elems[0] << ": " << push(que, elems.data()) << '\n';
+        process << "\npop: " << *static_cast<Value*>(queue::pop(linear)) << '\n';
+        process << "front: " << *static_cast<Value*>(queue::front(linear)) << '\n';
+        process << "push " << values[0] << ": " << queue::push(linear, values.data()) << '\n';
 
-        process << "whether it is empty: " << empty(que) << '\n';
-        process << "size: " << size(que) << '\n';
-        process << "all details: " << Printer(&que) << '\n';
-        destroy(&que);
+        process << "whether it is empty: " << queue::empty(linear) << '\n';
+        process << "size: " << queue::size(linear) << '\n';
+        process << "all details: " << Printer(&linear) << '\n';
+        queue::destroy(&linear);
 
         return std::ostringstream{process.str()};
     }
-    // NOLINTEND(google-build-using-namespace)
 };
 
 //! @brief Structure of linear.
@@ -854,27 +856,26 @@ public:
     //! @brief Destroy the Showcase object.
     virtual ~Showcase() = default;
 
-    // NOLINTBEGIN(google-build-using-namespace)
     //! @brief Binary search.
     //! @return procedure output
     static std::ostringstream bs()
     {
-        using namespace date_structure::tree::bs;
-        using Traverse = date_structure::tree::Traverse<BSTree, Node>;
-        using Printer = date_structure::tree::Printer<Node, Key>;
+        namespace bs = date_structure::tree::bs;
+        using Traverse = date_structure::tree::Traverse<bs::BSTree, bs::Node>;
+        using Printer = date_structure::tree::Printer<bs::Node, Key>;
         constexpr std::array<Key, 6> keys = {1, 5, 4, 3, 2, 6};
         std::ostringstream process{};
         const auto opInTraversal = [&process](const void* const key)
         { process << *static_cast<const Key*>(key) << " ... "; };
 
-        BSTree* const tree = creation(&compareKey);
+        bs::BSTree* const tree = bs::create(&compareKey);
         const auto traverse = Traverse(tree);
         process << std::boolalpha;
-        process << "insertion ";
+        process << "insert ";
         for (const auto& key : keys)
         {
             process << key << ", ";
-            insertion(tree, &key);
+            bs::insert(tree, &key);
         }
         process.seekp(process.str().length() - 2);
 
@@ -885,23 +886,24 @@ public:
         process << "\npost-order traversal: ";
         traverse.postOrder(opInTraversal);
 
-        process << "\nminimum: " << *static_cast<Key*>(getMinimum(tree)->key) << '\n';
-        process << "maximum: " << *static_cast<Key*>(getMaximum(tree)->key) << '\n';
+        process << "\nminimum: " << *static_cast<Key*>(bs::getMinimum(tree)->key) << '\n';
+        process << "maximum: " << *static_cast<Key*>(bs::getMaximum(tree)->key) << '\n';
         process << "all details:\n" << Printer(tree->root);
 
         constexpr Key searchKey = 3;
-        const auto* const searchNode = search(tree, &searchKey);
+        const auto* const searchNode = bs::search(tree, &searchKey);
         process << "search " << searchKey << ": " << static_cast<bool>(searchNode) << '\n';
-        process << "predecessor of " << searchKey << ": " << *static_cast<Key*>(getPredecessor(searchNode)->key)
+        process << "predecessor of " << searchKey << ": " << *static_cast<Key*>(bs::getPredecessor(searchNode)->key)
                 << '\n';
-        process << "successor of " << searchKey << ": " << *static_cast<Key*>(getSuccessor(searchNode)->key) << '\n';
-        process << "deletion " << searchKey << '\n';
-        deletion(tree, &searchKey);
+        process << "successor of " << searchKey << ": " << *static_cast<Key*>(bs::getSuccessor(searchNode)->key)
+                << '\n';
+        process << "remove " << searchKey << '\n';
+        bs::remove(tree, &searchKey);
 
         process << "in-order traversal: ";
         traverse.inOrder(opInTraversal);
         process << "\nall details:\n" << Printer(tree->root);
-        destruction(tree);
+        bs::destroy(tree);
 
         return std::ostringstream{process.str()};
     }
@@ -909,23 +911,23 @@ public:
     //! @return procedure output
     static std::ostringstream avl()
     {
-        using namespace date_structure::tree::avl;
-        using Traverse = date_structure::tree::Traverse<AVLTree, Node>;
-        using Printer = date_structure::tree::Printer<Node, Key>;
+        namespace avl = date_structure::tree::avl;
+        using Traverse = date_structure::tree::Traverse<avl::AVLTree, avl::Node>;
+        using Printer = date_structure::tree::Printer<avl::Node, Key>;
         constexpr std::array<Key, 16> keys = {3, 2, 1, 4, 5, 6, 7, 16, 15, 14, 13, 12, 11, 10, 8, 9};
         std::ostringstream process{};
         const auto opInTraversal = [&process](const void* const key)
         { process << *static_cast<const Key*>(key) << " ... "; };
 
-        AVLTree* const tree = creation(&compareKey);
+        avl::AVLTree* const tree = avl::create(&compareKey);
         const auto traverse = Traverse(tree);
         process << std::boolalpha;
-        process << "height: " << getHeight(tree) << '\n';
-        process << "insertion ";
+        process << "height: " << avl::getHeight(tree) << '\n';
+        process << "insert ";
         for (const auto& key : keys)
         {
             process << key << ", ";
-            insertion(tree, &key);
+            avl::insert(tree, &key);
         }
         process.seekp(process.str().length() - 2);
 
@@ -936,21 +938,21 @@ public:
         process << "\npost-order traversal: ";
         traverse.postOrder(opInTraversal);
 
-        process << "\nheight: " << getHeight(tree) << '\n';
-        process << "minimum: " << *static_cast<Key*>(getMinimum(tree)->key) << '\n';
-        process << "maximum: " << *static_cast<Key*>(getMaximum(tree)->key) << '\n';
+        process << "\nheight: " << avl::getHeight(tree) << '\n';
+        process << "minimum: " << *static_cast<Key*>(avl::getMinimum(tree)->key) << '\n';
+        process << "maximum: " << *static_cast<Key*>(avl::getMaximum(tree)->key) << '\n';
         process << "all details:\n" << Printer(tree->root);
         constexpr Key searchKey = 13;
-        const auto* const searchNode = search(tree, &searchKey);
+        const auto* const searchNode = avl::search(tree, &searchKey);
         process << "search " << searchKey << ": " << static_cast<bool>(searchNode) << '\n';
-        process << "deletion " << searchKey << '\n';
-        deletion(tree, &searchKey);
+        process << "remove " << searchKey << '\n';
+        avl::remove(tree, &searchKey);
 
-        process << "height: " << getHeight(tree) << '\n';
+        process << "height: " << avl::getHeight(tree) << '\n';
         process << "in-order traversal: ";
         traverse.inOrder(opInTraversal);
         process << "\nall details:\n" << Printer(tree->root);
-        destruction(tree);
+        avl::destroy(tree);
 
         return std::ostringstream{process.str()};
     }
@@ -958,22 +960,22 @@ public:
     //! @return procedure output
     static std::ostringstream splay()
     {
-        using namespace date_structure::tree::splay;
-        using Traverse = date_structure::tree::Traverse<SplayTree, Node>;
-        using Printer = date_structure::tree::Printer<Node, Key>;
+        namespace splay = date_structure::tree::splay;
+        using Traverse = date_structure::tree::Traverse<splay::SplayTree, splay::Node>;
+        using Printer = date_structure::tree::Printer<splay::Node, Key>;
         constexpr std::array<Key, 7> keys = {10, 50, 40, 70, 30, 20, 60};
         std::ostringstream process{};
         const auto opInTraversal = [&process](const void* const key)
         { process << *static_cast<const Key*>(key) << " ... "; };
 
-        SplayTree* const tree = creation(&compareKey);
+        splay::SplayTree* const tree = splay::create(&compareKey);
         const auto traverse = Traverse(tree);
         process << std::boolalpha;
-        process << "insertion ";
+        process << "insert ";
         for (const auto& key : keys)
         {
             process << key << ", ";
-            insertion(tree, &key);
+            splay::insert(tree, &key);
         }
         process.seekp(process.str().length() - 2);
 
@@ -984,30 +986,29 @@ public:
         process << "\npost-order traversal: ";
         traverse.postOrder(opInTraversal);
 
-        process << "\nminimum: " << *static_cast<Key*>(getMinimum(tree)->key) << '\n';
-        process << "maximum: " << *static_cast<Key*>(getMaximum(tree)->key) << '\n';
+        process << "\nminimum: " << *static_cast<Key*>(splay::getMinimum(tree)->key) << '\n';
+        process << "maximum: " << *static_cast<Key*>(splay::getMaximum(tree)->key) << '\n';
         process << "all details:\n" << Printer(tree->root);
 
         constexpr Key searchKey = 70;
-        const auto* const searchNode = search(tree, &searchKey);
+        const auto* const searchNode = splay::search(tree, &searchKey);
         process << "search " << searchKey << ": " << static_cast<bool>(searchNode) << '\n';
-        process << "deletion " << searchKey << '\n';
-        deletion(tree, &searchKey);
+        process << "remove " << searchKey << '\n';
+        splay::remove(tree, &searchKey);
 
         process << "in-order traversal: ";
         traverse.inOrder(opInTraversal);
         process << "\nall details:\n" << Printer(tree->root);
 
         constexpr Key splayKey = 30;
-        process << "splaying " << splayKey << '\n';
-        splaying(tree, &splayKey);
+        process << "splay " << splayKey << '\n';
+        splay::splay(tree, &splayKey);
 
         process << "all details:\n" << Printer(tree->root);
-        destruction(tree);
+        splay::destroy(tree);
 
         return std::ostringstream{process.str()};
     }
-    // NOLINTEND(google-build-using-namespace)
 };
 
 //! @brief Structure of tree.

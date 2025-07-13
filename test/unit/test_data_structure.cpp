@@ -318,15 +318,7 @@ protected:
     //! @brief Expected result 1.
     static constexpr std::string_view expRes1
     {
-        "insert 10: true\n"
-        "insert 40: true\n"
-        "insert 30: true\n"
-        "insert 60: true\n"
-        "insert 90: true\n"
-        "insert 70: true\n"
-        "insert 20: true\n"
-        "insert 50: true\n"
-        "insert 80: true\n"
+        "insert 10, 40, 30, 60, 90, 70, 20, 50, 80\n"
         "traversal: 90 ... 80 ... 70 ... 60 ... 40 ... 30 ... 20 ... 10 ... 50 ... \n"
         "insert 85: true\n"
         "traversal: 90 ... 85 ... 70 ... 60 ... 80 ... 30 ... 20 ... 10 ... 50 ... 40 ... \n"
@@ -336,15 +328,7 @@ protected:
     //! @brief Expected result 2.
     static constexpr std::string_view expRes2
     {
-        "insert 80: true\n"
-        "insert 40: true\n"
-        "insert 30: true\n"
-        "insert 60: true\n"
-        "insert 90: true\n"
-        "insert 70: true\n"
-        "insert 10: true\n"
-        "insert 50: true\n"
-        "insert 20: true\n"
+        "insert 80, 40, 30, 60, 90, 70, 10, 50, 20\n"
         "traversal: 10 ... 20 ... 30 ... 50 ... 90 ... 70 ... 40 ... 80 ... 60 ... \n"
         "insert 15: true\n"
         "traversal: 10 ... 15 ... 30 ... 50 ... 20 ... 70 ... 40 ... 80 ... 60 ... 90 ... \n"
@@ -494,7 +478,7 @@ protected:
     //! @brief Expected result 1.
     static constexpr std::string_view expRes1
     {
-        "insertion 1, 5, 4, 3, 2, 6\n"
+        "insert 1, 5, 4, 3, 2, 6\n"
         "pre-order traversal: 1 ... 5 ... 4 ... 3 ... 2 ... 6 ... \n"
         "in-order traversal: 1 ... 2 ... 3 ... 4 ... 5 ... 6 ... \n"
         "post-order traversal: 2 ... 3 ... 4 ... 6 ... 5 ... 1 ... \n"
@@ -510,7 +494,7 @@ protected:
         "search 3: true\n"
         "predecessor of 3: 2\n"
         "successor of 3: 4\n"
-        "deletion 3\n"
+        "remove 3\n"
         "in-order traversal: 1 ... 2 ... 4 ... 5 ... 6 ... \n"
         "all details:\n"
         "+ 1 -> root\n"
@@ -523,7 +507,7 @@ protected:
     static constexpr std::string_view expRes2
     {
         "height: 0\n"
-        "insertion 3, 2, 1, 4, 5, 6, 7, 16, 15, 14, 13, 12, 11, 10, 8, 9\n"
+        "insert 3, 2, 1, 4, 5, 6, 7, 16, 15, 14, 13, 12, 11, 10, 8, 9\n"
         "pre-order traversal: 7 ... 4 ... 2 ... 1 ... 3 ... 6 ... 5 ... 13 ... 11 ... 9 ... 8 ... 10 ... 12 ... 15 ... 14 ... 16 ... \n"
         "in-order traversal: 1 ... 2 ... 3 ... 4 ... 5 ... 6 ... 7 ... 8 ... 9 ... 10 ... 11 ... 12 ... 13 ... 14 ... 15 ... 16 ... \n"
         "post-order traversal: 1 ... 3 ... 2 ... 5 ... 6 ... 4 ... 8 ... 10 ... 9 ... 12 ... 11 ... 14 ... 16 ... 15 ... 13 ... 7 ... \n"
@@ -548,7 +532,7 @@ protected:
         "+       14 -> 15's left child\n"
         "+       16 -> 15's right child\n"
         "search 13: true\n"
-        "deletion 13\n"
+        "remove 13\n"
         "height: 5\n"
         "in-order traversal: 1 ... 2 ... 3 ... 4 ... 5 ... 6 ... 7 ... 8 ... 9 ... 10 ... 11 ... 12 ... 14 ... 15 ... 16 ... \n"
         "all details:\n"
@@ -571,7 +555,7 @@ protected:
     //! @brief Expected result 3.
     static constexpr std::string_view expRes3
     {
-        "insertion 10, 50, 40, 70, 30, 20, 60\n"
+        "insert 10, 50, 40, 70, 30, 20, 60\n"
         "pre-order traversal: 60 ... 30 ... 20 ... 10 ... 50 ... 40 ... 70 ... \n"
         "in-order traversal: 10 ... 20 ... 30 ... 40 ... 50 ... 60 ... 70 ... \n"
         "post-order traversal: 10 ... 20 ... 40 ... 50 ... 30 ... 70 ... 60 ... \n"
@@ -586,7 +570,7 @@ protected:
         "+       40 -> 50's left child\n"
         "+   70 -> 60's right child\n"
         "search 70: true\n"
-        "deletion 70\n"
+        "remove 70\n"
         "in-order traversal: 10 ... 20 ... 30 ... 40 ... 50 ... 60 ... \n"
         "all details:\n"
         "+ 60 -> root\n"
@@ -595,7 +579,7 @@ protected:
         "+       10 -> 20's left child\n"
         "+     50 -> 30's right child\n"
         "+       40 -> 50's left child\n"
-        "splaying 30\n"
+        "splay 30\n"
         "all details:\n"
         "+ 30 -> root\n"
         "+   20 -> 30's left child\n"

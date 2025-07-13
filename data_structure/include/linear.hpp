@@ -29,8 +29,8 @@ extern "C"
         struct Node* prev;
         //! @brief Pointer to the next node.
         struct Node* next;
-        //! @brief Node element.
-        void* elem;
+        //! @brief Node value.
+        void* value;
     }* Linear;
 #pragma pack(pop)
 #ifdef __cplusplus
@@ -58,8 +58,8 @@ extern bool removeFirst(const DLL head);
 extern bool removeLast(const DLL head);
 
 //! @brief Print the doubly linked list.
-//! @tparam Elem - type of element
-template <typename Elem>
+//! @tparam Value - type of value
+template <typename Value>
 class Printer
 {
 public:
@@ -74,17 +74,17 @@ private:
     const DLL* const dll{nullptr};
 
 protected:
-    template <typename E>
-    friend std::ostream& operator<<(std::ostream&, const Printer<E>&);
+    template <typename V>
+    friend std::ostream& operator<<(std::ostream&, const Printer<V>&);
 };
 
 //! @brief The operator (<<) overloading of the Printer class.
-//! @tparam E - type of element
+//! @tparam V - type of value
 //! @param os - output stream object
 //! @param printer - specific Printer object
 //! @return reference of the output stream object
-template <typename E>
-std::ostream& operator<<(std::ostream& os, const Printer<E>& printer)
+template <typename V>
+std::ostream& operator<<(std::ostream& os, const Printer<V>& printer)
 {
     if (printer.dll && *(printer.dll))
     {
@@ -93,7 +93,7 @@ std::ostream& operator<<(std::ostream& os, const Printer<E>& printer)
         os << "HEAD -> ";
         for (int i = 0; i < size; ++i)
         {
-            os << *static_cast<const E*>(get(dll, i));
+            os << *static_cast<const V*>(get(dll, i));
             if (i < (size - 1))
             {
                 os << " <-> ";
@@ -112,8 +112,8 @@ namespace stack
 //! @brief Alias for the linear structure. Used for the stack.
 using Stack = Linear;
 
-extern bool create(Stack* const stack);
-extern bool destroy(Stack* const stack);
+extern bool create(Stack* const stk);
+extern bool destroy(Stack* const stk);
 extern int size(const Stack head);
 extern bool empty(const Stack head);
 extern bool push(const Stack head, const void* const value);
@@ -121,8 +121,8 @@ extern void* top(const Stack head);
 extern void* pop(const Stack head);
 
 //! @brief Print the stack.
-//! @tparam Elem - type of element
-template <typename Elem>
+//! @tparam Value - type of value
+template <typename Value>
 class Printer
 {
 public:
@@ -137,17 +137,17 @@ private:
     const Stack* const stk{nullptr};
 
 protected:
-    template <typename E>
-    friend std::ostream& operator<<(std::ostream&, const Printer<E>&);
+    template <typename V>
+    friend std::ostream& operator<<(std::ostream&, const Printer<V>&);
 };
 
 //! @brief The operator (<<) overloading of the Printer class.
-//! @tparam E - type of element
+//! @tparam V - type of value
 //! @param os - output stream object
 //! @param printer - specific Printer object
 //! @return reference of the output stream object
-template <typename E>
-std::ostream& operator<<(std::ostream& os, const Printer<E>& printer)
+template <typename V>
+std::ostream& operator<<(std::ostream& os, const Printer<V>& printer)
 {
     if (printer.stk && *(printer.stk))
     {
@@ -156,7 +156,7 @@ std::ostream& operator<<(std::ostream& os, const Printer<E>& printer)
         os << "TOP [ ";
         for (int i = 0; i < size; ++i)
         {
-            os << *static_cast<const E*>(dll::get(stk, i));
+            os << *static_cast<const V*>(dll::get(stk, i));
             if (i < (size - 1))
             {
                 os << " | ";
@@ -175,8 +175,8 @@ namespace queue
 //! @brief Alias for the linear structure. Used for the queue.
 using Queue = Linear;
 
-extern bool create(Queue* const queue);
-extern bool destroy(Queue* const queue);
+extern bool create(Queue* const que);
+extern bool destroy(Queue* const que);
 extern int size(const Queue head);
 extern bool empty(const Queue head);
 extern bool push(const Queue head, const void* const value);
@@ -184,8 +184,8 @@ extern void* front(const Queue head);
 extern void* pop(const Queue head);
 
 //! @brief Print the queue.
-//! @tparam Elem - type of element
-template <typename Elem>
+//! @tparam Value - type of value
+template <typename Value>
 class Printer
 {
 public:
@@ -200,17 +200,17 @@ private:
     const Queue* const que{nullptr};
 
 protected:
-    template <typename E>
-    friend std::ostream& operator<<(std::ostream&, const Printer<E>&);
+    template <typename V>
+    friend std::ostream& operator<<(std::ostream&, const Printer<V>&);
 };
 
 //! @brief The operator (<<) overloading of the Printer class.
-//! @tparam E - type of element
+//! @tparam V - type of value
 //! @param os - output stream object
 //! @param printer - specific Printer object
 //! @return reference of the output stream object
-template <typename E>
-std::ostream& operator<<(std::ostream& os, const Printer<E>& printer)
+template <typename V>
+std::ostream& operator<<(std::ostream& os, const Printer<V>& printer)
 {
     if (printer.que && *(printer.que))
     {
@@ -219,7 +219,7 @@ std::ostream& operator<<(std::ostream& os, const Printer<E>& printer)
         os << "FRONT [ ";
         for (int i = 0; i < size; ++i)
         {
-            os << *static_cast<const E*>(dll::get(que, i));
+            os << *static_cast<const V*>(dll::get(que, i));
             if (i < (size - 1))
             {
                 os << " | ";
@@ -237,8 +237,8 @@ class Traverse
 {
 public:
     //! @brief Construct a new Traverse object.
-    //! @param head - head of linear structure for traversing
-    explicit Traverse(const dll::DLL* const head) : head{head} {}
+    //! @param linear - linear structure for traversing
+    explicit Traverse(const dll::DLL* const linear) : linear{linear} {}
     //! @brief Destroy the Traverse object.
     virtual ~Traverse() = default;
 
@@ -249,8 +249,8 @@ public:
     void order(const Operation& op) const;
 
 private:
-    //! @brief The head of linear structure for traversing.
-    const dll::DLL* const head{nullptr};
+    //! @brief The linear structure for traversing.
+    const dll::DLL* const linear{nullptr};
 };
 } // namespace linear
 } // namespace date_structure
