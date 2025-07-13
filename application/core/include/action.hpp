@@ -86,14 +86,6 @@ consteval std::string_view name()
 {
     return TypeInfo<T>::name;
 }
-//! @brief Get the description attribute directly for sub-cli related registrations.
-//! @tparam T - type of sub-cli or sub-cli's category
-//! @return description attribute
-template <typename T>
-consteval std::string_view descr()
-{
-    return TypeInfo<T>::attrs.find(REFLECTION_STR("descr")).value;
-}
 //! @brief Get the alias attribute directly for sub-cli related registrations.
 //! @tparam T - type of sub-cli's category
 //! @return alias attribute
@@ -143,6 +135,14 @@ consteval std::string_view alias()
     return TypeInfo<reg_num::ApplyNumeric>::fields.find(REFLECTION_STR(TypeInfo<T>::name))
         .attrs.find(REFLECTION_STR("alias"))
         .value;
+}
+//! @brief Get the description attribute directly for sub-cli related registrations.
+//! @tparam T - type of sub-cli or sub-cli's category
+//! @return description attribute
+template <typename T>
+consteval std::string_view descr()
+{
+    return TypeInfo<T>::attrs.find(REFLECTION_STR("descr")).value;
 }
 
 //! @brief The "Update Choice" message in the applied action.
