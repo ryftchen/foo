@@ -118,7 +118,7 @@ public:
     //! @param ip - peer ip address
     //! @param port - peer port number
     void toConnect(const std::string& ip, const std::uint16_t port);
-    //! @brief Create a thread to receive.
+    //! @brief Create the thread to receive.
     //! @param toDetach - whether to detach
     void toReceive(const bool toDetach = false);
     //! @brief Handling on message received.
@@ -148,7 +148,7 @@ public:
     void toBind(const std::uint16_t port);
     //! @brief Listen on a port number. Wait for the connection to be established.
     void toListen();
-    //! @brief Create a thread to accept the connection from the client.
+    //! @brief Create the thread to accept the connection from the client.
     //! @param toDetach - whether to detach
     void toAccept(const bool toDetach = false);
     //! @brief Handling on new connection.
@@ -194,10 +194,10 @@ public:
     //! @param ip - peer ip address
     //! @param port - peer port number
     void toConnect(const std::string& ip, const std::uint16_t port);
-    //! @brief Create a thread to receive.
+    //! @brief Create the thread to receive.
     //! @param toDetach - whether to detach
     void toReceive(const bool toDetach = false);
-    //! @brief Create a thread to receive from peer.
+    //! @brief Create the thread to receive from peer.
     //! @param toDetach - whether to detach
     void toReceiveFrom(const bool toDetach = false);
     //! @brief Handling on message received.

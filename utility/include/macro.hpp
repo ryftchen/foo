@@ -93,7 +93,7 @@ private:
     //! @brief The deferred callable.
     T deferred{};
 };
-//! @brief Create a deferral from a callable.
+//! @brief Create the deferral from a callable.
 //! @tparam T - type of deferred callable
 //! @param deferred - deferred callable
 //! @return deferral
