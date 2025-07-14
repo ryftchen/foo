@@ -161,11 +161,14 @@ void updateChoice<HeapInstance>(const std::string& target)
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case abbrValue(HeapInstance::max):
-            bits.set(HeapInstance::max);
+        case abbrValue(HeapInstance::binary):
+            bits.set(HeapInstance::binary);
             break;
-        case abbrValue(HeapInstance::min):
-            bits.set(HeapInstance::min);
+        case abbrValue(HeapInstance::leftist):
+            bits.set(HeapInstance::leftist);
+            break;
+        case abbrValue(HeapInstance::skew):
+            bits.set(HeapInstance::skew);
             break;
         default:
             bits.reset();

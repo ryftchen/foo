@@ -231,25 +231,36 @@ namespace heap
 //! @param result - heap result
 static void showResult(const HeapInstance instance, const std::string& result)
 {
-    std::printf("\n==> %-3s Instance <==\n%s", makeTitle(instance).c_str(), result.c_str());
+    std::printf("\n==> %-7s Instance <==\n%s", makeTitle(instance).c_str(), result.c_str());
 }
 
-void HeapStructure::maxInstance()
+void HeapStructure::binaryInstance()
 try
 {
-    const auto output = Showcase().max();
-    showResult(HeapInstance::max, output.str());
+    const auto output = Showcase().binary();
+    showResult(HeapInstance::binary, output.str());
 }
 catch (const std::exception& err)
 {
     LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
 }
 
-void HeapStructure::minInstance()
+void HeapStructure::leftistInstance()
 try
 {
-    const auto output = Showcase().min();
-    showResult(HeapInstance::min, output.str());
+    const auto output = Showcase().leftist();
+    showResult(HeapInstance::leftist, output.str());
+}
+catch (const std::exception& err)
+{
+    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
+}
+
+void HeapStructure::skewInstance()
+try
+{
+    const auto output = Showcase().skew();
+    showResult(HeapInstance::skew, output.str());
 }
 catch (const std::exception& err)
 {
@@ -287,11 +298,14 @@ void applyingHeap(const std::vector<std::string>& candidates)
         {
             using heap::HeapStructure;
             static_assert(utility::common::isStatelessClass<HeapStructure>());
-            case abbrValue(HeapInstance::max):
-                addTask(target, &HeapStructure::maxInstance);
+            case abbrValue(HeapInstance::binary):
+                addTask(target, &HeapStructure::binaryInstance);
                 break;
-            case abbrValue(HeapInstance::min):
-                addTask(target, &HeapStructure::minInstance);
+            case abbrValue(HeapInstance::leftist):
+                addTask(target, &HeapStructure::leftistInstance);
+                break;
+            case abbrValue(HeapInstance::skew):
+                addTask(target, &HeapStructure::skewInstance);
                 break;
             default:
                 throw std::logic_error{"Unknown " + std::string{toString<category>()} + " instance: " + target + '.'};

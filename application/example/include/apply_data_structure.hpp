@@ -587,7 +587,7 @@ using Key = std::int16_t;
 //! @param a - first key
 //! @param b - second key
 //! @return a is less than b if returns -1, a is greater than b if returns 1, and a is equal to b if returns 0
-static int compareData(const void* const a, const void* const b)
+static int compareKey(const void* const a, const void* const b)
 {
     const auto l = *static_cast<const Key*>(a), r = *static_cast<const Key*>(b);
     return (l > r) - (l < r);
@@ -600,80 +600,149 @@ public:
     //! @brief Destroy the Showcase object.
     virtual ~Showcase() = default;
 
-    //! @brief Max.
+    //! @brief Binary.
     //! @return procedure output
-    static std::ostringstream max()
+    static std::ostringstream binary()
     {
-        namespace max = date_structure::heap::max;
-        constexpr std::array<Key, 9> keys = {10, 40, 30, 60, 90, 70, 20, 50, 80};
-        constexpr int capacity = 30;
-        std::ostringstream process{};
-        const auto opInTraversal = [&process](const void* const key)
-        { process << *static_cast<const Key*>(key) << " ... "; };
-
-        max::MaxHeap* const heap = max::create(capacity, &compareData);
-        const auto traverse = max::Traverse(heap);
-        process << std::boolalpha;
-        process << "insert ";
-        for (const auto& key : keys)
-        {
-            process << key << ", ";
-            max::insert(heap, &key);
-        }
-        process.seekp(process.str().length() - 2);
-        process << "\ntraversal: ";
-        traverse.order(opInTraversal);
-
-        constexpr Key insertKey = 85;
-        process << "\ninsert " << insertKey << ": " << max::insert(heap, &insertKey) << '\n';
-        process << "traversal: ";
-        traverse.order(opInTraversal);
-
-        constexpr Key removeKey = 90;
-        process << "\nremove " << removeKey << ": " << max::remove(heap, &removeKey) << '\n';
-        process << "traversal: ";
-        traverse.order(opInTraversal);
-        process << '\n';
-        max::destroy(heap);
-
-        return std::ostringstream{process.str()};
-    }
-
-    //! @brief Min.
-    //! @return procedure output
-    static std::ostringstream min()
-    {
-        namespace min = date_structure::heap::min;
+        namespace binary = date_structure::heap::binary;
         constexpr std::array<Key, 9> keys = {80, 40, 30, 60, 90, 70, 10, 50, 20};
         constexpr int capacity = 30;
         std::ostringstream process{};
         const auto opInTraversal = [&process](const void* const key)
         { process << *static_cast<const Key*>(key) << " ... "; };
 
-        min::MinHeap* const heap = min::create(capacity, &compareData);
-        const auto traverse = min::Traverse(heap);
+        binary::BinaryHeap* const heap = binary::create(capacity, &compareKey);
+        const auto traverse = binary::Traverse(heap);
         process << std::boolalpha;
         process << "insert ";
         for (const auto& key : keys)
         {
             process << key << ", ";
-            min::insert(heap, &key);
+            binary::insert(heap, &key);
         }
         process.seekp(process.str().length() - 2);
         process << "\ntraversal: ";
         traverse.order(opInTraversal);
 
         constexpr Key insertKey = 15;
-        process << "\ninsert " << insertKey << ": " << min::insert(heap, &insertKey) << '\n';
+        process << "\ninsert " << insertKey << ": " << binary::insert(heap, &insertKey) << '\n';
         process << "traversal: ";
         traverse.order(opInTraversal);
 
         constexpr Key removeKey = 10;
-        process << "\nremove " << removeKey << ": " << min::remove(heap, &removeKey) << '\n';
+        process << "\nremove " << removeKey << ": " << binary::remove(heap, &removeKey) << '\n';
         process << "traversal: ";
         traverse.order(opInTraversal);
         process << '\n';
-        min::destroy(heap);
+        binary::destroy(heap);
+
+        return std::ostringstream{process.str()};
+    }
+
+    //! @brief Leftist.
+    //! @return procedure output
+    static std::ostringstream leftist()
+    {
+        namespace leftist = date_structure::heap::leftist;
+        using Traverse = date_structure::heap::Traverse<leftist::LeftistHeap, leftist::Node>;
+        using Printer = date_structure::heap::Printer<leftist::Node, Key>;
+        constexpr std::array<Key, 8> keys1 = {10, 40, 24, 30, 36, 20, 12, 16};
+        constexpr std::array<Key, 7> keys2 = {17, 13, 11, 15, 19, 21, 23};
+        std::ostringstream process{};
+        const auto opInTraversal = [&process](const void* const key)
+        { process << *static_cast<const Key*>(key) << " ... "; };
+
+        leftist::LeftistHeap* const heapA = leftist::create(&compareKey);
+        const auto traverseA = Traverse(heapA);
+        process << std::boolalpha;
+        process << "A insert ";
+        for (const auto& key : keys1)
+        {
+            process << key << ", ";
+            leftist::insert(heapA, &key);
+        }
+        process.seekp(process.str().length() - 2);
+        process << "\nA all details:\n" << Printer(heapA->root);
+
+        leftist::LeftistHeap* const heapB = leftist::create(&compareKey);
+        process << "B insert ";
+        for (const auto& key : keys2)
+        {
+            process << key << ", ";
+            leftist::insert(heapB, &key);
+        }
+        process.seekp(process.str().length() - 2);
+        process << "\nB all details:\n" << Printer(heapB->root);
+
+        process << "A merge B\n";
+        leftist::merge(heapA, heapB);
+        process << "A pre-order traversal: ";
+        traverseA.preOrder(opInTraversal);
+        process << "\nA in-order traversal: ";
+        traverseA.inOrder(opInTraversal);
+        process << "\nA post-order traversal: ";
+        traverseA.postOrder(opInTraversal);
+
+        process << "\nA minimum: " << *static_cast<Key*>(leftist::getMinimum(heapA)) << '\n';
+        process << "A remove\n";
+        remove(heapA);
+        process << "A all details:\n" << Printer(heapA->root);
+        leftist::destroy(heapA);
+        leftist::destroy(heapB);
+
+        return std::ostringstream{process.str()};
+    }
+
+    //! @brief Skew.
+    //! @return procedure output
+    static std::ostringstream skew()
+    {
+        namespace skew = date_structure::heap::skew;
+        using Traverse = date_structure::heap::Traverse<skew::SkewHeap, skew::Node>;
+        using Printer = date_structure::heap::Printer<skew::Node, Key>;
+        constexpr std::array<Key, 8> keys1 = {10, 40, 24, 30, 36, 20, 12, 16};
+        constexpr std::array<Key, 7> keys2 = {17, 13, 11, 15, 19, 21, 23};
+        std::ostringstream process{};
+        const auto opInTraversal = [&process](const void* const key)
+        { process << *static_cast<const Key*>(key) << " ... "; };
+
+        skew::SkewHeap* const heapA = skew::create(&compareKey);
+        const auto traverseA = Traverse(heapA);
+        process << std::boolalpha;
+        process << "A insert ";
+        for (const auto& key : keys1)
+        {
+            process << key << ", ";
+            skew::insert(heapA, &key);
+        }
+        process.seekp(process.str().length() - 2);
+        process << "\nA all details:\n" << Printer(heapA->root);
+
+        skew::SkewHeap* const heapB = skew::create(&compareKey);
+        process << "B insert ";
+        for (const auto& key : keys2)
+        {
+            process << key << ", ";
+            skew::insert(heapB, &key);
+        }
+        process.seekp(process.str().length() - 2);
+        process << "\nB all details:\n" << Printer(heapB->root);
+
+        process << "A merge B\n";
+        skew::merge(heapA, heapB);
+        process << "A pre-order traversal: ";
+        traverseA.preOrder(opInTraversal);
+        process << "\nA in-order traversal: ";
+        traverseA.inOrder(opInTraversal);
+        process << "\nA post-order traversal: ";
+        traverseA.postOrder(opInTraversal);
+
+        process << "\nA minimum: " << *static_cast<Key*>(skew::getMinimum(heapA)) << '\n';
+        process << "A remove\n";
+        remove(heapA);
+        process << "A all details:\n" << Printer(heapA->root);
+        skew::destroy(heapA);
+        skew::destroy(heapB);
 
         return std::ostringstream{process.str()};
     }
@@ -686,10 +755,12 @@ public:
     //! @brief Destroy the HeapStructure object.
     virtual ~HeapStructure() = default;
 
-    //! @brief The max instance.
-    static void maxInstance();
-    //! @brief The min instance.
-    static void minInstance();
+    //! @brief The binary instance.
+    static void binaryInstance();
+    //! @brief The leftist instance.
+    static void leftistInstance();
+    //! @brief The skew instance.
+    static void skewInstance();
 };
 } // namespace heap
 extern void applyingHeap(const std::vector<std::string>& candidates);
