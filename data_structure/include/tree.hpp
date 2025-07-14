@@ -155,12 +155,13 @@ extern Node* getMaximum(const SplayTree* const tree);
 extern SplayTree* create(const Compare cmp);
 extern void destroy(const SplayTree* tree);
 extern Node* search(const SplayTree* const tree, const void* const key);
-extern void splay(SplayTree* const tree, const void* const key);
 extern void insert(SplayTree* const tree, const void* const key);
 extern void remove(SplayTree* const tree, const void* const key);
+extern void splay(SplayTree* const tree, const void* const key);
 } // namespace splay
 
 //! @brief Do traversing.
+//! @tparam Tree - type of tree
 //! @tparam Node - type of tree node
 template <typename Tree, typename Node>
 class Traverse

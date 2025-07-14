@@ -57,7 +57,7 @@ static Node* getMaximum(Node* const root)
     return curr;
 }
 
-//! @brief Create a node of the BS tree.
+//! @brief Create the node of the BS subtree.
 //! @param key - key of the node to be created
 //! @param parent - parent node of the node to be created
 //! @param left - left child node of the node to be created
@@ -164,7 +164,7 @@ static Node* removeNode(Node* root, Node* const node)
     return !yIsRoot ? root : nullptr;
 }
 
-//! @brief Destroy the the BS subtree.
+//! @brief Destroy the BS subtree.
 //! @param root - root of the subtree
 static void destroy(const Node* root)
 {
@@ -269,7 +269,7 @@ Node* getSuccessor(const Node* x)
     return y;
 }
 
-//! @brief Create the the BS tree.
+//! @brief Create the BS tree.
 //! @param cmp - compare function to compare keys
 //! @return new BS tree
 BSTree* create(const Compare cmp)
@@ -286,7 +286,7 @@ BSTree* create(const Compare cmp)
     return tree;
 }
 
-//! @brief Destroy the the BS tree.
+//! @brief Destroy the BS tree.
 //! @param tree - BS tree
 void destroy(const BSTree* tree)
 {
@@ -458,7 +458,7 @@ static Node* rightLeftRotation(Node* const k1)
     return rightRightRotation(k1);
 }
 
-//! @brief Create a node of the AVL tree.
+//! @brief Create the node of the AVL subtree.
 //! @param key - key of the node to be created
 //! @param left - left child node of the node to be created
 //! @param right - right child node of the node to be created
@@ -543,7 +543,7 @@ static Node* removeNode(Node* root, const Node* const node, const Compare cmp)
     return root;
 }
 
-//! @brief Destroy the the AVL subtree.
+//! @brief Destroy the AVL subtree.
 //! @param root - root of the subtree
 static void destroy(const Node* root)
 {
@@ -661,7 +661,7 @@ Node* getMaximum(const AVLTree* const tree)
     return tree ? getMaximum(tree->root) : nullptr;
 }
 
-//! @brief Create the the AVL tree.
+//! @brief Create the AVL tree.
 //! @param cmp - compare function to compare keys
 //! @return new AVL tree
 AVLTree* create(const Compare cmp)
@@ -678,7 +678,7 @@ AVLTree* create(const Compare cmp)
     return tree;
 }
 
-//! @brief Destroy the the AVL tree.
+//! @brief Destroy the AVL tree.
 //! @param tree - AVL tree
 void destroy(const AVLTree* tree)
 {
@@ -768,7 +768,7 @@ static Node* getMaximum(Node* const root)
     return curr;
 }
 
-//! @brief Create a node of the splay tree.
+//! @brief Create the node of the splay subtree.
 //! @param key - key of the node to be created
 //! @param left - left child node of the node to be created
 //! @param right - right child node of the node to be created
@@ -838,7 +838,7 @@ static Node* insertNode(Node* root, Node* node, const Compare cmp)
     return root;
 }
 
-//! @brief Destroy the the splay subtree.
+//! @brief Destroy the splay subtree.
 //! @param root - root of the subtree
 static void destroy(const Node* root)
 {
@@ -1003,7 +1003,7 @@ Node* getMaximum(const SplayTree* const tree)
     return tree ? getMaximum(tree->root) : nullptr;
 }
 
-//! @brief Create the the splay tree.
+//! @brief Create the splay tree.
 //! @param cmp - compare function to compare keys
 //! @return new splay tree
 SplayTree* create(const Compare cmp)
@@ -1020,7 +1020,7 @@ SplayTree* create(const Compare cmp)
     return tree;
 }
 
-//! @brief Destroy the the splay tree.
+//! @brief Destroy the splay tree.
 //! @param tree - splay tree
 void destroy(const SplayTree* tree)
 {
@@ -1041,19 +1041,6 @@ void destroy(const SplayTree* tree)
 Node* search(const SplayTree* const tree, const void* const key)
 {
     return tree ? search(tree->root, key, tree->compare) : nullptr;
-}
-
-//! @brief Splay the node in the splay tree. Make to be the root node.
-//! @param tree - splay tree
-//! @param key - key of the target node
-void splay(SplayTree* const tree, const void* const key)
-{
-    if (!tree)
-    {
-        return;
-    }
-
-    tree->root = splay(tree->root, key, tree->compare);
 }
 
 //! @brief Insert the node into the splay tree. Not allow inserting node with the same key.
@@ -1080,6 +1067,19 @@ void remove(SplayTree* const tree, const void* const key)
     }
 
     tree->root = remove(tree->root, key, tree->compare);
+}
+
+//! @brief Splay the node in the splay tree. Make to be the root node.
+//! @param tree - splay tree
+//! @param key - key of the target node
+void splay(SplayTree* const tree, const void* const key)
+{
+    if (!tree)
+    {
+        return;
+    }
+
+    tree->root = splay(tree->root, key, tree->compare);
 }
 } // namespace splay
 // NOLINTEND(cppcoreguidelines-owning-memory, cppcoreguidelines-pro-type-const-cast)

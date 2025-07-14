@@ -19,7 +19,7 @@ const char* version() noexcept
 // NOLINTBEGIN(cppcoreguidelines-owning-memory, cppcoreguidelines-pro-type-const-cast)
 namespace dll
 {
-//! @brief Create a node of the doubly linked list.
+//! @brief Create the node of the doubly linked list.
 //! @param value - value of the target node
 //! @return new node
 static Node* createNode(const void* const value)

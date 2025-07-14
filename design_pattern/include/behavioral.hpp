@@ -427,7 +427,7 @@ private:
     [[nodiscard]] int getState() const;
 };
 
-//! @brief Create a memento containing a snapshot of its current internal state.
+//! @brief Create the memento containing a snapshot of its current internal state.
 //!        Use the memento to restore its internal state.
 class Originator
 {
