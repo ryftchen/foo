@@ -79,7 +79,7 @@ class Task:
             "--cache": ["fir", "fre", "rec"],
             "--filter": ["blo", "quo"],
             "--graph": ["und", "dir"],
-            "--heap": ["max", "min"],
+            "--heap": ["bin", "lef", "ske"],
             "--linear": ["lin", "sta", "que"],
             "--tree": ["bin", "ade", "spl"],
         },

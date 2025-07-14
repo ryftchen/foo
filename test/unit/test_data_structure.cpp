@@ -318,16 +318,6 @@ protected:
     //! @brief Expected result 1.
     static constexpr std::string_view expRes1
     {
-        "insert 10, 40, 30, 60, 90, 70, 20, 50, 80\n"
-        "traversal: 90 ... 80 ... 70 ... 60 ... 40 ... 30 ... 20 ... 10 ... 50 ... \n"
-        "insert 85: true\n"
-        "traversal: 90 ... 85 ... 70 ... 60 ... 80 ... 30 ... 20 ... 10 ... 50 ... 40 ... \n"
-        "remove 90: true\n"
-        "traversal: 85 ... 80 ... 70 ... 60 ... 40 ... 30 ... 20 ... 10 ... 50 ... \n"
-    };
-    //! @brief Expected result 2.
-    static constexpr std::string_view expRes2
-    {
         "insert 80, 40, 30, 60, 90, 70, 10, 50, 20\n"
         "traversal: 10 ... 20 ... 30 ... 50 ... 90 ... 70 ... 40 ... 80 ... 60 ... \n"
         "insert 15: true\n"
@@ -335,23 +325,119 @@ protected:
         "remove 10: true\n"
         "traversal: 15 ... 20 ... 30 ... 50 ... 90 ... 70 ... 40 ... 80 ... 60 ... \n"
     };
+    //! @brief Expected result 2.
+    static constexpr std::string_view expRes2
+    {
+        "A insert 10, 40, 24, 30, 36, 20, 12, 16\n"
+        "A all details:\n"
+        "+ 10(2) -> root\n"
+        "+   24(1) -> 10's left child\n"
+        "+     30(0) -> 24's left child\n"
+        "+     36(0) -> 24's right child\n"
+        "+   12(1) -> 10's right child\n"
+        "+     20(0) -> 12's left child\n"
+        "+       40(0) -> 20's left child\n"
+        "+     16(0) -> 12's right child\n"
+        "B insert 17, 13, 11, 15, 19, 21, 23\n"
+        "B all details:\n"
+        "+ 11(2) -> root\n"
+        "+   15(1) -> 11's left child\n"
+        "+     19(0) -> 15's left child\n"
+        "+     21(0) -> 15's right child\n"
+        "+   13(1) -> 11's right child\n"
+        "+     17(0) -> 13's left child\n"
+        "+     23(0) -> 13's right child\n"
+        "A merge B\n"
+        "A pre-order traversal: 10 ... 11 ... 15 ... 19 ... 21 ... 12 ... 13 ... 17 ... 16 ... 23 ... 20 ... 40 ... 24 ... 30 ... 36 ... \n"
+        "A in-order traversal: 19 ... 15 ... 21 ... 11 ... 17 ... 13 ... 23 ... 16 ... 12 ... 40 ... 20 ... 10 ... 30 ... 24 ... 36 ... \n"
+        "A post-order traversal: 19 ... 21 ... 15 ... 17 ... 23 ... 16 ... 13 ... 40 ... 20 ... 12 ... 11 ... 30 ... 36 ... 24 ... 10 ... \n"
+        "A minimum: 10\n"
+        "A remove\n"
+        "A all details:\n"
+        "+ 11(2) -> root\n"
+        "+   12(2) -> 11's left child\n"
+        "+     13(1) -> 12's left child\n"
+        "+       17(0) -> 13's left child\n"
+        "+       16(0) -> 13's right child\n"
+        "+         23(0) -> 16's left child\n"
+        "+     20(1) -> 12's right child\n"
+        "+       24(1) -> 20's left child\n"
+        "+         30(0) -> 24's left child\n"
+        "+         36(0) -> 24's right child\n"
+        "+       40(0) -> 20's right child\n"
+        "+   15(1) -> 11's right child\n"
+        "+     19(0) -> 15's left child\n"
+        "+     21(0) -> 15's right child\n"
+    };
+    //! @brief Expected result 3.
+    static constexpr std::string_view expRes3
+    {
+        "A insert 10, 40, 24, 30, 36, 20, 12, 16\n"
+        "A all details:\n"
+        "+ 10 -> root\n"
+        "+   16 -> 10's left child\n"
+        "+     20 -> 16's left child\n"
+        "+       30 -> 20's left child\n"
+        "+         40 -> 30's left child\n"
+        "+   12 -> 10's right child\n"
+        "+     24 -> 12's left child\n"
+        "+       36 -> 24's left child\n"
+        "B insert 17, 13, 11, 15, 19, 21, 23\n"
+        "B all details:\n"
+        "+ 11 -> root\n"
+        "+   13 -> 11's left child\n"
+        "+     17 -> 13's left child\n"
+        "+       23 -> 17's left child\n"
+        "+     19 -> 13's right child\n"
+        "+   15 -> 11's right child\n"
+        "+     21 -> 15's left child\n"
+        "A merge B\n"
+        "A pre-order traversal: 10 ... 11 ... 12 ... 15 ... 21 ... 24 ... 36 ... 13 ... 17 ... 23 ... 19 ... 16 ... 20 ... 30 ... 40 ... \n"
+        "A in-order traversal: 21 ... 15 ... 12 ... 36 ... 24 ... 11 ... 23 ... 17 ... 13 ... 19 ... 10 ... 40 ... 30 ... 20 ... 16 ... \n"
+        "A post-order traversal: 21 ... 15 ... 36 ... 24 ... 12 ... 23 ... 17 ... 19 ... 13 ... 11 ... 40 ... 30 ... 20 ... 16 ... 10 ... \n"
+        "A minimum: 10\n"
+        "A remove\n"
+        "A all details:\n"
+        "+ 11 -> root\n"
+        "+   13 -> 11's left child\n"
+        "+     16 -> 13's left child\n"
+        "+       19 -> 16's left child\n"
+        "+       20 -> 16's right child\n"
+        "+         30 -> 20's left child\n"
+        "+           40 -> 30's left child\n"
+        "+     17 -> 13's right child\n"
+        "+       23 -> 17's left child\n"
+        "+   12 -> 11's right child\n"
+        "+     15 -> 12's left child\n"
+        "+       21 -> 15's left child\n"
+        "+     24 -> 12's right child\n"
+        "+       36 -> 24's left child\n"
+    };
     // clang-format on
 };
 
-//! @brief Test for the max instance in the structure of heap.
-TEST_F(HeapTestBase, maxInstance)
+//! @brief Test for the binary instance in the structure of heap.
+TEST_F(HeapTestBase, binaryInstance)
 {
     std::ostringstream result{};
-    ASSERT_NO_THROW(result = sut.max());
+    ASSERT_NO_THROW(result = sut.binary());
     ASSERT_EQ(expRes1, result.str());
 }
 
-//! @brief Test for the min instance in the structure of heap.
-TEST_F(HeapTestBase, minInstance)
+//! @brief Test for the leftist instance in the structure of heap.
+TEST_F(HeapTestBase, leftistInstance)
 {
     std::ostringstream result{};
-    ASSERT_NO_THROW(result = sut.min());
+    ASSERT_NO_THROW(result = sut.leftist());
     ASSERT_EQ(expRes2, result.str());
+}
+
+//! @brief Test for the skew instance in the structure of heap.
+TEST_F(HeapTestBase, skewInstance)
+{
+    std::ostringstream result{};
+    ASSERT_NO_THROW(result = sut.skew());
+    ASSERT_EQ(expRes3, result.str());
 }
 
 //! @brief Test base of linear.

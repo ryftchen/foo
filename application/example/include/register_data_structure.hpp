@@ -83,17 +83,19 @@ struct Bottom<GraphInstance>
 //! @brief Enumerate specific heap instances.
 enum HeapInstance : std::uint8_t
 {
-    //! @brief Max.
-    max,
-    //! @brief Min.
-    min
+    //! @brief Binary.
+    binary,
+    //! @brief Leftist.
+    leftist,
+    //! @brief Skew.
+    skew
 };
 //! @brief Store the maximum value of the HeapInstance enum.
 template <>
 struct Bottom<HeapInstance>
 {
     //! @brief Maximum value of the HeapInstance enum.
-    static constexpr std::uint8_t value{2};
+    static constexpr std::uint8_t value{3};
 };
 
 //! @brief Enumerate specific linear instances.
@@ -422,16 +424,18 @@ struct utility::reflection::TypeInfo<application::reg_ds::HeapInstance>
     //! @brief Field list.
     static constexpr FieldList fields
     {
-        REG_DS_REFLECT_SECOND_LEVEL_FIELD(max, max),
-        REG_DS_REFLECT_SECOND_LEVEL_FIELD(min, min),
+        REG_DS_REFLECT_SECOND_LEVEL_FIELD(binary , bin),
+        REG_DS_REFLECT_SECOND_LEVEL_FIELD(leftist, lef),
+        REG_DS_REFLECT_SECOND_LEVEL_FIELD(skew   , ske),
     };
     // clang-format on
     //! @brief Attribute list.
     static constexpr AttrList attrs{Attr{
         REFLECTION_STR("descr"),
         "heap-related choices\n"
-        "- max    Max\n"
-        "- min    Min\n"
+        "- bin    Binary\n"
+        "- lef    Leftist\n"
+        "- ske    Skew\n"
         "add the choices listed above"}};
 };
 //! @brief Static reflection for LinearInstance. Used to map command line arguments.
@@ -589,7 +593,7 @@ constexpr std::string_view toString(const GraphInstance instance)
 constexpr std::string_view toString(const HeapInstance instance)
 {
     constexpr std::array<std::string_view, Bottom<HeapInstance>::value> stringify = {
-        MACRO_STRINGIFY(max), MACRO_STRINGIFY(min)};
+        MACRO_STRINGIFY(binary), MACRO_STRINGIFY(leftist), MACRO_STRINGIFY(skew)};
     return stringify.at(instance);
 }
 

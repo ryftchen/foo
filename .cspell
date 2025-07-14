@@ -71,6 +71,7 @@ words:
   - staticfile
   - stdbuf
   - strs
+  - subheap
   - suboperation
   - tmpfs
   - tparam
