@@ -302,7 +302,7 @@ void Originator::setMemento(const std::shared_ptr<Memento>& memento)
 
 std::shared_ptr<Memento> Originator::createMemento() const
 {
-    return std::shared_ptr<Memento>(new Memento(state));
+    return std::shared_ptr<Memento>(::new Memento(state));
 }
 
 CareTaker::~CareTaker()
