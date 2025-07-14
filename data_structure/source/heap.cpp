@@ -123,7 +123,7 @@ BinaryHeap* create(const int cap, const Compare cmp)
 
 //! @brief Destroy the binary heap.
 //! @param heap - heap to destroy
-void destroy(const BinaryHeap* heap)
+void destroy(BinaryHeap* heap)
 {
     if (!heap)
     {
@@ -131,6 +131,7 @@ void destroy(const BinaryHeap* heap)
     }
 
     ::delete[] heap->data;
+    heap->data = nullptr;
     ::delete heap;
     heap = nullptr;
 }
@@ -326,8 +327,20 @@ void insert(LeftistHeap* const heap, const void* const key)
         return;
     }
 
-    Node* const node = createNode(key);
-    heap->root = mergeNode(heap->root, node, heap->compare);
+    Node* node = createNode(key);
+    if (!node)
+    {
+        return;
+    }
+
+    Node* const merged = mergeNode(heap->root, node, heap->compare);
+    if (!merged)
+    {
+        ::delete node;
+        node = nullptr;
+        return;
+    }
+    heap->root = merged;
 }
 
 //! @brief Remove the node where the minimum key is located from the leftist heap.
@@ -474,8 +487,20 @@ void insert(SkewHeap* const heap, const void* const key)
         return;
     }
 
-    Node* const node = createNode(key);
-    heap->root = mergeNode(heap->root, node, heap->compare);
+    Node* node = createNode(key);
+    if (!node)
+    {
+        return;
+    }
+
+    Node* const merged = mergeNode(heap->root, node, heap->compare);
+    if (!merged)
+    {
+        ::delete node;
+        node = nullptr;
+        return;
+    }
+    heap->root = merged;
 }
 
 //! @brief Remove the node with the minimum key from the skew heap.
