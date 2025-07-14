@@ -46,7 +46,7 @@ extern "C"
 #endif // __cplusplus
 
 extern BinaryHeap* create(const int cap, const Compare cmp);
-extern void destroy(const BinaryHeap* heap);
+extern void destroy(BinaryHeap* heap);
 extern bool insert(BinaryHeap* const heap, const void* const key);
 extern bool remove(BinaryHeap* const heap, const void* const key);
 
