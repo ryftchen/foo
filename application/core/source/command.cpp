@@ -17,6 +17,7 @@
 #include "application/pch/precompiled_header.hpp"
 #endif // _PRECOMPILED_HEADER
 
+#include "utility/include/benchmark.hpp"
 #include "utility/include/currying.hpp"
 #include "utility/include/time.hpp"
 
@@ -1139,6 +1140,7 @@ void Command::validateDependenciesVersion() const
     if (!utility::common::areStringsEqual(
             mainCLI.version().data(),
             utility::argument::version(),
+            utility::benchmark::version(),
             utility::common::version(),
             utility::currying::version(),
             utility::fsm::version(),
