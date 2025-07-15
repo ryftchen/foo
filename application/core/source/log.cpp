@@ -174,32 +174,13 @@ retry:
 void Log::Access::startup() const
 try
 {
-    do
-    {
-        if (inst.isInServingState(State::hold))
-        {
-            throw std::runtime_error{"The " + std::string{name} + " did not initialize successfully ..."};
-        }
-        std::this_thread::yield();
-    }
-    while (!inst.isInServingState(State::idle));
-
-    if (std::unique_lock<std::mutex> daemonLock(inst.daemonMtx); true)
-    {
-        inst.ongoing.store(true);
-        daemonLock.unlock();
-        inst.daemonCond.notify_one();
-    }
-
-    do
-    {
-        if (inst.isInServingState(State::hold))
-        {
-            throw std::runtime_error{"The " + std::string{name} + " did not start successfully ..."};
-        }
-        std::this_thread::yield();
-    }
-    while (!inst.isInServingState(State::work));
+    waitOr(
+        State::idle,
+        [this]() { throw std::runtime_error{"The " + std::string{inst.name} + " did not setup successfully ..."}; });
+    toNotify([this]() { inst.ongoing.store(true); });
+    waitOr(
+        State::work,
+        [this]() { throw std::runtime_error{"The " + std::string{inst.name} + " did not start successfully ..."}; });
 }
 catch (const std::exception& err)
 {
@@ -209,22 +190,10 @@ catch (const std::exception& err)
 void Log::Access::shutdown() const
 try
 {
-    if (std::unique_lock<std::mutex> daemonLock(inst.daemonMtx); true)
-    {
-        inst.ongoing.store(false);
-        daemonLock.unlock();
-        inst.daemonCond.notify_one();
-    }
-
-    do
-    {
-        if (inst.isInServingState(State::hold))
-        {
-            throw std::runtime_error{"The " + std::string{name} + " did not stop successfully ..."};
-        }
-        std::this_thread::yield();
-    }
-    while (!inst.isInServingState(State::done));
+    toNotify([this]() { inst.ongoing.store(false); });
+    waitOr(
+        State::done,
+        [this]() { throw std::runtime_error{"The " + std::string{inst.name} + " did not stop successfully ..."}; });
 }
 catch (const std::exception& err)
 {
@@ -234,13 +203,37 @@ catch (const std::exception& err)
 void Log::Access::reload() const
 try
 {
-    if (std::unique_lock<std::mutex> daemonLock(inst.daemonMtx); true)
-    {
-        inst.toReset.store(true);
-        daemonLock.unlock();
-        inst.daemonCond.notify_one();
-    }
+    toNotify([this]() { inst.toReset.store(true); });
+    startResetTimer();
+}
+catch (const std::exception& err)
+{
+    LOG_ERR << err.what();
+}
 
+void Log::Access::waitOr(const State state, const std::function<void()>& handling) const
+{
+    do
+    {
+        if (inst.isInServingState(State::hold))
+        {
+            handling();
+        }
+        std::this_thread::yield();
+    }
+    while (!inst.isInServingState(state));
+}
+
+void Log::Access::toNotify(const std::function<void()>& action) const
+{
+    std::unique_lock<std::mutex> daemonLock(inst.daemonMtx);
+    action();
+    daemonLock.unlock();
+    inst.daemonCond.notify_one();
+}
+
+void Log::Access::startResetTimer() const
+{
     for (const utility::time::Stopwatch timing{}; timing.elapsedTime() <= inst.timeoutPeriod;)
     {
         if (!inst.toReset.load())
@@ -250,11 +243,8 @@ try
         std::this_thread::yield();
     }
     throw std::runtime_error{
-        "The " + std::string{name} + " did not reset properly in " + std::to_string(inst.timeoutPeriod) + " ms ..."};
-}
-catch (const std::exception& err)
-{
-    LOG_ERR << err.what();
+        "The " + std::string{inst.name} + " did not reset properly in " + std::to_string(inst.timeoutPeriod)
+        + " ms ..."};
 }
 
 void Log::flush(const OutputLevel severity, const std::string_view labelTpl, const std::string_view formatted)

@@ -106,6 +106,16 @@ public:
     private:
         //! @brief Instance to be accessed.
         View& inst;
+
+        //! @brief Wait until the viewer reaches the target state.
+        //! @param state - target state
+        //! @param handling - handling if unexpected state
+        void waitOr(const State state, const std::function<void()>& handling) const;
+        //! @brief Notify the viewer daemon to change the state.
+        //! @param action - action to be executed
+        void toNotify(const std::function<void()>& action) const;
+        //! @brief Start the reset timer.
+        void startResetTimer() const;
     };
     //! @brief Synchronization for the instance.
     class Sync
