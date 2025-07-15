@@ -168,6 +168,16 @@ public:
     private:
         //! @brief Instance to be accessed.
         Log& inst;
+
+        //! @brief Wait until the logger reaches the target state.
+        //! @param state - target state
+        //! @param handling - handling if unexpected state
+        void waitOr(const State state, const std::function<void()>& handling) const;
+        //! @brief Notify the logger daemon to change the state.
+        //! @param action - action to be executed
+        void toNotify(const std::function<void()>& action) const;
+        //! @brief Start the reset timer.
+        void startResetTimer() const;
     };
 
     //! @brief Log output for legacy (printf style).
