@@ -52,7 +52,7 @@ Socket::Socket(const Type socketType, const int socketId)
     if (socketId == -1)
     {
         const SockGuard lock(*this);
-        sock = ::socket(AF_INET, socketType, 0);
+        sock = ::socket(AF_INET, static_cast<std::uint8_t>(socketType), 0);
         if (sock == -1)
         {
             throw std::runtime_error{"Socket creation error, errno: " + errnoString() + '.'};

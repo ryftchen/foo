@@ -254,9 +254,9 @@ private:
     //! @brief The synchronization condition for daemon. Use with daemonMtx.
     std::condition_variable daemonCond;
     //! @brief Flag to indicate whether it is logging.
-    std::atomic<bool> ongoing{false};
+    std::atomic_bool ongoing{false};
     //! @brief Flag for rollback request.
-    std::atomic<bool> toReset{false};
+    std::atomic_bool toReset{false};
     //! @brief Full path to the log file.
     const std::string filePath{getFullLogPath()};
     //! @brief Priority level.

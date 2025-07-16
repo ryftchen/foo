@@ -109,7 +109,7 @@ class ApplyNumeric
 {
 public:
     //! @brief Enumerate specific numeric choices.
-    enum Category : std::uint8_t
+    enum class Category : std::uint8_t
     {
         //! @brief Arithmetic.
         arithmetic,

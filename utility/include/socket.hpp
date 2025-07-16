@@ -42,7 +42,7 @@ public:
     //! @brief Bytes buffer size.
     static constexpr std::uint16_t bufferSize{0xFFFFU};
     //! @brief Enumerate specific socket types.
-    enum Type : std::uint8_t
+    enum class Type : std::uint8_t
     {
         //! @brief TCP.
         tcp = ::SOCK_STREAM,
@@ -52,7 +52,7 @@ public:
 
 private:
     //! @brief Flag for request of stop.
-    std::atomic<bool> exitReady{false};
+    std::atomic_bool exitReady{false};
     //! @brief Result of asynchronous operations for the non-detached thread.
     std::future<void> asyncTask;
     //! @brief Spin lock to synchronize access to the socket.

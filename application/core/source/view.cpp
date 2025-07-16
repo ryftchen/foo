@@ -397,23 +397,17 @@ void View::Access::startResetTimer() const
 
 void View::Sync::waitTaskDone() const
 {
-    if (const auto maxWaitTime = std::chrono::milliseconds{inst.timeoutPeriod}; inst.isInServingState(State::work))
-    {
-        std::unique_lock<std::mutex> outputLock(inst.outputMtx);
-        inst.outputCompleted.store(false);
+    std::unique_lock<std::mutex> outputLock(inst.outputMtx);
+    inst.outputCompleted.store(false);
 
-        utility::time::Timer expiryTimer([]() { Sync().notifyTaskDone(); });
-        expiryTimer.start(maxWaitTime);
+    const auto maxWaitTime = std::chrono::milliseconds{inst.timeoutPeriod};
+    utility::time::Timer expiryTimer(inst.isInServingState(State::work) ? []() {} : []() { Sync().notifyTaskDone(); });
+    expiryTimer.start(maxWaitTime);
 
-        inst.outputCond.wait(outputLock, [this]() { return inst.outputCompleted.load(); });
-        inst.outputCompleted.store(false);
+    inst.outputCond.wait(outputLock, [this]() { return inst.outputCompleted.load(); });
+    inst.outputCompleted.store(false);
 
-        expiryTimer.stop();
-    }
-    else
-    {
-        std::this_thread::sleep_for(maxWaitTime);
-    }
+    expiryTimer.stop();
 }
 
 void View::Sync::notifyTaskDone() const
@@ -435,9 +429,7 @@ int View::buildResponse(const std::string& reqPlaintext, char* respBuffer)
             [&respBuffer](const OptProfile& opt) { return buildTLVPacket4Profile(opt.args, respBuffer); },
             [](const auto& opt)
             {
-                // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
-                if (auto* optPtr = const_cast<std::remove_const_t<std::remove_reference_t<decltype(opt)>>*>(&opt);
-                    dynamic_cast<OptBase*>(optPtr))
+                if (const auto* origPtr = &opt; dynamic_cast<const OptBase*>(origPtr))
                 {
                     throw std::runtime_error{
                         "The option is unprocessed due to unregistered or potential registration failures (typeid: "
@@ -511,11 +503,9 @@ int View::buildFinTLVPacket(char* buf)
     return len;
 }
 
-int View::buildTLVPacket4Depend(const std::vector<std::string>& args, char* buf)
+int View::buildTLVPacket4Depend(const Args& args, char* buf)
 {
     MACRO_IGNORE(args);
-
-    int len = 0;
     tlv::TLVValue val{};
     std::string extLibraries{};
 #if defined(__GLIBC__) && defined(__GLIBC_MINOR__)
@@ -568,6 +558,7 @@ int View::buildTLVPacket4Depend(const std::vector<std::string>& args, char* buf)
 #endif // defined(OPENSSL_VERSION_STR)
     std::strncpy(val.libDetail, extLibraries.c_str(), sizeof(val.libDetail) - 1);
     val.libDetail[sizeof(val.libDetail) - 1] = '\0';
+    int len = 0;
     if (!tlv::encodeTLV(buf, len, val))
     {
         throw std::runtime_error{"Failed to build packet for the depend option."};
@@ -577,7 +568,7 @@ int View::buildTLVPacket4Depend(const std::vector<std::string>& args, char* buf)
     return len;
 }
 
-int View::buildTLVPacket4Execute(const std::vector<std::string>& args, char* buf)
+int View::buildTLVPacket4Execute(const Args& args, char* buf)
 {
     const auto cmd = std::accumulate(
         args.cbegin(),
@@ -601,10 +592,9 @@ int View::buildTLVPacket4Execute(const std::vector<std::string>& args, char* buf
     return len;
 }
 
-int View::buildTLVPacket4Journal(const std::vector<std::string>& args, char* buf)
+int View::buildTLVPacket4Journal(const Args& args, char* buf)
 {
     MACRO_IGNORE(args);
-
     int len = 0;
     if (const int shmId = fillSharedMemory(logContentsPreview());
         !tlv::encodeTLV(buf, len, tlv::TLVValue{.logShmId = shmId}))
@@ -616,7 +606,7 @@ int View::buildTLVPacket4Journal(const std::vector<std::string>& args, char* buf
     return len;
 }
 
-int View::buildTLVPacket4Monitor(const std::vector<std::string>& args, char* buf)
+int View::buildTLVPacket4Monitor(const Args& args, char* buf)
 {
     if (!args.empty())
     {
@@ -637,15 +627,14 @@ int View::buildTLVPacket4Monitor(const std::vector<std::string>& args, char* buf
     return len;
 }
 
-int View::buildTLVPacket4Profile(const std::vector<std::string>& args, char* buf)
+int View::buildTLVPacket4Profile(const Args& args, char* buf)
 {
     MACRO_IGNORE(args);
-
-    int len = 0;
     tlv::TLVValue val{};
     std::strncpy(
         val.configDetail, configure::retrieveDataRepo().toUnescapedString().c_str(), sizeof(val.configDetail) - 1);
     val.configDetail[sizeof(val.configDetail) - 1] = '\0';
+    int len = 0;
     if (!tlv::encodeTLV(buf, len, val))
     {
         throw std::runtime_error{"Failed to build packet for the profile option."};
@@ -732,20 +721,19 @@ void View::printSharedMemory(const int shmId, const bool withoutPaging)
 {
     std::string output{};
     fetchSharedMemory(shmId, output);
-    if (withoutPaging)
-    {
-        std::istringstream transfer(output.c_str());
-        std::string line{};
-        while (std::getline(transfer, line))
-        {
-            std::cout << line << '\n';
-        }
-        std::cout << "\033[0m" << std::flush;
-    }
-    else
+    if (!withoutPaging)
     {
         segmentedOutput(output);
+        return;
     }
+
+    std::istringstream transfer(output.c_str());
+    std::string line{};
+    while (std::getline(transfer, line))
+    {
+        std::cout << line << '\n';
+    }
+    std::cout << "\033[0m" << std::flush;
 }
 
 void View::segmentedOutput(const std::string& buffer)
@@ -769,26 +757,25 @@ void View::segmentedOutput(const std::string& buffer)
             {
                 moreRows = true;
                 counter = 0;
+                return true;
             }
-            else
+
+            moreRows = false;
+            switch (utility::common::bkdrHash(input.c_str()))
             {
-                moreRows = false;
-                switch (utility::common::bkdrHash(input.c_str()))
-                {
-                    using utility::common::operator""_bkdrHash;
-                    case "c"_bkdrHash:
-                        withoutPaging = true;
-                        break;
-                    case "n"_bkdrHash:
-                        counter = 0;
-                        break;
-                    case "q"_bkdrHash:
-                        forcedCancel = true;
-                        break;
-                    default:
-                        std::cout << prompt << std::flush;
-                        return false;
-                }
+                using utility::common::operator""_bkdrHash;
+                case "c"_bkdrHash:
+                    withoutPaging = true;
+                    break;
+                case "n"_bkdrHash:
+                    counter = 0;
+                    break;
+                case "q"_bkdrHash:
+                    forcedCancel = true;
+                    break;
+                default:
+                    std::cout << prompt << std::flush;
+                    return false;
             }
             return true;
         });
