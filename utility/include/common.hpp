@@ -59,9 +59,10 @@ extern std::string printfString(const char* const fmt, ...);
 //! @param args - arguments
 //! @return string after formatting
 template <typename... Args>
-inline std::string formatString(const std::string_view fmt, Args&&... args)
+inline std::string formatString(
+    const std::string_view fmt, Args&&... args) // NOLINT(cppcoreguidelines-missing-std-forward)
 {
-    return std::vformat(fmt, std::make_format_args(std::forward<Args>(args)...));
+    return std::vformat(fmt, std::make_format_args(args...));
 }
 
 //! @brief Compare whether two strings are equal.
