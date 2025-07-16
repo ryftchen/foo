@@ -131,7 +131,7 @@ static constexpr std::string_view toString(const Category cat)
 {
     constexpr std::array<std::string_view, Bottom<Category>::value> stringify = {
         MACRO_STRINGIFY(console), MACRO_STRINGIFY(dump), MACRO_STRINGIFY(help), MACRO_STRINGIFY(version)};
-    return stringify.at(cat);
+    return stringify.at(static_cast<std::uint8_t>(cat));
 }
 
 // clang-format off
@@ -149,7 +149,7 @@ consteval std::string_view Command::getAlias(const Category cat)
 #define X(enum, descr, alias) {descr, alias},
     constexpr std::string_view table[][2] = {COMMAND_CATEGORY_X_MACRO_MAPPING};
     static_assert((sizeof(table) / sizeof(table[0])) == Bottom<Category>::value);
-    return table[cat][0];
+    return table[static_cast<std::uint8_t>(cat)][0];
 //! @endcond
 #undef X
 }
@@ -160,7 +160,7 @@ consteval std::string_view Command::getDescr(const Category cat)
 #define X(enum, descr, alias) {descr, alias},
     constexpr std::string_view table[][2] = {COMMAND_CATEGORY_X_MACRO_MAPPING};
     static_assert((sizeof(table) / sizeof(table[0])) == Bottom<Category>::value);
-    return table[cat][1];
+    return table[static_cast<std::uint8_t>(cat)][1];
 //! @endcond
 #undef X
 }
@@ -714,7 +714,7 @@ void Command::precheck()
              | std::views::filter([this](const auto i) { return mainCLI.isUsed(toString(Category(i))); }))
     {
         checkForExcessiveArguments();
-        bits.set(Category(index));
+        bits.set(index);
     }
 
     for (constexpr auto helpArgInExtra = toString(Category::help);

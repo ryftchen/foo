@@ -24,7 +24,7 @@ template <typename T>
 struct Bottom;
 
 //! @brief Enumerate specific native categories.
-enum Category : std::uint8_t
+enum class Category : std::uint8_t
 {
     //! @brief Console.
     console,
@@ -148,7 +148,7 @@ private:
     //! @brief The synchronization condition for foreground and background. Use with parserMtx.
     std::condition_variable parserCond;
     //! @brief Flag to indicate whether parsing of arguments is completed.
-    std::atomic<bool> isParsed{false};
+    std::atomic_bool isParsed{false};
     //! @brief Parse argument helper for commander.
     utility::argument::Argument mainCLI{"foo", note::version()};
     //! @brief Parse argument helper to apply algorithm.
@@ -164,7 +164,7 @@ private:
     //! @brief The Long prefix for the option.
     const std::string longPrefix{"--"};
     //! @brief Flag to indicate whether the command is faulty.
-    std::atomic<bool> isFaulty{false};
+    std::atomic_bool isFaulty{false};
 
     //! @brief Initialize the parse argument helpers for native.
     void initializeNativeCLI();

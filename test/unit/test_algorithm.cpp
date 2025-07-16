@@ -288,9 +288,9 @@ private:
     //! @brief Update expected result.
     static void updateExpRes()
     {
-        const auto* const orderedArray = fixture->getOrderedArray().get();
-        const auto length = fixture->getLength();
-        const auto searchKey = fixture->getSearchKey();
+        const float* const orderedArray = fixture->getOrderedArray().get();
+        const std::uint32_t length = fixture->getLength();
+        const float searchKey = fixture->getSearchKey();
         for (std::uint32_t i = 0; i < length; ++i)
         {
             if (orderedArray[i] == searchKey)

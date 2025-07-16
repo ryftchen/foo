@@ -150,47 +150,69 @@ private:
 
     //! @brief Timeout period (ms) to waiting for the viewer to change to the target state.
     const std::uint32_t timeoutPeriod{static_cast<std::uint32_t>(configure::detail::helperTimeout())};
+    //! @brief Alias for the option arguments.
+    using Args = std::vector<std::string>;
     //! @brief Option attribute.
-    struct OptBase
+    class OptBase
     {
+    public:
+        //! @brief Construct a new OptBase object.
+        //! @param args - option arguments
+        explicit OptBase(Args args = {}) : args{std::move(args)} {}
+        //! @brief Destroy the OptBase object.
+        virtual ~OptBase() = default;
+
         //! @brief The option arguments.
-        const std::vector<std::string> args;
+        const Args args;
     };
     //! @brief Option attribute for the depend option.
-    struct OptDepend : public OptBase
+    class OptDepend : public OptBase
     {
+    public:
         //! @brief The option name.
         static constexpr const char* const name{"depend"};
         //! @brief The option description.
         static constexpr const char* const description{"list all associated libraries"};
     };
     //! @brief Option attribute for the execute option.
-    struct OptExecute : public OptBase
+    class OptExecute : public OptBase
     {
+    public:
+        //! @brief Construct a new OptExecute object.
+        //! @param args - option arguments
+        explicit OptExecute(Args args) : OptBase(std::move(args)) {}
+
         //! @brief The option name.
         static constexpr const char* const name{"execute"};
         //! @brief The option description.
         static constexpr const char* const description{"enter bash commands in quotes [inputs: 'CMD']"};
     };
     //! @brief Option attribute for the journal option.
-    struct OptJournal : public OptBase
+    class OptJournal : public OptBase
     {
+    public:
         //! @brief The option name.
         static constexpr const char* const name{"journal"};
         //! @brief The option description.
         static constexpr const char* const description{"view the log with highlights"};
     };
     //! @brief Option attribute for the monitor option.
-    struct OptMonitor : public OptBase
+    class OptMonitor : public OptBase
     {
+    public:
+        //! @brief Construct a new OptMonitor object.
+        //! @param args - option arguments
+        explicit OptMonitor(Args args) : OptBase(std::move(args)) {}
+
         //! @brief The option name.
         static constexpr const char* const name{"monitor"};
         //! @brief The option description.
         static constexpr const char* const description{"query process status and stacks [inputs: NUM]"};
     };
     //! @brief Option attribute for the profile option.
-    struct OptProfile : public OptBase
+    class OptProfile : public OptBase
     {
+    public:
         //! @brief The option name.
         static constexpr const char* const name{"profile"};
         //! @brief The option description.
@@ -231,9 +253,9 @@ private:
     struct SharedMemory
     {
         //! @brief Shared memory buffer.
-        alignas(64) char buffer[sizeof(int) + maxShmSize]{'\0'};
+        alignas(64) char buffer[sizeof(int) + maxShmSize];
         //! @brief Flag for operable.
-        alignas(64) std::atomic<bool> signal{false};
+        alignas(64) std::atomic_bool signal;
     };
 
     //! @brief TCP server host address.
@@ -271,27 +293,27 @@ private:
     //! @param args - container of arguments
     //! @param buf - TLV packet buffer
     //! @return buffer length
-    static int buildTLVPacket4Depend(const std::vector<std::string>& args, char* buf);
+    static int buildTLVPacket4Depend(const Args& args, char* buf);
     //! @brief Build the TLV packet of the response message to get bash outputs.
     //! @param args - container of arguments
     //! @param buf - TLV packet buffer
     //! @return buffer length
-    static int buildTLVPacket4Execute(const std::vector<std::string>& args, char* buf);
+    static int buildTLVPacket4Execute(const Args& args, char* buf);
     //! @brief Build the TLV packet of the response message to get log contents.
     //! @param args - container of arguments
     //! @param buf - TLV packet buffer
     //! @return buffer length
-    static int buildTLVPacket4Journal(const std::vector<std::string>& args, char* buf);
+    static int buildTLVPacket4Journal(const Args& args, char* buf);
     //! @brief Build the TLV packet of the response message to get status reports.
     //! @param args - container of arguments
     //! @param buf - TLV packet buffer
     //! @return buffer length
-    static int buildTLVPacket4Monitor(const std::vector<std::string>& args, char* buf);
+    static int buildTLVPacket4Monitor(const Args& args, char* buf);
     //! @brief Build the TLV packet of the response message to get current configuration.
     //! @param args - container of arguments
     //! @param buf - TLV packet buffer
     //! @return buffer length
-    static int buildTLVPacket4Profile(const std::vector<std::string>& args, char* buf);
+    static int buildTLVPacket4Profile(const Args& args, char* buf);
     //! @brief Fill the shared memory.
     //! @param contents - contents to be filled
     //! @return shm id
@@ -324,15 +346,15 @@ private:
     //! @brief The synchronization condition for daemon. Use with daemonMtx.
     std::condition_variable daemonCond;
     //! @brief Flag to indicate whether it is viewing.
-    std::atomic<bool> ongoing{false};
+    std::atomic_bool ongoing{false};
     //! @brief Flag for rollback request.
-    std::atomic<bool> toReset{false};
+    std::atomic_bool toReset{false};
     //! @brief Mutex for controlling output.
     mutable std::mutex outputMtx;
     //! @brief The synchronization condition for output. Use with outputMtx.
     std::condition_variable outputCond;
     //! @brief Flag to indicate whether the output is complete.
-    std::atomic<bool> outputCompleted{false};
+    std::atomic_bool outputCompleted{false};
     //! @brief Renew the server.
     //! @tparam T - type of server
     template <typename T>

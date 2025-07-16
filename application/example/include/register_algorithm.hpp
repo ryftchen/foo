@@ -147,7 +147,7 @@ class ApplyAlgorithm
 {
 public:
     //! @brief Enumerate specific algorithm choices.
-    enum Category : std::uint8_t
+    enum class Category : std::uint8_t
     {
         //! @brief Match.
         match,

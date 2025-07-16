@@ -139,7 +139,7 @@ class ApplyDataStructure
 {
 public:
     //! @brief Enumerate specific data structure choices.
-    enum Category : std::uint8_t
+    enum class Category : std::uint8_t
     {
         //! @brief Cache.
         cache,

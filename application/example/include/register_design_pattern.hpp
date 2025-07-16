@@ -117,7 +117,7 @@ class ApplyDesignPattern
 {
 public:
     //! @brief Enumerate specific design pattern choices.
-    enum Category : std::uint8_t
+    enum class Category : std::uint8_t
     {
         //! @brief Behavioral.
         behavioral,
