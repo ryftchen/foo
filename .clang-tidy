@@ -87,7 +87,6 @@ CheckOptions:
   readability-identifier-naming.TypedefCase: CamelCase
   readability-identifier-naming.TypeAliasCase: CamelCase
   readability-identifier-naming.TypeTemplateParameterCase: CamelCase
-  readability-identifier-naming.TypeTemplateParameterIgnoredRegexp: expr-type
   readability-identifier-naming.UnionCase: CamelCase
   readability-identifier-naming.VariableCase: camelBack
   readability-magic-numbers.IgnoreAllFloatingPointValues: true
