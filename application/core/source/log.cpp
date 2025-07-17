@@ -556,6 +556,11 @@ bool Log::awaitNotification2Retry()
     return toReset.load();
 }
 
+template class Holder<Log::OutputLevel::debug>;
+template class Holder<Log::OutputLevel::info>;
+template class Holder<Log::OutputLevel::warning>;
+template class Holder<Log::OutputLevel::error>;
+
 //! @brief The operator (<<) overloading of the State enum.
 //! @param os - output stream object
 //! @param state - specific value of State enum
