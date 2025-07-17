@@ -22,7 +22,7 @@
 #include "utility/include/io.hpp"
 
 //! @brief Log with debug level.
-#define LOG_DBG application::log::Log::Holder<application::log::Log::OutputLevel::debug>().stream()
+#define LOG_DBG application::log::Holder<application::log::Log::OutputLevel::debug>().stream()
 //! @brief Log with debug level (printf style).
 #define LOG_DBG_P(fmt, ...)             \
     application::log::Log::printfStyle( \
@@ -32,7 +32,7 @@
     application::log::Log::formatStyle( \
         application::log::Log::OutputLevel::debug, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with info level.
-#define LOG_INF application::log::Log::Holder<application::log::Log::OutputLevel::info>().stream()
+#define LOG_INF application::log::Holder<application::log::Log::OutputLevel::info>().stream()
 //! @brief Log with info level (printf style).
 #define LOG_INF_P(fmt, ...)             \
     application::log::Log::printfStyle( \
@@ -42,7 +42,7 @@
     application::log::Log::formatStyle( \
         application::log::Log::OutputLevel::info, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with warning level.
-#define LOG_WRN application::log::Log::Holder<application::log::Log::OutputLevel::warning>().stream()
+#define LOG_WRN application::log::Holder<application::log::Log::OutputLevel::warning>().stream()
 //! @brief Log with warning level (printf style).
 #define LOG_WRN_P(fmt, ...)             \
     application::log::Log::printfStyle( \
@@ -52,7 +52,7 @@
     application::log::Log::formatStyle( \
         application::log::Log::OutputLevel::warning, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with error level.
-#define LOG_ERR application::log::Log::Holder<application::log::Log::OutputLevel::error>().stream()
+#define LOG_ERR application::log::Holder<application::log::Log::OutputLevel::error>().stream()
 //! @brief Log with error level (printf style).
 #define LOG_ERR_P(fmt, ...)             \
     application::log::Log::printfStyle( \
@@ -208,28 +208,6 @@ public:
         const std::uint32_t srcLine,
         const std::format_string<Args...>& format,
         Args&&... args);
-    //! @brief Log holder for flushing.
-    //! @tparam Lv - output level
-    template <OutputLevel Lv>
-    class Holder
-    {
-    public:
-        //! @brief Construct a new Holder object.
-        //! @param srcLoc - current source location
-        explicit Holder(const std::source_location& srcLoc = std::source_location::current()) : location{srcLoc} {}
-        //! @brief Destroy the Holder object.
-        virtual ~Holder() { printfStyle(Lv, location.file_name(), location.line(), output.str()); }
-
-        //! @brief Get the output stream for flushing.
-        //! @return reference of the output stream object, which is on string based
-        std::ostringstream& stream() { return output; }
-
-    private:
-        //! @brief Output stream for flushing.
-        std::ostringstream output;
-        //! @brief Source location.
-        const std::source_location location;
-    };
 
     static_assert((sourceDirectory.front() == '/') && (sourceDirectory.back() == '/'));
 
@@ -412,22 +390,49 @@ void Log::formatStyle(
     const std::string_view srcFile,
     const std::uint32_t srcLine,
     const std::format_string<Args...>& format,
-    Args&&... args)
+    Args&&... args) // NOLINT(cppcoreguidelines-missing-std-forward)
 {
     if (configure::detail::activateHelper())
     {
         getInstance().flush(
             severity,
             createLabelTemplate(srcFile, srcLine),
-            std::vformat(format.get(), std::make_format_args(std::forward<Args>(args)...)));
+            std::vformat(format.get(), std::make_format_args(args...)));
         return;
     }
 
     const auto rows = reformatContents(
         std::string{sourceDirectory.substr(1, sourceDirectory.length() - 2)} + ": ",
-        std::vformat(format.get(), std::make_format_args(std::forward<Args>(args)...)));
+        std::vformat(format.get(), std::make_format_args(args...)));
     std::for_each(rows.cbegin(), rows.cend(), [](const auto& output) { std::clog << output << std::endl; });
 }
+
+//! @brief Log holder for flushing.
+//! @tparam Lv - output level
+template <Log::OutputLevel Lv>
+class Holder
+{
+public:
+    //! @brief Construct a new Holder object.
+    //! @param srcLoc - current source location
+    explicit Holder(const std::source_location& srcLoc = std::source_location::current()) : location{srcLoc} {}
+    //! @brief Destroy the Holder object.
+    virtual ~Holder() { Log::printfStyle(Lv, location.file_name(), location.line(), output.str()); }
+
+    //! @brief Get the output stream for flushing.
+    //! @return reference of the output stream object, which is on string based
+    std::ostringstream& stream() { return output; }
+
+private:
+    //! @brief Output stream for flushing.
+    std::ostringstream output;
+    //! @brief Source location.
+    const std::source_location location;
+};
+extern template class Holder<Log::OutputLevel::debug>;
+extern template class Holder<Log::OutputLevel::info>;
+extern template class Holder<Log::OutputLevel::warning>;
+extern template class Holder<Log::OutputLevel::error>;
 
 //! @brief Instance information, if enabled.
 namespace info
