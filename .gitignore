@@ -16,5 +16,8 @@ report/
 .run_dict
 core.*
 Cargo.lock
+GPATH
+GRTAGS
+GTAGS
 vgcore.*
 *.profraw
