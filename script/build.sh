@@ -14,6 +14,7 @@ declare -A ARGS=([help]=false [assume]=false [quick]=false [dry]=false [initiali
     [statistics]=false [format]=false [lint]=false [query]=false [doxygen]=false [browser]=false)
 declare -A DEV_OPT=([compiler]="gcc" [parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]="localhost"
     [tmpfs]=false)
+declare MULTI_CHOICE_ORDER=()
 declare SUDO_PREFIX=""
 declare STATUS=0
 declare CMAKE_CACHE_ENTRY=""
@@ -114,6 +115,21 @@ function count_enabled_multiple_choice_parameters()
     echo "${number}"
 
     return 0
+}
+
+function update_multiple_choice_order()
+{
+    local option="$1" has_added=false
+    for choice in "${MULTI_CHOICE_ORDER[@]}"; do
+        if [[ ${choice} == "${option}" ]]; then
+            has_added=true
+            break
+        fi
+    done
+
+    if [[ ${has_added} == false ]]; then
+        MULTI_CHOICE_ORDER+=("${option}")
+    fi
 }
 
 function handle_type_related_parameter()
@@ -220,36 +236,44 @@ function parse_parameters()
             ;;
         -H | --hook)
             validate_multiple_choice_exclusivity "$1"
+            update_multiple_choice_order "hook"
             ARGS[hook]=true
             ;;
         -s | --spell)
             validate_multiple_choice_exclusivity "$1"
+            update_multiple_choice_order "spell"
             ARGS[spell]=true
             ;;
         -S | --statistics)
             validate_multiple_choice_exclusivity "$1"
+            update_multiple_choice_order "statistics"
             ARGS[statistics]=true
             ;;
         -f | --format)
             validate_multiple_choice_exclusivity "$1"
+            update_multiple_choice_order "format"
             handle_type_related_parameter "format" "$@"
             shift $?
             ;;
         -l | --lint)
             validate_multiple_choice_exclusivity "$1"
+            update_multiple_choice_order "lint"
             handle_type_related_parameter "lint" "$@"
             shift $?
             ;;
         -q | --query)
             validate_multiple_choice_exclusivity "$1"
+            update_multiple_choice_order "query"
             ARGS[query]=true
             ;;
         -d | --doxygen)
             validate_multiple_choice_exclusivity "$1"
+            update_multiple_choice_order "doxygen"
             ARGS[doxygen]=true
             ;;
         -b | --browser)
             validate_multiple_choice_exclusivity "$1"
+            update_multiple_choice_order "browser"
             ARGS[browser]=true
             ;;
         *)
@@ -1050,14 +1074,29 @@ function try_perform_multiple_choice_options()
 {
     check_potential_dependencies
 
-    perform_hook_option
-    perform_spell_option
-    perform_statistics_option
-    perform_format_option
-    perform_lint_option
-    perform_query_option
-    perform_doxygen_option
-    perform_browser_option
+    for choice in "${MULTI_CHOICE_ORDER[@]}"; do
+        if [[ ${choice} == "hook" ]]; then
+            perform_hook_option
+        elif [[ ${choice} == "spell" ]]; then
+            perform_spell_option
+        elif [[ ${choice} == "statistics" ]]; then
+            perform_statistics_option
+        elif [[ ${choice} == "format" ]]; then
+            perform_format_option
+        elif [[ ${choice} == "lint" ]]; then
+            perform_lint_option
+        elif [[ ${choice} == "query" ]]; then
+            perform_query_option
+        elif [[ ${choice} == "doxygen" ]]; then
+            perform_doxygen_option
+        elif [[ ${choice} == "browser" ]]; then
+            perform_browser_option
+        fi
+
+        if [[ ${STATUS} != 0 ]]; then
+            exit "${STATUS}"
+        fi
+    done
 }
 
 function set_compile_condition()
