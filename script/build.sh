@@ -19,7 +19,6 @@ declare SUDO_PREFIX=""
 declare STATUS=0
 declare CMAKE_CACHE_ENTRY=""
 declare CMAKE_BUILD_OPTION=""
-declare BUILD_TYPE="Debug"
 
 function shell()
 {
@@ -35,7 +34,7 @@ function die()
 
 function shell_command()
 {
-    if [[ ${ARGS[dry]} != false ]]; then
+    if [[ ${ARGS[dry]} == true ]]; then
         printf "${ESC_COLOR[exec]}[ exec ] ${ESC_COLOR[time]}$(date "+%b %d %T")${ESC_OFF} $ %s\n" "$*"
         echo
         return
@@ -69,9 +68,55 @@ function wait_until_get_input()
     return 0
 }
 
+function clean_up_temporary_files()
+{
+    local app_comp_db=${FOLDER[bld]}/${COMPILE_DB}
+    if [[ -f ./${app_comp_db}.bak ]]; then
+        shell_command "rm -rf ./${app_comp_db} && mv ./${app_comp_db}.bak ./${app_comp_db}"
+    fi
+    local tst_comp_db=${FOLDER[tst]}/${FOLDER[bld]}/${COMPILE_DB}
+    if [[ -f ./${tst_comp_db}.bak ]]; then
+        shell_command "rm -rf ./${tst_comp_db} && mv ./${tst_comp_db}.bak ./${tst_comp_db}"
+    fi
+}
+
+# shellcheck disable=SC2317
+function signal_handler()
+{
+    clean_up_temporary_files
+
+    exit 1
+}
+
+function prepare_environment()
+{
+    export TERM=linux TERMINFO=/etc/terminfo
+    if [[ -n ${FOO_ENV} ]]; then
+        if [[ ${FOO_ENV} != "foo_dev" ]]; then
+            die "The environment variable FOO_ENV must be foo_dev."
+        fi
+    else
+        die "Please export the environment variable FOO_ENV."
+    fi
+
+    local script_path
+    script_path=$(cd "$(dirname "${0}")" &>/dev/null && pwd)
+    if [[ ${script_path} != *"${FOLDER[proj]}/${FOLDER[scr]}" ]]; then
+        die "Illegal path to current script."
+    fi
+    cd "$(dirname "${script_path}")" || exit 1
+
+    if [[ ${EUID} -ne 0 ]]; then
+        SUDO_PREFIX="sudo "
+    fi
+    trap signal_handler SIGINT SIGTERM
+    clean_up_temporary_files
+}
+
 function validate_single_choice_exclusivity()
 {
-    if [[ $(count_enabled_single_choice_parameters) -gt 0 ]] || [[ $(count_enabled_multiple_choice_parameters) -gt 0 ]]; then
+    if [[ $(count_enabled_single_choice_parameters) -gt 0 ]] \
+        || [[ $(count_enabled_multiple_choice_parameters) -gt 0 ]]; then
         die "Mutually exclusive option: $1 is not allowed."
     fi
 }
@@ -160,12 +205,52 @@ function handle_type_related_parameter()
     fi
 }
 
+function perform_help_option()
+{
+    if [[ ${ARGS[help]} == false ]]; then
+        return
+    fi
+
+    echo "usage: $(basename "${0}") [-h] [-A {y,n}] [-Q] [-D] [-I] [-C] [-i] [-u] [-q] [-c] [-a] [-t [-r]] \
+[[{-H,-c,-f [cpp,sh,py,rs],-l [cpp,sh,py,rs],-S,-b,-d} ...] [-r]]"
+    echo
+    echo "build script"
+    echo
+    echo "options:"
+    echo "  -h, --help            show this help message and exit"
+    echo "  -A {y,n}, --assume {y,n}"
+    echo "                        assume confirmation is a yes or no"
+    echo "  -Q, --quick           quick process if support filter by type"
+    echo "  -D, --dry             dry run for script to preview"
+    echo "  -I, --initialize      initialize environment and exit"
+    echo "  -C, --clean           clean up project folder and exit"
+    echo "  -i, --install         install binary with libraries and exit"
+    echo "  -u, --uninstall       uninstall binary with libraries and exit"
+    echo "  -c, --container       construct docker container and exit"
+    echo "  -a, --archive         start or stop archive server and exit"
+    echo "  -t, --test            only build unit test and exit"
+    echo "  -r, --release         set as release version globally"
+    echo "  -H, --hook            run hook before commit for precheck"
+    echo "  -s, --spell           spell check against dictionaries"
+    echo "  -S, --statistics      lines of code classification statistics"
+    echo "  -f [cpp,sh,py,rs], --format [cpp,sh,py,rs]"
+    echo "                        format all code files or by type"
+    echo "  -l [cpp,sh,py,rs], --lint [cpp,sh,py,rs]"
+    echo "                        lint all code files or by type"
+    echo "  -q, --query           scan and query source code only"
+    echo "  -d, --doxygen         project documentation with doxygen"
+    echo "  -b, --browser         generate web-based code browser like IDE"
+
+    exit "${STATUS}"
+}
+
 function parse_parameters()
 {
     while [[ $# -gt 0 ]]; do
         case $1 in
         -h | --help)
             ARGS[help]=true
+            perform_help_option
             ;;
         -A | --assume)
             if [[ ${ARGS[assume]} != false ]]; then
@@ -216,9 +301,9 @@ function parse_parameters()
             ;;
         -t | --test)
             if {
-                [[ ${ARGS[release]} != false ]] && [[ $(count_enabled_multiple_choice_parameters) -gt 1 ]]
+                [[ ${ARGS[release]} == true ]] && [[ $(count_enabled_multiple_choice_parameters) -gt 1 ]]
             } || {
-                [[ ${ARGS[release]} = false ]] && [[ $(count_enabled_multiple_choice_parameters) -gt 0 ]]
+                [[ ${ARGS[release]} == false ]] && [[ $(count_enabled_multiple_choice_parameters) -gt 0 ]]
             } || [[ $(count_enabled_single_choice_parameters) -gt 0 ]]; then
                 die "Mutually exclusive option: $1 is not allowed."
             fi
@@ -226,9 +311,9 @@ function parse_parameters()
             ;;
         -r | --release)
             if {
-                [[ ${ARGS[test]} != false ]] && [[ $(count_enabled_single_choice_parameters) -gt 1 ]]
+                [[ ${ARGS[test]} == true ]] && [[ $(count_enabled_single_choice_parameters) -gt 1 ]]
             } || {
-                [[ ${ARGS[test]} = false ]] && [[ $(count_enabled_single_choice_parameters) -gt 0 ]]
+                [[ ${ARGS[test]} == false ]] && [[ $(count_enabled_single_choice_parameters) -gt 0 ]]
             }; then
                 die "Mutually exclusive option: $1 is not allowed."
             fi
@@ -284,48 +369,226 @@ function parse_parameters()
     done
 }
 
-function perform_help_option()
+function set_compile_condition()
 {
-    if [[ ${ARGS[help]} = false ]]; then
-        return
+    if [[ -f ./${FOLDER[scr]}/.build_env ]] && ! {
+        [[ -n ${FOO_BLD_FORCE} ]] && [[ ${FOO_BLD_FORCE} == "on" ]]
+    }; then
+        # shellcheck source=/dev/null
+        source "./${FOLDER[scr]}/.build_env"
+        if [[ -n ${FOO_BLD_COMPILER} ]]; then
+            if [[ ! ${FOO_BLD_COMPILER} =~ ^(gcc|clang)$ ]]; then
+                die "The FOO_BLD_COMPILER must be gcc or clang."
+            fi
+            DEV_OPT[compiler]=${FOO_BLD_COMPILER}
+        fi
+        if [[ -n ${FOO_BLD_PARALLEL} ]]; then
+            if [[ ! ${FOO_BLD_PARALLEL} =~ ^[0-9]+$ ]]; then
+                die "The FOO_BLD_PARALLEL must be a positive integer."
+            fi
+            DEV_OPT[parallel]=${FOO_BLD_PARALLEL}
+        fi
+        if [[ -n ${FOO_BLD_PCH} ]]; then
+            if [[ ! ${FOO_BLD_PCH} =~ ^(on|off)$ ]]; then
+                die "The FOO_BLD_PCH must be on or off."
+            fi
+            DEV_OPT[pch]=$([[ ${FOO_BLD_PCH} == "on" ]] && echo true || echo false)
+        fi
+        if [[ -n ${FOO_BLD_UNITY} ]]; then
+            if [[ ! ${FOO_BLD_UNITY} =~ ^(on|off)$ ]]; then
+                die "The FOO_BLD_UNITY must be on or off."
+            fi
+            DEV_OPT[unity]=$([[ ${FOO_BLD_UNITY} == "on" ]] && echo true || echo false)
+        fi
+        if [[ -n ${FOO_BLD_CCACHE} ]]; then
+            if [[ ! ${FOO_BLD_CCACHE} =~ ^(on|off)$ ]]; then
+                die "The FOO_BLD_CCACHE must be on or off."
+            fi
+            DEV_OPT[ccache]=$([[ ${FOO_BLD_CCACHE} == "on" ]] && echo true || echo false)
+        fi
+        if [[ -n "${FOO_BLD_DISTCC}" ]]; then
+            if [[ -z "${FOO_BLD_DISTCC// /}" ]]; then
+                die "The FOO_BLD_DISTCC must be a non-empty string."
+            fi
+            DEV_OPT[distcc]=${FOO_BLD_DISTCC}
+        fi
+        if [[ -n ${FOO_BLD_TMPFS} ]]; then
+            if [[ ! ${FOO_BLD_TMPFS} =~ ^(on|off)$ ]]; then
+                die "The FOO_BLD_TMPFS must be on or off."
+            fi
+            DEV_OPT[tmpfs]=$([[ ${FOO_BLD_TMPFS} == "on" ]] && echo true || echo false)
+        fi
+    fi
+    if {
+        [[ -n ${FOO_BLD_COV} ]] && [[ ${FOO_BLD_COV} == "llvm-cov" ]]
+    } || {
+        [[ -n ${FOO_BLD_SAN} ]] && [[ ${FOO_BLD_SAN} =~ ^(asan|tsan|ubsan)$ ]]
+    }; then
+        DEV_OPT[compiler]="clang"
     fi
 
-    echo "usage: $(basename "${0}") [-h] [-A {y,n}] [-Q] [-D] [-I] [-C] [-i] [-u] [-q] [-c] [-a] [-t [-r]] \
-[[{-H,-c,-f [cpp,sh,py,rs],-l [cpp,sh,py,rs],-S,-b,-d} ...] [-r]]"
-    echo
-    echo "build script"
-    echo
-    echo "options:"
-    echo "  -h, --help            show this help message and exit"
-    echo "  -A {y,n}, --assume {y,n}"
-    echo "                        assume confirmation is a yes or no"
-    echo "  -Q, --quick           quick process if support filter by type"
-    echo "  -D, --dry             dry run for script to preview"
-    echo "  -I, --initialize      initialize environment and exit"
-    echo "  -C, --clean           clean up project folder and exit"
-    echo "  -i, --install         install binary with libraries and exit"
-    echo "  -u, --uninstall       uninstall binary with libraries and exit"
-    echo "  -c, --container       construct docker container and exit"
-    echo "  -a, --archive         start or stop archive server and exit"
-    echo "  -t, --test            only build unit test and exit"
-    echo "  -r, --release         set as release version globally"
-    echo "  -H, --hook            run hook before commit for precheck"
-    echo "  -s, --spell           spell check against dictionaries"
-    echo "  -S, --statistics      lines of code classification statistics"
-    echo "  -f [cpp,sh,py,rs], --format [cpp,sh,py,rs]"
-    echo "                        format all code files or by type"
-    echo "  -l [cpp,sh,py,rs], --lint [cpp,sh,py,rs]"
-    echo "                        lint all code files or by type"
-    echo "  -q, --query           scan and query source code only"
-    echo "  -d, --doxygen         project documentation with doxygen"
-    echo "  -b, --browser         generate web-based code browser like IDE"
+    local build_type="Debug"
+    if [[ ${ARGS[release]} == true ]]; then
+        build_type="Release"
+    fi
+    CMAKE_CACHE_ENTRY=" -D CMAKE_BUILD_TYPE=${build_type}"
+    if [[ ${DEV_OPT[compiler]} == "gcc" ]]; then
+        local ver=14
+        export CC=gcc-${ver} CXX=g++-${ver}
+        if ! command -v "${CC}" >/dev/null 2>&1 || ! command -v "${CXX}" >/dev/null 2>&1; then
+            die "No ${CC} or ${CXX} program. Please install it."
+        fi
+    elif [[ ${DEV_OPT[compiler]} == "clang" ]]; then
+        local ver=19
+        export CC=clang-${ver} CXX=clang++-${ver}
+        if ! command -v "${CC}" >/dev/null 2>&1 || ! command -v "${CXX}" >/dev/null 2>&1; then
+            die "No ${CC} or ${CXX} program. Please install it."
+        fi
+    fi
+    CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D CMAKE_C_COMPILER=${CC} -D CMAKE_CXX_COMPILER=${CXX}"
+    local gnu_lib_ver=14
+    if command -v "gcc-${gnu_lib_ver}" >/dev/null 2>&1 && command -v "g++-${gnu_lib_ver}" >/dev/null 2>&1; then
+        local gcc_processor gxx_processor
+        gcc_processor=$("gcc-${gnu_lib_ver}" -dumpmachine)
+        gxx_processor=$("g++-${gnu_lib_ver}" -dumpmachine)
+        export C_INCLUDE_PATH=/usr/include:/usr/lib/gcc/${gcc_processor}/${gnu_lib_ver}/include \
+            CPLUS_INCLUDE_PATH=/usr/include/c++/${gnu_lib_ver}:/usr/include/${gxx_processor}/c++/${gnu_lib_ver}
+    fi
 
-    exit "${STATUS}"
+    if [[ ! ${DEV_OPT[parallel]} -eq 0 ]]; then
+        CMAKE_BUILD_OPTION=" -j ${DEV_OPT[parallel]}"
+    fi
+    if [[ ${DEV_OPT[pch]} == true ]]; then
+        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D TOOLCHAIN_PCH=ON"
+    fi
+    if [[ ${DEV_OPT[unity]} == true ]]; then
+        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D TOOLCHAIN_UNITY=ON"
+    fi
+    if [[ ${DEV_OPT[ccache]} == true ]]; then
+        if ! command -v ccache >/dev/null; then
+            die "No ccache program. Please install it."
+        fi
+        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D TOOLCHAIN_CCACHE=ON"
+        if [[ ${ARGS[test]} == false ]]; then
+            export CCACHE_DIR=${PWD}/${FOLDER[cac]}/ccache
+        else
+            export CCACHE_DIR=${PWD}/${FOLDER[tst]}/${FOLDER[cac]}/ccache
+        fi
+    fi
+    if [[ ${DEV_OPT[distcc]} != "localhost" ]]; then
+        if ! command -v distcc >/dev/null; then
+            die "No distcc program. Please install it."
+        fi
+        if [[ ${DEV_OPT[pch]} == true ]] || [[ ${DEV_OPT[unity]} == true ]]; then
+            die "Compilation relationships may have potential conflicts if the FOO_BLD_DISTCC is not localhost and the \
+FOO_BLD_PCH or FOO_BLD_UNITY is turned on."
+        fi
+        if [[ -n ${FOO_BLD_COV} ]] && [[ ${FOO_BLD_COV} == "llvm-cov" ]]; then
+            die "Code coverage may be affected if the FOO_BLD_DISTCC is not localhost."
+        fi
+        if [[ ${DEV_OPT[distcc]} == *"127.0.0.1"* ]]; then
+            local local_client="127.0.0.1/32" escaped_local_client
+            escaped_local_client=$(printf "%s\n" "${local_client}" | sed -e 's/[]\/$*.^[]/\\&/g')
+            if ! pgrep -a distccd \
+                | grep -e "-a ${escaped_local_client}\|--allow ${escaped_local_client}" >/dev/null 2>&1; then
+                die "No local distcc server has been detected, please start it manually, \
+e.g. with \"distccd --daemon --allow ${local_client}\"."
+            fi
+        fi
+        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D TOOLCHAIN_DISTCC=ON"
+        export DISTCC_HOSTS="localhost ${DEV_OPT[distcc]}"
+    fi
+    if [[ ${DEV_OPT[ccache]} == true ]] && [[ ${DEV_OPT[pch]} == true ]]; then
+        export CCACHE_PCH_EXTSUM=true CCACHE_SLOPPINESS=pch_defines,time_macros
+    fi
+    if [[ ${DEV_OPT[ccache]} == true ]] && [[ ${DEV_OPT[distcc]} != "localhost" ]]; then
+        export CCACHE_PREFIX=distcc
+    fi
+    local tmpfs_app_folder="${FOLDER[bld]}" tmpfs_tst_folder="${FOLDER[tst]}/${FOLDER[bld]}"
+    if [[ ${DEV_OPT[tmpfs]} == true ]]; then
+        if [[ ! -d ./${tmpfs_app_folder} ]]; then
+            shell_command "mkdir -p ./${tmpfs_app_folder}"
+        fi
+        if ! df -h -t tmpfs | grep -q "${FOLDER[proj]}/${tmpfs_app_folder}" 2>/dev/null; then
+            local tmpfs_app_size="512m"
+            shell_command "${SUDO_PREFIX}mount -t tmpfs -o size=${tmpfs_app_size} tmpfs ./${tmpfs_app_folder}"
+        fi
+
+        if [[ ! -d ./${tmpfs_tst_folder} ]]; then
+            shell_command "mkdir -p ./${tmpfs_tst_folder}"
+        fi
+        if ! df -h -t tmpfs | grep -q "${FOLDER[proj]}/${tmpfs_tst_folder}" 2>/dev/null; then
+            local tmpfs_tst_size="256m"
+            shell_command "${SUDO_PREFIX}mount -t tmpfs -o size=${tmpfs_tst_size} tmpfs ./${tmpfs_tst_folder}"
+        fi
+    else
+        if df -h -t tmpfs | grep -q "${FOLDER[proj]}/${tmpfs_app_folder}" 2>/dev/null; then
+            shell_command "${SUDO_PREFIX}umount ./${tmpfs_app_folder}"
+        fi
+        if df -h -t tmpfs | grep -q "${FOLDER[proj]}/${tmpfs_tst_folder}" 2>/dev/null; then
+            shell_command "${SUDO_PREFIX}umount ./${tmpfs_tst_folder}"
+        fi
+    fi
+}
+
+function update_compile_database()
+{
+    local source_folder=$1 build_folder=$2
+
+    if ! command -v cmake >/dev/null 2>&1 || ! command -v ninja >/dev/null 2>&1; then
+        die "No cmake or ninja program. Please install it."
+    fi
+
+    local cmake_cache="CMakeCache.txt"
+    if [[ -f ./${build_folder}/${cmake_cache} ]] \
+        && ! grep -Fwq "${DEV_OPT[compiler]}" "./${build_folder}/${cmake_cache}" 2>/dev/null; then
+        shell_command "rm -rf ./${build_folder}/${cmake_cache}"
+    fi
+    shell_command "cmake -S ./${source_folder} -B ./${build_folder} -G Ninja""${CMAKE_CACHE_ENTRY}"
+}
+
+function update_all_compile_databases()
+{
+    set_compile_condition
+    update_compile_database "" "${FOLDER[bld]}"
+    update_compile_database "${FOLDER[tst]}" "${FOLDER[tst]}/${FOLDER[bld]}"
+}
+
+function build_native_if_needed()
+{
+    local valid_param_num
+    valid_param_num=$(($(count_enabled_single_choice_parameters) + $(count_enabled_multiple_choice_parameters)))
+
+    if [[ valid_param_num -eq 0 ]] || {
+        [[ valid_param_num -eq 1 ]] && [[ ${ARGS[release]} == true ]]
+    }; then
+        set_compile_condition
+        update_compile_database "" "${FOLDER[bld]}"
+        NINJA_STATUS=$(echo -e "\e[92m[\e[92m%f/\e[92m%t\e[92m]\e[39m\e[49m ")
+        export NINJA_STATUS CLICOLOR_FORCE=1 TERM=dumb
+        shell_command "cmake --build ./${FOLDER[bld]}""${CMAKE_BUILD_OPTION}"
+
+        exit "${STATUS}"
+    fi
+
+    if {
+        [[ valid_param_num -eq 1 ]] && [[ ${ARGS[test]} == true ]]
+    } || {
+        [[ valid_param_num -eq 2 ]] && [[ ${ARGS[test]} == true ]] && [[ ${ARGS[release]} == true ]]
+    }; then
+        set_compile_condition
+        update_compile_database "${FOLDER[tst]}" "${FOLDER[tst]}/${FOLDER[bld]}"
+        NINJA_STATUS=$(echo -e "\e[92m[\e[92m%f/\e[92m%t\e[92m]\e[39m\e[49m ")
+        export NINJA_STATUS CLICOLOR_FORCE=1 TERM=dumb
+        shell_command "cmake --build ./${FOLDER[tst]}/${FOLDER[bld]}""${CMAKE_BUILD_OPTION}"
+
+        exit "${STATUS}"
+    fi
 }
 
 function perform_initialize_option()
 {
-    if [[ ${ARGS[initialize]} = false ]]; then
+    if [[ ${ARGS[initialize]} == false ]]; then
         return
     fi
 
@@ -381,7 +644,7 @@ EOF"
 
 function perform_clean_option()
 {
-    if [[ ${ARGS[clean]} = false ]]; then
+    if [[ ${ARGS[clean]} == false ]]; then
         return
     fi
 
@@ -414,7 +677,7 @@ function perform_clean_option()
 
 function perform_install_option()
 {
-    if [[ ${ARGS[install]} = false ]]; then
+    if [[ ${ARGS[install]} == false ]]; then
         return
     fi
 
@@ -455,7 +718,7 @@ function perform_install_option()
 
 function perform_uninstall_option()
 {
-    if [[ ${ARGS[uninstall]} = false ]]; then
+    if [[ ${ARGS[uninstall]} == false ]]; then
         return
     fi
 
@@ -485,7 +748,7 @@ function perform_uninstall_option()
 
 function perform_container_option()
 {
-    if [[ ${ARGS[container]} = false ]]; then
+    if [[ ${ARGS[container]} == false ]]; then
         return
     fi
 
@@ -516,7 +779,7 @@ function perform_container_option()
 
 function perform_archive_option()
 {
-    if [[ ${ARGS[archive]} = false ]]; then
+    if [[ ${ARGS[archive]} == false ]]; then
         return
     fi
 
@@ -605,7 +868,6 @@ EOF
 
 function try_perform_single_choice_options()
 {
-    perform_help_option
     perform_initialize_option
     perform_clean_option
     perform_install_option
@@ -614,75 +876,13 @@ function try_perform_single_choice_options()
     perform_archive_option
 }
 
-function check_potential_dependencies()
-{
-    if [[ ${ARGS[hook]} != false ]]; then
-        if ! command -v pre-commit >/dev/null 2>&1; then
-            die "No pre-commit program. Please install it."
-        fi
-    fi
-
-    if [[ ${ARGS[spell]} != false ]]; then
-        if ! command -v cspell >/dev/null 2>&1; then
-            die "No cspell program. Please install it."
-        fi
-    fi
-
-    if [[ ${ARGS[statistics]} != false ]]; then
-        if ! command -v cloc >/dev/null 2>&1; then
-            die "No cloc program. Please install it."
-        fi
-    fi
-
-    if [[ ${ARGS[format]} != false ]]; then
-        if ! command -v clang-format-19 >/dev/null 2>&1 || ! command -v shfmt >/dev/null 2>&1 \
-            || ! command -v black >/dev/null 2>&1 || ! command -v rustfmt >/dev/null 2>&1; then
-            die "No clang-format, shfmt, black or rustfmt program. Please install it."
-        fi
-    fi
-
-    if [[ ${ARGS[lint]} != false ]]; then
-        if ! command -v clang-tidy-19 >/dev/null 2>&1 || ! command -v run-clang-tidy-19 >/dev/null 2>&1 \
-            || ! command -v compdb >/dev/null 2>&1 || ! pip3 show clang-tidy-converter >/dev/null 2>&1 \
-            || ! command -v shellcheck >/dev/null 2>&1 || ! command -v pylint >/dev/null 2>&1 \
-            || ! command -v clippy-driver >/dev/null 2>&1; then
-            die "No clang-tidy (including run-clang-tidy-19, compdb, clang-tidy-converter), shellcheck, pylint \
-or clippy program. Please install it."
-        fi
-        if [[ ${DEV_OPT[pch]} = true ]] || [[ ${DEV_OPT[unity]} = true ]]; then
-            die "Due to the unconventional ${COMPILE_DB} file, the --lint option cannot run if the FOO_BLD_PCH or \
-FOO_BLD_UNITY is turned on."
-        fi
-    fi
-
-    if [[ ${ARGS[query]} = false ]]; then
-        if ! command -v codeql >/dev/null 2>&1 || ! command -v sarif >/dev/null 2>&1; then
-            die "No codeql (including sarif) program. Please install it."
-        fi
-    fi
-
-    if [[ ${ARGS[doxygen]} != false ]]; then
-        if ! command -v doxygen >/dev/null 2>&1 || ! command -v dot >/dev/null 2>&1; then
-            die "No doxygen (including dot) program. Please install it."
-        fi
-    fi
-
-    if [[ ${ARGS[browser]} != false ]]; then
-        if ! command -v codebrowser_generator >/dev/null 2>&1 \
-            || ! command -v codebrowser_indexgenerator >/dev/null 2>&1; then
-            die "No codebrowser_generator or codebrowser_indexgenerator program. Please install it."
-        fi
-        if [[ ${DEV_OPT[pch]} = true ]] || [[ ${DEV_OPT[unity]} = true ]]; then
-            die "Due to the unconventional ${COMPILE_DB} file, the --browser option cannot run if the FOO_BLD_PCH or \
-FOO_BLD_UNITY is turned on."
-        fi
-    fi
-}
-
 function perform_hook_option()
 {
-    if [[ ${ARGS[hook]} = false ]]; then
+    if [[ ${ARGS[hook]} == false ]]; then
         return
+    fi
+    if ! command -v pre-commit >/dev/null 2>&1; then
+        die "No pre-commit program. Please install it."
     fi
 
     shell_command "pre-commit install --config ./.pre-commit"
@@ -691,8 +891,11 @@ function perform_hook_option()
 
 function perform_spell_option()
 {
-    if [[ ${ARGS[spell]} = false ]]; then
+    if [[ ${ARGS[spell]} == false ]]; then
         return
+    fi
+    if ! command -v cspell >/dev/null 2>&1; then
+        die "No cspell program. Please install it."
     fi
 
     shell_command "cspell lint --config ./.cspell --show-context --no-cache"
@@ -700,8 +903,11 @@ function perform_spell_option()
 
 function perform_statistics_option()
 {
-    if [[ ${ARGS[statistics]} = false ]]; then
+    if [[ ${ARGS[statistics]} == false ]]; then
         return
+    fi
+    if ! command -v cloc >/dev/null 2>&1; then
+        die "No cloc program. Please install it."
     fi
 
     shell_command "printf \"C,C++,C/C++ Header\nBourne Shell\nPython\nRust\n\" \
@@ -710,12 +916,16 @@ function perform_statistics_option()
 
 function perform_format_option()
 {
-    if [[ ${ARGS[format]} = false ]]; then
+    if [[ ${ARGS[format]} == false ]]; then
         return
     fi
+    if ! command -v clang-format-19 >/dev/null 2>&1 || ! command -v shfmt >/dev/null 2>&1 \
+        || ! command -v black >/dev/null 2>&1 || ! command -v rustfmt >/dev/null 2>&1; then
+        die "No clang-format, shfmt, black or rustfmt program. Please install it."
+    fi
 
-    if [[ ${ARGS[format]} = true ]] || [[ ${ARGS[format]} = "cpp" ]]; then
-        if [[ ${ARGS[quick]} = false ]]; then
+    if [[ ${ARGS[format]} == true ]] || [[ ${ARGS[format]} == "cpp" ]]; then
+        if [[ ${ARGS[quick]} == false ]]; then
             shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
 ./${FOLDER[num]} ./${FOLDER[tst]} -name '*.cpp' -o -name '*.hpp' -o -name '*.tpp' | grep -v '/${FOLDER[bld]}/' \
 | xargs clang-format-19 --Werror -i --style=file:./.clang-format --verbose"
@@ -728,8 +938,8 @@ function perform_format_option()
         fi
     fi
 
-    if [[ ${ARGS[format]} = true ]] || [[ ${ARGS[format]} = "sh" ]]; then
-        if [[ ${ARGS[quick]} = false ]]; then
+    if [[ ${ARGS[format]} == true ]] || [[ ${ARGS[format]} == "sh" ]]; then
+        if [[ ${ARGS[quick]} == false ]]; then
             shell_command "shfmt -l -w ./${FOLDER[scr]}/*.sh"
         else
             local format_changed_sh="${GIT_CHANGE_CMD} | grep -E '\.sh$'"
@@ -739,8 +949,8 @@ function perform_format_option()
         fi
     fi
 
-    if [[ ${ARGS[format]} = true ]] || [[ ${ARGS[format]} = "py" ]]; then
-        if [[ ${ARGS[quick]} = false ]]; then
+    if [[ ${ARGS[format]} == true ]] || [[ ${ARGS[format]} == "py" ]]; then
+        if [[ ${ARGS[quick]} == false ]]; then
             shell_command "black --config ./.toml ./${FOLDER[scr]}/*.py"
         else
             local format_changed_py="${GIT_CHANGE_CMD} | grep -E '\.py$'"
@@ -750,10 +960,10 @@ function perform_format_option()
         fi
     fi
 
-    if [[ ${ARGS[format]} = true ]] || [[ ${ARGS[format]} = "rs" ]]; then
+    if [[ ${ARGS[format]} == true ]] || [[ ${ARGS[format]} == "rs" ]]; then
         local cargo_toml="Cargo.toml"
         local crate_path="./${FOLDER[doc]}/server/${cargo_toml}"
-        if [[ ${ARGS[quick]} = false ]]; then
+        if [[ ${ARGS[quick]} == false ]]; then
             shell_command "cargo fmt --all --verbose --manifest-path ${crate_path}"
         else
             local format_changed_rs="${GIT_CHANGE_CMD} | grep -E '\.rs$'"
@@ -772,11 +982,24 @@ do while [[ ! -f \${path}/${cargo_toml} ]] && [[ \${path} != \"/\" ]]; do path=\
 
 function perform_lint_option()
 {
-    if [[ ${ARGS[lint]} = false ]]; then
+    if [[ ${ARGS[lint]} == false ]]; then
         return
     fi
+    if ! command -v clang-tidy-19 >/dev/null 2>&1 || ! command -v run-clang-tidy-19 >/dev/null 2>&1 \
+        || ! command -v compdb >/dev/null 2>&1 || ! pip3 show clang-tidy-converter >/dev/null 2>&1 \
+        || ! command -v shellcheck >/dev/null 2>&1 || ! command -v pylint >/dev/null 2>&1 \
+        || ! command -v clippy-driver >/dev/null 2>&1; then
+        die "No clang-tidy (including run-clang-tidy-19, compdb, clang-tidy-converter), shellcheck, pylint or clippy \
+program. Please install it."
+    fi
 
-    if [[ ${ARGS[lint]} = true ]] || [[ ${ARGS[lint]} = "cpp" ]]; then
+    if [[ ${ARGS[lint]} == true ]] || [[ ${ARGS[lint]} == "cpp" ]]; then
+        update_all_compile_databases
+        if [[ ${DEV_OPT[pch]} == true ]] || [[ ${DEV_OPT[unity]} == true ]]; then
+            die "Due to the unconventional ${COMPILE_DB} file, the --lint option cannot run if the FOO_BLD_PCH or \
+FOO_BLD_UNITY is turned on."
+        fi
+
         local app_comp_db=${FOLDER[bld]}/${COMPILE_DB}
         if [[ ! -f ./${app_comp_db} ]]; then
             die "There is no ${COMPILE_DB} file in the ${FOLDER[bld]} folder. Please generate it."
@@ -803,7 +1026,7 @@ function perform_lint_option()
         elif [[ -f ${clang_tidy_log} ]]; then
             shell_command "rm -rf ${clang_tidy_log}"
         fi
-        if [[ ${ARGS[quick]} = false ]]; then
+        if [[ ${ARGS[quick]} == false ]]; then
             shell_command "set -o pipefail && find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} \
 ./${FOLDER[ds]} ./${FOLDER[dp]} ./${FOLDER[num]} -name '*.cpp' -o -name '*.hpp' \
 | xargs run-clang-tidy-19 -config-file=./.clang-tidy -p ./${FOLDER[bld]} -quiet | tee -a ${clang_tidy_log}"
@@ -815,8 +1038,8 @@ function perform_lint_option()
 | xargs run-clang-tidy-19 -config-file=./.clang-tidy -p ./${FOLDER[bld]} -quiet | tee -a ${clang_tidy_log}"
             fi
         fi
-        if [[ ${exist_file_extention} = true ]]; then
-            if [[ ${ARGS[quick]} = false ]]; then
+        if [[ ${exist_file_extention} == true ]]; then
+            if [[ ${ARGS[quick]} == false ]]; then
                 shell_command "set -o pipefail && find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} \
 ./${FOLDER[ds]} ./${FOLDER[dp]} ./${FOLDER[num]} -name '*.tpp' \
 | xargs clang-tidy-19 --config-file=./.clang-tidy -p ./${FOLDER[bld]} --quiet | tee -a ${clang_tidy_log}"
@@ -837,7 +1060,7 @@ function perform_lint_option()
         fi
         shell_command "compdb -p ./${FOLDER[tst]}/${FOLDER[bld]} list >./${COMPILE_DB} \
 && mv ./${tst_comp_db} ./${tst_comp_db}.bak && mv ./${COMPILE_DB} ./${FOLDER[tst]}/${FOLDER[bld]}"
-        if [[ ${ARGS[quick]} = false ]]; then
+        if [[ ${ARGS[quick]} == false ]]; then
             shell_command "set -o pipefail && find ./${FOLDER[tst]} -name '*.cpp' \
 | xargs run-clang-tidy-19 -config-file=./.clang-tidy -p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet \
 | tee -a ${clang_tidy_log}"
@@ -854,8 +1077,8 @@ function perform_lint_option()
 | python3 -m clang_tidy_converter --project_root ./ html >${clang_tidy_output_path}/index.html"
     fi
 
-    if [[ ${ARGS[lint]} = true ]] || [[ ${ARGS[lint]} = "sh" ]]; then
-        if [[ ${ARGS[quick]} = false ]]; then
+    if [[ ${ARGS[lint]} == true ]] || [[ ${ARGS[lint]} == "sh" ]]; then
+        if [[ ${ARGS[quick]} == false ]]; then
             shell_command "shellcheck -a ./${FOLDER[scr]}/*.sh"
         else
             local lint_changed_sh="${GIT_CHANGE_CMD} | grep -E '\.sh$'"
@@ -865,8 +1088,8 @@ function perform_lint_option()
         fi
     fi
 
-    if [[ ${ARGS[lint]} = true ]] || [[ ${ARGS[lint]} = "py" ]]; then
-        if [[ ${ARGS[quick]} = false ]]; then
+    if [[ ${ARGS[lint]} == true ]] || [[ ${ARGS[lint]} == "py" ]]; then
+        if [[ ${ARGS[quick]} == false ]]; then
             shell_command "pylint --rcfile=./.pylintrc ./${FOLDER[scr]}/*.py"
         else
             local lint_changed_py="${GIT_CHANGE_CMD} | grep -E '\.py$'"
@@ -876,14 +1099,14 @@ function perform_lint_option()
         fi
     fi
 
-    if [[ ${ARGS[lint]} = true ]] || [[ ${ARGS[lint]} = "rs" ]]; then
+    if [[ ${ARGS[lint]} == true ]] || [[ ${ARGS[lint]} == "rs" ]]; then
         local build_type
-        if [[ ${BUILD_TYPE} = "Release" ]]; then
+        if [[ ${ARGS[release]} == true ]]; then
             build_type=" --release"
         fi
         local cargo_toml="Cargo.toml"
         local crate_path="./${FOLDER[doc]}/server/${cargo_toml}"
-        if [[ ${ARGS[quick]} = false ]]; then
+        if [[ ${ARGS[quick]} == false ]]; then
             shell_command "cargo clippy --manifest-path ${crate_path}""${build_type}"
         else
             local lint_changed_rs="${GIT_CHANGE_CMD} | grep -E '\.rs$'"
@@ -902,13 +1125,16 @@ do while [[ ! -f \${path}/${cargo_toml} ]] && [[ \${path} != \"/\" ]]; do path=\
 
 function perform_query_option()
 {
-    if [[ ${ARGS[query]} = false ]]; then
+    if [[ ${ARGS[query]} == false ]]; then
         return
+    fi
+    if ! command -v codeql >/dev/null 2>&1 || ! command -v sarif >/dev/null 2>&1; then
+        die "No codeql (including sarif) program. Please install it."
     fi
 
     local build_script other_option
     build_script=./${FOLDER[scr]}/$(basename "$0")
-    if [[ ${ARGS[release]} != false ]]; then
+    if [[ ${ARGS[release]} == true ]]; then
         other_option=" --release"
     fi
     local rebuild_script=./${FOLDER[scr]}/.build_afresh
@@ -988,8 +1214,11 @@ function package_for_doxygen()
 
 function perform_doxygen_option()
 {
-    if [[ ${ARGS[doxygen]} = false ]]; then
+    if [[ ${ARGS[doxygen]} == false ]]; then
         return
+    fi
+    if ! command -v doxygen >/dev/null 2>&1 || ! command -v dot >/dev/null 2>&1; then
+        die "No doxygen (including dot) program. Please install it."
     fi
 
     local commit_id
@@ -1015,6 +1244,12 @@ function perform_doxygen_option()
 function package_for_browser()
 {
     local commit_id=$1
+
+    update_all_compile_databases
+    if [[ ${DEV_OPT[pch]} == true ]] || [[ ${DEV_OPT[unity]} == true ]]; then
+        die "Due to the unconventional ${COMPILE_DB} file, the --browser option cannot run if the FOO_BLD_PCH or \
+FOO_BLD_UNITY is turned on."
+    fi
 
     if [[ ! -f ./${FOLDER[bld]}/${COMPILE_DB} ]]; then
         die "There is no ${COMPILE_DB} file in the ${FOLDER[bld]} folder. Please generate it."
@@ -1046,8 +1281,12 @@ href=\"https://web.archive.org/web/20220309195008if_/https://code.woboq.org/favi
 
 function perform_browser_option()
 {
-    if [[ ${ARGS[browser]} = false ]]; then
+    if [[ ${ARGS[browser]} == false ]]; then
         return
+    fi
+    if ! command -v codebrowser_generator >/dev/null 2>&1 \
+        || ! command -v codebrowser_indexgenerator >/dev/null 2>&1; then
+        die "No codebrowser_generator or codebrowser_indexgenerator program. Please install it."
     fi
 
     local commit_id
@@ -1072,8 +1311,6 @@ function perform_browser_option()
 
 function try_perform_multiple_choice_options()
 {
-    check_potential_dependencies
-
     for choice in "${MULTI_CHOICE_ORDER[@]}"; do
         if [[ ${choice} == "hook" ]]; then
             perform_hook_option
@@ -1099,247 +1336,12 @@ function try_perform_multiple_choice_options()
     done
 }
 
-function set_compile_condition()
-{
-    local tmpfs_subfolder=$1 tmpfs_size=$2
-
-    if [[ -f ./${FOLDER[scr]}/.build_env ]] && ! {
-        [[ -n ${FOO_BLD_FORCE} ]] && [[ ${FOO_BLD_FORCE} = "on" ]]
-    }; then
-        # shellcheck source=/dev/null
-        source "./${FOLDER[scr]}/.build_env"
-        if [[ -n ${FOO_BLD_COMPILER} ]]; then
-            if [[ ! ${FOO_BLD_COMPILER} =~ ^(gcc|clang)$ ]]; then
-                die "The FOO_BLD_COMPILER must be gcc or clang."
-            fi
-            DEV_OPT[compiler]=${FOO_BLD_COMPILER}
-        fi
-        if [[ -n ${FOO_BLD_PARALLEL} ]]; then
-            if [[ ! ${FOO_BLD_PARALLEL} =~ ^[0-9]+$ ]]; then
-                die "The FOO_BLD_PARALLEL must be a positive integer."
-            fi
-            DEV_OPT[parallel]=${FOO_BLD_PARALLEL}
-        fi
-        if [[ -n ${FOO_BLD_PCH} ]]; then
-            if [[ ! ${FOO_BLD_PCH} =~ ^(on|off)$ ]]; then
-                die "The FOO_BLD_PCH must be on or off."
-            fi
-            DEV_OPT[pch]=$([[ ${FOO_BLD_PCH} = "on" ]] && echo true || echo false)
-        fi
-        if [[ -n ${FOO_BLD_UNITY} ]]; then
-            if [[ ! ${FOO_BLD_UNITY} =~ ^(on|off)$ ]]; then
-                die "The FOO_BLD_UNITY must be on or off."
-            fi
-            DEV_OPT[unity]=$([[ ${FOO_BLD_UNITY} = "on" ]] && echo true || echo false)
-        fi
-        if [[ -n ${FOO_BLD_CCACHE} ]]; then
-            if [[ ! ${FOO_BLD_CCACHE} =~ ^(on|off)$ ]]; then
-                die "The FOO_BLD_CCACHE must be on or off."
-            fi
-            DEV_OPT[ccache]=$([[ ${FOO_BLD_CCACHE} = "on" ]] && echo true || echo false)
-        fi
-        if [[ -n "${FOO_BLD_DISTCC}" ]]; then
-            if [[ -z "${FOO_BLD_DISTCC// /}" ]]; then
-                die "The FOO_BLD_DISTCC must be a non-empty string."
-            fi
-            DEV_OPT[distcc]=${FOO_BLD_DISTCC}
-        fi
-        if [[ -n ${FOO_BLD_TMPFS} ]]; then
-            if [[ ! ${FOO_BLD_TMPFS} =~ ^(on|off)$ ]]; then
-                die "The FOO_BLD_TMPFS must be on or off."
-            fi
-            DEV_OPT[tmpfs]=$([[ ${FOO_BLD_TMPFS} = "on" ]] && echo true || echo false)
-        fi
-    fi
-    if {
-        [[ -n ${FOO_BLD_COV} ]] && [[ ${FOO_BLD_COV} = "llvm-cov" ]]
-    } || {
-        [[ -n ${FOO_BLD_SAN} ]] && [[ ${FOO_BLD_SAN} =~ ^(asan|tsan|ubsan)$ ]]
-    }; then
-        DEV_OPT[compiler]="clang"
-    fi
-
-    CMAKE_CACHE_ENTRY=" -D CMAKE_BUILD_TYPE=${BUILD_TYPE}"
-    if [[ ${DEV_OPT[compiler]} = "gcc" ]]; then
-        local ver=14
-        export CC=gcc-${ver} CXX=g++-${ver}
-        if ! command -v "${CC}" >/dev/null 2>&1 || ! command -v "${CXX}" >/dev/null 2>&1; then
-            die "No ${CC} or ${CXX} program. Please install it."
-        fi
-    elif [[ ${DEV_OPT[compiler]} = "clang" ]]; then
-        local ver=19
-        export CC=clang-${ver} CXX=clang++-${ver}
-        if ! command -v "${CC}" >/dev/null 2>&1 || ! command -v "${CXX}" >/dev/null 2>&1; then
-            die "No ${CC} or ${CXX} program. Please install it."
-        fi
-    fi
-    CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D CMAKE_C_COMPILER=${CC} -D CMAKE_CXX_COMPILER=${CXX}"
-    local gnu_lib_ver=14
-    if command -v "gcc-${gnu_lib_ver}" >/dev/null 2>&1 && command -v "g++-${gnu_lib_ver}" >/dev/null 2>&1; then
-        local gcc_processor gxx_processor
-        gcc_processor=$("gcc-${gnu_lib_ver}" -dumpmachine)
-        gxx_processor=$("g++-${gnu_lib_ver}" -dumpmachine)
-        export C_INCLUDE_PATH=/usr/include:/usr/lib/gcc/${gcc_processor}/${gnu_lib_ver}/include \
-            CPLUS_INCLUDE_PATH=/usr/include/c++/${gnu_lib_ver}:/usr/include/${gxx_processor}/c++/${gnu_lib_ver}
-    fi
-
-    if [[ ! ${DEV_OPT[parallel]} -eq 0 ]]; then
-        CMAKE_BUILD_OPTION=" -j ${DEV_OPT[parallel]}"
-    fi
-    if [[ ${DEV_OPT[pch]} = true ]]; then
-        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D TOOLCHAIN_PCH=ON"
-    fi
-    if [[ ${DEV_OPT[unity]} = true ]]; then
-        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D TOOLCHAIN_UNITY=ON"
-    fi
-    if [[ ${DEV_OPT[ccache]} = true ]]; then
-        if ! command -v ccache >/dev/null; then
-            die "No ccache program. Please install it."
-        fi
-        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D TOOLCHAIN_CCACHE=ON"
-        if [[ ${ARGS[test]} = false ]]; then
-            export CCACHE_DIR=${PWD}/${FOLDER[cac]}/ccache
-        else
-            export CCACHE_DIR=${PWD}/${FOLDER[tst]}/${FOLDER[cac]}/ccache
-        fi
-    fi
-    if [[ ${DEV_OPT[distcc]} != "localhost" ]]; then
-        if ! command -v distcc >/dev/null; then
-            die "No distcc program. Please install it."
-        fi
-        if [[ ${DEV_OPT[pch]} = true ]] || [[ ${DEV_OPT[unity]} = true ]]; then
-            die "Compilation relationships may have potential conflicts if the FOO_BLD_DISTCC is not localhost and the \
-FOO_BLD_PCH or FOO_BLD_UNITY is turned on."
-        fi
-        if [[ -n ${FOO_BLD_COV} ]] && [[ ${FOO_BLD_COV} = "llvm-cov" ]]; then
-            die "Code coverage may be affected if the FOO_BLD_DISTCC is not localhost."
-        fi
-        if [[ ${DEV_OPT[distcc]} = *"127.0.0.1"* ]]; then
-            local local_client="127.0.0.1/32" escaped_local_client
-            escaped_local_client=$(printf "%s\n" "${local_client}" | sed -e 's/[]\/$*.^[]/\\&/g')
-            if ! pgrep -a distccd \
-                | grep -e "-a ${escaped_local_client}\|--allow ${escaped_local_client}" >/dev/null 2>&1; then
-                die "No local distcc server has been detected, please start it manually, \
-e.g. with \"distccd --daemon --allow ${local_client}\"."
-            fi
-        fi
-        CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D TOOLCHAIN_DISTCC=ON"
-        export DISTCC_HOSTS="localhost ${DEV_OPT[distcc]}"
-    fi
-    if [[ ${DEV_OPT[ccache]} = true ]] && [[ ${DEV_OPT[pch]} = true ]]; then
-        export CCACHE_PCH_EXTSUM=true CCACHE_SLOPPINESS=pch_defines,time_macros
-    fi
-    if [[ ${DEV_OPT[ccache]} = true ]] && [[ ${DEV_OPT[distcc]} != "localhost" ]]; then
-        export CCACHE_PREFIX=distcc
-    fi
-    if [[ ${DEV_OPT[tmpfs]} = true ]]; then
-        if [[ ! -d ./${tmpfs_subfolder} ]]; then
-            shell_command "mkdir -p ./${tmpfs_subfolder}"
-        fi
-        if ! df -h -t tmpfs | grep -q "${FOLDER[proj]}/${tmpfs_subfolder}" 2>/dev/null; then
-            shell_command "${SUDO_PREFIX}mount -t tmpfs -o size=${tmpfs_size} tmpfs ./${tmpfs_subfolder}"
-        fi
-    elif df -h -t tmpfs | grep -q "${FOLDER[proj]}/${tmpfs_subfolder}" 2>/dev/null; then
-        shell_command "${SUDO_PREFIX}umount ./${tmpfs_subfolder}"
-    fi
-}
-
-function build_native_if_needed()
-{
-    if ! command -v cmake >/dev/null 2>&1 || ! command -v ninja >/dev/null 2>&1; then
-        die "No cmake or ninja program. Please install it."
-    fi
-    if [[ ${ARGS[release]} != false ]]; then
-        BUILD_TYPE="Release"
-    fi
-
-    local cmake_cache="CMakeCache.txt"
-    if [[ ${ARGS[test]} != false ]]; then
-        set_compile_condition "${FOLDER[tst]}/${FOLDER[bld]}" "256m"
-        if [[ -f ./${FOLDER[tst]}/${FOLDER[bld]}/${cmake_cache} ]] \
-            && ! grep -Fwq "${DEV_OPT[compiler]}" "./${FOLDER[tst]}/${FOLDER[bld]}/${cmake_cache}" 2>/dev/null; then
-            shell_command "rm -rf ./${FOLDER[tst]}/${FOLDER[bld]}/${cmake_cache}"
-        fi
-        shell_command "cmake -S ./${FOLDER[tst]} -B ./${FOLDER[tst]}/${FOLDER[bld]} -G Ninja""${CMAKE_CACHE_ENTRY}"
-        NINJA_STATUS=$(echo -e "\e[92m[\e[92m%f/\e[92m%t\e[92m]\e[39m\e[49m ")
-        export NINJA_STATUS CLICOLOR_FORCE=1 TERM=dumb
-        shell_command "cmake --build ./${FOLDER[tst]}/${FOLDER[bld]}""${CMAKE_BUILD_OPTION}"
-
-        exit "${STATUS}"
-    fi
-
-    set_compile_condition "${FOLDER[bld]}" "512m"
-    if [[ -f ./${FOLDER[bld]}/${cmake_cache} ]] \
-        && ! grep -Fwq "${DEV_OPT[compiler]}" "./${FOLDER[bld]}/${cmake_cache}" 2>/dev/null; then
-        shell_command "rm -rf ./${FOLDER[bld]}/${cmake_cache}"
-    fi
-    shell_command "cmake -S ./ -B ./${FOLDER[bld]} -G Ninja""${CMAKE_CACHE_ENTRY}"
-
-    local valid_param_num
-    valid_param_num=$(($(count_enabled_single_choice_parameters) + $(count_enabled_multiple_choice_parameters)))
-    if [[ valid_param_num -eq 0 ]] || {
-        [[ valid_param_num -eq 1 ]] && [[ ${ARGS[release]} != false ]]
-    }; then
-        NINJA_STATUS=$(echo -e "\e[92m[\e[92m%f/\e[92m%t\e[92m]\e[39m\e[49m ")
-        export NINJA_STATUS CLICOLOR_FORCE=1 TERM=dumb
-        shell_command "cmake --build ./${FOLDER[bld]}""${CMAKE_BUILD_OPTION}"
-
-        exit "${STATUS}"
-    fi
-    shell_command "cmake -S ./${FOLDER[tst]} -B ./${FOLDER[tst]}/${FOLDER[bld]} -G Ninja""${CMAKE_CACHE_ENTRY}"
-}
-
-function clean_up_temporary_files()
-{
-    local app_comp_db=${FOLDER[bld]}/${COMPILE_DB}
-    if [[ -f ./${app_comp_db}.bak ]]; then
-        shell_command "rm -rf ./${app_comp_db} && mv ./${app_comp_db}.bak ./${app_comp_db}"
-    fi
-    local tst_comp_db=${FOLDER[tst]}/${FOLDER[bld]}/${COMPILE_DB}
-    if [[ -f ./${tst_comp_db}.bak ]]; then
-        shell_command "rm -rf ./${tst_comp_db} && mv ./${tst_comp_db}.bak ./${tst_comp_db}"
-    fi
-}
-
-# shellcheck disable=SC2317
-function signal_handler()
-{
-    clean_up_temporary_files
-
-    exit 1
-}
-
-function prepare_environment()
-{
-    export TERM=linux TERMINFO=/etc/terminfo
-    if [[ -n ${FOO_ENV} ]]; then
-        if [[ ${FOO_ENV} != "foo_dev" ]]; then
-            die "The environment variable FOO_ENV must be foo_dev."
-        fi
-    else
-        die "Please export the environment variable FOO_ENV."
-    fi
-
-    local script_path
-    script_path=$(cd "$(dirname "${0}")" &>/dev/null && pwd)
-    if [[ ${script_path} != *"${FOLDER[proj]}/${FOLDER[scr]}" ]]; then
-        die "Illegal path to current script."
-    fi
-    cd "$(dirname "${script_path}")" || exit 1
-
-    if [[ ${EUID} -ne 0 ]]; then
-        SUDO_PREFIX="sudo "
-    fi
-    trap signal_handler SIGINT SIGTERM
-    clean_up_temporary_files
-}
-
 function main()
 {
     prepare_environment
     parse_parameters "$@"
-    try_perform_single_choice_options
     build_native_if_needed
+    try_perform_single_choice_options
     try_perform_multiple_choice_options
 
     exit "${STATUS}"
