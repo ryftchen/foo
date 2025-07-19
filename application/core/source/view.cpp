@@ -503,9 +503,8 @@ int View::buildFinTLVPacket(char* buf)
     return len;
 }
 
-int View::buildTLVPacket4Depend(const Args& args, char* buf)
+int View::buildTLVPacket4Depend(const Args& /*args*/, char* buf)
 {
-    MACRO_IGNORE(args);
     tlv::TLVValue val{};
     std::string extLibraries{};
 #if defined(__GLIBC__) && defined(__GLIBC_MINOR__)
@@ -592,9 +591,8 @@ int View::buildTLVPacket4Execute(const Args& args, char* buf)
     return len;
 }
 
-int View::buildTLVPacket4Journal(const Args& args, char* buf)
+int View::buildTLVPacket4Journal(const Args& /*args*/, char* buf)
 {
-    MACRO_IGNORE(args);
     int len = 0;
     if (const int shmId = fillSharedMemory(logContentsPreview());
         !tlv::encodeTLV(buf, len, tlv::TLVValue{.logShmId = shmId}))
@@ -627,9 +625,8 @@ int View::buildTLVPacket4Monitor(const Args& args, char* buf)
     return len;
 }
 
-int View::buildTLVPacket4Profile(const Args& args, char* buf)
+int View::buildTLVPacket4Profile(const Args& /*args*/, char* buf)
 {
-    MACRO_IGNORE(args);
     tlv::TLVValue val{};
     std::strncpy(
         val.configDetail, configure::retrieveDataRepo().toUnescapedString().c_str(), sizeof(val.configDetail) - 1);
