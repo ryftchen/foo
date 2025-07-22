@@ -1010,10 +1010,8 @@ void View::doRollback()
 
 void View::awaitNotification2Ongoing()
 {
-    if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
-    {
-        daemonCond.wait(daemonLock, [this]() { return ongoing.load(); });
-    }
+    std::unique_lock<std::mutex> daemonLock(daemonMtx);
+    daemonCond.wait(daemonLock, [this]() { return ongoing.load(); });
 }
 
 void View::awaitNotification2View()
@@ -1031,10 +1029,8 @@ void View::awaitNotification2View()
 
 bool View::awaitNotification2Retry()
 {
-    if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
-    {
-        daemonCond.wait(daemonLock);
-    }
+    std::unique_lock<std::mutex> daemonLock(daemonMtx);
+    daemonCond.wait(daemonLock);
 
     return toReset.load();
 }
