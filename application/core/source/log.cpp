@@ -506,10 +506,8 @@ bool Log::isLogFileClose(const NoLogging& /*event*/) const
 
 void Log::awaitNotification2Ongoing()
 {
-    if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
-    {
-        daemonCond.wait(daemonLock, [this]() { return ongoing.load(); });
-    }
+    std::unique_lock<std::mutex> daemonLock(daemonMtx);
+    daemonCond.wait(daemonLock, [this]() { return ongoing.load(); });
 }
 
 void Log::awaitNotification2Log()
@@ -548,10 +546,8 @@ void Log::awaitNotification2Log()
 
 bool Log::awaitNotification2Retry()
 {
-    if (std::unique_lock<std::mutex> daemonLock(daemonMtx); true)
-    {
-        daemonCond.wait(daemonLock);
-    }
+    std::unique_lock<std::mutex> daemonLock(daemonMtx);
+    daemonCond.wait(daemonLock);
 
     return toReset.load();
 }
