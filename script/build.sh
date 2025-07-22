@@ -70,11 +70,11 @@ function wait_until_get_input()
 
 function clean_up_temporary_files()
 {
-    local app_comp_db=${FOLDER[bld]}/${COMPILE_DB}
+    local app_comp_db="${FOLDER[bld]}/${COMPILE_DB}"
     if [[ -f ./${app_comp_db}.bak ]]; then
         shell_command "rm -rf ./${app_comp_db} && mv ./${app_comp_db}.bak ./${app_comp_db}"
     fi
-    local tst_comp_db=${FOLDER[tst]}/${FOLDER[bld]}/${COMPILE_DB}
+    local tst_comp_db="${FOLDER[tst]}/${FOLDER[bld]}/${COMPILE_DB}"
     if [[ -f ./${tst_comp_db}.bak ]]; then
         shell_command "rm -rf ./${tst_comp_db} && mv ./${tst_comp_db}.bak ./${tst_comp_db}"
     fi
@@ -90,13 +90,13 @@ function signal_handler()
 
 function prepare_environment()
 {
+    set -u
     export TERM=linux TERMINFO=/etc/terminfo
-    if [[ -n ${FOO_ENV} ]]; then
-        if [[ ${FOO_ENV} != "foo_dev" ]]; then
-            die "The environment variable FOO_ENV must be foo_dev."
-        fi
-    else
+    if [[ ! -v FOO_ENV ]]; then
         die "Please export the environment variable FOO_ENV."
+    fi
+    if [[ ${FOO_ENV} != "foo_dev" ]]; then
+        die "The environment variable FOO_ENV must be foo_dev."
     fi
 
     local script_path
@@ -372,47 +372,47 @@ function parse_parameters()
 function set_compile_condition()
 {
     if [[ -f ./${FOLDER[scr]}/.build_env ]] && ! {
-        [[ -n ${FOO_BLD_FORCE} ]] && [[ ${FOO_BLD_FORCE} == "on" ]]
+        [[ -v FOO_BLD_FORCE ]] && [[ ${FOO_BLD_FORCE} == "on" ]]
     }; then
         # shellcheck source=/dev/null
         source "./${FOLDER[scr]}/.build_env"
-        if [[ -n ${FOO_BLD_COMPILER} ]]; then
+        if [[ -v FOO_BLD_COMPILER ]]; then
             if [[ ! ${FOO_BLD_COMPILER} =~ ^(gcc|clang)$ ]]; then
                 die "The FOO_BLD_COMPILER must be gcc or clang."
             fi
             DEV_OPT[compiler]=${FOO_BLD_COMPILER}
         fi
-        if [[ -n ${FOO_BLD_PARALLEL} ]]; then
+        if [[ -v FOO_BLD_PARALLEL ]]; then
             if [[ ! ${FOO_BLD_PARALLEL} =~ ^[0-9]+$ ]]; then
                 die "The FOO_BLD_PARALLEL must be a positive integer."
             fi
             DEV_OPT[parallel]=${FOO_BLD_PARALLEL}
         fi
-        if [[ -n ${FOO_BLD_PCH} ]]; then
+        if [[ -v FOO_BLD_PCH ]]; then
             if [[ ! ${FOO_BLD_PCH} =~ ^(on|off)$ ]]; then
                 die "The FOO_BLD_PCH must be on or off."
             fi
             DEV_OPT[pch]=$([[ ${FOO_BLD_PCH} == "on" ]] && echo true || echo false)
         fi
-        if [[ -n ${FOO_BLD_UNITY} ]]; then
+        if [[ -v FOO_BLD_UNITY ]]; then
             if [[ ! ${FOO_BLD_UNITY} =~ ^(on|off)$ ]]; then
                 die "The FOO_BLD_UNITY must be on or off."
             fi
             DEV_OPT[unity]=$([[ ${FOO_BLD_UNITY} == "on" ]] && echo true || echo false)
         fi
-        if [[ -n ${FOO_BLD_CCACHE} ]]; then
+        if [[ -v FOO_BLD_CCACHE ]]; then
             if [[ ! ${FOO_BLD_CCACHE} =~ ^(on|off)$ ]]; then
                 die "The FOO_BLD_CCACHE must be on or off."
             fi
             DEV_OPT[ccache]=$([[ ${FOO_BLD_CCACHE} == "on" ]] && echo true || echo false)
         fi
-        if [[ -n "${FOO_BLD_DISTCC}" ]]; then
-            if [[ -z "${FOO_BLD_DISTCC// /}" ]]; then
+        if [[ -v FOO_BLD_DISTCC ]]; then
+            if [[ -z ${FOO_BLD_DISTCC// /} ]]; then
                 die "The FOO_BLD_DISTCC must be a non-empty string."
             fi
             DEV_OPT[distcc]=${FOO_BLD_DISTCC}
         fi
-        if [[ -n ${FOO_BLD_TMPFS} ]]; then
+        if [[ -v FOO_BLD_TMPFS ]]; then
             if [[ ! ${FOO_BLD_TMPFS} =~ ^(on|off)$ ]]; then
                 die "The FOO_BLD_TMPFS must be on or off."
             fi
@@ -420,9 +420,9 @@ function set_compile_condition()
         fi
     fi
     if {
-        [[ -n ${FOO_BLD_COV} ]] && [[ ${FOO_BLD_COV} == "llvm-cov" ]]
+        [[ -v FOO_BLD_COV ]] && [[ ${FOO_BLD_COV} == "llvm-cov" ]]
     } || {
-        [[ -n ${FOO_BLD_SAN} ]] && [[ ${FOO_BLD_SAN} =~ ^(asan|tsan|ubsan)$ ]]
+        [[ -v FOO_BLD_SAN ]] && [[ ${FOO_BLD_SAN} =~ ^(asan|tsan|ubsan)$ ]]
     }; then
         DEV_OPT[compiler]="clang"
     fi
@@ -483,7 +483,7 @@ function set_compile_condition()
             die "Compilation relationships may have potential conflicts if the FOO_BLD_DISTCC is not localhost and the \
 FOO_BLD_PCH or FOO_BLD_UNITY is turned on."
         fi
-        if [[ -n ${FOO_BLD_COV} ]] && [[ ${FOO_BLD_COV} == "llvm-cov" ]]; then
+        if [[ -v FOO_BLD_COV ]] && [[ ${FOO_BLD_COV} == "llvm-cov" ]]; then
             die "Code coverage may be affected if the FOO_BLD_DISTCC is not localhost."
         fi
         if [[ ${DEV_OPT[distcc]} == *"127.0.0.1"* ]]; then
@@ -593,9 +593,7 @@ function perform_initialize_option()
     fi
 
     local export_cmd="export FOO_ENV=${FOLDER[proj]}_dev"
-    if {
-        [[ -z ${FOO_ENV} ]] || [[ ${FOO_ENV} != "${FOLDER[proj]}_dev" ]]
-    } && ! grep -Fxq "${export_cmd}" ~/"${BASH_RC}" 2>/dev/null; then
+    if ! grep -Fxq "${export_cmd}" ~/"${BASH_RC}" 2>/dev/null; then
         shell_command "echo '${export_cmd}' >>~/${BASH_RC}"
     fi
 
@@ -686,9 +684,9 @@ function perform_install_option()
     fi
 
     shell_command "${SUDO_PREFIX}cmake --install ./${FOLDER[bld]}"
-    local install_path=/opt/${FOLDER[proj]}
+    local install_path="/opt/${FOLDER[proj]}"
     if [[ -d ${install_path} ]]; then
-        local bin_path=${install_path}/bin
+        local bin_path="${install_path}/bin"
         local export_cmd="export PATH=${bin_path}:\$PATH"
         if [[ :${PATH}: != *:${bin_path}:* ]] && ! grep -Fxq "${export_cmd}" ~/"${BASH_RC}" 2>/dev/null; then
             shell_command "echo '${export_cmd}' >>~/${BASH_RC}"
@@ -702,7 +700,7 @@ function perform_install_option()
             shell_command "echo '${export_cmd}' >>~/${BASH_RC}"
         fi
 
-        local man_path=${install_path}/man
+        local man_path="${install_path}/man"
         export_cmd="MANDATORY_MANPATH ${man_path}"
         shell_command "${SUDO_PREFIX}mkdir -p ${man_path}/man1 \
 && ${SUDO_PREFIX}cp ./${FOLDER[doc]}/man.1 ${man_path}/man1/${FOLDER[proj]}.1"
@@ -1000,7 +998,7 @@ program. Please install it."
 FOO_BLD_UNITY is turned on."
         fi
 
-        local app_comp_db=${FOLDER[bld]}/${COMPILE_DB}
+        local app_comp_db="${FOLDER[bld]}/${COMPILE_DB}"
         if [[ ! -f ./${app_comp_db} ]]; then
             die "There is no ${COMPILE_DB} file in the ${FOLDER[bld]} folder. Please generate it."
         fi
@@ -1019,8 +1017,8 @@ FOO_BLD_UNITY is turned on."
             fi
         done
 
-        local clang_tidy_output_path=./${FOLDER[rep]}/sca/lint
-        local clang_tidy_log=${clang_tidy_output_path}/clang-tidy.log
+        local clang_tidy_output_path="./${FOLDER[rep]}/sca/lint"
+        local clang_tidy_log="${clang_tidy_output_path}/clang-tidy.log"
         if [[ ! -d ${clang_tidy_output_path} ]]; then
             shell_command "mkdir -p ${clang_tidy_output_path}"
         elif [[ -f ${clang_tidy_log} ]]; then
@@ -1054,7 +1052,7 @@ FOO_BLD_UNITY is turned on."
         fi
         shell_command "rm -rf ./${app_comp_db} && mv ./${app_comp_db}.bak ./${app_comp_db}"
 
-        local tst_comp_db=${FOLDER[tst]}/${FOLDER[bld]}/${COMPILE_DB}
+        local tst_comp_db="${FOLDER[tst]}/${FOLDER[bld]}/${COMPILE_DB}"
         if [[ ! -f ./${tst_comp_db} ]]; then
             die "There is no ${COMPILE_DB} file in the ${FOLDER[tst]}/${FOLDER[bld]} folder. Please generate it."
         fi
@@ -1100,7 +1098,7 @@ FOO_BLD_UNITY is turned on."
     fi
 
     if [[ ${ARGS[lint]} == true ]] || [[ ${ARGS[lint]} == "rs" ]]; then
-        local build_type
+        local build_type=""
         if [[ ${ARGS[release]} == true ]]; then
             build_type=" --release"
         fi
@@ -1132,12 +1130,13 @@ function perform_query_option()
         die "No codeql (including sarif) program. Please install it."
     fi
 
-    local build_script other_option
-    build_script=./${FOLDER[scr]}/$(basename "$0")
+    local build_script
+    build_script="./${FOLDER[scr]}/$(basename "$0")"
+    local other_option=""
     if [[ ${ARGS[release]} == true ]]; then
         other_option=" --release"
     fi
-    local rebuild_script=./${FOLDER[scr]}/.build_afresh
+    local rebuild_script="./${FOLDER[scr]}/.build_afresh"
     if [[ ! -f ${rebuild_script} ]]; then
         shell_command "cat <<EOF >./${rebuild_script}
 #!/usr/bin/env bash
@@ -1162,11 +1161,11 @@ to improve accuracy. (y or n)"
         echo "No"
     fi
 
-    local codeql_db_path=./${FOLDER[rep]}/sca/query
+    local codeql_db_path="./${FOLDER[rep]}/sca/query"
     shell_command "rm -rf ${codeql_db_path} && mkdir -p ${codeql_db_path}"
     shell_command "codeql database create ${codeql_db_path} --codescanning-config=./.codeql --language=cpp \
 --source-root=./ --command='${build_script}${other_option}' --command='${build_script} --test${other_option}'"
-    local codeql_sarif=${codeql_db_path}/codeql.sarif
+    local codeql_sarif="${codeql_db_path}/codeql.sarif"
     shell_command "codeql database analyze ${codeql_db_path} --format=sarif-latest --output=${codeql_sarif}"
     if echo "${input}" | grep -iq '^y'; then
         build_script=./${FOLDER[scr]}/$(basename "$0")
