@@ -32,11 +32,10 @@ class Schedule:  # pylint: disable=too-few-public-methods
         self._proxy_port = None
 
         env = os.getenv("FOO_ENV")
-        if env is not None:
-            if env != "foo_doc":
-                self._abort("The environment variable FOO_ENV must be foo_doc.")
-        else:
+        if env is None:
             self._abort("Please export the environment variable FOO_ENV.")
+        if env != "foo_doc":
+            self._abort("The environment variable FOO_ENV must be foo_doc.")
         self_path = os.path.split(os.path.realpath(__file__))[0]
         if not fnmatch.fnmatch(self_path, "*foo/script"):
             self._abort("Illegal path to current script.")
