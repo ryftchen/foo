@@ -83,7 +83,7 @@ void Stopwatch::reset()
     beginTime = std::chrono::high_resolution_clock::now();
 }
 
-//! @brief Get the current standard time (ISO 8601), like "1970-01-01T00:00:00.000000Z".
+//! @brief Get the current standard time (ISO 8601), like "1970-01-01T00:00:00.000000000Z".
 //! @return current standard time
 std::string currentStandardTime()
 {
