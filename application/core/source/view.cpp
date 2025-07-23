@@ -398,10 +398,10 @@ void View::Access::startResetTimer() const
 void View::Sync::waitTaskDone() const
 {
     std::unique_lock<std::mutex> outputLock(inst.outputMtx);
-    inst.outputCompleted.store(false);
-
     const auto maxWaitTime = std::chrono::milliseconds{inst.timeoutPeriod};
-    utility::time::Timer expiryTimer(inst.isInServingState(State::work) ? []() {} : []() { Sync().notifyTaskDone(); });
+    utility::time::Timer expiryTimer(
+        inst.isInServingState(State::work) ? []() {}
+                                           : (inst.outputCompleted.store(false), []() { Sync().notifyTaskDone(); }));
     expiryTimer.start(maxWaitTime);
 
     inst.outputCond.wait(outputLock, [this]() { return inst.outputCompleted.load(); });
