@@ -211,6 +211,12 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
+void Log::Access::onPreviewing(const std::function<void(const std::string&)>& peeking) const
+{
+    const utility::common::LockGuard guard(inst.fileLock, LockMode::read);
+    peeking(inst.filePath);
+}
+
 void Log::Access::waitOr(const State state, const std::function<void()>& handling) const
 {
     do
