@@ -158,12 +158,9 @@ public:
         //! @brief Request to reset the logger. Interface controller for external use.
         void reload() const;
 
-        //! @brief Get the log file path.
-        //! @return log file path
-        [[nodiscard]] std::string getFilePath() const noexcept { return inst.filePath; }
-        //! @brief Get the log file lock.
-        //! @return log file lock
-        [[nodiscard]] utility::common::ReadWriteLock& getFileLock() const noexcept { return inst.fileLock; }
+        //! @brief Preview the log.
+        //! @param peeking - further handling for peeking
+        void onPreviewing(const std::function<void(const std::string&)>& peeking) const;
 
     private:
         //! @brief Instance to be accessed.
@@ -433,23 +430,6 @@ extern template class Holder<Log::OutputLevel::debug>;
 extern template class Holder<Log::OutputLevel::info>;
 extern template class Holder<Log::OutputLevel::warning>;
 extern template class Holder<Log::OutputLevel::error>;
-
-//! @brief Instance information, if enabled.
-namespace info
-{
-//! @brief Get the current log file path.
-//! @return current log file path
-inline std::string loggerFilePath()
-{
-    return Log::Access().getFilePath();
-}
-//! @brief Get the current log file lock.
-//! @return current log file lock
-inline utility::common::ReadWriteLock& loggerFileLock()
-{
-    return Log::Access().getFileLock();
-}
-} // namespace info
 
 extern std::string& changeToLogStyle(std::string& line);
 } // namespace log
