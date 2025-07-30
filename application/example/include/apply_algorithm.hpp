@@ -358,13 +358,16 @@ public:
     //! @param range1 - left endpoint
     //! @param range2 - right endpoint
     //! @param funcDescr - function description
-    InputBuilder(Function function, const double range1, const double range2, const std::string_view funcDescr) :
+    InputBuilder(
+        Function function,
+        const double range1,
+        const double range2,
+        [[maybe_unused]] const std::string_view funcDescr) :
         function{std::move(function)}, range1{range1}, range2{range2}
     {
 #ifdef _RUNTIME_PRINTING
         std::cout << "\nOptimal function:\n" << funcDescr << std::endl;
 #endif // _RUNTIME_PRINTING
-        static_cast<void>(funcDescr);
     }
     //! @brief Destroy the InputBuilder object.
     virtual ~InputBuilder() = default;

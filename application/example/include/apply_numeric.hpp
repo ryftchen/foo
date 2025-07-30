@@ -289,13 +289,16 @@ public:
     //! @param range1 - lower endpoint
     //! @param range2 - upper endpoint
     //! @param exprDescr - expression description
-    InputBuilder(Expression expression, const double range1, const double range2, const std::string_view exprDescr) :
+    InputBuilder(
+        Expression expression,
+        const double range1,
+        const double range2,
+        [[maybe_unused]] const std::string_view exprDescr) :
         expression{std::move(expression)}, range1{range1}, range2{range2}
     {
 #ifdef _RUNTIME_PRINTING
         std::cout << "\nIntegral expression:\n" << exprDescr << std::endl;
 #endif // _RUNTIME_PRINTING
-        static_cast<void>(exprDescr);
     }
     //! @brief Destroy the InputBuilder object.
     virtual ~InputBuilder() = default;
