@@ -21,7 +21,7 @@ const char* version() noexcept
 
 std::optional<std::tuple<double, double>> Gradient::operator()(const double left, const double right, const double eps)
 {
-    const auto climbing{createClimbers(left, right)};
+    const auto climbing = createClimbers(left, right);
     double xBest = *climbing.cbegin(), yBest = func(xBest);
 
     for (std::uint32_t iteration = 0; auto x : climbing)
@@ -432,7 +432,7 @@ void Genetic::geneticCross(Chromosome& chr1, Chromosome& chr2)
     }
     while ((pmxBegin == pmxEnd) || ((pmxEnd - pmxBegin) == (chromosomeLength - 1)));
 
-    auto chrTemp{chr1};
+    auto chrTemp = chr1;
     std::copy_n(chr2.cbegin() + pmxBegin, pmxEnd - pmxBegin, chr1.begin() + pmxBegin);
     std::copy_n(chrTemp.cbegin() + pmxBegin, pmxEnd - pmxBegin, chr2.begin() + pmxBegin);
 }
