@@ -250,7 +250,7 @@ private:
     //! @brief Maximum size of the shared memory.
     static constexpr std::uint64_t maxShmSize{static_cast<std::uint64_t>(65536) * 10};
     //! @brief Memory that can be accessed by multiple programs simultaneously.
-    struct SharedMemory
+    struct ShrMemBlock
     {
         //! @brief Shared memory buffer.
         alignas(64) char buffer[sizeof(int) + maxShmSize];

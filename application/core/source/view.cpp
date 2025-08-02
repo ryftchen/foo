@@ -645,7 +645,7 @@ int View::buildTLVPacket4Profile(const Args& /*args*/, char* buf)
 int View::fillSharedMemory(const std::string_view contents)
 {
     const int shmId = ::shmget(
-        0, sizeof(SharedMemory), IPC_CREAT | IPC_EXCL | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+        0, sizeof(ShrMemBlock), IPC_CREAT | IPC_EXCL | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
     if (shmId == -1)
     {
         throw std::runtime_error{"Failed to create shared memory (" + std::to_string(shmId) + ")."};
@@ -656,7 +656,7 @@ int View::fillSharedMemory(const std::string_view contents)
         throw std::runtime_error{"Failed to attach shared memory (" + std::to_string(shmId) + ")."};
     }
 
-    auto* const shrMem = reinterpret_cast<SharedMemory*>(shm);
+    auto* const shrMem = reinterpret_cast<ShrMemBlock*>(shm);
     for (shrMem->signal.store(false);;)
     {
         if (shrMem->signal.load())
@@ -689,7 +689,7 @@ void View::fetchSharedMemory(const int shmId, std::string& contents)
         throw std::runtime_error{"Failed to attach shared memory (" + std::to_string(shmId) + ")."};
     }
 
-    auto* const shrMem = reinterpret_cast<SharedMemory*>(shm);
+    auto* const shrMem = reinterpret_cast<ShrMemBlock*>(shm);
     for (shrMem->signal.store(true);;)
     {
         if (!shrMem->signal.load())
