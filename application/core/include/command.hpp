@@ -320,7 +320,7 @@ private:
         //! @return hash value
         std::size_t operator()(const VerLinkKey& key) const
         {
-            constexpr std::size_t magicNumber = 0x9e3779b9, leftShift = 6, rightShift = 2;
+            constexpr std::size_t magicNumber = 0x9E3779B9, leftShift = 6, rightShift = 2;
             const std::size_t hash1 = std::hash<std::string>()(key.first), hash2 = std::hash<std::string>()(key.second);
             std::size_t seed = 0;
             seed ^= hash1 + magicNumber + (seed << leftShift) + (seed >> rightShift);

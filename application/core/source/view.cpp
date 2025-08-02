@@ -47,7 +47,7 @@ constexpr std::uint16_t detailSize = 256;
 enum TLVType : int
 {
     //! @brief Header.
-    header = 0x3b9aca07,
+    header = 0x3B9ACA07,
     //! @brief Stop.
     stop = 0,
     //! @brief Depend.
