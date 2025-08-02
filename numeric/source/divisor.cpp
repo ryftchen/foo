@@ -18,44 +18,45 @@ const char* version() noexcept
     return ver;
 }
 
-std::set<std::int32_t> Divisor::euclidean(std::int32_t a, std::int32_t b)
+std::set<std::int32_t> Divisor::euclidean(const std::int32_t a, const std::int32_t b)
 {
-    a = std::abs(a);
-    b = std::abs(b);
-
-    while (b)
+    std::int32_t x = std::abs(a), y = std::abs(b);
+    while (y)
     {
-        const std::int32_t temp = a % b;
-        a = b;
-        b = temp;
+        const std::int32_t temp = x % y;
+        x = y;
+        y = temp;
     }
 
-    return getAllDivisors(a);
+    return getAllDivisors(x);
 }
 
-std::set<std::int32_t> Divisor::stein(std::int32_t a, std::int32_t b)
+std::set<std::int32_t> Divisor::stein(const std::int32_t a, const std::int32_t b)
 {
-    std::int32_t gcd = 0, c = 0;
-    a = std::abs(a);
-    b = std::abs(b);
-
-    while (((a & 0x1) == 0) && ((b & 0x1) == 0))
+    std::int32_t x = std::abs(a), y = std::abs(b), gcd = 0, c = 0;
+    while (isEven(x) && isEven(y))
     {
-        a = a >> 1;
-        b = b >> 1;
+        x >>= 1;
+        y >>= 1;
         ++c;
     }
-    if ((a & 0x1) == 0)
+
+    if (isEven(x))
     {
-        a = a >> 1;
-        gcd = steinRecursive(a, b) << c;
+        x >>= 1;
+        gcd = steinRecursive(x, y) << c;
     }
     else
     {
-        gcd = steinRecursive(b, a) << c;
+        gcd = steinRecursive(y, x) << c;
     }
 
     return getAllDivisors(gcd);
+}
+
+bool Divisor::isEven(const std::int32_t n)
+{
+    return (n & 0b1) == 0;
 }
 
 std::int32_t Divisor::steinRecursive(std::int32_t a, std::int32_t b)
@@ -69,9 +70,9 @@ std::int32_t Divisor::steinRecursive(std::int32_t a, std::int32_t b)
         return a;
     }
 
-    while ((a & 0x1) == 0)
+    while (isEven(a))
     {
-        a = a >> 1;
+        a >>= 1;
     }
     if (a < b)
     {

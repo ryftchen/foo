@@ -28,14 +28,18 @@ public:
     //! @param a - first integer
     //! @param b - second integer
     //! @return all common divisors of two integers
-    static std::set<std::int32_t> euclidean(std::int32_t a, std::int32_t b);
+    static std::set<std::int32_t> euclidean(const std::int32_t a, const std::int32_t b);
     //! @brief Stein.
     //! @param a - first integer
     //! @param b - second integer
     //! @return all common divisors of two integers
-    static std::set<std::int32_t> stein(std::int32_t a, std::int32_t b);
+    static std::set<std::int32_t> stein(const std::int32_t a, const std::int32_t b);
 
 private:
+    //! @brief Check whether the integer is even.
+    //! @param n - integer to check
+    //! @return be even or not
+    static bool isEven(const std::int32_t n);
     //! @brief Recursive for the Stein method.
     //! @param a - first integer
     //! @param b - second integer
