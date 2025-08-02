@@ -371,13 +371,7 @@ void Genetic::updateSpecies(const double left, const double right, const double 
     property.prec = eps;
 
     const double stateNum = (property.upper - property.lower) * (1.0 / property.prec);
-    std::uint32_t bitCount = 0;
-    while ((stateNum <= std::pow(2, bitCount)) || (stateNum >= std::pow(2, bitCount + 1)))
-    {
-        ++bitCount;
-    }
-    chromosomeLength = bitCount + 1;
-
+    chromosomeLength = static_cast<std::uint32_t>(std::ceil(std::log2(stateNum)));
     if (chromosomeLength < minChrLen)
     {
         throw std::logic_error{"A precision of " + std::to_string(eps) + " is not sufficient."};
@@ -386,14 +380,15 @@ void Genetic::updateSpecies(const double left, const double right, const double 
 
 double Genetic::geneticDecode(const Chromosome& chr) const
 {
-    const double currDecoded = std::accumulate(
-                     chr.cbegin(),
-                     chr.cend(),
-                     0.0,
-                     [index = 0](const auto sum, const auto bit) mutable
-                     { return sum + (bit * std::pow(2, index++)); }),
-                 maxDecoded = std::pow(2, chromosomeLength) - 1.0;
-    return property.lower + ((property.upper - property.lower) * currDecoded / maxDecoded);
+    std::uint32_t currDecoded = 0;
+    std::for_each(
+        chr.cbegin(),
+        chr.cend(),
+        [&currDecoded, index = 0](const auto bit) mutable
+        { currDecoded |= static_cast<std::uint32_t>(bit) << index++; });
+    const auto maxDecoded = static_cast<double>((1ULL << chromosomeLength) - 1ULL);
+
+    return property.lower + ((property.upper - property.lower) * static_cast<double>(currDecoded) / maxDecoded);
 }
 
 Genetic::Population Genetic::populationInit()
