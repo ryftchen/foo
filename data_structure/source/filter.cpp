@@ -27,7 +27,7 @@ const char* version() noexcept
 //! @return hash value
 static std::uint64_t murmurHash2X64(const void* const key, const int length, const std::uint32_t seed) noexcept
 {
-    constexpr std::uint64_t mix = 0xc6a4a7935bd1e995;
+    constexpr std::uint64_t mix = 0xC6A4A7935BD1E995;
     constexpr int shift = 47;
     const auto* data1 = static_cast<const std::uint64_t*>(key);
     const std::uint64_t* end = data1 + (length / 8);
