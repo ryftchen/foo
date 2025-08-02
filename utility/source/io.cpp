@@ -55,7 +55,7 @@ std::string executeCommand(const std::string& command)
     }
 
     return output;
-};
+}
 
 //! @brief Wait for input from the user.
 //! @param operation - handling for inputs (interrupt waiting if the return value is true, otherwise continue waiting)

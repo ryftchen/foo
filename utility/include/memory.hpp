@@ -56,15 +56,15 @@ public:
     inline void deleteEntry(T* const res);
     //! @brief Get the maximum number of elements.
     //! @return size of capacity
-    inline std::size_t capacity() const noexcept;
+    inline std::size_t capacity() const;
     //! @brief Get the pointer of the allocated resource.
     //! @param res - reference of the allocated resource
     //! @return pointer of the allocated resource
-    inline T* address(T& res) const noexcept;
+    inline T* address(T& res) const;
     //! @brief Get the const pointer of the allocated resource.
     //! @param res - const reference of the allocated resource
     //! @return const pointer of the allocated resource
-    inline const T* address(const T& res) const noexcept;
+    inline const T* address(const T& res) const;
 
 private:
     //! @brief Union for the slot that stores element information.
@@ -114,7 +114,7 @@ private:
     //! @param data - pointer of data in the element
     //! @param align - align size
     //! @return padding size
-    inline std::size_t pointerPadding(const std::byte* const data, const std::size_t align) const noexcept;
+    inline std::size_t pointerPadding(const std::byte* const data, const std::size_t align) const;
 
     static_assert(BlockSize >= (2 * sizeof(Slot)));
 };
@@ -182,20 +182,20 @@ inline void Memory<T, BlockSize>::deleteEntry(T* const res)
 }
 
 template <typename T, std::size_t BlockSize>
-inline std::size_t Memory<T, BlockSize>::capacity() const noexcept
+inline std::size_t Memory<T, BlockSize>::capacity() const
 {
     constexpr std::size_t max = std::numeric_limits<std::size_t>::max() / BlockSize;
     return (BlockSize - sizeof(Slot*)) / sizeof(Slot) * max;
 }
 
 template <typename T, std::size_t BlockSize>
-inline T* Memory<T, BlockSize>::address(T& res) const noexcept
+inline T* Memory<T, BlockSize>::address(T& res) const
 {
     return std::addressof(res);
 }
 
 template <typename T, std::size_t BlockSize>
-inline const T* Memory<T, BlockSize>::address(const T& res) const noexcept
+inline const T* Memory<T, BlockSize>::address(const T& res) const
 {
     return std::addressof(res);
 }
@@ -256,8 +256,7 @@ inline void Memory<T, BlockSize>::createBlock()
 }
 
 template <typename T, std::size_t BlockSize>
-inline std::size_t Memory<T, BlockSize>::pointerPadding(
-    const std::byte* const data, const std::size_t align) const noexcept
+inline std::size_t Memory<T, BlockSize>::pointerPadding(const std::byte* const data, const std::size_t align) const
 {
     const auto padding = std::bit_cast<std::uintptr_t>(data);
     return (align - (padding % align)) % align;

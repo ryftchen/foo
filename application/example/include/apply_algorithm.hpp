@@ -133,8 +133,7 @@ public:
     InputBuilder& operator=(InputBuilder&&) = delete;
 
     //! @brief Maximum digit for the target text.
-    static constexpr std::uint32_t maxDigit{100000};
-
+    static constexpr std::uint32_t maxDigit{100'000};
     //! @brief Get the matching text.
     //! @return matching text
     [[nodiscard]] const std::unique_ptr<unsigned char[]>& getMatchingText() const { return marchingText; }
@@ -160,7 +159,6 @@ private:
 
     //! @brief Base number for converting the digit to precision.
     static constexpr int mpfrBase{10};
-
     //! @brief Create the matching text.
     //! @param text - target matching text
     //! @param textLen - length of matching text

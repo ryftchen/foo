@@ -60,15 +60,15 @@ std::string base64Encode(const std::string_view data)
         switch (offset)
         {
             case 16:
-                encoded += base64Alphabet.at(bitStream >> 18 & 0x3F);
+                encoded += base64Alphabet.at((bitStream >> 18) & 0x3F);
                 break;
             case 8:
-                encoded += base64Alphabet.at(bitStream >> 12 & 0x3F);
+                encoded += base64Alphabet.at((bitStream >> 12) & 0x3F);
                 break;
             case 0:
                 if (counter != 3)
                 {
-                    encoded += base64Alphabet.at(bitStream >> 6 & 0x3F);
+                    encoded += base64Alphabet.at((bitStream >> 6) & 0x3F);
                     encoded += base64Alphabet.at(bitStream & 0x3F);
                     bitStream = 0;
                 }
@@ -82,11 +82,11 @@ std::string base64Encode(const std::string_view data)
     switch (offset)
     {
         case 16:
-            encoded += base64Alphabet.at(bitStream >> 12 & 0x3F);
+            encoded += base64Alphabet.at((bitStream >> 12) & 0x3F);
             encoded += "==";
             break;
         case 8:
-            encoded += base64Alphabet.at(bitStream >> 6 & 0x3F);
+            encoded += base64Alphabet.at((bitStream >> 6) & 0x3F);
             encoded += '=';
             break;
         default:
@@ -115,10 +115,10 @@ std::string base64Decode(const std::string_view data)
             switch (offset)
             {
                 case 12:
-                    decoded += static_cast<char>(bitStream >> 16 & 0xFF);
+                    decoded += static_cast<char>((bitStream >> 16) & 0xFF);
                     break;
                 case 6:
-                    decoded += static_cast<char>(bitStream >> 8 & 0xFF);
+                    decoded += static_cast<char>((bitStream >> 8) & 0xFF);
                     break;
                 case 0:
                     if (counter != 4)

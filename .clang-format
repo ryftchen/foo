@@ -10,6 +10,7 @@ AlignOperands: false
 AlignTrailingComments: false
 AllowAllArgumentsOnNextLine: true
 AllowAllParametersOfDeclarationOnNextLine: true
+AllowBreakBeforeNoexceptSpecifier: OnlyWithParen
 AllowShortBlocksOnASingleLine: Never
 AllowShortCaseLabelsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: InlineOnly
@@ -42,6 +43,7 @@ BreakBeforeConceptDeclarations: true
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: AfterColon
 BreakStringLiterals: true
+BreakTemplateDeclarations: Yes
 ColumnLimit: 120
 CommentPragmas: '^TODO'
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
@@ -66,11 +68,18 @@ IncludeCategories:
 IndentCaseLabels: true
 IndentRequires: false
 IndentWidth: 4
+InsertBraces: true
+InsertNewlineAtEOF: true
 KeepEmptyLinesAtTheStartOfBlocks: false
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: None
+PackConstructorInitializers: NextLine
 PenaltyReturnTypeOnItsOwnLine: 5000
 PointerAlignment: Left
+QualifierAlignment: Custom
+QualifierOrder: [friend, inline, static, constexpr, const, volatile, type]
+RemoveParentheses: ReturnStatement
+RemoveSemicolon: true
 SortIncludes: true
 SpaceBeforeAssignmentOperators: true
 SpaceBeforeParens: Custom

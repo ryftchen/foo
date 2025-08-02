@@ -118,7 +118,7 @@ static constexpr auto concatString = ConcatString<Strings...>::value;
 template <typename T>
 consteval bool isStatelessClass()
 {
-    return std::is_empty_v<T> || ((sizeof(T) == sizeof(void*) && std::is_polymorphic_v<T>));
+    return std::is_empty_v<T> || (sizeof(T) == sizeof(void*) && std::is_polymorphic_v<T>);
 }
 
 //! @brief Check whether the target value is part of the enumeration.

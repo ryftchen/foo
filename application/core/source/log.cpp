@@ -117,7 +117,7 @@ static const HlRegex& logStyle()
 {
     static const HlRegex highlight{};
     return highlight;
-};
+}
 
 Log& Log::getInstance()
 {
@@ -430,7 +430,7 @@ void Log::openLogFile()
         default:
             break;
     }
-};
+}
 
 void Log::closeLogFile()
 {
