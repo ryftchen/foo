@@ -153,9 +153,9 @@ private:
     //! @brief Target expression.
     const Expression expr;
     //! @brief Number of Gauss nodes.
-    static constexpr std::uint32_t nodeSize{5};
+    static constexpr std::uint8_t nodeSize{5};
     //! @brief Number of Gauss coefficients.
-    static constexpr std::uint32_t coeffSize{2};
+    static constexpr std::uint8_t coeffSize{2};
     //! @brief Table of Gauss-Legendre quadrature.
     static constexpr std::array<std::array<double, coeffSize>, nodeSize> gaussLegendreTbl{
         {{-0.9061798459, +0.2369268851},

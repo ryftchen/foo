@@ -90,9 +90,9 @@ public:
 
 private:
     //! @brief First integer for elementary arithmetic.
-    const std::int32_t integer1{0};
+    const std::int32_t integer1 : 17 {0};
     //! @brief Second integer for elementary arithmetic.
-    const std::int32_t integer2{0};
+    const std::int32_t integer2 : 17 {0};
 };
 } // namespace arithmetic
 extern void applyingArithmetic(const std::vector<std::string>& candidates);
