@@ -73,11 +73,11 @@ public:
     //! @tparam U - type of deferred callable
     //! @param deferred - deferred callable
     template <typename U>
-    explicit Defer(U&& deferred) : deferred{std::forward<U>(deferred)}
+    explicit Defer(U&& deferred) noexcept(noexcept(T(std::forward<U>(deferred)))) : deferred{std::forward<U>(deferred)}
     {
     }
     //! @brief Destroy the Defer object.
-    virtual ~Defer() { deferred(); }
+    virtual ~Defer() noexcept(noexcept(deferred())) { deferred(); }
     //! @brief Construct a new Defer object.
     Defer(const Defer&) = delete;
     //! @brief Construct a new Defer object.
@@ -98,7 +98,7 @@ private:
 //! @param deferred - deferred callable
 //! @return deferral
 template <typename T>
-constexpr auto makeDeferral(T&& deferred) noexcept
+constexpr auto makeDeferral(T&& deferred) noexcept(noexcept(Defer<std::decay_t<T>>(std::forward<T>(deferred))))
 {
     return Defer<std::decay_t<T>>(std::forward<T>(deferred));
 }

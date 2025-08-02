@@ -397,10 +397,10 @@ class Singleton
 {
 public:
     //! @brief Construct a new Singleton object.
-    Singleton(Singleton const&) = delete;
+    Singleton(const Singleton&) = delete;
     //! @brief The operator (=) overloading of Singleton class.
     //! @return reference of the Singleton object
-    Singleton& operator=(Singleton const&) = delete;
+    Singleton& operator=(const Singleton&) = delete;
 
     //! @brief Get the instance of the singleton.
     //! @return the instance of the singleton

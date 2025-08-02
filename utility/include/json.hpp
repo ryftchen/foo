@@ -338,7 +338,7 @@ public:
         Data() : value{nullptr} {}
         //! @brief Construct a new Data object.
         //! @param s - string value
-        explicit Data(const String& s) : value{std::make_shared<String>(s)} {};
+        explicit Data(const String& s) : value{std::make_shared<String>(s)} {}
         //! @brief Construct a new Data object.
         //! @param f - floating value
         explicit Data(const Floating f) : value{f} {}
