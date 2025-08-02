@@ -272,7 +272,8 @@ retry:
     }
     catch (const std::exception& err)
     {
-        LOG_ERR << "Suspend the " << name << " during " << State(currentState()) << " state. " << err.what();
+        LOG_ERR << "Suspend the " << name << " during " << static_cast<State>(currentState()) << " state. "
+                << err.what();
 
         processEvent(Standby{});
         if (awaitNotification2Retry())

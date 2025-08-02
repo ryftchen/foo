@@ -711,7 +711,7 @@ void Command::precheck()
 {
     for (auto& bits = taskDispatcher.nativeCategories;
          const auto index : std::views::iota(0U, bits.size())
-             | std::views::filter([this](const auto i) { return mainCLI.isUsed(toString(Category(i))); }))
+             | std::views::filter([this](const auto i) { return mainCLI.isUsed(toString(static_cast<Category>(i))); }))
     {
         checkForExcessiveArguments();
         bits.set(index);
@@ -763,7 +763,7 @@ void Command::dispatch()
              const auto index :
              std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
         {
-            builtInNotifier.notify(Category(index));
+            builtInNotifier.notify(static_cast<Category>(index));
         }
     }
 

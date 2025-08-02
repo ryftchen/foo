@@ -214,9 +214,9 @@ private:
     explicit Log(const StateType initState = State::init) :
         FSM(initState),
         filePath{getFullLogPath(configure::detail::filePath4Logger())},
-        priorityLevel{OutputLevel(configure::detail::priorityLevel4Logger())},
-        targetType{OutputType(configure::detail::targetType4Logger())},
-        writeMode{OutputMode(configure::detail::writeMode4Logger())}
+        priorityLevel{static_cast<OutputLevel>(configure::detail::priorityLevel4Logger())},
+        targetType{static_cast<OutputType>(configure::detail::targetType4Logger())},
+        writeMode{static_cast<OutputMode>(configure::detail::writeMode4Logger())}
     {
     }
 
