@@ -27,8 +27,6 @@ using namespace application::app_algo; // NOLINT(google-build-using-namespace)
 class MatchTestBase : public ::testing::Test
 {
 public:
-    //! @brief Construct a new MatchTestBase object.
-    MatchTestBase() = default;
     //! @brief Destroy the MatchTestBase object.
     ~MatchTestBase() override = default;
 
@@ -123,8 +121,6 @@ TEST_F(MatchTestBase, sundayMethod)
 class NotationTestBase : public ::testing::Test
 {
 public:
-    //! @brief Construct a new NotationTestBase object.
-    NotationTestBase() = default;
     //! @brief Destroy the NotationTestBase object.
     ~NotationTestBase() override = default;
 
@@ -173,8 +169,6 @@ TEST_F(NotationTestBase, postfixMethod)
 class OptimalTestBase : public ::testing::Test
 {
 public:
-    //! @brief Construct a new OptimalTestBase object.
-    OptimalTestBase() = default;
     //! @brief Destroy the OptimalTestBase object.
     ~OptimalTestBase() override = default;
 
@@ -279,8 +273,6 @@ TEST_F(OptimalTestBase, geneticMethod)
 class SearchTestBase : public ::testing::Test
 {
 public:
-    //! @brief Construct a new SearchTestBase object.
-    SearchTestBase() = default;
     //! @brief Destroy the SearchTestBase object.
     ~SearchTestBase() override = default;
 
@@ -355,8 +347,6 @@ TEST_F(SearchTestBase, fibonacciMethod)
 class SortTestBase : public ::testing::Test
 {
 public:
-    //! @brief Construct a new SortTestBase object.
-    SortTestBase() = default;
     //! @brief Destroy the SortTestBase object.
     ~SortTestBase() override = default;
 

@@ -78,6 +78,9 @@ namespace command
 class Receiver
 {
 public:
+    //! @brief Destroy the Receiver object.
+    virtual ~Receiver() = default;
+
     //! @brief Perform the operations associated with carrying out the request.
     static void action();
 };
@@ -119,6 +122,9 @@ private:
 class Invoker
 {
 public:
+    //! @brief Destroy the Invoker object.
+    virtual ~Invoker() = default;
+
     //! @brief Set the command.
     //! @param c - command
     void set(const std::shared_ptr<Command>& c);
@@ -140,6 +146,9 @@ namespace interpreter
 class Context
 {
 public:
+    //! @brief Destroy the Context object.
+    virtual ~Context() = default;
+
     //! @brief Set the pair of the expression and the value.
     //! @param expr - expression
     //! @param val - value
@@ -411,6 +420,10 @@ namespace memento
 //! @brief Store the internal state of the originator. Protect against access by other than the originator.
 class Memento
 {
+public:
+    //! @brief Destroy the Memento object.
+    virtual ~Memento() = default;
+
 private:
     friend class Originator;
     //! @brief Construct a new Memento object.
@@ -432,6 +445,9 @@ private:
 class Originator
 {
 public:
+    //! @brief Destroy the Originator object.
+    virtual ~Originator() = default;
+
     //! @brief Set the state of originator.
     //! @param s - target state
     void setState(const int s);
@@ -529,8 +545,6 @@ public:
     //! @brief Construct a new ConcreteObserver object.
     //! @param state - target state of observer
     explicit ConcreteObserver(const int state) : observerState{state} {}
-    //! @brief Destroy the ConcreteObserver object.
-    ~ConcreteObserver() override = default;
 
     //! @brief Get the state of observer.
     //! @return state of observer
@@ -548,11 +562,6 @@ private:
 class ConcreteSubject : public Subject
 {
 public:
-    //! @brief Construct a new ConcreteSubject object.
-    ConcreteSubject() = default;
-    //! @brief Destroy the ConcreteSubject object.
-    ~ConcreteSubject() override = default;
-
     //! @brief Get the state of subject.
     //! @return state of subject
     int getState() const override;
@@ -586,9 +595,6 @@ public:
 class ConcreteStateA : public State
 {
 public:
-    //! @brief Destroy the ConcreteStateA object.
-    ~ConcreteStateA() override = default;
-
     //! @brief Handle in the state.
     void handle() override;
 };
@@ -597,9 +603,6 @@ public:
 class ConcreteStateB : public State
 {
 public:
-    //! @brief Destroy the ConcreteStateB object.
-    ~ConcreteStateB() override = default;
-
     //! @brief Handle in the state.
     void handle() override;
 };
@@ -643,9 +646,6 @@ public:
 class ConcreteStrategyA : public Strategy
 {
 public:
-    //! @brief Destroy the ConcreteStrategyA object.
-    ~ConcreteStrategyA() override = default;
-
     //! @brief The interface of the algorithm.
     void algorithmInterface() override;
 };
@@ -654,9 +654,6 @@ public:
 class ConcreteStrategyB : public Strategy
 {
 public:
-    //! @brief Destroy the ConcreteStrategyB object.
-    ~ConcreteStrategyB() override = default;
-
     //! @brief The interface of the algorithm.
     void algorithmInterface() override;
 };
@@ -704,9 +701,6 @@ public:
 class ConcreteClass : public AbstractClass
 {
 public:
-    //! @brief Destroy the ConcreteClass object.
-    ~ConcreteClass() override = default;
-
     //! @brief The primitive operation 1.
     void primitiveOperation1() override;
     //! @brief The primitive operation 2.
@@ -741,9 +735,6 @@ public:
 class ConcreteVisitor1 : public Visitor
 {
 public:
-    //! @brief Destroy the ConcreteVisitor1 object.
-    ~ConcreteVisitor1() override = default;
-
     //! @brief Visit element A.
     //! @param element - element to be visited
     void visitElementA(const std::shared_ptr<ConcreteElementA>& element) override;
@@ -756,9 +747,6 @@ public:
 class ConcreteVisitor2 : public Visitor
 {
 public:
-    //! @brief Destroy the ConcreteVisitor2 object.
-    ~ConcreteVisitor2() override = default;
-
     //! @brief Visit element A.
     //! @param element - element to be visited
     void visitElementA(const std::shared_ptr<ConcreteElementA>& element) override;
@@ -783,9 +771,6 @@ public:
 class ConcreteElementA : public Element, public std::enable_shared_from_this<ConcreteElementA>
 {
 public:
-    //! @brief Destroy the ConcreteElementA object.
-    ~ConcreteElementA() override = default;
-
     //! @brief Accept visitor.
     //! @param visitor - visitor to be accepted
     void accept(Visitor& visitor) override;
@@ -795,9 +780,6 @@ public:
 class ConcreteElementB : public Element, public std::enable_shared_from_this<ConcreteElementB>
 {
 public:
-    //! @brief Destroy the ConcreteElementB object.
-    ~ConcreteElementB() override = default;
-
     //! @brief Accept visitor.
     //! @param visitor - visitor to be accepted
     void accept(Visitor& visitor) override;

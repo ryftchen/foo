@@ -108,6 +108,9 @@ struct Bottom<PrimeMethod>
 class ApplyNumeric
 {
 public:
+    //! @brief Destroy the ApplyNumeric object.
+    virtual ~ApplyNumeric() = default;
+
     //! @brief Enumerate specific numeric choices.
     enum class Category : std::uint8_t
     {

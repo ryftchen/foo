@@ -8,6 +8,7 @@
 
 #ifndef _PRECOMPILED_HEADER
 #include <readline/history.h>
+#include <readline/readline.h>
 #include <functional>
 #include <list>
 #include <memory>
@@ -88,15 +89,15 @@ private:
         //! @param greeting - default greeting information
         explicit Terminal(const std::string_view greeting) : greeting{greeting} {}
         //! @brief Destroy the Terminal object.
-        virtual ~Terminal() { delete history; }
+        virtual ~Terminal() { ::rl_free(history); }
         //! @brief Construct a new Terminal object.
         Terminal(const Terminal&) = delete;
         //! @brief Construct a new Terminal object.
         Terminal(Terminal&&) = delete;
-        //! @brief The operator (=) overloading of Terminal struct.
+        //! @brief The operator (=) overloading of Terminal class.
         //! @return reference of the Terminal object
         Terminal& operator=(const Terminal&) = delete;
-        //! @brief The operator (=) overloading of Terminal struct.
+        //! @brief The operator (=) overloading of Terminal class.
         //! @return reference of the Terminal object
         Terminal& operator=(Terminal&&) = delete;
 

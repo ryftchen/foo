@@ -225,6 +225,8 @@ public:
     //! @brief Construct a new FSM object.
     //! @param initState - initialization value of state
     explicit FSM(const State initState = {}) : state{initState} {}
+    //! @brief Destroy the FSM object.
+    virtual ~FSM() = default;
 
     //! @brief Process the specific event.
     //! @tparam Event - type of triggered event
@@ -241,9 +243,12 @@ private:
     //! @tparam Event - type of triggered event
     //! @tparam Target - target state
     template <State Source, typename Event, State Target>
-    struct RowBase
+    class RowBase
     {
     public:
+        //! @brief Destroy the RowBase object.
+        virtual ~RowBase() = default;
+
         //! @brief Alias for state.
         using StateType = State;
         //! @brief Alias for event.
@@ -387,8 +392,9 @@ protected:
         Action action = nullptr,
         typename Guard = std::nullptr_t,
         Guard guard = nullptr>
-    struct DefRow : public RowBase<Source, Event, Target>
+    class DefRow : public RowBase<Source, Event, Target>
     {
+    public:
         //! @brief Process the specific event.
         //! @param self - derived object
         //! @param event - event to be processed
@@ -418,8 +424,9 @@ protected:
         State Target,
         void (Derived::*action)(const Event&) = nullptr,
         bool (Derived::*guard)(const Event&) const = nullptr>
-    struct MemFuncRow : public RowBase<Source, Event, Target>
+    class MemFuncRow : public RowBase<Source, Event, Target>
     {
+    public:
         //! @brief Process the specific event.
         //! @param self - derived object
         //! @param event - event to be processed
@@ -447,8 +454,9 @@ protected:
     //! @tparam action - action function
     //! @tparam guard - guard condition
     template <State Source, typename Event, State Target, auto action = nullptr, auto guard = nullptr>
-    struct Row : public RowBase<Source, Event, Target>
+    class Row : public RowBase<Source, Event, Target>
     {
+    public:
         //! @brief Process the specific event.
         //! @param self - derived object
         //! @param event - event to be processed

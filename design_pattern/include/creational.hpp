@@ -36,9 +36,6 @@ public:
 class ConcreteProductAX : public ProductA
 {
 public:
-    //! @brief Destroy the ConcreteProductAX object.
-    ~ConcreteProductAX() override = default;
-
     //! @brief Get the product name.
     //! @return product name
     [[nodiscard]] std::string getName() const override;
@@ -48,9 +45,6 @@ public:
 class ConcreteProductAY : public ProductA
 {
 public:
-    //! @brief Destroy the ConcreteProductAY object.
-    ~ConcreteProductAY() override = default;
-
     //! @brief Get the product name.
     //! @return product name
     [[nodiscard]] std::string getName() const override;
@@ -72,9 +66,6 @@ public:
 class ConcreteProductBX : public ProductB
 {
 public:
-    //! @brief Destroy the ConcreteProductBX object.
-    ~ConcreteProductBX() override = default;
-
     //! @brief Get the product name.
     //! @return product name
     [[nodiscard]] std::string getName() const override;
@@ -84,9 +75,6 @@ public:
 class ConcreteProductBY : public ProductB
 {
 public:
-    //! @brief Destroy the ConcreteProductBY object.
-    ~ConcreteProductBY() override = default;
-
     //! @brief Get the product name.
     //! @return product name
     [[nodiscard]] std::string getName() const override;
@@ -112,9 +100,6 @@ public:
 class ConcreteFactoryX : public AbstractFactory
 {
 public:
-    //! @brief Destroy the ConcreteFactoryX object.
-    ~ConcreteFactoryX() override = default;
-
     //! @brief Create product A.
     //! @return product A
     std::unique_ptr<ProductA> createProductA() override;
@@ -127,9 +112,6 @@ public:
 class ConcreteFactoryY : public AbstractFactory
 {
 public:
-    //! @brief Destroy the ConcreteFactoryY object.
-    ~ConcreteFactoryY() override = default;
-
     //! @brief Create product A.
     //! @return product A
     std::unique_ptr<ProductA> createProductA() override;
@@ -148,6 +130,9 @@ namespace builder
 class Product
 {
 public:
+    //! @brief Destroy the Product object.
+    virtual ~Product() = default;
+
     //! @brief Make part A.
     //! @param part - target part
     void makeA(const std::string_view part);
@@ -259,9 +244,6 @@ public:
 class ConcreteProductA : public Product
 {
 public:
-    //! @brief Destroy the ConcreteProductA object.
-    ~ConcreteProductA() override = default;
-
     //! @brief Get the product name.
     //! @return product name
     [[nodiscard]] std::string getName() const override;
@@ -271,9 +253,6 @@ public:
 class ConcreteProductB : public Product
 {
 public:
-    //! @brief Destroy the ConcreteProductB object.
-    ~ConcreteProductB() override = default;
-
     //! @brief Get the product name.
     //! @return product name
     [[nodiscard]] std::string getName() const override;
@@ -301,9 +280,6 @@ public:
 class ConcreteCreator : public Creator
 {
 public:
-    //! @brief Destroy the ConcreteCreator object.
-    ~ConcreteCreator() override = default;
-
     //! @brief Create product A.
     //! @return product A
     std::unique_ptr<Product> createProductA() override;
@@ -339,9 +315,6 @@ public:
 class ConcretePrototypeA : public Prototype
 {
 public:
-    //! @brief Destroy the ConcretePrototypeA object.
-    ~ConcretePrototypeA() override = default;
-
     //! @brief Clone self.
     //! @return cloning of self
     std::unique_ptr<Prototype> clone() override;
@@ -354,9 +327,6 @@ public:
 class ConcretePrototypeB : public Prototype
 {
 public:
-    //! @brief Destroy the ConcretePrototypeB object.
-    ~ConcretePrototypeB() override = default;
-
     //! @brief Clone self.
     //! @return cloning of self
     std::unique_ptr<Prototype> clone() override;
@@ -369,6 +339,9 @@ public:
 class Client
 {
 public:
+    //! @brief Destroy the Client object.
+    virtual ~Client() = default;
+
     //! @brief Initialize all prototypes.
     static void init();
     //! @brief Remove all prototypes.
@@ -396,11 +369,18 @@ namespace singleton
 class Singleton
 {
 public:
+    //! @brief Destroy the Memento object.
+    virtual ~Singleton() = default;
     //! @brief Construct a new Singleton object.
     Singleton(const Singleton&) = delete;
+    //! @brief Construct a new Singleton object.
+    Singleton(Singleton&&) = delete;
     //! @brief The operator (=) overloading of Singleton class.
     //! @return reference of the Singleton object
     Singleton& operator=(const Singleton&) = delete;
+    //! @brief The operator (=) overloading of Singleton class.
+    //! @return reference of the Singleton object
+    Singleton& operator=(Singleton&&) = delete;
 
     //! @brief Get the instance of the singleton.
     //! @return the instance of the singleton

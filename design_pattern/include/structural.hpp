@@ -37,6 +37,9 @@ public:
 class Adaptee
 {
 public:
+    //! @brief Destroy the Adaptee object.
+    virtual ~Adaptee() = default;
+
     //! @brief The specific request.
     static void specificRequest();
 };
@@ -79,9 +82,6 @@ public:
 class ConcreteImplementorA : public Implementor
 {
 public:
-    //! @brief Destroy the ConcreteImplementorA object.
-    ~ConcreteImplementorA() override = default;
-
     //! @brief Implemented action.
     void action() override;
 };
@@ -90,9 +90,6 @@ public:
 class ConcreteImplementorB : public Implementor
 {
 public:
-    //! @brief Destroy the ConcreteImplementorB object.
-    ~ConcreteImplementorB() override = default;
-
     //! @brief Implemented action.
     void action() override;
 };
@@ -115,8 +112,6 @@ public:
     //! @brief Construct a new RefinedAbstraction object.
     //! @param implementor - target implementor
     explicit RefinedAbstraction(std::unique_ptr<Implementor> implementor) : implementor{std::move(implementor)} {}
-    //! @brief Destroy the RefinedAbstraction object.
-    ~RefinedAbstraction() override = default;
 
     //! @brief Abstracted operation.
     void operation() override;
@@ -184,8 +179,6 @@ public:
     //! @brief Construct a new Leaf object.
     //! @param id - target leaf node id
     explicit Leaf(const int id) : id{id} {}
-    //! @brief Destroy the Leaf object.
-    ~Leaf() override = default;
 
     //! @brief Execute operation.
     void operation() override;
@@ -216,9 +209,6 @@ public:
 class ConcreteComponent : public Component
 {
 public:
-    //! @brief Destroy the ConcreteComponent object.
-    ~ConcreteComponent() override = default;
-
     //! @brief The related operation.
     void operation() override;
 };
@@ -230,8 +220,6 @@ public:
     //! @brief Construct a new Decorator object.
     //! @param component - target component
     explicit Decorator(std::shared_ptr<Component> component) : component{std::move(component)} {}
-    //! @brief Destroy the Decorator object.
-    ~Decorator() override = default;
 
     //! @brief The related operation.
     void operation() override;
@@ -275,6 +263,9 @@ namespace facade
 class SubsystemA
 {
 public:
+    //! @brief Destroy the SubsystemA object.
+    virtual ~SubsystemA() = default;
+
     //! @brief The sub-operation.
     static void suboperation();
 };
@@ -283,6 +274,9 @@ public:
 class SubsystemB
 {
 public:
+    //! @brief Destroy the SubsystemB object.
+    virtual ~SubsystemB() = default;
+
     //! @brief The sub-operation.
     static void suboperation();
 };
@@ -291,6 +285,9 @@ public:
 class SubsystemC
 {
 public:
+    //! @brief Destroy the SubsystemC object.
+    virtual ~SubsystemC() = default;
+
     //! @brief The sub-operation.
     static void suboperation();
 };
@@ -299,8 +296,8 @@ public:
 class Facade
 {
 public:
-    //! @brief Construct a new Facade object.
-    Facade() = default;
+    //! @brief Destroy the Facade object.
+    virtual ~Facade() = default;
 
     //! @brief The operation 1.
     void operation1();
@@ -340,8 +337,6 @@ public:
     //! @brief Construct a new UnsharedConcreteFlyweight object.
     //! @param intrinsicState - target intrinsic state
     explicit UnsharedConcreteFlyweight(const int intrinsicState) : state{intrinsicState} {}
-    //! @brief Destroy the UnsharedConcreteFlyweight object.
-    ~UnsharedConcreteFlyweight() override = default;
 
     //! @brief The related operation.
     void operation() override;
@@ -358,8 +353,6 @@ public:
     //! @brief Construct a new ConcreteFlyweight object.
     //! @param intrinsicState - target intrinsic state
     explicit ConcreteFlyweight(const int intrinsicState) : state{intrinsicState} {}
-    //! @brief Destroy the ConcreteFlyweight object.
-    ~ConcreteFlyweight() override = default;
 
     //! @brief The related operation.
     void operation() override;

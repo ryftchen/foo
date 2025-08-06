@@ -76,7 +76,7 @@ class Log final : public utility::fsm::FSM<Log>
 {
 public:
     //! @brief Destroy the Log object.
-    virtual ~Log() = default;
+    ~Log() override = default;
     //! @brief Construct a new Log object.
     Log(const Log&) = delete;
     //! @brief Construct a new Log object.
