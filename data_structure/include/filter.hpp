@@ -25,8 +25,6 @@ public:
     //! @param falsePositiveProb - desired false positive probability
     //! @param hashSeed - hash seed
     Bloom(const std::uint32_t capacity, const double falsePositiveProb, const std::uint32_t hashSeed);
-    //! @brief Destroy the Bloom object.
-    virtual ~Bloom() = default;
 
     //! @brief Insert a key into the filter.
     //! @param key - key to hash
@@ -95,8 +93,6 @@ public:
     //! @param rBits - number of reminder bits
     //! @param hashSeed - hash seed
     Quotient(const std::uint8_t qBits, const std::uint8_t rBits, const std::uint32_t hashSeed);
-    //! @brief Destroy the Quotient object.
-    virtual ~Quotient() = default;
 
     //! @brief Insert a key into the filter.
     //! @param key - key to hash

@@ -29,8 +29,6 @@ public:
     //! @param buf - packet buffer
     //! @param len - buffer length
     Packet(char* buf, const std::uint32_t len) : buffer{buf}, tail{buffer + len}, writer{buffer}, reader{buffer} {}
-    //! @brief Destroy the Packet object.
-    virtual ~Packet() = default;
 
     //! @brief Write data to the packet buffer.
     //! @tparam T - type of data to be written

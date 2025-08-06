@@ -21,9 +21,6 @@ extern const char* version() noexcept;
 class Notation
 {
 public:
-    //! @brief Destroy the Notation object.
-    virtual ~Notation() = default;
-
     //! @brief Prefix.
     //! @param infix - infix notation
     //! @return prefix notation

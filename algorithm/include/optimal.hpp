@@ -28,8 +28,20 @@ inline constexpr double epsilon = 1e-5;
 class Optimal
 {
 public:
+    //! @brief Construct a new Optimal object.
+    Optimal() = default;
     //! @brief Destroy the Optimal object.
     virtual ~Optimal() = default;
+    //! @brief Construct a new Optimal object.
+    Optimal(const Optimal&) = default;
+    //! @brief Construct a new Optimal object.
+    Optimal(Optimal&&) noexcept = default;
+    //! @brief The operator (=) overloading of Optimal class.
+    //! @return reference of the Optimal object
+    Optimal& operator=(const Optimal&) = default;
+    //! @brief The operator (=) overloading of Optimal class.
+    //! @return reference of the Optimal object
+    Optimal& operator=(Optimal&&) noexcept = default;
 
     //! @brief The operator (()) overloading of Optimal class.
     //! @param left - left endpoint

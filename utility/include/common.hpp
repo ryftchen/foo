@@ -104,9 +104,6 @@ private:
         }()};
 
 public:
-    //! @brief Destroy the ConcatString object.
-    constexpr virtual ~ConcatString() = default;
-
     //! @brief The splicing result. Converted from a sequence of characters.
     static constexpr std::string_view value{characters.data(), characters.size() - 1};
 };
@@ -137,8 +134,20 @@ requires std::is_enum_v<EnumType>
 class EnumCheck<EnumType>
 {
 public:
+    //! @brief Construct a new EnumCheck object.
+    consteval EnumCheck() = default;
     //! @brief Destroy the EnumCheck object.
     constexpr virtual ~EnumCheck() = default;
+    //! @brief Construct a new EnumCheck object.
+    consteval EnumCheck(const EnumCheck&) = default;
+    //! @brief Construct a new EnumCheck object.
+    consteval EnumCheck(EnumCheck&&) noexcept = default;
+    //! @brief The operator (=) overloading of EnumCheck class.
+    //! @return reference of the EnumCheck object
+    consteval EnumCheck& operator=(const EnumCheck&) = default;
+    //! @brief The operator (=) overloading of EnumCheck class.
+    //! @return reference of the EnumCheck object
+    consteval EnumCheck& operator=(EnumCheck&&) noexcept = default;
 
     //! @brief Check whether it contains the value as an enumeration.
     //! @tparam IntType - type of integral
@@ -251,9 +260,6 @@ constexpr auto wrapClosure(Clos&& closure)
 class SpinLock
 {
 public:
-    //! @brief Destroy the SpinLock object.
-    virtual ~SpinLock() = default;
-
     //! @brief Acquire the lock.
     void lock();
     //! @brief Release the lock.
@@ -271,9 +277,6 @@ private:
 class ReadWriteLock
 {
 public:
-    //! @brief Destroy the ReadWriteLock object.
-    virtual ~ReadWriteLock() = default;
-
     //! @brief Acquire a read lock.
     void readLock();
     //! @brief Release a read lock.
@@ -316,6 +319,16 @@ public:
     LockGuard(ReadWriteLock& lock, const LockMode mode);
     //! @brief Destroy the LockGuard object.
     virtual ~LockGuard();
+    //! @brief Construct a new LockGuard object.
+    LockGuard(const LockGuard&) = delete;
+    //! @brief Construct a new LockGuard object.
+    LockGuard(LockGuard&&) noexcept = delete;
+    //! @brief The operator (=) overloading of LockGuard class.
+    //! @return reference of the LockGuard object
+    LockGuard& operator=(const LockGuard&) = delete;
+    //! @brief The operator (=) overloading of LockGuard class.
+    //! @return reference of the LockGuard object
+    LockGuard& operator=(LockGuard&&) noexcept = delete;
 
 private:
     //! @brief Object managed by the guard.

@@ -100,9 +100,6 @@ using ArgsExclType = typename ArgsExcl<std::make_index_sequence<N>, Args...>::Ty
 template <typename Callable, typename ArgsTuple, typename UncurriedArgsTuple>
 class Curried
 {
-public:
-    //! @brief Destroy the Curried object.
-    virtual ~Curried() = default;
 };
 
 //! @brief Completion of curry.
@@ -122,8 +119,6 @@ public:
         callable{std::forward<CallableType>(call)}, curriedArgs{std::move(args)}
     {
     }
-    //! @brief Destroy the Curried object.
-    virtual ~Curried() = default;
 
     //! @brief The operator (()) overloading of Curried class.
     //! @param args - uncurried function arguments

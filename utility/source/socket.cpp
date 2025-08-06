@@ -51,7 +51,7 @@ Socket::Socket(const Type socketType, const int socketId)
     ::pthread_spin_init(&sockLock, ::PTHREAD_PROCESS_PRIVATE);
     if (socketId == -1)
     {
-        const SockGuard lock(*this);
+        const Guard lock(*this);
         sock = ::socket(AF_INET, static_cast<std::uint8_t>(socketType), 0);
         if (sock == -1)
         {
@@ -74,7 +74,7 @@ void Socket::toClose()
 {
     requestStop();
 
-    const SockGuard lock(*this);
+    const Guard lock(*this);
     ::shutdown(sock, ::SHUT_RDWR);
     ::close(sock);
 }
@@ -130,7 +130,7 @@ void Socket::launchAsyncTask(Func&& func, Args&&... args)
 
 int TCPSocket::toSend(const char* const bytes, const std::size_t length)
 {
-    const SockGuard lock(*this);
+    const Guard lock(*this);
     return ::send(sock, bytes, length, 0);
 }
 
@@ -205,7 +205,7 @@ void TCPSocket::toRecv(const std::shared_ptr<TCPSocket> socket) // NOLINT(perfor
 
         if (int msgLen = 0; pollFDs.at(0).revents & POLLIN)
         {
-            if (const SockGuard lock(*socket); true)
+            if (const Guard lock(*socket); true)
             {
                 msgLen = ::recv(socket->sock, tempBuffer, bufferSize, 0);
                 if (msgLen <= 0)
@@ -231,7 +231,7 @@ void TCPSocket::toRecv(const std::shared_ptr<TCPSocket> socket) // NOLINT(perfor
 
 TCPServer::TCPServer() : Socket(Type::tcp)
 {
-    const SockGuard lock(*this);
+    const Guard lock(*this);
     int opt1 = 1, opt2 = 0;
     ::setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &opt1, sizeof(opt1));
     ::setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, &opt2, sizeof(opt2));
@@ -246,8 +246,7 @@ void TCPServer::toBind(const std::string& ip, const std::uint16_t port)
 
     sockAddr.sin_family = AF_INET;
     sockAddr.sin_port = ::htons(port);
-    if (const SockGuard lock(*this);
-        ::bind(sock, reinterpret_cast<const ::sockaddr*>(&sockAddr), sizeof(sockAddr)) == -1)
+    if (const Guard lock(*this); ::bind(sock, reinterpret_cast<const ::sockaddr*>(&sockAddr), sizeof(sockAddr)) == -1)
     {
         throw std::runtime_error{"Failed to bind the socket, errno: " + errnoString() + '.'};
     }
@@ -261,7 +260,7 @@ void TCPServer::toBind(const std::uint16_t port)
 void TCPServer::toListen()
 {
     constexpr int retryTimes = 10;
-    if (const SockGuard lock(*this); ::listen(sock, retryTimes) == -1)
+    if (const Guard lock(*this); ::listen(sock, retryTimes) == -1)
     {
         throw std::runtime_error{"Server could not listen on the socket, errno: " + errnoString() + '.'};
     }
@@ -352,7 +351,7 @@ int UDPSocket::toSendTo(
     addr.sin_port = ::htons(port);
     addr.sin_family = AF_INET;
     int sent = 0;
-    if (const SockGuard lock(*this); true)
+    if (const Guard lock(*this); true)
     {
         sent = ::sendto(sock, bytes, length, 0, reinterpret_cast<const ::sockaddr*>(&addr), sizeof(addr));
         if (sent == -1)
@@ -371,7 +370,7 @@ int UDPSocket::toSendTo(const std::string_view message, const std::string& ip, c
 
 int UDPSocket::toSend(const char* const bytes, const std::size_t length)
 {
-    const SockGuard lock(*this);
+    const Guard lock(*this);
     return ::send(sock, bytes, length, 0);
 }
 
@@ -457,7 +456,7 @@ void UDPSocket::toRecv(const std::shared_ptr<UDPSocket> socket) // NOLINT(perfor
 
         if (int msgLen = 0; pollFDs.at(0).revents & POLLIN)
         {
-            if (const SockGuard lock(*socket); true)
+            if (const Guard lock(*socket); true)
             {
                 msgLen = ::recv(socket->sock, tempBuffer, bufferSize, 0);
                 if (msgLen == -1)
@@ -504,7 +503,7 @@ void UDPSocket::toRecvFrom(const std::shared_ptr<UDPSocket> socket) // NOLINT(pe
 
         if (int msgLen = 0; pollFDs.at(0).revents & POLLIN)
         {
-            if (const SockGuard lock(*socket); true)
+            if (const Guard lock(*socket); true)
             {
                 msgLen = ::recvfrom(
                     socket->sock, tempBuffer, bufferSize, 0, reinterpret_cast<::sockaddr*>(&addr), &hostAddrSize);
@@ -537,8 +536,7 @@ void UDPServer::toBind(const std::string& ip, const std::uint16_t port)
 
     sockAddr.sin_family = AF_INET;
     sockAddr.sin_port = ::htons(port);
-    if (const SockGuard lock(*this);
-        ::bind(sock, reinterpret_cast<const ::sockaddr*>(&sockAddr), sizeof(sockAddr)) == -1)
+    if (const Guard lock(*this); ::bind(sock, reinterpret_cast<const ::sockaddr*>(&sockAddr), sizeof(sockAddr)) == -1)
     {
         throw std::runtime_error{"Failed to bind the socket, errno: " + errnoString() + '.'};
     }

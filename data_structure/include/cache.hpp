@@ -33,8 +33,6 @@ public:
     //! @param capacity - maximum number of elements the cache can hold
     //! @param maxLoadFactor - maximum load factor for the internal hash map
     explicit FIFO(const std::size_t capacity, const float maxLoadFactor = 1.0F);
-    //! @brief Destroy the FIFO object.
-    virtual ~FIFO() = default;
 
     //! @brief Insert or update an element by using the value by key.
     //! @param key - key associated with the value
@@ -370,8 +368,6 @@ public:
     //! @param capacity - maximum number of elements the cache can hold
     //! @param maxLoadFactor - maximum load factor for the internal hash map
     explicit LFU(const std::size_t capacity, const float maxLoadFactor = 1.0F);
-    //! @brief Destroy the LFU object.
-    virtual ~LFU() = default;
 
     //! @brief Insert or update an element by using the value by key.
     //! @param key - key associated with the value
@@ -729,8 +725,6 @@ public:
     //! @param capacity - maximum number of elements the cache can hold
     //! @param maxLoadFactor - maximum load factor for the internal hash map
     explicit LRU(const std::size_t capacity, const float maxLoadFactor = 1.0F);
-    //! @brief Destroy the LRU object.
-    virtual ~LRU() = default;
 
     //! @brief Insert or update an element by using the value by key.
     //! @param key - key associated with the value

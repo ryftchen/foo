@@ -44,9 +44,6 @@ constexpr std::int32_t integerB = -46340;
 class ArithmeticCalculation
 {
 public:
-    //! @brief Destroy the ArithmeticCalculation object.
-    virtual ~ArithmeticCalculation() = default;
-
     //! @brief The addition method.
     //! @param augend - augend of addition
     //! @param addend - addend of addition
@@ -78,8 +75,6 @@ public:
         std::cout << "\nElementary arithmetic of " << integer1 << " and " << integer2 << ':' << std::endl;
 #endif // _RUNTIME_PRINTING
     }
-    //! @brief Destroy the InputBuilder object.
-    virtual ~InputBuilder() = default;
 
     //! @brief Get the pair of integers.
     //! @return pair of integers
@@ -116,9 +111,6 @@ constexpr std::int32_t integerB = 2 * 3 * 5 * 7 * 11 * 13 * 17;
 class DivisorCalculation
 {
 public:
-    //! @brief Destroy the DivisorCalculation object.
-    virtual ~DivisorCalculation() = default;
-
     //! @brief The Euclidean method.
     //! @param a - first integer
     //! @param b - second integer
@@ -147,8 +139,6 @@ public:
         std::cout << "\nAll common divisors of " << integer1 << " and " << integer2 << ':' << std::endl;
 #endif // _RUNTIME_PRINTING
     }
-    //! @brief Destroy the InputBuilder object.
-    virtual ~InputBuilder() = default;
 
     //! @brief Get the pair of integers.
     //! @return pair of integers
@@ -210,8 +200,20 @@ using Expression = std::function<double(const double)>;
 class ExprBase
 {
 public:
+    //! @brief Construct a new ExprBase object.
+    ExprBase() = default;
     //! @brief Destroy the ExprBase object.
     virtual ~ExprBase() = default;
+    //! @brief Construct a new ExprBase object.
+    ExprBase(const ExprBase&) = default;
+    //! @brief Construct a new ExprBase object.
+    ExprBase(ExprBase&&) noexcept = default;
+    //! @brief The operator (=) overloading of ExprBase class.
+    //! @return reference of the ExprBase object
+    ExprBase& operator=(const ExprBase&) = default;
+    //! @brief The operator (=) overloading of ExprBase class.
+    //! @return reference of the ExprBase object
+    ExprBase& operator=(ExprBase&&) noexcept = default;
 
     //! @brief The operator (()) overloading of ExprBase class.
     //! @param x - independent variable
@@ -250,9 +252,6 @@ public:
 class IntegralCalculation
 {
 public:
-    //! @brief Destroy the IntegralCalculation object.
-    virtual ~IntegralCalculation() = default;
-
     //! @brief The trapezoidal method.
     //! @param expr - target expression
     //! @param lower - lower endpoint
@@ -300,8 +299,6 @@ public:
         std::cout << "\nIntegral expression:\n" << exprDescr << std::endl;
 #endif // _RUNTIME_PRINTING
     }
-    //! @brief Destroy the InputBuilder object.
-    virtual ~InputBuilder() = default;
 
     //! @brief Get the target expression.
     //! @return target expression
@@ -338,9 +335,6 @@ constexpr std::uint32_t maxPositiveInteger = 997;
 class PrimeCalculation
 {
 public:
-    //! @brief Destroy the PrimeCalculation object.
-    virtual ~PrimeCalculation() = default;
-
     //! @brief The Eratosthenes method.
     //! @param max - maximum positive integer
     static void eratosthenesMethod(const std::uint32_t max);
@@ -366,8 +360,6 @@ public:
         std::cout << "\nAll prime numbers smaller than " << maxPositiveInteger << ':' << std::endl;
 #endif // _RUNTIME_PRINTING
     }
-    //! @brief Destroy the InputBuilder object.
-    virtual ~InputBuilder() = default;
 
     //! @brief Get the Maximum positive integer.
     //! @return maximum positive integer

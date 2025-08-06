@@ -21,9 +21,6 @@ extern const char* version() noexcept;
 class Divisor
 {
 public:
-    //! @brief Destroy the Divisor object.
-    virtual ~Divisor() = default;
-
     //! @brief Euclidean.
     //! @param a - first integer
     //! @param b - second integer

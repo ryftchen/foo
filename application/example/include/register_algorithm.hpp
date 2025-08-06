@@ -146,9 +146,6 @@ struct Bottom<SortMethod>
 class ApplyAlgorithm
 {
 public:
-    //! @brief Destroy the ApplyAlgorithm object.
-    virtual ~ApplyAlgorithm() = default;
-
     //! @brief Enumerate specific algorithm choices.
     enum class Category : std::uint8_t
     {

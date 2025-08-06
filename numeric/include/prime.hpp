@@ -21,9 +21,6 @@ extern const char* version() noexcept;
 class Prime
 {
 public:
-    //! @brief Destroy the Prime object.
-    virtual ~Prime() = default;
-
     //! @brief Eratosthenes.
     //! @param max - maximum positive integer
     //! @return all prime numbers that are not greater than the maximum positive integer

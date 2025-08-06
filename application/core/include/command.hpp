@@ -50,15 +50,24 @@ template <typename Key, typename Subject>
 class Notifier
 {
 public:
-    //! @brief Destroy the Notifier object.
-    virtual ~Notifier() = default;
-
     //! @brief The base action when notified.
     class ActionBase
     {
     public:
+        //! @brief Construct a new ActionBase object.
+        ActionBase() = default;
         //! @brief Destroy the ActionBase object.
         virtual ~ActionBase() = default;
+        //! @brief Construct a new ActionBase object.
+        ActionBase(const ActionBase&) = default;
+        //! @brief Construct a new ActionBase object.
+        ActionBase(ActionBase&&) noexcept = default;
+        //! @brief The operator (=) overloading of ActionBase class.
+        //! @return reference of the ActionBase object
+        ActionBase& operator=(const ActionBase&) = default;
+        //! @brief The operator (=) overloading of ActionBase class.
+        //! @return reference of the ActionBase object
+        ActionBase& operator=(ActionBase&&) noexcept = default;
 
         //! @brief Perform the specific operation.
         virtual void execute() const = 0;
@@ -218,8 +227,20 @@ private:
     class TaskManager
     {
     public:
+        //! @brief Construct a new TaskManager object.
+        TaskManager() = default;
         //! @brief Destroy the TaskManager object.
         virtual ~TaskManager() = default;
+        //! @brief Construct a new TaskManager object.
+        TaskManager(const TaskManager&) = default;
+        //! @brief Construct a new TaskManager object.
+        TaskManager(TaskManager&&) noexcept = default;
+        //! @brief The operator (=) overloading of TaskManager class.
+        //! @return reference of the TaskManager object
+        TaskManager& operator=(const TaskManager&) = default;
+        //! @brief The operator (=) overloading of TaskManager class.
+        //! @return reference of the TaskManager object
+        TaskManager& operator=(TaskManager&&) noexcept = default;
 
         //! @brief Check whether any tasks do not exist.
         //! @return any tasks do not exist or exist

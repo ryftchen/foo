@@ -26,10 +26,6 @@ using namespace application::app_num; // NOLINT(google-build-using-namespace)
 //! @brief Test base of arithmetic.
 class ArithmeticTestBase : public ::testing::Test
 {
-public:
-    //! @brief Destroy the ArithmeticTestBase object.
-    ~ArithmeticTestBase() override = default;
-
 protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
@@ -90,10 +86,6 @@ TEST_F(ArithmeticTestBase, divisionMethod)
 //! @brief Test base of divisor.
 class DivisorTestBase : public ::testing::Test
 {
-public:
-    //! @brief Destroy the DivisorTestBase object.
-    ~DivisorTestBase() override = default;
-
 protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
@@ -136,10 +128,6 @@ TEST_F(DivisorTestBase, steinMethod)
 //! @brief Test base of integral.
 class IntegralTestBase : public ::testing::Test
 {
-public:
-    //! @brief Destroy the IntegralTestBase object.
-    ~IntegralTestBase() override = default;
-
 protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
@@ -225,10 +213,6 @@ TEST_F(IntegralTestBase, monteCarloMethod)
 //! @brief Test base of prime.
 class PrimeTestBase : public ::testing::Test
 {
-public:
-    //! @brief Destroy the PrimeTestBase object.
-    ~PrimeTestBase() override = default;
-
 protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()

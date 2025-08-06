@@ -28,6 +28,16 @@ public:
     explicit Timer(std::function<void()> callback) : callback{std::move(callback)} {}
     //! @brief Destroy the Timer object.
     virtual ~Timer();
+    //! @brief Construct a new Timer object.
+    Timer(const Timer&) = delete;
+    //! @brief Construct a new Timer object.
+    Timer(Timer&&) noexcept = delete;
+    //! @brief The operator (=) overloading of Timer class.
+    //! @return reference of the Timer object
+    Timer& operator=(const Timer&) = delete;
+    //! @brief The operator (=) overloading of Timer class.
+    //! @return reference of the Timer object
+    Timer& operator=(Timer&&) noexcept = delete;
 
     //! @brief Start the timer.
     //! @param interval - time interval
@@ -56,8 +66,6 @@ class Stopwatch
 public:
     //! @brief Construct a new Stopwatch object.
     Stopwatch();
-    //! @brief Destroy the Stopwatch object.
-    virtual ~Stopwatch() = default;
 
     //! @brief Reset the beginning time.
     void reset();
