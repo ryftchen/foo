@@ -20,9 +20,6 @@ extern const char* version() noexcept;
 class Match
 {
 public:
-    //! @brief Destroy the Match object.
-    virtual ~Match() = default;
-
     //! @brief Rabin-Karp.
     //! @param text - matching text
     //! @param pattern - single pattern

@@ -21,6 +21,17 @@ extern const char* version() noexcept;
 class Socket
 {
 public:
+    //! @brief Construct a new Socket object.
+    Socket(const Socket&) = delete;
+    //! @brief Construct a new Socket object.
+    Socket(Socket&&) noexcept = delete;
+    //! @brief The operator (=) overloading of Socket class.
+    //! @return reference of the Socket object
+    Socket& operator=(const Socket&) = delete;
+    //! @brief The operator (=) overloading of Socket class.
+    //! @return reference of the Socket object
+    Socket& operator=(Socket&&) noexcept = delete;
+
     //! @brief Close the socket.
     void toClose();
     //! @brief Wait for the task to be done and then exit.
@@ -79,14 +90,24 @@ protected:
     template <typename Func, typename... Args>
     void launchAsyncTask(Func&& func, Args&&... args);
     //! @brief Guard for the spin lock to ensure mutual exclusion.
-    class SockGuard
+    class Guard
     {
     public:
-        //! @brief Construct a new SockGuard object.
+        //! @brief Construct a new Guard object.
         //! @param socket - target socket
-        explicit SockGuard(const Socket& socket) : socket{socket} { socket.spinLock(); }
-        //! @brief Destroy the SockGuard object.
-        virtual ~SockGuard() { socket.spinUnlock(); }
+        explicit Guard(const Socket& socket) : socket{socket} { socket.spinLock(); }
+        //! @brief Destroy the Guard object.
+        virtual ~Guard() { socket.spinUnlock(); }
+        //! @brief Construct a new Guard object.
+        Guard(const Guard&) = delete;
+        //! @brief Construct a new Guard object.
+        Guard(Guard&&) noexcept = delete;
+        //! @brief The operator (=) overloading of Guard class.
+        //! @return reference of the Guard object
+        Guard& operator=(const Guard&) = delete;
+        //! @brief The operator (=) overloading of Guard class.
+        //! @return reference of the Guard object
+        Guard& operator=(Guard&&) noexcept = delete;
 
     private:
         //! @brief Socket to be mutually exclusive.

@@ -66,8 +66,6 @@ public:
     //! @brief Construct a new Printer object.
     //! @param dll - doubly linked list to print
     explicit Printer(const DLL* const dll) : dll{dll} {}
-    //! @brief Destroy the Printer object.
-    virtual ~Printer() = default;
 
 private:
     //! @brief The doubly linked list to print.
@@ -129,8 +127,6 @@ public:
     //! @brief Construct a new Printer object.
     //! @param stk - stack to print
     explicit Printer(const Stack* const stk) : stk{stk} {}
-    //! @brief Destroy the Printer object.
-    virtual ~Printer() = default;
 
 private:
     //! @brief The stack to print.
@@ -192,8 +188,6 @@ public:
     //! @brief Construct a new Printer object.
     //! @param que - queue to print
     explicit Printer(const Queue* const que) : que{que} {}
-    //! @brief Destroy the Printer object.
-    virtual ~Printer() = default;
 
 private:
     //! @brief The queue to print.
@@ -239,8 +233,6 @@ public:
     //! @brief Construct a new Traverse object.
     //! @param linear - linear structure for traversing
     explicit Traverse(const dll::DLL* const linear) : linear{linear} {}
-    //! @brief Destroy the Traverse object.
-    virtual ~Traverse() = default;
 
     //! @brief Alias for the operation when traversing.
     using Operation = std::function<void(const void* const)>;

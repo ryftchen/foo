@@ -45,9 +45,6 @@ constexpr std::string_view patternString = "12345";
 class MatchSolution
 {
 public:
-    //! @brief Destroy the MatchSolution object.
-    virtual ~MatchSolution() = default;
-
     //! @brief The Rabin-Karp method.
     //! @param text - matching text
     //! @param pattern - single pattern
@@ -120,7 +117,6 @@ public:
     }
     //! @brief Destroy the InputBuilder object.
     virtual ~InputBuilder() { ::mpfr_free_cache(); }
-
     //! @brief Construct a new InputBuilder object.
     InputBuilder(const InputBuilder&) = delete;
     //! @brief Construct a new InputBuilder object.
@@ -223,9 +219,6 @@ constexpr std::string_view infixString = "a+b*(c^d-e)^(f+g*h)-i";
 class NotationSolution
 {
 public:
-    //! @brief Destroy the NotationSolution object.
-    virtual ~NotationSolution() = default;
-
     //! @brief The prefix method.
     //! @param infix - infix notation
     static void prefixMethod(const std::string_view infix);
@@ -246,8 +239,6 @@ public:
         std::cout << "\nInfix notation:\n" << infixNotation << std::endl;
 #endif // _RUNTIME_PRINTING
     }
-    //! @brief Destroy the InputBuilder object.
-    virtual ~InputBuilder() = default;
 
     //! @brief Get the infix notation.
     //! @return infix notation
@@ -272,8 +263,20 @@ using Function = std::function<double(const double)>;
 class FuncBase
 {
 public:
+    //! @brief Construct a new FuncBase object.
+    FuncBase() = default;
     //! @brief Destroy the FuncBase object.
     virtual ~FuncBase() = default;
+    //! @brief Construct a new FuncBase object.
+    FuncBase(const FuncBase&) = default;
+    //! @brief Construct a new FuncBase object.
+    FuncBase(FuncBase&&) noexcept = default;
+    //! @brief The operator (=) overloading of FuncBase class.
+    //! @return reference of the FuncBase object
+    FuncBase& operator=(const FuncBase&) = default;
+    //! @brief The operator (=) overloading of FuncBase class.
+    //! @return reference of the FuncBase object
+    FuncBase& operator=(FuncBase&&) noexcept = default;
 
     //! @brief The operator (()) overloading of FuncBase class.
     //! @param x - independent variable
@@ -312,9 +315,6 @@ public:
 class OptimalSolution
 {
 public:
-    //! @brief Destroy the OptimalSolution object.
-    virtual ~OptimalSolution() = default;
-
     //! @brief The gradient descent method.
     //! @param func - target function
     //! @param left - left endpoint
@@ -367,8 +367,6 @@ public:
         std::cout << "\nOptimal function:\n" << funcDescr << std::endl;
 #endif // _RUNTIME_PRINTING
     }
-    //! @brief Destroy the InputBuilder object.
-    virtual ~InputBuilder() = default;
 
     //! @brief Get the target function.
     //! @return target function
@@ -409,9 +407,6 @@ constexpr std::uint32_t arrayLength = 53;
 class SearchSolution
 {
 public:
-    //! @brief Destroy the SearchSolution object.
-    virtual ~SearchSolution() = default;
-
     //! @brief The binary method.
     //! @param array - ordered array to be searched
     //! @param length - length of array
@@ -457,6 +452,8 @@ public:
     {
         clone(rhs);
     }
+    //! @brief Construct a new InputBuilder object.
+    InputBuilder(InputBuilder&&) noexcept = default;
     //! @brief The operator (!=) overloading of InputBuilder class.
     //! @param rhs - right-hand side
     //! @return reference of the InputBuilder object
@@ -469,6 +466,9 @@ public:
 
         return *this;
     }
+    //! @brief The operator (=) overloading of InputBuilder class.
+    //! @return reference of the InputBuilder object
+    InputBuilder& operator=(InputBuilder&&) noexcept = default;
 
     //! @brief Get the ordered array.
     //! @return ordered array
@@ -614,9 +614,6 @@ constexpr std::uint32_t arrayLength = 53;
 class SortSolution
 {
 public:
-    //! @brief Destroy the SortSolution object.
-    virtual ~SortSolution() = default;
-
     //! @brief The bubble method.
     //! @param array - array to be sorted
     //! @param length - length of array
@@ -687,6 +684,8 @@ public:
     {
         clone(rhs);
     }
+    //! @brief Construct a new InputBuilder object.
+    InputBuilder(InputBuilder&&) noexcept = default;
     //! @brief The operator (!=) overloading of InputBuilder class.
     //! @param rhs - right-hand side
     //! @return reference of the InputBuilder object
@@ -699,6 +698,9 @@ public:
 
         return *this;
     }
+    //! @brief The operator (=) overloading of InputBuilder class.
+    //! @return reference of the InputBuilder object
+    InputBuilder& operator=(InputBuilder&&) noexcept = default;
 
     //! @brief Get the random array.
     //! @return random array

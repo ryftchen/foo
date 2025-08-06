@@ -26,9 +26,6 @@ const char* const version = design_pattern::behavioral::version();
 class Showcase
 {
 public:
-    //! @brief Destroy the Showcase object.
-    virtual ~Showcase() = default;
-
     // NOLINTBEGIN(google-build-using-namespace)
     //! @brief Chain of responsibility.
     //! @return procedure output
@@ -228,9 +225,6 @@ private:
 class BehavioralPattern
 {
 public:
-    //! @brief Destroy the BehavioralPattern object.
-    virtual ~BehavioralPattern() = default;
-
     //! @brief The chain of responsibility instance.
     static void chainOfResponsibilityInstance();
     //! @brief The command instance.
@@ -267,9 +261,6 @@ const char* const version = design_pattern::creational::version();
 class Showcase
 {
 public:
-    //! @brief Destroy the Showcase object.
-    virtual ~Showcase() = default;
-
     // NOLINTBEGIN(google-build-using-namespace)
     //! @brief Abstract factory.
     //! @return procedure output
@@ -376,9 +367,6 @@ private:
 class CreationalPattern
 {
 public:
-    //! @brief Destroy the CreationalPattern object.
-    virtual ~CreationalPattern() = default;
-
     //! @brief The abstract factory instance.
     static void abstractFactoryInstance();
     //! @brief The builder instance.
@@ -403,9 +391,6 @@ const char* const version = design_pattern::structural::version();
 class Showcase
 {
 public:
-    //! @brief Destroy the Showcase object.
-    virtual ~Showcase() = default;
-
     // NOLINTBEGIN(google-build-using-namespace)
     //! @brief Adapter.
     //! @return procedure output
@@ -519,9 +504,6 @@ private:
 class StructuralPattern
 {
 public:
-    //! @brief Destroy the StructuralPattern object.
-    virtual ~StructuralPattern() = default;
-
     //! @brief The adapter instance.
     static void adapterInstance();
     //! @brief The bridge instance.

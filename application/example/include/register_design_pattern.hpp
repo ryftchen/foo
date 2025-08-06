@@ -116,9 +116,6 @@ struct Bottom<StructuralInstance>
 class ApplyDesignPattern
 {
 public:
-    //! @brief Destroy the ApplyDesignPattern object.
-    virtual ~ApplyDesignPattern() = default;
-
     //! @brief Enumerate specific design pattern choices.
     enum class Category : std::uint8_t
     {

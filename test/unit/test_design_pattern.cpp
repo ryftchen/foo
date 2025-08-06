@@ -26,10 +26,6 @@ using namespace application::app_dp; // NOLINT(google-build-using-namespace)
 //! @brief Test base of behavioral.
 class BehavioralTestBase : public ::testing::Test
 {
-public:
-    //! @brief Destroy the BehavioralTestBase object.
-    ~BehavioralTestBase() override = default;
-
 protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite() { TST_DP_PRINT_TASK_TITLE("BEHAVIORAL", "BEGIN"); }
@@ -219,10 +215,6 @@ TEST_F(BehavioralTestBase, visitorInstance)
 //! @brief Test base of creational.
 class CreationalTestBase : public ::testing::Test
 {
-public:
-    //! @brief Destroy the CreationalTestBase object.
-    ~CreationalTestBase() override = default;
-
 protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite() { TST_DP_PRINT_TASK_TITLE("CREATIONAL", "BEGIN"); }
@@ -313,10 +305,6 @@ TEST_F(CreationalTestBase, singletonInstance)
 //! @brief Test base of structural.
 class StructuralTestBase : public ::testing::Test
 {
-public:
-    //! @brief Destroy the StructuralTestBase object.
-    ~StructuralTestBase() override = default;
-
 protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite() { TST_DP_PRINT_TASK_TITLE("STRUCTURAL", "BEGIN"); }

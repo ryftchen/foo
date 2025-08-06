@@ -26,8 +26,20 @@ inline constexpr double epsilon = 1e-5;
 class Integral
 {
 public:
+    //! @brief Construct a new Integral object.
+    Integral() = default;
     //! @brief Destroy the Integral object.
     virtual ~Integral() = default;
+    //! @brief Construct a new Integral object.
+    Integral(const Integral&) = default;
+    //! @brief Construct a new Integral object.
+    Integral(Integral&&) noexcept = default;
+    //! @brief The operator (=) overloading of Integral class.
+    //! @return reference of the Integral object
+    Integral& operator=(const Integral&) = default;
+    //! @brief The operator (=) overloading of Integral class.
+    //! @return reference of the Integral object
+    Integral& operator=(Integral&&) noexcept = default;
 
     //! @brief The operator (()) overloading of Integral class.
     //! @param lower - lower endpoint

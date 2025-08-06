@@ -37,6 +37,16 @@ public:
     explicit FDStreamBuffer(const int fd = -1) : fileDescriptor{fd} {}
     //! @brief Destroy the FDStreamBuffer object.
     ~FDStreamBuffer() override;
+    //! @brief Construct a new FDStreamBuffer object.
+    FDStreamBuffer(const FDStreamBuffer&) = delete;
+    //! @brief Construct a new FDStreamBuffer object.
+    FDStreamBuffer(FDStreamBuffer&&) noexcept = default;
+    //! @brief The operator (=) overloading of FDStreamBuffer class.
+    //! @return reference of the FDStreamBuffer object
+    FDStreamBuffer& operator=(const FDStreamBuffer&) = delete;
+    //! @brief The operator (=) overloading of FDStreamBuffer class.
+    //! @return reference of the FDStreamBuffer object
+    FDStreamBuffer& operator=(FDStreamBuffer&&) noexcept = default;
 
     //! @brief Get the file descriptor.
     //! @return file descriptor associated with the stream buffer

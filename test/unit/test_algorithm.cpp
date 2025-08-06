@@ -26,10 +26,6 @@ using namespace application::app_algo; // NOLINT(google-build-using-namespace)
 //! @brief Test base of match.
 class MatchTestBase : public ::testing::Test
 {
-public:
-    //! @brief Destroy the MatchTestBase object.
-    ~MatchTestBase() override = default;
-
 protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
@@ -120,10 +116,6 @@ TEST_F(MatchTestBase, sundayMethod)
 //! @brief Test base of notation.
 class NotationTestBase : public ::testing::Test
 {
-public:
-    //! @brief Destroy the NotationTestBase object.
-    ~NotationTestBase() override = default;
-
 protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
@@ -168,10 +160,6 @@ TEST_F(NotationTestBase, postfixMethod)
 //! @brief Test base of optimal.
 class OptimalTestBase : public ::testing::Test
 {
-public:
-    //! @brief Destroy the OptimalTestBase object.
-    ~OptimalTestBase() override = default;
-
 protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
@@ -272,10 +260,6 @@ TEST_F(OptimalTestBase, geneticMethod)
 //! @brief Test base of search.
 class SearchTestBase : public ::testing::Test
 {
-public:
-    //! @brief Destroy the SearchTestBase object.
-    ~SearchTestBase() override = default;
-
 private:
     //! @brief Update expected result.
     static void updateExpRes()
@@ -346,10 +330,6 @@ TEST_F(SearchTestBase, fibonacciMethod)
 //! @brief Test base of sort.
 class SortTestBase : public ::testing::Test
 {
-public:
-    //! @brief Destroy the SortTestBase object.
-    ~SortTestBase() override = default;
-
 private:
     //! @brief Update expected result.
     static void updateExpRes()

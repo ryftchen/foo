@@ -27,6 +27,16 @@ public:
     explicit Thread(const std::size_t size);
     //! @brief Destroy the Thread object.
     virtual ~Thread();
+    //! @brief Construct a new Thread object.
+    Thread(const Thread&) = delete;
+    //! @brief Construct a new Thread object.
+    Thread(Thread&&) noexcept = delete;
+    //! @brief The operator (=) overloading of Thread class.
+    //! @return reference of the Thread object
+    Thread& operator=(const Thread&) = delete;
+    //! @brief The operator (=) overloading of Thread class.
+    //! @return reference of the Thread object
+    Thread& operator=(Thread&&) noexcept = delete;
 
     //! @brief Enqueue tasks that require multi-threading.
     //! @tparam Func - type of callable function

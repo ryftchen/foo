@@ -25,9 +25,6 @@ template <typename T>
 class Search
 {
 public:
-    //! @brief Destroy the Search object.
-    virtual ~Search() = default;
-
     //! @brief Binary.
     //! @param array - ordered array to be searched
     //! @param length - length of array

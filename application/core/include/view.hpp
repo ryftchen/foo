@@ -72,8 +72,6 @@ public:
     public:
         //! @brief Construct a new Access object.
         Access() : inst{getInstance()} {}
-        //! @brief Destroy the Access object.
-        virtual ~Access() = default;
 
         //! @brief Wait for the viewer to start. Interface controller for external use.
         void startup() const;
@@ -123,8 +121,6 @@ public:
     public:
         //! @brief Construct a new Sync object.
         Sync() : inst{getInstance()} {}
-        //! @brief Destroy the Sync object.
-        virtual ~Sync() = default;
 
         //! @brief Block the caller until the output task is marked as done.
         void waitTaskDone() const;
@@ -161,6 +157,16 @@ private:
         explicit OptBase(Args args = {}) : args{std::move(args)} {}
         //! @brief Destroy the OptBase object.
         virtual ~OptBase() = default;
+        //! @brief Construct a new OptBase object.
+        OptBase(const OptBase&) = default;
+        //! @brief Construct a new OptBase object.
+        OptBase(OptBase&&) noexcept = default;
+        //! @brief The operator (=) overloading of OptBase class.
+        //! @return reference of the OptBase object
+        OptBase& operator=(const OptBase&) = delete;
+        //! @brief The operator (=) overloading of OptBase class.
+        //! @return reference of the OptBase object
+        OptBase& operator=(OptBase&&) noexcept = delete;
 
         //! @brief The option arguments.
         const Args args;

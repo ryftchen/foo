@@ -148,8 +148,6 @@ public:
     public:
         //! @brief Construct a new Access object.
         Access() : inst{getInstance()} {}
-        //! @brief Destroy the Access object.
-        virtual ~Access() = default;
 
         //! @brief Wait for the logger to start. Interface controller for external use.
         void startup() const;
@@ -415,6 +413,16 @@ public:
     explicit Holder(const std::source_location& srcLoc = std::source_location::current()) : location{srcLoc} {}
     //! @brief Destroy the Holder object.
     virtual ~Holder() { Log::printfStyle(Lv, location.file_name(), location.line(), output.str()); }
+    //! @brief Construct a new Holder object.
+    Holder(const Holder&) = default;
+    //! @brief Construct a new Holder object.
+    Holder(Holder&&) noexcept = default;
+    //! @brief The operator (=) overloading of Holder class.
+    //! @return reference of the Holder object
+    Holder& operator=(const Holder&) = default;
+    //! @brief The operator (=) overloading of Holder class.
+    //! @return reference of the Holder object
+    Holder& operator=(Holder&&) noexcept = default;
 
     //! @brief Get the output stream for flushing.
     //! @return reference of the output stream object, which is on string based

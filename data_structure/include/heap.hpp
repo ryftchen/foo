@@ -57,8 +57,6 @@ public:
     //! @brief Construct a new Traverse object.
     //! @param heap - heap structure to be traversed
     explicit Traverse(const BinaryHeap* const heap) : heap{heap} {}
-    //! @brief Destroy the Traverse object.
-    virtual ~Traverse() = default;
 
     //! @brief Alias for the operation when traversing.
     using Operation = std::function<void(const void* const)>;
@@ -172,8 +170,6 @@ public:
     //! @brief Construct a new Traverse object.
     //! @param heap - heap structure to be traversed
     explicit Traverse(const Heap* const heap) : heap{heap} {}
-    //! @brief Destroy the Traverse object.
-    virtual ~Traverse() = default;
 
     //! @brief Alias for the operation when traversing.
     using Operation = std::function<void(const void* const)>;
@@ -286,8 +282,6 @@ public:
     //! @brief Construct a new Printer object.
     //! @param root - root of the heap
     explicit Printer(const Node* const root) : root{root} {}
-    //! @brief Destroy the Printer object.
-    virtual ~Printer() = default;
 
     //! @brief Print the node in the heap.
     //! @param os - output stream object

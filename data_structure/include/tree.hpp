@@ -170,8 +170,6 @@ public:
     //! @brief Construct a new Traverse object.
     //! @param tree - tree structure to be traversed
     explicit Traverse(const Tree* const tree) : tree{tree} {}
-    //! @brief Destroy the Traverse object.
-    virtual ~Traverse() = default;
 
     //! @brief Alias for the operation when traversing.
     using Operation = std::function<void(const void* const)>;
@@ -284,8 +282,6 @@ public:
     //! @brief Construct a new Printer object.
     //! @param root - root of the tree
     explicit Printer(const Node* const root) : root{root} {}
-    //! @brief Destroy the Printer object.
-    virtual ~Printer() = default;
 
     //! @brief Print the node in the tree.
     //! @param os - output stream object

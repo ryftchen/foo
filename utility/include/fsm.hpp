@@ -227,6 +227,16 @@ public:
     explicit FSM(const State initState = {}) : state{initState} {}
     //! @brief Destroy the FSM object.
     virtual ~FSM() = default;
+    //! @brief Construct a new FSM object.
+    FSM(const FSM&) = default;
+    //! @brief Construct a new FSM object.
+    FSM(FSM&&) noexcept = default;
+    //! @brief The operator (=) overloading of FSM class.
+    //! @return reference of the FSM object
+    FSM& operator=(const FSM&) = default;
+    //! @brief The operator (=) overloading of FSM class.
+    //! @return reference of the FSM object
+    FSM& operator=(FSM&&) noexcept = default;
 
     //! @brief Process the specific event.
     //! @tparam Event - type of triggered event
@@ -246,8 +256,20 @@ private:
     class RowBase
     {
     public:
+        //! @brief Construct a new RowBase object.
+        RowBase() = default;
         //! @brief Destroy the RowBase object.
         virtual ~RowBase() = default;
+        //! @brief Construct a new RowBase object.
+        RowBase(const RowBase&) = default;
+        //! @brief Construct a new RowBase object.
+        RowBase(RowBase&&) noexcept = default;
+        //! @brief The operator (=) overloading of RowBase class.
+        //! @return reference of the RowBase object
+        RowBase& operator=(const RowBase&) = default;
+        //! @brief The operator (=) overloading of RowBase class.
+        //! @return reference of the RowBase object
+        RowBase& operator=(RowBase&&) noexcept = default;
 
         //! @brief Alias for state.
         using StateType = State;

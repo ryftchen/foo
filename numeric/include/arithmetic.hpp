@@ -20,9 +20,6 @@ extern const char* version() noexcept;
 class Arithmetic
 {
 public:
-    //! @brief Destroy the Arithmetic object.
-    virtual ~Arithmetic() = default;
-
     //! @brief Addition.
     //! @param augend - augend of addition
     //! @param addend - addend of addition

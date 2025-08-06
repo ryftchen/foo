@@ -82,8 +82,6 @@ public:
     //! @brief Construct a new Traverse object.
     //! @param graph - graph structure to be traversed
     explicit Traverse(const AMLGraph* const graph) : graph{graph} {}
-    //! @brief Destroy the Traverse object.
-    virtual ~Traverse() = default;
 
     //! @brief Alias for the operation when traversing.
     using Operation = std::function<void(const void* const)>;
@@ -179,8 +177,6 @@ public:
     //! @brief Construct a new Traverse object.
     //! @param graph - graph structure to be traversed
     explicit Traverse(const OLGraph* const graph) : graph{graph} {}
-    //! @brief Destroy the Traverse object.
-    virtual ~Traverse() = default;
 
     //! @brief Alias for the operation when traversing.
     using Operation = std::function<void(const void* const)>;

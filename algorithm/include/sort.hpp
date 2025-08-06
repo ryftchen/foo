@@ -26,9 +26,6 @@ template <typename T>
 class Sort
 {
 public:
-    //! @brief Destroy the Sort object.
-    virtual ~Sort() = default;
-
     //! @brief Bubble.
     //! @param array - array to be sorted
     //! @param length - length of array

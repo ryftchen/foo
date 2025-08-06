@@ -26,10 +26,6 @@ using namespace application::app_ds; // NOLINT(google-build-using-namespace)
 //! @brief Test base of cache.
 class CacheTestBase : public ::testing::Test
 {
-public:
-    //! @brief Destroy the CacheTestBase object.
-    ~CacheTestBase() override = default;
-
 protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE("CACHE", "BEGIN"); }
@@ -139,10 +135,6 @@ TEST_F(CacheTestBase, lruInstance)
 //! @brief Test base of filter.
 class FilterTestBase : public ::testing::Test
 {
-public:
-    //! @brief Destroy the FilterTestBase object.
-    ~FilterTestBase() override = default;
-
 protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE("Filter", "BEGIN"); }
@@ -195,10 +187,6 @@ TEST_F(FilterTestBase, quotientInstance)
 //! @brief Test base of graph.
 class GraphTestBase : public ::testing::Test
 {
-public:
-    //! @brief Destroy the GraphTestBase object.
-    ~GraphTestBase() override = default;
-
 protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE("GRAPH", "BEGIN"); }
@@ -290,10 +278,6 @@ TEST_F(GraphTestBase, directedInstance)
 //! @brief Test base of heap.
 class HeapTestBase : public ::testing::Test
 {
-public:
-    //! @brief Destroy the HeapTestBase object.
-    ~HeapTestBase() override = default;
-
 protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE("HEAP", "BEGIN"); }
@@ -435,10 +419,6 @@ TEST_F(HeapTestBase, skewInstance)
 //! @brief Test base of linear.
 class LinearTestBase : public ::testing::Test
 {
-public:
-    //! @brief Destroy the LinearTestBase object.
-    ~LinearTestBase() override = default;
-
 protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE("LINEAR", "BEGIN"); }
@@ -532,10 +512,6 @@ TEST_F(LinearTestBase, queueInstance)
 //! @brief Test base of tree.
 class TreeTestBase : public ::testing::Test
 {
-public:
-    //! @brief Destroy the TreeTestBase object.
-    ~TreeTestBase() override = default;
-
 protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE("TREE", "BEGIN"); }

@@ -26,8 +26,20 @@ namespace chain_of_responsibility
 class Handler
 {
 public:
+    //! @brief Construct a new Handler object.
+    Handler() = default;
     //! @brief Destroy the Handler object.
     virtual ~Handler() = default;
+    //! @brief Construct a new Handler object.
+    Handler(const Handler&) = default;
+    //! @brief Construct a new Handler object.
+    Handler(Handler&&) noexcept = default;
+    //! @brief The operator (=) overloading of Handler class.
+    //! @return reference of the Handler object
+    Handler& operator=(const Handler&) = default;
+    //! @brief The operator (=) overloading of Handler class.
+    //! @return reference of the Handler object
+    Handler& operator=(Handler&&) noexcept = default;
 
     //! @brief Set the handler.
     //! @param handler - target handler
@@ -44,9 +56,6 @@ private:
 class ConcreteHandler1 : public Handler
 {
 public:
-    //! @brief Destroy the ConcreteHandler1 object.
-    ~ConcreteHandler1() override = default;
-
     //! @brief Check whether it can handle the request.
     //! @return can handle or not
     static bool canHandle();
@@ -58,9 +67,6 @@ public:
 class ConcreteHandler2 : public Handler
 {
 public:
-    //! @brief Destroy the ConcreteHandler2 object.
-    ~ConcreteHandler2() override = default;
-
     //! @brief Check whether it can handle the request.
     //! @return can handle or not
     static bool canHandle();
@@ -78,9 +84,6 @@ namespace command
 class Receiver
 {
 public:
-    //! @brief Destroy the Receiver object.
-    virtual ~Receiver() = default;
-
     //! @brief Perform the operations associated with carrying out the request.
     static void action();
 };
@@ -91,6 +94,16 @@ class Command
 public:
     //! @brief Destroy the Command object.
     virtual ~Command() = default;
+    //! @brief Construct a new Command object.
+    Command(const Command&) = default;
+    //! @brief Construct a new Command object.
+    Command(Command&&) noexcept = default;
+    //! @brief The operator (=) overloading of Command class.
+    //! @return reference of the Command object
+    Command& operator=(const Command&) = default;
+    //! @brief The operator (=) overloading of Command class.
+    //! @return reference of the Command object
+    Command& operator=(Command&&) noexcept = default;
 
     //! @brief Execute the command.
     virtual void execute() = 0;
@@ -109,6 +122,16 @@ public:
     explicit ConcreteCommand(const std::shared_ptr<Receiver>& receiver) : receiver{receiver} {}
     //! @brief Destroy the ConcreteCommand object.
     ~ConcreteCommand() override;
+    //! @brief Construct a new ConcreteCommand object.
+    ConcreteCommand(const ConcreteCommand&) = default;
+    //! @brief Construct a new ConcreteCommand object.
+    ConcreteCommand(ConcreteCommand&&) noexcept = default;
+    //! @brief The operator (=) overloading of ConcreteCommand class.
+    //! @return reference of the ConcreteCommand object
+    ConcreteCommand& operator=(const ConcreteCommand&) = delete;
+    //! @brief The operator (=) overloading of ConcreteCommand class.
+    //! @return reference of the ConcreteCommand object
+    ConcreteCommand& operator=(ConcreteCommand&&) noexcept = delete;
 
     //! @brief Execute the command.
     void execute() override;
@@ -122,9 +145,6 @@ private:
 class Invoker
 {
 public:
-    //! @brief Destroy the Invoker object.
-    virtual ~Invoker() = default;
-
     //! @brief Set the command.
     //! @param c - command
     void set(const std::shared_ptr<Command>& c);
@@ -146,9 +166,6 @@ namespace interpreter
 class Context
 {
 public:
-    //! @brief Destroy the Context object.
-    virtual ~Context() = default;
-
     //! @brief Set the pair of the expression and the value.
     //! @param expr - expression
     //! @param val - value
@@ -167,8 +184,20 @@ private:
 class AbstractExpression
 {
 public:
+    //! @brief Construct a new AbstractExpression object.
+    AbstractExpression() = default;
     //! @brief Destroy the AbstractExpression object.
     virtual ~AbstractExpression() = default;
+    //! @brief Construct a new AbstractExpression object.
+    AbstractExpression(const AbstractExpression&) = default;
+    //! @brief Construct a new AbstractExpression object.
+    AbstractExpression(AbstractExpression&&) noexcept = default;
+    //! @brief The operator (=) overloading of AbstractExpression class.
+    //! @return reference of the AbstractExpression object
+    AbstractExpression& operator=(const AbstractExpression&) = default;
+    //! @brief The operator (=) overloading of AbstractExpression class.
+    //! @return reference of the AbstractExpression object
+    AbstractExpression& operator=(AbstractExpression&&) noexcept = default;
 
     //! @brief The interpret that is common to all nodes in the abstract syntax tree.
     //! @param context - global context
@@ -183,8 +212,6 @@ public:
     //! @brief Construct a new TerminalExpression object.
     //! @param value - target value
     explicit TerminalExpression(const std::string_view value) : value{value} {}
-    //! @brief Destroy the TerminalExpression object.
-    ~TerminalExpression() override = default;
 
     //! @brief The interpret that associated with terminal symbols in the grammar.
     //! @param context - global context
@@ -209,6 +236,16 @@ public:
     }
     //! @brief Destroy the NonTerminalExpression object.
     ~NonTerminalExpression() override;
+    //! @brief Construct a new NonTerminalExpression object.
+    NonTerminalExpression(const NonTerminalExpression&) = default;
+    //! @brief Construct a new NonTerminalExpression object.
+    NonTerminalExpression(NonTerminalExpression&&) noexcept = default;
+    //! @brief The operator (=) overloading of NonTerminalExpression class.
+    //! @return reference of the NonTerminalExpression object
+    NonTerminalExpression& operator=(const NonTerminalExpression&) = default;
+    //! @brief The operator (=) overloading of NonTerminalExpression class.
+    //! @return reference of the NonTerminalExpression object
+    NonTerminalExpression& operator=(NonTerminalExpression&&) noexcept = default;
 
     //! @brief The interpret that associated with non-terminal symbols in the grammar.
     //! @param context - global context
@@ -232,8 +269,20 @@ namespace iterator
 class Iterator
 {
 public:
+    //! @brief Construct a new Iterator object.
+    Iterator() = default;
     //! @brief Destroy the Iterator object.
     virtual ~Iterator() = default;
+    //! @brief Construct a new Iterator object.
+    Iterator(const Iterator&) = default;
+    //! @brief Construct a new Iterator object.
+    Iterator(Iterator&&) noexcept = default;
+    //! @brief The operator (=) overloading of Iterator class.
+    //! @return reference of the Iterator object
+    Iterator& operator=(const Iterator&) = default;
+    //! @brief The operator (=) overloading of Iterator class.
+    //! @return reference of the Iterator object
+    Iterator& operator=(Iterator&&) noexcept = default;
 
     //! @brief Set the current index to the first.
     virtual void first() = 0;
@@ -251,8 +300,20 @@ public:
 class Aggregate
 {
 public:
+    //! @brief Construct a new Aggregate object.
+    Aggregate() = default;
     //! @brief Destroy the Aggregate object.
     virtual ~Aggregate() = default;
+    //! @brief Construct a new Aggregate object.
+    Aggregate(const Aggregate&) = default;
+    //! @brief Construct a new Aggregate object.
+    Aggregate(Aggregate&&) noexcept = default;
+    //! @brief The operator (=) overloading of Aggregate class.
+    //! @return reference of the Aggregate object
+    Aggregate& operator=(const Aggregate&) = default;
+    //! @brief The operator (=) overloading of Aggregate class.
+    //! @return reference of the Aggregate object
+    Aggregate& operator=(Aggregate&&) noexcept = default;
 
     //! @brief Create an iterator.
     //! @return iterator
@@ -268,6 +329,16 @@ public:
     explicit ConcreteAggregate(const std::uint32_t size);
     //! @brief Destroy the ConcreteAggregate object.
     ~ConcreteAggregate() override;
+    //! @brief Construct a new ConcreteAggregate object.
+    ConcreteAggregate(const ConcreteAggregate&) = delete;
+    //! @brief Construct a new ConcreteAggregate object.
+    ConcreteAggregate(ConcreteAggregate&&) noexcept = default;
+    //! @brief The operator (=) overloading of ConcreteAggregate class.
+    //! @return reference of the ConcreteAggregate object
+    ConcreteAggregate& operator=(const ConcreteAggregate&) = delete;
+    //! @brief The operator (=) overloading of ConcreteAggregate class.
+    //! @return reference of the ConcreteAggregate object
+    ConcreteAggregate& operator=(ConcreteAggregate&&) noexcept = delete;
 
     //! @brief Create an iterator.
     //! @return iterator
@@ -294,8 +365,6 @@ public:
     //! @brief Construct a new ConcreteIterator object.
     //! @param aggregate - target aggregate
     explicit ConcreteIterator(std::shared_ptr<ConcreteAggregate> aggregate) : aggregate{std::move(aggregate)} {}
-    //! @brief Destroy the ConcreteIterator object.
-    ~ConcreteIterator() override = default;
 
     //! @brief Set the current index to the first.
     void first() override;
@@ -329,6 +398,16 @@ class Mediator
 public:
     //! @brief Destroy the Mediator object.
     virtual ~Mediator() = default;
+    //! @brief Construct a new Mediator object.
+    Mediator(const Mediator&) = default;
+    //! @brief Construct a new Mediator object.
+    Mediator(Mediator&&) noexcept = default;
+    //! @brief The operator (=) overloading of Mediator class.
+    //! @return reference of the Mediator object
+    Mediator& operator=(const Mediator&) = default;
+    //! @brief The operator (=) overloading of Mediator class.
+    //! @return reference of the Mediator object
+    Mediator& operator=(Mediator&&) noexcept = default;
 
     //! @brief Add colleague.
     //! @param colleague - target colleague
@@ -347,8 +426,20 @@ protected:
 class ConcreteMediator : public Mediator
 {
 public:
+    //! @brief Construct a new ConcreteMediator object.
+    ConcreteMediator() = default;
     //! @brief Destroy the ConcreteMediator object.
     ~ConcreteMediator() override;
+    //! @brief Construct a new ConcreteMediator object.
+    ConcreteMediator(const ConcreteMediator&) = default;
+    //! @brief Construct a new ConcreteMediator object.
+    ConcreteMediator(ConcreteMediator&&) noexcept = default;
+    //! @brief The operator (=) overloading of ConcreteMediator class.
+    //! @return reference of the ConcreteMediator object
+    ConcreteMediator& operator=(const ConcreteMediator&) = default;
+    //! @brief The operator (=) overloading of ConcreteMediator class.
+    //! @return reference of the ConcreteMediator object
+    ConcreteMediator& operator=(ConcreteMediator&&) noexcept = default;
 
     //! @brief Add colleague.
     //! @param colleague - target colleague
@@ -374,6 +465,16 @@ public:
     Colleague(const std::shared_ptr<Mediator>& mediator, const std::uint32_t id) : mediator{mediator}, id{id} {}
     //! @brief Destroy the Colleague object.
     virtual ~Colleague() = default;
+    //! @brief Construct a new Colleague object.
+    Colleague(const Colleague&) = default;
+    //! @brief Construct a new Colleague object.
+    Colleague(Colleague&&) noexcept = default;
+    //! @brief The operator (=) overloading of Colleague class.
+    //! @return reference of the Colleague object
+    Colleague& operator=(const Colleague&) = delete;
+    //! @brief The operator (=) overloading of Colleague class.
+    //! @return reference of the Colleague object
+    Colleague& operator=(Colleague&&) noexcept = delete;
 
     //! @brief Get the id of the colleague.
     //! @return id of the colleague
@@ -400,8 +501,6 @@ public:
     //! @param mediator - target mediator
     //! @param id - target id
     ConcreteColleague(const std::shared_ptr<Mediator>& mediator, const std::uint32_t id) : Colleague(mediator, id) {}
-    //! @brief Destroy the ConcreteColleague object.
-    ~ConcreteColleague() override = default;
 
     //! @brief Send message.
     //! @param msg - sending message
@@ -420,10 +519,6 @@ namespace memento
 //! @brief Store the internal state of the originator. Protect against access by other than the originator.
 class Memento
 {
-public:
-    //! @brief Destroy the Memento object.
-    virtual ~Memento() = default;
-
 private:
     friend class Originator;
     //! @brief Construct a new Memento object.
@@ -445,9 +540,6 @@ private:
 class Originator
 {
 public:
-    //! @brief Destroy the Originator object.
-    virtual ~Originator() = default;
-
     //! @brief Set the state of originator.
     //! @param s - target state
     void setState(const int s);
@@ -475,6 +567,16 @@ public:
     explicit CareTaker(const std::shared_ptr<Originator>& originator) : originator{originator} {}
     //! @brief Destroy the CareTaker object.
     virtual ~CareTaker();
+    //! @brief Construct a new CareTaker object.
+    CareTaker(const CareTaker&) = default;
+    //! @brief Construct a new CareTaker object.
+    CareTaker(CareTaker&&) noexcept = default;
+    //! @brief The operator (=) overloading of CareTaker class.
+    //! @return reference of the CareTaker object
+    CareTaker& operator=(const CareTaker&) = delete;
+    //! @brief The operator (=) overloading of CareTaker class.
+    //! @return reference of the CareTaker object
+    CareTaker& operator=(CareTaker&&) noexcept = delete;
 
     //! @brief Save the current state to history.
     void save();
@@ -500,8 +602,20 @@ class Subject;
 class Observer
 {
 public:
+    //! @brief Construct a new Observer object.
+    Observer() = default;
     //! @brief Destroy the Observer object.
     virtual ~Observer() = default;
+    //! @brief Construct a new Observer object.
+    Observer(const Observer&) = default;
+    //! @brief Construct a new Observer object.
+    Observer(Observer&&) noexcept = default;
+    //! @brief The operator (=) overloading of Observer class.
+    //! @return reference of the Observer object
+    Observer& operator=(const Observer&) = default;
+    //! @brief The operator (=) overloading of Observer class.
+    //! @return reference of the Observer object
+    Observer& operator=(Observer&&) noexcept = default;
 
     //! @brief Get the state of observer.
     //! @return state of observer
@@ -515,8 +629,20 @@ public:
 class Subject : public std::enable_shared_from_this<Subject>
 {
 public:
+    //! @brief Construct a new Subject object.
+    Subject() = default;
     //! @brief Destroy the Subject object.
     virtual ~Subject() = default;
+    //! @brief Construct a new Subject object.
+    Subject(const Subject&) = default;
+    //! @brief Construct a new Subject object.
+    Subject(Subject&&) noexcept = default;
+    //! @brief The operator (=) overloading of Subject class.
+    //! @return reference of the Subject object
+    Subject& operator=(const Subject&) = default;
+    //! @brief The operator (=) overloading of Subject class.
+    //! @return reference of the Subject object
+    Subject& operator=(Subject&&) noexcept = default;
 
     //! @brief Attach observer.
     //! @param observer - observer to be attached
@@ -584,8 +710,20 @@ namespace state
 class State
 {
 public:
+    //! @brief Construct a new State object.
+    State() = default;
     //! @brief Destroy the State object.
     virtual ~State() = default;
+    //! @brief Construct a new State object.
+    State(const State&) = default;
+    //! @brief Construct a new State object.
+    State(State&&) noexcept = default;
+    //! @brief The operator (=) overloading of State class.
+    //! @return reference of the State object
+    State& operator=(const State&) = default;
+    //! @brief The operator (=) overloading of State class.
+    //! @return reference of the State object
+    State& operator=(State&&) noexcept = default;
 
     //! @brief Handle in the state.
     virtual void handle() = 0;
@@ -611,8 +749,20 @@ public:
 class Context
 {
 public:
+    //! @brief Construct a new Context object.
+    Context() = default;
     //! @brief Destroy the Context object.
     virtual ~Context();
+    //! @brief Construct a new Context object.
+    Context(const Context&) = delete;
+    //! @brief Construct a new Context object.
+    Context(Context&&) noexcept = default;
+    //! @brief The operator (=) overloading of Context class.
+    //! @return reference of the Context object
+    Context& operator=(const Context&) = delete;
+    //! @brief The operator (=) overloading of Context class.
+    //! @return reference of the Context object
+    Context& operator=(Context&&) noexcept = default;
 
     //! @brief Set the state of context.
     //! @param s - target state
@@ -635,8 +785,20 @@ namespace strategy
 class Strategy
 {
 public:
+    //! @brief Construct a new Strategy object.
+    Strategy() = default;
     //! @brief Destroy the Strategy object.
     virtual ~Strategy() = default;
+    //! @brief Construct a new Strategy object.
+    Strategy(const Strategy&) = default;
+    //! @brief Construct a new Strategy object.
+    Strategy(Strategy&&) noexcept = default;
+    //! @brief The operator (=) overloading of Strategy class.
+    //! @return reference of the Strategy object
+    Strategy& operator=(const Strategy&) = default;
+    //! @brief The operator (=) overloading of Strategy class.
+    //! @return reference of the Strategy object
+    Strategy& operator=(Strategy&&) noexcept = default;
 
     //! @brief The interface of the algorithm.
     virtual void algorithmInterface() = 0;
@@ -667,6 +829,16 @@ public:
     explicit Context(std::unique_ptr<Strategy> strategy) : strategy{std::move(strategy)} {}
     //! @brief Destroy the Context object.
     virtual ~Context();
+    //! @brief Construct a new Context object.
+    Context(const Context&) = delete;
+    //! @brief Construct a new Context object.
+    Context(Context&&) noexcept = default;
+    //! @brief The operator (=) overloading of Context class.
+    //! @return reference of the Context object
+    Context& operator=(const Context&) = delete;
+    //! @brief The operator (=) overloading of Context class.
+    //! @return reference of the Context object
+    Context& operator=(Context&&) noexcept = default;
 
     //! @brief The interface of the context.
     void contextInterface();
@@ -686,8 +858,20 @@ namespace template_method
 class AbstractClass
 {
 public:
+    //! @brief Construct a new AbstractClass object.
+    AbstractClass() = default;
     //! @brief Destroy the AbstractClass object.
     virtual ~AbstractClass() = default;
+    //! @brief Construct a new AbstractClass object.
+    AbstractClass(const AbstractClass&) = default;
+    //! @brief Construct a new AbstractClass object.
+    AbstractClass(AbstractClass&&) noexcept = default;
+    //! @brief The operator (=) overloading of AbstractClass class.
+    //! @return reference of the AbstractClass object
+    AbstractClass& operator=(const AbstractClass&) = default;
+    //! @brief The operator (=) overloading of AbstractClass class.
+    //! @return reference of the AbstractClass object
+    AbstractClass& operator=(AbstractClass&&) noexcept = default;
 
     //! @brief The template method.
     void templateMethod();
@@ -720,8 +904,20 @@ class ConcreteElementB;
 class Visitor
 {
 public:
+    //! @brief Construct a new Visitor object.
+    Visitor() = default;
     //! @brief Destroy the Visitor object.
     virtual ~Visitor() = default;
+    //! @brief Construct a new Visitor object.
+    Visitor(const Visitor&) = default;
+    //! @brief Construct a new Visitor object.
+    Visitor(Visitor&&) noexcept = default;
+    //! @brief The operator (=) overloading of Visitor class.
+    //! @return reference of the Visitor object
+    Visitor& operator=(const Visitor&) = default;
+    //! @brief The operator (=) overloading of Visitor class.
+    //! @return reference of the Visitor object
+    Visitor& operator=(Visitor&&) noexcept = default;
 
     //! @brief Visit element A.
     //! @param element - element to be visited
@@ -759,8 +955,20 @@ public:
 class Element
 {
 public:
+    //! @brief Construct a new Element object.
+    Element() = default;
     //! @brief Destroy the Element object.
     virtual ~Element() = default;
+    //! @brief Construct a new Element object.
+    Element(const Element&) = default;
+    //! @brief Construct a new Element object.
+    Element(Element&&) noexcept = default;
+    //! @brief The operator (=) overloading of Element class.
+    //! @return reference of the Element object
+    Element& operator=(const Element&) = default;
+    //! @brief The operator (=) overloading of Element class.
+    //! @return reference of the Element object
+    Element& operator=(Element&&) noexcept = default;
 
     //! @brief Accept visitor.
     //! @param visitor - visitor to be accepted
