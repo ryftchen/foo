@@ -31,7 +31,7 @@ protected:
     static void SetUpTestSuite()
     {
         TST_NUM_PRINT_TASK_TITLE("ARITHMETIC", "BEGIN");
-        fixture = std::make_shared<arithmetic::InputBuilder>(arithmetic::input::integerA, arithmetic::input::integerB);
+        fixture = std::make_shared<arithmetic::InputBuilder>(arithmetic::input::operandA, arithmetic::input::operandB);
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
@@ -62,25 +62,25 @@ std::shared_ptr<arithmetic::InputBuilder> ArithmeticTestBase::fixture = {};
 //! @brief Test for the addition method in the calculation of arithmetic.
 TEST_F(ArithmeticTestBase, additionMethod)
 {
-    ASSERT_EQ(expRes1, sut.addition(fixture->getIntegers().first, fixture->getIntegers().second));
+    ASSERT_EQ(expRes1, sut.addition(fixture->getOperands().first, fixture->getOperands().second));
 }
 
 //! @brief Test for the subtraction method in the calculation of arithmetic.
 TEST_F(ArithmeticTestBase, subtractionMethod)
 {
-    ASSERT_EQ(expRes2, sut.subtraction(fixture->getIntegers().first, fixture->getIntegers().second));
+    ASSERT_EQ(expRes2, sut.subtraction(fixture->getOperands().first, fixture->getOperands().second));
 }
 
 //! @brief Test for the multiplication method in the calculation of arithmetic.
 TEST_F(ArithmeticTestBase, multiplicationMethod)
 {
-    ASSERT_EQ(expRes3, sut.multiplication(fixture->getIntegers().first, fixture->getIntegers().second));
+    ASSERT_EQ(expRes3, sut.multiplication(fixture->getOperands().first, fixture->getOperands().second));
 }
 
 //! @brief Test for the division method in the calculation of arithmetic.
 TEST_F(ArithmeticTestBase, divisionMethod)
 {
-    ASSERT_EQ(expRes4, sut.division(fixture->getIntegers().first, fixture->getIntegers().second));
+    ASSERT_EQ(expRes4, sut.division(fixture->getOperands().first, fixture->getOperands().second));
 }
 
 //! @brief Test base of divisor.
@@ -91,7 +91,7 @@ protected:
     static void SetUpTestSuite()
     {
         TST_NUM_PRINT_TASK_TITLE("DIVISOR", "BEGIN");
-        fixture = std::make_shared<divisor::InputBuilder>(divisor::input::integerA, divisor::input::integerB);
+        fixture = std::make_shared<divisor::InputBuilder>(divisor::input::numberA, divisor::input::numberB);
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
@@ -116,13 +116,13 @@ std::shared_ptr<divisor::InputBuilder> DivisorTestBase::fixture = {};
 //! @brief Test for the Euclidean method in the calculation of divisor.
 TEST_F(DivisorTestBase, euclideanMethod)
 {
-    ASSERT_EQ(expRes, sut.euclidean(fixture->getIntegers().first, fixture->getIntegers().second));
+    ASSERT_EQ(expRes, sut.euclidean(fixture->getNumbers().first, fixture->getNumbers().second));
 }
 
 //! @brief Test for the Stein method in the calculation of divisor.
 TEST_F(DivisorTestBase, steinMethod)
 {
-    ASSERT_EQ(expRes, sut.stein(fixture->getIntegers().first, fixture->getIntegers().second));
+    ASSERT_EQ(expRes, sut.stein(fixture->getNumbers().first, fixture->getNumbers().second));
 }
 
 //! @brief Test base of integral.
@@ -218,7 +218,7 @@ protected:
     static void SetUpTestSuite()
     {
         TST_NUM_PRINT_TASK_TITLE("PRIME", "BEGIN");
-        fixture = std::make_shared<prime::InputBuilder>(prime::input::maxPositiveInteger);
+        fixture = std::make_shared<prime::InputBuilder>(prime::input::upperBound);
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
@@ -257,13 +257,13 @@ std::shared_ptr<prime::InputBuilder> PrimeTestBase::fixture = {};
 //! @brief Test for the Eratosthenes method in the calculation of prime.
 TEST_F(PrimeTestBase, eratosthenesMethod)
 {
-    ASSERT_EQ(expRes(), sut.eratosthenes(fixture->getMaxPositiveInteger()));
+    ASSERT_EQ(expRes(), sut.eratosthenes(fixture->getUpperBound()));
 }
 
 //! @brief Test for the Euler method in the calculation of prime.
 TEST_F(PrimeTestBase, eulerMethod)
 {
-    ASSERT_EQ(expRes(), sut.euler(fixture->getMaxPositiveInteger()));
+    ASSERT_EQ(expRes(), sut.euler(fixture->getUpperBound()));
 }
 } // namespace tst_num
 } // namespace test

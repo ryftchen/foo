@@ -8,6 +8,7 @@
 #include "register_algorithm.hpp"
 
 #ifndef _PRECOMPILED_HEADER
+#include <cassert>
 #include <iomanip>
 #include <ranges>
 #include <syncstream>
@@ -189,7 +190,7 @@ void applyingMatch(const std::vector<std::string>& candidates)
     {
         return;
     }
-    MACRO_ASSERT(bits.size() == candidates.size());
+    assert(bits.size() == candidates.size());
 
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
@@ -289,7 +290,7 @@ void applyingNotation(const std::vector<std::string>& candidates)
     {
         return;
     }
-    MACRO_ASSERT(bits.size() == candidates.size());
+    assert(bits.size() == candidates.size());
 
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
@@ -435,7 +436,7 @@ void applyingOptimal(const std::vector<std::string>& candidates)
     {
         return;
     }
-    MACRO_ASSERT(bits.size() == candidates.size());
+    assert(bits.size() == candidates.size());
 
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
@@ -567,7 +568,7 @@ void applyingSearch(const std::vector<std::string>& candidates)
     {
         return;
     }
-    MACRO_ASSERT(bits.size() == candidates.size());
+    assert(bits.size() == candidates.size());
 
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
@@ -763,7 +764,7 @@ void applyingSort(const std::vector<std::string>& candidates)
     {
         return;
     }
-    MACRO_ASSERT(bits.size() == candidates.size());
+    assert(bits.size() == candidates.size());
 
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 

@@ -132,16 +132,16 @@ public:
     static constexpr std::uint32_t maxDigit{100'000};
     //! @brief Get the matching text.
     //! @return matching text
-    [[nodiscard]] const std::unique_ptr<unsigned char[]>& getMatchingText() const { return marchingText; }
+    [[nodiscard]] const std::unique_ptr<unsigned char[]>& getMatchingText() const noexcept { return marchingText; }
     //! @brief Get the length of the matching text.
     //! @return length of the matching text
-    [[nodiscard]] std::uint32_t getTextLength() const { return textLength; }
+    [[nodiscard]] std::uint32_t getTextLength() const noexcept { return textLength; }
     //! @brief Get the single pattern.
     //! @return single pattern
-    [[nodiscard]] const std::unique_ptr<unsigned char[]>& getSinglePattern() const { return singlePattern; }
+    [[nodiscard]] const std::unique_ptr<unsigned char[]>& getSinglePattern() const noexcept { return singlePattern; }
     //! @brief Get the length of the single pattern.
     //! @return length of the single pattern
-    [[nodiscard]] std::uint32_t getPatternLength() const { return patternLength; }
+    [[nodiscard]] std::uint32_t getPatternLength() const noexcept { return patternLength; }
 
 private:
     //! @brief Matching text.
@@ -242,7 +242,7 @@ public:
 
     //! @brief Get the infix notation.
     //! @return infix notation
-    [[nodiscard]] std::string getInfixNotation() const { return infixNotation; }
+    [[nodiscard]] std::string getInfixNotation() const noexcept { return infixNotation; }
 
 private:
     //! @brief Infix notation.
@@ -370,10 +370,10 @@ public:
 
     //! @brief Get the target function.
     //! @return target function
-    [[nodiscard]] Function getFunction() const { return function; }
+    [[nodiscard]] Function getFunction() const noexcept { return function; }
     //! @brief Get the pair of ranges.
     //! @return pair of ranges
-    [[nodiscard]] std::pair<double, double> getRanges() const { return std::make_pair(range1, range2); }
+    [[nodiscard]] std::pair<double, double> getRanges() const noexcept { return std::make_pair(range1, range2); }
 
 private:
     //! @brief Target function.
@@ -472,13 +472,13 @@ public:
 
     //! @brief Get the ordered array.
     //! @return ordered array
-    const std::unique_ptr<T[]>& getOrderedArray() const { return orderedArray; }
+    const std::unique_ptr<T[]>& getOrderedArray() const noexcept { return orderedArray; }
     //! @brief Get the length.
     //! @return length
-    [[nodiscard]] std::uint32_t getLength() const { return length; }
+    [[nodiscard]] std::uint32_t getLength() const noexcept { return length; }
     //! @brief Get the search key.
     //! @return search key
-    T getSearchKey() const { return orderedArray[length / 2]; }
+    T getSearchKey() const noexcept { return orderedArray[length / 2]; }
     //! @brief Splice from array for printing.
     //! @tparam N - type of array
     //! @param array - target array
@@ -704,10 +704,10 @@ public:
 
     //! @brief Get the random array.
     //! @return random array
-    const std::unique_ptr<T[]>& getRandomArray() const { return randomArray; }
+    const std::unique_ptr<T[]>& getRandomArray() const noexcept { return randomArray; }
     //! @brief Get the length.
     //! @return length
-    [[nodiscard]] std::uint32_t getLength() const { return length; }
+    [[nodiscard]] std::uint32_t getLength() const noexcept { return length; }
     //! @brief Splice from array for printing.
     //! @tparam N - type of array
     //! @param array - target array
