@@ -38,10 +38,6 @@ public:
     //! @return result of optimal
     virtual std::optional<std::tuple<double, double>> operator()(
         const double left, const double right, const double eps) = 0;
-
-protected:
-    //! @brief Construct a new Optimal object.
-    Optimal() = default;
 };
 
 //! @brief Gradient descent (GD).

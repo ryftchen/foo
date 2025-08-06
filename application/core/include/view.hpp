@@ -30,7 +30,7 @@ class View final : public utility::fsm::FSM<View>
 {
 public:
     //! @brief Destroy the View object.
-    virtual ~View() = default;
+    ~View() override = default;
     //! @brief Construct a new View object.
     View(const View&) = delete;
     //! @brief Construct a new View object.

@@ -27,8 +27,6 @@ using namespace application::app_dp; // NOLINT(google-build-using-namespace)
 class BehavioralTestBase : public ::testing::Test
 {
 public:
-    //! @brief Construct a new BehavioralTestBase object.
-    BehavioralTestBase() = default;
     //! @brief Destroy the BehavioralTestBase object.
     ~BehavioralTestBase() override = default;
 
@@ -222,8 +220,6 @@ TEST_F(BehavioralTestBase, visitorInstance)
 class CreationalTestBase : public ::testing::Test
 {
 public:
-    //! @brief Construct a new CreationalTestBase object.
-    CreationalTestBase() = default;
     //! @brief Destroy the CreationalTestBase object.
     ~CreationalTestBase() override = default;
 
@@ -318,8 +314,6 @@ TEST_F(CreationalTestBase, singletonInstance)
 class StructuralTestBase : public ::testing::Test
 {
 public:
-    //! @brief Construct a new StructuralTestBase object.
-    StructuralTestBase() = default;
     //! @brief Destroy the StructuralTestBase object.
     ~StructuralTestBase() override = default;
 

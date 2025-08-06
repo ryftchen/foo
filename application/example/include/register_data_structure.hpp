@@ -138,6 +138,9 @@ struct Bottom<TreeInstance>
 class ApplyDataStructure
 {
 public:
+    //! @brief Destroy the ApplyDataStructure object.
+    virtual ~ApplyDataStructure() = default;
+
     //! @brief Enumerate specific data structure choices.
     enum class Category : std::uint8_t
     {

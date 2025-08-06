@@ -27,8 +27,6 @@ using namespace application::app_ds; // NOLINT(google-build-using-namespace)
 class CacheTestBase : public ::testing::Test
 {
 public:
-    //! @brief Construct a new CacheTestBase object.
-    CacheTestBase() = default;
     //! @brief Destroy the CacheTestBase object.
     ~CacheTestBase() override = default;
 
@@ -142,8 +140,6 @@ TEST_F(CacheTestBase, lruInstance)
 class FilterTestBase : public ::testing::Test
 {
 public:
-    //! @brief Construct a new FilterTestBase object.
-    FilterTestBase() = default;
     //! @brief Destroy the FilterTestBase object.
     ~FilterTestBase() override = default;
 
@@ -200,8 +196,6 @@ TEST_F(FilterTestBase, quotientInstance)
 class GraphTestBase : public ::testing::Test
 {
 public:
-    //! @brief Construct a new GraphTestBase object.
-    GraphTestBase() = default;
     //! @brief Destroy the GraphTestBase object.
     ~GraphTestBase() override = default;
 
@@ -297,8 +291,6 @@ TEST_F(GraphTestBase, directedInstance)
 class HeapTestBase : public ::testing::Test
 {
 public:
-    //! @brief Construct a new HeapTestBase object.
-    HeapTestBase() = default;
     //! @brief Destroy the HeapTestBase object.
     ~HeapTestBase() override = default;
 
@@ -444,8 +436,6 @@ TEST_F(HeapTestBase, skewInstance)
 class LinearTestBase : public ::testing::Test
 {
 public:
-    //! @brief Construct a new LinearTestBase object.
-    LinearTestBase() = default;
     //! @brief Destroy the LinearTestBase object.
     ~LinearTestBase() override = default;
 
@@ -543,8 +533,6 @@ TEST_F(LinearTestBase, queueInstance)
 class TreeTestBase : public ::testing::Test
 {
 public:
-    //! @brief Construct a new TreeTestBase object.
-    TreeTestBase() = default;
     //! @brief Destroy the TreeTestBase object.
     ~TreeTestBase() override = default;
 

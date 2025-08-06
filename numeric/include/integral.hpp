@@ -37,9 +37,6 @@ public:
     virtual double operator()(const double lower, const double upper, const double eps) const = 0;
 
 protected:
-    //! @brief Construct a new Integral object.
-    Integral() = default;
-
     //! @brief Calculate the value of the definite integral with the trapezoidal rule.
     //! @param expr - target expression
     //! @param left - left endpoint

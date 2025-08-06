@@ -31,6 +31,9 @@ extern const char* version() noexcept;
 class Reflect
 {
 public:
+    //! @brief Destroy the Reflect object.
+    constexpr virtual ~Reflect() = default;
+
     //! @brief Custom string type wrapper.
     //! @tparam Char - type of character in string
     //! @tparam N - string size

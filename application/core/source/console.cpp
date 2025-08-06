@@ -8,7 +8,6 @@
 #include "note.hpp"
 
 #ifndef _PRECOMPILED_HEADER
-#include <readline/readline.h>
 #include <algorithm>
 #include <fstream>
 #include <iomanip>

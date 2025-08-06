@@ -88,7 +88,7 @@ inline bool areStringsEqual(const char* const str1, const char* const str2, Othe
 //! @brief Splice strings into constexpr type.
 //! @tparam Strings - target strings to be spliced
 template <const std::string_view&... Strings>
-struct ConcatString
+class ConcatString
 {
 private:
     //! @brief A sequence of characters.
@@ -104,6 +104,9 @@ private:
         }()};
 
 public:
+    //! @brief Destroy the ConcatString object.
+    constexpr virtual ~ConcatString() = default;
+
     //! @brief The splicing result. Converted from a sequence of characters.
     static constexpr std::string_view value{characters.data(), characters.size() - 1};
 };
@@ -134,6 +137,9 @@ requires std::is_enum_v<EnumType>
 class EnumCheck<EnumType>
 {
 public:
+    //! @brief Destroy the EnumCheck object.
+    constexpr virtual ~EnumCheck() = default;
+
     //! @brief Check whether it contains the value as an enumeration.
     //! @tparam IntType - type of integral
     //! @return has or not
@@ -245,8 +251,6 @@ constexpr auto wrapClosure(Clos&& closure)
 class SpinLock
 {
 public:
-    //! @brief Construct a new SpinLock object.
-    SpinLock() = default;
     //! @brief Destroy the SpinLock object.
     virtual ~SpinLock() = default;
 
@@ -267,8 +271,6 @@ private:
 class ReadWriteLock
 {
 public:
-    //! @brief Construct a new ReadWriteLock object.
-    ReadWriteLock() = default;
     //! @brief Destroy the ReadWriteLock object.
     virtual ~ReadWriteLock() = default;
 

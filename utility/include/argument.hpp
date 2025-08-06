@@ -113,6 +113,8 @@ public:
         Trait(prefix, std::move(collection), std::make_index_sequence<N>{})
     {
     }
+    //! @brief Destroy the Trait object.
+    virtual ~Trait() = default;
 
     //! @brief The operator (==) overloading of Trait class.
     //! @tparam T - type of right-hand side
@@ -253,6 +255,8 @@ private:
                 throw std::runtime_error{"The range of number of arguments is invalid."};
             }
         }
+        //! @brief Destroy the ArgsNumRange object.
+        virtual ~ArgsNumRange() = default;
 
         //! @brief The operator (==) overloading of Trait class.
         //! @param rhs - right-hand side
