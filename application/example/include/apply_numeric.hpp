@@ -34,10 +34,10 @@ const char* const version = numeric::arithmetic::version();
 //! @brief Set input parameters.
 namespace input
 {
-//! @brief One of integers for arithmetic methods.
-constexpr std::int32_t integerA = 46340;
-//! @brief One of integers for arithmetic methods.
-constexpr std::int32_t integerB = -46340;
+//! @brief One of operands for arithmetic methods.
+constexpr std::int32_t operandA = 46340;
+//! @brief One of operands for arithmetic methods.
+constexpr std::int32_t operandB = -46340;
 } // namespace input
 
 //! @brief Calculation of arithmetic.
@@ -67,27 +67,27 @@ class InputBuilder
 {
 public:
     //! @brief Construct a new InputBuilder object.
-    //! @param integer1 - first integer for elementary arithmetic
-    //! @param integer2 - second integer for elementary arithmetic
-    InputBuilder(const std::int32_t integer1, const std::int32_t integer2) : integer1{integer1}, integer2{integer2}
+    //! @param operand1 - first operand for elementary arithmetic
+    //! @param operand2 - second operand for elementary arithmetic
+    InputBuilder(const std::int32_t operand1, const std::int32_t operand2) : operand1{operand1}, operand2{operand2}
     {
 #ifdef _RUNTIME_PRINTING
-        std::cout << "\nElementary arithmetic of " << integer1 << " and " << integer2 << ':' << std::endl;
+        std::cout << "\nElementary arithmetic of " << operand1 << " and " << operand2 << ':' << std::endl;
 #endif // _RUNTIME_PRINTING
     }
 
-    //! @brief Get the pair of integers.
-    //! @return pair of integers
-    [[nodiscard]] std::pair<std::int32_t, std::int32_t> getIntegers() const
+    //! @brief Get the pair of operands.
+    //! @return pair of operands
+    [[nodiscard]] std::pair<std::int32_t, std::int32_t> getOperands() const noexcept
     {
-        return std::make_pair(integer1, integer2);
+        return std::make_pair(operand1, operand2);
     }
 
 private:
-    //! @brief First integer for elementary arithmetic.
-    const std::int32_t integer1 : 17 {0};
-    //! @brief Second integer for elementary arithmetic.
-    const std::int32_t integer2 : 17 {0};
+    //! @brief First operand for elementary arithmetic.
+    const std::int32_t operand1 : 17 {0};
+    //! @brief Second operand for elementary arithmetic.
+    const std::int32_t operand2 : 17 {0};
 };
 } // namespace arithmetic
 extern void applyingArithmetic(const std::vector<std::string>& candidates);
@@ -101,10 +101,10 @@ const char* const version = numeric::divisor::version();
 //! @brief Set input parameters.
 namespace input
 {
-//! @brief One of integers for divisor methods.
-constexpr std::int32_t integerA = 2 * 2 * 3 * 3 * 5 * 5 * 7 * 7;
-//! @brief One of integers for divisor methods.
-constexpr std::int32_t integerB = 2 * 3 * 5 * 7 * 11 * 13 * 17;
+//! @brief One of numbers for divisor methods.
+constexpr std::int32_t numberA = 2 * 2 * 3 * 3 * 5 * 5 * 7 * 7;
+//! @brief One of numbers for divisor methods.
+constexpr std::int32_t numberB = 2 * 3 * 5 * 7 * 11 * 13 * 17;
 } // namespace input
 
 //! @brief Calculation of divisor.
@@ -131,20 +131,20 @@ class InputBuilder
 {
 public:
     //! @brief Construct a new InputBuilder object.
-    //! @param integer1 - first integer
-    //! @param integer2 - second integer
-    InputBuilder(const std::int32_t integer1, const std::int32_t integer2) : integer1{integer1}, integer2{integer2}
+    //! @param number1 - first number
+    //! @param number2 - second number
+    InputBuilder(const std::int32_t number1, const std::int32_t number2) : number1{number1}, number2{number2}
     {
 #ifdef _RUNTIME_PRINTING
-        std::cout << "\nAll common divisors of " << integer1 << " and " << integer2 << ':' << std::endl;
+        std::cout << "\nAll common divisors of " << number1 << " and " << number2 << ':' << std::endl;
 #endif // _RUNTIME_PRINTING
     }
 
-    //! @brief Get the pair of integers.
-    //! @return pair of integers
-    [[nodiscard]] std::pair<std::int32_t, std::int32_t> getIntegers() const
+    //! @brief Get the pair of numbers.
+    //! @return pair of numbers
+    [[nodiscard]] std::pair<std::int32_t, std::int32_t> getNumbers() const noexcept
     {
-        return std::make_pair(integer1, integer2);
+        return std::make_pair(number1, number2);
     }
     //! @brief Splice all integers for printing.
     //! @tparam T - type of container
@@ -180,10 +180,10 @@ public:
     }
 
 private:
-    //! @brief First integer.
-    const std::int32_t integer1{0};
-    //! @brief Second integer.
-    const std::int32_t integer2{0};
+    //! @brief First number.
+    const std::int32_t number1{0};
+    //! @brief Second number.
+    const std::int32_t number2{0};
 };
 } // namespace divisor
 extern void applyingDivisor(const std::vector<std::string>& candidates);
@@ -302,10 +302,10 @@ public:
 
     //! @brief Get the target expression.
     //! @return target expression
-    [[nodiscard]] Expression getExpression() const { return expression; }
+    [[nodiscard]] Expression getExpression() const noexcept { return expression; }
     //! @brief Get the pair of ranges.
     //! @return pair of ranges
-    [[nodiscard]] std::pair<double, double> getRanges() const { return std::make_pair(range1, range2); }
+    [[nodiscard]] std::pair<double, double> getRanges() const noexcept { return std::make_pair(range1, range2); }
 
 private:
     //! @brief Target expression.
@@ -327,8 +327,8 @@ const char* const version = numeric::prime::version();
 //! @brief Set input parameters.
 namespace input
 {
-//! @brief Maximum positive integer for prime methods.
-constexpr std::uint32_t maxPositiveInteger = 997;
+//! @brief Upper bound for prime methods.
+constexpr std::uint32_t upperBound = 997;
 } // namespace input
 
 //! @brief Calculation of prime.
@@ -353,17 +353,17 @@ class InputBuilder
 {
 public:
     //! @brief Construct a new InputBuilder object.
-    //! @param maxPositiveInteger - maximum positive integer
-    explicit InputBuilder(const std::uint32_t maxPositiveInteger) : maxPositiveInteger{maxPositiveInteger}
+    //! @param upperBound - upper bound
+    explicit InputBuilder(const std::uint32_t upperBound) : upperBound{upperBound}
     {
 #ifdef _RUNTIME_PRINTING
-        std::cout << "\nAll prime numbers smaller than " << maxPositiveInteger << ':' << std::endl;
+        std::cout << "\nAll prime numbers smaller than " << upperBound << ':' << std::endl;
 #endif // _RUNTIME_PRINTING
     }
 
-    //! @brief Get the Maximum positive integer.
-    //! @return maximum positive integer
-    [[nodiscard]] std::uint32_t getMaxPositiveInteger() const { return maxPositiveInteger; }
+    //! @brief Get the upper bound.
+    //! @return upper bound
+    [[nodiscard]] std::uint32_t getUpperBound() const noexcept { return upperBound; }
     //! @brief Splice all integers for printing.
     //! @tparam T - type of container
     //! @param container - integer container
@@ -397,8 +397,8 @@ public:
     }
 
 private:
-    //! @brief Maximum positive integer.
-    const std::uint32_t maxPositiveInteger{0};
+    //! @brief Upper bound.
+    const std::uint32_t upperBound{0};
 };
 } // namespace prime
 extern void applyingPrime(const std::vector<std::string>& candidates);

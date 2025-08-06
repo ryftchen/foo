@@ -8,6 +8,7 @@
 #include "register_design_pattern.hpp"
 
 #ifndef _PRECOMPILED_HEADER
+#include <cassert>
 #include <iomanip>
 #include <ranges>
 #include <syncstream>
@@ -211,7 +212,7 @@ void applyingBehavioral(const std::vector<std::string>& candidates)
     {
         return;
     }
-    MACRO_ASSERT(bits.size() == candidates.size());
+    assert(bits.size() == candidates.size());
 
     APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
@@ -348,7 +349,7 @@ void applyingCreational(const std::vector<std::string>& candidates)
     {
         return;
     }
-    MACRO_ASSERT(bits.size() == candidates.size());
+    assert(bits.size() == candidates.size());
 
     APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
@@ -489,7 +490,7 @@ void applyingStructural(const std::vector<std::string>& candidates)
     {
         return;
     }
-    MACRO_ASSERT(bits.size() == candidates.size());
+    assert(bits.size() == candidates.size());
 
     APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
