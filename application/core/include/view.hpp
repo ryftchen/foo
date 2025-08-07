@@ -42,6 +42,14 @@ public:
     //! @return reference of the View object
     View& operator=(View&&) = delete;
 
+    //! @brief Instance name.
+    static constexpr std::string_view name{configure::field::viewer};
+    //! @brief Get the View instance.
+    //! @return reference of the View object
+    static View& getInstance();
+    //! @brief Service for running.
+    void service();
+
     friend class FSM<View>;
     //! @brief Enumerate specific states for FSM.
     enum State : std::uint8_t
@@ -57,15 +65,6 @@ public:
         //! @brief Hold.
         hold
     };
-
-    //! @brief Get the View instance.
-    //! @return reference of the View object
-    static View& getInstance();
-    //! @brief Instance name.
-    static constexpr std::string_view name{configure::field::viewer};
-    //! @brief Service for running.
-    void service();
-
     //! @brief Access for the instance.
     class Access
     {
