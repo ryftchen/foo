@@ -90,8 +90,6 @@ public:
         //! @brief Construct a new Handler object.
         //! @param subject - involved subject
         explicit Handler(const Subject& subject) : subject{subject} {}
-        //! @brief Construct a new Handler object.
-        Handler() = delete;
 
         //! @brief Perform the specific operation.
         void execute() const override;

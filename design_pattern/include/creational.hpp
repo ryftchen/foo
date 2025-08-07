@@ -250,21 +250,6 @@ public:
 class Director
 {
 public:
-    //! @brief Construct a new Director object.
-    Director() = default;
-    //! @brief Destroy the Director object.
-    virtual ~Director();
-    //! @brief Construct a new Director object.
-    Director(const Director&) = delete;
-    //! @brief Construct a new Director object.
-    Director(Director&&) noexcept = default;
-    //! @brief The operator (=) overloading of Director class.
-    //! @return reference of the Director object
-    Director& operator=(const Director&) = delete;
-    //! @brief The operator (=) overloading of Director class.
-    //! @return reference of the Director object
-    Director& operator=(Director&&) noexcept = default;
-
     //! @brief Set the builder.
     //! @param b - target builder
     void set(std::unique_ptr<Builder> b);
