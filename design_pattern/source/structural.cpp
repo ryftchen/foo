@@ -25,11 +25,6 @@ void Adaptee::specificRequest()
     output() << "specific request\n";
 }
 
-Adapter::~Adapter()
-{
-    adaptee.reset();
-}
-
 void Adapter::request()
 {
     adaptee->specificRequest();
@@ -85,11 +80,6 @@ void Component::remove(const std::uint32_t /*index*/)
 {
 }
 
-Composite::~Composite()
-{
-    std::for_each(children.begin(), children.end(), [](auto& component) { component.reset(); });
-}
-
 std::shared_ptr<Component> Composite::getChild(const std::uint32_t index)
 {
     return children.at(index);
@@ -102,9 +92,7 @@ void Composite::add(const std::shared_ptr<Component>& component)
 
 void Composite::remove(const std::uint32_t index)
 {
-    std::shared_ptr<Component> child = children.at(index);
     children.erase(children.cbegin() + index);
-    child.reset();
 }
 
 void Composite::operation()
@@ -209,12 +197,6 @@ void ConcreteFlyweight::operation()
     output() << "concrete flyweight with state " << state << '\n';
 }
 
-FlyweightFactory::~FlyweightFactory()
-{
-    std::for_each(flies.begin(), flies.end(), [](auto& file) { file.second.reset(); });
-    flies.clear();
-}
-
 std::unique_ptr<Flyweight>& FlyweightFactory::getFlyweight(const int key)
 {
     if (flies.contains(key))
@@ -242,14 +224,6 @@ namespace proxy
 void RealSubject::request()
 {
     output() << "real subject request\n";
-}
-
-Proxy::~Proxy()
-{
-    if (subject)
-    {
-        subject.reset();
-    }
 }
 
 void Proxy::request()

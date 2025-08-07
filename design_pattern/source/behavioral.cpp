@@ -86,14 +86,6 @@ void Receiver::action()
     output() << "receiver: execute action\n";
 }
 
-ConcreteCommand::~ConcreteCommand()
-{
-    if (auto r = receiver.lock())
-    {
-        r.reset();
-    }
-}
-
 void ConcreteCommand::execute()
 {
     receiver.lock()->action();
@@ -143,12 +135,6 @@ bool TerminalExpression::interpret(const std::shared_ptr<Context>& context)
     return context->get(value);
 }
 
-NonTerminalExpression::~NonTerminalExpression()
-{
-    leftOp.reset();
-    rightOp.reset();
-}
-
 bool NonTerminalExpression::interpret(const std::shared_ptr<Context>& context)
 {
     return leftOp->interpret(context) && rightOp->interpret(context);
@@ -169,11 +155,6 @@ ConcreteAggregate::ConcreteAggregate(const std::uint32_t size) : count{size}
 {
     list = std::make_unique<int[]>(size);
     std::fill(list.get(), list.get() + size, 1);
-}
-
-ConcreteAggregate::~ConcreteAggregate()
-{
-    list.reset();
 }
 
 std::shared_ptr<Iterator> ConcreteAggregate::createIterator()
@@ -222,12 +203,6 @@ std::ostringstream& output() noexcept
 
 namespace mediator
 {
-ConcreteMediator::~ConcreteMediator()
-{
-    std::for_each(colleagues.begin(), colleagues.end(), [](auto& colleague) { colleague.reset(); });
-    colleagues.clear();
-}
-
 void ConcreteMediator::add(const std::shared_ptr<Colleague>& colleague)
 {
     colleagues.emplace_back(colleague);
@@ -303,12 +278,6 @@ void Originator::setMemento(const std::shared_ptr<Memento>& memento)
 std::shared_ptr<Memento> Originator::createMemento() const
 {
     return std::shared_ptr<Memento>(::new Memento(state));
-}
-
-CareTaker::~CareTaker()
-{
-    std::for_each(history.begin(), history.end(), [](auto& memento) { memento.reset(); });
-    history.clear();
 }
 
 void CareTaker::save()
@@ -413,11 +382,6 @@ void ConcreteStateB::handle()
     output() << "state B handled\n";
 }
 
-Context::~Context()
-{
-    state.reset();
-}
-
 void Context::setState(std::unique_ptr<State> s)
 {
     if (state)
@@ -451,11 +415,6 @@ void ConcreteStrategyA::algorithmInterface()
 void ConcreteStrategyB::algorithmInterface()
 {
     output() << "concrete strategy B\n";
-}
-
-Context::~Context()
-{
-    strategy.reset();
 }
 
 void Context::contextInterface()

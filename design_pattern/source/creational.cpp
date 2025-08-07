@@ -124,14 +124,6 @@ void ConcreteBuilderY::buildPartC()
     product.makeC("C-Y");
 }
 
-Director::~Director()
-{
-    if (builder)
-    {
-        builder.reset();
-    }
-}
-
 void Director::set(std::unique_ptr<Builder> b)
 {
     if (builder)
