@@ -88,37 +88,15 @@ public:
     //! @return reference of the Log object
     Log& operator=(Log&&) = delete;
 
+    //! @brief Instance name.
+    static constexpr std::string_view name{configure::field::logger};
+    //! @brief Get the Log instance.
+    //! @return reference of the Log object
+    static Log& getInstance();
+    //! @brief Service for running.
+    void service();
+
     friend class FSM<Log>;
-    //! @brief Enumerate specific output levels.
-    enum class OutputLevel : std::uint8_t
-    {
-        //! @brief Debug.
-        debug,
-        //! @brief Info.
-        info,
-        //! @brief Warning.
-        warning,
-        //! @brief Error.
-        error
-    };
-    //! @brief Enumerate specific output modes.
-    enum class OutputMode : std::uint8_t
-    {
-        //! @brief Append.
-        append,
-        //! @brief Overwrite.
-        overwrite
-    };
-    //! @brief Enumerate specific output types.
-    enum class OutputType : std::uint8_t
-    {
-        //! @brief File.
-        file,
-        //! @brief Terminal.
-        terminal,
-        //! @brief All.
-        all
-    };
     //! @brief Enumerate specific states for FSM.
     enum State : std::uint8_t
     {
@@ -133,15 +111,6 @@ public:
         //! @brief Hold.
         hold
     };
-
-    //! @brief Get the Log instance.
-    //! @return reference of the Log object
-    static Log& getInstance();
-    //! @brief Instance name.
-    static constexpr std::string_view name{configure::field::logger};
-    //! @brief Service for running.
-    void service();
-
     //! @brief Access for the instance.
     class Access
     {
@@ -175,6 +144,36 @@ public:
         void startResetTimer() const;
     };
 
+    //! @brief Enumerate specific output levels.
+    enum class OutputLevel : std::uint8_t
+    {
+        //! @brief Debug.
+        debug,
+        //! @brief Info.
+        info,
+        //! @brief Warning.
+        warning,
+        //! @brief Error.
+        error
+    };
+    //! @brief Enumerate specific output modes.
+    enum class OutputMode : std::uint8_t
+    {
+        //! @brief Append.
+        append,
+        //! @brief Overwrite.
+        overwrite
+    };
+    //! @brief Enumerate specific output types.
+    enum class OutputType : std::uint8_t
+    {
+        //! @brief File.
+        file,
+        //! @brief Terminal.
+        terminal,
+        //! @brief All.
+        all
+    };
     //! @brief Log output for legacy (printf style).
     //! @tparam Args - type of arguments of log format
     //! @param severity - level of severity
@@ -203,8 +202,6 @@ public:
         const std::uint32_t srcLine,
         const std::format_string<Args...>& format,
         Args&&... args);
-
-    static_assert((sourceDirectory.front() == '/') && (sourceDirectory.back() == '/'));
 
 private:
     //! @brief Construct a new Log object.
@@ -352,6 +349,8 @@ private:
     //! @return whether retry is required or not
     bool awaitNotification2Retry();
 
+    static_assert((sourceDirectory.front() == '/') && (sourceDirectory.back() == '/'));
+
 protected:
     friend std::ostream& operator<<(std::ostream& os, const State state);
 };
@@ -426,7 +425,7 @@ public:
 
     //! @brief Get the output stream for flushing.
     //! @return reference of the output stream object, which is on string based
-    std::ostringstream& stream() { return output; }
+    std::ostringstream& stream() noexcept { return output; }
 
 private:
     //! @brief Output stream for flushing.

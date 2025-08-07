@@ -135,11 +135,11 @@ public:
     //! @return reference of the Command object
     Command& operator=(Command&&) = delete;
 
+    //! @brief Instance title.
+    static constexpr std::string title{"commander"};
     //! @brief Get the Command instance.
     //! @return reference of the Command object
     static Command& getInstance();
-    //! @brief Instance title.
-    static constexpr std::string title{"commander"};
     //! @brief Interface used to execute.
     //! @param argc - argument count
     //! @param argv - argument vector
