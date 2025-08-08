@@ -157,15 +157,15 @@ protected:
     static constexpr double expRes{-0.21723};
     //! @brief Allowable absolute error.
     static constexpr double absErr{0.1 * ((expRes < 0.0) ? -expRes : expRes)};
-    //! @brief Precision of optimal.
-    static constexpr double prec{algorithm::optimal::epsilon};
+    //! @brief Default precision.
+    static constexpr double defPrec{algorithm::optimal::epsilon};
 };
 
 //! @brief Test for the gradient descent method in the solution of optimal.
 TEST_F(OptimalTestBase, gradientDescentMethod)
 {
     const auto result =
-        (*sut<algorithm::optimal::Gradient>())(fixture.getRanges().first, fixture.getRanges().second, prec);
+        (*sut<algorithm::optimal::Gradient>())(fixture.getRanges().first, fixture.getRanges().second, defPrec);
     ASSERT_TRUE(result.has_value());
     EXPECT_GT(std::get<0>(result.value()), expRes - absErr);
     EXPECT_LT(std::get<0>(result.value()), expRes + absErr);
@@ -174,7 +174,8 @@ TEST_F(OptimalTestBase, gradientDescentMethod)
 //! @brief Test for the tabu method in the solution of optimal.
 TEST_F(OptimalTestBase, tabuMethod)
 {
-    const auto result = (*sut<algorithm::optimal::Tabu>())(fixture.getRanges().first, fixture.getRanges().second, prec);
+    const auto result =
+        (*sut<algorithm::optimal::Tabu>())(fixture.getRanges().first, fixture.getRanges().second, defPrec);
     ASSERT_TRUE(result.has_value());
     EXPECT_GT(std::get<0>(result.value()), expRes - absErr);
     EXPECT_LT(std::get<0>(result.value()), expRes + absErr);
@@ -184,7 +185,7 @@ TEST_F(OptimalTestBase, tabuMethod)
 TEST_F(OptimalTestBase, simulatedAnnealingMethod)
 {
     const auto result =
-        (*sut<algorithm::optimal::Annealing>())(fixture.getRanges().first, fixture.getRanges().second, prec);
+        (*sut<algorithm::optimal::Annealing>())(fixture.getRanges().first, fixture.getRanges().second, defPrec);
     ASSERT_TRUE(result.has_value());
     EXPECT_GT(std::get<0>(result.value()), expRes - absErr);
     EXPECT_LT(std::get<0>(result.value()), expRes + absErr);
@@ -194,7 +195,7 @@ TEST_F(OptimalTestBase, simulatedAnnealingMethod)
 TEST_F(OptimalTestBase, particleSwarmMethod)
 {
     const auto result =
-        (*sut<algorithm::optimal::Particle>())(fixture.getRanges().first, fixture.getRanges().second, prec);
+        (*sut<algorithm::optimal::Particle>())(fixture.getRanges().first, fixture.getRanges().second, defPrec);
     ASSERT_TRUE(result.has_value());
     EXPECT_GT(std::get<0>(result.value()), expRes - absErr);
     EXPECT_LT(std::get<0>(result.value()), expRes + absErr);
@@ -203,7 +204,8 @@ TEST_F(OptimalTestBase, particleSwarmMethod)
 //! @brief Test for the ant colony method in the solution of optimal.
 TEST_F(OptimalTestBase, antColonyMethod)
 {
-    const auto result = (*sut<algorithm::optimal::Ant>())(fixture.getRanges().first, fixture.getRanges().second, prec);
+    const auto result =
+        (*sut<algorithm::optimal::Ant>())(fixture.getRanges().first, fixture.getRanges().second, defPrec);
     ASSERT_TRUE(result.has_value());
     EXPECT_GT(std::get<0>(result.value()), expRes - absErr);
     EXPECT_LT(std::get<0>(result.value()), expRes + absErr);
@@ -213,7 +215,7 @@ TEST_F(OptimalTestBase, antColonyMethod)
 TEST_F(OptimalTestBase, geneticMethod)
 {
     const auto result =
-        (*sut<algorithm::optimal::Genetic>())(fixture.getRanges().first, fixture.getRanges().second, prec);
+        (*sut<algorithm::optimal::Genetic>())(fixture.getRanges().first, fixture.getRanges().second, defPrec);
     ASSERT_TRUE(result.has_value());
     EXPECT_GT(std::get<0>(result.value()), expRes - absErr);
     EXPECT_LT(std::get<0>(result.value()), expRes + absErr);

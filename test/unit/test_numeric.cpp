@@ -125,15 +125,15 @@ protected:
     static constexpr double expRes{1.05838};
     //! @brief Allowable absolute error.
     static constexpr double absErr{0.1 * ((expRes < 0.0) ? -expRes : expRes)};
-    //! @brief Precision of integral.
-    static constexpr double prec{numeric::integral::epsilon};
+    //! @brief Default precision.
+    static constexpr double defPrec{numeric::integral::epsilon};
 };
 
 //! @brief Test for the trapezoidal method in the calculation of integral.
 TEST_F(IntegralTestBase, trapezoidalMethod)
 {
     const auto result =
-        (*sut<numeric::integral::Trapezoidal>())(fixture.getRanges().first, fixture.getRanges().second, prec);
+        (*sut<numeric::integral::Trapezoidal>())(fixture.getRanges().first, fixture.getRanges().second, defPrec);
     EXPECT_GT(result, expRes - absErr);
     EXPECT_LT(result, expRes + absErr);
 }
@@ -142,7 +142,7 @@ TEST_F(IntegralTestBase, trapezoidalMethod)
 TEST_F(IntegralTestBase, adaptiveSimpsonMethod)
 {
     const auto result =
-        (*sut<numeric::integral::Simpson>())(fixture.getRanges().first, fixture.getRanges().second, prec);
+        (*sut<numeric::integral::Simpson>())(fixture.getRanges().first, fixture.getRanges().second, defPrec);
     EXPECT_GT(result, expRes - absErr);
     EXPECT_LT(result, expRes + absErr);
 }
@@ -151,7 +151,7 @@ TEST_F(IntegralTestBase, adaptiveSimpsonMethod)
 TEST_F(IntegralTestBase, rombergMethod)
 {
     const auto result =
-        (*sut<numeric::integral::Romberg>())(fixture.getRanges().first, fixture.getRanges().second, prec);
+        (*sut<numeric::integral::Romberg>())(fixture.getRanges().first, fixture.getRanges().second, defPrec);
     EXPECT_GT(result, expRes - absErr);
     EXPECT_LT(result, expRes + absErr);
 }
@@ -159,7 +159,8 @@ TEST_F(IntegralTestBase, rombergMethod)
 //! @brief Test for the Gauss-Legendre's 5-points method in the calculation of integral.
 TEST_F(IntegralTestBase, gaussLegendreMethod)
 {
-    const auto result = (*sut<numeric::integral::Gauss>())(fixture.getRanges().first, fixture.getRanges().second, prec);
+    const auto result =
+        (*sut<numeric::integral::Gauss>())(fixture.getRanges().first, fixture.getRanges().second, defPrec);
     EXPECT_GT(result, expRes - absErr);
     EXPECT_LT(result, expRes + absErr);
 }
@@ -168,7 +169,7 @@ TEST_F(IntegralTestBase, gaussLegendreMethod)
 TEST_F(IntegralTestBase, monteCarloMethod)
 {
     const auto result =
-        (*sut<numeric::integral::MonteCarlo>())(fixture.getRanges().first, fixture.getRanges().second, prec);
+        (*sut<numeric::integral::MonteCarlo>())(fixture.getRanges().first, fixture.getRanges().second, defPrec);
     EXPECT_GT(result, expRes - absErr);
     EXPECT_LT(result, expRes + absErr);
 }
