@@ -128,13 +128,13 @@ public:
     bool operator!=(const T& rhs) const;
 
     //! @brief Set help message.
-    //! @param content - help message content
+    //! @param message - help message
     //! @return reference of the Trait object
-    Trait& help(const std::string_view content);
-    //! @brief Set metavar message.
-    //! @param content - metavar message content
+    Trait& help(const std::string_view message);
+    //! @brief Set meta variable.
+    //! @param variable - meta variable
     //! @return reference of the Trait object
-    Trait& metavar(const std::string_view content);
+    Trait& metaVariable(const std::string_view variable);
     //! @brief Set default value.
     //! @tparam T - type of default value
     //! @param value - default value
@@ -207,10 +207,10 @@ private:
     std::vector<std::string> names;
     //! @brief Used argument name.
     std::string usedName;
-    //! @brief Help message content.
-    std::string helpCont;
-    //! @brief Metavar message content.
-    std::string metavarCont;
+    //! @brief Help message.
+    std::string helpMsg;
+    //! @brief Meta variable.
+    std::string metaVar;
     //! @brief Default value.
     std::any defaultVal;
     //! @brief Default value content to be represented.

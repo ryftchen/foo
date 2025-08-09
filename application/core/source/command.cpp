@@ -261,7 +261,7 @@ void Command::setupMainCLI()
                 }
                 return input;
             })
-        .metavar("CMD")
+        .metaVariable("CMD")
         .help(getDescr(Category::console));
     builtInNotifier.attach(Category::console, std::make_shared<LocalNotifier::Handler<Category::console>>(*this));
 }
@@ -273,7 +273,7 @@ void Command::setupSubCLI<reg_algo::ApplyAlgorithm>() // NOLINT(readability-func
     using Intf = ExtraManager::Intf;
     using Attr = ExtraManager::Attr;
     using action::name, action::alias, action::descr;
-    constexpr std::string_view helpDescr = getDescr(Category::help), optMetavar = "OPT";
+    constexpr std::string_view helpDescr = getDescr(Category::help);
     const std::string helpArg1 = shortPrefix + std::string{getAlias(Category::help)},
                       helpArg2 = longPrefix + std::string{toString(Category::help)};
     std::vector<std::string> candidates{};
@@ -293,7 +293,7 @@ void Command::setupSubCLI<reg_algo::ApplyAlgorithm>() // NOLINT(readability-func
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
-        .metavar(optMetavar)
+        .metaVariable(metaVar)
         .help(descr<reg_algo::MatchMethod>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<reg_algo::MatchMethod>& msg)
                                       { reg_algo::updateChoice<reg_algo::MatchMethod>(msg.cho); });
@@ -310,7 +310,7 @@ void Command::setupSubCLI<reg_algo::ApplyAlgorithm>() // NOLINT(readability-func
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
-        .metavar(optMetavar)
+        .metaVariable(metaVar)
         .help(descr<reg_algo::NotationMethod>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<reg_algo::NotationMethod>& msg)
                                       { reg_algo::updateChoice<reg_algo::NotationMethod>(msg.cho); });
@@ -327,7 +327,7 @@ void Command::setupSubCLI<reg_algo::ApplyAlgorithm>() // NOLINT(readability-func
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
-        .metavar(optMetavar)
+        .metaVariable(metaVar)
         .help(descr<reg_algo::OptimalMethod>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<reg_algo::OptimalMethod>& msg)
                                       { reg_algo::updateChoice<reg_algo::OptimalMethod>(msg.cho); });
@@ -344,7 +344,7 @@ void Command::setupSubCLI<reg_algo::ApplyAlgorithm>() // NOLINT(readability-func
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
-        .metavar(optMetavar)
+        .metaVariable(metaVar)
         .help(descr<reg_algo::SearchMethod>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<reg_algo::SearchMethod>& msg)
                                       { reg_algo::updateChoice<reg_algo::SearchMethod>(msg.cho); });
@@ -361,7 +361,7 @@ void Command::setupSubCLI<reg_algo::ApplyAlgorithm>() // NOLINT(readability-func
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
-        .metavar(optMetavar)
+        .metaVariable(metaVar)
         .help(descr<reg_algo::SortMethod>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<reg_algo::SortMethod>& msg)
                                       { reg_algo::updateChoice<reg_algo::SortMethod>(msg.cho); });
@@ -379,7 +379,7 @@ void Command::setupSubCLI<reg_dp::ApplyDesignPattern>()
     using Intf = ExtraManager::Intf;
     using Attr = ExtraManager::Attr;
     using action::name, action::alias, action::descr;
-    constexpr std::string_view helpDescr = getDescr(Category::help), optMetavar = "OPT";
+    constexpr std::string_view helpDescr = getDescr(Category::help);
     const std::string helpArg1 = shortPrefix + std::string{getAlias(Category::help)},
                       helpArg2 = longPrefix + std::string{toString(Category::help)};
     std::vector<std::string> candidates{};
@@ -398,7 +398,7 @@ void Command::setupSubCLI<reg_dp::ApplyDesignPattern>()
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
-        .metavar(optMetavar)
+        .metaVariable(metaVar)
         .help(descr<reg_dp::BehavioralInstance>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<reg_dp::BehavioralInstance>& msg)
                                       { reg_dp::updateChoice<reg_dp::BehavioralInstance>(msg.cho); });
@@ -416,7 +416,7 @@ void Command::setupSubCLI<reg_dp::ApplyDesignPattern>()
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
-        .metavar(optMetavar)
+        .metaVariable(metaVar)
         .help(descr<reg_dp::CreationalInstance>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<reg_dp::CreationalInstance>& msg)
                                       { reg_dp::updateChoice<reg_dp::CreationalInstance>(msg.cho); });
@@ -434,7 +434,7 @@ void Command::setupSubCLI<reg_dp::ApplyDesignPattern>()
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
-        .metavar(optMetavar)
+        .metaVariable(metaVar)
         .help(descr<reg_dp::StructuralInstance>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<reg_dp::StructuralInstance>& msg)
                                       { reg_dp::updateChoice<reg_dp::StructuralInstance>(msg.cho); });
@@ -453,7 +453,7 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>() // NOLINT(readability-fu
     using Intf = ExtraManager::Intf;
     using Attr = ExtraManager::Attr;
     using action::name, action::alias, action::descr;
-    constexpr std::string_view helpDescr = getDescr(Category::help), optMetavar = "OPT";
+    constexpr std::string_view helpDescr = getDescr(Category::help);
     const std::string helpArg1 = shortPrefix + std::string{getAlias(Category::help)},
                       helpArg2 = longPrefix + std::string{toString(Category::help)};
     std::vector<std::string> candidates{};
@@ -472,7 +472,7 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>() // NOLINT(readability-fu
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
-        .metavar(optMetavar)
+        .metaVariable(metaVar)
         .help(descr<reg_ds::CacheInstance>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<reg_ds::CacheInstance>& msg)
                                       { reg_ds::updateChoice<reg_ds::CacheInstance>(msg.cho); });
@@ -489,7 +489,7 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>() // NOLINT(readability-fu
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
-        .metavar(optMetavar)
+        .metaVariable(metaVar)
         .help(descr<reg_ds::FilterInstance>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<reg_ds::FilterInstance>& msg)
                                       { reg_ds::updateChoice<reg_ds::FilterInstance>(msg.cho); });
@@ -506,7 +506,7 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>() // NOLINT(readability-fu
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
-        .metavar(optMetavar)
+        .metaVariable(metaVar)
         .help(descr<reg_ds::GraphInstance>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<reg_ds::GraphInstance>& msg)
                                       { reg_ds::updateChoice<reg_ds::GraphInstance>(msg.cho); });
@@ -523,7 +523,7 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>() // NOLINT(readability-fu
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
-        .metavar(optMetavar)
+        .metaVariable(metaVar)
         .help(descr<reg_ds::HeapInstance>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<reg_ds::HeapInstance>& msg)
                                       { reg_ds::updateChoice<reg_ds::HeapInstance>(msg.cho); });
@@ -540,7 +540,7 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>() // NOLINT(readability-fu
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
-        .metavar(optMetavar)
+        .metaVariable(metaVar)
         .help(descr<reg_ds::LinearInstance>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<reg_ds::LinearInstance>& msg)
                                       { reg_ds::updateChoice<reg_ds::LinearInstance>(msg.cho); });
@@ -557,7 +557,7 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>() // NOLINT(readability-fu
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
-        .metavar(optMetavar)
+        .metaVariable(metaVar)
         .help(descr<reg_ds::TreeInstance>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<reg_ds::TreeInstance>& msg)
                                       { reg_ds::updateChoice<reg_ds::TreeInstance>(msg.cho); });
@@ -575,7 +575,7 @@ void Command::setupSubCLI<reg_num::ApplyNumeric>()
     using Intf = ExtraManager::Intf;
     using Attr = ExtraManager::Attr;
     using action::name, action::alias, action::descr;
-    constexpr std::string_view helpDescr = getDescr(Category::help), optMetavar = "OPT";
+    constexpr std::string_view helpDescr = getDescr(Category::help);
     const std::string helpArg1 = shortPrefix + std::string{getAlias(Category::help)},
                       helpArg2 = longPrefix + std::string{toString(Category::help)};
     std::vector<std::string> candidates{};
@@ -594,7 +594,7 @@ void Command::setupSubCLI<reg_num::ApplyNumeric>()
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
-        .metavar(optMetavar)
+        .metaVariable(metaVar)
         .help(descr<reg_num::ArithmeticMethod>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<reg_num::ArithmeticMethod>& msg)
                                       { reg_num::updateChoice<reg_num::ArithmeticMethod>(msg.cho); });
@@ -611,7 +611,7 @@ void Command::setupSubCLI<reg_num::ApplyNumeric>()
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
-        .metavar(optMetavar)
+        .metaVariable(metaVar)
         .help(descr<reg_num::DivisorMethod>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<reg_num::DivisorMethod>& msg)
                                       { reg_num::updateChoice<reg_num::DivisorMethod>(msg.cho); });
@@ -628,7 +628,7 @@ void Command::setupSubCLI<reg_num::ApplyNumeric>()
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
-        .metavar(optMetavar)
+        .metaVariable(metaVar)
         .help(descr<reg_num::IntegralMethod>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<reg_num::IntegralMethod>& msg)
                                       { reg_num::updateChoice<reg_num::IntegralMethod>(msg.cho); });
@@ -645,7 +645,7 @@ void Command::setupSubCLI<reg_num::ApplyNumeric>()
         .argsNum(0, candidates.size())
         .defaultValue<std::vector<std::string>>(std::move(candidates))
         .remaining()
-        .metavar(optMetavar)
+        .metaVariable(metaVar)
         .help(descr<reg_num::PrimeMethod>());
     applyingForwarder.registerHandler([](const action::UpdateChoice<reg_num::PrimeMethod>& msg)
                                       { reg_num::updateChoice<reg_num::PrimeMethod>(msg.cho); });
