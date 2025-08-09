@@ -170,6 +170,8 @@ private:
     const std::string shortPrefix{"-"};
     //! @brief The Long prefix for the option.
     const std::string longPrefix{"--"};
+    //! @brief The meta variable for the option.
+    static constexpr std::string_view metaVar{"OPT"};
     //! @brief Flag to indicate whether the command is faulty.
     std::atomic_bool isFaulty{false};
 

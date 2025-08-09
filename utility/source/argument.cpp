@@ -21,15 +21,15 @@ const char* version() noexcept
     return ver;
 }
 
-Trait& Trait::help(const std::string_view content)
+Trait& Trait::help(const std::string_view message)
 {
-    helpCont = content;
+    helpMsg = message;
     return *this;
 }
 
-Trait& Trait::metavar(const std::string_view content)
+Trait& Trait::metaVariable(const std::string_view variable)
 {
-    metavarCont = content;
+    metaVar = variable;
     return *this;
 }
 
@@ -131,10 +131,10 @@ std::string Trait::getInlineUsage() const
         out << '[';
     }
     out << longestName;
-    const auto metavar = metavarCont.empty() ? "VAR" : metavarCont;
+    const auto var = metaVar.empty() ? "VAR" : metaVar;
     if (argsNumRange.getMax() > 0)
     {
-        out << ' ' << metavar;
+        out << ' ' << var;
         if (argsNumRange.getMax() > 1)
         {
             out << "...";
@@ -154,13 +154,13 @@ std::size_t Trait::getArgumentsLength() const
         names.cbegin(), names.cend(), 0, [](const auto sum, const auto& str) { return sum + str.length(); });
     if (checkIfPositional(names.at(0), prefixChars))
     {
-        return metavarCont.empty() ? (namesSize + (names.size() - 1)) : metavarCont.length();
+        return metaVar.empty() ? (namesSize + (names.size() - 1)) : metaVar.length();
     }
 
     std::size_t size = namesSize + (2 * (names.size() - 1));
-    if (!metavarCont.empty() && (argsNumRange == ArgsNumRange{1, 1}))
+    if (!metaVar.empty() && (argsNumRange == ArgsNumRange{1, 1}))
     {
-        size += metavarCont.length() + 1;
+        size += metaVar.length() + 1;
     }
 
     return size;
@@ -248,14 +248,14 @@ std::ostream& operator<<(std::ostream& os, const Trait& tra)
     std::ostringstream out{};
     if (tra.checkIfPositional(tra.names.at(0), tra.prefixChars))
     {
-        out << (tra.metavarCont.empty() ? join(tra.names.cbegin(), tra.names.cend(), " ") : tra.metavarCont);
+        out << (tra.metaVar.empty() ? join(tra.names.cbegin(), tra.names.cend(), " ") : tra.metaVar);
     }
     else
     {
         out << join(tra.names.cbegin(), tra.names.cend(), ", ");
-        if (!tra.metavarCont.empty() && (tra.argsNumRange == Trait::ArgsNumRange{1, 1}))
+        if (!tra.metaVar.empty() && (tra.argsNumRange == Trait::ArgsNumRange{1, 1}))
         {
-            out << ' ' << tra.metavarCont;
+            out << ' ' << tra.metaVar;
         }
     }
 
@@ -265,9 +265,9 @@ std::ostream& operator<<(std::ostream& os, const Trait& tra)
 
     std::size_t pos = 0, prev = 0;
     bool firstLine = true;
-    const std::string_view helpView = tra.helpCont;
+    const std::string_view helpView = tra.helpMsg;
     const char* tabSpace = "    ";
-    while ((pos = tra.helpCont.find('\n', prev)) != std::string::npos)
+    while ((pos = tra.helpMsg.find('\n', prev)) != std::string::npos)
     {
         const auto line = helpView.substr(prev, pos - prev + 1);
         if (firstLine)
@@ -285,11 +285,11 @@ std::ostream& operator<<(std::ostream& os, const Trait& tra)
 
     if (firstLine)
     {
-        os << tabSpace << tra.helpCont;
+        os << tabSpace << tra.helpMsg;
     }
     else
     {
-        const auto remain = helpView.substr(prev, tra.helpCont.length() - prev);
+        const auto remain = helpView.substr(prev, tra.helpMsg.length() - prev);
         if (!remain.empty())
         {
             os.width(streamWidth);
@@ -297,7 +297,7 @@ std::ostream& operator<<(std::ostream& os, const Trait& tra)
         }
     }
 
-    if (!tra.helpCont.empty())
+    if (!tra.helpMsg.empty())
     {
         os << ' ';
     }
@@ -447,7 +447,7 @@ std::string Argument::usage() const
     }
     for (const auto& argument : positionalArgs)
     {
-        out << ' ' << (argument.metavarCont.empty() ? argument.names.at(0) : argument.metavarCont);
+        out << ' ' << (argument.metaVar.empty() ? argument.names.at(0) : argument.metaVar);
     }
 
     if (!subParserMap.empty())
