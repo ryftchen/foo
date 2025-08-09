@@ -24,42 +24,42 @@
 //! @brief Log with debug level.
 #define LOG_DBG application::log::Holder<application::log::Log::OutputLevel::debug>().stream()
 //! @brief Log with debug level (printf style).
-#define LOG_DBG_P(fmt, ...)             \
-    application::log::Log::printfStyle( \
+#define LOG_DBG_P(fmt, ...)        \
+    application::log::printfStyle( \
         application::log::Log::OutputLevel::debug, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with debug level (format style).
-#define LOG_DBG_F(fmt, ...)             \
-    application::log::Log::formatStyle( \
+#define LOG_DBG_F(fmt, ...)        \
+    application::log::formatStyle( \
         application::log::Log::OutputLevel::debug, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with info level.
 #define LOG_INF application::log::Holder<application::log::Log::OutputLevel::info>().stream()
 //! @brief Log with info level (printf style).
-#define LOG_INF_P(fmt, ...)             \
-    application::log::Log::printfStyle( \
+#define LOG_INF_P(fmt, ...)        \
+    application::log::printfStyle( \
         application::log::Log::OutputLevel::info, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with info level (format style).
-#define LOG_INF_F(fmt, ...)             \
-    application::log::Log::formatStyle( \
+#define LOG_INF_F(fmt, ...)        \
+    application::log::formatStyle( \
         application::log::Log::OutputLevel::info, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with warning level.
 #define LOG_WRN application::log::Holder<application::log::Log::OutputLevel::warning>().stream()
 //! @brief Log with warning level (printf style).
-#define LOG_WRN_P(fmt, ...)             \
-    application::log::Log::printfStyle( \
+#define LOG_WRN_P(fmt, ...)        \
+    application::log::printfStyle( \
         application::log::Log::OutputLevel::warning, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with warning level (format style).
-#define LOG_WRN_F(fmt, ...)             \
-    application::log::Log::formatStyle( \
+#define LOG_WRN_F(fmt, ...)        \
+    application::log::formatStyle( \
         application::log::Log::OutputLevel::warning, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with error level.
 #define LOG_ERR application::log::Holder<application::log::Log::OutputLevel::error>().stream()
 //! @brief Log with error level (printf style).
-#define LOG_ERR_P(fmt, ...)             \
-    application::log::Log::printfStyle( \
+#define LOG_ERR_P(fmt, ...)        \
+    application::log::printfStyle( \
         application::log::Log::OutputLevel::error, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with error level (format style).
-#define LOG_ERR_F(fmt, ...)             \
-    application::log::Log::formatStyle( \
+#define LOG_ERR_F(fmt, ...)        \
+    application::log::formatStyle( \
         application::log::Log::OutputLevel::error, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 
 //! @brief The application module.
@@ -75,6 +75,7 @@ constexpr std::string_view sourceDirectory = "/foo/";
 class Log final : public utility::fsm::FSM<Log>
 {
 public:
+    friend class FSM<Log>;
     //! @brief Destroy the Log object.
     ~Log() override = default;
     //! @brief Construct a new Log object.
@@ -89,14 +90,13 @@ public:
     Log& operator=(Log&&) = delete;
 
     //! @brief Instance name.
-    static constexpr std::string_view name{configure::field::logger};
+    static constexpr std::string name{configure::field::logger};
     //! @brief Get the Log instance.
     //! @return reference of the Log object
     static Log& getInstance();
     //! @brief Service for running.
     void service();
 
-    friend class FSM<Log>;
     //! @brief Enumerate specific states for FSM.
     enum State : std::uint8_t
     {
@@ -136,7 +136,7 @@ public:
         void waitOr(const State state, const std::function<void()>& handling) const;
         //! @brief Notify the logger daemon to change the state.
         //! @param action - action to be executed
-        void toNotify(const std::function<void()>& action) const;
+        void notifyWith(const std::function<void()>& action) const;
         //! @brief Start the reset timer.
         void startResetTimer() const;
     };
@@ -171,47 +171,45 @@ public:
         //! @brief All.
         all
     };
-    //! @brief Log output for legacy (printf style).
-    //! @tparam Args - type of arguments of log format
-    //! @param severity - level of severity
-    //! @param srcFile - current code file
-    //! @param srcLine - current code line
-    //! @param format - log format to be flushed
-    //! @param args - arguments of log format
     template <typename... Args>
-    static void printfStyle(
+    friend void printfStyle(
         const OutputLevel severity,
         const std::string_view srcFile,
         const std::uint32_t srcLine,
         const std::string& format,
         Args&&... args);
-    //! @brief Log output for modern (format style).
-    //! @tparam Args - type of arguments of log format
-    //! @param severity - level of severity
-    //! @param srcFile - current code file
-    //! @param srcLine - current code line
-    //! @param format - log format to be flushed
-    //! @param args - arguments of log format
     template <typename... Args>
-    static void formatStyle(
+    friend void formatStyle(
         const OutputLevel severity,
         const std::string_view srcFile,
         const std::uint32_t srcLine,
         const std::format_string<Args...>& format,
         Args&&... args);
+    static_assert((sourceDirectory.front() == '/') && (sourceDirectory.back() == '/'));
 
 private:
     //! @brief Construct a new Log object.
-    //! @param initState - initialization value of state
-    explicit Log(const StateType initState = State::init) :
-        FSM(initState),
-        filePath{getFullLogPath(configure::detail::filePath4Logger())},
-        priorityLevel{static_cast<OutputLevel>(configure::detail::priorityLevel4Logger())},
-        targetType{static_cast<OutputType>(configure::detail::targetType4Logger())},
-        writeMode{static_cast<OutputMode>(configure::detail::writeMode4Logger())}
+    //! @param filePath -full path to the log file
+    //! @param priorityLevel - priority level
+    //! @param targetType - target type
+    //! @param writeMode - write mode
+    explicit Log(
+        const std::string_view filePath = getFullLogPath(configure::detail::filePath4Logger()),
+        const OutputLevel priorityLevel = static_cast<OutputLevel>(configure::detail::priorityLevel4Logger()),
+        const OutputType targetType = static_cast<OutputType>(configure::detail::targetType4Logger()),
+        const OutputMode writeMode = static_cast<OutputMode>(configure::detail::writeMode4Logger())) :
+        FSM(State::init), filePath{filePath}, priorityLevel{priorityLevel}, targetType{targetType}, writeMode{writeMode}
     {
     }
 
+    //! @brief Full path to the log file.
+    const std::string filePath{getFullLogPath()};
+    //! @brief Priority level.
+    const OutputLevel priorityLevel{OutputLevel::debug};
+    //! @brief Target type.
+    const OutputType targetType{OutputType::all};
+    //! @brief Write mode.
+    const OutputMode writeMode{OutputMode::append};
     //! @brief Timeout period (ms) to waiting for the logger to change to the target state.
     const std::uint32_t timeoutPeriod{static_cast<std::uint32_t>(configure::detail::helperTimeout())};
     //! @brief The queue of logs.
@@ -224,14 +222,6 @@ private:
     std::atomic_bool ongoing{false};
     //! @brief Flag for rollback request.
     std::atomic_bool toReset{false};
-    //! @brief Full path to the log file.
-    const std::string filePath{getFullLogPath()};
-    //! @brief Priority level.
-    const OutputLevel priorityLevel{OutputLevel::debug};
-    //! @brief Target type.
-    const OutputType targetType{OutputType::all};
-    //! @brief Write mode.
-    const OutputMode writeMode{OutputMode::append};
     //! @brief Writer of the log content.
     utility::io::FileWriter logWriter{filePath};
     //! @brief Operation lock for the log file.
@@ -346,15 +336,20 @@ private:
     //! @return whether retry is required or not
     bool awaitNotification2Retry();
 
-    static_assert((sourceDirectory.front() == '/') && (sourceDirectory.back() == '/'));
-
 protected:
     friend std::ostream& operator<<(std::ostream& os, const State state);
 };
 
+//! @brief Log output for legacy (printf style).
+//! @tparam Args - type of arguments of log format
+//! @param severity - level of severity
+//! @param srcFile - current code file
+//! @param srcLine - current code line
+//! @param format - log format to be flushed
+//! @param args - arguments of log format
 template <typename... Args>
-void Log::printfStyle(
-    const OutputLevel severity,
+void printfStyle(
+    const Log::OutputLevel severity,
     const std::string_view srcFile,
     const std::uint32_t srcLine,
     const std::string& format,
@@ -362,22 +357,29 @@ void Log::printfStyle(
 {
     if (configure::detail::activateHelper())
     {
-        getInstance().flush(
+        Log::getInstance().flush(
             severity,
-            createLabelTemplate(srcFile, srcLine),
+            Log::createLabelTemplate(srcFile, srcLine),
             utility::common::printfString(format.c_str(), std::forward<Args>(args)...));
         return;
     }
 
-    const auto rows = reformatContents(
+    const auto rows = Log::reformatContents(
         std::string{sourceDirectory.substr(1, sourceDirectory.length() - 2)} + ": ",
         utility::common::printfString(format.c_str(), std::forward<Args>(args)...));
     std::for_each(rows.cbegin(), rows.cend(), [](const auto& output) { std::clog << output << std::endl; });
 }
 
+//! @brief Log output for modern (format style).
+//! @tparam Args - type of arguments of log format
+//! @param severity - level of severity
+//! @param srcFile - current code file
+//! @param srcLine - current code line
+//! @param format - log format to be flushed
+//! @param args - arguments of log format
 template <typename... Args>
-void Log::formatStyle(
-    const OutputLevel severity,
+void formatStyle(
+    const Log::OutputLevel severity,
     const std::string_view srcFile,
     const std::uint32_t srcLine,
     const std::format_string<Args...>& format,
@@ -385,14 +387,14 @@ void Log::formatStyle(
 {
     if (configure::detail::activateHelper())
     {
-        getInstance().flush(
+        Log::getInstance().flush(
             severity,
-            createLabelTemplate(srcFile, srcLine),
+            Log::createLabelTemplate(srcFile, srcLine),
             std::vformat(format.get(), std::make_format_args(args...)));
         return;
     }
 
-    const auto rows = reformatContents(
+    const auto rows = Log::reformatContents(
         std::string{sourceDirectory.substr(1, sourceDirectory.length() - 2)} + ": ",
         std::vformat(format.get(), std::make_format_args(args...)));
     std::for_each(rows.cbegin(), rows.cend(), [](const auto& output) { std::clog << output << std::endl; });
@@ -408,7 +410,7 @@ public:
     //! @param srcLoc - current source location
     explicit Holder(const std::source_location& srcLoc = std::source_location::current()) : location{srcLoc} {}
     //! @brief Destroy the Holder object.
-    virtual ~Holder() { Log::printfStyle(Lv, location.file_name(), location.line(), output.str()); }
+    virtual ~Holder() { printfStyle(Lv, location.file_name(), location.line(), buffer.str()); }
     //! @brief Construct a new Holder object.
     Holder(const Holder&) = default;
     //! @brief Construct a new Holder object.
@@ -420,13 +422,13 @@ public:
     //! @return reference of the Holder object
     Holder& operator=(Holder&&) noexcept = default;
 
-    //! @brief Get the output stream for flushing.
-    //! @return reference of the output stream object, which is on string based
-    std::ostringstream& stream() noexcept { return output; }
+    //! @brief Get the buffer stream for flushing.
+    //! @return reference of the buffer stream object, which is on string based
+    std::ostringstream& stream() noexcept { return buffer; }
 
 private:
     //! @brief Output stream for flushing.
-    std::ostringstream output;
+    std::ostringstream buffer;
     //! @brief Source location.
     const std::source_location location;
 };
