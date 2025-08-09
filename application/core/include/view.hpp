@@ -8,7 +8,6 @@
 
 #include "configure.hpp"
 
-#include "utility/include/common.hpp"
 #include "utility/include/fsm.hpp"
 #include "utility/include/socket.hpp"
 
@@ -29,6 +28,7 @@ inline constexpr std::string_view exitSymbol = "stop";
 class View final : public utility::fsm::FSM<View>
 {
 public:
+    friend class FSM<View>;
     //! @brief Destroy the View object.
     ~View() override = default;
     //! @brief Construct a new View object.
@@ -43,14 +43,13 @@ public:
     View& operator=(View&&) = delete;
 
     //! @brief Instance name.
-    static constexpr std::string_view name{configure::field::viewer};
+    static constexpr std::string name{configure::field::viewer};
     //! @brief Get the View instance.
     //! @return reference of the View object
     static View& getInstance();
     //! @brief Service for running.
     void service();
 
-    friend class FSM<View>;
     //! @brief Enumerate specific states for FSM.
     enum State : std::uint8_t
     {
@@ -107,7 +106,7 @@ public:
         void waitOr(const State state, const std::function<void()>& handling) const;
         //! @brief Notify the viewer daemon to change the state.
         //! @param action - action to be executed
-        void toNotify(const std::function<void()>& action) const;
+        void notifyWith(const std::function<void()>& action) const;
         //! @brief Start the reset timer.
         void startResetTimer() const;
     };
@@ -127,91 +126,73 @@ public:
 
 private:
     //! @brief Construct a new View object.
-    //! @param initState - initialization value of state
-    explicit View(const StateType initState = State::init) :
-        FSM(initState),
-        tcpHost{configure::detail::tcpHost4Viewer()},
-        tcpPort{static_cast<std::uint16_t>(configure::detail::tcpPort4Viewer())},
-        udpHost{configure::detail::udpHost4Viewer()},
-        udpPort{static_cast<std::uint16_t>(configure::detail::udpPort4Viewer())}
+    //! @param tcpHost - tcp server host address
+    //! @param tcpPort - tcp server port number
+    //! @param udpHost - udp server host address
+    //! @param udpPort - udp server port number
+    explicit View(
+        const std::string_view tcpHost = configure::detail::tcpHost4Viewer(),
+        const std::uint16_t tcpPort = configure::detail::tcpPort4Viewer(),
+        const std::string_view udpHost = configure::detail::udpHost4Viewer(),
+        const std::uint16_t udpPort = configure::detail::udpPort4Viewer()) :
+        FSM(State::init), tcpHost{tcpHost}, tcpPort{tcpPort}, udpHost{udpHost}, udpPort{udpPort}
     {
     }
 
+    //! @brief TCP server host address.
+    const std::string tcpHost{"localhost"};
+    //! @brief TCP server port number.
+    const std::uint16_t tcpPort{61501};
+    //! @brief UDP server host address.
+    const std::string udpHost{"localhost"};
+    //! @brief UDP server port number.
+    const std::uint16_t udpPort{61502};
     //! @brief Timeout period (ms) to waiting for the viewer to change to the target state.
     const std::uint32_t timeoutPeriod{static_cast<std::uint32_t>(configure::detail::helperTimeout())};
+
     //! @brief Alias for the option arguments.
     using Args = std::vector<std::string>;
     //! @brief Option attribute.
-    class OptBase
+    struct OptBase
     {
-    public:
-        //! @brief Construct a new OptBase object.
-        //! @param args - option arguments
-        explicit OptBase(Args args = {}) : args{std::move(args)} {}
-        //! @brief Destroy the OptBase object.
-        virtual ~OptBase() = default;
-        //! @brief Construct a new OptBase object.
-        OptBase(const OptBase&) = default;
-        //! @brief Construct a new OptBase object.
-        OptBase(OptBase&&) noexcept = default;
-        //! @brief The operator (=) overloading of OptBase class.
-        //! @return reference of the OptBase object
-        OptBase& operator=(const OptBase&) = delete;
-        //! @brief The operator (=) overloading of OptBase class.
-        //! @return reference of the OptBase object
-        OptBase& operator=(OptBase&&) noexcept = delete;
-
         //! @brief The option arguments.
         const Args args;
     };
     //! @brief Option attribute for the depend option.
-    class OptDepend : public OptBase
+    struct OptDepend : public OptBase
     {
-    public:
         //! @brief The option name.
         static constexpr const char* const name{"depend"};
         //! @brief The option description.
         static constexpr const char* const description{"list all associated libraries"};
     };
     //! @brief Option attribute for the execute option.
-    class OptExecute : public OptBase
+    struct OptExecute : public OptBase
     {
-    public:
-        //! @brief Construct a new OptExecute object.
-        //! @param args - option arguments
-        explicit OptExecute(Args args) : OptBase(std::move(args)) {}
-
         //! @brief The option name.
         static constexpr const char* const name{"execute"};
         //! @brief The option description.
         static constexpr const char* const description{"enter bash commands in quotes [inputs: 'CMD']"};
     };
     //! @brief Option attribute for the journal option.
-    class OptJournal : public OptBase
+    struct OptJournal : public OptBase
     {
-    public:
         //! @brief The option name.
         static constexpr const char* const name{"journal"};
         //! @brief The option description.
         static constexpr const char* const description{"view the log with highlights"};
     };
     //! @brief Option attribute for the monitor option.
-    class OptMonitor : public OptBase
+    struct OptMonitor : public OptBase
     {
-    public:
-        //! @brief Construct a new OptMonitor object.
-        //! @param args - option arguments
-        explicit OptMonitor(Args args) : OptBase(std::move(args)) {}
-
         //! @brief The option name.
         static constexpr const char* const name{"monitor"};
         //! @brief The option description.
         static constexpr const char* const description{"query process status and stacks [inputs: NUM]"};
     };
     //! @brief Option attribute for the profile option.
-    class OptProfile : public OptBase
+    struct OptProfile : public OptBase
     {
-    public:
         //! @brief The option name.
         static constexpr const char* const name{"profile"};
         //! @brief The option description.
@@ -257,16 +238,6 @@ private:
         alignas(64) std::atomic_bool signal;
     };
 
-    //! @brief TCP server host address.
-    const std::string tcpHost{"localhost"};
-    //! @brief TCP server port number.
-    const std::uint16_t tcpPort{61501};
-    //! @brief UDP server host address.
-    const std::string udpHost{"localhost"};
-    //! @brief UDP server port number.
-    const std::uint16_t udpPort{61502};
-    //! @brief Alias for the lock mode.
-    using LockMode = utility::common::ReadWriteLock::LockMode;
     //! @brief Build the response message.
     //! @param reqPlaintext - plaintext of the request
     //! @param respBuffer - buffer to store the response

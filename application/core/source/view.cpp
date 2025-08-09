@@ -240,7 +240,7 @@ View& View::getInstance()
         static View viewer{};
         return viewer;
     }
-    throw std::logic_error{"The " + std::string{name} + " is disabled."};
+    throw std::logic_error{"The " + name + " is disabled."};
 }
 
 // NOLINTBEGIN(cppcoreguidelines-avoid-goto)
@@ -288,13 +288,9 @@ retry:
 void View::Access::startup() const
 try
 {
-    waitOr(
-        State::idle,
-        [this]() { throw std::runtime_error{"The " + std::string{inst.name} + " did not setup successfully ..."}; });
-    toNotify([this]() { inst.ongoing.store(true); });
-    waitOr(
-        State::work,
-        [this]() { throw std::runtime_error{"The " + std::string{inst.name} + " did not start successfully ..."}; });
+    waitOr(State::idle, [this]() { throw std::runtime_error{"The " + inst.name + " did not setup successfully ..."}; });
+    notifyWith([this]() { inst.ongoing.store(true); });
+    waitOr(State::work, [this]() { throw std::runtime_error{"The " + inst.name + " did not start successfully ..."}; });
 }
 catch (const std::exception& err)
 {
@@ -304,10 +300,8 @@ catch (const std::exception& err)
 void View::Access::shutdown() const
 try
 {
-    toNotify([this]() { inst.ongoing.store(false); });
-    waitOr(
-        State::done,
-        [this]() { throw std::runtime_error{"The " + std::string{inst.name} + " did not stop successfully ..."}; });
+    notifyWith([this]() { inst.ongoing.store(false); });
+    waitOr(State::done, [this]() { throw std::runtime_error{"The " + inst.name + " did not stop successfully ..."}; });
 }
 catch (const std::exception& err)
 {
@@ -317,7 +311,7 @@ catch (const std::exception& err)
 void View::Access::reload() const
 try
 {
-    toNotify([this]() { inst.toReset.store(true); });
+    notifyWith([this]() { inst.toReset.store(true); });
     startResetTimer();
 }
 catch (const std::exception& err)
@@ -373,7 +367,7 @@ void View::Access::waitOr(const State state, const std::function<void()>& handli
     while (!inst.isInServingState(state));
 }
 
-void View::Access::toNotify(const std::function<void()>& action) const
+void View::Access::notifyWith(const std::function<void()>& action) const
 {
     std::unique_lock<std::mutex> daemonLock(inst.daemonMtx);
     action();
@@ -392,8 +386,7 @@ void View::Access::startResetTimer() const
         std::this_thread::yield();
     }
     throw std::runtime_error{
-        "The " + std::string{inst.name} + " did not reset properly in " + std::to_string(inst.timeoutPeriod)
-        + " ms ..."};
+        "The " + inst.name + " did not reset properly in " + std::to_string(inst.timeoutPeriod) + " ms ..."};
 }
 
 void View::Sync::waitTaskDone() const
