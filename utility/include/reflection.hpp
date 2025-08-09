@@ -35,8 +35,9 @@ public:
     //! @tparam Char - type of character in string
     //! @tparam N - string size
     template <typename Char, std::size_t N>
-    struct StrType
+    class StrType
     {
+    public:
         //! @brief Alias for the value type.
         using ValueType = Char;
         //! @brief Construct a new StrType object.
@@ -58,8 +59,9 @@ public:
     //! @brief Custom string.
     //! @tparam Str - custom string with wrapper
     template <StrType Str>
-    struct String
+    class String
     {
+    public:
         //! @brief Alias for the character.
         using Char = typename decltype(Str)::ValueType;
         //! @brief Check whether it is the custom string type.
@@ -228,7 +230,7 @@ struct NamedValueBase
 //! @tparam Name - type of name
 //! @tparam T - type of target value
 template <typename Name, typename T>
-struct NamedValue : NamedValueBase<Name>
+struct NamedValue : public NamedValueBase<Name>
 {
     //! @brief Construct a new NamedValue object.
     //! @param val - target value
@@ -252,7 +254,7 @@ struct NamedValue : NamedValueBase<Name>
     }
 
     //! @brief Named value.
-    T value{};
+    const T value{};
     //! @brief Flag to indicate whether it has a value.
     static constexpr bool hasValue{true};
 };
@@ -260,7 +262,7 @@ struct NamedValue : NamedValueBase<Name>
 //! @brief Specialization for named value.
 //! @tparam Name - type of name
 template <typename Name>
-struct NamedValue<Name, void> : NamedValueBase<Name>
+struct NamedValue<Name, void> : public NamedValueBase<Name>
 {
     //! @brief The operator (==) overloading of NamedValue struct.
     //! @tparam U - type of value
@@ -285,7 +287,7 @@ struct ElemList
     constexpr explicit ElemList(const Es... es) : elems{es...} {}
 
     //! @brief Element list.
-    std::tuple<Es...> elems{};
+    const std::tuple<Es...> elems{};
     //! @brief Size of list of the elements.
     static constexpr std::size_t size{sizeof...(Es)};
 
@@ -443,7 +445,7 @@ struct ElemList
 //! @tparam Name - type of name
 //! @tparam T - type of target value
 template <typename Name, typename T>
-struct Attr : NamedValue<Name, T>
+struct Attr : public NamedValue<Name, T>
 {
     //! @brief Construct a new Attr object.
     //! @param val - target value
@@ -453,7 +455,7 @@ struct Attr : NamedValue<Name, T>
 //! @brief Attribute in class.
 //! @tparam Name - type of name
 template <typename Name>
-struct Attr<Name, void> : NamedValue<Name, void>
+struct Attr<Name, void> : public NamedValue<Name, void>
 {
     //! @brief Construct a new Attr object.
     constexpr explicit Attr(const Name /*name*/) {}
@@ -462,7 +464,7 @@ struct Attr<Name, void> : NamedValue<Name, void>
 //! @brief The list of attributes.
 //! @tparam As - type of list of attributes
 template <typename... As>
-struct AttrList : ElemList<As...>
+struct AttrList : public ElemList<As...>
 {
     //! @brief Construct a new AttrList object.
     //! @param as - list of attributes
@@ -484,7 +486,7 @@ struct TraitBase
 //! @brief Specialization for trait.
 //! @tparam T - type of target value
 template <typename T>
-struct Trait : TraitBase<true, false>
+struct Trait : public TraitBase<true, false>
 {
 };
 
@@ -492,14 +494,14 @@ struct Trait : TraitBase<true, false>
 //! @tparam U - type of target object
 //! @tparam T - type of target value
 template <typename U, typename T>
-struct Trait<T U::*> : TraitBase<false, std::is_function_v<T>>
+struct Trait<T U::*> : public TraitBase<false, std::is_function_v<T>>
 {
 };
 
 //! @brief Specialization for trait.
 //! @tparam T - type of target value
 template <typename T>
-struct Trait<T*> : TraitBase<true, std::is_function_v<T>>
+struct Trait<T*> : public TraitBase<true, std::is_function_v<T>>
 {
 };
 
@@ -508,7 +510,7 @@ struct Trait<T*> : TraitBase<true, std::is_function_v<T>>
 //! @tparam T - type of target value
 //! @tparam Attrs - type of list of attributes
 template <typename Name, typename T, typename Attrs>
-struct Field : Trait<T>, NamedValue<Name, T>
+struct Field : public Trait<T>, NamedValue<Name, T>
 {
     //! @brief Construct a new Field object.
     //! @param val - target value
@@ -516,13 +518,13 @@ struct Field : Trait<T>, NamedValue<Name, T>
     constexpr Field(const Name /*name*/, const T val, const Attrs as = {}) : NamedValue<Name, T>{val}, attrs{as} {}
 
     //! @brief Attribute list.
-    Attrs attrs{};
+    const Attrs attrs{};
 };
 
 //! @brief The list of fields.
 //! @tparam Fs - type of list of fields
 template <typename... Fs>
-struct FieldList : ElemList<Fs...>
+struct FieldList : public ElemList<Fs...>
 {
     //! @brief Construct a new FieldList object.
     //! @param fs - list of fields
@@ -549,7 +551,7 @@ struct Base
 //! @brief The list of public base classes.
 //! @tparam Bs - type of list of public base classes
 template <typename... Bs>
-struct BaseList : ElemList<Bs...>
+struct BaseList : public ElemList<Bs...>
 {
     //! @brief Construct a new BaseList object.
     //! @param bs - list of public base classes
@@ -559,7 +561,7 @@ struct BaseList : ElemList<Bs...>
 //! @brief The list of type informations.
 //! @tparam Ts - type of list of type informations
 template <typename... Ts>
-struct TypeInfoList : ElemList<Ts...>
+struct TypeInfoList : public ElemList<Ts...>
 {
     //! @brief Construct a new TypeInfoList object.
     //! @param ts - list of type informations

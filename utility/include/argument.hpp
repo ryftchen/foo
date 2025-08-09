@@ -28,17 +28,17 @@ extern const char* version() noexcept;
 //! @brief Confirm container traits. Value is false.
 //! @tparam T - type to be confirmed
 template <typename T, typename = void>
-struct HasContainerTraits : std::false_type
+struct HasContainerTraits : public std::false_type
 {
 };
 //! @brief Confirm container traits (std::string). Value is false.
 template <>
-struct HasContainerTraits<std::string> : std::false_type
+struct HasContainerTraits<std::string> : public std::false_type
 {
 };
 //! @brief Confirm container traits (std::string_view). Value is false.
 template <>
-struct HasContainerTraits<std::string_view> : std::false_type
+struct HasContainerTraits<std::string_view> : public std::false_type
 {
 };
 //! @brief Confirm container traits. Value is true.
@@ -50,7 +50,7 @@ struct HasContainerTraits<
         typename T::value_type,
         decltype(std::declval<T>().begin()),
         decltype(std::declval<T>().end()),
-        decltype(std::declval<T>().size())>> : std::true_type
+        decltype(std::declval<T>().size())>> : public std::true_type
 {
 };
 //! @brief Confirm whether it is a container.
@@ -61,14 +61,14 @@ static constexpr bool isContainer = HasContainerTraits<T>::value;
 //! @brief Confirm streamable traits. Value is false.
 //! @tparam T - type to be confirmed
 template <typename T, typename = void>
-struct HasStreamableTraits : std::false_type
+struct HasStreamableTraits : public std::false_type
 {
 };
 //! @brief Confirm streamable traits. Value is true.
 //! @tparam T - type to be confirmed
 template <typename T>
 struct HasStreamableTraits<T, std::void_t<decltype(std::declval<std::ostream&>() << std::declval<T>())>>
-    : std::true_type
+    : public std::true_type
 {
 };
 //! @brief Confirm whether it is streamable.

@@ -404,14 +404,14 @@ class Forward<Intf> : public Intf
 };
 
 //! @brief Message forwarder.
-class MessageForwarder : public MessageTypes::WithInterface<ForwardBase>::AsParameterPackFor<Forward>
+struct MessageForwarder : public MessageTypes::WithInterface<ForwardBase>::AsParameterPackFor<Forward>
 {
 };
 
 //! @brief Applying event type object's helper type for the visitor.
 //! @tparam Ts - type of visitors
 template <typename... Ts>
-struct EvtVisitor : Ts...
+struct EvtVisitor : public Ts...
 {
     using Ts::operator()...;
 };

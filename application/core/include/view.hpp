@@ -69,9 +69,6 @@ public:
     class Access
     {
     public:
-        //! @brief Construct a new Access object.
-        Access() : inst{getInstance()} {}
-
         //! @brief Wait for the viewer to start. Interface controller for external use.
         void startup() const;
         //! @brief Wait for the viewer to stop. Interface controller for external use.
@@ -102,7 +99,7 @@ public:
 
     private:
         //! @brief Instance to be accessed.
-        View& inst;
+        View& inst{getInstance()};
 
         //! @brief Wait until the viewer reaches the target state.
         //! @param state - target state
@@ -118,9 +115,6 @@ public:
     class Sync
     {
     public:
-        //! @brief Construct a new Sync object.
-        Sync() : inst{getInstance()} {}
-
         //! @brief Block the caller until the output task is marked as done.
         void waitTaskDone() const;
         //! @brief Notify that the output task has been completed and unblock any waiters.
@@ -128,7 +122,7 @@ public:
 
     private:
         //! @brief Instance to be synchronized.
-        View& inst;
+        View& inst{getInstance()};
     };
 
 private:
@@ -226,7 +220,7 @@ private:
     //! @brief Option type object's helper type for the visitor.
     //! @tparam Ts - type of visitors
     template <typename... Ts>
-    struct OptionVisitor : Ts...
+    struct OptionVisitor : public Ts...
     {
         using Ts::operator()...;
     };

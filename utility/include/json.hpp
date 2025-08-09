@@ -315,7 +315,7 @@ public:
     //! @brief Data type object's helper type for the visitor.
     //! @tparam Ts - type of visitors
     template <typename... Ts>
-    struct DataVisitor : Ts...
+    struct DataVisitor : public Ts...
     {
         using Ts::operator()...;
     };
