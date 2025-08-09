@@ -242,9 +242,9 @@ private:
 
         //! @brief Check whether any tasks do not exist.
         //! @return any tasks do not exist or exist
-        [[nodiscard]] virtual inline bool empty() const = 0;
+        [[nodiscard]] virtual bool empty() const = 0;
         //! @brief Reset bit flags that manage all tasks.
-        virtual inline void reset() = 0;
+        virtual void reset() = 0;
     };
     //! @brief Manage native categories.
     class NativeManager : virtual public TaskManager

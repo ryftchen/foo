@@ -126,29 +126,13 @@ consteval bool isStatelessClass()
 //! @tparam Values - arguments of enumeration
 template <typename EnumType, EnumType... Values>
 requires std::is_enum_v<EnumType>
-class EnumCheck;
+struct EnumCheck;
 //! @brief Check whether the target value is part of the enumeration.
 //! @tparam EnumType - type of enumeration
 template <typename EnumType>
 requires std::is_enum_v<EnumType>
-class EnumCheck<EnumType>
+struct EnumCheck<EnumType>
 {
-public:
-    //! @brief Construct a new EnumCheck object.
-    consteval EnumCheck() = default;
-    //! @brief Destroy the EnumCheck object.
-    constexpr virtual ~EnumCheck() = default;
-    //! @brief Construct a new EnumCheck object.
-    consteval EnumCheck(const EnumCheck&) = default;
-    //! @brief Construct a new EnumCheck object.
-    consteval EnumCheck(EnumCheck&&) noexcept = default;
-    //! @brief The operator (=) overloading of EnumCheck class.
-    //! @return reference of the EnumCheck object
-    consteval EnumCheck& operator=(const EnumCheck&) = default;
-    //! @brief The operator (=) overloading of EnumCheck class.
-    //! @return reference of the EnumCheck object
-    consteval EnumCheck& operator=(EnumCheck&&) noexcept = default;
-
     //! @brief Check whether it contains the value as an enumeration.
     //! @tparam IntType - type of integral
     //! @return has or not
@@ -164,9 +148,8 @@ public:
 //! @tparam Next - next enumeration value
 template <typename EnumType, EnumType Value, EnumType... Next>
 requires std::is_enum_v<EnumType>
-class EnumCheck<EnumType, Value, Next...> : private EnumCheck<EnumType, Next...>
+struct EnumCheck<EnumType, Value, Next...> : private EnumCheck<EnumType, Next...>
 {
-public:
     //! @brief Check whether it contains the value as an enumeration.
     //! @tparam IntType - type of integral
     //! @param val - target value

@@ -115,9 +115,6 @@ public:
     class Access
     {
     public:
-        //! @brief Construct a new Access object.
-        Access() : inst{getInstance()} {}
-
         //! @brief Wait for the logger to start. Interface controller for external use.
         void startup() const;
         //! @brief Wait for the logger to stop. Interface controller for external use.
@@ -131,7 +128,7 @@ public:
 
     private:
         //! @brief Instance to be accessed.
-        Log& inst;
+        Log& inst{getInstance()};
 
         //! @brief Wait until the logger reaches the target state.
         //! @param state - target state
