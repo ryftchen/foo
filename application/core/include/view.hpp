@@ -106,7 +106,7 @@ public:
         void waitOr(const State state, const std::function<void()>& handling) const;
         //! @brief Notify the viewer daemon to change the state.
         //! @param action - action to be executed
-        void notifyWith(const std::function<void()>& action) const;
+        void notifyVia(const std::function<void()>& action) const;
         //! @brief Start the reset timer.
         void startResetTimer() const;
     };
