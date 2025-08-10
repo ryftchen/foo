@@ -40,7 +40,6 @@
 #include <cstdint>
 #include <cstring>
 #include <filesystem>
-#include <format>
 #include <forward_list>
 #include <fstream>
 #include <functional>

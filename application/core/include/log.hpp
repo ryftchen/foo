@@ -183,7 +183,7 @@ public:
         const OutputLevel severity,
         const std::string_view srcFile,
         const std::uint32_t srcLine,
-        const std::format_string<Args...>& format,
+        const std::string& format,
         Args&&... args);
     static_assert((sourceDirectory.front() == '/') && (sourceDirectory.back() == '/'));
 
@@ -382,21 +382,21 @@ void formatStyle(
     const Log::OutputLevel severity,
     const std::string_view srcFile,
     const std::uint32_t srcLine,
-    const std::format_string<Args...>& format,
-    Args&&... args) // NOLINT(cppcoreguidelines-missing-std-forward)
+    const std::string& format,
+    Args&&... args)
 {
     if (configure::detail::activateHelper())
     {
         Log::getInstance().flush(
             severity,
             Log::createLabelTemplate(srcFile, srcLine),
-            std::vformat(format.get(), std::make_format_args(args...)));
+            utility::common::formatString(format, std::forward<Args>(args)...));
         return;
     }
 
     const auto rows = Log::reformatContents(
         std::string{sourceDirectory.substr(1, sourceDirectory.length() - 2)} + ": ",
-        std::vformat(format.get(), std::make_format_args(args...)));
+        utility::common::formatString(format, std::forward<Args>(args)...));
     std::for_each(rows.cbegin(), rows.cend(), [](const auto& output) { std::clog << output << std::endl; });
 }
 

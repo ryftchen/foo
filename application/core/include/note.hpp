@@ -45,6 +45,8 @@ constexpr std::string_view banner()
     // clang-format on
 }
 
-extern std::string overview();
+extern std::string compiler();
+extern std::string processor();
+extern std::string date();
 } // namespace note
 } // namespace application
