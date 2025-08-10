@@ -6,19 +6,13 @@
 
 #include "note.hpp"
 
-#ifndef _PRECOMPILED_HEADER
-#include <format>
-#else
-#include "application/pch/precompiled_header.hpp"
-#endif // _PRECOMPILED_HEADER
-
 #include "utility/include/macro.hpp"
 
 namespace application::note
 {
 //! @brief Compiler name.
 //! @return compiler
-static constexpr std::string_view compiler()
+std::string compiler()
 {
 #ifdef __clang__
     return "clang " MACRO_STRINGIFY(__clang_major__) "." MACRO_STRINGIFY(__clang_minor__) "." MACRO_STRINGIFY(
@@ -34,7 +28,7 @@ static constexpr std::string_view compiler()
 
 //! @brief Target processor.
 //! @return processor
-static constexpr std::string_view processor()
+std::string processor()
 {
 #ifdef _TARGET_PROCESSOR
     return _TARGET_PROCESSOR;
@@ -46,7 +40,7 @@ static constexpr std::string_view processor()
 
 //! @brief Build date.
 //! @return date
-static constexpr std::string_view date()
+std::string date()
 {
 #if defined(__DATE__) && defined(__TIME__)
     return "" __DATE__ " " __TIME__ "";
@@ -54,25 +48,5 @@ static constexpr std::string_view date()
 #pragma message("Unknown date at compile time.")
     return "unknown date";
 #endif // defined(__DATE__) && defined(__TIME__)
-}
-
-//! @brief Program overview.
-//! @return overview
-std::string overview()
-{
-    return std::format(
-        "\033[7m\033[49m{}"
-#ifndef NDEBUG
-        "            DEBUG VERSION {} "
-#else
-        "          RELEASE VERSION {} "
-#endif // NDEBUG
-        "\033[0m\n{}\nBuilt with {} for {} on {}.\n",
-        banner(),
-        version(),
-        copyright(),
-        compiler(),
-        processor(),
-        date());
 }
 } // namespace application::note

@@ -916,7 +916,24 @@ void Command::dumpConfiguration()
 void Command::displayVersionInfo() const
 {
     validateDependenciesVersion();
-    std::cout << note::overview() << std::flush;
+
+    const auto basicInfo = std::format(
+                   "\033[7m\033[49m{}"
+#ifndef NDEBUG
+                   "            DEBUG VERSION {} "
+#else
+                   "          RELEASE VERSION {} "
+#endif // NDEBUG
+                   "\033[0m\n",
+                   note::banner(),
+                   mainCLI.version()),
+               additionalInfo = std::format(
+                   "{}\nBuilt with {} for {} on {}.\n",
+                   note::copyright(),
+                   note::compiler(),
+                   note::processor(),
+                   note::date());
+    std::cout << basicInfo << additionalInfo << std::flush;
 }
 
 void Command::checkForExcessiveArguments()
@@ -1054,7 +1071,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
             try
             {
                 utility::common::invokeCallableWith<log::Log>(gracefulReset);
-                LOG_INF_F("Refreshed the {} outputs.", log::Log::name);
+                LOG_INF << "Refreshed the " << log::Log::name << " outputs.";
             }
             catch (const std::exception& err)
             {
@@ -1081,7 +1098,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
                 utility::common::invokeCallableWith<view::View>(gracefulReset);
                 client = std::make_shared<T>();
                 launchClient(client);
-                LOG_INF_F("Reconnected to the {} servers.", view::View::name);
+                LOG_INF << "Reconnected to the " << view::View::name << " servers.";
             }
             catch (const std::exception& err)
             {
@@ -1137,36 +1154,45 @@ void Command::interactionLatency()
 
 void Command::validateDependenciesVersion() const
 {
-    if (!utility::common::areStringsEqual(
-            mainCLI.version().data(),
-            utility::argument::version(),
-            utility::benchmark::version(),
-            utility::common::version(),
-            utility::currying::version(),
-            utility::fsm::version(),
-            utility::io::version(),
-            utility::json::version(),
-            utility::macro::version(),
-            utility::memory::version(),
-            utility::reflection::version(),
-            utility::socket::version(),
-            utility::thread::version(),
-            utility::time::version()))
+    const auto& choiceRegistry = taskDispatcher.extraChoiceRegistry;
+    const bool isNativeMatched = utility::common::areStringsEqual(
+                   mainCLI.version().data(),
+                   utility::argument::version(),
+                   utility::benchmark::version(),
+                   utility::common::version(),
+                   utility::currying::version(),
+                   utility::fsm::version(),
+                   utility::io::version(),
+                   utility::json::version(),
+                   utility::macro::version(),
+                   utility::memory::version(),
+                   utility::reflection::version(),
+                   utility::socket::version(),
+                   utility::thread::version(),
+                   utility::time::version()),
+               isExtraMatched = (versionLinks.count({subCLIAppAlgo.title(), subCLIAppAlgo.version()})
+                                 == choiceRegistry.at(subCLIAppAlgo.title()).size())
+        && (versionLinks.count({subCLIAppDp.title(), subCLIAppDp.version()})
+            == choiceRegistry.at(subCLIAppDp.title()).size())
+        && (versionLinks.count({subCLIAppDs.title(), subCLIAppDs.version()})
+            == choiceRegistry.at(subCLIAppDs.title()).size())
+        && (versionLinks.count({subCLIAppNum.title(), subCLIAppNum.version()})
+            == choiceRegistry.at(subCLIAppNum.title()).size());
+    if (!isNativeMatched || !isExtraMatched)
     {
-        throw std::runtime_error{"Main dependency version number mismatch."};
-    }
-
-    if (const auto& choiceRegistry = taskDispatcher.extraChoiceRegistry;
-        (versionLinks.count({subCLIAppAlgo.title(), subCLIAppAlgo.version()})
-         != choiceRegistry.at(subCLIAppAlgo.title()).size())
-        || (versionLinks.count({subCLIAppDp.title(), subCLIAppDp.version()})
-            != choiceRegistry.at(subCLIAppDp.title()).size())
-        || (versionLinks.count({subCLIAppDs.title(), subCLIAppDs.version()})
-            != choiceRegistry.at(subCLIAppDs.title()).size())
-        || (versionLinks.count({subCLIAppNum.title(), subCLIAppNum.version()})
-            != choiceRegistry.at(subCLIAppNum.title()).size()))
-    {
-        throw std::runtime_error{"Sub-dependency version number mismatch."};
+        throw std::runtime_error{std::format(
+            "Dependencies version number mismatch. Expected main version: {} ({})"
+            ", sub-version: {} ({}), {} ({}), {} ({}), {} ({}).",
+            mainCLI.title(),
+            mainCLI.version(),
+            subCLIAppAlgo.title(),
+            subCLIAppAlgo.version(),
+            subCLIAppDp.title(),
+            subCLIAppDp.version(),
+            subCLIAppDs.title(),
+            subCLIAppDs.version(),
+            subCLIAppNum.title(),
+            subCLIAppNum.version())};
     }
 }
 } // namespace application::command
