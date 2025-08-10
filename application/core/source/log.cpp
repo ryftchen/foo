@@ -176,7 +176,7 @@ void Log::Access::startup() const
 try
 {
     waitOr(State::idle, [this]() { throw std::runtime_error{"The " + inst.name + " did not setup successfully ..."}; });
-    notifyWith([this]() { inst.ongoing.store(true); });
+    notifyVia([this]() { inst.ongoing.store(true); });
     waitOr(State::work, [this]() { throw std::runtime_error{"The " + inst.name + " did not start successfully ..."}; });
 }
 catch (const std::exception& err)
@@ -187,7 +187,7 @@ catch (const std::exception& err)
 void Log::Access::shutdown() const
 try
 {
-    notifyWith([this]() { inst.ongoing.store(false); });
+    notifyVia([this]() { inst.ongoing.store(false); });
     waitOr(State::done, [this]() { throw std::runtime_error{"The " + inst.name + " did not stop successfully ..."}; });
 }
 catch (const std::exception& err)
@@ -198,7 +198,7 @@ catch (const std::exception& err)
 void Log::Access::reload() const
 try
 {
-    notifyWith([this]() { inst.toReset.store(true); });
+    notifyVia([this]() { inst.toReset.store(true); });
     startResetTimer();
 }
 catch (const std::exception& err)
@@ -225,7 +225,7 @@ void Log::Access::waitOr(const State state, const std::function<void()>& handlin
     while (!inst.isInServingState(state));
 }
 
-void Log::Access::notifyWith(const std::function<void()>& action) const
+void Log::Access::notifyVia(const std::function<void()>& action) const
 {
     std::unique_lock<std::mutex> daemonLock(inst.daemonMtx);
     action();
