@@ -28,14 +28,22 @@ class ArithmeticTestBase : public ::testing::Test
 {
 protected:
     //! @brief Set up the test case.
-    static void SetUpTestSuite() { TST_NUM_PRINT_TASK_TITLE("ARITHMETIC", "BEGIN"); }
+    static void SetUpTestSuite()
+    {
+        TST_NUM_PRINT_TASK_TITLE("ARITHMETIC", "BEGIN");
+        fixture = std::make_unique<arithmetic::InputBuilder>(arithmetic::input::operandA, arithmetic::input::operandB);
+    }
     //! @brief Tear down the test case.
-    static void TearDownTestSuite() { TST_NUM_PRINT_TASK_TITLE("ARITHMETIC", "END"); }
+    static void TearDownTestSuite()
+    {
+        TST_NUM_PRINT_TASK_TITLE("ARITHMETIC", "END");
+        fixture.reset();
+    }
 
     //! @brief System under test.
     const numeric::arithmetic::Arithmetic sut{};
     //! @brief Fixture data.
-    const arithmetic::InputBuilder fixture{arithmetic::input::operandA, arithmetic::input::operandB};
+    static std::unique_ptr<arithmetic::InputBuilder> fixture;
     //! @brief Expected result 1.
     static constexpr std::int32_t expRes1{0};
     //! @brief Expected result 2.
@@ -45,29 +53,30 @@ protected:
     //! @brief Expected result 4.
     static constexpr std::int32_t expRes4{-1};
 };
+std::unique_ptr<arithmetic::InputBuilder> ArithmeticTestBase::fixture = {};
 
 //! @brief Test for the addition method in the calculation of arithmetic.
 TEST_F(ArithmeticTestBase, additionMethod)
 {
-    ASSERT_EQ(expRes1, sut.addition(fixture.getOperands().first, fixture.getOperands().second));
+    ASSERT_EQ(expRes1, sut.addition(fixture->getOperands().first, fixture->getOperands().second));
 }
 
 //! @brief Test for the subtraction method in the calculation of arithmetic.
 TEST_F(ArithmeticTestBase, subtractionMethod)
 {
-    ASSERT_EQ(expRes2, sut.subtraction(fixture.getOperands().first, fixture.getOperands().second));
+    ASSERT_EQ(expRes2, sut.subtraction(fixture->getOperands().first, fixture->getOperands().second));
 }
 
 //! @brief Test for the multiplication method in the calculation of arithmetic.
 TEST_F(ArithmeticTestBase, multiplicationMethod)
 {
-    ASSERT_EQ(expRes3, sut.multiplication(fixture.getOperands().first, fixture.getOperands().second));
+    ASSERT_EQ(expRes3, sut.multiplication(fixture->getOperands().first, fixture->getOperands().second));
 }
 
 //! @brief Test for the division method in the calculation of arithmetic.
 TEST_F(ArithmeticTestBase, divisionMethod)
 {
-    ASSERT_EQ(expRes4, sut.division(fixture.getOperands().first, fixture.getOperands().second));
+    ASSERT_EQ(expRes4, sut.division(fixture->getOperands().first, fixture->getOperands().second));
 }
 
 //! @brief Test base of divisor.
@@ -75,28 +84,37 @@ class DivisorTestBase : public ::testing::Test
 {
 protected:
     //! @brief Set up the test case.
-    static void SetUpTestSuite() { TST_NUM_PRINT_TASK_TITLE("DIVISOR", "BEGIN"); }
+    static void SetUpTestSuite()
+    {
+        TST_NUM_PRINT_TASK_TITLE("DIVISOR", "BEGIN");
+        fixture = std::make_unique<divisor::InputBuilder>(divisor::input::numberA, divisor::input::numberB);
+    }
     //! @brief Tear down the test case.
-    static void TearDownTestSuite() { TST_NUM_PRINT_TASK_TITLE("DIVISOR", "END"); }
+    static void TearDownTestSuite()
+    {
+        TST_NUM_PRINT_TASK_TITLE("DIVISOR", "END");
+        fixture.reset();
+    }
 
     //! @brief System under test.
     const numeric::divisor::Divisor sut{};
     //! @brief Fixture data.
-    const divisor::InputBuilder fixture{divisor::input::numberA, divisor::input::numberB};
+    static std::unique_ptr<divisor::InputBuilder> fixture;
     //! @brief Expected result.
     const std::set<std::int32_t> expRes{1, 2, 3, 5, 6, 7, 10, 14, 15, 21, 30, 35, 42, 70, 105, 210};
 };
+std::unique_ptr<divisor::InputBuilder> DivisorTestBase::fixture = {};
 
 //! @brief Test for the Euclidean method in the calculation of divisor.
 TEST_F(DivisorTestBase, euclideanMethod)
 {
-    ASSERT_EQ(expRes, sut.euclidean(fixture.getNumbers().first, fixture.getNumbers().second));
+    ASSERT_EQ(expRes, sut.euclidean(fixture->getNumbers().first, fixture->getNumbers().second));
 }
 
 //! @brief Test for the Stein method in the calculation of divisor.
 TEST_F(DivisorTestBase, steinMethod)
 {
-    ASSERT_EQ(expRes, sut.stein(fixture.getNumbers().first, fixture.getNumbers().second));
+    ASSERT_EQ(expRes, sut.stein(fixture->getNumbers().first, fixture->getNumbers().second));
 }
 
 //! @brief Test base of integral.
@@ -104,23 +122,30 @@ class IntegralTestBase : public ::testing::Test
 {
 protected:
     //! @brief Set up the test case.
-    static void SetUpTestSuite() { TST_NUM_PRINT_TASK_TITLE("INTEGRAL", "BEGIN"); }
+    static void SetUpTestSuite()
+    {
+        TST_NUM_PRINT_TASK_TITLE("INTEGRAL", "BEGIN");
+        using CylindricalBessel = integral::input::CylindricalBessel;
+        fixture = std::make_unique<integral::InputBuilder>(
+            CylindricalBessel{}, CylindricalBessel::range1, CylindricalBessel::range2, CylindricalBessel::exprDescr);
+    }
     //! @brief Tear down the test case.
-    static void TearDownTestSuite() { TST_NUM_PRINT_TASK_TITLE("INTEGRAL", "END"); }
+    static void TearDownTestSuite()
+    {
+        TST_NUM_PRINT_TASK_TITLE("INTEGRAL", "END");
+        fixture.reset();
+    }
 
-    //! @brief Alias for the integral expression.
-    using CylindricalBessel = integral::input::CylindricalBessel;
     //! @brief System under test.
     //! @tparam T - type of system under test
     //! @return system under test
     template <typename T>
-    [[nodiscard]] std::unique_ptr<numeric::integral::Integral> sut() const
+    static std::unique_ptr<numeric::integral::Integral> sut()
     {
-        return std::make_unique<T>(fixture.getExpression());
+        return std::make_unique<T>(fixture->getExpression());
     }
     //! @brief Fixture data.
-    const integral::InputBuilder fixture{
-        CylindricalBessel{}, CylindricalBessel::range1, CylindricalBessel::range2, CylindricalBessel::exprDescr};
+    static std::unique_ptr<integral::InputBuilder> fixture;
     //! @brief Expected result.
     static constexpr double expRes{1.05838};
     //! @brief Allowable absolute error.
@@ -128,12 +153,13 @@ protected:
     //! @brief Default precision.
     static constexpr double defPrec{numeric::integral::epsilon};
 };
+std::unique_ptr<integral::InputBuilder> IntegralTestBase::fixture = {};
 
 //! @brief Test for the trapezoidal method in the calculation of integral.
 TEST_F(IntegralTestBase, trapezoidalMethod)
 {
     const auto result =
-        (*sut<numeric::integral::Trapezoidal>())(fixture.getRanges().first, fixture.getRanges().second, defPrec);
+        (*sut<numeric::integral::Trapezoidal>())(fixture->getRanges().first, fixture->getRanges().second, defPrec);
     EXPECT_GT(result, expRes - absErr);
     EXPECT_LT(result, expRes + absErr);
 }
@@ -142,7 +168,7 @@ TEST_F(IntegralTestBase, trapezoidalMethod)
 TEST_F(IntegralTestBase, adaptiveSimpsonMethod)
 {
     const auto result =
-        (*sut<numeric::integral::Simpson>())(fixture.getRanges().first, fixture.getRanges().second, defPrec);
+        (*sut<numeric::integral::Simpson>())(fixture->getRanges().first, fixture->getRanges().second, defPrec);
     EXPECT_GT(result, expRes - absErr);
     EXPECT_LT(result, expRes + absErr);
 }
@@ -151,7 +177,7 @@ TEST_F(IntegralTestBase, adaptiveSimpsonMethod)
 TEST_F(IntegralTestBase, rombergMethod)
 {
     const auto result =
-        (*sut<numeric::integral::Romberg>())(fixture.getRanges().first, fixture.getRanges().second, defPrec);
+        (*sut<numeric::integral::Romberg>())(fixture->getRanges().first, fixture->getRanges().second, defPrec);
     EXPECT_GT(result, expRes - absErr);
     EXPECT_LT(result, expRes + absErr);
 }
@@ -160,7 +186,7 @@ TEST_F(IntegralTestBase, rombergMethod)
 TEST_F(IntegralTestBase, gaussLegendreMethod)
 {
     const auto result =
-        (*sut<numeric::integral::Gauss>())(fixture.getRanges().first, fixture.getRanges().second, defPrec);
+        (*sut<numeric::integral::Gauss>())(fixture->getRanges().first, fixture->getRanges().second, defPrec);
     EXPECT_GT(result, expRes - absErr);
     EXPECT_LT(result, expRes + absErr);
 }
@@ -169,7 +195,7 @@ TEST_F(IntegralTestBase, gaussLegendreMethod)
 TEST_F(IntegralTestBase, monteCarloMethod)
 {
     const auto result =
-        (*sut<numeric::integral::MonteCarlo>())(fixture.getRanges().first, fixture.getRanges().second, defPrec);
+        (*sut<numeric::integral::MonteCarlo>())(fixture->getRanges().first, fixture->getRanges().second, defPrec);
     EXPECT_GT(result, expRes - absErr);
     EXPECT_LT(result, expRes + absErr);
 }
@@ -179,14 +205,22 @@ class PrimeTestBase : public ::testing::Test
 {
 protected:
     //! @brief Set up the test case.
-    static void SetUpTestSuite() { TST_NUM_PRINT_TASK_TITLE("PRIME", "BEGIN"); }
+    static void SetUpTestSuite()
+    {
+        TST_NUM_PRINT_TASK_TITLE("PRIME", "BEGIN");
+        fixture = std::make_unique<prime::InputBuilder>(prime::input::upperBound);
+    }
     //! @brief Tear down the test case.
-    static void TearDownTestSuite() { TST_NUM_PRINT_TASK_TITLE("PRIME", "END"); }
+    static void TearDownTestSuite()
+    {
+        TST_NUM_PRINT_TASK_TITLE("PRIME", "END");
+        fixture.reset();
+    }
 
     //! @brief System under test.
     const numeric::prime::Prime sut{};
     //! @brief Fixture data.
-    const prime::InputBuilder fixture{prime::input::upperBound};
+    static std::unique_ptr<prime::InputBuilder> fixture;
     //! @brief Expected result.
     //! @return expected result
     static constexpr auto expRes()
@@ -204,17 +238,18 @@ protected:
         // NOLINTEND(readability-magic-numbers)
     }
 };
+std::unique_ptr<prime::InputBuilder> PrimeTestBase::fixture = {};
 
 //! @brief Test for the Eratosthenes method in the calculation of prime.
 TEST_F(PrimeTestBase, eratosthenesMethod)
 {
-    ASSERT_EQ(expRes(), sut.eratosthenes(fixture.getUpperBound()));
+    ASSERT_EQ(expRes(), sut.eratosthenes(fixture->getUpperBound()));
 }
 
 //! @brief Test for the Euler method in the calculation of prime.
 TEST_F(PrimeTestBase, eulerMethod)
 {
-    ASSERT_EQ(expRes(), sut.euler(fixture.getUpperBound()));
+    ASSERT_EQ(expRes(), sut.euler(fixture->getUpperBound()));
 }
 } // namespace tst_num
 } // namespace test
