@@ -25,6 +25,23 @@ ApplyNumeric& manager() noexcept
     return manager;
 }
 
+//! @brief Check whether any numeric choices exist.
+//! @return any numeric choices exist or not
+bool present()
+{
+    bool isExist = false;
+    TypeInfo<ApplyNumeric>::forEachVarOf(
+        manager(), [&isExist](const auto /*field*/, auto&& var) { isExist |= !var.none(); });
+
+    return isExist;
+}
+
+//! @brief Reset bit flags that manage numeric choices.
+void clear()
+{
+    TypeInfo<ApplyNumeric>::forEachVarOf(manager(), [](const auto /*field*/, auto&& var) { var.reset(); });
+}
+
 namespace arithmetic
 {
 //! @brief Register version number.

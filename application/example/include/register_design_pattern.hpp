@@ -134,17 +134,6 @@ public:
     //! @brief Bit flags for managing structural instances.
     std::bitset<Bottom<StructuralInstance>::value> structuralOpts;
 
-    //! @brief Check whether any design pattern choices do not exist.
-    //! @return any design pattern choices do not exist or exist
-    [[nodiscard]] bool empty() const { return behavioralOpts.none() && creationalOpts.none() && structuralOpts.none(); }
-    //! @brief Reset bit flags that manage design pattern choices.
-    void reset()
-    {
-        behavioralOpts.reset();
-        creationalOpts.reset();
-        structuralOpts.reset();
-    }
-
 protected:
     //! @brief The operator (<<) overloading of the Category enum.
     //! @param os - output stream object
@@ -172,6 +161,8 @@ protected:
     }
 };
 extern ApplyDesignPattern& manager() noexcept;
+extern bool present();
+extern void clear();
 
 //! @brief Update choice.
 //! @tparam T - type of target instance
@@ -409,16 +400,18 @@ template <typename T>
 consteval std::size_t abbrValue(const T instance)
 {
     static_assert(Bottom<T>::value == TypeInfo<T>::fields.size);
+    constexpr auto refl = REFLECTION_STR("choice");
     std::size_t value = 0;
     TypeInfo<T>::fields.forEach(
-        [instance, &value](const auto field)
+        [refl, instance, &value](const auto field)
         {
             if (field.name == toString(instance))
             {
-                static_assert(field.attrs.size == 1);
-                const auto attr = field.attrs.find(REFLECTION_STR("choice"));
+                static_assert(field.attrs.contains(refl) && (field.attrs.size == 1));
+                const auto attr = field.attrs.find(refl);
                 static_assert(attr.hasValue);
                 value = utility::common::operator""_bkdrHash(attr.value);
+                return;
             }
         });
 

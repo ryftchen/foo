@@ -25,6 +25,23 @@ ApplyDesignPattern& manager() noexcept
     return manager;
 }
 
+//! @brief Check whether any design pattern choices exist.
+//! @return any design pattern choices exist or not
+bool present()
+{
+    bool isExist = false;
+    TypeInfo<ApplyDesignPattern>::forEachVarOf(
+        manager(), [&isExist](const auto /*field*/, auto&& var) { isExist |= !var.none(); });
+
+    return isExist;
+}
+
+//! @brief Reset bit flags that manage design pattern choices.
+void clear()
+{
+    TypeInfo<ApplyDesignPattern>::forEachVarOf(manager(), [](const auto /*field*/, auto&& var) { var.reset(); });
+}
+
 namespace behavioral
 {
 //! @brief Register version number.

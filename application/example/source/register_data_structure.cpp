@@ -25,6 +25,23 @@ ApplyDataStructure& manager() noexcept
     return manager;
 }
 
+//! @brief Check whether any data structure choices exist.
+//! @return any data structure choices exist or not
+bool present()
+{
+    bool isExist = false;
+    TypeInfo<ApplyDataStructure>::forEachVarOf(
+        manager(), [&isExist](const auto /*field*/, auto&& var) { isExist |= !var.none(); });
+
+    return isExist;
+}
+
+//! @brief Reset bit flags that manage data structure choices.
+void clear()
+{
+    TypeInfo<ApplyDataStructure>::forEachVarOf(manager(), [](const auto /*field*/, auto&& var) { var.reset(); });
+}
+
 namespace cache
 {
 //! @brief Register version number.

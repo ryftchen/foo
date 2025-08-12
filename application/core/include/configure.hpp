@@ -67,7 +67,7 @@ class Configure final
 {
 public:
     //! @brief Destroy the Configure object.
-    virtual ~Configure() = default;
+    ~Configure() = default;
     //! @brief Construct a new Configure object.
     Configure(const Configure&) = delete;
     //! @brief Construct a new Configure object.

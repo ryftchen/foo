@@ -25,6 +25,23 @@ ApplyAlgorithm& manager() noexcept
     return manager;
 }
 
+//! @brief Check whether any algorithm choices exist.
+//! @return any design pattern choices exist or not
+bool present()
+{
+    bool isExist = false;
+    TypeInfo<ApplyAlgorithm>::forEachVarOf(
+        manager(), [&isExist](const auto /*field*/, auto&& var) { isExist |= !var.none(); });
+
+    return isExist;
+}
+
+//! @brief Reset bit flags that manage algorithm choices.
+void clear()
+{
+    TypeInfo<ApplyAlgorithm>::forEachVarOf(manager(), [](const auto /*field*/, auto&& var) { var.reset(); });
+}
+
 namespace match
 {
 //! @brief Register version number.

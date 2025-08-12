@@ -172,22 +172,6 @@ public:
     //! @brief Bit flags for managing sort methods.
     std::bitset<Bottom<SortMethod>::value> sortOpts;
 
-    //! @brief Check whether any algorithm choices do not exist.
-    //! @return any algorithm choices do not exist or exist
-    [[nodiscard]] bool empty() const
-    {
-        return matchOpts.none() && notationOpts.none() && optimalOpts.none() && searchOpts.none() && sortOpts.none();
-    }
-    //! @brief Reset bit flags that manage algorithm choices.
-    void reset()
-    {
-        matchOpts.reset();
-        notationOpts.reset();
-        optimalOpts.reset();
-        searchOpts.reset();
-        sortOpts.reset();
-    }
-
 protected:
     //! @brief The operator (<<) overloading of the Category enum.
     //! @param os - output stream object
@@ -220,6 +204,8 @@ protected:
     }
 };
 extern ApplyAlgorithm& manager() noexcept;
+extern bool present();
+extern void clear();
 
 //! @brief Update choice.
 //! @tparam T - type of target method
@@ -527,16 +513,18 @@ template <typename T>
 consteval std::size_t abbrValue(const T method)
 {
     static_assert(Bottom<T>::value == TypeInfo<T>::fields.size);
+    constexpr auto refl = REFLECTION_STR("choice");
     std::size_t value = 0;
     TypeInfo<T>::fields.forEach(
-        [method, &value](const auto field)
+        [refl, method, &value](const auto field)
         {
             if (field.name == toString(method))
             {
-                static_assert(field.attrs.size == 1);
-                const auto attr = field.attrs.find(REFLECTION_STR("choice"));
+                static_assert(field.attrs.contains(refl) && (field.attrs.size == 1));
+                const auto attr = field.attrs.find(refl);
                 static_assert(attr.hasValue);
                 value = utility::common::operator""_bkdrHash(attr.value);
+                return;
             }
         });
 
