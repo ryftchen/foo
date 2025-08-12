@@ -40,28 +40,6 @@ constexpr std::int32_t operandA = 46340;
 constexpr std::int32_t operandB = -46340;
 } // namespace input
 
-//! @brief Calculation of arithmetic.
-class ArithmeticCalculation
-{
-public:
-    //! @brief The addition method.
-    //! @param augend - augend of addition
-    //! @param addend - addend of addition
-    static void additionMethod(const std::int32_t augend, const std::int32_t addend);
-    //! @brief The subtraction method.
-    //! @param minuend - minuend of subtraction
-    //! @param subtrahend - subtrahend of subtraction
-    static void subtractionMethod(const std::int32_t minuend, const std::int32_t subtrahend);
-    //! @brief The multiplication method.
-    //! @param multiplier - multiplier of multiplication
-    //! @param multiplicand - multiplicand of multiplication
-    static void multiplicationMethod(const std::int32_t multiplier, const std::int32_t multiplicand);
-    //! @brief The division method.
-    //! @param dividend - dividend of division
-    //! @param divisor - divisor of division
-    static void divisionMethod(const std::int32_t dividend, const std::int32_t divisor);
-};
-
 //! @brief Builder for the input.
 class InputBuilder
 {
@@ -89,6 +67,28 @@ private:
     //! @brief Second operand for elementary arithmetic.
     const std::int32_t operand2 : 17 {0};
 };
+
+//! @brief Calculation of arithmetic.
+class ArithmeticCalculation
+{
+public:
+    //! @brief The addition method.
+    //! @param augend - augend of addition
+    //! @param addend - addend of addition
+    static void additionMethod(const std::int32_t augend, const std::int32_t addend);
+    //! @brief The subtraction method.
+    //! @param minuend - minuend of subtraction
+    //! @param subtrahend - subtrahend of subtraction
+    static void subtractionMethod(const std::int32_t minuend, const std::int32_t subtrahend);
+    //! @brief The multiplication method.
+    //! @param multiplier - multiplier of multiplication
+    //! @param multiplicand - multiplicand of multiplication
+    static void multiplicationMethod(const std::int32_t multiplier, const std::int32_t multiplicand);
+    //! @brief The division method.
+    //! @param dividend - dividend of division
+    //! @param divisor - divisor of division
+    static void divisionMethod(const std::int32_t dividend, const std::int32_t divisor);
+};
 } // namespace arithmetic
 extern void applyingArithmetic(const std::vector<std::string>& candidates);
 
@@ -106,20 +106,6 @@ constexpr std::int32_t numberA = 2 * 2 * 3 * 3 * 5 * 5 * 7 * 7;
 //! @brief One of numbers for divisor methods.
 constexpr std::int32_t numberB = 2 * 3 * 5 * 7 * 11 * 13 * 17;
 } // namespace input
-
-//! @brief Calculation of divisor.
-class DivisorCalculation
-{
-public:
-    //! @brief The Euclidean method.
-    //! @param a - first integer
-    //! @param b - second integer
-    static void euclideanMethod(const std::int32_t a, const std::int32_t b);
-    //! @brief The Stein method.
-    //! @param a - first integer
-    //! @param b - second integer
-    static void steinMethod(const std::int32_t a, const std::int32_t b);
-};
 
 //! @brief Maximum alignment length per element of printing.
 constexpr std::uint8_t maxAlignOfPrint = 16;
@@ -185,6 +171,20 @@ private:
     //! @brief Second number.
     const std::int32_t number2{0};
 };
+
+//! @brief Calculation of divisor.
+class DivisorCalculation
+{
+public:
+    //! @brief The Euclidean method.
+    //! @param a - first integer
+    //! @param b - second integer
+    static void euclideanMethod(const std::int32_t a, const std::int32_t b);
+    //! @brief The Stein method.
+    //! @param a - first integer
+    //! @param b - second integer
+    static void steinMethod(const std::int32_t a, const std::int32_t b);
+};
 } // namespace divisor
 extern void applyingDivisor(const std::vector<std::string>& candidates);
 
@@ -248,37 +248,6 @@ public:
 };
 } // namespace input
 
-//! @brief Calculation of integral.
-class IntegralCalculation
-{
-public:
-    //! @brief The trapezoidal method.
-    //! @param expr - target expression
-    //! @param lower - lower endpoint
-    //! @param upper - upper endpoint
-    static void trapezoidalMethod(const Expression& expr, const double lower, const double upper);
-    //! @brief The adaptive Simpson's 1/3 method.
-    //! @param expr - target expression
-    //! @param lower - lower endpoint
-    //! @param upper - upper endpoint
-    static void adaptiveSimpsonMethod(const Expression& expr, const double lower, const double upper);
-    //! @brief The Romberg method.
-    //! @param expr - target expression
-    //! @param lower - lower endpoint
-    //! @param upper - upper endpoint
-    static void rombergMethod(const Expression& expr, const double lower, const double upper);
-    //! @brief The Gauss-Legendre's 5-points method.
-    //! @param expr - target expression
-    //! @param lower - lower endpoint
-    //! @param upper - upper endpoint
-    static void gaussLegendreMethod(const Expression& expr, const double lower, const double upper);
-    //! @brief The Monte-Carlo method.
-    //! @param expr - target expression
-    //! @param lower - lower endpoint
-    //! @param upper - upper endpoint
-    static void monteCarloMethod(const Expression& expr, const double lower, const double upper);
-};
-
 //! @brief Builder for the input.
 class InputBuilder
 {
@@ -315,6 +284,37 @@ private:
     //! @brief Upper endpoint.
     const double range2{0.0};
 };
+
+//! @brief Calculation of integral.
+class IntegralCalculation
+{
+public:
+    //! @brief The trapezoidal method.
+    //! @param expr - target expression
+    //! @param lower - lower endpoint
+    //! @param upper - upper endpoint
+    static void trapezoidalMethod(const Expression& expr, const double lower, const double upper);
+    //! @brief The adaptive Simpson's 1/3 method.
+    //! @param expr - target expression
+    //! @param lower - lower endpoint
+    //! @param upper - upper endpoint
+    static void adaptiveSimpsonMethod(const Expression& expr, const double lower, const double upper);
+    //! @brief The Romberg method.
+    //! @param expr - target expression
+    //! @param lower - lower endpoint
+    //! @param upper - upper endpoint
+    static void rombergMethod(const Expression& expr, const double lower, const double upper);
+    //! @brief The Gauss-Legendre's 5-points method.
+    //! @param expr - target expression
+    //! @param lower - lower endpoint
+    //! @param upper - upper endpoint
+    static void gaussLegendreMethod(const Expression& expr, const double lower, const double upper);
+    //! @brief The Monte-Carlo method.
+    //! @param expr - target expression
+    //! @param lower - lower endpoint
+    //! @param upper - upper endpoint
+    static void monteCarloMethod(const Expression& expr, const double lower, const double upper);
+};
 } // namespace integral
 extern void applyingIntegral(const std::vector<std::string>& candidates);
 
@@ -330,18 +330,6 @@ namespace input
 //! @brief Upper bound for prime methods.
 constexpr std::uint32_t upperBound = 997;
 } // namespace input
-
-//! @brief Calculation of prime.
-class PrimeCalculation
-{
-public:
-    //! @brief The Eratosthenes method.
-    //! @param max - maximum positive integer
-    static void eratosthenesMethod(const std::uint32_t max);
-    //! @brief The Euler method.
-    //! @param max - maximum positive integer
-    static void eulerMethod(const std::uint32_t max);
-};
 
 //! @brief Maximum alignment length per element of printing.
 constexpr std::uint8_t maxAlignOfPrint = 16;
@@ -399,6 +387,18 @@ public:
 private:
     //! @brief Upper bound.
     const std::uint32_t upperBound{0};
+};
+
+//! @brief Calculation of prime.
+class PrimeCalculation
+{
+public:
+    //! @brief The Eratosthenes method.
+    //! @param max - maximum positive integer
+    static void eratosthenesMethod(const std::uint32_t max);
+    //! @brief The Euler method.
+    //! @param max - maximum positive integer
+    static void eulerMethod(const std::uint32_t max);
 };
 } // namespace prime
 extern void applyingPrime(const std::vector<std::string>& candidates);

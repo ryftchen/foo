@@ -197,7 +197,7 @@ struct Curry<std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>
     //! @param args - function arguments
     //! @return curried result
     template <typename Ret, typename... Args>
-    static auto curryForInternal(const std::function<Ret(CurriedArgs..., UncurriedArgs...)>& call, Args&&... args)
+    static auto curryInternal(const std::function<Ret(CurriedArgs..., UncurriedArgs...)>& call, Args&&... args)
     {
         using Callable = std::function<Ret(CurriedArgs..., UncurriedArgs...)>;
         using CurriedType = Curried<Callable, std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>;
@@ -210,7 +210,7 @@ struct Curry<std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>
     //! @param args - function arguments
     //! @return curried result
     template <typename Ret, typename... Args>
-    static auto curryForInternal(std::function<Ret(CurriedArgs..., UncurriedArgs...)>&& call, Args&&... args)
+    static auto curryInternal(std::function<Ret(CurriedArgs..., UncurriedArgs...)>&& call, Args&&... args)
     {
         using Callable = std::function<Ret(CurriedArgs..., UncurriedArgs...)>;
         using CurriedType = Curried<Callable, std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>;
@@ -231,7 +231,7 @@ inline auto curry(std::function<Ret(FullArgs...)>&& call, Args&&... args)
     using CurriedArgsTuple = ArgsHeadType<sizeof...(Args), FullArgs...>;
     using UncurriedArgsTuple = ArgsExclType<sizeof...(Args), FullArgs...>;
     using CurryWrapper = Curry<CurriedArgsTuple, UncurriedArgsTuple>;
-    return CurryWrapper::curryForInternal(std::move(call), std::forward<Args>(args)...);
+    return CurryWrapper::curryInternal(std::move(call), std::forward<Args>(args)...);
 }
 
 //! @brief To curry.
@@ -247,7 +247,7 @@ inline auto curry(const std::function<Ret(FullArgs...)>& call, Args&&... args)
     using CurriedArgsTuple = ArgsHeadType<sizeof...(Args), FullArgs...>;
     using UncurriedArgsTuple = ArgsExclType<sizeof...(Args), FullArgs...>;
     using CurryWrapper = Curry<CurriedArgsTuple, UncurriedArgsTuple>;
-    return CurryWrapper::curryForInternal(call, std::forward<Args>(args)...);
+    return CurryWrapper::curryInternal(call, std::forward<Args>(args)...);
 }
 
 //! @brief To curry.

@@ -30,7 +30,7 @@ class View final : public utility::fsm::FSM<View>
 public:
     friend class FSM<View>;
     //! @brief Destroy the View object.
-    ~View() override = default;
+    ~View() = default;
     //! @brief Construct a new View object.
     View(const View&) = delete;
     //! @brief Construct a new View object.

@@ -168,24 +168,6 @@ public:
     //! @brief Bit flags for managing tree instances.
     std::bitset<Bottom<TreeInstance>::value> treeOpts;
 
-    //! @brief Check whether any data structure choices do not exist.
-    //! @return any data structure choices do not exist or exist
-    [[nodiscard]] bool empty() const
-    {
-        return cacheOpts.none() && filterOpts.none() && graphOpts.none() && heapOpts.none() && linearOpts.none()
-            && treeOpts.none();
-    }
-    //! @brief Reset bit flags that manage data structure choices.
-    void reset()
-    {
-        cacheOpts.reset();
-        filterOpts.reset();
-        graphOpts.reset();
-        heapOpts.reset();
-        linearOpts.reset();
-        treeOpts.reset();
-    }
-
 protected:
     //! @brief The operator (<<) overloading of the Category enum.
     //! @param os - output stream object
@@ -222,6 +204,8 @@ protected:
     }
 };
 extern ApplyDataStructure& manager() noexcept;
+extern bool present();
+extern void clear();
 
 //! @brief Update choice.
 //! @tparam T - type of target instance
@@ -541,16 +525,18 @@ template <typename T>
 consteval std::size_t abbrValue(const T instance)
 {
     static_assert(Bottom<T>::value == TypeInfo<T>::fields.size);
+    constexpr auto refl = REFLECTION_STR("choice");
     std::size_t value = 0;
     TypeInfo<T>::fields.forEach(
-        [instance, &value](const auto field)
+        [refl, instance, &value](const auto field)
         {
             if (field.name == toString(instance))
             {
-                static_assert(field.attrs.size == 1);
-                const auto attr = field.attrs.find(REFLECTION_STR("choice"));
+                static_assert(field.attrs.contains(refl) && (field.attrs.size == 1));
+                const auto attr = field.attrs.find(refl);
                 static_assert(attr.hasValue);
                 value = utility::common::operator""_bkdrHash(attr.value);
+                return;
             }
         });
 

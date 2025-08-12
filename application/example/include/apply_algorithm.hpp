@@ -41,62 +41,6 @@ namespace input
 constexpr std::string_view patternString = "12345";
 } // namespace input
 
-//! @brief Solution of match.
-class MatchSolution
-{
-public:
-    //! @brief The Rabin-Karp method.
-    //! @param text - matching text
-    //! @param pattern - single pattern
-    //! @param textLen - length of matching text
-    //! @param patternLen - length of single pattern
-    static void rkMethod(
-        const unsigned char* const text,
-        const unsigned char* const pattern,
-        const std::uint32_t textLen,
-        const std::uint32_t patternLen);
-    //! @brief The Knuth-Morris-Pratt method.
-    //! @param text - matching text
-    //! @param pattern - single pattern
-    //! @param textLen - length of matching text
-    //! @param patternLen - length of single pattern
-    static void kmpMethod(
-        const unsigned char* const text,
-        const unsigned char* const pattern,
-        const std::uint32_t textLen,
-        const std::uint32_t patternLen);
-    //! @brief The Boyer-Moore method.
-    //! @param text - matching text
-    //! @param pattern - single pattern
-    //! @param textLen - length of matching text
-    //! @param patternLen - length of single pattern
-    static void bmMethod(
-        const unsigned char* const text,
-        const unsigned char* const pattern,
-        const std::uint32_t textLen,
-        const std::uint32_t patternLen);
-    //! @brief The Horspool method.
-    //! @param text - matching text
-    //! @param pattern - single pattern
-    //! @param textLen - length of matching text
-    //! @param patternLen - length of single pattern
-    static void horspoolMethod(
-        const unsigned char* const text,
-        const unsigned char* const pattern,
-        const std::uint32_t textLen,
-        const std::uint32_t patternLen);
-    //! @brief The Sunday method.
-    //! @param text - matching text
-    //! @param pattern - single pattern
-    //! @param textLen - length of matching text
-    //! @param patternLen - length of single pattern
-    static void sundayMethod(
-        const unsigned char* const text,
-        const unsigned char* const pattern,
-        const std::uint32_t textLen,
-        const std::uint32_t patternLen);
-};
-
 //! @brief Maximum number per line of printing.
 constexpr std::uint32_t maxNumPerLineOfPrint = 50;
 
@@ -199,6 +143,62 @@ private:
         return 1 + static_cast<int>(std::ceil(static_cast<double>(digit) * std::log2(mpfrBase)));
     }
 };
+
+//! @brief Solution of match.
+class MatchSolution
+{
+public:
+    //! @brief The Rabin-Karp method.
+    //! @param text - matching text
+    //! @param pattern - single pattern
+    //! @param textLen - length of matching text
+    //! @param patternLen - length of single pattern
+    static void rkMethod(
+        const unsigned char* const text,
+        const unsigned char* const pattern,
+        const std::uint32_t textLen,
+        const std::uint32_t patternLen);
+    //! @brief The Knuth-Morris-Pratt method.
+    //! @param text - matching text
+    //! @param pattern - single pattern
+    //! @param textLen - length of matching text
+    //! @param patternLen - length of single pattern
+    static void kmpMethod(
+        const unsigned char* const text,
+        const unsigned char* const pattern,
+        const std::uint32_t textLen,
+        const std::uint32_t patternLen);
+    //! @brief The Boyer-Moore method.
+    //! @param text - matching text
+    //! @param pattern - single pattern
+    //! @param textLen - length of matching text
+    //! @param patternLen - length of single pattern
+    static void bmMethod(
+        const unsigned char* const text,
+        const unsigned char* const pattern,
+        const std::uint32_t textLen,
+        const std::uint32_t patternLen);
+    //! @brief The Horspool method.
+    //! @param text - matching text
+    //! @param pattern - single pattern
+    //! @param textLen - length of matching text
+    //! @param patternLen - length of single pattern
+    static void horspoolMethod(
+        const unsigned char* const text,
+        const unsigned char* const pattern,
+        const std::uint32_t textLen,
+        const std::uint32_t patternLen);
+    //! @brief The Sunday method.
+    //! @param text - matching text
+    //! @param pattern - single pattern
+    //! @param textLen - length of matching text
+    //! @param patternLen - length of single pattern
+    static void sundayMethod(
+        const unsigned char* const text,
+        const unsigned char* const pattern,
+        const std::uint32_t textLen,
+        const std::uint32_t patternLen);
+};
 } // namespace match
 extern void applyingMatch(const std::vector<std::string>& candidates);
 
@@ -214,18 +214,6 @@ namespace input
 //! @brief Infix string for notation methods.
 constexpr std::string_view infixString = "a+b*(c^d-e)^(f+g*h)-i";
 } // namespace input
-
-//! @brief Solution of notation.
-class NotationSolution
-{
-public:
-    //! @brief The prefix method.
-    //! @param infix - infix notation
-    static void prefixMethod(const std::string_view infix);
-    //! @brief The postfix method.
-    //! @param infix - infix notation
-    static void postfixMethod(const std::string_view infix);
-};
 
 //! @brief Builder for the input.
 class InputBuilder
@@ -247,6 +235,18 @@ public:
 private:
     //! @brief Infix notation.
     const std::string infixNotation;
+};
+
+//! @brief Solution of notation.
+class NotationSolution
+{
+public:
+    //! @brief The prefix method.
+    //! @param infix - infix notation
+    static void prefixMethod(const std::string_view infix);
+    //! @brief The postfix method.
+    //! @param infix - infix notation
+    static void postfixMethod(const std::string_view infix);
 };
 } // namespace notation
 extern void applyingNotation(const std::vector<std::string>& candidates);
@@ -311,42 +311,6 @@ public:
 };
 } // namespace input
 
-//! @brief Solution of optimal.
-class OptimalSolution
-{
-public:
-    //! @brief The gradient descent method.
-    //! @param func - target function
-    //! @param left - left endpoint
-    //! @param right - right endpoint
-    static void gradientDescentMethod(const Function& func, const double left, const double right);
-    //! @brief The tabu method.
-    //! @param func - target function
-    //! @param left - left endpoint
-    //! @param right - right endpoint
-    static void tabuMethod(const Function& func, const double left, const double right);
-    //! @brief The simulated annealing method.
-    //! @param func - target function
-    //! @param left - left endpoint
-    //! @param right - right endpoint
-    static void simulatedAnnealingMethod(const Function& func, const double left, const double right);
-    //! @brief The particle swarm method.
-    //! @param func - target function
-    //! @param left - left endpoint
-    //! @param right - right endpoint
-    static void particleSwarmMethod(const Function& func, const double left, const double right);
-    //! @brief The ant colony method.
-    //! @param func - target function
-    //! @param left - left endpoint
-    //! @param right - right endpoint
-    static void antColonyMethod(const Function& func, const double left, const double right);
-    //! @brief The genetic method.
-    //! @param func - target function
-    //! @param left - left endpoint
-    //! @param right - right endpoint
-    static void geneticMethod(const Function& func, const double left, const double right);
-};
-
 //! @brief Builder for the input.
 class InputBuilder
 {
@@ -383,6 +347,42 @@ private:
     //! @brief Right endpoint.
     const double range2{0.0};
 };
+
+//! @brief Solution of optimal.
+class OptimalSolution
+{
+public:
+    //! @brief The gradient descent method.
+    //! @param func - target function
+    //! @param left - left endpoint
+    //! @param right - right endpoint
+    static void gradientDescentMethod(const Function& func, const double left, const double right);
+    //! @brief The tabu method.
+    //! @param func - target function
+    //! @param left - left endpoint
+    //! @param right - right endpoint
+    static void tabuMethod(const Function& func, const double left, const double right);
+    //! @brief The simulated annealing method.
+    //! @param func - target function
+    //! @param left - left endpoint
+    //! @param right - right endpoint
+    static void simulatedAnnealingMethod(const Function& func, const double left, const double right);
+    //! @brief The particle swarm method.
+    //! @param func - target function
+    //! @param left - left endpoint
+    //! @param right - right endpoint
+    static void particleSwarmMethod(const Function& func, const double left, const double right);
+    //! @brief The ant colony method.
+    //! @param func - target function
+    //! @param left - left endpoint
+    //! @param right - right endpoint
+    static void antColonyMethod(const Function& func, const double left, const double right);
+    //! @brief The genetic method.
+    //! @param func - target function
+    //! @param left - left endpoint
+    //! @param right - right endpoint
+    static void geneticMethod(const Function& func, const double left, const double right);
+};
 } // namespace optimal
 extern void applyingOptimal(const std::vector<std::string>& candidates);
 
@@ -402,27 +402,6 @@ constexpr float arrayRangeMax = 150.0;
 //! @brief Length of the array for search methods.
 constexpr std::uint32_t arrayLength = 53;
 } // namespace input
-
-//! @brief Solution of search.
-class SearchSolution
-{
-public:
-    //! @brief The binary method.
-    //! @param array - ordered array to be searched
-    //! @param length - length of array
-    //! @param key - search key
-    static void binaryMethod(const float* const array, const std::uint32_t length, const float key);
-    //! @brief The interpolation method.
-    //! @param array - ordered array to be searched
-    //! @param length - length of array
-    //! @param key - search key
-    static void interpolationMethod(const float* const array, const std::uint32_t length, const float key);
-    //! @brief The Fibonacci method.
-    //! @param array - ordered array to be searched
-    //! @param length - length of array
-    //! @param key - search key
-    static void fibonacciMethod(const float* const array, const std::uint32_t length, const float key);
-};
 
 //! @brief Maximum alignment length per element of printing.
 constexpr std::uint8_t maxAlignOfPrint = 16;
@@ -590,6 +569,27 @@ private:
 #endif // _RUNTIME_PRINTING
     }
 };
+
+//! @brief Solution of search.
+class SearchSolution
+{
+public:
+    //! @brief The binary method.
+    //! @param array - ordered array to be searched
+    //! @param length - length of array
+    //! @param key - search key
+    static void binaryMethod(const float* const array, const std::uint32_t length, const float key);
+    //! @brief The interpolation method.
+    //! @param array - ordered array to be searched
+    //! @param length - length of array
+    //! @param key - search key
+    static void interpolationMethod(const float* const array, const std::uint32_t length, const float key);
+    //! @brief The Fibonacci method.
+    //! @param array - ordered array to be searched
+    //! @param length - length of array
+    //! @param key - search key
+    static void fibonacciMethod(const float* const array, const std::uint32_t length, const float key);
+};
 } // namespace search
 extern void applyingSearch(const std::vector<std::string>& candidates);
 
@@ -609,52 +609,6 @@ constexpr std::int32_t arrayRangeMax = 150;
 //! @brief Length of the array for sort methods.
 constexpr std::uint32_t arrayLength = 53;
 } // namespace input
-
-//! @brief Solution of sort.
-class SortSolution
-{
-public:
-    //! @brief The bubble method.
-    //! @param array - array to be sorted
-    //! @param length - length of array
-    static void bubbleMethod(const std::int32_t* const array, const std::uint32_t length);
-    //! @brief The selection method.
-    //! @param array - array to be sorted
-    //! @param length - length of array
-    static void selectionMethod(const std::int32_t* const array, const std::uint32_t length);
-    //! @brief The insertion method.
-    //! @param array - array to be sorted
-    //! @param length - length of array
-    static void insertionMethod(const std::int32_t* const array, const std::uint32_t length);
-    //! @brief The shell method.
-    //! @param array - array to be sorted
-    //! @param length - length of array
-    static void shellMethod(const std::int32_t* const array, const std::uint32_t length);
-    //! @brief The merge method.
-    //! @param array - array to be sorted
-    //! @param length - length of array
-    static void mergeMethod(const std::int32_t* const array, const std::uint32_t length);
-    //! @brief The quick method.
-    //! @param array - array to be sorted
-    //! @param length - length of array
-    static void quickMethod(const std::int32_t* const array, const std::uint32_t length);
-    //! @brief The heap method.
-    //! @param array - array to be sorted
-    //! @param length - length of array
-    static void heapMethod(const std::int32_t* const array, const std::uint32_t length);
-    //! @brief The counting method.
-    //! @param array - array to be sorted
-    //! @param length - length of array
-    static void countingMethod(const std::int32_t* const array, const std::uint32_t length);
-    //! @brief The bucket method.
-    //! @param array - array to be sorted
-    //! @param length - length of array
-    static void bucketMethod(const std::int32_t* const array, const std::uint32_t length);
-    //! @brief The radix method.
-    //! @param array - array to be sorted
-    //! @param length - length of array
-    static void radixMethod(const std::int32_t* const array, const std::uint32_t length);
-};
 
 //! @brief Maximum alignment length per element of printing.
 constexpr std::uint8_t maxAlignOfPrint = 16;
@@ -816,6 +770,52 @@ private:
                   << spliceAll<T>(array, length, fmtBuffer.data(), bufferSize + 1) << std::endl;
 #endif // _RUNTIME_PRINTING
     }
+};
+
+//! @brief Solution of sort.
+class SortSolution
+{
+public:
+    //! @brief The bubble method.
+    //! @param array - array to be sorted
+    //! @param length - length of array
+    static void bubbleMethod(const std::int32_t* const array, const std::uint32_t length);
+    //! @brief The selection method.
+    //! @param array - array to be sorted
+    //! @param length - length of array
+    static void selectionMethod(const std::int32_t* const array, const std::uint32_t length);
+    //! @brief The insertion method.
+    //! @param array - array to be sorted
+    //! @param length - length of array
+    static void insertionMethod(const std::int32_t* const array, const std::uint32_t length);
+    //! @brief The shell method.
+    //! @param array - array to be sorted
+    //! @param length - length of array
+    static void shellMethod(const std::int32_t* const array, const std::uint32_t length);
+    //! @brief The merge method.
+    //! @param array - array to be sorted
+    //! @param length - length of array
+    static void mergeMethod(const std::int32_t* const array, const std::uint32_t length);
+    //! @brief The quick method.
+    //! @param array - array to be sorted
+    //! @param length - length of array
+    static void quickMethod(const std::int32_t* const array, const std::uint32_t length);
+    //! @brief The heap method.
+    //! @param array - array to be sorted
+    //! @param length - length of array
+    static void heapMethod(const std::int32_t* const array, const std::uint32_t length);
+    //! @brief The counting method.
+    //! @param array - array to be sorted
+    //! @param length - length of array
+    static void countingMethod(const std::int32_t* const array, const std::uint32_t length);
+    //! @brief The bucket method.
+    //! @param array - array to be sorted
+    //! @param length - length of array
+    static void bucketMethod(const std::int32_t* const array, const std::uint32_t length);
+    //! @brief The radix method.
+    //! @param array - array to be sorted
+    //! @param length - length of array
+    static void radixMethod(const std::int32_t* const array, const std::uint32_t length);
 };
 } // namespace sort
 extern void applyingSort(const std::vector<std::string>& candidates);

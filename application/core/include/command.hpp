@@ -123,7 +123,7 @@ class Command final
 {
 public:
     //! @brief Destroy the Command object.
-    virtual ~Command();
+    ~Command();
     //! @brief Construct a new Command object.
     Command(const Command&) = delete;
     //! @brief Construct a new Command object.
@@ -207,7 +207,7 @@ private:
     //! @brief Display version information.
     void displayVersionInfo() const;
     //! @brief Check for excessive arguments.
-    void checkForExcessiveArguments();
+    void checkExcessArgs();
 
     //! @brief Get the alias name.
     //! @param cat - specific value of Category enum
