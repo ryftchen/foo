@@ -42,6 +42,16 @@ void clear()
     TypeInfo<ApplyAlgorithm>::forEachVarOf(manager(), [](const auto /*field*/, auto&& var) { var.reset(); });
 }
 
+//! @brief Find the position of bit flags to set a particular method.
+//! @tparam T - type of target method
+//! @param stringify - method name
+//! @return position of bit flags
+template <typename T>
+static consteval std::size_t findPosition(const std::string_view stringify)
+{
+    return static_cast<std::size_t>(TypeInfo<T>::fields.template valueOfName<T>(stringify));
+}
+
 namespace match
 {
 //! @brief Register version number.
@@ -62,19 +72,19 @@ void updateChoice<MatchMethod>(const std::string& target)
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case abbrValue(MatchMethod::rabinKarp):
-            bits.set(MatchMethod::rabinKarp);
+            bits.set(findPosition<MatchMethod>(MACRO_STRINGIFY(rabinKarp)));
             break;
         case abbrValue(MatchMethod::knuthMorrisPratt):
-            bits.set(MatchMethod::knuthMorrisPratt);
+            bits.set(findPosition<MatchMethod>(MACRO_STRINGIFY(knuthMorrisPratt)));
             break;
         case abbrValue(MatchMethod::boyerMoore):
-            bits.set(MatchMethod::boyerMoore);
+            bits.set(findPosition<MatchMethod>(MACRO_STRINGIFY(boyerMoore)));
             break;
         case abbrValue(MatchMethod::horspool):
-            bits.set(MatchMethod::horspool);
+            bits.set(findPosition<MatchMethod>(MACRO_STRINGIFY(horspool)));
             break;
         case abbrValue(MatchMethod::sunday):
-            bits.set(MatchMethod::sunday);
+            bits.set(findPosition<MatchMethod>(MACRO_STRINGIFY(sunday)));
             break;
         default:
             bits.reset();
@@ -109,10 +119,10 @@ void updateChoice<NotationMethod>(const std::string& target)
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case abbrValue(NotationMethod::prefix):
-            bits.set(NotationMethod::prefix);
+            bits.set(findPosition<NotationMethod>(MACRO_STRINGIFY(prefix)));
             break;
         case abbrValue(NotationMethod::postfix):
-            bits.set(NotationMethod::postfix);
+            bits.set(findPosition<NotationMethod>(MACRO_STRINGIFY(postfix)));
             break;
         default:
             bits.reset();
@@ -147,22 +157,22 @@ void updateChoice<OptimalMethod>(const std::string& target)
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case abbrValue(OptimalMethod::gradient):
-            bits.set(OptimalMethod::gradient);
+            bits.set(findPosition<OptimalMethod>(MACRO_STRINGIFY(gradient)));
             break;
         case abbrValue(OptimalMethod::tabu):
-            bits.set(OptimalMethod::tabu);
+            bits.set(findPosition<OptimalMethod>(MACRO_STRINGIFY(tabu)));
             break;
         case abbrValue(OptimalMethod::annealing):
-            bits.set(OptimalMethod::annealing);
+            bits.set(findPosition<OptimalMethod>(MACRO_STRINGIFY(annealing)));
             break;
         case abbrValue(OptimalMethod::particle):
-            bits.set(OptimalMethod::particle);
+            bits.set(findPosition<OptimalMethod>(MACRO_STRINGIFY(particle)));
             break;
         case abbrValue(OptimalMethod::ant):
-            bits.set(OptimalMethod::ant);
+            bits.set(findPosition<OptimalMethod>(MACRO_STRINGIFY(ant)));
             break;
         case abbrValue(OptimalMethod::genetic):
-            bits.set(OptimalMethod::genetic);
+            bits.set(findPosition<OptimalMethod>(MACRO_STRINGIFY(genetic)));
             break;
         default:
             bits.reset();
@@ -197,13 +207,13 @@ void updateChoice<SearchMethod>(const std::string& target)
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case abbrValue(SearchMethod::binary):
-            bits.set(SearchMethod::binary);
+            bits.set(findPosition<SearchMethod>(MACRO_STRINGIFY(binary)));
             break;
         case abbrValue(SearchMethod::interpolation):
-            bits.set(SearchMethod::interpolation);
+            bits.set(findPosition<SearchMethod>(MACRO_STRINGIFY(interpolation)));
             break;
         case abbrValue(SearchMethod::fibonacci):
-            bits.set(SearchMethod::fibonacci);
+            bits.set(findPosition<SearchMethod>(MACRO_STRINGIFY(fibonacci)));
             break;
         default:
             bits.reset();
@@ -238,34 +248,34 @@ void updateChoice<SortMethod>(const std::string& target)
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case abbrValue(SortMethod::bubble):
-            bits.set(SortMethod::bubble);
+            bits.set(findPosition<SortMethod>(MACRO_STRINGIFY(bubble)));
             break;
         case abbrValue(SortMethod::selection):
-            bits.set(SortMethod::selection);
+            bits.set(findPosition<SortMethod>(MACRO_STRINGIFY(selection)));
             break;
         case abbrValue(SortMethod::insertion):
-            bits.set(SortMethod::insertion);
+            bits.set(findPosition<SortMethod>(MACRO_STRINGIFY(insertion)));
             break;
         case abbrValue(SortMethod::shell):
-            bits.set(SortMethod::shell);
+            bits.set(findPosition<SortMethod>(MACRO_STRINGIFY(shell)));
             break;
         case abbrValue(SortMethod::merge):
-            bits.set(SortMethod::merge);
+            bits.set(findPosition<SortMethod>(MACRO_STRINGIFY(merge)));
             break;
         case abbrValue(SortMethod::quick):
-            bits.set(SortMethod::quick);
+            bits.set(findPosition<SortMethod>(MACRO_STRINGIFY(quick)));
             break;
         case abbrValue(SortMethod::heap):
-            bits.set(SortMethod::heap);
+            bits.set(findPosition<SortMethod>(MACRO_STRINGIFY(heap)));
             break;
         case abbrValue(SortMethod::counting):
-            bits.set(SortMethod::counting);
+            bits.set(findPosition<SortMethod>(MACRO_STRINGIFY(counting)));
             break;
         case abbrValue(SortMethod::bucket):
-            bits.set(SortMethod::bucket);
+            bits.set(findPosition<SortMethod>(MACRO_STRINGIFY(bucket)));
             break;
         case abbrValue(SortMethod::radix):
-            bits.set(SortMethod::radix);
+            bits.set(findPosition<SortMethod>(MACRO_STRINGIFY(radix)));
             break;
         default:
             bits.reset();

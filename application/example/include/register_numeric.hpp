@@ -31,7 +31,7 @@ template <typename T>
 struct Bottom;
 
 //! @brief Enumerate specific arithmetic methods.
-enum ArithmeticMethod : std::uint8_t
+enum class ArithmeticMethod : std::uint8_t
 {
     //! @brief Addition.
     addition,
@@ -51,7 +51,7 @@ struct Bottom<ArithmeticMethod>
 };
 
 //! @brief Enumerate specific divisor methods.
-enum DivisorMethod : std::uint8_t
+enum class DivisorMethod : std::uint8_t
 {
     //! @brief Euclidean.
     euclidean,
@@ -67,7 +67,7 @@ struct Bottom<DivisorMethod>
 };
 
 //! @brief Enumerate specific integral methods.
-enum IntegralMethod : std::uint8_t
+enum class IntegralMethod : std::uint8_t
 {
     //! @brief Trapezoidal.
     trapezoidal,
@@ -89,7 +89,7 @@ struct Bottom<IntegralMethod>
 };
 
 //! @brief Enumerate specific prime methods.
-enum PrimeMethod : std::uint8_t
+enum class PrimeMethod : std::uint8_t
 {
     //! @brief Eratosthenes.
     eratosthenes,
@@ -413,66 +413,20 @@ consteval std::size_t abbrValue(const T method)
     static_assert(Bottom<T>::value == TypeInfo<T>::fields.size);
     constexpr auto refl = REFLECTION_STR("choice");
     std::size_t value = 0;
-    TypeInfo<T>::fields.forEach(
+    TypeInfo<T>::fields.findIf(
         [refl, method, &value](const auto field)
         {
-            if (field.name == toString(method))
+            if (field.name == TypeInfo<T>::fields.nameOfValue(method))
             {
                 static_assert(field.attrs.contains(refl) && (field.attrs.size == 1));
                 const auto attr = field.attrs.find(refl);
                 static_assert(attr.hasValue);
                 value = utility::common::operator""_bkdrHash(attr.value);
-                return;
+                return true;
             }
+            return false;
         });
 
     return value;
-}
-
-//! @brief Convert method enumeration to string.
-//! @param method - specific value of ArithmeticMethod enum
-//! @return method name
-constexpr std::string_view toString(const ArithmeticMethod method)
-{
-    constexpr std::array<std::string_view, Bottom<ArithmeticMethod>::value> stringify = {
-        MACRO_STRINGIFY(addition),
-        MACRO_STRINGIFY(subtraction),
-        MACRO_STRINGIFY(multiplication),
-        MACRO_STRINGIFY(division)};
-    return stringify.at(method);
-}
-
-//! @brief Convert method enumeration to string.
-//! @param method - specific value of DivisorMethod enum
-//! @return method name
-constexpr std::string_view toString(const DivisorMethod method)
-{
-    constexpr std::array<std::string_view, Bottom<DivisorMethod>::value> stringify = {
-        MACRO_STRINGIFY(euclidean), MACRO_STRINGIFY(stein)};
-    return stringify.at(method);
-}
-
-//! @brief Convert method enumeration to string.
-//! @param method - specific value of IntegralMethod enum
-//! @return method name
-constexpr std::string_view toString(const IntegralMethod method)
-{
-    constexpr std::array<std::string_view, Bottom<IntegralMethod>::value> stringify = {
-        MACRO_STRINGIFY(trapezoidal),
-        MACRO_STRINGIFY(simpson),
-        MACRO_STRINGIFY(romberg),
-        MACRO_STRINGIFY(gauss),
-        MACRO_STRINGIFY(monteCarlo)};
-    return stringify.at(method);
-}
-
-//! @brief Convert method enumeration to string.
-//! @param method - specific value of PrimeMethod enum
-//! @return method name
-constexpr std::string_view toString(const PrimeMethod method)
-{
-    constexpr std::array<std::string_view, Bottom<PrimeMethod>::value> stringify = {
-        MACRO_STRINGIFY(eratosthenes), MACRO_STRINGIFY(euler)};
-    return stringify.at(method);
 }
 } // namespace application::reg_num

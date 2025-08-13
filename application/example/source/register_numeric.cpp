@@ -42,6 +42,16 @@ void clear()
     TypeInfo<ApplyNumeric>::forEachVarOf(manager(), [](const auto /*field*/, auto&& var) { var.reset(); });
 }
 
+//! @brief Find the position of bit flags to set a particular method.
+//! @tparam T - type of target method
+//! @param stringify - method name
+//! @return position of bit flags
+template <typename T>
+static consteval std::size_t findPosition(const std::string_view stringify)
+{
+    return static_cast<std::size_t>(TypeInfo<T>::fields.template valueOfName<T>(stringify));
+}
+
 namespace arithmetic
 {
 //! @brief Register version number.
@@ -62,16 +72,16 @@ void updateChoice<ArithmeticMethod>(const std::string& target)
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case abbrValue(ArithmeticMethod::addition):
-            bits.set(ArithmeticMethod::addition);
+            bits.set(findPosition<ArithmeticMethod>(MACRO_STRINGIFY(addition)));
             break;
         case abbrValue(ArithmeticMethod::subtraction):
-            bits.set(ArithmeticMethod::subtraction);
+            bits.set(findPosition<ArithmeticMethod>(MACRO_STRINGIFY(subtraction)));
             break;
         case abbrValue(ArithmeticMethod::multiplication):
-            bits.set(ArithmeticMethod::multiplication);
+            bits.set(findPosition<ArithmeticMethod>(MACRO_STRINGIFY(multiplication)));
             break;
         case abbrValue(ArithmeticMethod::division):
-            bits.set(ArithmeticMethod::division);
+            bits.set(findPosition<ArithmeticMethod>(MACRO_STRINGIFY(division)));
             break;
         default:
             bits.reset();
@@ -106,10 +116,10 @@ void updateChoice<DivisorMethod>(const std::string& target)
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case abbrValue(DivisorMethod::euclidean):
-            bits.set(DivisorMethod::euclidean);
+            bits.set(findPosition<DivisorMethod>(MACRO_STRINGIFY(euclidean)));
             break;
         case abbrValue(DivisorMethod::stein):
-            bits.set(DivisorMethod::stein);
+            bits.set(findPosition<DivisorMethod>(MACRO_STRINGIFY(stein)));
             break;
         default:
             bits.reset();
@@ -144,19 +154,19 @@ void updateChoice<IntegralMethod>(const std::string& target)
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case abbrValue(IntegralMethod::trapezoidal):
-            bits.set(IntegralMethod::trapezoidal);
+            bits.set(findPosition<IntegralMethod>(MACRO_STRINGIFY(trapezoidal)));
             break;
         case abbrValue(IntegralMethod::simpson):
-            bits.set(IntegralMethod::simpson);
+            bits.set(findPosition<IntegralMethod>(MACRO_STRINGIFY(simpson)));
             break;
         case abbrValue(IntegralMethod::romberg):
-            bits.set(IntegralMethod::romberg);
+            bits.set(findPosition<IntegralMethod>(MACRO_STRINGIFY(romberg)));
             break;
         case abbrValue(IntegralMethod::gauss):
-            bits.set(IntegralMethod::gauss);
+            bits.set(findPosition<IntegralMethod>(MACRO_STRINGIFY(gauss)));
             break;
         case abbrValue(IntegralMethod::monteCarlo):
-            bits.set(IntegralMethod::monteCarlo);
+            bits.set(findPosition<IntegralMethod>(MACRO_STRINGIFY(monteCarlo)));
             break;
         default:
             bits.reset();
@@ -191,10 +201,10 @@ void updateChoice<PrimeMethod>(const std::string& target)
     switch (utility::common::bkdrHash(target.c_str()))
     {
         case abbrValue(PrimeMethod::eratosthenes):
-            bits.set(PrimeMethod::eratosthenes);
+            bits.set(findPosition<PrimeMethod>(MACRO_STRINGIFY(eratosthenes)));
             break;
         case abbrValue(PrimeMethod::euler):
-            bits.set(PrimeMethod::euler);
+            bits.set(findPosition<PrimeMethod>(MACRO_STRINGIFY(euler)));
             break;
         default:
             bits.reset();

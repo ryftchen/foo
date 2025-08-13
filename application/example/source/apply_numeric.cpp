@@ -45,7 +45,7 @@ using namespace reg_num; // NOLINT(google-build-using-namespace)
 template <typename T>
 static std::string makeTitle(const T method)
 {
-    std::string title(toString(method));
+    std::string title(TypeInfo<T>::fields.nameOfValue(method));
     title.at(0) = std::toupper(title.at(0));
 
     return title;
