@@ -66,7 +66,7 @@ template <Category Cat>
 static consteval std::string_view categoryAlias()
 {
     constexpr auto attr =
-        TypeInfo<ApplyDataStructure>::fields.find(REFLECTION_STR(toString<Cat>())).attrs.find(REFLECTION_STR("alias"));
+        TypeInfo<ApplyDataStructure>::fields.find(REFLECTION_STR(toString(Cat))).attrs.find(REFLECTION_STR("alias"));
     static_assert(attr.hasValue);
     return attr.value;
 }
@@ -125,7 +125,7 @@ void applyingFilter(const std::vector<std::string>& candidates)
         { allocatedJob->enqueue(taskNamer(subTask), targetInstance); });
     MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
 
-    std::cout << "\nInstances of the " << toString<category>() << " structure:" << std::endl;
+    std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
@@ -141,7 +141,7 @@ void applyingFilter(const std::vector<std::string>& candidates)
                 addTask(target, &FilterStructure::quotientInstance);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " instance: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
         }
     }
 
@@ -202,7 +202,7 @@ void applyingGraph(const std::vector<std::string>& candidates)
         { allocatedJob->enqueue(taskNamer(subTask), targetInstance); });
     MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
 
-    std::cout << "\nInstances of the " << toString<category>() << " structure:" << std::endl;
+    std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
@@ -218,7 +218,7 @@ void applyingGraph(const std::vector<std::string>& candidates)
                 addTask(target, &GraphStructure::directedInstance);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " instance: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
         }
     }
 
@@ -290,7 +290,7 @@ void applyingHeap(const std::vector<std::string>& candidates)
         { allocatedJob->enqueue(taskNamer(subTask), targetInstance); });
     MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
 
-    std::cout << "\nInstances of the " << toString<category>() << " structure:" << std::endl;
+    std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
@@ -309,7 +309,7 @@ void applyingHeap(const std::vector<std::string>& candidates)
                 addTask(target, &HeapStructure::skewInstance);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " instance: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
         }
     }
 
@@ -381,7 +381,7 @@ void applyingCache(const std::vector<std::string>& candidates)
         { allocatedJob->enqueue(taskNamer(subTask), targetInstance); });
     MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
 
-    std::cout << "\nInstances of the " << toString<category>() << " structure:" << std::endl;
+    std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
@@ -400,7 +400,7 @@ void applyingCache(const std::vector<std::string>& candidates)
                 addTask(target, &CacheStructure::lruInstance);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " instance: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
         }
     }
 
@@ -472,7 +472,7 @@ void applyingLinear(const std::vector<std::string>& candidates)
         { allocatedJob->enqueue(taskNamer(subTask), targetInstance); });
     MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
 
-    std::cout << "\nInstances of the " << toString<category>() << " structure:" << std::endl;
+    std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
@@ -491,7 +491,7 @@ void applyingLinear(const std::vector<std::string>& candidates)
                 addTask(target, &LinearStructure::queueInstance);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " instance: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
         }
     }
 
@@ -563,7 +563,7 @@ void applyingTree(const std::vector<std::string>& candidates)
         { allocatedJob->enqueue(taskNamer(subTask), targetInstance); });
     MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
 
-    std::cout << "\nInstances of the " << toString<category>() << " structure:" << std::endl;
+    std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
@@ -582,7 +582,7 @@ void applyingTree(const std::vector<std::string>& candidates)
                 addTask(target, &TreeStructure::splayInstance);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " instance: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
         }
     }
 

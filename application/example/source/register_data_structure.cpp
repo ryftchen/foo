@@ -82,7 +82,7 @@ void updateChoice<CacheInstance>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " instance: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " instance: " + target + '.'};
     }
 }
 //! @brief Run cache-related choices.
@@ -120,7 +120,7 @@ void updateChoice<FilterInstance>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " instance: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " instance: " + target + '.'};
     }
 }
 //! @brief Run filter-related choices.
@@ -158,7 +158,7 @@ void updateChoice<GraphInstance>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " instance: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " instance: " + target + '.'};
     }
 }
 //! @brief Run graph-related choices.
@@ -199,7 +199,7 @@ void updateChoice<HeapInstance>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " instance: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " instance: " + target + '.'};
     }
 }
 //! @brief Run heap-related choices.
@@ -240,7 +240,7 @@ void updateChoice<LinearInstance>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " instance: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " instance: " + target + '.'};
     }
 }
 //! @brief Run linear-related choices.
@@ -281,7 +281,7 @@ void updateChoice<TreeInstance>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " instance: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " instance: " + target + '.'};
     }
 }
 //! @brief Run tree-related choices.
