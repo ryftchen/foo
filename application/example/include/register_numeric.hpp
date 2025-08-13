@@ -243,7 +243,7 @@ void runChoices<PrimeMethod>(const std::vector<std::string>& candidates);
 //! @brief Static reflection for ApplyNumeric. Used to map command line arguments.
 template <>
 struct utility::reflection::TypeInfo<application::reg_num::ApplyNumeric>
-    : public TypeInfoBase<application::reg_num::ApplyNumeric>
+    : public TypeInfoImpl<application::reg_num::ApplyNumeric>
 {
     //! @brief Name.
     static constexpr std::string_view name{"app-num"};
@@ -263,7 +263,7 @@ struct utility::reflection::TypeInfo<application::reg_num::ApplyNumeric>
 //! @brief Static reflection for ArithmeticMethod. Used to map command line arguments.
 template <>
 struct utility::reflection::TypeInfo<application::reg_num::ArithmeticMethod>
-    : public TypeInfoBase<application::reg_num::ArithmeticMethod>
+    : public TypeInfoImpl<application::reg_num::ArithmeticMethod>
 {
     //! @brief Name.
     static constexpr std::string_view name{"arithmetic"};
@@ -290,7 +290,7 @@ struct utility::reflection::TypeInfo<application::reg_num::ArithmeticMethod>
 //! @brief Static reflection for DivisorMethod. Used to map command line arguments.
 template <>
 struct utility::reflection::TypeInfo<application::reg_num::DivisorMethod>
-    : public TypeInfoBase<application::reg_num::DivisorMethod>
+    : public TypeInfoImpl<application::reg_num::DivisorMethod>
 {
     //! @brief Name.
     static constexpr std::string_view name{"divisor"};
@@ -313,7 +313,7 @@ struct utility::reflection::TypeInfo<application::reg_num::DivisorMethod>
 //! @brief Static reflection for IntegralMethod. Used to map command line arguments.
 template <>
 struct utility::reflection::TypeInfo<application::reg_num::IntegralMethod>
-    : public TypeInfoBase<application::reg_num::IntegralMethod>
+    : public TypeInfoImpl<application::reg_num::IntegralMethod>
 {
     //! @brief Name.
     static constexpr std::string_view name{"integral"};
@@ -342,7 +342,7 @@ struct utility::reflection::TypeInfo<application::reg_num::IntegralMethod>
 //! @brief Static reflection for PrimeMethod. Used to map command line arguments.
 template <>
 struct utility::reflection::TypeInfo<application::reg_num::PrimeMethod>
-    : public TypeInfoBase<application::reg_num::PrimeMethod>
+    : public TypeInfoImpl<application::reg_num::PrimeMethod>
 {
     //! @brief Name.
     static constexpr std::string_view name{"prime"};

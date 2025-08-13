@@ -297,7 +297,7 @@ void runChoices<SortMethod>(const std::vector<std::string>& candidates);
 //! @brief Static reflection for ApplyAlgorithm. Used to map command line arguments.
 template <>
 struct utility::reflection::TypeInfo<application::reg_algo::ApplyAlgorithm>
-    : public TypeInfoBase<application::reg_algo::ApplyAlgorithm>
+    : public TypeInfoImpl<application::reg_algo::ApplyAlgorithm>
 {
     //! @brief Name.
     static constexpr std::string_view name{"app-algo"};
@@ -318,7 +318,7 @@ struct utility::reflection::TypeInfo<application::reg_algo::ApplyAlgorithm>
 //! @brief Static reflection for MatchMethod. Used to map command line arguments.
 template <>
 struct utility::reflection::TypeInfo<application::reg_algo::MatchMethod>
-    : public TypeInfoBase<application::reg_algo::MatchMethod>
+    : public TypeInfoImpl<application::reg_algo::MatchMethod>
 {
     //! @brief Name.
     static constexpr std::string_view name{"match"};
@@ -347,7 +347,7 @@ struct utility::reflection::TypeInfo<application::reg_algo::MatchMethod>
 //! @brief Static reflection for NotationMethod. Used to map command line arguments.
 template <>
 struct utility::reflection::TypeInfo<application::reg_algo::NotationMethod>
-    : public TypeInfoBase<application::reg_algo::NotationMethod>
+    : public TypeInfoImpl<application::reg_algo::NotationMethod>
 {
     //! @brief Name.
     static constexpr std::string_view name{"notation"};
@@ -370,7 +370,7 @@ struct utility::reflection::TypeInfo<application::reg_algo::NotationMethod>
 //! @brief Static reflection for OptimalMethod. Used to map command line arguments.
 template <>
 struct utility::reflection::TypeInfo<application::reg_algo::OptimalMethod>
-    : public TypeInfoBase<application::reg_algo::OptimalMethod>
+    : public TypeInfoImpl<application::reg_algo::OptimalMethod>
 {
     //! @brief Name.
     static constexpr std::string_view name{"optimal"};
@@ -401,7 +401,7 @@ struct utility::reflection::TypeInfo<application::reg_algo::OptimalMethod>
 //! @brief Static reflection for SearchMethod. Used to map command line arguments.
 template <>
 struct utility::reflection::TypeInfo<application::reg_algo::SearchMethod>
-    : public TypeInfoBase<application::reg_algo::SearchMethod>
+    : public TypeInfoImpl<application::reg_algo::SearchMethod>
 {
     //! @brief Name.
     static constexpr std::string_view name{"search"};
@@ -426,7 +426,7 @@ struct utility::reflection::TypeInfo<application::reg_algo::SearchMethod>
 //! @brief Static reflection for SortMethod. Used to map command line arguments.
 template <>
 struct utility::reflection::TypeInfo<application::reg_algo::SortMethod>
-    : public TypeInfoBase<application::reg_algo::SortMethod>
+    : public TypeInfoImpl<application::reg_algo::SortMethod>
 {
     //! @brief Name.
     static constexpr std::string_view name{"sort"};

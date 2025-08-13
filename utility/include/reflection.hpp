@@ -280,12 +280,12 @@ struct NamedValue<Name, void> : public NamedValueBase<Name>
 //! @brief The list of elements.
 //! @tparam Es - type of list of elements
 template <typename... Es>
-class ElemList
+class Elements
 {
 public:
-    //! @brief Construct a new ElemList object.
+    //! @brief Construct a new Elements object.
     //! @param es - list of elements
-    constexpr explicit ElemList(const Es... es) : elems{es...} {}
+    constexpr explicit Elements(const Es... es) : elems{es...} {}
 
     //! @brief Size of list of the elements.
     static constexpr std::size_t size{sizeof...(Es)};
@@ -372,14 +372,14 @@ private:
 
 template <typename... Es>
 template <typename Init, typename Func>
-constexpr auto ElemList<Es...>::accumulate(Init init, Func&& func) const
+constexpr auto Elements<Es...>::accumulate(Init init, Func&& func) const
 {
     return Reflect::acc(*this, std::forward<Func>(func), std::move(init), std::make_index_sequence<size>{});
 }
 
 template <typename... Es>
 template <typename Func>
-constexpr void ElemList<Es...>::forEach(Func&& func) const
+constexpr void Elements<Es...>::forEach(Func&& func) const
 {
     accumulate(
         0,
@@ -392,21 +392,21 @@ constexpr void ElemList<Es...>::forEach(Func&& func) const
 
 template <typename... Es>
 template <typename Str>
-constexpr bool ElemList<Es...>::contains(const Str& /*name*/)
+constexpr bool Elements<Es...>::contains(const Str& /*name*/)
 {
     return (Es::NameType::template is<Str>() || ...);
 }
 
 template <typename... Es>
 template <typename Func>
-constexpr std::size_t ElemList<Es...>::findIf(Func&& func) const
+constexpr std::size_t Elements<Es...>::findIf(Func&& func) const
 {
     return Reflect::findIf(*this, std::forward<Func>(func), std::make_index_sequence<size>{});
 }
 
 template <typename... Es>
 template <typename Str>
-constexpr const auto& ElemList<Es...>::find(const Str& /*name*/) const
+constexpr const auto& Elements<Es...>::find(const Str& /*name*/) const
 {
     constexpr std::size_t index = []() constexpr
     {
@@ -425,14 +425,14 @@ constexpr const auto& ElemList<Es...>::find(const Str& /*name*/) const
 
 template <typename... Es>
 template <typename T>
-constexpr std::size_t ElemList<Es...>::findValue(const T& val) const
+constexpr std::size_t Elements<Es...>::findValue(const T& val) const
 {
     return findIf([&val](const auto& elem) { return elem == val; });
 }
 
 template <typename... Es>
 template <typename T, typename Str>
-constexpr const T* ElemList<Es...>::valuePtrOfName(const Str& name) const
+constexpr const T* Elements<Es...>::valuePtrOfName(const Str& name) const
 {
     return accumulate(
         nullptr,
@@ -451,14 +451,14 @@ constexpr const T* ElemList<Es...>::valuePtrOfName(const Str& name) const
 
 template <typename... Es>
 template <typename T, typename Str>
-constexpr const T& ElemList<Es...>::valueOfName(const Str& name) const
+constexpr const T& Elements<Es...>::valueOfName(const Str& name) const
 {
     return *valuePtrOfName<T>(name);
 }
 
 template <typename... Es>
 template <typename T, typename Char>
-constexpr auto ElemList<Es...>::nameOfValue(const T& val) const
+constexpr auto Elements<Es...>::nameOfValue(const T& val) const
 {
     return accumulate(
         std::basic_string_view<Char>{},
@@ -467,14 +467,14 @@ constexpr auto ElemList<Es...>::nameOfValue(const T& val) const
 
 template <typename... Es>
 template <typename Elem>
-constexpr auto ElemList<Es...>::push(const Elem& elem) const
+constexpr auto Elements<Es...>::push(const Elem& elem) const
 {
-    return std::apply([&elem](const auto&... es) { return ElemList<Es..., Elem>{es..., elem}; }, elems);
+    return std::apply([&elem](const auto&... es) { return Elements<Es..., Elem>{es..., elem}; }, elems);
 }
 
 template <typename... Es>
 template <typename Elem>
-constexpr auto ElemList<Es...>::insert(const Elem& elem) const
+constexpr auto Elements<Es...>::insert(const Elem& elem) const
 {
     if constexpr ((std::is_same_v<Es, Elem> || ...))
     {
@@ -488,7 +488,7 @@ constexpr auto ElemList<Es...>::insert(const Elem& elem) const
 
 template <typename... Es>
 template <std::size_t N>
-constexpr const auto& ElemList<Es...>::get() const
+constexpr const auto& Elements<Es...>::get() const
 {
     return std::get<N>(elems);
 }
@@ -516,11 +516,11 @@ struct Attr<Name, void> : public NamedValue<Name, void>
 //! @brief The list of attributes.
 //! @tparam As - type of list of attributes
 template <typename... As>
-struct AttrList : public ElemList<As...>
+struct AttrList : public Elements<As...>
 {
     //! @brief Construct a new AttrList object.
     //! @param as - list of attributes
-    constexpr explicit AttrList(const As... as) : ElemList<As...>{as...} {}
+    constexpr explicit AttrList(const As... as) : Elements<As...>{as...} {}
 };
 
 //! @brief Base class of trait.
@@ -576,11 +576,11 @@ struct Field : public Trait<T>, public NamedValue<Name, T>
 //! @brief The list of fields.
 //! @tparam Fs - type of list of fields
 template <typename... Fs>
-struct FieldList : public ElemList<Fs...>
+struct FieldList : public Elements<Fs...>
 {
     //! @brief Construct a new FieldList object.
     //! @param fs - list of fields
-    constexpr explicit FieldList(const Fs... fs) : ElemList<Fs...>{fs...} {}
+    constexpr explicit FieldList(const Fs... fs) : Elements<Fs...>{fs...} {}
 };
 
 //! @brief Type information.
@@ -603,28 +603,28 @@ struct Base
 //! @brief The list of public base classes.
 //! @tparam Bs - type of list of public base classes
 template <typename... Bs>
-struct BaseList : public ElemList<Bs...>
+struct BaseList : public Elements<Bs...>
 {
     //! @brief Construct a new BaseList object.
     //! @param bs - list of public base classes
-    constexpr explicit BaseList(const Bs... bs) : ElemList<Bs...>{bs...} {}
+    constexpr explicit BaseList(const Bs... bs) : Elements<Bs...>{bs...} {}
 };
 
 //! @brief The list of type informations.
 //! @tparam Ts - type of list of type informations
 template <typename... Ts>
-struct TypeInfoList : public ElemList<Ts...>
+struct TypeInfoList : public Elements<Ts...>
 {
     //! @brief Construct a new TypeInfoList object.
     //! @param ts - list of type informations
-    constexpr explicit TypeInfoList(const Ts... ts) : ElemList<Ts...>{ts...} {}
+    constexpr explicit TypeInfoList(const Ts... ts) : Elements<Ts...>{ts...} {}
 };
 
-//! @brief Base class of type information.
+//! @brief The base class that includes the implementation of type information.
 //! @tparam T - type of type information
 //! @tparam Bs - type of list of public base classes
 template <typename T, typename... Bs>
-class TypeInfoBase
+class TypeInfoImpl
 {
 public:
     //! @brief Alias for the type.
@@ -665,7 +665,7 @@ public:
 
 template <typename T, typename... Bs>
 template <typename U>
-constexpr auto&& TypeInfoBase<T, Bs...>::forward(U&& derived)
+constexpr auto&& TypeInfoImpl<T, Bs...>::forward(U&& derived)
 {
     if constexpr (std::is_same_v<std::decay_t<U>, U>)
     {
@@ -682,10 +682,10 @@ constexpr auto&& TypeInfoBase<T, Bs...>::forward(U&& derived)
 }
 
 template <typename T, typename... Bs>
-constexpr auto TypeInfoBase<T, Bs...>::virtualBases()
+constexpr auto TypeInfoImpl<T, Bs...>::virtualBases()
 {
     return bases.accumulate(
-        ElemList<>{},
+        Elements<>{},
         [](const auto acc, const auto base)
         {
             auto concat = base.info.virtualBases().accumulate(
@@ -703,7 +703,7 @@ constexpr auto TypeInfoBase<T, Bs...>::virtualBases()
 
 template <typename T, typename... Bs>
 template <typename Ret, typename Func>
-constexpr auto TypeInfoBase<T, Bs...>::dfsAcc(Ret ret, Func&& func)
+constexpr auto TypeInfoImpl<T, Bs...>::dfsAcc(Ret ret, Func&& func)
 {
     return Reflect::dfsAcc<0>(
         TypeInfo<Type>{},
@@ -715,7 +715,7 @@ constexpr auto TypeInfoBase<T, Bs...>::dfsAcc(Ret ret, Func&& func)
 
 template <typename T, typename... Bs>
 template <typename Func>
-constexpr void TypeInfoBase<T, Bs...>::dfsForEach(Func&& func)
+constexpr void TypeInfoImpl<T, Bs...>::dfsForEach(Func&& func)
 {
     dfsAcc(
         0,
@@ -728,7 +728,7 @@ constexpr void TypeInfoBase<T, Bs...>::dfsForEach(Func&& func)
 
 template <typename T, typename... Bs>
 template <typename U, typename Func>
-constexpr void TypeInfoBase<T, Bs...>::forEachVarOf(U&& obj, Func&& func)
+constexpr void TypeInfoImpl<T, Bs...>::forEachVarOf(U&& obj, Func&& func)
 {
     virtualBases().forEach(
         [&](const auto vb)
