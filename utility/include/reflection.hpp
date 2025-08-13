@@ -68,7 +68,7 @@ public:
         //! @tparam T - type of target string
         //! @return be custom string type or not
         template <typename T>
-        static consteval bool is(const T /*str*/ = {})
+        static consteval bool is(const T& /*str*/ = {})
         {
             return std::is_same_v<T, String>;
         }
@@ -88,10 +88,10 @@ public:
     //! @tparam Func - type of callable function
     //! @param lit - string literal
     //! @param func - callable function
-    //! @param sequence - sequences related to arguments
+    //! @param seq - sequences related to arguments
     //! @return value index
     template <typename Lit, typename Func>
-    static constexpr std::size_t findIf(const Lit lit, Func&& func, const std::index_sequence<>& sequence);
+    static constexpr std::size_t findIf(const Lit& lit, Func&& func, const std::index_sequence<>& seq);
     //! @brief Finding by condition.
     //! @tparam Lit - type of string literal
     //! @tparam Func - type of callable function
@@ -99,10 +99,10 @@ public:
     //! @tparam Ns - last index of sequences related to arguments
     //! @param lit - string literal
     //! @param func - callable function
-    //! @param sequence - sequences related to arguments
+    //! @param seq - sequences related to arguments
     //! @return value index
     template <typename Lit, typename Func, std::size_t N0, std::size_t... Ns>
-    static constexpr std::size_t findIf(const Lit lit, Func&& func, const std::index_sequence<N0, Ns...>& sequence);
+    static constexpr std::size_t findIf(const Lit& lit, Func&& func, const std::index_sequence<N0, Ns...>& seq);
     //! @brief Calculate accumulation.
     //! @tparam Lit - type of string literal
     //! @tparam Func - type of callable function
@@ -110,10 +110,10 @@ public:
     //! @param lit - string literal
     //! @param func - callable function
     //! @param ret - return value
-    //! @param sequence - sequences related to arguments
+    //! @param seq - sequences related to arguments
     //! @return result of accumulation
     template <typename Lit, typename Func, typename Ret>
-    static constexpr auto acc(const Lit lit, Func&& func, Ret ret, const std::index_sequence<>& sequence);
+    static constexpr auto acc(const Lit& lit, Func&& func, Ret ret, const std::index_sequence<>& seq);
     //! @brief Calculate accumulation.
     //! @tparam Lit - type of string literal
     //! @tparam Func - type of callable function
@@ -123,10 +123,10 @@ public:
     //! @param lit - string literal
     //! @param func - callable function
     //! @param ret - return value
-    //! @param sequence - sequences related to arguments
+    //! @param seq - sequences related to arguments
     //! @return result of accumulation
     template <typename Lit, typename Func, typename Ret, std::size_t N0, std::size_t... Ns>
-    static constexpr auto acc(const Lit lit, Func&& func, Ret ret, const std::index_sequence<N0, Ns...>& sequence);
+    static constexpr auto acc(const Lit& lit, Func&& func, Ret ret, const std::index_sequence<N0, Ns...>& seq);
     //! @brief Calculate accumulation by the DFS algorithm.
     //! @tparam D - degree of depth
     //! @tparam T - type of type information
@@ -137,7 +137,7 @@ public:
     //! @param ret - return value
     //! @return result of the accumulation
     template <std::size_t D, typename T, typename Ret, typename Func>
-    static constexpr auto dfsAcc(const T info, Func&& func, Ret ret);
+    static constexpr auto dfsAcc(const T& info, Func&& func, Ret ret);
     //! @brief Traverse the variable of node v in the DFS algorithm.
     //! @tparam T - type of type information
     //! @tparam U - type of object to be traversed
@@ -146,36 +146,36 @@ public:
     //! @param obj - object to be traversed
     //! @param func - callable function
     template <typename T, typename U, typename Func>
-    static constexpr void varInNodeV(const T info, U&& obj, Func&& func);
+    static constexpr void varInNodeV(const T& info, U&& obj, Func&& func);
 };
 
 template <typename Lit, typename Func>
-constexpr std::size_t Reflect::findIf(const Lit /*lit*/, Func&& /*func*/, const std::index_sequence<>& /*sequence*/)
+constexpr std::size_t Reflect::findIf(const Lit& /*lit*/, Func&& /*func*/, const std::index_sequence<>& /*seq*/)
 {
     return -1;
 }
 
 template <typename Lit, typename Func, std::size_t N0, std::size_t... Ns>
-constexpr std::size_t Reflect::findIf(const Lit lit, Func&& func, const std::index_sequence<N0, Ns...>& /*sequence*/)
+constexpr std::size_t Reflect::findIf(const Lit& lit, Func&& func, const std::index_sequence<N0, Ns...>& /*seq*/)
 {
     return func(lit.template get<N0>()) ? N0 : findIf(lit, std::forward<Func>(func), std::index_sequence<Ns...>{});
 }
 
 template <typename Lit, typename Func, typename Ret>
-constexpr auto Reflect::acc(const Lit /*lit*/, Func&& /*func*/, Ret ret, const std::index_sequence<>& /*sequence*/)
+constexpr auto Reflect::acc(const Lit& /*lit*/, Func&& /*func*/, Ret ret, const std::index_sequence<>& /*seq*/)
 {
     return ret;
 }
 
 template <typename Lit, typename Func, typename Ret, std::size_t N0, std::size_t... Ns>
-constexpr auto Reflect::acc(const Lit lit, Func&& func, Ret ret, const std::index_sequence<N0, Ns...>& /*sequence*/)
+constexpr auto Reflect::acc(const Lit& lit, Func&& func, Ret ret, const std::index_sequence<N0, Ns...>& /*seq*/)
 {
     return acc(
         lit, std::forward<Func>(func), func(std::move(ret), lit.template get<N0>()), std::index_sequence<Ns...>{});
 }
 
 template <std::size_t D, typename T, typename Ret, typename Func>
-constexpr auto Reflect::dfsAcc(const T info, Func&& func, Ret ret)
+constexpr auto Reflect::dfsAcc(const T& info, Func&& func, Ret ret)
 {
     return info.bases.accumulate(
         std::move(ret),
@@ -194,7 +194,7 @@ constexpr auto Reflect::dfsAcc(const T info, Func&& func, Ret ret)
 }
 
 template <typename T, typename U, typename Func>
-constexpr void Reflect::varInNodeV(const T /*info*/, U&& obj, Func&& func)
+constexpr void Reflect::varInNodeV(const T& /*info*/, U&& obj, Func&& func)
 {
     T::fields.forEach(
         [&](const auto fld)
@@ -241,7 +241,7 @@ struct NamedValue : public NamedValueBase<Name>
     //! @param val - named value
     //! @return be equal or not
     template <typename U>
-    constexpr bool operator==(const U val) const
+    constexpr bool operator==(const U& val) const
     {
         if constexpr (std::is_same_v<T, U>)
         {
@@ -254,7 +254,7 @@ struct NamedValue : public NamedValueBase<Name>
     }
 
     //! @brief Named value.
-    const T value{};
+    T value{};
     //! @brief Flag to indicate whether it has a value.
     static constexpr bool hasValue{true};
 };
@@ -268,7 +268,7 @@ struct NamedValue<Name, void> : public NamedValueBase<Name>
     //! @tparam U - type of value
     //! @return be equal or not
     template <typename U>
-    constexpr bool operator==(const U /*val*/) const
+    constexpr bool operator==(const U& /*val*/) const
     {
         return false;
     }
@@ -307,7 +307,7 @@ public:
     //! @param name - value name
     //! @return contains or not
     template <typename Str>
-    static constexpr bool contains(const Str name = {});
+    static constexpr bool contains(const Str& name = {});
     //! @brief Finding by condition.
     //! @tparam Func - type of callable function
     //! @param func - callable function
@@ -319,46 +319,46 @@ public:
     //! @param name - value name
     //! @return value index
     template <typename Str>
-    constexpr const auto& find(const Str name = {}) const;
+    constexpr const auto& find(const Str& name = {}) const;
     //! @brief Finding by value.
     //! @tparam T - type of target value
     //! @param val - target value
     //! @return value index
     template <typename T>
-    constexpr std::size_t findValue(const T val) const;
+    constexpr std::size_t findValue(const T& val) const;
     //! @brief Get the pointer of value by name.
     //! @tparam T - type of value
     //! @tparam Str - type of custom string
     //! @param name - value name
     //! @return pointer of value
     template <typename T, typename Str>
-    constexpr const T* valuePtrOfName(const Str name) const;
+    constexpr const T* valuePtrOfName(const Str& name) const;
     //! @brief Get the reference of value by name.
     //! @tparam T - type of value
     //! @tparam Str - type of custom string
     //! @param name - value name
     //! @return reference of value
     template <typename T, typename Str>
-    constexpr const T& valueOfName(const Str name) const;
+    constexpr const T& valueOfName(const Str& name) const;
     //! @brief Get the name by value.
     //! @tparam T - type of target value
     //! @tparam Char - type of character in custom string
     //! @param val - target value
     //! @return value name
     template <typename T, typename Char = char>
-    constexpr auto nameOfValue(const T val) const;
+    constexpr auto nameOfValue(const T& val) const;
     //! @brief Push operation of the element.
     //! @tparam Elem - type of target element
     //! @param elem - target element
     //! @return position after pushing
     template <typename Elem>
-    constexpr auto push(const Elem elem) const;
+    constexpr auto push(const Elem& elem) const;
     //! @brief Insert operation of the element.
     //! @tparam Elem - type of target element
     //! @param elem - target element
     //! @return position after inserting
     template <typename Elem>
-    constexpr auto insert(const Elem elem) const;
+    constexpr auto insert(const Elem& elem) const;
     //! @brief Get the value.
     //! @tparam N - value index
     //! @return target value
@@ -392,7 +392,7 @@ constexpr void ElemList<Es...>::forEach(Func&& func) const
 
 template <typename... Es>
 template <typename Str>
-constexpr bool ElemList<Es...>::contains(const Str /*name*/)
+constexpr bool ElemList<Es...>::contains(const Str& /*name*/)
 {
     return (Es::NameType::template is<Str>() || ...);
 }
@@ -406,7 +406,7 @@ constexpr std::size_t ElemList<Es...>::findIf(Func&& func) const
 
 template <typename... Es>
 template <typename Str>
-constexpr const auto& ElemList<Es...>::find(const Str /*name*/) const
+constexpr const auto& ElemList<Es...>::find(const Str& /*name*/) const
 {
     constexpr std::size_t index = []() constexpr
     {
@@ -425,18 +425,18 @@ constexpr const auto& ElemList<Es...>::find(const Str /*name*/) const
 
 template <typename... Es>
 template <typename T>
-constexpr std::size_t ElemList<Es...>::findValue(const T val) const
+constexpr std::size_t ElemList<Es...>::findValue(const T& val) const
 {
-    return findIf([&val](const auto elem) { return elem == val; });
+    return findIf([&val](const auto& elem) { return elem == val; });
 }
 
 template <typename... Es>
 template <typename T, typename Str>
-constexpr const T* ElemList<Es...>::valuePtrOfName(const Str name) const
+constexpr const T* ElemList<Es...>::valuePtrOfName(const Str& name) const
 {
     return accumulate(
         nullptr,
-        [&name](const auto ret, const auto elem)
+        [&name](const auto ret, const auto& elem)
         {
             if constexpr (std::is_same_v<T, decltype(elem.value)>)
             {
@@ -451,30 +451,30 @@ constexpr const T* ElemList<Es...>::valuePtrOfName(const Str name) const
 
 template <typename... Es>
 template <typename T, typename Str>
-constexpr const T& ElemList<Es...>::valueOfName(const Str name) const
+constexpr const T& ElemList<Es...>::valueOfName(const Str& name) const
 {
     return *valuePtrOfName<T>(name);
 }
 
 template <typename... Es>
 template <typename T, typename Char>
-constexpr auto ElemList<Es...>::nameOfValue(const T val) const
+constexpr auto ElemList<Es...>::nameOfValue(const T& val) const
 {
     return accumulate(
         std::basic_string_view<Char>{},
-        [&val](const auto ret, const auto elem) { return (elem == val) ? elem.name : ret; });
+        [&val](const auto ret, const auto& elem) { return (elem == val) ? elem.name : ret; });
 }
 
 template <typename... Es>
 template <typename Elem>
-constexpr auto ElemList<Es...>::push(const Elem elem) const
+constexpr auto ElemList<Es...>::push(const Elem& elem) const
 {
-    return std::apply([&elem](const auto... es) { return ElemList<Es..., Elem>{es..., elem}; }, elems);
+    return std::apply([&elem](const auto&... es) { return ElemList<Es..., Elem>{es..., elem}; }, elems);
 }
 
 template <typename... Es>
 template <typename Elem>
-constexpr auto ElemList<Es...>::insert(const Elem elem) const
+constexpr auto ElemList<Es...>::insert(const Elem& elem) const
 {
     if constexpr ((std::is_same_v<Es, Elem> || ...))
     {
