@@ -66,7 +66,7 @@ template <Category Cat>
 static consteval std::string_view categoryAlias()
 {
     constexpr auto attr =
-        TypeInfo<ApplyDesignPattern>::fields.find(REFLECTION_STR(toString<Cat>())).attrs.find(REFLECTION_STR("alias"));
+        TypeInfo<ApplyDesignPattern>::fields.find(REFLECTION_STR(toString(Cat))).attrs.find(REFLECTION_STR("alias"));
     static_assert(attr.hasValue);
     return attr.value;
 }
@@ -224,7 +224,7 @@ void applyingBehavioral(const std::vector<std::string>& candidates)
         { allocatedJob->enqueue(taskNamer(subTask), targetInstance); });
     MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
 
-    std::cout << "\nInstances of the " << toString<category>() << " pattern:" << std::endl;
+    std::cout << "\nInstances of the " << toString(category) << " pattern:" << std::endl;
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
@@ -267,7 +267,7 @@ void applyingBehavioral(const std::vector<std::string>& candidates)
                 addTask(target, &BehavioralPattern::visitorInstance);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " instance: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
         }
     }
 
@@ -361,7 +361,7 @@ void applyingCreational(const std::vector<std::string>& candidates)
         { allocatedJob->enqueue(taskNamer(subTask), targetInstance); });
     MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
 
-    std::cout << "\nInstances of the " << toString<category>() << " pattern:" << std::endl;
+    std::cout << "\nInstances of the " << toString(category) << " pattern:" << std::endl;
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
@@ -386,7 +386,7 @@ void applyingCreational(const std::vector<std::string>& candidates)
                 addTask(target, &CreationalPattern::singletonInstance);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " instance: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
         }
     }
 
@@ -502,7 +502,7 @@ void applyingStructural(const std::vector<std::string>& candidates)
         { allocatedJob->enqueue(taskNamer(subTask), targetInstance); });
     MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
 
-    std::cout << "\nInstances of the " << toString<category>() << " pattern:" << std::endl;
+    std::cout << "\nInstances of the " << toString(category) << " pattern:" << std::endl;
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
@@ -533,7 +533,7 @@ void applyingStructural(const std::vector<std::string>& candidates)
                 addTask(target, &StructuralPattern::proxyInstance);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " instance: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
         }
     }
 

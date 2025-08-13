@@ -85,7 +85,7 @@ void updateChoice<ArithmeticMethod>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " method: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target + '.'};
     }
 }
 //! @brief Run arithmetic-related choices.
@@ -123,7 +123,7 @@ void updateChoice<DivisorMethod>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " method: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target + '.'};
     }
 }
 //! @brief Run divisor-related choices.
@@ -170,7 +170,7 @@ void updateChoice<IntegralMethod>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " method: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target + '.'};
     }
 }
 //! @brief Run integral-related choices.
@@ -208,7 +208,7 @@ void updateChoice<PrimeMethod>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " method: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target + '.'};
     }
 }
 //! @brief Run prime-related choices.

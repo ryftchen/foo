@@ -106,7 +106,7 @@ void updateChoice<BehavioralInstance>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " instance: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " instance: " + target + '.'};
     }
 }
 //! @brief Run behavioral-related choices.
@@ -153,7 +153,7 @@ void updateChoice<CreationalInstance>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " instance: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " instance: " + target + '.'};
     }
 }
 //! @brief Run creational-related choices.
@@ -206,7 +206,7 @@ void updateChoice<StructuralInstance>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " instance: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " instance: " + target + '.'};
     }
 }
 //! @brief Run structural-related choices.

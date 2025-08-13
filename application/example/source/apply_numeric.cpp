@@ -66,7 +66,7 @@ template <Category Cat>
 static consteval std::string_view categoryAlias()
 {
     constexpr auto attr =
-        TypeInfo<ApplyNumeric>::fields.find(REFLECTION_STR(toString<Cat>())).attrs.find(REFLECTION_STR("alias"));
+        TypeInfo<ApplyNumeric>::fields.find(REFLECTION_STR(toString(Cat))).attrs.find(REFLECTION_STR("alias"));
     static_assert(attr.hasValue);
     return attr.value;
 }
@@ -178,7 +178,7 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
                 addTask(target, &ArithmeticCalculation::divisionMethod);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
         }
     }
 
@@ -269,7 +269,7 @@ void applyingDivisor(const std::vector<std::string>& candidates)
                 addTask(target, &DivisorCalculation::steinMethod);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
         }
     }
 
@@ -406,7 +406,7 @@ void applyingIntegral(const std::vector<std::string>& candidates)
                 addTask(target, &IntegralCalculation::monteCarloMethod);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
         }
     }
 
@@ -494,7 +494,7 @@ void applyingPrime(const std::vector<std::string>& candidates)
                 addTask(target, &PrimeCalculation::eulerMethod);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
         }
     }
 

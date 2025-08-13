@@ -66,7 +66,7 @@ template <Category Cat>
 static consteval std::string_view categoryAlias()
 {
     constexpr auto attr =
-        TypeInfo<ApplyAlgorithm>::fields.find(REFLECTION_STR(toString<Cat>())).attrs.find(REFLECTION_STR("alias"));
+        TypeInfo<ApplyAlgorithm>::fields.find(REFLECTION_STR(toString(Cat))).attrs.find(REFLECTION_STR("alias"));
     static_assert(attr.hasValue);
     return attr.value;
 }
@@ -240,7 +240,7 @@ void applyingMatch(const std::vector<std::string>& candidates)
                 addTask(target, &MatchSolution::sundayMethod);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
         }
     }
 
@@ -320,7 +320,7 @@ void applyingNotation(const std::vector<std::string>& candidates)
                 addTask(target, &NotationSolution::postfixMethod);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
         }
     }
 
@@ -487,7 +487,7 @@ void applyingOptimal(const std::vector<std::string>& candidates)
                 addTask(target, &OptimalSolution::geneticMethod);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
         }
     }
 
@@ -609,7 +609,7 @@ void applyingSearch(const std::vector<std::string>& candidates)
                 addTask(target, &SearchSolution::fibonacciMethod);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
         }
     }
 
@@ -822,7 +822,7 @@ void applyingSort(const std::vector<std::string>& candidates)
                 addTask(target, &SortSolution::radixMethod);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString<category>()} + " method: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
         }
     }
 

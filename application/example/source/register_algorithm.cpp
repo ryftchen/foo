@@ -88,7 +88,7 @@ void updateChoice<MatchMethod>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " method: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target + '.'};
     }
 }
 //! @brief Run match-related choices.
@@ -126,7 +126,7 @@ void updateChoice<NotationMethod>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " method: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target + '.'};
     }
 }
 //! @brief Run notation-related choices.
@@ -176,7 +176,7 @@ void updateChoice<OptimalMethod>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " method: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target + '.'};
     }
 }
 //! @brief Run optimal-related choices.
@@ -217,7 +217,7 @@ void updateChoice<SearchMethod>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " method: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target + '.'};
     }
 }
 //! @brief Run search-related choices.
@@ -279,7 +279,7 @@ void updateChoice<SortMethod>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString<category>()} + " method: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target + '.'};
     }
 }
 //! @brief Run sort-related choices.

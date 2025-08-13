@@ -374,12 +374,11 @@ using TypeInfo = utility::reflection::TypeInfo<T>;
 //! @brief Alias for Category.
 using Category = ApplyNumeric::Category;
 //! @brief Convert category enumeration to string.
-//! @tparam Cat - specific value of Category enum
+//! @param cat - specific value of Category enum
 //! @return category name
-template <Category Cat>
-consteval std::string_view toString()
+consteval std::string_view toString(const Category cat)
 {
-    switch (Cat)
+    switch (cat)
     {
         case Category::arithmetic:
             return TypeInfo<ArithmeticMethod>::name;
@@ -401,7 +400,7 @@ consteval std::string_view toString()
 template <Category Cat>
 constexpr auto& categoryOpts()
 {
-    return std::invoke(TypeInfo<ApplyNumeric>::fields.find(REFLECTION_STR(toString<Cat>())).value, manager());
+    return std::invoke(TypeInfo<ApplyNumeric>::fields.find(REFLECTION_STR(toString(Cat))).value, manager());
 }
 //! @brief Abbreviation value for the target method.
 //! @tparam T - type of target method
