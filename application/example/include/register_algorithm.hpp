@@ -31,7 +31,7 @@ template <typename T>
 struct Bottom;
 
 //! @brief Enumerate specific match methods.
-enum MatchMethod : std::uint8_t
+enum class MatchMethod : std::uint8_t
 {
     //! @brief Rabin-Karp.
     rabinKarp,
@@ -53,7 +53,7 @@ struct Bottom<MatchMethod>
 };
 
 //! @brief Enumerate specific notation methods.
-enum NotationMethod : std::uint8_t
+enum class NotationMethod : std::uint8_t
 {
     //! @brief Prefix.
     prefix,
@@ -69,7 +69,7 @@ struct Bottom<NotationMethod>
 };
 
 //! @brief Enumerate specific optimal methods.
-enum OptimalMethod : std::uint8_t
+enum class OptimalMethod : std::uint8_t
 {
     //! @brief Gradient.
     gradient,
@@ -93,7 +93,7 @@ struct Bottom<OptimalMethod>
 };
 
 //! @brief Enumerate specific search methods.
-enum SearchMethod : std::uint8_t
+enum class SearchMethod : std::uint8_t
 {
     //! @brief Binary.
     binary,
@@ -111,7 +111,7 @@ struct Bottom<SearchMethod>
 };
 
 //! @brief Enumerate specific sort methods.
-enum SortMethod : std::uint8_t
+enum class SortMethod : std::uint8_t
 {
     //! @brief Bubble.
     bubble,
@@ -515,87 +515,20 @@ consteval std::size_t abbrValue(const T method)
     static_assert(Bottom<T>::value == TypeInfo<T>::fields.size);
     constexpr auto refl = REFLECTION_STR("choice");
     std::size_t value = 0;
-    TypeInfo<T>::fields.forEach(
+    TypeInfo<T>::fields.findIf(
         [refl, method, &value](const auto field)
         {
-            if (field.name == toString(method))
+            if (field.name == TypeInfo<T>::fields.nameOfValue(method))
             {
                 static_assert(field.attrs.contains(refl) && (field.attrs.size == 1));
                 const auto attr = field.attrs.find(refl);
                 static_assert(attr.hasValue);
                 value = utility::common::operator""_bkdrHash(attr.value);
-                return;
+                return true;
             }
+            return false;
         });
 
     return value;
-}
-
-//! @brief Convert method enumeration to string.
-//! @param method - specific value of MatchMethod enum
-//! @return method name
-constexpr std::string_view toString(const MatchMethod method)
-{
-    constexpr std::array<std::string_view, Bottom<MatchMethod>::value> stringify = {
-        MACRO_STRINGIFY(rabinKarp),
-        MACRO_STRINGIFY(knuthMorrisPratt),
-        MACRO_STRINGIFY(boyerMoore),
-        MACRO_STRINGIFY(horspool),
-        MACRO_STRINGIFY(sunday)};
-    return stringify.at(method);
-}
-
-//! @brief Convert method enumeration to string.
-//! @param method - specific value of NotationMethod enum
-//! @return method name
-constexpr std::string_view toString(const NotationMethod method)
-{
-    constexpr std::array<std::string_view, Bottom<NotationMethod>::value> stringify = {
-        MACRO_STRINGIFY(prefix), MACRO_STRINGIFY(postfix)};
-    return stringify.at(method);
-}
-
-//! @brief Convert method enumeration to string.
-//! @param method - specific value of OptimalMethod enum
-//! @return method name
-constexpr std::string_view toString(const OptimalMethod method)
-{
-    constexpr std::array<std::string_view, Bottom<OptimalMethod>::value> stringify = {
-        MACRO_STRINGIFY(gradient),
-        MACRO_STRINGIFY(tabu),
-        MACRO_STRINGIFY(annealing),
-        MACRO_STRINGIFY(particle),
-        MACRO_STRINGIFY(ant),
-        MACRO_STRINGIFY(genetic)};
-    return stringify.at(method);
-}
-
-//! @brief Convert method enumeration to string.
-//! @param method - specific value of SearchMethod enum
-//! @return method name
-constexpr std::string_view toString(const SearchMethod method)
-{
-    constexpr std::array<std::string_view, Bottom<SearchMethod>::value> stringify = {
-        MACRO_STRINGIFY(binary), MACRO_STRINGIFY(interpolation), MACRO_STRINGIFY(fibonacci)};
-    return stringify.at(method);
-}
-
-//! @brief Convert method enumeration to string.
-//! @param method - specific value of SortMethod enum
-//! @return method name
-constexpr std::string_view toString(const SortMethod method)
-{
-    constexpr std::array<std::string_view, Bottom<SortMethod>::value> stringify = {
-        MACRO_STRINGIFY(bubble),
-        MACRO_STRINGIFY(selection),
-        MACRO_STRINGIFY(insertion),
-        MACRO_STRINGIFY(shell),
-        MACRO_STRINGIFY(merge),
-        MACRO_STRINGIFY(quick),
-        MACRO_STRINGIFY(heap),
-        MACRO_STRINGIFY(counting),
-        MACRO_STRINGIFY(bucket),
-        MACRO_STRINGIFY(radix)};
-    return stringify.at(method);
 }
 } // namespace application::reg_algo

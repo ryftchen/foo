@@ -31,7 +31,7 @@ template <typename T>
 struct Bottom;
 
 //! @brief Enumerate specific behavioral instances.
-enum BehavioralInstance : std::uint8_t
+enum class BehavioralInstance : std::uint8_t
 {
     //! @brief Chain of responsibility.
     chainOfResponsibility,
@@ -65,7 +65,7 @@ struct Bottom<BehavioralInstance>
 };
 
 //! @brief Enumerate specific creational instances.
-enum CreationalInstance : std::uint8_t
+enum class CreationalInstance : std::uint8_t
 {
     //! @brief Abstract factory.
     abstractFactory,
@@ -87,7 +87,7 @@ struct Bottom<CreationalInstance>
 };
 
 //! @brief Enumerate specific structural instances.
-enum StructuralInstance : std::uint8_t
+enum class StructuralInstance : std::uint8_t
 {
     //! @brief Adapter.
     adapter,
@@ -402,69 +402,20 @@ consteval std::size_t abbrValue(const T instance)
     static_assert(Bottom<T>::value == TypeInfo<T>::fields.size);
     constexpr auto refl = REFLECTION_STR("choice");
     std::size_t value = 0;
-    TypeInfo<T>::fields.forEach(
+    TypeInfo<T>::fields.findIf(
         [refl, instance, &value](const auto field)
         {
-            if (field.name == toString(instance))
+            if (field.name == TypeInfo<T>::fields.nameOfValue(instance))
             {
                 static_assert(field.attrs.contains(refl) && (field.attrs.size == 1));
                 const auto attr = field.attrs.find(refl);
                 static_assert(attr.hasValue);
                 value = utility::common::operator""_bkdrHash(attr.value);
-                return;
+                return true;
             }
+            return false;
         });
 
     return value;
-}
-
-//! @brief Convert instance enumeration to string.
-//! @param instance - specific value of BehavioralInstance enum
-//! @return instance name
-constexpr std::string_view toString(const BehavioralInstance instance)
-{
-    constexpr std::array<std::string_view, Bottom<BehavioralInstance>::value> stringify = {
-        MACRO_STRINGIFY(chainOfResponsibility),
-        MACRO_STRINGIFY(command),
-        MACRO_STRINGIFY(interpreter),
-        MACRO_STRINGIFY(iterator),
-        MACRO_STRINGIFY(mediator),
-        MACRO_STRINGIFY(memento),
-        MACRO_STRINGIFY(observer),
-        MACRO_STRINGIFY(state),
-        MACRO_STRINGIFY(strategy),
-        MACRO_STRINGIFY(templateMethod),
-        MACRO_STRINGIFY(visitor)};
-    return stringify.at(instance);
-}
-
-//! @brief Convert instance enumeration to string.
-//! @param instance - specific value of CreationalInstance enum
-//! @return instance name
-constexpr std::string_view toString(const CreationalInstance instance)
-{
-    constexpr std::array<std::string_view, Bottom<CreationalInstance>::value> stringify = {
-        MACRO_STRINGIFY(abstractFactory),
-        MACRO_STRINGIFY(builder),
-        MACRO_STRINGIFY(factoryMethod),
-        MACRO_STRINGIFY(prototype),
-        MACRO_STRINGIFY(singleton)};
-    return stringify.at(instance);
-}
-
-//! @brief Convert instance enumeration to string.
-//! @param instance - specific value of StructuralInstance enum
-//! @return instance name
-constexpr std::string_view toString(const StructuralInstance instance)
-{
-    constexpr std::array<std::string_view, Bottom<StructuralInstance>::value> stringify = {
-        MACRO_STRINGIFY(adapter),
-        MACRO_STRINGIFY(bridge),
-        MACRO_STRINGIFY(composite),
-        MACRO_STRINGIFY(decorator),
-        MACRO_STRINGIFY(facade),
-        MACRO_STRINGIFY(flyweight),
-        MACRO_STRINGIFY(proxy)};
-    return stringify.at(instance);
 }
 } // namespace application::reg_dp

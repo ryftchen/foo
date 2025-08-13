@@ -44,7 +44,7 @@ using namespace reg_dp; // NOLINT(google-build-using-namespace)
 template <typename T>
 static std::string makeTitle(const T instance)
 {
-    std::string title(toString(instance));
+    std::string title(TypeInfo<T>::fields.nameOfValue(instance));
     title.at(0) = std::toupper(title.at(0));
 
     return title;

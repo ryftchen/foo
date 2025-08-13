@@ -31,7 +31,7 @@ template <typename T>
 struct Bottom;
 
 //! @brief Enumerate specific cache instances.
-enum CacheInstance : std::uint8_t
+enum class CacheInstance : std::uint8_t
 {
     //! @brief First in first out.
     firstInFirstOut,
@@ -49,7 +49,7 @@ struct Bottom<CacheInstance>
 };
 
 //! @brief Enumerate specific filter instances.
-enum FilterInstance : std::uint8_t
+enum class FilterInstance : std::uint8_t
 {
     //! @brief Bloom.
     bloom,
@@ -65,7 +65,7 @@ struct Bottom<FilterInstance>
 };
 
 //! @brief Enumerate specific graph instances.
-enum GraphInstance : std::uint8_t
+enum class GraphInstance : std::uint8_t
 {
     //! @brief Undirected.
     undirected,
@@ -81,7 +81,7 @@ struct Bottom<GraphInstance>
 };
 
 //! @brief Enumerate specific heap instances.
-enum HeapInstance : std::uint8_t
+enum class HeapInstance : std::uint8_t
 {
     //! @brief Binary.
     binary,
@@ -99,7 +99,7 @@ struct Bottom<HeapInstance>
 };
 
 //! @brief Enumerate specific linear instances.
-enum LinearInstance : std::uint8_t
+enum class LinearInstance : std::uint8_t
 {
     //! @brief Doubly linked list.
     doublyLinkedList,
@@ -117,7 +117,7 @@ struct Bottom<LinearInstance>
 };
 
 //! @brief Enumerate specific tree instances.
-enum TreeInstance : std::uint8_t
+enum class TreeInstance : std::uint8_t
 {
     //! @brief Binary search.
     binarySearch,
@@ -527,79 +527,20 @@ consteval std::size_t abbrValue(const T instance)
     static_assert(Bottom<T>::value == TypeInfo<T>::fields.size);
     constexpr auto refl = REFLECTION_STR("choice");
     std::size_t value = 0;
-    TypeInfo<T>::fields.forEach(
+    TypeInfo<T>::fields.findIf(
         [refl, instance, &value](const auto field)
         {
-            if (field.name == toString(instance))
+            if (field.name == TypeInfo<T>::fields.nameOfValue(instance))
             {
                 static_assert(field.attrs.contains(refl) && (field.attrs.size == 1));
                 const auto attr = field.attrs.find(refl);
                 static_assert(attr.hasValue);
                 value = utility::common::operator""_bkdrHash(attr.value);
-                return;
+                return true;
             }
+            return false;
         });
 
     return value;
-}
-
-//! @brief Convert instance enumeration to string.
-//! @param instance - specific value of CacheInstance enum
-//! @return instance name
-constexpr std::string_view toString(const CacheInstance instance)
-{
-    constexpr std::array<std::string_view, Bottom<CacheInstance>::value> stringify = {
-        MACRO_STRINGIFY(firstInFirstOut), MACRO_STRINGIFY(leastFrequentlyUsed), MACRO_STRINGIFY(leastRecentlyUsed)};
-    return stringify.at(instance);
-}
-
-//! @brief Convert instance enumeration to string.
-//! @param instance - specific value of FilterInstance enum
-//! @return instance name
-constexpr std::string_view toString(const FilterInstance instance)
-{
-    constexpr std::array<std::string_view, Bottom<FilterInstance>::value> stringify = {
-        MACRO_STRINGIFY(bloom), MACRO_STRINGIFY(quotient)};
-    return stringify.at(instance);
-}
-
-//! @brief Convert instance enumeration to string.
-//! @param instance - specific value of GraphInstance enum
-//! @return instance name
-constexpr std::string_view toString(const GraphInstance instance)
-{
-    constexpr std::array<std::string_view, Bottom<GraphInstance>::value> stringify = {
-        MACRO_STRINGIFY(undirected), MACRO_STRINGIFY(directed)};
-    return stringify.at(instance);
-}
-
-//! @brief Convert instance enumeration to string.
-//! @param instance - specific value of HeapInstance enum
-//! @return instance name
-constexpr std::string_view toString(const HeapInstance instance)
-{
-    constexpr std::array<std::string_view, Bottom<HeapInstance>::value> stringify = {
-        MACRO_STRINGIFY(binary), MACRO_STRINGIFY(leftist), MACRO_STRINGIFY(skew)};
-    return stringify.at(instance);
-}
-
-//! @brief Convert instance enumeration to string.
-//! @param instance - specific value of LinearInstance enum
-//! @return instance name
-constexpr std::string_view toString(const LinearInstance instance)
-{
-    constexpr std::array<std::string_view, Bottom<LinearInstance>::value> stringify = {
-        MACRO_STRINGIFY(doublyLinkedList), MACRO_STRINGIFY(stack), MACRO_STRINGIFY(queue)};
-    return stringify.at(instance);
-}
-
-//! @brief Convert instance enumeration to string.
-//! @param instance - specific value of TreeInstance enum
-//! @return instance name
-constexpr std::string_view toString(const TreeInstance instance)
-{
-    constexpr std::array<std::string_view, Bottom<TreeInstance>::value> stringify = {
-        MACRO_STRINGIFY(binarySearch), MACRO_STRINGIFY(adelsonVelskyLandis), MACRO_STRINGIFY(splay)};
-    return stringify.at(instance);
 }
 } // namespace application::reg_ds
