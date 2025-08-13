@@ -307,7 +307,7 @@ void runChoices<TreeInstance>(const std::vector<std::string>& candidates);
 //! @brief Static reflection for ApplyDataStructure. Used to map command line arguments.
 template <>
 struct utility::reflection::TypeInfo<application::reg_ds::ApplyDataStructure>
-    : public TypeInfoBase<application::reg_ds::ApplyDataStructure>
+    : public TypeInfoImpl<application::reg_ds::ApplyDataStructure>
 {
     //! @brief Name.
     static constexpr std::string_view name{"app-ds"};
@@ -329,7 +329,7 @@ struct utility::reflection::TypeInfo<application::reg_ds::ApplyDataStructure>
 //! @brief Static reflection for CacheInstance. Used to map command line arguments.
 template <>
 struct utility::reflection::TypeInfo<application::reg_ds::CacheInstance>
-    : public TypeInfoBase<application::reg_ds::CacheInstance>
+    : public TypeInfoImpl<application::reg_ds::CacheInstance>
 {
     //! @brief Name.
     static constexpr std::string_view name{"cache"};
@@ -354,7 +354,7 @@ struct utility::reflection::TypeInfo<application::reg_ds::CacheInstance>
 //! @brief Static reflection for FilterInstance. Used to map command line arguments.
 template <>
 struct utility::reflection::TypeInfo<application::reg_ds::FilterInstance>
-    : public TypeInfoBase<application::reg_ds::FilterInstance>
+    : public TypeInfoImpl<application::reg_ds::FilterInstance>
 {
     //! @brief Name.
     static constexpr std::string_view name{"filter"};
@@ -377,7 +377,7 @@ struct utility::reflection::TypeInfo<application::reg_ds::FilterInstance>
 //! @brief Static reflection for GraphInstance. Used to map command line arguments.
 template <>
 struct utility::reflection::TypeInfo<application::reg_ds::GraphInstance>
-    : public TypeInfoBase<application::reg_ds::GraphInstance>
+    : public TypeInfoImpl<application::reg_ds::GraphInstance>
 {
     //! @brief Name.
     static constexpr std::string_view name{"graph"};
@@ -400,7 +400,7 @@ struct utility::reflection::TypeInfo<application::reg_ds::GraphInstance>
 //! @brief Static reflection for HeapInstance. Used to map command line arguments.
 template <>
 struct utility::reflection::TypeInfo<application::reg_ds::HeapInstance>
-    : public TypeInfoBase<application::reg_ds::HeapInstance>
+    : public TypeInfoImpl<application::reg_ds::HeapInstance>
 {
     //! @brief Name.
     static constexpr std::string_view name{"heap"};
@@ -425,7 +425,7 @@ struct utility::reflection::TypeInfo<application::reg_ds::HeapInstance>
 //! @brief Static reflection for LinearInstance. Used to map command line arguments.
 template <>
 struct utility::reflection::TypeInfo<application::reg_ds::LinearInstance>
-    : public TypeInfoBase<application::reg_ds::LinearInstance>
+    : public TypeInfoImpl<application::reg_ds::LinearInstance>
 {
     //! @brief Name.
     static constexpr std::string_view name{"linear"};
@@ -450,7 +450,7 @@ struct utility::reflection::TypeInfo<application::reg_ds::LinearInstance>
 //! @brief Static reflection for TreeInstance. Used to map command line arguments.
 template <>
 struct utility::reflection::TypeInfo<application::reg_ds::TreeInstance>
-    : public TypeInfoBase<application::reg_ds::TreeInstance>
+    : public TypeInfoImpl<application::reg_ds::TreeInstance>
 {
     //! @brief Name.
     static constexpr std::string_view name{"tree"};

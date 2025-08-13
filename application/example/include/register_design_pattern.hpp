@@ -234,7 +234,7 @@ void runChoices<StructuralInstance>(const std::vector<std::string>& candidates);
 //! @brief Static reflection for ApplyDesignPattern. Used to map command line arguments.
 template <>
 struct utility::reflection::TypeInfo<application::reg_dp::ApplyDesignPattern>
-    : public TypeInfoBase<application::reg_dp::ApplyDesignPattern>
+    : public TypeInfoImpl<application::reg_dp::ApplyDesignPattern>
 {
     //! @brief Name.
     static constexpr std::string_view name{"app-dp"};
@@ -253,7 +253,7 @@ struct utility::reflection::TypeInfo<application::reg_dp::ApplyDesignPattern>
 //! @brief Static reflection for BehavioralInstance. Used to map command line arguments.
 template <>
 struct utility::reflection::TypeInfo<application::reg_dp::BehavioralInstance>
-    : public TypeInfoBase<application::reg_dp::BehavioralInstance>
+    : public TypeInfoImpl<application::reg_dp::BehavioralInstance>
 {
     //! @brief Name.
     static constexpr std::string_view name{"behavioral"};
@@ -294,7 +294,7 @@ struct utility::reflection::TypeInfo<application::reg_dp::BehavioralInstance>
 //! @brief Static reflection for CreationalInstance. Used to map command line arguments.
 template <>
 struct utility::reflection::TypeInfo<application::reg_dp::CreationalInstance>
-    : public TypeInfoBase<application::reg_dp::CreationalInstance>
+    : public TypeInfoImpl<application::reg_dp::CreationalInstance>
 {
     //! @brief Name.
     static constexpr std::string_view name{"creational"};
@@ -323,7 +323,7 @@ struct utility::reflection::TypeInfo<application::reg_dp::CreationalInstance>
 //! @brief Static reflection for StructuralInstance. Used to map command line arguments.
 template <>
 struct utility::reflection::TypeInfo<application::reg_dp::StructuralInstance>
-    : public TypeInfoBase<application::reg_dp::StructuralInstance>
+    : public TypeInfoImpl<application::reg_dp::StructuralInstance>
 {
     //! @brief Name.
     static constexpr std::string_view name{"structural"};
