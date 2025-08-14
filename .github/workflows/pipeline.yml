@@ -253,7 +253,7 @@ jobs:
 
       - name: Do documentation
         run: |
-          ./script/build.sh --browser --doxygen
+          ./script/build.sh --doxygen --browser
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4.3.0
