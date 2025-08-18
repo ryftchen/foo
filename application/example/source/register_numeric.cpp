@@ -17,12 +17,14 @@ const char* version() noexcept
     return ver;
 }
 
-//! @brief Get the numeric choice manager.
-//! @return reference of the ApplyNumeric object
-ApplyNumeric& manager() noexcept
+namespace manage
 {
-    static ApplyNumeric manager{};
-    return manager;
+//! @brief Get the numeric choice applier.
+//! @return reference of the ApplyNumeric object
+ApplyNumeric& applier()
+{
+    static ApplyNumeric applier{};
+    return applier;
 }
 
 //! @brief Check whether any numeric choices exist.
@@ -31,16 +33,16 @@ bool present()
 {
     bool isExist = false;
     TypeInfo<ApplyNumeric>::forEachVarOf(
-        manager(), [&isExist](const auto /*field*/, auto&& var) { isExist |= !var.none(); });
+        applier(), [&isExist](const auto /*field*/, auto&& var) { isExist |= !var.none(); });
 
     return isExist;
 }
-
 //! @brief Reset bit flags that manage numeric choices.
 void clear()
 {
-    TypeInfo<ApplyNumeric>::forEachVarOf(manager(), [](const auto /*field*/, auto&& var) { var.reset(); });
+    TypeInfo<ApplyNumeric>::forEachVarOf(applier(), [](const auto /*field*/, auto&& var) { var.reset(); });
 }
+} // namespace manage
 
 //! @brief Find the position of bit flags to set a particular method.
 //! @tparam T - type of target method

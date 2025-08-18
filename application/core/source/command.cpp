@@ -281,7 +281,7 @@ void Command::setupSubCLI<reg_algo::ApplyAlgorithm>()
     std::vector<std::string> candidates{};
 
     auto& algoTable = taskDispatcher.extraChoiceRegistry[subCLIAppAlgo.title()];
-    taskDispatcher.extraChecklist.emplace(subCLIAppAlgo.title(), Intf{&present, &clear});
+    taskDispatcher.extraChecklist.emplace(subCLIAppAlgo.title(), Intf{&manage::present, &manage::clear});
     subCLIAppAlgo.addDescription(descr<ApplyAlgorithm>());
     subCLIAppAlgo.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
     candidates = extractChoices<MatchMethod>();
@@ -372,7 +372,7 @@ void Command::setupSubCLI<reg_dp::ApplyDesignPattern>()
     std::vector<std::string> candidates{};
 
     auto& dpTable = taskDispatcher.extraChoiceRegistry[subCLIAppDp.title()];
-    taskDispatcher.extraChecklist.emplace(subCLIAppDp.title(), Intf{&present, &clear});
+    taskDispatcher.extraChecklist.emplace(subCLIAppDp.title(), Intf{&manage::present, &manage::clear});
     subCLIAppDp.addDescription(descr<ApplyDesignPattern>());
     subCLIAppDp.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
     candidates = extractChoices<BehavioralInstance>();
@@ -440,7 +440,7 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
     std::vector<std::string> candidates{};
 
     auto& dsTable = taskDispatcher.extraChoiceRegistry[subCLIAppDs.title()];
-    taskDispatcher.extraChecklist.emplace(subCLIAppDs.title(), Intf{&present, &clear});
+    taskDispatcher.extraChecklist.emplace(subCLIAppDs.title(), Intf{&manage::present, &manage::clear});
     subCLIAppDs.addDescription(descr<ApplyDataStructure>());
     subCLIAppDs.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
     candidates = extractChoices<CacheInstance>();
@@ -546,7 +546,7 @@ void Command::setupSubCLI<reg_num::ApplyNumeric>()
     std::vector<std::string> candidates{};
 
     auto& numTable = taskDispatcher.extraChoiceRegistry[subCLIAppNum.title()];
-    taskDispatcher.extraChecklist.emplace(subCLIAppNum.title(), Intf{&present, &clear});
+    taskDispatcher.extraChecklist.emplace(subCLIAppNum.title(), Intf{&manage::present, &manage::clear});
     subCLIAppNum.addDescription(descr<ApplyNumeric>());
     subCLIAppNum.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
     candidates = extractChoices<ArithmeticMethod>();
