@@ -17,12 +17,14 @@ const char* version() noexcept
     return ver;
 }
 
-//! @brief Get the design pattern choice manager.
-//! @return reference of the ApplyDesignPattern object
-ApplyDesignPattern& manager() noexcept
+namespace manage
 {
-    static ApplyDesignPattern manager{};
-    return manager;
+//! @brief Get the design pattern choice applier.
+//! @return reference of the ApplyDesignPattern object
+ApplyDesignPattern& applier()
+{
+    static ApplyDesignPattern applier{};
+    return applier;
 }
 
 //! @brief Check whether any design pattern choices exist.
@@ -31,16 +33,16 @@ bool present()
 {
     bool isExist = false;
     TypeInfo<ApplyDesignPattern>::forEachVarOf(
-        manager(), [&isExist](const auto /*field*/, auto&& var) { isExist |= !var.none(); });
+        applier(), [&isExist](const auto /*field*/, auto&& var) { isExist |= !var.none(); });
 
     return isExist;
 }
-
 //! @brief Reset bit flags that manage design pattern choices.
 void clear()
 {
-    TypeInfo<ApplyDesignPattern>::forEachVarOf(manager(), [](const auto /*field*/, auto&& var) { var.reset(); });
+    TypeInfo<ApplyDesignPattern>::forEachVarOf(applier(), [](const auto /*field*/, auto&& var) { var.reset(); });
 }
+} // namespace manage
 
 //! @brief Find the position of bit flags to set a particular instance.
 //! @tparam T - type of target instance

@@ -203,9 +203,15 @@ protected:
         return os;
     }
 };
-extern ApplyDataStructure& manager() noexcept;
+
+//! @brief Manage the data structure choices.
+namespace manage
+{
+extern ApplyDataStructure& applier();
+
 extern bool present();
 extern void clear();
+} // namespace manage
 
 //! @brief Update choice.
 //! @tparam T - type of target instance
@@ -514,7 +520,8 @@ consteval std::string_view toString(const Category cat)
 template <Category Cat>
 constexpr auto& categoryOpts()
 {
-    return std::invoke(TypeInfo<ApplyDataStructure>::fields.find(REFLECTION_STR(toString(Cat))).value, manager());
+    return std::invoke(
+        TypeInfo<ApplyDataStructure>::fields.find(REFLECTION_STR(toString(Cat))).value, manage::applier());
 }
 //! @brief Abbreviation value for the target instance.
 //! @tparam T - type of target instance

@@ -160,9 +160,15 @@ protected:
         return os;
     }
 };
-extern ApplyDesignPattern& manager() noexcept;
+
+//! @brief Manage the design pattern choices.
+namespace manage
+{
+extern ApplyDesignPattern& applier();
+
 extern bool present();
 extern void clear();
+} // namespace manage
 
 //! @brief Update choice.
 //! @tparam T - type of target instance
@@ -389,7 +395,8 @@ consteval std::string_view toString(const Category cat)
 template <Category Cat>
 constexpr auto& categoryOpts()
 {
-    return std::invoke(TypeInfo<ApplyDesignPattern>::fields.find(REFLECTION_STR(toString(Cat))).value, manager());
+    return std::invoke(
+        TypeInfo<ApplyDesignPattern>::fields.find(REFLECTION_STR(toString(Cat))).value, manage::applier());
 }
 //! @brief Abbreviation value for the target instance.
 //! @tparam T - type of target instance

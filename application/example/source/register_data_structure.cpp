@@ -17,12 +17,14 @@ const char* version() noexcept
     return ver;
 }
 
-//! @brief Get the data structure choice manager.
-//! @return reference of the ApplyDataStructure object
-ApplyDataStructure& manager() noexcept
+namespace manage
 {
-    static ApplyDataStructure manager{};
-    return manager;
+//! @brief Get the data structure choice applier.
+//! @return reference of the ApplyDataStructure object
+ApplyDataStructure& applier()
+{
+    static ApplyDataStructure applier{};
+    return applier;
 }
 
 //! @brief Check whether any data structure choices exist.
@@ -31,16 +33,16 @@ bool present()
 {
     bool isExist = false;
     TypeInfo<ApplyDataStructure>::forEachVarOf(
-        manager(), [&isExist](const auto /*field*/, auto&& var) { isExist |= !var.none(); });
+        applier(), [&isExist](const auto /*field*/, auto&& var) { isExist |= !var.none(); });
 
     return isExist;
 }
-
 //! @brief Reset bit flags that manage data structure choices.
 void clear()
 {
-    TypeInfo<ApplyDataStructure>::forEachVarOf(manager(), [](const auto /*field*/, auto&& var) { var.reset(); });
+    TypeInfo<ApplyDataStructure>::forEachVarOf(applier(), [](const auto /*field*/, auto&& var) { var.reset(); });
 }
+} // namespace manage
 
 //! @brief Find the position of bit flags to set a particular instance.
 //! @tparam T - type of target instance

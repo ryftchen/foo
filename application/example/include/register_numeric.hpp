@@ -159,9 +159,15 @@ protected:
         return os;
     }
 };
-extern ApplyNumeric& manager() noexcept;
+
+//! @brief Manage the numeric choices.
+namespace manage
+{
+extern ApplyNumeric& applier();
+
 extern bool present();
 extern void clear();
+} // namespace manage
 
 //! @brief Update choice.
 //! @tparam T - type of target method
@@ -400,7 +406,7 @@ consteval std::string_view toString(const Category cat)
 template <Category Cat>
 constexpr auto& categoryOpts()
 {
-    return std::invoke(TypeInfo<ApplyNumeric>::fields.find(REFLECTION_STR(toString(Cat))).value, manager());
+    return std::invoke(TypeInfo<ApplyNumeric>::fields.find(REFLECTION_STR(toString(Cat))).value, manage::applier());
 }
 //! @brief Abbreviation value for the target method.
 //! @tparam T - type of target method

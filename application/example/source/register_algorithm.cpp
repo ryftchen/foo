@@ -17,12 +17,14 @@ const char* version() noexcept
     return ver;
 }
 
-//! @brief Get the algorithm choice manager.
-//! @return reference of the ApplyAlgorithm object
-ApplyAlgorithm& manager() noexcept
+namespace manage
 {
-    static ApplyAlgorithm manager{};
-    return manager;
+//! @brief Get the algorithm choice applier.
+//! @return reference of the ApplyAlgorithm object
+ApplyAlgorithm& applier()
+{
+    static ApplyAlgorithm applier{};
+    return applier;
 }
 
 //! @brief Check whether any algorithm choices exist.
@@ -31,16 +33,16 @@ bool present()
 {
     bool isExist = false;
     TypeInfo<ApplyAlgorithm>::forEachVarOf(
-        manager(), [&isExist](const auto /*field*/, auto&& var) { isExist |= !var.none(); });
+        applier(), [&isExist](const auto /*field*/, auto&& var) { isExist |= !var.none(); });
 
     return isExist;
 }
-
 //! @brief Reset bit flags that manage algorithm choices.
 void clear()
 {
-    TypeInfo<ApplyAlgorithm>::forEachVarOf(manager(), [](const auto /*field*/, auto&& var) { var.reset(); });
+    TypeInfo<ApplyAlgorithm>::forEachVarOf(applier(), [](const auto /*field*/, auto&& var) { var.reset(); });
 }
+} // namespace manage
 
 //! @brief Find the position of bit flags to set a particular method.
 //! @tparam T - type of target method

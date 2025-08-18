@@ -203,9 +203,15 @@ protected:
         return os;
     }
 };
-extern ApplyAlgorithm& manager() noexcept;
+
+//! @brief Manage the algorithm choices.
+namespace manage
+{
+extern ApplyAlgorithm& applier();
+
 extern bool present();
 extern void clear();
+} // namespace manage
 
 //! @brief Update choice.
 //! @tparam T - type of target method
@@ -502,7 +508,7 @@ consteval std::string_view toString(const Category cat)
 template <Category Cat>
 constexpr auto& categoryOpts()
 {
-    return std::invoke(TypeInfo<ApplyAlgorithm>::fields.find(REFLECTION_STR(toString(Cat))).value, manager());
+    return std::invoke(TypeInfo<ApplyAlgorithm>::fields.find(REFLECTION_STR(toString(Cat))).value, manage::applier());
 }
 //! @brief Abbreviation value for the target method.
 //! @tparam T - type of target method
