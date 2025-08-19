@@ -133,9 +133,9 @@ class FilterTestBase : public ::testing::Test
 {
 protected:
     //! @brief Set up the test case.
-    static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE("Filter", "BEGIN"); }
+    static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE("FILTER", "BEGIN"); }
     //! @brief Tear down the test case.
-    static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE("Filter", "END"); }
+    static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE("FILTER", "END"); }
 
     //! @brief System under test.
     const filter::Showcase sut{};
