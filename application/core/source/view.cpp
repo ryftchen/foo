@@ -233,6 +233,14 @@ static bool decodeTLV(char* buf, const int len, TLVValue& val)
 }
 } // namespace tlv
 
+View::View() : FSM(State::init)
+{
+    if (!configure::detail::activateHelper()) [[unlikely]]
+    {
+        throw std::logic_error{"The " + name + " is disabled."};
+    }
+}
+
 View& View::getInstance()
 {
     if (configure::detail::activateHelper()) [[likely]]

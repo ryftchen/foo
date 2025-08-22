@@ -71,7 +71,7 @@ constexpr std::string_view traceLevelPrefixRegex = R"(\[TRC\])";
 //! @brief Regular expression of date time in log.
 constexpr std::string_view dateTimeRegex = R"(\[(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.(\d{9})Z\])";
 //! @brief Regular expression of code file in log.
-constexpr std::string_view codeFileRegex = R"(\[[^ ]+\.(c|h|cc|hh|cpp|hpp|tpp|cxx|hxx|C|H)#\d+\])";
+constexpr std::string_view codeFileRegex = R"(\[[^ ]+\.(cpp|hpp|tpp)#\d+\])";
 
 //! @brief Debug level prefix with color. Include ANSI escape codes.
 constexpr auto debugLevelPrefixWithColor =
@@ -119,14 +119,18 @@ static const HlRegex& logStyle()
     return highlight;
 }
 
+Log::Log() : FSM(State::init)
+{
+    if (!configure::detail::activateHelper()) [[unlikely]]
+    {
+        throw std::logic_error{"The " + name + " is disabled."};
+    }
+}
+
 Log& Log::getInstance()
 {
-    if (configure::detail::activateHelper()) [[likely]]
-    {
-        static Log logger{};
-        return logger;
-    }
-    throw std::logic_error{"The " + name + " is disabled."};
+    static Log logger{};
+    return logger;
 }
 
 // NOLINTBEGIN(cppcoreguidelines-avoid-goto)

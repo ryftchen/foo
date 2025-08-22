@@ -8,7 +8,6 @@
 #include "register_numeric.hpp"
 
 #ifndef _PRECOMPILED_HEADER
-#include <cassert>
 #include <iomanip>
 #include <ranges>
 #include <syncstream>
@@ -139,7 +138,6 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
     {
         return;
     }
-    assert(bits.size() == candidates.size());
 
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
@@ -236,7 +234,6 @@ void applyingDivisor(const std::vector<std::string>& candidates)
     {
         return;
     }
-    assert(bits.size() == candidates.size());
 
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
@@ -358,7 +355,6 @@ void applyingIntegral(const std::vector<std::string>& candidates)
     {
         return;
     }
-    assert(bits.size() == candidates.size());
 
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
@@ -464,7 +460,6 @@ void applyingPrime(const std::vector<std::string>& candidates)
     {
         return;
     }
-    assert(bits.size() == candidates.size());
 
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 

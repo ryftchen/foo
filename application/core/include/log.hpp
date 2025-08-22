@@ -189,27 +189,16 @@ public:
 
 private:
     //! @brief Construct a new Log object.
-    //! @param filePath -full path to the log file
-    //! @param priorityLevel - priority level
-    //! @param targetType - target type
-    //! @param writeMode - write mode
-    explicit Log(
-        const std::string_view filePath = getFullLogPath(configure::detail::filePath4Logger()),
-        const OutputLevel priorityLevel = static_cast<OutputLevel>(configure::detail::priorityLevel4Logger()),
-        const OutputType targetType = static_cast<OutputType>(configure::detail::targetType4Logger()),
-        const OutputMode writeMode = static_cast<OutputMode>(configure::detail::writeMode4Logger())) :
-        FSM(State::init), filePath{filePath}, priorityLevel{priorityLevel}, targetType{targetType}, writeMode{writeMode}
-    {
-    }
+    Log();
 
     //! @brief Full path to the log file.
-    const std::string filePath{getFullLogPath()};
+    const std::string filePath{getFullLogPath(configure::detail::filePath4Logger())};
     //! @brief Priority level.
-    const OutputLevel priorityLevel{OutputLevel::debug};
+    const OutputLevel priorityLevel{static_cast<OutputLevel>(configure::detail::priorityLevel4Logger())};
     //! @brief Target type.
-    const OutputType targetType{OutputType::all};
+    const OutputType targetType{static_cast<OutputType>(configure::detail::targetType4Logger())};
     //! @brief Write mode.
-    const OutputMode writeMode{OutputMode::append};
+    const OutputMode writeMode{static_cast<OutputMode>(configure::detail::writeMode4Logger())};
     //! @brief Timeout period (ms) to waiting for the logger to change to the target state.
     const std::uint32_t timeoutPeriod{static_cast<std::uint32_t>(configure::detail::helperTimeout())};
     //! @brief The queue of logs.
@@ -355,7 +344,7 @@ void printfStyle(
     const std::string& format,
     Args&&... args)
 {
-    if (configure::detail::activateHelper())
+    if (configure::detail::activateHelper()) [[likely]]
     {
         Log::getInstance().flush(
             severity,
@@ -385,7 +374,7 @@ void formatStyle(
     const std::string& format,
     Args&&... args)
 {
-    if (configure::detail::activateHelper())
+    if (configure::detail::activateHelper()) [[likely]]
     {
         Log::getInstance().flush(
             severity,
