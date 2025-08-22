@@ -1035,7 +1035,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
             try
             {
                 utility::common::invokeCallableWith<log::Log>(gracefulReset);
-                LOG_INF_F("Refreshed the {} outputs.", log::Log::name);
+                LOG_INF << "Refreshed the " << log::Log::name << " outputs.";
             }
             catch (const std::exception& err)
             {
@@ -1062,7 +1062,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
                 utility::common::invokeCallableWith<view::View>(gracefulReset);
                 client = std::make_shared<T>();
                 launchClient(client);
-                LOG_INF_F("Reconnected to the {} servers.", view::View::name);
+                LOG_INF << "Reconnected to the " << view::View::name << " servers.";
             }
             catch (const std::exception& err)
             {
