@@ -69,7 +69,7 @@ static void triggerHelper(const ExtEvent event)
         case ExtEvent::reload:
             typename Helper::Access().reload();
             return;
-        [[unlikely]] default:
+        default:
             break;
     }
 }
@@ -278,12 +278,13 @@ void Command::setupSubCLI<reg_algo::ApplyAlgorithm>()
     constexpr std::string_view helpDescr = getDescr(Category::help);
     const std::string helpArg1 = shortPrefix + std::string{getAlias(Category::help)},
                       helpArg2 = longPrefix + std::string{toString(Category::help)};
+    auto& algoTable = taskDispatcher.extraChoiceRegistry[subCLIAppAlgo.title()];
     std::vector<std::string> candidates{};
 
-    auto& algoTable = taskDispatcher.extraChoiceRegistry[subCLIAppAlgo.title()];
     taskDispatcher.extraChecklist.emplace(subCLIAppAlgo.title(), Intf{&manage::present, &manage::clear});
     subCLIAppAlgo.addDescription(descr<ApplyAlgorithm>());
     subCLIAppAlgo.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
+
     candidates = extractChoices<MatchMethod>();
     algoTable.emplace(name<MatchMethod>(), Attr{candidates, MatchMethod{}});
     subCLIAppAlgo
@@ -355,6 +356,7 @@ void Command::setupSubCLI<reg_algo::ApplyAlgorithm>()
     applyingForwarder.registerHandler([](const action::RunChoices<SortMethod>& msg)
                                       { runChoices<SortMethod>(msg.coll); });
     versionLinks.emplace(VerLinkKey{name<ApplyAlgorithm>(), sort::version()}, name<SortMethod>());
+
     mainCLI.addSubParser(subCLIAppAlgo);
 }
 
@@ -369,12 +371,13 @@ void Command::setupSubCLI<reg_dp::ApplyDesignPattern>()
     constexpr std::string_view helpDescr = getDescr(Category::help);
     const std::string helpArg1 = shortPrefix + std::string{getAlias(Category::help)},
                       helpArg2 = longPrefix + std::string{toString(Category::help)};
+    auto& dpTable = taskDispatcher.extraChoiceRegistry[subCLIAppDp.title()];
     std::vector<std::string> candidates{};
 
-    auto& dpTable = taskDispatcher.extraChoiceRegistry[subCLIAppDp.title()];
     taskDispatcher.extraChecklist.emplace(subCLIAppDp.title(), Intf{&manage::present, &manage::clear});
     subCLIAppDp.addDescription(descr<ApplyDesignPattern>());
     subCLIAppDp.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
+
     candidates = extractChoices<BehavioralInstance>();
     dpTable.emplace(name<BehavioralInstance>(), Attr{candidates, BehavioralInstance{}});
     subCLIAppDp
@@ -423,6 +426,7 @@ void Command::setupSubCLI<reg_dp::ApplyDesignPattern>()
     applyingForwarder.registerHandler([](const action::RunChoices<StructuralInstance>& msg)
                                       { runChoices<StructuralInstance>(msg.coll); });
     versionLinks.emplace(VerLinkKey{name<ApplyDesignPattern>(), structural::version()}, name<StructuralInstance>());
+
     mainCLI.addSubParser(subCLIAppDp);
 }
 
@@ -437,12 +441,13 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
     constexpr std::string_view helpDescr = getDescr(Category::help);
     const std::string helpArg1 = shortPrefix + std::string{getAlias(Category::help)},
                       helpArg2 = longPrefix + std::string{toString(Category::help)};
+    auto& dsTable = taskDispatcher.extraChoiceRegistry[subCLIAppDs.title()];
     std::vector<std::string> candidates{};
 
-    auto& dsTable = taskDispatcher.extraChoiceRegistry[subCLIAppDs.title()];
     taskDispatcher.extraChecklist.emplace(subCLIAppDs.title(), Intf{&manage::present, &manage::clear});
     subCLIAppDs.addDescription(descr<ApplyDataStructure>());
     subCLIAppDs.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
+
     candidates = extractChoices<CacheInstance>();
     dsTable.emplace(name<CacheInstance>(), Attr{candidates, CacheInstance{}});
     subCLIAppDs
@@ -529,6 +534,7 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
     applyingForwarder.registerHandler([](const action::RunChoices<TreeInstance>& msg)
                                       { runChoices<TreeInstance>(msg.coll); });
     versionLinks.emplace(VerLinkKey{name<ApplyDataStructure>(), tree::version()}, name<TreeInstance>());
+
     mainCLI.addSubParser(subCLIAppDs);
 }
 
@@ -543,12 +549,13 @@ void Command::setupSubCLI<reg_num::ApplyNumeric>()
     constexpr std::string_view helpDescr = getDescr(Category::help);
     const std::string helpArg1 = shortPrefix + std::string{getAlias(Category::help)},
                       helpArg2 = longPrefix + std::string{toString(Category::help)};
+    auto& numTable = taskDispatcher.extraChoiceRegistry[subCLIAppNum.title()];
     std::vector<std::string> candidates{};
 
-    auto& numTable = taskDispatcher.extraChoiceRegistry[subCLIAppNum.title()];
     taskDispatcher.extraChecklist.emplace(subCLIAppNum.title(), Intf{&manage::present, &manage::clear});
     subCLIAppNum.addDescription(descr<ApplyNumeric>());
     subCLIAppNum.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
+
     candidates = extractChoices<ArithmeticMethod>();
     numTable.emplace(name<ArithmeticMethod>(), Attr{candidates, ArithmeticMethod{}});
     subCLIAppNum
@@ -607,6 +614,7 @@ void Command::setupSubCLI<reg_num::ApplyNumeric>()
     applyingForwarder.registerHandler([](const action::RunChoices<PrimeMethod>& msg)
                                       { runChoices<PrimeMethod>(msg.coll); });
     versionLinks.emplace(VerLinkKey{name<ApplyNumeric>(), prime::version()}, name<PrimeMethod>());
+
     mainCLI.addSubParser(subCLIAppNum);
 }
 // NOLINTEND(google-build-using-namespace, readability-function-size)
@@ -1027,7 +1035,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
             try
             {
                 utility::common::invokeCallableWith<log::Log>(gracefulReset);
-                LOG_INF << "Refreshed the " << log::Log::name << " outputs.";
+                LOG_INF_F("Refreshed the {} outputs.", log::Log::name);
             }
             catch (const std::exception& err)
             {
@@ -1054,7 +1062,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
                 utility::common::invokeCallableWith<view::View>(gracefulReset);
                 client = std::make_shared<T>();
                 launchClient(client);
-                LOG_INF << "Reconnected to the " << view::View::name << " servers.";
+                LOG_INF_F("Reconnected to the {} servers.", view::View::name);
             }
             catch (const std::exception& err)
             {

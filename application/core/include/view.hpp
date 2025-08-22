@@ -126,27 +126,16 @@ public:
 
 private:
     //! @brief Construct a new View object.
-    //! @param tcpHost - tcp server host address
-    //! @param tcpPort - tcp server port number
-    //! @param udpHost - udp server host address
-    //! @param udpPort - udp server port number
-    explicit View(
-        const std::string_view tcpHost = configure::detail::tcpHost4Viewer(),
-        const std::uint16_t tcpPort = configure::detail::tcpPort4Viewer(),
-        const std::string_view udpHost = configure::detail::udpHost4Viewer(),
-        const std::uint16_t udpPort = configure::detail::udpPort4Viewer()) :
-        FSM(State::init), tcpHost{tcpHost}, tcpPort{tcpPort}, udpHost{udpHost}, udpPort{udpPort}
-    {
-    }
+    View();
 
     //! @brief TCP server host address.
-    const std::string tcpHost{"localhost"};
+    const std::string tcpHost{configure::detail::tcpHost4Viewer()};
     //! @brief TCP server port number.
-    const std::uint16_t tcpPort{61501};
+    const std::uint16_t tcpPort{static_cast<std::uint16_t>(configure::detail::tcpPort4Viewer())};
     //! @brief UDP server host address.
-    const std::string udpHost{"localhost"};
+    const std::string udpHost{configure::detail::udpHost4Viewer()};
     //! @brief UDP server port number.
-    const std::uint16_t udpPort{61502};
+    const std::uint16_t udpPort{static_cast<std::uint16_t>(configure::detail::udpPort4Viewer())};
     //! @brief Timeout period (ms) to waiting for the viewer to change to the target state.
     const std::uint32_t timeoutPeriod{static_cast<std::uint32_t>(configure::detail::helperTimeout())};
 

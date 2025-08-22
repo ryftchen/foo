@@ -8,7 +8,6 @@
 #include "register_data_structure.hpp"
 
 #ifndef _PRECOMPILED_HEADER
-#include <cassert>
 #include <iomanip>
 #include <ranges>
 #include <syncstream>
@@ -113,7 +112,6 @@ void applyingFilter(const std::vector<std::string>& candidates)
     {
         return;
     }
-    assert(bits.size() == candidates.size());
 
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
@@ -190,7 +188,6 @@ void applyingGraph(const std::vector<std::string>& candidates)
     {
         return;
     }
-    assert(bits.size() == candidates.size());
 
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
@@ -278,7 +275,6 @@ void applyingHeap(const std::vector<std::string>& candidates)
     {
         return;
     }
-    assert(bits.size() == candidates.size());
 
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
@@ -369,7 +365,6 @@ void applyingCache(const std::vector<std::string>& candidates)
     {
         return;
     }
-    assert(bits.size() == candidates.size());
 
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
@@ -460,7 +455,6 @@ void applyingLinear(const std::vector<std::string>& candidates)
     {
         return;
     }
-    assert(bits.size() == candidates.size());
 
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
@@ -551,7 +545,6 @@ void applyingTree(const std::vector<std::string>& candidates)
     {
         return;
     }
-    assert(bits.size() == candidates.size());
 
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
 
