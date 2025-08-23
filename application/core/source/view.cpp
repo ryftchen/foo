@@ -821,21 +821,22 @@ std::string View::statusReportsPreview(const std::uint16_t frame)
 
     const int pid = ::getpid();
     constexpr std::uint16_t totalLen = 1024;
-    char cmd[totalLen] = {'\0'};
-    std::snprintf(cmd, totalLen, "ps -T -p %d | awk 'NR>1 {split($0, a, \" \"); print a[2]}'", pid);
+    std::array<char, totalLen> queryStmt{};
+    std::snprintf(
+        queryStmt.data(), queryStmt.size(), "ps -T -p %d | awk 'NR>1 {split($0, a, \" \"); print a[2]}'", pid);
 
     constexpr const char* const focusField = "Name|State|Tgid|Pid|PPid|TracerPid|Uid|Gid|VmSize|VmRSS|CoreDumping|"
                                              "Threads|SigQ|voluntary_ctxt_switches|nonvoluntary_ctxt_switches";
-    const auto queryResult = utility::io::executeCommand(cmd);
-    std::vector<std::string> cmdColl{};
+    const auto queryResult = utility::io::executeCommand(queryStmt.data());
+    std::vector<std::string> statements{};
     std::size_t pos = 0, prev = 0;
     while ((pos = queryResult.find('\n', prev)) != std::string::npos)
     {
         const int tid = std::stoi(queryResult.substr(prev, pos - prev + 1));
-        char cmd[totalLen] = {'\0'};
+        std::array<char, totalLen> execStmt{};
         if (const int usedLen = std::snprintf(
-                cmd,
-                totalLen,
+                execStmt.data(),
+                execStmt.size(),
                 "/bin/bash -c "
                 "\"if [[ -f /proc/%d/task/%d/status ]]; then cat /proc/%d/task/%d/status | grep -E '^(%s):'",
                 pid,
@@ -845,30 +846,30 @@ std::string View::statusReportsPreview(const std::uint16_t frame)
                 focusField);
             frame == 0)
         {
-            std::strncpy(cmd + usedLen, "; fi\"", totalLen - usedLen);
+            std::strncpy(execStmt.data() + usedLen, "; fi\"", execStmt.size() - usedLen);
+            execStmt[totalLen - 1] = '\0';
         }
         else
         {
             std::snprintf(
-                cmd + usedLen,
-                totalLen - usedLen,
+                execStmt.data() + usedLen,
+                execStmt.size() - usedLen,
                 " && echo 'Stack:' "
                 "&& (timeout --preserve-status --signal=2 1 stdbuf -o0 eu-stack -1v -n %d -p %d 2>&1 | grep '#' "
                 "|| exit 0); fi\"",
                 frame,
                 tid);
         }
-        cmdColl.emplace_back(cmd);
+        statements.emplace_back(execStmt.data());
         prev += pos - prev + 1;
     }
-    cmd[totalLen - 1] = '\0';
 
     return std::accumulate(
-        cmdColl.cbegin(),
-        cmdColl.cend(),
+        statements.cbegin(),
+        statements.cend(),
         std::string{},
-        [](const auto& acc, const auto& cmd)
-        { return acc.empty() ? utility::io::executeCommand(cmd) : (acc + '\n' + utility::io::executeCommand(cmd)); });
+        [](const auto& acc, const auto& stmt)
+        { return acc.empty() ? utility::io::executeCommand(stmt) : (acc + '\n' + utility::io::executeCommand(stmt)); });
 }
 
 //! @brief Renew the TCP server.
@@ -892,17 +893,18 @@ void View::renewServer<utility::socket::TCPServer>()
                 return;
             }
 
-            char respBuffer[1024] = {'\0'};
+            std::array<char, 1024> respBuffer{};
             try
             {
                 const auto reqPlaintext = utility::common::base64Decode(message);
-                (reqPlaintext != exitSymbol) ? newSocket->toSend(respBuffer, buildResponse(reqPlaintext, respBuffer))
-                                             : newSocket->toSend(respBuffer, buildFinTLVPacket(respBuffer));
+                (reqPlaintext != exitSymbol)
+                    ? newSocket->toSend(respBuffer.data(), buildResponse(reqPlaintext, respBuffer.data()))
+                    : newSocket->toSend(respBuffer.data(), buildFinTLVPacket(respBuffer.data()));
             }
             catch (const std::exception& err)
             {
                 LOG_WRN << err.what();
-                newSocket->toSend(respBuffer, buildAckTLVPacket(respBuffer));
+                newSocket->toSend(respBuffer.data(), buildAckTLVPacket(respBuffer.data()));
             }
         };
     };
@@ -921,18 +923,18 @@ void View::renewServer<utility::socket::UDPServer>()
             return;
         }
 
-        char respBuffer[1024] = {'\0'};
+        std::array<char, 1024> respBuffer{};
         try
         {
             const auto reqPlaintext = utility::common::base64Decode(message);
             (reqPlaintext != exitSymbol)
-                ? udpServer->toSendTo(respBuffer, buildResponse(reqPlaintext, respBuffer), ip, port)
-                : udpServer->toSendTo(respBuffer, buildFinTLVPacket(respBuffer), ip, port);
+                ? udpServer->toSendTo(respBuffer.data(), buildResponse(reqPlaintext, respBuffer.data()), ip, port)
+                : udpServer->toSendTo(respBuffer.data(), buildFinTLVPacket(respBuffer.data()), ip, port);
         }
         catch (const std::exception& err)
         {
             LOG_WRN << err.what();
-            udpServer->toSendTo(respBuffer, buildAckTLVPacket(respBuffer), ip, port);
+            udpServer->toSendTo(respBuffer.data(), buildAckTLVPacket(respBuffer.data()), ip, port);
         }
     };
 }

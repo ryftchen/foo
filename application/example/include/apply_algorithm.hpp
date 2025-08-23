@@ -476,14 +476,14 @@ public:
             align = std::max(static_cast<std::uint32_t>(std::to_string(*(array + i)).length()), align);
         }
 
-        char spliceFmt[16] = {'\0'};
+        std::array<char, 16> spliceFmt{};
         if constexpr (std::is_integral_v<T>)
         {
-            std::snprintf(spliceFmt, sizeof(spliceFmt), "%%%dd%%c", align + 1);
+            std::snprintf(spliceFmt.data(), spliceFmt.size(), "%%%dd%%c", align + 1);
         }
         else if constexpr (std::is_floating_point_v<T>)
         {
-            std::snprintf(spliceFmt, sizeof(spliceFmt), "%%%d.5f%%c", align + 1);
+            std::snprintf(spliceFmt.data(), spliceFmt.size(), "%%%d.5f%%c", align + 1);
         }
         else
         {
@@ -493,7 +493,8 @@ public:
         for (std::uint32_t i = 0, offset = 0; i < length; ++i)
         {
             const char sep = (((i + 1) % maxColumnOfPrint == 0) && ((i + 1) != length)) ? '\n' : ' ';
-            const int written = std::snprintf(fmtBuffer + offset, bufferSize - offset, spliceFmt, *(array + i), sep);
+            const int written =
+                std::snprintf(fmtBuffer + offset, bufferSize - offset, spliceFmt.data(), *(array + i), sep);
             if ((written < 0) || (written >= static_cast<int>(bufferSize - offset)))
             {
                 break;
@@ -680,14 +681,14 @@ public:
             align = std::max(static_cast<std::uint32_t>(std::to_string(*(array + i)).length()), align);
         }
 
-        char spliceFmt[16] = {'\0'};
+        std::array<char, 16> spliceFmt{};
         if constexpr (std::is_integral_v<T>)
         {
-            std::snprintf(spliceFmt, sizeof(spliceFmt), "%%%dd%%c", align + 1);
+            std::snprintf(spliceFmt.data(), spliceFmt.size(), "%%%dd%%c", align + 1);
         }
         else if constexpr (std::is_floating_point_v<T>)
         {
-            std::snprintf(spliceFmt, sizeof(spliceFmt), "%%%d.5f%%c", align + 1);
+            std::snprintf(spliceFmt.data(), spliceFmt.size(), "%%%d.5f%%c", align + 1);
         }
         else
         {
@@ -697,7 +698,8 @@ public:
         for (std::uint32_t i = 0, offset = 0; i < length; ++i)
         {
             const char sep = (((i + 1) % maxColumnOfPrint == 0) && ((i + 1) != length)) ? '\n' : ' ';
-            const int written = std::snprintf(fmtBuffer + offset, bufferSize - offset, spliceFmt, *(array + i), sep);
+            const int written =
+                std::snprintf(fmtBuffer + offset, bufferSize - offset, spliceFmt.data(), *(array + i), sep);
             if ((written < 0) || (written >= static_cast<int>(bufferSize - offset)))
             {
                 break;

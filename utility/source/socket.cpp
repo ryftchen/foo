@@ -9,6 +9,7 @@
 #include <sys/poll.h>
 #include <netdb.h>
 #include <algorithm>
+#include <array>
 #include <cstring>
 #include <vector>
 
@@ -27,21 +28,21 @@ const char* version() noexcept
 //! @return ip address string
 static std::string ipAddrString(const ::sockaddr_in& addr)
 {
-    char ip[INET_ADDRSTRLEN] = {'\0'};
-    ::inet_ntop(AF_INET, &addr.sin_addr, ip, INET_ADDRSTRLEN);
+    std::array<char, INET_ADDRSTRLEN> ip{};
+    ::inet_ntop(AF_INET, &addr.sin_addr, ip.data(), ip.size());
 
-    return std::string{ip};
+    return std::string{ip.data()};
 }
 
 //! @brief Get the errno string safely.
 //! @return errno string
 static std::string errnoString()
 {
-    char buffer[64] = {'\0'};
+    std::array<char, 64> buffer{};
 #ifdef _GNU_SOURCE
-    return ::strerror_r(errno, buffer, sizeof(buffer));
+    return ::strerror_r(errno, buffer.data(), buffer.size());
 #else
-    return (::strerror_r(errno, buffer, sizeof(buffer)) == 0) ? std::string{buffer} : "Unknown error";
+    return (::strerror_r(errno, buffer.data(), buffer.size()) == 0) ? std::string{buffer.data()} : "Unknown error";
 #endif // _GNU_SOURCE
 }
 
@@ -186,8 +187,7 @@ void TCPSocket::toReceive(const bool toDetach)
 
 void TCPSocket::toRecv(const std::shared_ptr<TCPSocket> socket) // NOLINT(performance-unnecessary-value-param)
 {
-    char tempBuffer[bufferSize];
-    tempBuffer[0] = '\0';
+    std::array<char, bufferSize> tempBuffer{};
     std::vector<::pollfd> pollFDs(1);
     pollFDs.at(0).fd = socket->sock;
     pollFDs.at(0).events = POLLIN;
@@ -207,7 +207,7 @@ void TCPSocket::toRecv(const std::shared_ptr<TCPSocket> socket) // NOLINT(perfor
         {
             if (const Guard lock(*socket); true)
             {
-                msgLen = ::recv(socket->sock, tempBuffer, bufferSize, 0);
+                msgLen = ::recv(socket->sock, tempBuffer.data(), tempBuffer.size(), 0);
                 if (msgLen <= 0)
                 {
                     break;
@@ -217,11 +217,11 @@ void TCPSocket::toRecv(const std::shared_ptr<TCPSocket> socket) // NOLINT(perfor
             tempBuffer[msgLen] = '\0';
             if (socket->onMessageReceived)
             {
-                socket->onMessageReceived(std::string(tempBuffer, msgLen));
+                socket->onMessageReceived(std::string(tempBuffer.data(), msgLen));
             }
             if (socket->onRawMessageReceived)
             {
-                socket->onRawMessageReceived(tempBuffer, msgLen);
+                socket->onRawMessageReceived(tempBuffer.data(), msgLen);
             }
         }
     }
@@ -437,8 +437,7 @@ void UDPSocket::toReceiveFrom(const bool toDetach)
 
 void UDPSocket::toRecv(const std::shared_ptr<UDPSocket> socket) // NOLINT(performance-unnecessary-value-param)
 {
-    char tempBuffer[bufferSize];
-    tempBuffer[0] = '\0';
+    std::array<char, bufferSize> tempBuffer{};
     std::vector<::pollfd> pollFDs(1);
     pollFDs.at(0).fd = socket->sock;
     pollFDs.at(0).events = POLLIN;
@@ -458,7 +457,7 @@ void UDPSocket::toRecv(const std::shared_ptr<UDPSocket> socket) // NOLINT(perfor
         {
             if (const Guard lock(*socket); true)
             {
-                msgLen = ::recv(socket->sock, tempBuffer, bufferSize, 0);
+                msgLen = ::recv(socket->sock, tempBuffer.data(), tempBuffer.size(), 0);
                 if (msgLen == -1)
                 {
                     break;
@@ -469,11 +468,12 @@ void UDPSocket::toRecv(const std::shared_ptr<UDPSocket> socket) // NOLINT(perfor
             if (socket->onMessageReceived)
             {
                 socket->onMessageReceived(
-                    std::string_view(tempBuffer, msgLen), socket->transportAddress(), socket->transportPort());
+                    std::string_view(tempBuffer.data(), msgLen), socket->transportAddress(), socket->transportPort());
             }
             if (socket->onRawMessageReceived)
             {
-                socket->onRawMessageReceived(tempBuffer, msgLen, socket->transportAddress(), socket->transportPort());
+                socket->onRawMessageReceived(
+                    tempBuffer.data(), msgLen, socket->transportAddress(), socket->transportPort());
             }
         }
     }
@@ -484,8 +484,7 @@ void UDPSocket::toRecvFrom(const std::shared_ptr<UDPSocket> socket) // NOLINT(pe
     ::sockaddr_in addr{};
     ::socklen_t hostAddrSize = sizeof(addr);
 
-    char tempBuffer[bufferSize];
-    tempBuffer[0] = '\0';
+    std::array<char, bufferSize> tempBuffer{};
     std::vector<::pollfd> pollFDs(1);
     pollFDs.at(0).fd = socket->sock;
     pollFDs.at(0).events = POLLIN;
@@ -506,7 +505,12 @@ void UDPSocket::toRecvFrom(const std::shared_ptr<UDPSocket> socket) // NOLINT(pe
             if (const Guard lock(*socket); true)
             {
                 msgLen = ::recvfrom(
-                    socket->sock, tempBuffer, bufferSize, 0, reinterpret_cast<::sockaddr*>(&addr), &hostAddrSize);
+                    socket->sock,
+                    tempBuffer.data(),
+                    tempBuffer.size(),
+                    0,
+                    reinterpret_cast<::sockaddr*>(&addr),
+                    &hostAddrSize);
                 if (msgLen == -1)
                 {
                     break;
@@ -517,11 +521,11 @@ void UDPSocket::toRecvFrom(const std::shared_ptr<UDPSocket> socket) // NOLINT(pe
             if (socket->onMessageReceived)
             {
                 socket->onMessageReceived(
-                    std::string_view(tempBuffer, msgLen), ipAddrString(addr), ::ntohs(addr.sin_port));
+                    std::string_view(tempBuffer.data(), msgLen), ipAddrString(addr), ::ntohs(addr.sin_port));
             }
             if (socket->onRawMessageReceived)
             {
-                socket->onRawMessageReceived(tempBuffer, msgLen, ipAddrString(addr), ::ntohs(addr.sin_port));
+                socket->onRawMessageReceived(tempBuffer.data(), msgLen, ipAddrString(addr), ::ntohs(addr.sin_port));
             }
         }
     }
