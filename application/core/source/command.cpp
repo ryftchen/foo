@@ -29,7 +29,7 @@ inline namespace
 //! @brief Constraint for external helpers.
 //! @tparam T - type of helper
 template <typename T>
-concept HelperType = !std::is_constructible_v<T> && !std::is_copy_constructible_v<T> && !std::is_copy_assignable_v<T>
+concept ExtHelper = !std::is_constructible_v<T> && !std::is_copy_constructible_v<T> && !std::is_copy_assignable_v<T>
     && !std::is_move_constructible_v<T> && !std::is_move_assignable_v<T> && requires (const T& /*helper*/) {
            { T::getInstance() } -> std::same_as<T&>;
        };
@@ -49,7 +49,7 @@ enum class ExtEvent : std::uint8_t
 //! @brief Trigger the external helper with event.
 //! @tparam Helper - type of helper
 //! @param event - target event
-template <HelperType Helper>
+template <ExtHelper Helper>
 requires std::derived_from<Helper, utility::fsm::FSM<Helper>>
 static void triggerHelper(const ExtEvent event)
 {
@@ -76,7 +76,7 @@ static void triggerHelper(const ExtEvent event)
 
 //! @brief Helper daemon function.
 //! @tparam Helpers - type of arguments of helper
-template <HelperType... Helpers>
+template <ExtHelper... Helpers>
 requires (std::derived_from<Helpers, utility::fsm::FSM<Helpers>> && ...)
 static void helperDaemon()
 {
@@ -125,7 +125,7 @@ static action::Awaitable helperLifecycle()
 }
 
 //! @brief Convert category enumeration to string.
-//! @param cat - specific value of Category enum
+//! @param cat - native category
 //! @return category name
 static constexpr std::string_view toString(const Category cat)
 {
@@ -143,7 +143,7 @@ static constexpr std::string_view toString(const Category cat)
     X(Category::help   , "h", "show this help message and exit"       ) \
     X(Category::version, "v", "show version information and exit"     )
 // clang-format on
-consteval std::string_view Command::getAlias(const Category cat)
+consteval std::string_view Command::mappedAlias(const Category cat)
 {
 //! @cond
 #define X(enum, descr, alias) {descr, alias},
@@ -154,7 +154,7 @@ consteval std::string_view Command::getAlias(const Category cat)
 #undef X
 }
 
-consteval std::string_view Command::getDescr(const Category cat)
+consteval std::string_view Command::mappedDescr(const Category cat)
 {
 //! @cond
 #define X(enum, descr, alias) {descr, alias},
@@ -224,29 +224,29 @@ void Command::setupMainCLI()
     using ArgsNumPattern = utility::argument::ArgsNumPattern;
     mainCLI
         .addArgument(
-            shortPrefix + std::string{getAlias(Category::help)}, longPrefix + std::string{toString(Category::help)})
+            shortPrefix + std::string{mappedAlias(Category::help)}, longPrefix + std::string{toString(Category::help)})
         .argsNum(0)
         .implicitValue(true)
-        .help(getDescr(Category::help));
+        .help(mappedDescr(Category::help));
     builtInNotifier.attach(Category::help, std::make_shared<LocalNotifier::Handler<Category::help>>(*this));
     mainCLI
         .addArgument(
-            shortPrefix + std::string{getAlias(Category::version)},
+            shortPrefix + std::string{mappedAlias(Category::version)},
             longPrefix + std::string{toString(Category::version)})
         .argsNum(0)
         .implicitValue(true)
-        .help(getDescr(Category::version));
+        .help(mappedDescr(Category::version));
     builtInNotifier.attach(Category::version, std::make_shared<LocalNotifier::Handler<Category::version>>(*this));
     mainCLI
         .addArgument(
-            shortPrefix + std::string{getAlias(Category::dump)}, longPrefix + std::string{toString(Category::dump)})
+            shortPrefix + std::string{mappedAlias(Category::dump)}, longPrefix + std::string{toString(Category::dump)})
         .argsNum(0)
         .implicitValue(true)
-        .help(getDescr(Category::dump));
+        .help(mappedDescr(Category::dump));
     builtInNotifier.attach(Category::dump, std::make_shared<LocalNotifier::Handler<Category::dump>>(*this));
     mainCLI
         .addArgument(
-            shortPrefix + std::string{getAlias(Category::console)},
+            shortPrefix + std::string{mappedAlias(Category::console)},
             longPrefix + std::string{toString(Category::console)})
         .argsNum(ArgsNumPattern::any)
         .defaultValue<std::vector<std::string>>({"usage"})
@@ -262,7 +262,7 @@ void Command::setupMainCLI()
                 return input;
             })
         .metaVariable("CMD")
-        .help(getDescr(Category::console));
+        .help(mappedDescr(Category::console));
     builtInNotifier.attach(Category::console, std::make_shared<LocalNotifier::Handler<Category::console>>(*this));
 }
 
@@ -275,8 +275,8 @@ void Command::setupSubCLI<reg_algo::ApplyAlgorithm>()
     using Intf = ExtraManager::Intf;
     using Attr = ExtraManager::Attr;
     using action::name, action::alias, action::descr;
-    constexpr std::string_view helpDescr = getDescr(Category::help);
-    const std::string helpArg1 = shortPrefix + std::string{getAlias(Category::help)},
+    constexpr std::string_view helpDescr = mappedDescr(Category::help);
+    const std::string helpArg1 = shortPrefix + std::string{mappedAlias(Category::help)},
                       helpArg2 = longPrefix + std::string{toString(Category::help)};
     auto& algoTable = taskDispatcher.extraChoiceRegistry[subCLIAppAlgo.title()];
     std::vector<std::string> candidates{};
@@ -368,8 +368,8 @@ void Command::setupSubCLI<reg_dp::ApplyDesignPattern>()
     using Intf = ExtraManager::Intf;
     using Attr = ExtraManager::Attr;
     using action::name, action::alias, action::descr;
-    constexpr std::string_view helpDescr = getDescr(Category::help);
-    const std::string helpArg1 = shortPrefix + std::string{getAlias(Category::help)},
+    constexpr std::string_view helpDescr = mappedDescr(Category::help);
+    const std::string helpArg1 = shortPrefix + std::string{mappedAlias(Category::help)},
                       helpArg2 = longPrefix + std::string{toString(Category::help)};
     auto& dpTable = taskDispatcher.extraChoiceRegistry[subCLIAppDp.title()];
     std::vector<std::string> candidates{};
@@ -438,8 +438,8 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
     using Intf = ExtraManager::Intf;
     using Attr = ExtraManager::Attr;
     using action::name, action::alias, action::descr;
-    constexpr std::string_view helpDescr = getDescr(Category::help);
-    const std::string helpArg1 = shortPrefix + std::string{getAlias(Category::help)},
+    constexpr std::string_view helpDescr = mappedDescr(Category::help);
+    const std::string helpArg1 = shortPrefix + std::string{mappedAlias(Category::help)},
                       helpArg2 = longPrefix + std::string{toString(Category::help)};
     auto& dsTable = taskDispatcher.extraChoiceRegistry[subCLIAppDs.title()];
     std::vector<std::string> candidates{};
@@ -546,8 +546,8 @@ void Command::setupSubCLI<reg_num::ApplyNumeric>()
     using Intf = ExtraManager::Intf;
     using Attr = ExtraManager::Attr;
     using action::name, action::alias, action::descr;
-    constexpr std::string_view helpDescr = getDescr(Category::help);
-    const std::string helpArg1 = shortPrefix + std::string{getAlias(Category::help)},
+    constexpr std::string_view helpDescr = mappedDescr(Category::help);
+    const std::string helpArg1 = shortPrefix + std::string{mappedAlias(Category::help)},
                       helpArg2 = longPrefix + std::string{toString(Category::help)};
     auto& numTable = taskDispatcher.extraChoiceRegistry[subCLIAppNum.title()];
     std::vector<std::string> candidates{};
@@ -997,7 +997,7 @@ catch (const std::exception& err)
 template <typename T>
 void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& client)
 {
-    static constexpr auto gracefulReset = []<HelperType Helper>() constexpr
+    static constexpr auto gracefulReset = []<ExtHelper Helper>() constexpr
     {
         triggerHelper<Helper>(ExtEvent::reload);
         triggerHelper<Helper>(ExtEvent::startup);
@@ -1034,8 +1034,9 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
             auto retCode = RetCode::success;
             try
             {
-                utility::common::invokeCallableWith<log::Log>(gracefulReset);
-                LOG_INF << "Refreshed the " << log::Log::name << " outputs.";
+                using log::Log;
+                utility::common::invokeCallableWith<Log>(gracefulReset);
+                LOG_INF_F("Refreshed the {} outputs.", Log::name);
             }
             catch (const std::exception& err)
             {
@@ -1059,10 +1060,11 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
                 interactionLatency();
                 client.reset();
 
-                utility::common::invokeCallableWith<view::View>(gracefulReset);
+                using view::View;
+                utility::common::invokeCallableWith<View>(gracefulReset);
                 client = std::make_shared<T>();
                 launchClient(client);
-                LOG_INF << "Reconnected to the " << view::View::name << " servers.";
+                LOG_INF_F("Reconnected to the {} servers.", View::name);
             }
             catch (const std::exception& err)
             {

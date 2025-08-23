@@ -41,7 +41,7 @@ using namespace reg_ds; // NOLINT(google-build-using-namespace)
 //! @param instance - target instance
 //! @return initial capitalized title
 template <typename T>
-static std::string makeTitle(const T instance)
+static std::string customTitle(const T instance)
 {
     std::string title(TypeInfo<T>::fields.nameOfValue(instance));
     title.at(0) = std::toupper(title.at(0));
@@ -59,7 +59,7 @@ static const auto& curriedTaskName()
 }
 
 //! @brief Get the alias of the category in data structure choices.
-//! @tparam Cat - specific value of Category enum
+//! @tparam Cat - target category
 //! @return alias of the category name
 template <Category Cat>
 static consteval std::string_view categoryAlias()
@@ -73,11 +73,11 @@ static consteval std::string_view categoryAlias()
 namespace filter
 {
 //! @brief Show the contents of the filter result.
-//! @param instance - specific value of FilterInstance enum
+//! @param instance - used filter instance
 //! @param result - filter result
 static void showResult(const FilterInstance instance, const std::string& result)
 {
-    std::printf("\n==> %-8s Instance <==\n%s", makeTitle(instance).c_str(), result.c_str());
+    std::printf("\n==> %-8s Instance <==\n%s", customTitle(instance).c_str(), result.c_str());
 }
 
 void FilterStructure::bloomInstance()
@@ -132,10 +132,10 @@ void applyingFilter(const std::vector<std::string>& candidates)
         {
             using filter::FilterStructure;
             static_assert(utility::common::isStatelessClass<FilterStructure>());
-            case abbrValue(FilterInstance::bloom):
+            case abbrLitHash(FilterInstance::bloom):
                 addTask(target, &FilterStructure::bloomInstance);
                 break;
-            case abbrValue(FilterInstance::quotient):
+            case abbrLitHash(FilterInstance::quotient):
                 addTask(target, &FilterStructure::quotientInstance);
                 break;
             default:
@@ -149,11 +149,11 @@ void applyingFilter(const std::vector<std::string>& candidates)
 namespace graph
 {
 //! @brief Show the contents of the graph result.
-//! @param instance - specific value of GraphInstance enum
+//! @param instance - used graph instance
 //! @param result - graph result
 static void showResult(const GraphInstance instance, const std::string& result)
 {
-    std::printf("\n==> %-10s Instance <==\n%s", makeTitle(instance).c_str(), result.c_str());
+    std::printf("\n==> %-10s Instance <==\n%s", customTitle(instance).c_str(), result.c_str());
 }
 
 void GraphStructure::undirectedInstance()
@@ -208,10 +208,10 @@ void applyingGraph(const std::vector<std::string>& candidates)
         {
             using graph::GraphStructure;
             static_assert(utility::common::isStatelessClass<GraphStructure>());
-            case abbrValue(GraphInstance::undirected):
+            case abbrLitHash(GraphInstance::undirected):
                 addTask(target, &GraphStructure::undirectedInstance);
                 break;
-            case abbrValue(GraphInstance::directed):
+            case abbrLitHash(GraphInstance::directed):
                 addTask(target, &GraphStructure::directedInstance);
                 break;
             default:
@@ -225,11 +225,11 @@ void applyingGraph(const std::vector<std::string>& candidates)
 namespace heap
 {
 //! @brief Show the contents of the heap result.
-//! @param instance - specific value of HeapInstance enum
+//! @param instance - used heap instance
 //! @param result - heap result
 static void showResult(const HeapInstance instance, const std::string& result)
 {
-    std::printf("\n==> %-7s Instance <==\n%s", makeTitle(instance).c_str(), result.c_str());
+    std::printf("\n==> %-7s Instance <==\n%s", customTitle(instance).c_str(), result.c_str());
 }
 
 void HeapStructure::binaryInstance()
@@ -295,13 +295,13 @@ void applyingHeap(const std::vector<std::string>& candidates)
         {
             using heap::HeapStructure;
             static_assert(utility::common::isStatelessClass<HeapStructure>());
-            case abbrValue(HeapInstance::binary):
+            case abbrLitHash(HeapInstance::binary):
                 addTask(target, &HeapStructure::binaryInstance);
                 break;
-            case abbrValue(HeapInstance::leftist):
+            case abbrLitHash(HeapInstance::leftist):
                 addTask(target, &HeapStructure::leftistInstance);
                 break;
-            case abbrValue(HeapInstance::skew):
+            case abbrLitHash(HeapInstance::skew):
                 addTask(target, &HeapStructure::skewInstance);
                 break;
             default:
@@ -315,11 +315,11 @@ void applyingHeap(const std::vector<std::string>& candidates)
 namespace cache
 {
 //! @brief Show the contents of the cache result.
-//! @param instance - specific value of CacheInstance enum
+//! @param instance - used cache instance
 //! @param result - cache result
 static void showResult(const CacheInstance instance, const std::string& result)
 {
-    std::printf("\n==> %-19s Instance <==\n%s", makeTitle(instance).c_str(), result.c_str());
+    std::printf("\n==> %-19s Instance <==\n%s", customTitle(instance).c_str(), result.c_str());
 }
 
 void CacheStructure::fifoInstance()
@@ -385,13 +385,13 @@ void applyingCache(const std::vector<std::string>& candidates)
         {
             using cache::CacheStructure;
             static_assert(utility::common::isStatelessClass<CacheStructure>());
-            case abbrValue(CacheInstance::firstInFirstOut):
+            case abbrLitHash(CacheInstance::firstInFirstOut):
                 addTask(target, &CacheStructure::fifoInstance);
                 break;
-            case abbrValue(CacheInstance::leastFrequentlyUsed):
+            case abbrLitHash(CacheInstance::leastFrequentlyUsed):
                 addTask(target, &CacheStructure::lfuInstance);
                 break;
-            case abbrValue(CacheInstance::leastRecentlyUsed):
+            case abbrLitHash(CacheInstance::leastRecentlyUsed):
                 addTask(target, &CacheStructure::lruInstance);
                 break;
             default:
@@ -405,11 +405,11 @@ void applyingCache(const std::vector<std::string>& candidates)
 namespace linear
 {
 //! @brief Show the contents of the linear result.
-//! @param instance - specific value of LinearInstance enum
+//! @param instance - used linear instance
 //! @param result - linear result
 static void showResult(const LinearInstance instance, const std::string& result)
 {
-    std::printf("\n==> %-16s Instance <==\n%s", makeTitle(instance).c_str(), result.c_str());
+    std::printf("\n==> %-16s Instance <==\n%s", customTitle(instance).c_str(), result.c_str());
 }
 
 void LinearStructure::dllInstance()
@@ -475,13 +475,13 @@ void applyingLinear(const std::vector<std::string>& candidates)
         {
             using linear::LinearStructure;
             static_assert(utility::common::isStatelessClass<LinearStructure>());
-            case abbrValue(LinearInstance::doublyLinkedList):
+            case abbrLitHash(LinearInstance::doublyLinkedList):
                 addTask(target, &LinearStructure::dllInstance);
                 break;
-            case abbrValue(LinearInstance::stack):
+            case abbrLitHash(LinearInstance::stack):
                 addTask(target, &LinearStructure::stackInstance);
                 break;
-            case abbrValue(LinearInstance::queue):
+            case abbrLitHash(LinearInstance::queue):
                 addTask(target, &LinearStructure::queueInstance);
                 break;
             default:
@@ -495,11 +495,11 @@ void applyingLinear(const std::vector<std::string>& candidates)
 namespace tree
 {
 //! @brief Show the contents of the tree result.
-//! @param instance - specific value of TreeInstance enum
+//! @param instance - used tree instance
 //! @param result - tree result
 static void showResult(const TreeInstance instance, const std::string& result)
 {
-    std::printf("\n==> %-19s Instance <==\n%s", makeTitle(instance).c_str(), result.c_str());
+    std::printf("\n==> %-19s Instance <==\n%s", customTitle(instance).c_str(), result.c_str());
 }
 
 void TreeStructure::bsInstance()
@@ -565,13 +565,13 @@ void applyingTree(const std::vector<std::string>& candidates)
         {
             using tree::TreeStructure;
             static_assert(utility::common::isStatelessClass<TreeStructure>());
-            case abbrValue(TreeInstance::binarySearch):
+            case abbrLitHash(TreeInstance::binarySearch):
                 addTask(target, &TreeStructure::bsInstance);
                 break;
-            case abbrValue(TreeInstance::adelsonVelskyLandis):
+            case abbrLitHash(TreeInstance::adelsonVelskyLandis):
                 addTask(target, &TreeStructure::avlInstance);
                 break;
-            case abbrValue(TreeInstance::splay):
+            case abbrLitHash(TreeInstance::splay):
                 addTask(target, &TreeStructure::splayInstance);
                 break;
             default:

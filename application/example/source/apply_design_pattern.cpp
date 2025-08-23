@@ -41,7 +41,7 @@ using namespace reg_dp; // NOLINT(google-build-using-namespace)
 //! @param instance - target instance
 //! @return initial capitalized title
 template <typename T>
-static std::string makeTitle(const T instance)
+static std::string customTitle(const T instance)
 {
     std::string title(TypeInfo<T>::fields.nameOfValue(instance));
     title.at(0) = std::toupper(title.at(0));
@@ -59,7 +59,7 @@ static const auto& curriedTaskName()
 }
 
 //! @brief Get the alias of the category in design pattern choices.
-//! @tparam Cat - specific value of Category enum
+//! @tparam Cat - target category
 //! @return alias of the category name
 template <Category Cat>
 static consteval std::string_view categoryAlias()
@@ -73,11 +73,11 @@ static consteval std::string_view categoryAlias()
 namespace behavioral
 {
 //! @brief Show the contents of the behavioral result.
-//! @param instance - specific value of BehavioralInstance enum
+//! @param instance - used behavioral instance
 //! @param result - behavioral result
 static void showResult(const BehavioralInstance instance, const std::string& result)
 {
-    std::printf("\n==> %-21s Instance <==\n%s", makeTitle(instance).c_str(), result.c_str());
+    std::printf("\n==> %-21s Instance <==\n%s", customTitle(instance).c_str(), result.c_str());
 }
 
 void BehavioralPattern::chainOfResponsibilityInstance()
@@ -231,37 +231,37 @@ void applyingBehavioral(const std::vector<std::string>& candidates)
         {
             using behavioral::BehavioralPattern;
             static_assert(utility::common::isStatelessClass<BehavioralPattern>());
-            case abbrValue(BehavioralInstance::chainOfResponsibility):
+            case abbrLitHash(BehavioralInstance::chainOfResponsibility):
                 addTask(target, &BehavioralPattern::chainOfResponsibilityInstance);
                 break;
-            case abbrValue(BehavioralInstance::command):
+            case abbrLitHash(BehavioralInstance::command):
                 addTask(target, &BehavioralPattern::commandInstance);
                 break;
-            case abbrValue(BehavioralInstance::interpreter):
+            case abbrLitHash(BehavioralInstance::interpreter):
                 addTask(target, &BehavioralPattern::interpreterInstance);
                 break;
-            case abbrValue(BehavioralInstance::iterator):
+            case abbrLitHash(BehavioralInstance::iterator):
                 addTask(target, &BehavioralPattern::iteratorInstance);
                 break;
-            case abbrValue(BehavioralInstance::mediator):
+            case abbrLitHash(BehavioralInstance::mediator):
                 addTask(target, &BehavioralPattern::mediatorInstance);
                 break;
-            case abbrValue(BehavioralInstance::memento):
+            case abbrLitHash(BehavioralInstance::memento):
                 addTask(target, &BehavioralPattern::mementoInstance);
                 break;
-            case abbrValue(BehavioralInstance::observer):
+            case abbrLitHash(BehavioralInstance::observer):
                 addTask(target, &BehavioralPattern::observerInstance);
                 break;
-            case abbrValue(BehavioralInstance::state):
+            case abbrLitHash(BehavioralInstance::state):
                 addTask(target, &BehavioralPattern::stateInstance);
                 break;
-            case abbrValue(BehavioralInstance::strategy):
+            case abbrLitHash(BehavioralInstance::strategy):
                 addTask(target, &BehavioralPattern::strategyInstance);
                 break;
-            case abbrValue(BehavioralInstance::templateMethod):
+            case abbrLitHash(BehavioralInstance::templateMethod):
                 addTask(target, &BehavioralPattern::templateMethodInstance);
                 break;
-            case abbrValue(BehavioralInstance::visitor):
+            case abbrLitHash(BehavioralInstance::visitor):
                 addTask(target, &BehavioralPattern::visitorInstance);
                 break;
             default:
@@ -275,11 +275,11 @@ void applyingBehavioral(const std::vector<std::string>& candidates)
 namespace creational
 {
 //! @brief Show the contents of the creational result.
-//! @param instance - specific value of CreationalInstance enum
+//! @param instance - used creational instance
 //! @param result - creational result
 static void showResult(const CreationalInstance instance, const std::string& result)
 {
-    std::printf("\n==> %-15s Instance <==\n%s", makeTitle(instance).c_str(), result.c_str());
+    std::printf("\n==> %-15s Instance <==\n%s", customTitle(instance).c_str(), result.c_str());
 }
 
 void CreationalPattern::abstractFactoryInstance()
@@ -367,19 +367,19 @@ void applyingCreational(const std::vector<std::string>& candidates)
         {
             using creational::CreationalPattern;
             static_assert(utility::common::isStatelessClass<CreationalPattern>());
-            case abbrValue(CreationalInstance::abstractFactory):
+            case abbrLitHash(CreationalInstance::abstractFactory):
                 addTask(target, &CreationalPattern::abstractFactoryInstance);
                 break;
-            case abbrValue(CreationalInstance::builder):
+            case abbrLitHash(CreationalInstance::builder):
                 addTask(target, &CreationalPattern::builderInstance);
                 break;
-            case abbrValue(CreationalInstance::factoryMethod):
+            case abbrLitHash(CreationalInstance::factoryMethod):
                 addTask(target, &CreationalPattern::factoryMethodInstance);
                 break;
-            case abbrValue(CreationalInstance::prototype):
+            case abbrLitHash(CreationalInstance::prototype):
                 addTask(target, &CreationalPattern::prototypeInstance);
                 break;
-            case abbrValue(CreationalInstance::singleton):
+            case abbrLitHash(CreationalInstance::singleton):
                 addTask(target, &CreationalPattern::singletonInstance);
                 break;
             default:
@@ -393,11 +393,11 @@ void applyingCreational(const std::vector<std::string>& candidates)
 namespace structural
 {
 //! @brief Show the contents of the structural result.
-//! @param instance - specific value of StructuralInstance enum
+//! @param instance - used structural instance
 //! @param result - structural result
 static void showResult(const StructuralInstance instance, const std::string& result)
 {
-    std::printf("\n==> %-9s Instance <==\n%s", makeTitle(instance).c_str(), result.c_str());
+    std::printf("\n==> %-9s Instance <==\n%s", customTitle(instance).c_str(), result.c_str());
 }
 
 void StructuralPattern::adapterInstance()
@@ -507,25 +507,25 @@ void applyingStructural(const std::vector<std::string>& candidates)
         {
             using structural::StructuralPattern;
             static_assert(utility::common::isStatelessClass<StructuralPattern>());
-            case abbrValue(StructuralInstance::adapter):
+            case abbrLitHash(StructuralInstance::adapter):
                 addTask(target, &StructuralPattern::adapterInstance);
                 break;
-            case abbrValue(StructuralInstance::bridge):
+            case abbrLitHash(StructuralInstance::bridge):
                 addTask(target, &StructuralPattern::bridgeInstance);
                 break;
-            case abbrValue(StructuralInstance::composite):
+            case abbrLitHash(StructuralInstance::composite):
                 addTask(target, &StructuralPattern::compositeInstance);
                 break;
-            case abbrValue(StructuralInstance::decorator):
+            case abbrLitHash(StructuralInstance::decorator):
                 addTask(target, &StructuralPattern::decoratorInstance);
                 break;
-            case abbrValue(StructuralInstance::facade):
+            case abbrLitHash(StructuralInstance::facade):
                 addTask(target, &StructuralPattern::facadeInstance);
                 break;
-            case abbrValue(StructuralInstance::flyweight):
+            case abbrLitHash(StructuralInstance::flyweight):
                 addTask(target, &StructuralPattern::flyweightInstance);
                 break;
-            case abbrValue(StructuralInstance::proxy):
+            case abbrLitHash(StructuralInstance::proxy):
                 addTask(target, &StructuralPattern::proxyInstance);
                 break;
             default:

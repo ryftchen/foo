@@ -171,7 +171,7 @@ public:
 protected:
     //! @brief The operator (<<) overloading of the Category enum.
     //! @param os - output stream object
-    //! @param cat - specific value of Category enum
+    //! @param cat - current category
     //! @return reference of the output stream object
     friend std::ostream& operator<<(std::ostream& os, const Category cat)
     {
@@ -207,7 +207,7 @@ protected:
 //! @brief Manage the data structure choices.
 namespace manage
 {
-extern ApplyDataStructure& applier();
+extern ApplyDataStructure& choiceApplier();
 
 extern bool present();
 extern void clear();
@@ -490,7 +490,7 @@ using TypeInfo = utility::reflection::TypeInfo<T>;
 //! @brief Alias for Category.
 using Category = ApplyDataStructure::Category;
 //! @brief Convert category enumeration to string.
-//! @param cat - specific value of Category enum
+//! @param cat - target category
 //! @return category name
 consteval std::string_view toString(const Category cat)
 {
@@ -515,20 +515,20 @@ consteval std::string_view toString(const Category cat)
     return {};
 }
 //! @brief Get the bit flags of the category in data structure choices.
-//! @tparam Cat - specific value of Category enum
+//! @tparam Cat - target category
 //! @return reference of the category bit flags
 template <Category Cat>
 constexpr auto& categoryOpts()
 {
     return std::invoke(
-        TypeInfo<ApplyDataStructure>::fields.find(REFLECTION_STR(toString(Cat))).value, manage::applier());
+        TypeInfo<ApplyDataStructure>::fields.find(REFLECTION_STR(toString(Cat))).value, manage::choiceApplier());
 }
-//! @brief Abbreviation value for the target instance.
-//! @tparam T - type of target instance
-//! @param instance - target instance
-//! @return abbreviation value
+//! @brief The literal hash value of the abbreviation for the candidate instance.
+//! @tparam T - type of candidate instance
+//! @param instance - candidate instance
+//! @return literal hash value
 template <typename T>
-consteval std::size_t abbrValue(const T instance)
+consteval std::size_t abbrLitHash(const T instance)
 {
     static_assert(Bottom<T>::value == TypeInfo<T>::fields.size);
     constexpr auto refl = REFLECTION_STR("choice");

@@ -21,7 +21,7 @@ namespace manage
 {
 //! @brief Get the data structure choice applier.
 //! @return reference of the ApplyDataStructure object
-ApplyDataStructure& applier()
+ApplyDataStructure& choiceApplier()
 {
     static ApplyDataStructure applier{};
     return applier;
@@ -33,14 +33,14 @@ bool present()
 {
     bool isExist = false;
     TypeInfo<ApplyDataStructure>::forEachVarOf(
-        applier(), [&isExist](const auto /*field*/, auto&& var) { isExist |= !var.none(); });
+        choiceApplier(), [&isExist](const auto /*field*/, auto&& var) { isExist |= !var.none(); });
 
     return isExist;
 }
 //! @brief Reset bit flags that manage data structure choices.
 void clear()
 {
-    TypeInfo<ApplyDataStructure>::forEachVarOf(applier(), [](const auto /*field*/, auto&& var) { var.reset(); });
+    TypeInfo<ApplyDataStructure>::forEachVarOf(choiceApplier(), [](const auto /*field*/, auto&& var) { var.reset(); });
 }
 } // namespace manage
 
@@ -49,7 +49,7 @@ void clear()
 //! @param stringify - instance name
 //! @return position of bit flags
 template <typename T>
-static consteval std::size_t findPosition(const std::string_view stringify)
+static consteval std::size_t mappedPos(const std::string_view stringify)
 {
     return static_cast<std::size_t>(TypeInfo<T>::fields.template valueOfName<T>(stringify));
 }
@@ -73,14 +73,14 @@ void updateChoice<CacheInstance>(const std::string& target)
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case abbrValue(CacheInstance::firstInFirstOut):
-            bits.set(findPosition<CacheInstance>(MACRO_STRINGIFY(firstInFirstOut)));
+        case abbrLitHash(CacheInstance::firstInFirstOut):
+            bits.set(mappedPos<CacheInstance>(MACRO_STRINGIFY(firstInFirstOut)));
             break;
-        case abbrValue(CacheInstance::leastFrequentlyUsed):
-            bits.set(findPosition<CacheInstance>(MACRO_STRINGIFY(leastFrequentlyUsed)));
+        case abbrLitHash(CacheInstance::leastFrequentlyUsed):
+            bits.set(mappedPos<CacheInstance>(MACRO_STRINGIFY(leastFrequentlyUsed)));
             break;
-        case abbrValue(CacheInstance::leastRecentlyUsed):
-            bits.set(findPosition<CacheInstance>(MACRO_STRINGIFY(leastRecentlyUsed)));
+        case abbrLitHash(CacheInstance::leastRecentlyUsed):
+            bits.set(mappedPos<CacheInstance>(MACRO_STRINGIFY(leastRecentlyUsed)));
             break;
         default:
             bits.reset();
@@ -114,11 +114,11 @@ void updateChoice<FilterInstance>(const std::string& target)
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case abbrValue(FilterInstance::bloom):
-            bits.set(findPosition<FilterInstance>(MACRO_STRINGIFY(bloom)));
+        case abbrLitHash(FilterInstance::bloom):
+            bits.set(mappedPos<FilterInstance>(MACRO_STRINGIFY(bloom)));
             break;
-        case abbrValue(FilterInstance::quotient):
-            bits.set(findPosition<FilterInstance>(MACRO_STRINGIFY(quotient)));
+        case abbrLitHash(FilterInstance::quotient):
+            bits.set(mappedPos<FilterInstance>(MACRO_STRINGIFY(quotient)));
             break;
         default:
             bits.reset();
@@ -152,11 +152,11 @@ void updateChoice<GraphInstance>(const std::string& target)
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case abbrValue(GraphInstance::undirected):
-            bits.set(findPosition<GraphInstance>(MACRO_STRINGIFY(undirected)));
+        case abbrLitHash(GraphInstance::undirected):
+            bits.set(mappedPos<GraphInstance>(MACRO_STRINGIFY(undirected)));
             break;
-        case abbrValue(GraphInstance::directed):
-            bits.set(findPosition<GraphInstance>(MACRO_STRINGIFY(directed)));
+        case abbrLitHash(GraphInstance::directed):
+            bits.set(mappedPos<GraphInstance>(MACRO_STRINGIFY(directed)));
             break;
         default:
             bits.reset();
@@ -190,14 +190,14 @@ void updateChoice<HeapInstance>(const std::string& target)
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case abbrValue(HeapInstance::binary):
-            bits.set(findPosition<HeapInstance>(MACRO_STRINGIFY(binary)));
+        case abbrLitHash(HeapInstance::binary):
+            bits.set(mappedPos<HeapInstance>(MACRO_STRINGIFY(binary)));
             break;
-        case abbrValue(HeapInstance::leftist):
-            bits.set(findPosition<HeapInstance>(MACRO_STRINGIFY(leftist)));
+        case abbrLitHash(HeapInstance::leftist):
+            bits.set(mappedPos<HeapInstance>(MACRO_STRINGIFY(leftist)));
             break;
-        case abbrValue(HeapInstance::skew):
-            bits.set(findPosition<HeapInstance>(MACRO_STRINGIFY(skew)));
+        case abbrLitHash(HeapInstance::skew):
+            bits.set(mappedPos<HeapInstance>(MACRO_STRINGIFY(skew)));
             break;
         default:
             bits.reset();
@@ -231,14 +231,14 @@ void updateChoice<LinearInstance>(const std::string& target)
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case abbrValue(LinearInstance::doublyLinkedList):
-            bits.set(findPosition<LinearInstance>(MACRO_STRINGIFY(doublyLinkedList)));
+        case abbrLitHash(LinearInstance::doublyLinkedList):
+            bits.set(mappedPos<LinearInstance>(MACRO_STRINGIFY(doublyLinkedList)));
             break;
-        case abbrValue(LinearInstance::stack):
-            bits.set(findPosition<LinearInstance>(MACRO_STRINGIFY(stack)));
+        case abbrLitHash(LinearInstance::stack):
+            bits.set(mappedPos<LinearInstance>(MACRO_STRINGIFY(stack)));
             break;
-        case abbrValue(LinearInstance::queue):
-            bits.set(findPosition<LinearInstance>(MACRO_STRINGIFY(queue)));
+        case abbrLitHash(LinearInstance::queue):
+            bits.set(mappedPos<LinearInstance>(MACRO_STRINGIFY(queue)));
             break;
         default:
             bits.reset();
@@ -272,14 +272,14 @@ void updateChoice<TreeInstance>(const std::string& target)
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case abbrValue(TreeInstance::binarySearch):
-            bits.set(findPosition<TreeInstance>(MACRO_STRINGIFY(binarySearch)));
+        case abbrLitHash(TreeInstance::binarySearch):
+            bits.set(mappedPos<TreeInstance>(MACRO_STRINGIFY(binarySearch)));
             break;
-        case abbrValue(TreeInstance::adelsonVelskyLandis):
-            bits.set(findPosition<TreeInstance>(MACRO_STRINGIFY(adelsonVelskyLandis)));
+        case abbrLitHash(TreeInstance::adelsonVelskyLandis):
+            bits.set(mappedPos<TreeInstance>(MACRO_STRINGIFY(adelsonVelskyLandis)));
             break;
-        case abbrValue(TreeInstance::splay):
-            bits.set(findPosition<TreeInstance>(MACRO_STRINGIFY(splay)));
+        case abbrLitHash(TreeInstance::splay):
+            bits.set(mappedPos<TreeInstance>(MACRO_STRINGIFY(splay)));
             break;
         default:
             bits.reset();
