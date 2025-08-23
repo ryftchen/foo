@@ -21,7 +21,7 @@ namespace manage
 {
 //! @brief Get the numeric choice applier.
 //! @return reference of the ApplyNumeric object
-ApplyNumeric& applier()
+ApplyNumeric& choiceApplier()
 {
     static ApplyNumeric applier{};
     return applier;
@@ -33,14 +33,14 @@ bool present()
 {
     bool isExist = false;
     TypeInfo<ApplyNumeric>::forEachVarOf(
-        applier(), [&isExist](const auto /*field*/, auto&& var) { isExist |= !var.none(); });
+        choiceApplier(), [&isExist](const auto /*field*/, auto&& var) { isExist |= !var.none(); });
 
     return isExist;
 }
 //! @brief Reset bit flags that manage numeric choices.
 void clear()
 {
-    TypeInfo<ApplyNumeric>::forEachVarOf(applier(), [](const auto /*field*/, auto&& var) { var.reset(); });
+    TypeInfo<ApplyNumeric>::forEachVarOf(choiceApplier(), [](const auto /*field*/, auto&& var) { var.reset(); });
 }
 } // namespace manage
 
@@ -49,7 +49,7 @@ void clear()
 //! @param stringify - method name
 //! @return position of bit flags
 template <typename T>
-static consteval std::size_t findPosition(const std::string_view stringify)
+static consteval std::size_t mappedPos(const std::string_view stringify)
 {
     return static_cast<std::size_t>(TypeInfo<T>::fields.template valueOfName<T>(stringify));
 }
@@ -73,17 +73,17 @@ void updateChoice<ArithmeticMethod>(const std::string& target)
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case abbrValue(ArithmeticMethod::addition):
-            bits.set(findPosition<ArithmeticMethod>(MACRO_STRINGIFY(addition)));
+        case abbrLitHash(ArithmeticMethod::addition):
+            bits.set(mappedPos<ArithmeticMethod>(MACRO_STRINGIFY(addition)));
             break;
-        case abbrValue(ArithmeticMethod::subtraction):
-            bits.set(findPosition<ArithmeticMethod>(MACRO_STRINGIFY(subtraction)));
+        case abbrLitHash(ArithmeticMethod::subtraction):
+            bits.set(mappedPos<ArithmeticMethod>(MACRO_STRINGIFY(subtraction)));
             break;
-        case abbrValue(ArithmeticMethod::multiplication):
-            bits.set(findPosition<ArithmeticMethod>(MACRO_STRINGIFY(multiplication)));
+        case abbrLitHash(ArithmeticMethod::multiplication):
+            bits.set(mappedPos<ArithmeticMethod>(MACRO_STRINGIFY(multiplication)));
             break;
-        case abbrValue(ArithmeticMethod::division):
-            bits.set(findPosition<ArithmeticMethod>(MACRO_STRINGIFY(division)));
+        case abbrLitHash(ArithmeticMethod::division):
+            bits.set(mappedPos<ArithmeticMethod>(MACRO_STRINGIFY(division)));
             break;
         default:
             bits.reset();
@@ -117,11 +117,11 @@ void updateChoice<DivisorMethod>(const std::string& target)
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case abbrValue(DivisorMethod::euclidean):
-            bits.set(findPosition<DivisorMethod>(MACRO_STRINGIFY(euclidean)));
+        case abbrLitHash(DivisorMethod::euclidean):
+            bits.set(mappedPos<DivisorMethod>(MACRO_STRINGIFY(euclidean)));
             break;
-        case abbrValue(DivisorMethod::stein):
-            bits.set(findPosition<DivisorMethod>(MACRO_STRINGIFY(stein)));
+        case abbrLitHash(DivisorMethod::stein):
+            bits.set(mappedPos<DivisorMethod>(MACRO_STRINGIFY(stein)));
             break;
         default:
             bits.reset();
@@ -155,20 +155,20 @@ void updateChoice<IntegralMethod>(const std::string& target)
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case abbrValue(IntegralMethod::trapezoidal):
-            bits.set(findPosition<IntegralMethod>(MACRO_STRINGIFY(trapezoidal)));
+        case abbrLitHash(IntegralMethod::trapezoidal):
+            bits.set(mappedPos<IntegralMethod>(MACRO_STRINGIFY(trapezoidal)));
             break;
-        case abbrValue(IntegralMethod::simpson):
-            bits.set(findPosition<IntegralMethod>(MACRO_STRINGIFY(simpson)));
+        case abbrLitHash(IntegralMethod::simpson):
+            bits.set(mappedPos<IntegralMethod>(MACRO_STRINGIFY(simpson)));
             break;
-        case abbrValue(IntegralMethod::romberg):
-            bits.set(findPosition<IntegralMethod>(MACRO_STRINGIFY(romberg)));
+        case abbrLitHash(IntegralMethod::romberg):
+            bits.set(mappedPos<IntegralMethod>(MACRO_STRINGIFY(romberg)));
             break;
-        case abbrValue(IntegralMethod::gauss):
-            bits.set(findPosition<IntegralMethod>(MACRO_STRINGIFY(gauss)));
+        case abbrLitHash(IntegralMethod::gauss):
+            bits.set(mappedPos<IntegralMethod>(MACRO_STRINGIFY(gauss)));
             break;
-        case abbrValue(IntegralMethod::monteCarlo):
-            bits.set(findPosition<IntegralMethod>(MACRO_STRINGIFY(monteCarlo)));
+        case abbrLitHash(IntegralMethod::monteCarlo):
+            bits.set(mappedPos<IntegralMethod>(MACRO_STRINGIFY(monteCarlo)));
             break;
         default:
             bits.reset();
@@ -202,11 +202,11 @@ void updateChoice<PrimeMethod>(const std::string& target)
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case abbrValue(PrimeMethod::eratosthenes):
-            bits.set(findPosition<PrimeMethod>(MACRO_STRINGIFY(eratosthenes)));
+        case abbrLitHash(PrimeMethod::eratosthenes):
+            bits.set(mappedPos<PrimeMethod>(MACRO_STRINGIFY(eratosthenes)));
             break;
-        case abbrValue(PrimeMethod::euler):
-            bits.set(findPosition<PrimeMethod>(MACRO_STRINGIFY(euler)));
+        case abbrLitHash(PrimeMethod::euler):
+            bits.set(mappedPos<PrimeMethod>(MACRO_STRINGIFY(euler)));
             break;
         default:
             bits.reset();

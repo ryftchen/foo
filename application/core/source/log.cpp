@@ -563,7 +563,7 @@ template class Holder<Log::OutputLevel::error>;
 
 //! @brief The operator (<<) overloading of the State enum.
 //! @param os - output stream object
-//! @param state - specific value of State enum
+//! @param state - current state
 //! @return reference of the output stream object
 std::ostream& operator<<(std::ostream& os, const Log::State state)
 {

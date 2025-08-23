@@ -42,7 +42,7 @@ using namespace reg_algo; // NOLINT(google-build-using-namespace)
 //! @param method - target method
 //! @return initial capitalized title
 template <typename T>
-static std::string makeTitle(const T method)
+static std::string customTitle(const T method)
 {
     std::string title(TypeInfo<T>::fields.nameOfValue(method));
     title.at(0) = std::toupper(title.at(0));
@@ -59,7 +59,7 @@ static const auto& curriedTaskName()
 }
 
 //! @brief Get the alias of the category in algorithm choices.
-//! @tparam Cat - specific value of Category enum
+//! @tparam Cat - target category
 //! @return alias of the category name
 template <Category Cat>
 static consteval std::string_view categoryAlias()
@@ -73,7 +73,7 @@ static consteval std::string_view categoryAlias()
 namespace match
 {
 //! @brief Show the contents of the match result.
-//! @param method - specific value of MatchMethod enum
+//! @param method - used match method
 //! @param result - match result
 //! @param pattern - single pattern
 //! @param interval - time interval
@@ -84,7 +84,7 @@ static void showResult(
     {
         std::printf(
             "\n==> %-16s Method <==\npattern \"%s\" found starting (1st) at index %ld, run time: %8.5f ms\n",
-            makeTitle(method).c_str(),
+            customTitle(method).c_str(),
             pattern,
             result,
             interval);
@@ -93,7 +93,7 @@ static void showResult(
     {
         std::printf(
             "\n==> %-16s Method <==\npattern \"%s\" could not be found, run time: %8.5f ms\n",
-            makeTitle(method).c_str(),
+            customTitle(method).c_str(),
             pattern,
             interval);
     }
@@ -222,19 +222,19 @@ void applyingMatch(const std::vector<std::string>& candidates)
         {
             using match::MatchSolution;
             static_assert(utility::common::isStatelessClass<MatchSolution>());
-            case abbrValue(MatchMethod::rabinKarp):
+            case abbrLitHash(MatchMethod::rabinKarp):
                 addTask(target, &MatchSolution::rkMethod);
                 break;
-            case abbrValue(MatchMethod::knuthMorrisPratt):
+            case abbrLitHash(MatchMethod::knuthMorrisPratt):
                 addTask(target, &MatchSolution::kmpMethod);
                 break;
-            case abbrValue(MatchMethod::boyerMoore):
+            case abbrLitHash(MatchMethod::boyerMoore):
                 addTask(target, &MatchSolution::bmMethod);
                 break;
-            case abbrValue(MatchMethod::horspool):
+            case abbrLitHash(MatchMethod::horspool):
                 addTask(target, &MatchSolution::horspoolMethod);
                 break;
-            case abbrValue(MatchMethod::sunday):
+            case abbrLitHash(MatchMethod::sunday):
                 addTask(target, &MatchSolution::sundayMethod);
                 break;
             default:
@@ -248,12 +248,12 @@ void applyingMatch(const std::vector<std::string>& candidates)
 namespace notation
 {
 //! @brief Show the contents of the notation result.
-//! @param method - specific value of NotationMethod enum
+//! @param method - used notation method
 //! @param result - notation result
 //! @param descr - notation description
 static void showResult(const NotationMethod method, const std::string& result, const std::string& descr)
 {
-    std::printf("\n==> %-7s Method <==\n%s: %s\n", makeTitle(method).c_str(), descr.c_str(), result.c_str());
+    std::printf("\n==> %-7s Method <==\n%s: %s\n", customTitle(method).c_str(), descr.c_str(), result.c_str());
 }
 
 void NotationSolution::prefixMethod(const std::string_view infix)
@@ -310,10 +310,10 @@ void applyingNotation(const std::vector<std::string>& candidates)
         {
             using notation::NotationSolution;
             static_assert(utility::common::isStatelessClass<NotationSolution>());
-            case abbrValue(NotationMethod::prefix):
+            case abbrLitHash(NotationMethod::prefix):
                 addTask(target, &NotationSolution::prefixMethod);
                 break;
-            case abbrValue(NotationMethod::postfix):
+            case abbrLitHash(NotationMethod::postfix):
                 addTask(target, &NotationSolution::postfixMethod);
                 break;
             default:
@@ -327,7 +327,7 @@ void applyingNotation(const std::vector<std::string>& candidates)
 namespace optimal
 {
 //! @brief Show the contents of the optimal result.
-//! @param method - specific value of OptimalMethod enum
+//! @param method - used optimal method
 //! @param result - optimal result
 //! @param interval - time interval
 static void showResult(
@@ -337,7 +337,7 @@ static void showResult(
     {
         std::printf(
             "\n==> %-9s Method <==\nF(min)=%+.5f X=%+.5f, run time: %8.5f ms\n",
-            makeTitle(method).c_str(),
+            customTitle(method).c_str(),
             std::get<0>(result.value()),
             std::get<1>(result.value()),
             interval);
@@ -346,7 +346,7 @@ static void showResult(
     {
         std::printf(
             "\n==> %-9s Method <==\nF(min) could not be found, run time: %8.5f ms\n",
-            makeTitle(method).c_str(),
+            customTitle(method).c_str(),
             interval);
     }
 }
@@ -464,22 +464,22 @@ void applyingOptimal(const std::vector<std::string>& candidates)
         {
             using optimal::OptimalSolution;
             static_assert(utility::common::isStatelessClass<OptimalSolution>());
-            case abbrValue(OptimalMethod::gradient):
+            case abbrLitHash(OptimalMethod::gradient):
                 addTask(target, &OptimalSolution::gradientDescentMethod);
                 break;
-            case abbrValue(OptimalMethod::tabu):
+            case abbrLitHash(OptimalMethod::tabu):
                 addTask(target, &OptimalSolution::tabuMethod);
                 break;
-            case abbrValue(OptimalMethod::annealing):
+            case abbrLitHash(OptimalMethod::annealing):
                 addTask(target, &OptimalSolution::simulatedAnnealingMethod);
                 break;
-            case abbrValue(OptimalMethod::particle):
+            case abbrLitHash(OptimalMethod::particle):
                 addTask(target, &OptimalSolution::particleSwarmMethod);
                 break;
-            case abbrValue(OptimalMethod::ant):
+            case abbrLitHash(OptimalMethod::ant):
                 addTask(target, &OptimalSolution::antColonyMethod);
                 break;
-            case abbrValue(OptimalMethod::genetic):
+            case abbrLitHash(OptimalMethod::genetic):
                 addTask(target, &OptimalSolution::geneticMethod);
                 break;
             default:
@@ -493,7 +493,7 @@ void applyingOptimal(const std::vector<std::string>& candidates)
 namespace search
 {
 //! @brief Show the contents of the search result.
-//! @param method - specific value of SearchMethod enum
+//! @param method - used search method
 //! @param result - search result
 //! @param key - search key
 //! @param interval - time interval
@@ -503,7 +503,7 @@ static void showResult(const SearchMethod method, const std::int64_t result, con
     {
         std::printf(
             "\n==> %-13s Method <==\nfound the key \"%.5f\" that appears in the index %ld, run time: %8.5f ms\n",
-            makeTitle(method).c_str(),
+            customTitle(method).c_str(),
             key,
             result,
             interval);
@@ -512,7 +512,7 @@ static void showResult(const SearchMethod method, const std::int64_t result, con
     {
         std::printf(
             "\n==> %-13s Method <==\ncould not find the key \"%.5f\", run time: %8.5f ms\n",
-            makeTitle(method).c_str(),
+            customTitle(method).c_str(),
             key,
             interval);
     }
@@ -594,13 +594,13 @@ void applyingSearch(const std::vector<std::string>& candidates)
         {
             using search::SearchSolution;
             static_assert(utility::common::isStatelessClass<SearchSolution>());
-            case abbrValue(SearchMethod::binary):
+            case abbrLitHash(SearchMethod::binary):
                 addTask(target, &SearchSolution::binaryMethod);
                 break;
-            case abbrValue(SearchMethod::interpolation):
+            case abbrLitHash(SearchMethod::interpolation):
                 addTask(target, &SearchSolution::interpolationMethod);
                 break;
-            case abbrValue(SearchMethod::fibonacci):
+            case abbrLitHash(SearchMethod::fibonacci):
                 addTask(target, &SearchSolution::fibonacciMethod);
                 break;
             default:
@@ -614,7 +614,7 @@ void applyingSearch(const std::vector<std::string>& candidates)
 namespace sort
 {
 //! @brief Show the contents of the sort result.
-//! @param method - specific value of SortMethod enum
+//! @param method - used sort method
 //! @param result - sort result
 //! @param interval - time interval
 static void showResult(const SortMethod method, const std::vector<std::int32_t>& result, const double interval)
@@ -623,7 +623,7 @@ static void showResult(const SortMethod method, const std::vector<std::int32_t>&
     std::vector<char> fmtBuffer(bufferSize + 1);
     std::printf(
         "\n==> %-9s Method <==\n%s\n(asc) run time: %8.5f ms\n",
-        makeTitle(method).c_str(),
+        customTitle(method).c_str(),
         InputBuilder<std::int32_t>::template spliceAll<std::int32_t>(
             result.data(), result.size(), fmtBuffer.data(), bufferSize + 1),
         interval);
@@ -785,34 +785,34 @@ void applyingSort(const std::vector<std::string>& candidates)
         {
             using sort::SortSolution;
             static_assert(utility::common::isStatelessClass<SortSolution>());
-            case abbrValue(SortMethod::bubble):
+            case abbrLitHash(SortMethod::bubble):
                 addTask(target, &SortSolution::bubbleMethod);
                 break;
-            case abbrValue(SortMethod::selection):
+            case abbrLitHash(SortMethod::selection):
                 addTask(target, &SortSolution::selectionMethod);
                 break;
-            case abbrValue(SortMethod::insertion):
+            case abbrLitHash(SortMethod::insertion):
                 addTask(target, &SortSolution::insertionMethod);
                 break;
-            case abbrValue(SortMethod::shell):
+            case abbrLitHash(SortMethod::shell):
                 addTask(target, &SortSolution::shellMethod);
                 break;
-            case abbrValue(SortMethod::merge):
+            case abbrLitHash(SortMethod::merge):
                 addTask(target, &SortSolution::mergeMethod);
                 break;
-            case abbrValue(SortMethod::quick):
+            case abbrLitHash(SortMethod::quick):
                 addTask(target, &SortSolution::quickMethod);
                 break;
-            case abbrValue(SortMethod::heap):
+            case abbrLitHash(SortMethod::heap):
                 addTask(target, &SortSolution::heapMethod);
                 break;
-            case abbrValue(SortMethod::counting):
+            case abbrLitHash(SortMethod::counting):
                 addTask(target, &SortSolution::countingMethod);
                 break;
-            case abbrValue(SortMethod::bucket):
+            case abbrLitHash(SortMethod::bucket):
                 addTask(target, &SortSolution::bucketMethod);
                 break;
-            case abbrValue(SortMethod::radix):
+            case abbrLitHash(SortMethod::radix):
                 addTask(target, &SortSolution::radixMethod);
                 break;
             default:

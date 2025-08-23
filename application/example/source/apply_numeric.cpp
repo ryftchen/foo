@@ -42,7 +42,7 @@ using namespace reg_num; // NOLINT(google-build-using-namespace)
 //! @param method - target method
 //! @return initial capitalized title
 template <typename T>
-static std::string makeTitle(const T method)
+static std::string customTitle(const T method)
 {
     std::string title(TypeInfo<T>::fields.nameOfValue(method));
     title.at(0) = std::toupper(title.at(0));
@@ -59,7 +59,7 @@ static const auto& curriedTaskName()
 }
 
 //! @brief Get the alias of the category in numeric choices.
-//! @tparam Cat - specific value of Category enum
+//! @tparam Cat - target category
 //! @return alias of the category name
 template <Category Cat>
 static consteval std::string_view categoryAlias()
@@ -73,7 +73,7 @@ static consteval std::string_view categoryAlias()
 namespace arithmetic
 {
 //! @brief Show the contents of the arithmetic result.
-//! @param method - specific value of ArithmeticMethod enum
+//! @param method - used arithmetic method
 //! @param result - arithmetic result
 //! @param a - first integer for elementary arithmetic
 //! @param b - second integer for elementary arithmetic
@@ -81,7 +81,7 @@ namespace arithmetic
 static void showResult(
     const ArithmeticMethod method, const std::int32_t result, const std::int32_t a, const std::int32_t b, const char op)
 {
-    std::printf("\n==> %-14s Method <==\n(%d) %c (%d) = %d\n", makeTitle(method).c_str(), a, op, b, result);
+    std::printf("\n==> %-14s Method <==\n(%d) %c (%d) = %d\n", customTitle(method).c_str(), a, op, b, result);
 }
 
 void ArithmeticCalculation::additionMethod(const std::int32_t augend, const std::int32_t addend)
@@ -163,16 +163,16 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
         {
             using arithmetic::ArithmeticCalculation;
             static_assert(utility::common::isStatelessClass<ArithmeticCalculation>());
-            case abbrValue(ArithmeticMethod::addition):
+            case abbrLitHash(ArithmeticMethod::addition):
                 addTask(target, &ArithmeticCalculation::additionMethod);
                 break;
-            case abbrValue(ArithmeticMethod::subtraction):
+            case abbrLitHash(ArithmeticMethod::subtraction):
                 addTask(target, &ArithmeticCalculation::subtractionMethod);
                 break;
-            case abbrValue(ArithmeticMethod::multiplication):
+            case abbrLitHash(ArithmeticMethod::multiplication):
                 addTask(target, &ArithmeticCalculation::multiplicationMethod);
                 break;
-            case abbrValue(ArithmeticMethod::division):
+            case abbrLitHash(ArithmeticMethod::division):
                 addTask(target, &ArithmeticCalculation::divisionMethod);
                 break;
             default:
@@ -186,7 +186,7 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
 namespace divisor
 {
 //! @brief Show the contents of the divisor result.
-//! @param method - specific value of DivisorMethod enum
+//! @param method - used divisor method
 //! @param result - divisor result
 //! @param interval - time interval
 static void showResult(const DivisorMethod method, const std::set<std::int32_t>& result, const double interval)
@@ -195,7 +195,7 @@ static void showResult(const DivisorMethod method, const std::set<std::int32_t>&
     std::vector<char> fmtBuffer(bufferSize + 1);
     std::printf(
         "\n==> %-9s Method <==\n%s\nrun time: %8.5f ms\n",
-        makeTitle(method).c_str(),
+        customTitle(method).c_str(),
         InputBuilder::template spliceAllIntegers<std::int32_t>(result, fmtBuffer.data(), bufferSize + 1),
         interval);
 }
@@ -259,10 +259,10 @@ void applyingDivisor(const std::vector<std::string>& candidates)
         {
             using divisor::DivisorCalculation;
             static_assert(utility::common::isStatelessClass<DivisorCalculation>());
-            case abbrValue(DivisorMethod::euclidean):
+            case abbrLitHash(DivisorMethod::euclidean):
                 addTask(target, &DivisorCalculation::euclideanMethod);
                 break;
-            case abbrValue(DivisorMethod::stein):
+            case abbrLitHash(DivisorMethod::stein):
                 addTask(target, &DivisorCalculation::steinMethod);
                 break;
             default:
@@ -276,13 +276,13 @@ void applyingDivisor(const std::vector<std::string>& candidates)
 namespace integral
 {
 //! @brief Show the contents of the integral result.
-//! @param method - specific value of IntegralMethod enum
+//! @param method - used integral method
 //! @param result - integral result
 //! @param interval - time interval
 static void showResult(const IntegralMethod method, const double result, const double interval)
 {
     std::printf(
-        "\n==> %-11s Method <==\nI(def)=%+.5f, run time: %8.5f ms\n", makeTitle(method).c_str(), result, interval);
+        "\n==> %-11s Method <==\nI(def)=%+.5f, run time: %8.5f ms\n", customTitle(method).c_str(), result, interval);
 }
 
 void IntegralCalculation::trapezoidalMethod(const Expression& expr, const double lower, const double upper)
@@ -386,19 +386,19 @@ void applyingIntegral(const std::vector<std::string>& candidates)
         {
             using integral::IntegralCalculation;
             static_assert(utility::common::isStatelessClass<IntegralCalculation>());
-            case abbrValue(IntegralMethod::trapezoidal):
+            case abbrLitHash(IntegralMethod::trapezoidal):
                 addTask(target, &IntegralCalculation::trapezoidalMethod);
                 break;
-            case abbrValue(IntegralMethod::simpson):
+            case abbrLitHash(IntegralMethod::simpson):
                 addTask(target, &IntegralCalculation::adaptiveSimpsonMethod);
                 break;
-            case abbrValue(IntegralMethod::romberg):
+            case abbrLitHash(IntegralMethod::romberg):
                 addTask(target, &IntegralCalculation::rombergMethod);
                 break;
-            case abbrValue(IntegralMethod::gauss):
+            case abbrLitHash(IntegralMethod::gauss):
                 addTask(target, &IntegralCalculation::gaussLegendreMethod);
                 break;
-            case abbrValue(IntegralMethod::monteCarlo):
+            case abbrLitHash(IntegralMethod::monteCarlo):
                 addTask(target, &IntegralCalculation::monteCarloMethod);
                 break;
             default:
@@ -412,7 +412,7 @@ void applyingIntegral(const std::vector<std::string>& candidates)
 namespace prime
 {
 //! @brief Show the contents of the prime result.
-//! @param method - specific value of PrimeMethod enum
+//! @param method - used prime method
 //! @param result - prime result
 //! @param interval - time interval
 static void showResult(const PrimeMethod method, const std::vector<std::uint32_t>& result, const double interval)
@@ -421,7 +421,7 @@ static void showResult(const PrimeMethod method, const std::vector<std::uint32_t
     std::vector<char> fmtBuffer(bufferSize + 1);
     std::printf(
         "\n==> %-9s Method <==\n%s\nrun time: %8.5f ms\n",
-        makeTitle(method).c_str(),
+        customTitle(method).c_str(),
         InputBuilder::template spliceAllIntegers<std::uint32_t>(result, fmtBuffer.data(), bufferSize + 1),
         interval);
 }
@@ -482,10 +482,10 @@ void applyingPrime(const std::vector<std::string>& candidates)
         {
             using prime::PrimeCalculation;
             static_assert(utility::common::isStatelessClass<PrimeCalculation>());
-            case abbrValue(PrimeMethod::eratosthenes):
+            case abbrLitHash(PrimeMethod::eratosthenes):
                 addTask(target, &PrimeCalculation::eratosthenesMethod);
                 break;
-            case abbrValue(PrimeMethod::euler):
+            case abbrLitHash(PrimeMethod::euler):
                 addTask(target, &PrimeCalculation::eulerMethod);
                 break;
             default:

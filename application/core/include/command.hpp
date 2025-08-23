@@ -209,14 +209,14 @@ private:
     //! @brief Check for excessive arguments.
     void checkExcessArgs();
 
-    //! @brief Get the alias name.
-    //! @param cat - specific value of Category enum
+    //! @brief Map the alias name.
+    //! @param cat - native category
     //! @return alias name
-    static consteval std::string_view getAlias(const Category cat);
-    //! @brief Get the description.
-    //! @param cat - specific value of Category enum
+    static consteval std::string_view mappedAlias(const Category cat);
+    //! @brief Map the description.
+    //! @param cat - native category
     //! @return description
-    static consteval std::string_view getDescr(const Category cat);
+    static consteval std::string_view mappedDescr(const Category cat);
     //! @brief Extract all choices in the sub-cli's category.
     //! @tparam T - type of sub-cli's category
     //! @return all choices

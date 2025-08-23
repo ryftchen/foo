@@ -175,7 +175,7 @@ public:
 protected:
     //! @brief The operator (<<) overloading of the Category enum.
     //! @param os - output stream object
-    //! @param cat - specific value of Category enum
+    //! @param cat - current category
     //! @return reference of the output stream object
     friend std::ostream& operator<<(std::ostream& os, const Category cat)
     {
@@ -207,7 +207,7 @@ protected:
 //! @brief Manage the algorithm choices.
 namespace manage
 {
-extern ApplyAlgorithm& applier();
+extern ApplyAlgorithm& choiceApplier();
 
 extern bool present();
 extern void clear();
@@ -480,7 +480,7 @@ using TypeInfo = utility::reflection::TypeInfo<T>;
 //! @brief Alias for Category.
 using Category = ApplyAlgorithm::Category;
 //! @brief Convert category enumeration to string.
-//! @param cat - specific value of Category enum
+//! @param cat - target category
 //! @return category name
 consteval std::string_view toString(const Category cat)
 {
@@ -503,19 +503,20 @@ consteval std::string_view toString(const Category cat)
     return {};
 }
 //! @brief Get the bit flags of the category in algorithm choices.
-//! @tparam Cat - specific value of Category enum
+//! @tparam Cat - target category
 //! @return reference of the category bit flags
 template <Category Cat>
 constexpr auto& categoryOpts()
 {
-    return std::invoke(TypeInfo<ApplyAlgorithm>::fields.find(REFLECTION_STR(toString(Cat))).value, manage::applier());
+    return std::invoke(
+        TypeInfo<ApplyAlgorithm>::fields.find(REFLECTION_STR(toString(Cat))).value, manage::choiceApplier());
 }
-//! @brief Abbreviation value for the target method.
-//! @tparam T - type of target method
-//! @param method - target method
-//! @return abbreviation value
+//! @brief The literal hash value of the abbreviation for the candidate method.
+//! @tparam T - type of candidate method
+//! @param method - candidate method
+//! @return literal hash value
 template <typename T>
-consteval std::size_t abbrValue(const T method)
+consteval std::size_t abbrLitHash(const T method)
 {
     static_assert(Bottom<T>::value == TypeInfo<T>::fields.size);
     constexpr auto refl = REFLECTION_STR("choice");

@@ -21,7 +21,7 @@ namespace manage
 {
 //! @brief Get the design pattern choice applier.
 //! @return reference of the ApplyDesignPattern object
-ApplyDesignPattern& applier()
+ApplyDesignPattern& choiceApplier()
 {
     static ApplyDesignPattern applier{};
     return applier;
@@ -33,14 +33,14 @@ bool present()
 {
     bool isExist = false;
     TypeInfo<ApplyDesignPattern>::forEachVarOf(
-        applier(), [&isExist](const auto /*field*/, auto&& var) { isExist |= !var.none(); });
+        choiceApplier(), [&isExist](const auto /*field*/, auto&& var) { isExist |= !var.none(); });
 
     return isExist;
 }
 //! @brief Reset bit flags that manage design pattern choices.
 void clear()
 {
-    TypeInfo<ApplyDesignPattern>::forEachVarOf(applier(), [](const auto /*field*/, auto&& var) { var.reset(); });
+    TypeInfo<ApplyDesignPattern>::forEachVarOf(choiceApplier(), [](const auto /*field*/, auto&& var) { var.reset(); });
 }
 } // namespace manage
 
@@ -49,7 +49,7 @@ void clear()
 //! @param stringify - instance name
 //! @return position of bit flags
 template <typename T>
-static consteval std::size_t findPosition(const std::string_view stringify)
+static consteval std::size_t mappedPos(const std::string_view stringify)
 {
     return static_cast<std::size_t>(TypeInfo<T>::fields.template valueOfName<T>(stringify));
 }
@@ -73,38 +73,38 @@ void updateChoice<BehavioralInstance>(const std::string& target)
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case abbrValue(BehavioralInstance::chainOfResponsibility):
-            bits.set(findPosition<BehavioralInstance>(MACRO_STRINGIFY(chainOfResponsibility)));
+        case abbrLitHash(BehavioralInstance::chainOfResponsibility):
+            bits.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(chainOfResponsibility)));
             break;
-        case abbrValue(BehavioralInstance::command):
-            bits.set(findPosition<BehavioralInstance>(MACRO_STRINGIFY(command)));
+        case abbrLitHash(BehavioralInstance::command):
+            bits.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(command)));
             break;
-        case abbrValue(BehavioralInstance::interpreter):
-            bits.set(findPosition<BehavioralInstance>(MACRO_STRINGIFY(interpreter)));
+        case abbrLitHash(BehavioralInstance::interpreter):
+            bits.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(interpreter)));
             break;
-        case abbrValue(BehavioralInstance::iterator):
-            bits.set(findPosition<BehavioralInstance>(MACRO_STRINGIFY(iterator)));
+        case abbrLitHash(BehavioralInstance::iterator):
+            bits.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(iterator)));
             break;
-        case abbrValue(BehavioralInstance::mediator):
-            bits.set(findPosition<BehavioralInstance>(MACRO_STRINGIFY(mediator)));
+        case abbrLitHash(BehavioralInstance::mediator):
+            bits.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(mediator)));
             break;
-        case abbrValue(BehavioralInstance::memento):
-            bits.set(findPosition<BehavioralInstance>(MACRO_STRINGIFY(memento)));
+        case abbrLitHash(BehavioralInstance::memento):
+            bits.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(memento)));
             break;
-        case abbrValue(BehavioralInstance::observer):
-            bits.set(findPosition<BehavioralInstance>(MACRO_STRINGIFY(observer)));
+        case abbrLitHash(BehavioralInstance::observer):
+            bits.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(observer)));
             break;
-        case abbrValue(BehavioralInstance::state):
-            bits.set(findPosition<BehavioralInstance>(MACRO_STRINGIFY(state)));
+        case abbrLitHash(BehavioralInstance::state):
+            bits.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(state)));
             break;
-        case abbrValue(BehavioralInstance::strategy):
-            bits.set(findPosition<BehavioralInstance>(MACRO_STRINGIFY(strategy)));
+        case abbrLitHash(BehavioralInstance::strategy):
+            bits.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(strategy)));
             break;
-        case abbrValue(BehavioralInstance::templateMethod):
-            bits.set(findPosition<BehavioralInstance>(MACRO_STRINGIFY(templateMethod)));
+        case abbrLitHash(BehavioralInstance::templateMethod):
+            bits.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(templateMethod)));
             break;
-        case abbrValue(BehavioralInstance::visitor):
-            bits.set(findPosition<BehavioralInstance>(MACRO_STRINGIFY(visitor)));
+        case abbrLitHash(BehavioralInstance::visitor):
+            bits.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(visitor)));
             break;
         default:
             bits.reset();
@@ -138,20 +138,20 @@ void updateChoice<CreationalInstance>(const std::string& target)
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case abbrValue(CreationalInstance::abstractFactory):
-            bits.set(findPosition<CreationalInstance>(MACRO_STRINGIFY(abstractFactory)));
+        case abbrLitHash(CreationalInstance::abstractFactory):
+            bits.set(mappedPos<CreationalInstance>(MACRO_STRINGIFY(abstractFactory)));
             break;
-        case abbrValue(CreationalInstance::builder):
-            bits.set(findPosition<CreationalInstance>(MACRO_STRINGIFY(builder)));
+        case abbrLitHash(CreationalInstance::builder):
+            bits.set(mappedPos<CreationalInstance>(MACRO_STRINGIFY(builder)));
             break;
-        case abbrValue(CreationalInstance::factoryMethod):
-            bits.set(findPosition<CreationalInstance>(MACRO_STRINGIFY(factoryMethod)));
+        case abbrLitHash(CreationalInstance::factoryMethod):
+            bits.set(mappedPos<CreationalInstance>(MACRO_STRINGIFY(factoryMethod)));
             break;
-        case abbrValue(CreationalInstance::prototype):
-            bits.set(findPosition<CreationalInstance>(MACRO_STRINGIFY(prototype)));
+        case abbrLitHash(CreationalInstance::prototype):
+            bits.set(mappedPos<CreationalInstance>(MACRO_STRINGIFY(prototype)));
             break;
-        case abbrValue(CreationalInstance::singleton):
-            bits.set(findPosition<CreationalInstance>(MACRO_STRINGIFY(singleton)));
+        case abbrLitHash(CreationalInstance::singleton):
+            bits.set(mappedPos<CreationalInstance>(MACRO_STRINGIFY(singleton)));
             break;
         default:
             bits.reset();
@@ -185,26 +185,26 @@ void updateChoice<StructuralInstance>(const std::string& target)
 
     switch (utility::common::bkdrHash(target.c_str()))
     {
-        case abbrValue(StructuralInstance::adapter):
-            bits.set(findPosition<StructuralInstance>(MACRO_STRINGIFY(adapter)));
+        case abbrLitHash(StructuralInstance::adapter):
+            bits.set(mappedPos<StructuralInstance>(MACRO_STRINGIFY(adapter)));
             break;
-        case abbrValue(StructuralInstance::bridge):
-            bits.set(findPosition<StructuralInstance>(MACRO_STRINGIFY(bridge)));
+        case abbrLitHash(StructuralInstance::bridge):
+            bits.set(mappedPos<StructuralInstance>(MACRO_STRINGIFY(bridge)));
             break;
-        case abbrValue(StructuralInstance::composite):
-            bits.set(findPosition<StructuralInstance>(MACRO_STRINGIFY(composite)));
+        case abbrLitHash(StructuralInstance::composite):
+            bits.set(mappedPos<StructuralInstance>(MACRO_STRINGIFY(composite)));
             break;
-        case abbrValue(StructuralInstance::decorator):
-            bits.set(findPosition<StructuralInstance>(MACRO_STRINGIFY(decorator)));
+        case abbrLitHash(StructuralInstance::decorator):
+            bits.set(mappedPos<StructuralInstance>(MACRO_STRINGIFY(decorator)));
             break;
-        case abbrValue(StructuralInstance::facade):
-            bits.set(findPosition<StructuralInstance>(MACRO_STRINGIFY(facade)));
+        case abbrLitHash(StructuralInstance::facade):
+            bits.set(mappedPos<StructuralInstance>(MACRO_STRINGIFY(facade)));
             break;
-        case abbrValue(StructuralInstance::flyweight):
-            bits.set(findPosition<StructuralInstance>(MACRO_STRINGIFY(flyweight)));
+        case abbrLitHash(StructuralInstance::flyweight):
+            bits.set(mappedPos<StructuralInstance>(MACRO_STRINGIFY(flyweight)));
             break;
-        case abbrValue(StructuralInstance::proxy):
-            bits.set(findPosition<StructuralInstance>(MACRO_STRINGIFY(proxy)));
+        case abbrLitHash(StructuralInstance::proxy):
+            bits.set(mappedPos<StructuralInstance>(MACRO_STRINGIFY(proxy)));
             break;
         default:
             bits.reset();
