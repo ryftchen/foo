@@ -954,13 +954,13 @@ try
     interactionLatency();
     const char* const userEnv = std::getenv("USER"); // NOLINT(concurrency-mt-unsafe)
     const std::string userName = userEnv ? userEnv : "USER";
-    char hostName[HOST_NAME_MAX] = {'\0'};
-    if (::gethostname(hostName, HOST_NAME_MAX))
+    std::array<char, HOST_NAME_MAX> hostName{};
+    if (::gethostname(hostName.data(), hostName.size()) != 0)
     {
-        std::strncpy(hostName, "HOSTNAME", HOST_NAME_MAX - 1);
+        std::strncpy(hostName.data(), "HOSTNAME", hostName.size() - 1);
         hostName[HOST_NAME_MAX - 1] = '\0';
     }
-    const auto greeting = userName + '@' + std::string{hostName} + " foo > ";
+    const auto greeting = userName + '@' + hostName.data() + " foo > ";
     const auto session = std::make_unique<console::Console>(greeting);
     auto tcpClient = std::make_shared<utility::socket::TCPSocket>();
     launchClient(tcpClient);

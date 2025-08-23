@@ -10,6 +10,7 @@
 #include <cxxabi.h>
 #include <dlfcn.h>
 #include <execinfo.h>
+#include <array>
 #include <csignal>
 #include <filesystem>
 #else
@@ -36,11 +37,11 @@ static void signalHandler(const int sig)
 {
     signalStatus = sig;
     constexpr std::uint16_t maxFrame = 128;
-    void* callStack[maxFrame] = {nullptr};
-    const int numOfFrame = ::backtrace(callStack, maxFrame);
-    char** const symbols = ::backtrace_symbols(callStack, numOfFrame);
+    std::array<void*, maxFrame> callStack{};
+    const int numOfFrame = ::backtrace(callStack.data(), callStack.size());
+    char** const symbols = ::backtrace_symbols(callStack.data(), numOfFrame);
 
-    char buffer[1024] = {'\0'};
+    std::array<char, 1024> buffer{};
     std::ostringstream originalTrace{}, detailedTrace{};
     for (int i = 1; i < numOfFrame; ++i)
     {
@@ -55,8 +56,8 @@ static void signalHandler(const int sig)
                 demangle = ::abi::__cxa_demangle(info.dli_sname, nullptr, nullptr, &status);
             }
             std::snprintf(
-                buffer,
-                sizeof(buffer),
+                buffer.data(),
+                buffer.size(),
                 "%-3d %*p %.960s + %zd\n",
                 i,
                 static_cast<int>(2 + (sizeof(void*) * 2)),
@@ -68,15 +69,15 @@ static void signalHandler(const int sig)
         else
         {
             std::snprintf(
-                buffer,
-                sizeof(buffer),
+                buffer.data(),
+                buffer.size(),
                 "%-3d %*p %.960s\n",
                 i,
                 static_cast<int>(2 + (sizeof(void*) * 2)),
                 callStack[i],
                 symbols[i]);
         }
-        detailedTrace << buffer;
+        detailedTrace << buffer.data();
     }
     std::free(static_cast<void*>(symbols));
 
