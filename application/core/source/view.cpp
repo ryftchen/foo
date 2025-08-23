@@ -171,8 +171,8 @@ static bool encodeTLV(char* buf, int& len, const TLVValue& val)
     enc.write<int>(TLVType::profile);
     sum += sizeof(int) + serialize(enc, val, &TLVValue::configDetail);
 
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-    *reinterpret_cast<int*>(buf + sizeof(int)) = ::htonl(sum);
+    int temp = ::htonl(sum);
+    std::memcpy(buf + sizeof(int), &temp, sizeof(temp));
     len = sizeof(int) + sizeof(int) + sum;
 
     return true;
