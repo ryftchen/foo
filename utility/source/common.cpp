@@ -31,7 +31,7 @@ constexpr std::string_view base64Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 //! @brief The Brian-Kernighan Dennis-Ritchie hash function.
 //! @param str - input data
 //! @return hash value
-std::size_t bkdrHash(const char* str)
+std::size_t bkdrHash(const char* str) noexcept
 {
     std::size_t hash = 0;
     while (*str)
@@ -39,7 +39,7 @@ std::size_t bkdrHash(const char* str)
         hash = hash * bkdrHashSeed + (*str++);
     }
 
-    return hash & bkdrHashSize;
+    return hash & bkdrHashMask;
 }
 
 // NOLINTBEGIN(readability-magic-numbers)
@@ -148,21 +148,21 @@ std::string base64Decode(const std::string_view data)
 //! @return string after formatting
 std::string printfString(const char* const fmt, ...) // NOLINT(cert-dcl50-cpp)
 {
-    std::va_list list{};
-    ::va_start(list, fmt);
-    const int bufferSize = std::vsnprintf(nullptr, 0, fmt, list);
-    ::va_end(list);
-    if (bufferSize < 0)
+    std::va_list argList{};
+    ::va_start(argList, fmt);
+    const int reservedSize = std::vsnprintf(nullptr, 0, fmt, argList);
+    ::va_end(argList);
+    if (reservedSize < 0)
     {
-        throw std::runtime_error{"Unable to format string."};
+        throw std::runtime_error{"Unable to reserve size for formatting string."};
     }
 
-    ::va_start(list, fmt);
-    std::vector<char> buffer(bufferSize + 1);
-    std::vsnprintf(buffer.data(), bufferSize + 1, fmt, list);
-    ::va_end(list);
+    ::va_start(argList, fmt);
+    std::vector<char> buffer(reservedSize + 1);
+    std::vsnprintf(buffer.data(), reservedSize + 1, fmt, argList);
+    ::va_end(argList);
 
-    return std::string{buffer.cbegin(), buffer.cbegin() + bufferSize};
+    return std::string{buffer.cbegin(), buffer.cbegin() + reservedSize};
 }
 
 void SpinLock::lock()
