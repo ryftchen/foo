@@ -22,31 +22,30 @@ extern const char* version() noexcept;
 
 //! @brief Hash seed for BKDR hash function.
 constexpr std::size_t bkdrHashSeed = 131;
-//! @brief Hash size for BKDR hash function.
-constexpr std::size_t bkdrHashSize = 0x7FFFFFFF;
-
-extern std::size_t bkdrHash(const char* str);
-//! @brief The Brian-Kernighan Dennis-Ritchie hash function at compile time.
+//! @brief Hash mask for BKDR hash function.
+constexpr std::size_t bkdrHashMask = 0x7FFFFFFF;
+extern std::size_t bkdrHash(const char* str) noexcept;
+//! @brief The Brian-Kernighan Dennis-Ritchie hash function (recursive).
 //! @param str - input data
-//! @param hash - previous hash value
+//! @param hash - recursive hash value
 //! @return hash value
-constexpr std::size_t bkdrHashInCompiling(const char* const str, const std::size_t hash = 0) noexcept
+constexpr std::size_t bkdrHashRecursive(const char* const str, const std::size_t hash = 0) noexcept
 {
-    return *str ? bkdrHashInCompiling(str + 1, (hash * bkdrHashSeed + *str) & bkdrHashSize) : hash;
+    return *str ? bkdrHashRecursive(str + 1, (hash * bkdrHashSeed + *str) & bkdrHashMask) : hash;
 }
 //! @brief The operator ("") overloading with BKDR hash function.
 //! @param str - input data
 //! @return hash value
-constexpr std::size_t operator""_bkdrHash(const char* str, const std::size_t /*len*/) noexcept
+constexpr std::size_t operator""_bkdrHash(const char* const str, const std::size_t /*len*/) noexcept
 {
-    return bkdrHashInCompiling(str);
+    return bkdrHashRecursive(str);
 }
 //! @brief The operator ("") overloading with BKDR hash function.
 //! @param str - input data
 //! @return hash value
-constexpr std::size_t operator""_bkdrHash(const char* str) noexcept
+constexpr std::size_t operator""_bkdrHash(const char* const str) noexcept
 {
-    return bkdrHashInCompiling(str);
+    return bkdrHashRecursive(str);
 }
 
 extern std::string base64Encode(const std::string_view data);
@@ -95,12 +94,12 @@ private:
     static constexpr std::array characters{
         []() constexpr noexcept
         {
-            constexpr auto length = (Strings.length() + ... + 0);
-            std::array<char, length + 1> result{};
-            char* dst = result.data();
+            constexpr auto len = (Strings.length() + ... + 0);
+            std::array<char, len + 1> str{};
+            char* dst = str.data();
             ((std::copy_n(Strings.cbegin(), Strings.length(), dst), dst += Strings.length()), ...);
-            result.at(length) = '\0';
-            return result;
+            str[len] = '\0';
+            return str;
         }()};
 
 public:
