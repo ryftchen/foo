@@ -37,7 +37,7 @@ private:
     //! @param n - integer to check
     //! @return be even or not
     static bool isEven(const std::int32_t n);
-    //! @brief Recursive for the Stein method.
+    //! @brief Recursion for the Stein method.
     //! @param a - first integer
     //! @param b - second integer
     //! @return greatest common divisor

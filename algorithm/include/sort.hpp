@@ -78,12 +78,12 @@ public:
     static std::vector<T> radix(const T* const array, const std::uint32_t length);
 
 private:
-    //! @brief Recursive for the merge method.
+    //! @brief Recursion for the merge method.
     //! @param sorting - array to be sorted
     //! @param begin - index of beginning
     //! @param end - index of ending
     static void mergeSortRecursive(T* const sorting, const std::uint32_t begin, const std::uint32_t end);
-    //! @brief Recursive for the quick method.
+    //! @brief Recursion for the quick method.
     //! @param sorting - array to be sorted
     //! @param begin - index of beginning
     //! @param end - index of ending
