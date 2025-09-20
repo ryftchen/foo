@@ -877,18 +877,49 @@ template <>
 void View::renewServer<utility::socket::TCPServer>()
 {
     tcpServer = std::make_shared<utility::socket::TCPServer>();
-    // NOLINTNEXTLINE(performance-unnecessary-value-param)
-    tcpServer->onNewConnection = [](const std::shared_ptr<utility::socket::TCPSocket> newSocket)
-    {
-        const std::weak_ptr<utility::socket::TCPSocket> weakSock = newSocket;
-        newSocket->onMessageReceived = [weakSock](const std::string_view message)
+    tcpServer->bindConnection(
+        [](const std::shared_ptr<utility::socket::TCPSocket> client) // NOLINT(performance-unnecessary-value-param)
+        {
+            const std::weak_ptr<utility::socket::TCPSocket> weakSock = client;
+            client->bindMessage(
+                [weakSock](const std::string_view message)
+                {
+                    if (message.empty())
+                    {
+                        return;
+                    }
+                    auto newSocket = weakSock.lock();
+                    if (!newSocket)
+                    {
+                        return;
+                    }
+
+                    std::array<char, 1024> respBuffer{};
+                    try
+                    {
+                        const auto reqPlaintext = utility::common::base64Decode(message);
+                        (reqPlaintext != exitSymbol)
+                            ? newSocket->toSend(respBuffer.data(), buildResponse(reqPlaintext, respBuffer.data()))
+                            : newSocket->toSend(respBuffer.data(), buildFinTLVPacket(respBuffer.data()));
+                    }
+                    catch (const std::exception& err)
+                    {
+                        LOG_WRN << err.what();
+                        newSocket->toSend(respBuffer.data(), buildAckTLVPacket(respBuffer.data()));
+                    }
+                });
+        });
+}
+
+//! @brief Renew the UDP server.
+template <>
+void View::renewServer<utility::socket::UDPServer>()
+{
+    udpServer = std::make_shared<utility::socket::UDPServer>();
+    udpServer->bindMessage(
+        [this](const std::string_view message, const std::string& ip, const std::uint16_t port)
         {
             if (message.empty())
-            {
-                return;
-            }
-            auto newSocket = weakSock.lock();
-            if (!newSocket)
             {
                 return;
             }
@@ -898,45 +929,15 @@ void View::renewServer<utility::socket::TCPServer>()
             {
                 const auto reqPlaintext = utility::common::base64Decode(message);
                 (reqPlaintext != exitSymbol)
-                    ? newSocket->toSend(respBuffer.data(), buildResponse(reqPlaintext, respBuffer.data()))
-                    : newSocket->toSend(respBuffer.data(), buildFinTLVPacket(respBuffer.data()));
+                    ? udpServer->toSendTo(respBuffer.data(), buildResponse(reqPlaintext, respBuffer.data()), ip, port)
+                    : udpServer->toSendTo(respBuffer.data(), buildFinTLVPacket(respBuffer.data()), ip, port);
             }
             catch (const std::exception& err)
             {
                 LOG_WRN << err.what();
-                newSocket->toSend(respBuffer.data(), buildAckTLVPacket(respBuffer.data()));
+                udpServer->toSendTo(respBuffer.data(), buildAckTLVPacket(respBuffer.data()), ip, port);
             }
-        };
-    };
-}
-
-//! @brief Renew the UDP server.
-template <>
-void View::renewServer<utility::socket::UDPServer>()
-{
-    udpServer = std::make_shared<utility::socket::UDPServer>();
-    udpServer->onMessageReceived =
-        [this](const std::string_view message, const std::string& ip, const std::uint16_t port)
-    {
-        if (message.empty())
-        {
-            return;
-        }
-
-        std::array<char, 1024> respBuffer{};
-        try
-        {
-            const auto reqPlaintext = utility::common::base64Decode(message);
-            (reqPlaintext != exitSymbol)
-                ? udpServer->toSendTo(respBuffer.data(), buildResponse(reqPlaintext, respBuffer.data()), ip, port)
-                : udpServer->toSendTo(respBuffer.data(), buildFinTLVPacket(respBuffer.data()), ip, port);
-        }
-        catch (const std::exception& err)
-        {
-            LOG_WRN << err.what();
-            udpServer->toSendTo(respBuffer.data(), buildAckTLVPacket(respBuffer.data()), ip, port);
-        }
-    };
+        });
 }
 
 bool View::isInServingState(const State state) const

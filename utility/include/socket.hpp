@@ -8,6 +8,7 @@
 
 #include <arpa/inet.h>
 #include <future>
+#include <memory>
 
 //! @brief The utility module.
 namespace utility // NOLINT(modernize-concat-nested-namespaces)
@@ -142,15 +143,35 @@ public:
     //! @brief Create the thread to receive.
     //! @param toDetach - whether to detach
     void toReceive(const bool toDetach = false);
-    //! @brief Handling on message received.
-    std::function<void(const std::string_view)> onMessageReceived;
-    //! @brief Handling on raw message received.
-    std::function<void(char*, const int)> onRawMessageReceived;
+
+    //! @brief Alias for the handling on message received.
+    using MessageCallback = std::function<void(const std::string_view)>;
+    //! @brief Alias for the handling on raw message received.
+    using RawMessageCallback = std::function<void(char*, const int)>;
+    //! @brief Bind the callback to handle the received message.
+    //! @param callback - callback on received message
+    void bindMessage(MessageCallback callback);
+    //! @brief Bind the callback to handle the received raw message.
+    //! @param callback - callback on received raw message
+    void bindRawMessage(RawMessageCallback callback);
 
 private:
+    //! @brief Handling on message received.
+    std::atomic<std::shared_ptr<MessageCallback>> msgCb;
+    //! @brief Handling on raw message received.
+    std::atomic<std::shared_ptr<RawMessageCallback>> rawMsgCb;
+
     //! @brief Receive bytes from socket FD.
     //! @param socket - target socket
     static void toRecv(const std::shared_ptr<TCPSocket> socket);
+
+    //! @brief Emit the received message.
+    //! @param message - received message
+    void emitMessage(const std::string_view message) const;
+    //! @brief Emit the received raw message.
+    //! @param buffer - received bytes buffer
+    //! @param length - length of buffer
+    void emitRawMessage(char* buffer, const int length) const;
 };
 
 //! @brief TCP server.
@@ -172,13 +193,24 @@ public:
     //! @brief Create the thread to accept the connection from the client.
     //! @param toDetach - whether to detach
     void toAccept(const bool toDetach = false);
-    //! @brief Handling on new connection.
-    std::function<void(const std::shared_ptr<TCPSocket>)> onNewConnection;
+
+    //! @brief Alias for the handling on new connection.
+    using ConnectionCallback = std::function<void(const std::shared_ptr<TCPSocket>)>;
+    //! @brief Bind the callback to handle the new connection.
+    //! @param callback - callback on new connection
+    void bindConnection(ConnectionCallback callback);
 
 private:
+    //! @brief Handling on new connection.
+    std::atomic<std::shared_ptr<ConnectionCallback>> connCb;
+
     //! @brief Accept the connection on socket FD.
     //! @param server - target server
     static void toAccept(const std::shared_ptr<TCPServer> server);
+
+    //! @brief Emit the new connection.
+    //! @param client - new connected client
+    void emitConnection(const std::shared_ptr<TCPSocket> client) const;
 };
 
 //! @brief UDP socket.
@@ -221,18 +253,42 @@ public:
     //! @brief Create the thread to receive from peer.
     //! @param toDetach - whether to detach
     void toReceiveFrom(const bool toDetach = false);
-    //! @brief Handling on message received.
-    std::function<void(const std::string_view, const std::string&, const std::uint16_t)> onMessageReceived;
-    //! @brief Handling on raw message received.
-    std::function<void(char*, const int, const std::string&, const std::uint16_t)> onRawMessageReceived;
+
+    //! @brief Alias for the handling on message received.
+    using MessageCallback = std::function<void(const std::string_view, const std::string&, const std::uint16_t)>;
+    //! @brief Alias for the handling on raw message received.
+    using RawMessageCallback = std::function<void(char*, const int, const std::string&, const std::uint16_t)>;
+    //! @brief Bind the callback to handle the received message.
+    //! @param callback - callback on received message
+    void bindMessage(MessageCallback callback);
+    //! @brief Bind the callback to handle the received raw message.
+    //! @param callback - callback on received raw message
+    void bindRawMessage(RawMessageCallback callback);
 
 private:
+    //! @brief Handling on message received.
+    std::atomic<std::shared_ptr<MessageCallback>> msgCb;
+    //! @brief Handling on raw message received.
+    std::atomic<std::shared_ptr<RawMessageCallback>> rawMsgCb;
+
     //! @brief Receive bytes from socket FD.
     //! @param socket - target socket
     static void toRecv(const std::shared_ptr<UDPSocket> socket);
     //! @brief Receive bytes through socket FD.
     //! @param socket - target socket
     static void toRecvFrom(const std::shared_ptr<UDPSocket> socket);
+
+    //! @brief Emit the received message.
+    //! @param message - received message
+    //! @param ip - source ip address
+    //! @param port - source port number
+    void emitMessage(const std::string_view message, const std::string& ip, const std::uint16_t port) const;
+    //! @brief Emit the received raw message.
+    //! @param buffer - received bytes buffer
+    //! @param length - length of buffer
+    //! @param ip - source ip address
+    //! @param port - source port number
+    void emitRawMessage(char* buffer, const int length, const std::string& ip, const std::uint16_t port) const;
 };
 
 //! @brief UDP server.
