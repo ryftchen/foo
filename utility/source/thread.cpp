@@ -18,10 +18,10 @@ const char* version() noexcept
     return ver;
 }
 
-Thread::Thread(const std::size_t size)
+Thread::Thread(const std::size_t capacity)
 {
-    thdColl.reserve(size);
-    std::generate_n(std::back_inserter(thdColl), size, [this]() { return std::thread{[this]() { workLoop(); }}; });
+    thdColl.reserve(capacity);
+    std::generate_n(std::back_inserter(thdColl), capacity, [this]() { return std::thread{[this]() { workLoop(); }}; });
 }
 
 void Thread::workLoop()

@@ -26,10 +26,7 @@ using TupleConcatResult = decltype(std::tuple_cat(std::declval<Tuples>()...));
 //! @tparam IdxSeq - type of index sequence
 //! @tparam Args - type of function arguments
 template <typename IdxSeq, typename... Args>
-struct ArgsHead
-{
-};
-
+struct ArgsHead;
 //! @brief Head of function arguments.
 //! @tparam Args - type of function arguments
 template <typename... Args>
@@ -38,7 +35,6 @@ struct ArgsHead<std::integer_sequence<std::size_t>, Args...>
     //! @brief Alias for the empty tuple.
     using Type = std::tuple<>;
 };
-
 //! @brief Head of function arguments.
 //! @tparam Args - type of function arguments
 //! @tparam Rest - type of rest function arguments
@@ -51,7 +47,6 @@ struct ArgsHead<std::integer_sequence<std::size_t, N, I...>, Args, Rest...>
     using Type =
         TupleConcatResult<std::tuple<Args>, typename ArgsHead<std::integer_sequence<std::size_t, I...>, Rest...>::Type>;
 };
-
 //! @brief Alias for the function arguments head type.
 //! @tparam N - number of specific function arguments
 //! @tparam Args - type of function arguments
@@ -62,10 +57,7 @@ using ArgsHeadType = typename ArgsHead<std::make_index_sequence<N>, Args...>::Ty
 //! @tparam IdxSeq - type of index sequence
 //! @tparam Args - type of function arguments
 template <typename IdxSeq, typename... Args>
-struct ArgsExcl
-{
-};
-
+struct ArgsExcl;
 //! @brief Exclusion of function arguments.
 //! @tparam Args - type of function arguments
 template <typename... Args>
@@ -74,7 +66,6 @@ struct ArgsExcl<std::integer_sequence<std::size_t>, Args...>
     //! @brief Alias for the rest tuple.
     using Type = std::tuple<Args...>;
 };
-
 //! @brief Exclusion of function arguments.
 //! @tparam Args - type of function arguments
 //! @tparam Rest - type of rest function arguments
@@ -86,7 +77,6 @@ struct ArgsExcl<std::integer_sequence<std::size_t, N, I...>, Args, Rest...>
     //! @brief Alias for the rest function arguments.
     using Type = typename ArgsExcl<std::integer_sequence<std::size_t, I...>, Rest...>::Type;
 };
-
 //! @brief Alias for the function arguments exclusion type.
 //! @tparam N - number of specific function arguments
 //! @tparam Args - type of function arguments
@@ -98,10 +88,7 @@ using ArgsExclType = typename ArgsExcl<std::make_index_sequence<N>, Args...>::Ty
 //! @tparam ArgsTuple - type of function arguments tuple
 //! @tparam UncurriedArgsTuple - type of uncurried function arguments tuple
 template <typename Callable, typename ArgsTuple, typename UncurriedArgsTuple>
-class Curried
-{
-};
-
+class Curried;
 //! @brief Completion of curry.
 //! @tparam Callable - type of original function
 //! @tparam CurriedArgs - type of curried function arguments
@@ -180,10 +167,7 @@ inline auto Curried<Callable, std::tuple<CurriedArgs...>, std::tuple<UncurriedAr
 //! @tparam CurriedArgsTuple - type of curried function arguments tuple
 //! @tparam UncurriedArgsTuple - type of uncurried function arguments tuple
 template <typename CurriedArgsTuple, typename UncurriedArgsTuple>
-struct Curry
-{
-};
-
+struct Curry;
 //! @brief Package curry.
 //! @tparam CurriedArgs - type of curried function arguments
 //! @tparam UncurriedArgs - type of uncurried function arguments
