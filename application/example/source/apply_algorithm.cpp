@@ -198,21 +198,21 @@ void applyingMatch(const std::vector<std::string>& candidates)
     static_assert(InputBuilder::maxDigit > patternString.length());
     const auto inputData = std::make_shared<InputBuilder>(patternString);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = utility::common::wrapClosure(
+    const auto addTask =
         [allocatedJob, &inputData, &taskNamer](
             const std::string_view subTask,
             void (*targetMethod)(
                 const unsigned char* const, const unsigned char* const, const std::uint32_t, const std::uint32_t))
-        {
-            allocatedJob->enqueue(
-                taskNamer(subTask),
-                targetMethod,
-                inputData->getMatchingText().get(),
-                inputData->getSinglePattern().get(),
-                inputData->getTextLength(),
-                inputData->getPatternLength());
-        });
-    MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
+    {
+        allocatedJob->enqueue(
+            taskNamer(subTask),
+            targetMethod,
+            inputData->getMatchingText().get(),
+            inputData->getSinglePattern().get(),
+            inputData->getTextLength(),
+            inputData->getPatternLength());
+    };
+    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
@@ -296,11 +296,10 @@ void applyingNotation(const std::vector<std::string>& candidates)
     using notation::InputBuilder, notation::input::infixString;
     const auto inputData = std::make_shared<InputBuilder>(infixString);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = utility::common::wrapClosure(
-        [allocatedJob, &inputData, &taskNamer](
-            const std::string_view subTask, void (*targetMethod)(const std::string_view))
-        { allocatedJob->enqueue(taskNamer(subTask), targetMethod, inputData->getInfixNotation()); });
-    MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
+    const auto addTask = [allocatedJob, &inputData, &taskNamer](
+                             const std::string_view subTask, void (*targetMethod)(const std::string_view))
+    { allocatedJob->enqueue(taskNamer(subTask), targetMethod, inputData->getInfixNotation()); };
+    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
@@ -443,18 +442,18 @@ void applyingOptimal(const std::vector<std::string>& candidates)
     const auto inputData = std::make_shared<InputBuilder>(
         SphericalBessel{}, SphericalBessel::range1, SphericalBessel::range2, SphericalBessel::funcDescr);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = utility::common::wrapClosure(
+    const auto addTask =
         [allocatedJob, &inputData, &taskNamer](
             const std::string_view subTask, void (*targetMethod)(const Function&, const double, const double))
-        {
-            allocatedJob->enqueue(
-                taskNamer(subTask),
-                targetMethod,
-                inputData->getFunction(),
-                inputData->getRanges().first,
-                inputData->getRanges().second);
-        });
-    MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
+    {
+        allocatedJob->enqueue(
+            taskNamer(subTask),
+            targetMethod,
+            inputData->getFunction(),
+            inputData->getRanges().first,
+            inputData->getRanges().second);
+    };
+    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
@@ -573,18 +572,18 @@ void applyingSearch(const std::vector<std::string>& candidates)
     static_assert((arrayRangeMin < arrayRangeMax) && (arrayLength > 0));
     const auto inputData = std::make_shared<InputBuilder<float>>(arrayLength, arrayRangeMin, arrayRangeMax);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = utility::common::wrapClosure(
+    const auto addTask =
         [allocatedJob, &inputData, &taskNamer](
             const std::string_view subTask, void (*targetMethod)(const float* const, const std::uint32_t, const float))
-        {
-            allocatedJob->enqueue(
-                taskNamer(subTask),
-                targetMethod,
-                inputData->getOrderedArray().get(),
-                inputData->getLength(),
-                inputData->getSearchKey());
-        });
-    MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
+    {
+        allocatedJob->enqueue(
+            taskNamer(subTask),
+            targetMethod,
+            inputData->getOrderedArray().get(),
+            inputData->getLength(),
+            inputData->getSearchKey());
+    };
+    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
@@ -768,14 +767,14 @@ void applyingSort(const std::vector<std::string>& candidates)
     static_assert((arrayRangeMin < arrayRangeMax) && (arrayLength > 0));
     const auto inputData = std::make_shared<InputBuilder<std::int32_t>>(arrayLength, arrayRangeMin, arrayRangeMax);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = utility::common::wrapClosure(
+    const auto addTask =
         [allocatedJob, &inputData, &taskNamer](
             const std::string_view subTask, void (*targetMethod)(const std::int32_t* const, const std::uint32_t))
-        {
-            allocatedJob->enqueue(
-                taskNamer(subTask), targetMethod, inputData->getRandomArray().get(), inputData->getLength());
-        });
-    MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
+    {
+        allocatedJob->enqueue(
+            taskNamer(subTask), targetMethod, inputData->getRandomArray().get(), inputData->getLength());
+    };
+    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
