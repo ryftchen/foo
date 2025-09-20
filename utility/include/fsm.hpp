@@ -250,10 +250,10 @@ private:
         using EventType = Event;
         //! @brief Get source state.
         //! @return source state
-        static constexpr StateType sourceValue() { return Source; }
+        static constexpr StateType sourceState() { return Source; }
         //! @brief Get target state.
         //! @return target state
-        static constexpr StateType targetValue() { return Target; }
+        static constexpr StateType targetState() { return Target; }
 
     protected:
         //! @brief Process the specific event.
@@ -319,13 +319,13 @@ private:
     //! @tparam Event - type of triggered event
     //! @tparam Types - type of behaviors
     template <typename Event, typename... Types>
-    struct handleEvent;
+    struct EventHandler;
     //! @brief Handle the specific event. Include both event and behaviors.
     //! @tparam Event - type of triggered event
     //! @tparam T - type of derived class
     //! @tparam Types - type of behaviors
     template <typename Event, typename T, typename... Types>
-    struct handleEvent<Event, List<T, Types...>>
+    struct EventHandler<Event, List<T, Types...>>
     {
         //! @brief Execute handling.
         //! @param self - derived object
@@ -334,15 +334,15 @@ private:
         //! @return state after execute
         static constexpr State execute(Derived& self, const Event& event, const State state)
         {
-            return ((T::sourceValue() == state) && T::checkGuard(self, event))
-                ? (T::processEvent(self, event), T::targetValue())
-                : handleEvent<Event, List<Types...>>::execute(self, event, state);
+            return ((T::sourceState() == state) && T::checkGuard(self, event))
+                ? (T::processEvent(self, event), T::targetState())
+                : EventHandler<Event, List<Types...>>::execute(self, event, state);
         }
     };
     //! @brief Handle the specific event. Include only event.
     //! @tparam Event - type of triggered event
     template <typename Event>
-    struct handleEvent<Event, List<>>
+    struct EventHandler<Event, List<>>
     {
         //! @brief Execute handling. No transition.
         //! @param self - derived object
@@ -478,7 +478,7 @@ inline void FSM<Derived, State>::processEvent(const Event& event)
     using Rows = typename ByEventType<Event, typename Derived::TransitionTable>::Type;
     static_assert(std::is_base_of_v<FSM, Derived>);
     auto& self = static_cast<Derived&>(*this);
-    state = handleEvent<Event, Rows>::execute(self, event, state);
+    state = EventHandler<Event, Rows>::execute(self, event, state);
 }
 
 template <typename Derived, typename State>
