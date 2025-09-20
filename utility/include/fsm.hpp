@@ -161,9 +161,7 @@ constexpr AdaptInvokeResultType<Func, Arg1, Arg2> adaptiveInvoke(Func&& func, Ar
 //! @brief The list of behaviors.
 //! @tparam Types - type of behaviors
 template <typename... Types>
-struct List
-{
-};
+struct List;
 
 //! @brief Associate behaviors.
 //! @tparam Types - type of behaviors

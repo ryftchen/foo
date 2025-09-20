@@ -164,15 +164,11 @@ struct RunChoices
 //! @brief Indication type of updating in the applied action.
 //! @tparam Msg - type of message
 template <typename Msg>
-struct UpdatingIndication
-{
-};
+struct UpdatingIndication;
 //! @brief Indication type of running in the applied action.
 //! @tparam Msg - type of message
 template <typename Msg>
-struct RunningIndication
-{
-};
+struct RunningIndication;
 //! @brief Message type list.
 //! @tparam Types - type of indication types
 template <typename... Types>
