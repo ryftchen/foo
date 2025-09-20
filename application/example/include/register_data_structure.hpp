@@ -487,7 +487,7 @@ namespace application::reg_ds
 //! @tparam T - type of target object
 template <typename T>
 using TypeInfo = utility::reflection::TypeInfo<T>;
-//! @brief Alias for Category.
+//! @brief Alias for the category.
 using Category = ApplyDataStructure::Category;
 //! @brief Convert category enumeration to string.
 //! @param cat - target category

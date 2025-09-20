@@ -102,8 +102,10 @@ bool Packet::read(T* const data)
 
 extern void encryptMessage(char* buffer, const int length);
 extern void decryptMessage(char* buffer, const int length);
+
 extern void compressData(std::vector<char>& cache);
 extern void decompressData(std::vector<char>& cache);
+
 extern std::string toHexString(const char* const buffer, const int length);
 } // namespace data
 } // namespace application
