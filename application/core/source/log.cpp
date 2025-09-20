@@ -144,11 +144,11 @@ retry:
         processEvent(OpenFile{});
 
         assert(currentState() == State::idle);
-        awaitNotification2Ongoing();
+        awaitNotification2Proceed();
         processEvent(GoLogging{});
 
         assert(currentState() == State::work);
-        awaitNotification2Log();
+        notificationLoop();
         if (toReset.load())
         {
             processEvent(Relaunch{});
@@ -203,7 +203,13 @@ void Log::Access::reload() const
 try
 {
     notifyVia([this]() { inst.toReset.store(true); });
-    startResetTimer();
+    countdownIf(
+        [this]() { return inst.toReset.load(); },
+        [this]()
+        {
+            throw std::runtime_error{
+                "The " + inst.name + " did not reset properly in " + std::to_string(inst.timeoutPeriod) + " ms ..."};
+        });
 }
 catch (const std::exception& err)
 {
@@ -237,18 +243,17 @@ void Log::Access::notifyVia(const std::function<void()>& action) const
     inst.daemonCond.notify_one();
 }
 
-void Log::Access::startResetTimer() const
+void Log::Access::countdownIf(const std::function<bool()>& condition, const std::function<void()>& handling) const
 {
     for (const utility::time::Stopwatch timing{}; timing.elapsedTime() <= inst.timeoutPeriod;)
     {
-        if (!inst.toReset.load())
+        if (!condition())
         {
             return;
         }
         std::this_thread::yield();
     }
-    throw std::runtime_error{
-        "The " + inst.name + " did not reset properly in " + std::to_string(inst.timeoutPeriod) + " ms ..."};
+    handling();
 }
 
 void Log::flush(const OutputLevel severity, const std::string_view labelTpl, const std::string_view formatted)
@@ -508,13 +513,7 @@ bool Log::isLogFileClose(const NoLogging& /*event*/) const
     return !logWriter.isOpen();
 }
 
-void Log::awaitNotification2Ongoing()
-{
-    std::unique_lock<std::mutex> daemonLock(daemonMtx);
-    daemonCond.wait(daemonLock, [this]() { return ongoing.load(); });
-}
-
-void Log::awaitNotification2Log()
+void Log::notificationLoop()
 {
     while (ongoing.load())
     {
@@ -546,6 +545,12 @@ void Log::awaitNotification2Log()
             logQueue.pop();
         }
     }
+}
+
+void Log::awaitNotification2Proceed()
+{
+    std::unique_lock<std::mutex> daemonLock(daemonMtx);
+    daemonCond.wait(daemonLock, [this]() { return ongoing.load(); });
 }
 
 bool Log::awaitNotification2Retry()

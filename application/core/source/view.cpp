@@ -261,11 +261,11 @@ retry:
         processEvent(CreateServer{});
 
         assert(currentState() == State::idle);
-        awaitNotification2Ongoing();
+        awaitNotification2Proceed();
         processEvent(GoViewing{});
 
         assert(currentState() == State::work);
-        awaitNotification2View();
+        notificationLoop();
         if (toReset.load())
         {
             processEvent(Relaunch{});
@@ -320,7 +320,13 @@ void View::Access::reload() const
 try
 {
     notifyVia([this]() { inst.toReset.store(true); });
-    startResetTimer();
+    countdownIf(
+        [this]() { return inst.toReset.load(); },
+        [this]()
+        {
+            throw std::runtime_error{
+                "The " + inst.name + " did not reset properly in " + std::to_string(inst.timeoutPeriod) + " ms ..."};
+        });
 }
 catch (const std::exception& err)
 {
@@ -383,18 +389,17 @@ void View::Access::notifyVia(const std::function<void()>& action) const
     inst.daemonCond.notify_one();
 }
 
-void View::Access::startResetTimer() const
+void View::Access::countdownIf(const std::function<bool()>& condition, const std::function<void()>& handling) const
 {
     for (const utility::time::Stopwatch timing{}; timing.elapsedTime() <= inst.timeoutPeriod;)
     {
-        if (!inst.toReset.load())
+        if (!condition())
         {
             return;
         }
         std::this_thread::yield();
     }
-    throw std::runtime_error{
-        "The " + inst.name + " did not reset properly in " + std::to_string(inst.timeoutPeriod) + " ms ..."};
+    handling();
 }
 
 void View::Sync::waitTaskDone() const
@@ -1016,13 +1021,7 @@ void View::doRollback()
     outputCompleted.store(false);
 }
 
-void View::awaitNotification2Ongoing()
-{
-    std::unique_lock<std::mutex> daemonLock(daemonMtx);
-    daemonCond.wait(daemonLock, [this]() { return ongoing.load(); });
-}
-
-void View::awaitNotification2View()
+void View::notificationLoop()
 {
     while (ongoing.load())
     {
@@ -1033,6 +1032,12 @@ void View::awaitNotification2View()
             break;
         }
     }
+}
+
+void View::awaitNotification2Proceed()
+{
+    std::unique_lock<std::mutex> daemonLock(daemonMtx);
+    daemonCond.wait(daemonLock, [this]() { return ongoing.load(); });
 }
 
 bool View::awaitNotification2Retry()
