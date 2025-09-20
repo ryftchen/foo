@@ -17,7 +17,7 @@ namespace currying
 {
 extern const char* version() noexcept;
 
-//! @brief Alias for tuple concat result.
+//! @brief Alias for the tuple concat result.
 //! @tparam Tuples - type of tuples
 template <typename... Tuples>
 using TupleConcatResult = decltype(std::tuple_cat(std::declval<Tuples>()...));
@@ -35,7 +35,7 @@ struct ArgsHead
 template <typename... Args>
 struct ArgsHead<std::integer_sequence<std::size_t>, Args...>
 {
-    //! @brief Alias for empty tuple.
+    //! @brief Alias for the empty tuple.
     using Type = std::tuple<>;
 };
 
@@ -47,12 +47,12 @@ struct ArgsHead<std::integer_sequence<std::size_t>, Args...>
 template <typename Args, typename... Rest, std::size_t N, std::size_t... I>
 struct ArgsHead<std::integer_sequence<std::size_t, N, I...>, Args, Rest...>
 {
-    //! @brief Alias for tuple concat.
+    //! @brief Alias for the tuple concat.
     using Type =
         TupleConcatResult<std::tuple<Args>, typename ArgsHead<std::integer_sequence<std::size_t, I...>, Rest...>::Type>;
 };
 
-//! @brief Alias for function arguments head type.
+//! @brief Alias for the function arguments head type.
 //! @tparam N - number of specific function arguments
 //! @tparam Args - type of function arguments
 template <std::size_t N, typename... Args>
@@ -71,7 +71,7 @@ struct ArgsExcl
 template <typename... Args>
 struct ArgsExcl<std::integer_sequence<std::size_t>, Args...>
 {
-    //! @brief Alias for rest tuple.
+    //! @brief Alias for the rest tuple.
     using Type = std::tuple<Args...>;
 };
 
@@ -83,11 +83,11 @@ struct ArgsExcl<std::integer_sequence<std::size_t>, Args...>
 template <typename Args, typename... Rest, std::size_t N, std::size_t... I>
 struct ArgsExcl<std::integer_sequence<std::size_t, N, I...>, Args, Rest...>
 {
-    //! @brief Alias for rest function arguments.
+    //! @brief Alias for the rest function arguments.
     using Type = typename ArgsExcl<std::integer_sequence<std::size_t, I...>, Rest...>::Type;
 };
 
-//! @brief Alias for function arguments exclusion type.
+//! @brief Alias for the function arguments exclusion type.
 //! @tparam N - number of specific function arguments
 //! @tparam Args - type of function arguments
 template <std::size_t N, typename... Args>

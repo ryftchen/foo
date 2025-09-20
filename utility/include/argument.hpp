@@ -199,9 +199,9 @@ public:
     friend class Argument;
 
 private:
-    //! @brief Alias for function which has valued return.
+    //! @brief Alias for the function which has valued return.
     using ValuedAction = std::function<std::any(const std::string&)>;
-    //! @brief Alias for function which has void return.
+    //! @brief Alias for the function which has void return.
     using VoidAction = std::function<void(const std::string&)>;
     //! @brief All argument names.
     std::vector<std::string> names;
@@ -762,9 +762,9 @@ private:
     //! @brief Version number.
     std::string versionNumber;
 
-    //! @brief Alias for iterator in all Trait instances.
+    //! @brief Alias for the iterator in all Trait instances.
     using TraitIter = std::list<Trait>::iterator;
-    //! @brief Alias for iterator in all Argument instances.
+    //! @brief Alias for the iterator in all Argument instances.
     using ArgumentIter = std::list<std::reference_wrapper<Argument>>::iterator;
     //! @brief Description text.
     std::string descrText;

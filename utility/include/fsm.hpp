@@ -16,7 +16,7 @@ namespace fsm
 {
 extern const char* version() noexcept;
 
-//! @brief Alias for invoke result type.
+//! @brief Alias for the invoke result type.
 //! @tparam Func - type of callable function
 //! @tparam Args - type of function arguments
 template <typename Func, typename... Args>
@@ -71,7 +71,7 @@ struct FlexInvokeHelper;
 template <typename Func, typename Arg1, typename Arg2>
 struct FlexInvokeHelper<Func, Arg1, Arg2, true, false, false, false>
 {
-    //! @brief Alias for return type.
+    //! @brief Alias for the return type.
     using ReturnType = InvokeResultType<Func>;
     //! @brief Invoke operation.
     //! @param func - callable function
@@ -88,7 +88,7 @@ struct FlexInvokeHelper<Func, Arg1, Arg2, true, false, false, false>
 template <typename Func, typename Arg1, typename Arg2>
 struct FlexInvokeHelper<Func, Arg1, Arg2, false, true, false, false>
 {
-    //! @brief Alias for return type.
+    //! @brief Alias for the return type.
     using ReturnType = InvokeResultType<Func, Arg1>;
     //! @brief Invoke operation.
     //! @param func - callable function
@@ -106,7 +106,7 @@ struct FlexInvokeHelper<Func, Arg1, Arg2, false, true, false, false>
 template <typename Func, typename Arg1, typename Arg2>
 struct FlexInvokeHelper<Func, Arg1, Arg2, false, false, true, false>
 {
-    //! @brief Alias for return type.
+    //! @brief Alias for the return type.
     using ReturnType = InvokeResultType<Func, Arg2>;
     //! @brief Invoke operation.
     //! @param func - callable function
@@ -124,7 +124,7 @@ struct FlexInvokeHelper<Func, Arg1, Arg2, false, false, true, false>
 template <typename Func, typename Arg1, typename Arg2>
 struct FlexInvokeHelper<Func, Arg1, Arg2, false, false, false, true>
 {
-    //! @brief Alias for return type.
+    //! @brief Alias for the return type.
     using ReturnType = InvokeResultType<Func, Arg1, Arg2>;
     //! @brief Invoke operation.
     //! @param func - callable function
@@ -137,7 +137,7 @@ struct FlexInvokeHelper<Func, Arg1, Arg2, false, false, false, true>
     }
 };
 
-//! @brief Alias for adaptive invoke result type.
+//! @brief Alias for the adaptive invoke result type.
 //! @tparam Func - type of callable function
 //! @tparam Arg1 - type of function arguments
 //! @tparam Arg2 - type of function arguments
@@ -175,14 +175,14 @@ struct Concat;
 template <typename T, typename... Types>
 struct Concat<T, List<Types...>>
 {
-    //! @brief Alias for list.
+    //! @brief Alias for the list.
     using Type = List<T, Types...>;
 };
 //! @brief Associate.
 template <>
 struct Concat<>
 {
-    //! @brief Alias for list.
+    //! @brief Alias for the list.
     using Type = List<>;
 };
 
@@ -198,7 +198,7 @@ struct Filter;
 template <template <typename> class Predicate, typename T, typename... Types>
 struct Filter<Predicate, T, Types...>
 {
-    //! @brief Alias for concat or filter.
+    //! @brief Alias for the concat or filter.
     using Type = std::conditional_t<
         Predicate<T>::value,
         typename Concat<T, typename Filter<Predicate, Types...>::Type>::Type,
@@ -209,7 +209,7 @@ struct Filter<Predicate, T, Types...>
 template <template <typename> class Predicate>
 struct Filter<Predicate>
 {
-    //! @brief Alias for list.
+    //! @brief Alias for the list.
     using Type = List<>;
 };
 
@@ -220,7 +220,7 @@ template <typename Derived, typename State = int>
 class FSM
 {
 public:
-    //! @brief Alias for state.
+    //! @brief Alias for the state.
     using StateType = State;
     //! @brief Construct a new FSM object.
     //! @param initState - initialization value of state
@@ -244,9 +244,9 @@ private:
     class RowBase
     {
     public:
-        //! @brief Alias for state.
+        //! @brief Alias for the state.
         using StateType = State;
-        //! @brief Alias for event.
+        //! @brief Alias for the event.
         using EventType = Event;
         //! @brief Get source state.
         //! @return source state
@@ -299,11 +299,11 @@ private:
     template <typename Event, typename... Types>
     struct ByEventType<Event, List<Types...>>
     {
-        //! @brief Alias for predicate.
+        //! @brief Alias for the predicate.
         //! @tparam T - type of class to which the struct belongs
         template <typename T>
         using Predicate = std::is_same<typename T::EventType, Event>;
-        //! @brief Alias for filter type.
+        //! @brief Alias for the filter type.
         using Type = typename Filter<Predicate, Types...>::Type;
     };
     //! @brief Classification by event type. Include only event.
@@ -311,7 +311,7 @@ private:
     template <typename Event>
     struct ByEventType<Event, List<>>
     {
-        //! @brief Alias for list.
+        //! @brief Alias for the list.
         using Type = List<>;
     };
 
@@ -360,7 +360,7 @@ private:
     mutable std::recursive_mutex mtx;
 
 protected:
-    //! @brief Alias for transition table.
+    //! @brief Alias for the transition table.
     //! @tparam Rows - type of row-based
     template <typename... Rows>
     using Table = List<Rows...>;

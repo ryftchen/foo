@@ -196,7 +196,7 @@ inline int helperTimeout()
 //! @brief Activity configuration applied to tasks.
 namespace task
 {
-//! @brief Alias for memory pool for task when making multi-threading.
+//! @brief Alias for the memory pool for task when making multi-threading.
 using ResourcePool = utility::memory::Memory<utility::thread::Thread>;
 extern ResourcePool& resourcePool();
 //! @brief Preset full name for the task.
