@@ -33,7 +33,7 @@ protected:
     static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE("CACHE", "END"); }
 
     //! @brief System under test.
-    const cache::Showcase sut{};
+    [[no_unique_address]] const cache::Showcase sut{};
     // clang-format off
     //! @brief Expected result 1.
     static constexpr std::string_view expRes1
@@ -138,7 +138,7 @@ protected:
     static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE("FILTER", "END"); }
 
     //! @brief System under test.
-    const filter::Showcase sut{};
+    [[no_unique_address]] const filter::Showcase sut{};
     // clang-format off
     //! @brief Expected result 1.
     static constexpr std::string_view expRes1
@@ -186,7 +186,7 @@ protected:
     static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE("GRAPH", "END"); }
 
     //! @brief System under test.
-    const graph::Showcase sut{};
+    [[no_unique_address]] const graph::Showcase sut{};
     // clang-format off
     //! @brief Expected result 1.
     static constexpr std::string_view expRes1
@@ -273,7 +273,7 @@ protected:
     static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE("HEAP", "END"); }
 
     //! @brief System under test.
-    const heap::Showcase sut{};
+    [[no_unique_address]] const heap::Showcase sut{};
     // clang-format off
     //! @brief Expected result 1.
     static constexpr std::string_view expRes1
@@ -410,7 +410,7 @@ protected:
     static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE("LINEAR", "END"); }
 
     //! @brief System under test.
-    const linear::Showcase sut{};
+    [[no_unique_address]] const linear::Showcase sut{};
     // clang-format off
     //! @brief Expected result 1.
     static constexpr std::string_view expRes1
@@ -499,7 +499,7 @@ protected:
     static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE("TREE", "END"); }
 
     //! @brief System under test.
-    const tree::Showcase sut{};
+    [[no_unique_address]] const tree::Showcase sut{};
     // clang-format off
     //! @brief Expected result 1.
     static constexpr std::string_view expRes1

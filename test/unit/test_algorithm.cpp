@@ -41,7 +41,7 @@ protected:
     }
 
     //! @brief System under test.
-    const algorithm::match::Match sut{};
+    [[no_unique_address]] const algorithm::match::Match sut{};
     //! @brief Fixture data.
     static std::unique_ptr<match::InputBuilder> fixture;
     //! @brief Expected result.
@@ -127,7 +127,7 @@ protected:
     }
 
     //! @brief System under test.
-    const algorithm::notation::Notation sut{};
+    [[no_unique_address]] const algorithm::notation::Notation sut{};
     //! @brief Fixture data.
     static std::unique_ptr<notation::InputBuilder> fixture;
     //! @brief Expected result 1.
@@ -285,7 +285,7 @@ protected:
     }
 
     //! @brief System under test.
-    const algorithm::search::Search<float> sut{};
+    [[no_unique_address]] const algorithm::search::Search<float> sut{};
     //! @brief Fixture data.
     static std::unique_ptr<search::InputBuilder<float>> fixture;
     //! @brief Expected result.
@@ -345,7 +345,7 @@ protected:
     }
 
     //! @brief System under test.
-    algorithm::sort::Sort<std::int32_t> sut{};
+    [[no_unique_address]] algorithm::sort::Sort<std::int32_t> sut{};
     //! @brief Fixture data.
     static std::unique_ptr<sort::InputBuilder<std::int32_t>> fixture;
     //! @brief Expected result.

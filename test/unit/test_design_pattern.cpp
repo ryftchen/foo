@@ -33,7 +33,7 @@ protected:
     static void TearDownTestSuite() { TST_DP_PRINT_TASK_TITLE("BEHAVIORAL", "END"); }
 
     //! @brief System under test.
-    const behavioral::Showcase sut{};
+    [[no_unique_address]] const behavioral::Showcase sut{};
     // clang-format off
     //! @brief Expected result 1.
     static constexpr std::string_view expRes1
@@ -218,7 +218,7 @@ protected:
     static void TearDownTestSuite() { TST_DP_PRINT_TASK_TITLE("CREATIONAL", "END"); }
 
     //! @brief System under test.
-    const creational::Showcase sut{};
+    [[no_unique_address]] const creational::Showcase sut{};
     // clang-format off
     //! @brief Expected result 1.
     static constexpr std::string_view expRes1
@@ -304,7 +304,7 @@ protected:
     static void TearDownTestSuite() { TST_DP_PRINT_TASK_TITLE("STRUCTURAL", "END"); }
 
     //! @brief System under test.
-    const structural::Showcase sut{};
+    [[no_unique_address]] const structural::Showcase sut{};
     // clang-format off
     //! @brief Expected result 1.
     static constexpr std::string_view expRes1

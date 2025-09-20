@@ -41,7 +41,7 @@ protected:
     }
 
     //! @brief System under test.
-    const numeric::arithmetic::Arithmetic sut{};
+    [[no_unique_address]] const numeric::arithmetic::Arithmetic sut{};
     //! @brief Fixture data.
     static std::unique_ptr<arithmetic::InputBuilder> fixture;
     //! @brief Expected result 1.
@@ -97,7 +97,7 @@ protected:
     }
 
     //! @brief System under test.
-    const numeric::divisor::Divisor sut{};
+    [[no_unique_address]] const numeric::divisor::Divisor sut{};
     //! @brief Fixture data.
     static std::unique_ptr<divisor::InputBuilder> fixture;
     //! @brief Expected result.
@@ -218,7 +218,7 @@ protected:
     }
 
     //! @brief System under test.
-    const numeric::prime::Prime sut{};
+    [[no_unique_address]] const numeric::prime::Prime sut{};
     //! @brief Fixture data.
     static std::unique_ptr<prime::InputBuilder> fixture;
     //! @brief Expected result.
