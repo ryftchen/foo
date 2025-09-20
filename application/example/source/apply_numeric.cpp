@@ -146,14 +146,14 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
     using arithmetic::InputBuilder, arithmetic::input::operandA, arithmetic::input::operandB;
     const auto inputData = std::make_shared<InputBuilder>(operandA, operandB);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = utility::common::wrapClosure(
+    const auto addTask =
         [allocatedJob, &inputData, &taskNamer](
             const std::string_view subTask, void (*targetMethod)(const std::int32_t, const std::int32_t))
-        {
-            allocatedJob->enqueue(
-                taskNamer(subTask), targetMethod, inputData->getOperands().first, inputData->getOperands().second);
-        });
-    MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
+    {
+        allocatedJob->enqueue(
+            taskNamer(subTask), targetMethod, inputData->getOperands().first, inputData->getOperands().second);
+    };
+    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
@@ -242,14 +242,14 @@ void applyingDivisor(const std::vector<std::string>& candidates)
     using divisor::InputBuilder, divisor::input::numberA, divisor::input::numberB;
     const auto inputData = std::make_shared<InputBuilder>(numberA, numberB);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = utility::common::wrapClosure(
+    const auto addTask =
         [allocatedJob, &inputData, &taskNamer](
             const std::string_view subTask, void (*targetMethod)(const std::int32_t, const std::int32_t))
-        {
-            allocatedJob->enqueue(
-                taskNamer(subTask), targetMethod, inputData->getNumbers().first, inputData->getNumbers().second);
-        });
-    MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
+    {
+        allocatedJob->enqueue(
+            taskNamer(subTask), targetMethod, inputData->getNumbers().first, inputData->getNumbers().second);
+    };
+    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
@@ -365,18 +365,18 @@ void applyingIntegral(const std::vector<std::string>& candidates)
     const auto inputData = std::make_shared<InputBuilder>(
         CylindricalBessel{}, CylindricalBessel::range1, CylindricalBessel::range2, CylindricalBessel::exprDescr);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = utility::common::wrapClosure(
+    const auto addTask =
         [allocatedJob, &inputData, &taskNamer](
             const std::string_view subTask, void (*targetMethod)(const Expression&, const double, const double))
-        {
-            allocatedJob->enqueue(
-                taskNamer(subTask),
-                targetMethod,
-                inputData->getExpression(),
-                inputData->getRanges().first,
-                inputData->getRanges().second);
-        });
-    MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
+    {
+        allocatedJob->enqueue(
+            taskNamer(subTask),
+            targetMethod,
+            inputData->getExpression(),
+            inputData->getRanges().first,
+            inputData->getRanges().second);
+    };
+    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
@@ -468,11 +468,10 @@ void applyingPrime(const std::vector<std::string>& candidates)
     using prime::InputBuilder, prime::input::upperBound;
     const auto inputData = std::make_shared<InputBuilder>(upperBound);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = utility::common::wrapClosure(
-        [allocatedJob, &inputData, &taskNamer](
-            const std::string_view subTask, void (*targetMethod)(const std::uint32_t))
-        { allocatedJob->enqueue(taskNamer(subTask), targetMethod, inputData->getUpperBound()); });
-    MACRO_DEFER([&]() { pooling.deleteEntry(allocatedJob); });
+    const auto addTask = [allocatedJob, &inputData, &taskNamer](
+                             const std::string_view subTask, void (*targetMethod)(const std::uint32_t))
+    { allocatedJob->enqueue(taskNamer(subTask), targetMethod, inputData->getUpperBound()); };
+    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
