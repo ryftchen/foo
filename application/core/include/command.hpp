@@ -50,41 +50,41 @@ template <typename Key, typename Subject>
 class Notifier
 {
 public:
-    //! @brief The base action when notified.
-    class ActionBase
+    //! @brief The base routine when notified.
+    class RoutineBase
     {
     public:
-        //! @brief Construct a new ActionBase object.
-        ActionBase() = default;
-        //! @brief Destroy the ActionBase object.
-        virtual ~ActionBase() = default;
-        //! @brief Construct a new ActionBase object.
-        ActionBase(const ActionBase&) = default;
-        //! @brief Construct a new ActionBase object.
-        ActionBase(ActionBase&&) noexcept = default;
-        //! @brief The operator (=) overloading of ActionBase class.
-        //! @return reference of the ActionBase object
-        ActionBase& operator=(const ActionBase&) = default;
-        //! @brief The operator (=) overloading of ActionBase class.
-        //! @return reference of the ActionBase object
-        ActionBase& operator=(ActionBase&&) noexcept = default;
+        //! @brief Construct a new RoutineBase object.
+        RoutineBase() = default;
+        //! @brief Destroy the RoutineBase object.
+        virtual ~RoutineBase() = default;
+        //! @brief Construct a new RoutineBase object.
+        RoutineBase(const RoutineBase&) = default;
+        //! @brief Construct a new RoutineBase object.
+        RoutineBase(RoutineBase&&) noexcept = default;
+        //! @brief The operator (=) overloading of RoutineBase class.
+        //! @return reference of the RoutineBase object
+        RoutineBase& operator=(const RoutineBase&) = default;
+        //! @brief The operator (=) overloading of RoutineBase class.
+        //! @return reference of the RoutineBase object
+        RoutineBase& operator=(RoutineBase&&) noexcept = default;
 
         //! @brief Perform the specific operation.
         virtual void execute() const = 0;
     };
-    //! @brief The action when notified.
+    //! @brief The routine when notified.
     //! @tparam CRTP - type of derived class for CRTP
     template <typename CRTP>
-    class Action : public ActionBase
+    class Routine : public RoutineBase
     {
     public:
         //! @brief Perform the specific operation.
         void execute() const override { static_cast<const CRTP&>(*this).execute(); }
     };
-    //! @brief The handler that performs an action when notified.
+    //! @brief The handler used to trigger a routine when notified.
     //! @tparam key - specific key
     template <Key key>
-    class Handler : public Action<Handler<key>>
+    class Handler : public Routine<Handler<key>>
     {
     public:
         //! @brief Construct a new Handler object.
@@ -102,7 +102,7 @@ public:
     //! @brief Attach a handler with a specific key to the notifier.
     //! @param key - specific key
     //! @param handler - handler to be attached
-    void attach(const Key key, std::shared_ptr<ActionBase> handler) { handlers[key] = std::move(handler); }
+    void attach(const Key key, std::shared_ptr<RoutineBase> handler) { handlers[key] = std::move(handler); }
     //! @brief Notify the handler associated with the given key.
     //! @param key - specific key
     void notify(const Key key) const
@@ -115,7 +115,7 @@ public:
 
 private:
     //! @brief Map of handlers identified by a key.
-    std::map<Key, std::shared_ptr<ActionBase>> handlers{};
+    std::map<Key, std::shared_ptr<RoutineBase>> handlers{};
 };
 
 //! @brief Execute the command line.
