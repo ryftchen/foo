@@ -782,21 +782,22 @@ std::vector<std::string> Command::extractChoices()
 template <>
 void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::socket::TCPSocket>& client)
 {
-    client->onRawMessageReceived = [&client](char* buffer, const int length)
-    {
-        try
+    client->bindRawMessage(
+        [&client](char* buffer, const int length)
         {
-            if (!client->stopRequested() && onParsing4Client(buffer, length))
+            try
             {
-                client->requestStop();
+                if (!client->stopRequested() && onParsing4Client(buffer, length))
+                {
+                    client->requestStop();
+                }
             }
-        }
-        catch (const std::exception& err)
-        {
-            LOG_WRN << err.what();
-        }
-        notifyClientOutputDone();
-    };
+            catch (const std::exception& err)
+            {
+                LOG_WRN << err.what();
+            }
+            notifyClientOutputDone();
+        });
     client->toConnect(view::info::viewerTCPHost(), view::info::viewerTCPPort());
 }
 
@@ -805,22 +806,22 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
 template <>
 void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::socket::UDPSocket>& client)
 {
-    client->onRawMessageReceived =
+    client->bindRawMessage(
         [&client](char* buffer, const int length, const std::string& /*ip*/, const std::uint16_t /*port*/)
-    {
-        try
         {
-            if (!client->stopRequested() && onParsing4Client(buffer, length))
+            try
             {
-                client->requestStop();
+                if (!client->stopRequested() && onParsing4Client(buffer, length))
+                {
+                    client->requestStop();
+                }
             }
-        }
-        catch (const std::exception& err)
-        {
-            LOG_WRN << err.what();
-        }
-        notifyClientOutputDone();
-    };
+            catch (const std::exception& err)
+            {
+                LOG_WRN << err.what();
+            }
+            notifyClientOutputDone();
+        });
     client->toReceive();
     client->toConnect(view::info::viewerUDPHost(), view::info::viewerUDPPort());
 }
@@ -1035,7 +1036,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
             try
             {
                 using log::Log;
-                utility::common::invokeCallableWith<Log>(gracefulReset);
+                gracefulReset.template operator()<Log>();
                 LOG_INF_F("Refreshed the {} outputs.", Log::name);
             }
             catch (const std::exception& err)
@@ -1061,7 +1062,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
                 client.reset();
 
                 using view::View;
-                utility::common::invokeCallableWith<View>(gracefulReset);
+                gracefulReset.template operator()<View>();
                 client = std::make_shared<T>();
                 launchClient(client);
                 LOG_INF_F("Reconnected to the {} servers.", View::name);
