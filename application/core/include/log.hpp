@@ -134,11 +134,13 @@ public:
         //! @param state - target state
         //! @param handling - handling if unexpected state
         void waitOr(const State state, const std::function<void()>& handling) const;
-        //! @brief Notify the logger daemon to change the state.
+        //! @brief Notify the logger to change the state.
         //! @param action - action to be executed
         void notifyVia(const std::function<void()>& action) const;
-        //! @brief Start the reset timer.
-        void startResetTimer() const;
+        //! @brief Keep countdown if the logger does not meet the condition in time.
+        //! @param condition - condition of countdown
+        //! @param handling - handling if timeout
+        void countdownIf(const std::function<bool()>& condition, const std::function<void()>& handling) const;
     };
 
     //! @brief Enumerate specific output levels.
@@ -317,10 +319,10 @@ private:
         // --------------+-----------+--------------+--------------------+------------------------
     >;
     // clang-format on
-    //! @brief Await notification to ongoing.
-    void awaitNotification2Ongoing();
-    //! @brief Await notification to log.
-    void awaitNotification2Log();
+    //! @brief The notification loop.
+    void notificationLoop();
+    //! @brief Await notification to proceed.
+    void awaitNotification2Proceed();
     //! @brief Await notification to retry.
     //! @return whether retry is required or not
     bool awaitNotification2Retry();

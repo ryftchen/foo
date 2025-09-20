@@ -186,10 +186,10 @@ Command& Command::getInstance()
 bool Command::execute(const int argc, const char* const argv[])
 try
 {
-    auto launcher = helperLifecycle<log::Log, view::View>();
-    if (!launcher.done())
+    auto establishCtrl = helperLifecycle<log::Log, view::View>();
+    if (!establishCtrl.done())
     {
-        launcher.resume();
+        establishCtrl.resume();
     }
 
     if (argc == 1)
@@ -204,9 +204,9 @@ try
         scheduledJob.enqueue(title + "-back", &Command::backEndHandler, this);
     }
 
-    if (!launcher.done())
+    if (!establishCtrl.done())
     {
-        launcher.resume();
+        establishCtrl.resume();
     }
 
     return !isFaulty.load();
