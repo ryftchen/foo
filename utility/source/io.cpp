@@ -108,10 +108,10 @@ void waitForUserInput(const std::function<bool(const std::string&)>& operation, 
 //! @param filename - file path
 //! @param toLock - lock or not
 //! @param toReverse - reverse or not
-//! @param totalRows - number of rows
+//! @param lineLimit - maximum number of lines
 //! @return file contents
 std::list<std::string> getFileContents(
-    const std::string_view filename, const bool toLock, const bool toReverse, const std::size_t totalRows)
+    const std::string_view filename, const bool toLock, const bool toReverse, const std::size_t lineLimit)
 {
     FileReader fileReader(filename);
     fileReader.open();
@@ -126,7 +126,7 @@ std::list<std::string> getFileContents(
     std::list<std::string> contents{};
     if (!toReverse)
     {
-        while ((contents.size() < totalRows) && std::getline(input, line))
+        while ((contents.size() < lineLimit) && std::getline(input, line))
         {
             contents.emplace_back(line);
         }
@@ -135,7 +135,7 @@ std::list<std::string> getFileContents(
     {
         const std::size_t numOfLines =
                               std::count(std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>{}, '\n'),
-                          startLine = (numOfLines > totalRows) ? (numOfLines - totalRows + 1) : 1;
+                          startLine = (numOfLines > lineLimit) ? (numOfLines - lineLimit + 1) : 1;
         input.clear();
         input.seekg(0, std::ios::beg);
         for (std::size_t i = 0; i < (startLine - 1); ++i)
@@ -162,49 +162,44 @@ FDStreamBuffer::~FDStreamBuffer()
     close();
 }
 
-int FDStreamBuffer::fd() const
+void FDStreamBuffer::reset(const int newFD)
 {
-    return fileDescriptor;
-}
-
-void FDStreamBuffer::fd(const int newFD)
-{
-    if (fileDescriptor == newFD)
+    if (fd == newFD)
     {
         return;
     }
 
-    if (fileDescriptor >= 0)
+    if (fd >= 0)
     {
         sync();
-        ::close(fileDescriptor);
+        ::close(fd);
     }
     setg(nullptr, nullptr, nullptr);
     setp(nullptr, nullptr);
     readBuffer.reset();
     writeBuffer.reset();
-    fileDescriptor = newFD;
+    fd = newFD;
 }
 
 void FDStreamBuffer::close()
 {
-    if (fileDescriptor < 0)
+    if (fd < 0)
     {
         return;
     }
 
     flush();
-    ::close(fileDescriptor);
+    ::close(fd);
     setg(nullptr, nullptr, nullptr);
     setp(nullptr, nullptr);
     readBuffer.reset();
     writeBuffer.reset();
-    fileDescriptor = -1;
+    fd = -1;
 }
 
 int FDStreamBuffer::flush()
 {
-    if ((fileDescriptor < 0) || !writeBuffer)
+    if ((fd < 0) || !writeBuffer)
     {
         return 0;
     }
@@ -212,7 +207,7 @@ int FDStreamBuffer::flush()
     const char* ptr = pbase();
     while (ptr < pptr())
     {
-        const int writtenSize = ::write(fileDescriptor, ptr, pptr() - ptr);
+        const int writtenSize = ::write(fd, ptr, pptr() - ptr);
         if (writtenSize <= 0)
         {
             return -1;
@@ -230,7 +225,7 @@ FDStreamBuffer::int_type FDStreamBuffer::underflow()
     {
         throw std::runtime_error{"Read pointer has not reached the end of the buffer."};
     }
-    if (fileDescriptor < 0)
+    if (fd < 0)
     {
         return traits_type::eof();
     }
@@ -240,7 +235,7 @@ FDStreamBuffer::int_type FDStreamBuffer::underflow()
         readBuffer = std::make_unique<char[]>(bufferSize);
     }
 
-    const int readSize = ::read(fileDescriptor, readBuffer.get(), bufferSize);
+    const int readSize = ::read(fd, readBuffer.get(), bufferSize);
     if (readSize <= 0)
     {
         return traits_type::eof();
@@ -256,7 +251,7 @@ FDStreamBuffer::int_type FDStreamBuffer::overflow(const int_type c)
     {
         throw std::runtime_error{"Write pointer has not reached the end of the buffer."};
     }
-    if (fileDescriptor < 0)
+    if (fd < 0)
     {
         return traits_type::eof();
     }
@@ -287,7 +282,7 @@ int FDStreamBuffer::sync()
 std::streampos FDStreamBuffer::seekoff(
     const std::streamoff off, const std::ios_base::seekdir way, const std::ios_base::openmode mode)
 {
-    if ((fileDescriptor < 0) || ((mode & std::ios_base::out) && (sync() == -1)))
+    if ((fd < 0) || ((mode & std::ios_base::out) && (sync() == -1)))
     {
         return -1;
     }
@@ -299,17 +294,17 @@ std::streampos FDStreamBuffer::seekoff(
             newOffset = off;
             break;
         case std::ios_base::cur:
-            newOffset = (((mode & std::ios_base::in) && gptr()) ? (off - (egptr() - gptr())) : off)
-                + ::lseek(fileDescriptor, 0, SEEK_CUR);
+            newOffset =
+                (((mode & std::ios_base::in) && gptr()) ? (off - (egptr() - gptr())) : off) + ::lseek(fd, 0, SEEK_CUR);
             break;
         case std::ios_base::end:
-            newOffset = off + ::lseek(fileDescriptor, 0, SEEK_END);
+            newOffset = off + ::lseek(fd, 0, SEEK_END);
             break;
         default:
             return -1;
     }
 
-    if (::lseek(fileDescriptor, newOffset, SEEK_SET) == -1)
+    if (::lseek(fd, newOffset, SEEK_SET) == -1)
     {
         return -1;
     }
@@ -325,7 +320,7 @@ std::streampos FDStreamBuffer::seekpos(const std::streampos sp, const std::ios_b
 
 std::streamsize FDStreamBuffer::showmanyc()
 {
-    if ((fileDescriptor < 0) || !gptr() || !egptr())
+    if ((fd < 0) || !gptr() || !egptr())
     {
         return 0;
     }
@@ -356,7 +351,7 @@ void FileReader::open()
         throw std::runtime_error{
             "Failed to open " + std::filesystem::path(name).filename().string() + " file for reading."};
     }
-    strBuf.fd(fd);
+    strBuf.reset(fd);
 }
 
 void FileReader::close()
@@ -416,7 +411,7 @@ void FileWriter::open(const bool overwrite)
         throw std::runtime_error{
             "Failed to open " + std::filesystem::path(name).filename().string() + " file for writing."};
     }
-    strBuf.fd(fd);
+    strBuf.reset(fd);
 }
 
 void FileWriter::close()

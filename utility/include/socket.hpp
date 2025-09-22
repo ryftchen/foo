@@ -150,10 +150,10 @@ public:
     using RawMessageCallback = std::function<void(char*, const int)>;
     //! @brief Bind the callback to handle the received message.
     //! @param callback - callback on received message
-    void bindMessage(MessageCallback callback);
+    void subscribeMessage(MessageCallback callback);
     //! @brief Bind the callback to handle the received raw message.
     //! @param callback - callback on received raw message
-    void bindRawMessage(RawMessageCallback callback);
+    void subscribeRawMessage(RawMessageCallback callback);
 
 private:
     //! @brief Handling on message received.
@@ -167,11 +167,11 @@ private:
 
     //! @brief Emit the received message.
     //! @param message - received message
-    void emitMessage(const std::string_view message) const;
+    void onMessage(const std::string_view message) const;
     //! @brief Emit the received raw message.
     //! @param buffer - received bytes buffer
     //! @param length - length of buffer
-    void emitRawMessage(char* buffer, const int length) const;
+    void onRawMessage(char* buffer, const int length) const;
 };
 
 //! @brief TCP server.
@@ -198,7 +198,7 @@ public:
     using ConnectionCallback = std::function<void(const std::shared_ptr<TCPSocket>)>;
     //! @brief Bind the callback to handle the new connection.
     //! @param callback - callback on new connection
-    void bindConnection(ConnectionCallback callback);
+    void subscribeConnection(ConnectionCallback callback);
 
 private:
     //! @brief Handling on new connection.
@@ -210,7 +210,7 @@ private:
 
     //! @brief Emit the new connection.
     //! @param client - new connected client
-    void emitConnection(const std::shared_ptr<TCPSocket> client) const;
+    void onConnection(const std::shared_ptr<TCPSocket> client) const;
 };
 
 //! @brief UDP socket.
@@ -260,10 +260,10 @@ public:
     using RawMessageCallback = std::function<void(char*, const int, const std::string&, const std::uint16_t)>;
     //! @brief Bind the callback to handle the received message.
     //! @param callback - callback on received message
-    void bindMessage(MessageCallback callback);
+    void subscribeMessage(MessageCallback callback);
     //! @brief Bind the callback to handle the received raw message.
     //! @param callback - callback on received raw message
-    void bindRawMessage(RawMessageCallback callback);
+    void subscribeRawMessage(RawMessageCallback callback);
 
 private:
     //! @brief Handling on message received.
@@ -282,13 +282,13 @@ private:
     //! @param message - received message
     //! @param ip - source ip address
     //! @param port - source port number
-    void emitMessage(const std::string_view message, const std::string& ip, const std::uint16_t port) const;
+    void onMessage(const std::string_view message, const std::string& ip, const std::uint16_t port) const;
     //! @brief Emit the received raw message.
     //! @param buffer - received bytes buffer
     //! @param length - length of buffer
     //! @param ip - source ip address
     //! @param port - source port number
-    void emitRawMessage(char* buffer, const int length, const std::string& ip, const std::uint16_t port) const;
+    void onRawMessage(char* buffer, const int length, const std::string& ip, const std::uint16_t port) const;
 };
 
 //! @brief UDP server.

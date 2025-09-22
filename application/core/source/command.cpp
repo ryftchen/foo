@@ -782,7 +782,7 @@ std::vector<std::string> Command::extractChoices()
 template <>
 void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::socket::TCPSocket>& client)
 {
-    client->bindRawMessage(
+    client->subscribeRawMessage(
         [&client](char* buffer, const int length)
         {
             try
@@ -806,7 +806,7 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
 template <>
 void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::socket::UDPSocket>& client)
 {
-    client->bindRawMessage(
+    client->subscribeRawMessage(
         [&client](char* buffer, const int length, const std::string& /*ip*/, const std::uint16_t /*port*/)
         {
             try
