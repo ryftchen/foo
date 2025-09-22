@@ -26,7 +26,7 @@ extern std::list<std::string> getFileContents(
     const std::string_view filename,
     const bool toLock = false,
     const bool toReverse = false,
-    const std::size_t totalRows = std::numeric_limits<std::size_t>::max());
+    const std::size_t lineLimit = std::numeric_limits<std::size_t>::max());
 
 //! @brief Custom stream buffer for file descriptors.
 class FDStreamBuffer : public std::streambuf
@@ -34,7 +34,7 @@ class FDStreamBuffer : public std::streambuf
 public:
     //! @brief Construct a new FDStreamBuffer object.
     //! @param fd - file descriptor to associate with the stream buffer
-    explicit FDStreamBuffer(const int fd = -1) : fileDescriptor{fd} {}
+    explicit FDStreamBuffer(const int fd = -1) : fd{fd} {}
     //! @brief Destroy the FDStreamBuffer object.
     ~FDStreamBuffer() override;
     //! @brief Construct a new FDStreamBuffer object.
@@ -48,18 +48,15 @@ public:
     //! @return reference of the FDStreamBuffer object
     FDStreamBuffer& operator=(FDStreamBuffer&&) noexcept = default;
 
-    //! @brief Get the file descriptor.
-    //! @return file descriptor associated with the stream buffer
-    [[nodiscard]] int fd() const;
-    //! @brief Set the file descriptor.
+    //! @brief Reset by setting the file descriptor.
     //! @param newFD - new file descriptor to associate with the stream buffer
-    void fd(const int newFD);
+    void reset(const int newFD);
     //! @brief Closes the file descriptor.
     void close();
 
 private:
     //! @brief File descriptor associated with the stream buffer.
-    int fileDescriptor{-1};
+    int fd{-1};
     //! @brief Buffer for reading data.
     std::unique_ptr<char[]> readBuffer;
     //! @brief Buffer for writing data.

@@ -185,12 +185,12 @@ void TCPSocket::toReceive(const bool toDetach)
     }
 }
 
-void TCPSocket::bindMessage(MessageCallback callback)
+void TCPSocket::subscribeMessage(MessageCallback callback)
 {
     msgCb.store(std::make_shared<decltype(callback)>(std::move(callback)), std::memory_order_release);
 }
 
-void TCPSocket::bindRawMessage(RawMessageCallback callback)
+void TCPSocket::subscribeRawMessage(RawMessageCallback callback)
 {
     rawMsgCb.store(std::make_shared<decltype(callback)>(std::move(callback)), std::memory_order_release);
 }
@@ -225,15 +225,15 @@ void TCPSocket::toRecv(const std::shared_ptr<TCPSocket> socket) // NOLINT(perfor
             }
 
             tempBuffer[msgLen] = '\0';
-            socket->emitMessage(std::string(tempBuffer.data(), msgLen));
-            socket->emitRawMessage(tempBuffer.data(), msgLen);
+            socket->onMessage(std::string(tempBuffer.data(), msgLen));
+            socket->onRawMessage(tempBuffer.data(), msgLen);
         }
     }
 
     socket->toClose();
 }
 
-void TCPSocket::emitMessage(const std::string_view message) const
+void TCPSocket::onMessage(const std::string_view message) const
 {
     const auto& callback = msgCb.load(std::memory_order_acquire);
     if (callback && *callback)
@@ -242,7 +242,7 @@ void TCPSocket::emitMessage(const std::string_view message) const
     }
 }
 
-void TCPSocket::emitRawMessage(char* buffer, const int length) const
+void TCPSocket::onRawMessage(char* buffer, const int length) const
 {
     const auto& callback = rawMsgCb.load(std::memory_order_acquire);
     if (callback && *callback)
@@ -315,7 +315,7 @@ void TCPServer::toAccept(const bool toDetach)
     }
 }
 
-void TCPServer::bindConnection(ConnectionCallback callback)
+void TCPServer::subscribeConnection(ConnectionCallback callback)
 {
     connCb.store(std::make_shared<decltype(callback)>(std::move(callback)), std::memory_order_release);
 }
@@ -341,14 +341,14 @@ void TCPServer::toAccept(const std::shared_ptr<TCPServer> server) // NOLINT(perf
 
         auto newSocket = std::make_shared<TCPSocket>(newSock);
         newSocket->sockAddr = newSockAddr;
-        server->emitConnection(newSocket);
+        server->onConnection(newSocket);
 
         newSocket->toReceive(true);
         activeSockets.emplace_back(std::move(newSocket));
     }
 }
 
-void TCPServer::emitConnection(
+void TCPServer::onConnection(
     const std::shared_ptr<TCPSocket> client) const // NOLINT(performance-unnecessary-value-param)
 {
     const auto& callback = connCb.load(std::memory_order_acquire);
@@ -469,12 +469,12 @@ void UDPSocket::toReceiveFrom(const bool toDetach)
     }
 }
 
-void UDPSocket::bindMessage(MessageCallback callback)
+void UDPSocket::subscribeMessage(MessageCallback callback)
 {
     msgCb.store(std::make_shared<decltype(callback)>(std::move(callback)), std::memory_order_release);
 }
 
-void UDPSocket::bindRawMessage(RawMessageCallback callback)
+void UDPSocket::subscribeRawMessage(RawMessageCallback callback)
 {
     rawMsgCb.store(std::make_shared<decltype(callback)>(std::move(callback)), std::memory_order_release);
 }
@@ -509,9 +509,9 @@ void UDPSocket::toRecv(const std::shared_ptr<UDPSocket> socket) // NOLINT(perfor
             }
 
             tempBuffer[msgLen] = '\0';
-            socket->emitMessage(
+            socket->onMessage(
                 std::string_view(tempBuffer.data(), msgLen), socket->transportAddress(), socket->transportPort());
-            socket->emitRawMessage(tempBuffer.data(), msgLen, socket->transportAddress(), socket->transportPort());
+            socket->onRawMessage(tempBuffer.data(), msgLen, socket->transportAddress(), socket->transportPort());
         }
     }
 }
@@ -555,14 +555,13 @@ void UDPSocket::toRecvFrom(const std::shared_ptr<UDPSocket> socket) // NOLINT(pe
             }
 
             tempBuffer[msgLen] = '\0';
-            socket->emitMessage(
-                std::string_view(tempBuffer.data(), msgLen), ipAddrString(addr), ::ntohs(addr.sin_port));
-            socket->emitRawMessage(tempBuffer.data(), msgLen, ipAddrString(addr), ::ntohs(addr.sin_port));
+            socket->onMessage(std::string_view(tempBuffer.data(), msgLen), ipAddrString(addr), ::ntohs(addr.sin_port));
+            socket->onRawMessage(tempBuffer.data(), msgLen, ipAddrString(addr), ::ntohs(addr.sin_port));
         }
     }
 }
 
-void UDPSocket::emitMessage(const std::string_view message, const std::string& ip, const std::uint16_t port) const
+void UDPSocket::onMessage(const std::string_view message, const std::string& ip, const std::uint16_t port) const
 {
     const auto& callback = msgCb.load(std::memory_order_acquire);
     if (callback && *callback)
@@ -571,7 +570,7 @@ void UDPSocket::emitMessage(const std::string_view message, const std::string& i
     }
 }
 
-void UDPSocket::emitRawMessage(char* buffer, const int length, const std::string& ip, const std::uint16_t port) const
+void UDPSocket::onRawMessage(char* buffer, const int length, const std::string& ip, const std::uint16_t port) const
 {
     const auto& callback = rawMsgCb.load(std::memory_order_acquire);
     if (callback && *callback)

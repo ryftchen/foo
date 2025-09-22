@@ -882,11 +882,11 @@ template <>
 void View::renewServer<utility::socket::TCPServer>()
 {
     tcpServer = std::make_shared<utility::socket::TCPServer>();
-    tcpServer->bindConnection(
+    tcpServer->subscribeConnection(
         [](const std::shared_ptr<utility::socket::TCPSocket> client) // NOLINT(performance-unnecessary-value-param)
         {
             const std::weak_ptr<utility::socket::TCPSocket> weakSock = client;
-            client->bindMessage(
+            client->subscribeMessage(
                 [weakSock](const std::string_view message)
                 {
                     if (message.empty())
@@ -921,7 +921,7 @@ template <>
 void View::renewServer<utility::socket::UDPServer>()
 {
     udpServer = std::make_shared<utility::socket::UDPServer>();
-    udpServer->bindMessage(
+    udpServer->subscribeMessage(
         [this](const std::string_view message, const std::string& ip, const std::uint16_t port)
         {
             if (message.empty())
