@@ -14,17 +14,19 @@ namespace benchmark
 {
 extern const char* version() noexcept;
 
+// NOLINTBEGIN(hicpp-no-assembler)
 //! @brief Escape the pointer to prevent optimization. Used for benchmark.
 //! @param p - pointer to escape
-inline void escape(const void* const p)
+inline void escape(const void* const p) noexcept
 {
-    asm volatile("" : : "g"(p) : "memory"); // NOLINT(hicpp-no-assembler)
+    asm volatile("" : : "g"(p) : "memory");
 }
 
 //! @brief Clobber the memory to prevent optimization. Used for benchmark.
-inline void clobber()
+inline void clobber() noexcept
 {
-    asm volatile("" : : : "memory"); // NOLINT(hicpp-no-assembler)
+    asm volatile("" : : : "memory");
 }
+// NOLINTEND(hicpp-no-assembler)
 } // namespace benchmark
 } // namespace utility
