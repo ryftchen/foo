@@ -7,7 +7,6 @@
 #include "optimal.hpp"
 
 #include <algorithm>
-#include <stdexcept>
 
 namespace algorithm::optimal
 {
@@ -351,7 +350,11 @@ void Ant::updatePheromones(Colony& colony)
 
 std::optional<std::tuple<double, double>> Genetic::operator()(const double left, const double right, const double eps)
 {
-    updateSpecies(left, right, eps);
+    if (!updateSpecies(left, right, eps))
+    {
+        return std::nullopt;
+    }
+
     auto pop = populationInit();
     for (std::uint32_t i = 0; i < numOfGenerations; ++i)
     {
@@ -364,18 +367,21 @@ std::optional<std::tuple<double, double>> Genetic::operator()(const double left,
     return std::make_optional(std::make_tuple(func(xBest), xBest));
 }
 
-void Genetic::updateSpecies(const double left, const double right, const double eps)
+bool Genetic::updateSpecies(const double left, const double right, const double eps)
 {
+    const double stateNum = (right - left) * (1.0 / eps);
+    const auto estimatedLen = static_cast<std::uint32_t>(std::ceil(std::log2(stateNum)));
+    if (estimatedLen < minChrLen)
+    {
+        return false;
+    }
+
+    chromosomeLength = estimatedLen;
     property.lower = left;
     property.upper = right;
     property.prec = eps;
 
-    const double stateNum = (property.upper - property.lower) * (1.0 / property.prec);
-    chromosomeLength = static_cast<std::uint32_t>(std::ceil(std::log2(stateNum)));
-    if (chromosomeLength < minChrLen)
-    {
-        throw std::logic_error{"A precision of " + std::to_string(eps) + " is not sufficient."};
-    }
+    return true;
 }
 
 double Genetic::geneticDecode(const Chromosome& chr) const

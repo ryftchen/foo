@@ -38,14 +38,14 @@ void Timer::start(const std::chrono::milliseconds& interval, const bool isPeriod
                 { return !cond.wait_for(lock, interval, [&token]() { return token.stop_requested(); }); };
                 !isPeriodic)
             {
-                if (waitTimeout(lock))
+                if (waitTimeout(lock) && callback)
                 {
                     callback();
                 }
             }
             else
             {
-                while (waitTimeout(lock))
+                while (waitTimeout(lock) && callback)
                 {
                     callback();
                 }

@@ -89,11 +89,6 @@ Bloom::Bloom(const std::uint32_t capacity, const double falsePositiveProb, const
     filter{std::make_unique<std::uint8_t[]>(filterSize)},
     hashPos{std::make_unique<std::uint32_t[]>(hashFuncNum)}
 {
-    if ((capacity == 0) || (falsePositiveProb <= 0.0) || (falsePositiveProb >= 1.0))
-    {
-        throw std::runtime_error{"Invalid capacity or false positive probability."};
-    }
-
     std::memset(filter.get(), 0, filterSize * sizeof(std::uint8_t));
 }
 
@@ -161,14 +156,24 @@ std::uint8_t Bloom::getBit(const std::uint8_t filter[], const std::uint32_t pos)
 
 std::uint32_t Bloom::calculateParamM(const std::uint32_t n, const double p)
 {
+    if ((n == 0) || (p <= 0.0) || (p >= 1.0))
+    {
+        return 0;
+    }
     std::uint32_t m = std::ceil(-1.0 * n * std::log(p) / (std::numbers::ln2 * std::numbers::ln2));
     m = (m - m % 64) + 64;
+
     return m;
 }
 
 std::uint32_t Bloom::calculateParamK(const std::uint32_t m, const std::uint32_t n)
 {
+    if ((m == 0) || (n == 0))
+    {
+        return 0;
+    }
     const std::uint32_t k = std::round(std::numbers::ln2 * m / n);
+
     return k;
 }
 
@@ -184,11 +189,6 @@ Quotient::Quotient(const std::uint8_t qBits, const std::uint8_t rBits, const std
     filterSize{filterSizeInBytes(qBits, rBits)},
     filter{std::make_unique<std::uint64_t[]>(filterSize)}
 {
-    if ((qBits == 0) || (rBits == 0) || ((qBits + rBits) > 64))
-    {
-        throw std::runtime_error{"Invalid quotient or remainder bits."};
-    }
-
     std::memset(filter.get(), 0, filterSize * sizeof(std::uint64_t));
 }
 
@@ -655,7 +655,12 @@ std::uint64_t Quotient::lowMask(const std::uint64_t n)
 
 std::uint64_t Quotient::filterSizeInBytes(const std::uint8_t q, const std::uint8_t r)
 {
+    if ((q == 0) || (r == 0) || ((q + r) > 64))
+    {
+        return 0;
+    }
     const std::uint64_t bits = static_cast<std::uint64_t>(1 << q) * (r + 3), bytes = bits / 8;
+
     return (bits % 8) ? (bytes + 1) : bytes;
 }
 // NOLINTEND(readability-magic-numbers)

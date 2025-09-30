@@ -219,14 +219,17 @@ catch (const std::exception& err)
 void Log::Access::onPreviewing(const std::function<void(const std::string&)>& peeking) const
 {
     const utility::common::LockGuard guard(inst.fileLock, LockMode::read);
-    peeking(inst.filePath);
+    if (peeking)
+    {
+        peeking(inst.filePath);
+    }
 }
 
 void Log::Access::waitOr(const State state, const std::function<void()>& handling) const
 {
     do
     {
-        if (inst.isInServingState(State::hold))
+        if (inst.isInServingState(State::hold) && handling)
         {
             handling();
         }
@@ -238,7 +241,10 @@ void Log::Access::waitOr(const State state, const std::function<void()>& handlin
 void Log::Access::notifyVia(const std::function<void()>& action) const
 {
     std::unique_lock<std::mutex> daemonLock(inst.daemonMtx);
-    action();
+    if (action)
+    {
+        action();
+    }
     daemonLock.unlock();
     inst.daemonCond.notify_one();
 }
@@ -247,13 +253,16 @@ void Log::Access::countdownIf(const std::function<bool()>& condition, const std:
 {
     for (const utility::time::Stopwatch timing{}; timing.elapsedTime() <= inst.timeoutPeriod;)
     {
-        if (!condition())
+        if (!condition || !condition())
         {
             return;
         }
         std::this_thread::yield();
     }
-    handling();
+    if (handling)
+    {
+        handling();
+    }
 }
 
 void Log::flush(const OutputLevel severity, const std::string_view labelTpl, const std::string_view formatted)

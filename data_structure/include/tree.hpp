@@ -236,7 +236,7 @@ void Traverse<Tree, Node>::postOrder(const Operation& op) const
 template <typename Tree, typename Node>
 void Traverse<Tree, Node>::preOrderTraversal(const Node* const node, const Operation& op)
 {
-    if (!node)
+    if (!node || !op)
     {
         return;
     }
@@ -249,7 +249,7 @@ void Traverse<Tree, Node>::preOrderTraversal(const Node* const node, const Opera
 template <typename Tree, typename Node>
 void Traverse<Tree, Node>::inOrderTraversal(const Node* const node, const Operation& op)
 {
-    if (!node)
+    if (!node || !op)
     {
         return;
     }
@@ -262,7 +262,7 @@ void Traverse<Tree, Node>::inOrderTraversal(const Node* const node, const Operat
 template <typename Tree, typename Node>
 void Traverse<Tree, Node>::postOrderTraversal(const Node* const node, const Operation& op)
 {
-    if (!node)
+    if (!node || !op)
     {
         return;
     }

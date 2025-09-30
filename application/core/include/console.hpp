@@ -59,8 +59,8 @@ public:
     //! @brief Register console option.
     //! @param name - option name
     //! @param description - option description
-    //! @param callable - callable function
-    void registerOption(const std::string_view name, const std::string_view description, Callback callable);
+    //! @param callback - callback function
+    void registerOption(const std::string_view name, const std::string_view description, Callback callback);
     //! @brief Set greeting information.
     //! @param greeting - greeting information
     void setGreeting(const std::string_view greeting);

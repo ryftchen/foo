@@ -10,7 +10,6 @@
 #include <cmath>
 #include <cstdint>
 #include <queue>
-#include <stdexcept>
 
 //! @brief The algorithm module.
 namespace algorithm // NOLINT(modernize-concat-nested-namespaces)
@@ -314,7 +313,7 @@ std::vector<T> Sort<T>::counting(const T* const array, const std::uint32_t lengt
 {
     if constexpr (!std::is_integral_v<T>)
     {
-        throw std::logic_error{"The array type is not integral."};
+        return {};
     }
 
     std::vector<T> sorting(array, array + length);
@@ -381,7 +380,7 @@ std::vector<T> Sort<T>::radix(const T* const array, const std::uint32_t length)
 {
     if constexpr (!std::is_integral_v<T>)
     {
-        throw std::logic_error{"The array type is not integral."};
+        return {};
     }
 
     std::vector<T> sorting(array, array + length);

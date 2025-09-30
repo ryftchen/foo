@@ -418,7 +418,7 @@ void* pop(const Queue head)
 
 void Traverse::order(const Operation& op) const
 {
-    if (!linear || !*linear)
+    if (!linear || !*linear || !op)
     {
         return;
     }

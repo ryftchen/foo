@@ -307,7 +307,7 @@ void Traverse::dfs(const void* const vert, const Operation& op) const
 
 void Traverse::bfs(const void* const vert, const Operation& op) const
 {
-    if (!graph || !vert)
+    if (!graph || !vert || !op)
     {
         return;
     }
@@ -354,7 +354,7 @@ void Traverse::bfs(const void* const vert, const Operation& op) const
 
 void Traverse::dfsRecursive(const int index, bool visited[], const Operation& op) const
 {
-    if (!graph || (index < 0))
+    if (!graph || (index < 0) || !op)
     {
         return;
     }
@@ -693,7 +693,7 @@ void Traverse::dfs(const void* const vert, const Operation& op) const
 
 void Traverse::bfs(const void* const vert, const Operation& op) const
 {
-    if (!graph || !vert)
+    if (!graph || !vert || !op)
     {
         return;
     }
@@ -736,7 +736,7 @@ void Traverse::bfs(const void* const vert, const Operation& op) const
 
 void Traverse::dfsRecursive(const int index, bool visited[], const Operation& op) const
 {
-    if (!graph || (index < 0))
+    if (!graph || (index < 0) || !op)
     {
         return;
     }
