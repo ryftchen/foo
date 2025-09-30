@@ -281,6 +281,15 @@ private:
         //! @brief Wrap interfaces to check for existing and reset extra choices.
         struct Intf
         {
+            Intf(std::function<bool()> presentCb, std::function<void()> clearCb) :
+                present{std::move(presentCb)}, clear{std::move(clearCb)}
+            {
+                if (!present || !clear)
+                {
+                    throw std::runtime_error{"Invalid sub-command interfaces are being used."};
+                }
+            }
+
             //! @brief Check the existence status of the extra choice.
             const std::function<bool()> present;
             //! @brief Reset control of the extra choice.

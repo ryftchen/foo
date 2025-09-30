@@ -497,7 +497,8 @@ private:
     //! @param left - left endpoint
     //! @param right - right endpoint
     //! @param eps - precision of calculation
-    void updateSpecies(const double left, const double right, const double eps);
+    //! @return success or failure
+    bool updateSpecies(const double left, const double right, const double eps);
     //! @brief Alias for the individual's chromosome in species.
     using Chromosome = std::vector<std::uint8_t>;
     //! @brief Alias for the population in species.

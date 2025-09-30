@@ -372,7 +372,7 @@ void View::Access::waitOr(const State state, const std::function<void()>& handli
 {
     do
     {
-        if (inst.isInServingState(State::hold))
+        if (inst.isInServingState(State::hold) && handling)
         {
             handling();
         }
@@ -384,7 +384,10 @@ void View::Access::waitOr(const State state, const std::function<void()>& handli
 void View::Access::notifyVia(const std::function<void()>& action) const
 {
     std::unique_lock<std::mutex> daemonLock(inst.daemonMtx);
-    action();
+    if (action)
+    {
+        action();
+    }
     daemonLock.unlock();
     inst.daemonCond.notify_one();
 }
@@ -393,13 +396,16 @@ void View::Access::countdownIf(const std::function<bool()>& condition, const std
 {
     for (const utility::time::Stopwatch timing{}; timing.elapsedTime() <= inst.timeoutPeriod;)
     {
-        if (!condition())
+        if (!condition || !condition())
         {
             return;
         }
         std::this_thread::yield();
     }
-    handling();
+    if (handling)
+    {
+        handling();
+    }
 }
 
 void View::Sync::waitTaskDone() const

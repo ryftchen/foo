@@ -94,7 +94,7 @@ void waitForUserInput(const std::function<bool(const std::string&)>& operation, 
         {
             std::string input{};
             std::getline(std::cin, input);
-            if (operation(input))
+            if (!operation || operation(input))
             {
                 break;
             }

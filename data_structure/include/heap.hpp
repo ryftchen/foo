@@ -236,7 +236,7 @@ void Traverse<Heap, Node>::postOrder(const Operation& op) const
 template <typename Heap, typename Node>
 void Traverse<Heap, Node>::preOrderTraversal(const Node* const node, const Operation& op)
 {
-    if (!node)
+    if (!node || !op)
     {
         return;
     }
@@ -249,7 +249,7 @@ void Traverse<Heap, Node>::preOrderTraversal(const Node* const node, const Opera
 template <typename Heap, typename Node>
 void Traverse<Heap, Node>::inOrderTraversal(const Node* const node, const Operation& op)
 {
-    if (!node)
+    if (!node || !op)
     {
         return;
     }
@@ -262,7 +262,7 @@ void Traverse<Heap, Node>::inOrderTraversal(const Node* const node, const Operat
 template <typename Heap, typename Node>
 void Traverse<Heap, Node>::postOrderTraversal(const Node* const node, const Operation& op)
 {
-    if (!node)
+    if (!node || !op)
     {
         return;
     }

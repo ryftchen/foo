@@ -41,9 +41,9 @@ Console::~Console()
     ::rl_restore_prompt();
 }
 
-void Console::registerOption(const std::string_view name, const std::string_view description, Callback callable)
+void Console::registerOption(const std::string_view name, const std::string_view description, Callback callback)
 {
-    terminal->regTable.emplace(name, std::make_pair(description, std::move(callable)));
+    terminal->regTable.emplace(name, std::make_pair(description, std::move(callback)));
     terminal->orderList.emplace_back(name);
 }
 
@@ -69,8 +69,9 @@ Console::RetCode Console::optionExecutor(const std::string& option) const
         throw std::runtime_error{
             "The console option (" + inputs.front() + ") could not be found. Enter the \"usage\" for help."};
     }
+    const auto& callback = std::get<Callback>(regIter->second);
 
-    return std::get<Callback>(regIter->second)(inputs);
+    return callback ? callback(inputs) : RetCode::success;
 }
 
 Console::RetCode Console::fileExecutor(const std::string& filename) const

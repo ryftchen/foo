@@ -59,7 +59,7 @@ std::int64_t Match::rk(
             }
         }
 
-        if (i < textLen - patternLen)
+        if (i < (textLen - patternLen))
         {
             textHash = (rollingHashBase * (textHash - text[i] * pow) + text[i + patternLen]) % rollingHashMod;
             if (textHash < 0)

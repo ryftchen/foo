@@ -8,7 +8,6 @@
 
 #include <cmath>
 #include <cstdint>
-#include <stdexcept>
 #include <vector>
 
 //! @brief The algorithm module.
@@ -123,9 +122,9 @@ std::int64_t Search<T>::fibonacci(const T* const array, const std::uint32_t leng
         return index;
     }
     const auto& fib = generateFibonacciNumber(length);
-    if (constexpr std::uint8_t minSize = 3; minSize > static_cast<std::int32_t>(fib.size() - 1))
+    if (constexpr std::uint8_t minSize = 3; static_cast<std::int32_t>(fib.size() - 1) < minSize)
     {
-        throw std::logic_error{"An array size of " + std::to_string(length) + " is not sufficient."};
+        return index;
     }
 
     std::uint32_t n = fib.size() - 1;

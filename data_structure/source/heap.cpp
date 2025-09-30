@@ -179,7 +179,7 @@ bool remove(BinaryHeap* const heap, const void* const key)
 
 void Traverse::order(const Operation& op) const
 {
-    if (!heap)
+    if (!heap || !op)
     {
         return;
     }
