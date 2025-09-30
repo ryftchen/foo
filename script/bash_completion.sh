@@ -39,6 +39,7 @@ function _foo()
         _filedir
         ;;
     esac
+
     mapfile -t COMPREPLY < <(compgen -W "-h --help -v --version -d --dump -c --console app-algo app-dp app-ds app-num" \
         -- "${curr}")
 }
