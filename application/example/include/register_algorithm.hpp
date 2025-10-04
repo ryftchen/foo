@@ -182,16 +182,16 @@ extern bool present();
 extern void clear();
 } // namespace manage
 
-//! @brief Update choice.
+//! @brief Set choice.
 //! @tparam T - type of target method
-//! @param target - target method
+//! @param choice - target choice
 template <typename T>
-void updateChoice(const std::string& target);
-//! @brief Run choices.
+void setChoice(const std::string& choice);
+//! @brief Run candidates.
 //! @tparam T - type of target method
-//! @param candidates - container for the candidate target methods
+//! @param candidates - container for the candidate target choices
 template <typename T>
-void runChoices(const std::vector<std::string>& candidates);
+void runCandidates(const std::vector<std::string>& candidates);
 
 //! @brief Register match.
 namespace match
@@ -199,9 +199,9 @@ namespace match
 extern const char* version() noexcept;
 } // namespace match
 template <>
-void updateChoice<MatchMethod>(const std::string& target);
+void setChoice<MatchMethod>(const std::string& choice);
 template <>
-void runChoices<MatchMethod>(const std::vector<std::string>& candidates);
+void runCandidates<MatchMethod>(const std::vector<std::string>& candidates);
 
 //! @brief Register notation.
 namespace notation
@@ -209,9 +209,9 @@ namespace notation
 extern const char* version() noexcept;
 } // namespace notation
 template <>
-void updateChoice<NotationMethod>(const std::string& target);
+void setChoice<NotationMethod>(const std::string& choice);
 template <>
-void runChoices<NotationMethod>(const std::vector<std::string>& candidates);
+void runCandidates<NotationMethod>(const std::vector<std::string>& candidates);
 
 //! @brief Register optimal.
 namespace optimal
@@ -219,9 +219,9 @@ namespace optimal
 extern const char* version() noexcept;
 } // namespace optimal
 template <>
-void updateChoice<OptimalMethod>(const std::string& target);
+void setChoice<OptimalMethod>(const std::string& choice);
 template <>
-void runChoices<OptimalMethod>(const std::vector<std::string>& candidates);
+void runCandidates<OptimalMethod>(const std::vector<std::string>& candidates);
 
 //! @brief Register search.
 namespace search
@@ -229,9 +229,9 @@ namespace search
 extern const char* version() noexcept;
 } // namespace search
 template <>
-void updateChoice<SearchMethod>(const std::string& target);
+void setChoice<SearchMethod>(const std::string& choice);
 template <>
-void runChoices<SearchMethod>(const std::vector<std::string>& candidates);
+void runCandidates<SearchMethod>(const std::vector<std::string>& candidates);
 
 //! @brief Register sort.
 namespace sort
@@ -239,9 +239,9 @@ namespace sort
 extern const char* version() noexcept;
 } // namespace sort
 template <>
-void updateChoice<SortMethod>(const std::string& target);
+void setChoice<SortMethod>(const std::string& choice);
 template <>
-void runChoices<SortMethod>(const std::vector<std::string>& candidates);
+void runCandidates<SortMethod>(const std::vector<std::string>& candidates);
 } // namespace reg_algo
 } // namespace application
 

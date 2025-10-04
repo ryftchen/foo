@@ -140,16 +140,16 @@ extern bool present();
 extern void clear();
 } // namespace manage
 
-//! @brief Update choice.
+//! @brief Set choice.
 //! @tparam T - type of target method
-//! @param target - target method
+//! @param choice - target choice
 template <typename T>
-void updateChoice(const std::string& target);
-//! @brief Run choices.
+void setChoice(const std::string& choice);
+//! @brief Run candidates.
 //! @tparam T - type of target method
-//! @param candidates - container for the candidate target methods
+//! @param candidates - container for the candidate target choices
 template <typename T>
-void runChoices(const std::vector<std::string>& candidates);
+void runCandidates(const std::vector<std::string>& candidates);
 
 //! @brief Register arithmetic.
 namespace arithmetic
@@ -157,9 +157,9 @@ namespace arithmetic
 extern const char* version() noexcept;
 } // namespace arithmetic
 template <>
-void updateChoice<ArithmeticMethod>(const std::string& target);
+void setChoice<ArithmeticMethod>(const std::string& choice);
 template <>
-void runChoices<ArithmeticMethod>(const std::vector<std::string>& candidates);
+void runCandidates<ArithmeticMethod>(const std::vector<std::string>& candidates);
 
 //! @brief Register divisor.
 namespace divisor
@@ -167,9 +167,9 @@ namespace divisor
 extern const char* version() noexcept;
 } // namespace divisor
 template <>
-void updateChoice<DivisorMethod>(const std::string& target);
+void setChoice<DivisorMethod>(const std::string& choice);
 template <>
-void runChoices<DivisorMethod>(const std::vector<std::string>& candidates);
+void runCandidates<DivisorMethod>(const std::vector<std::string>& candidates);
 
 //! @brief Register integral.
 namespace integral
@@ -177,9 +177,9 @@ namespace integral
 extern const char* version() noexcept;
 } // namespace integral
 template <>
-void updateChoice<IntegralMethod>(const std::string& target);
+void setChoice<IntegralMethod>(const std::string& choice);
 template <>
-void runChoices<IntegralMethod>(const std::vector<std::string>& candidates);
+void runCandidates<IntegralMethod>(const std::vector<std::string>& candidates);
 
 //! @brief Register prime.
 namespace prime
@@ -187,9 +187,9 @@ namespace prime
 extern const char* version() noexcept;
 } // namespace prime
 template <>
-void updateChoice<PrimeMethod>(const std::string& target);
+void setChoice<PrimeMethod>(const std::string& choice);
 template <>
-void runChoices<PrimeMethod>(const std::vector<std::string>& candidates);
+void runCandidates<PrimeMethod>(const std::vector<std::string>& candidates);
 } // namespace reg_num
 } // namespace application
 

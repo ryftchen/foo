@@ -145,26 +145,26 @@ consteval std::string_view descr()
     return TypeInfo<T>::attrs.find(REFLECTION_STR("descr")).value;
 }
 
-//! @brief The "Update Choice" message in the applied action.
+//! @brief The "Set Choice" message in the applied action.
 //! @tparam Evt - type of applied action event
 template <typename Evt>
-struct UpdateChoice
+struct SetChoice
 {
     //! @brief Target choice.
-    const std::string cho;
+    const std::string choice;
 };
-//! @brief The "Run Choices" message in the applied action.
+//! @brief The "Run Candidates" message in the applied action.
 //! @tparam Evt - type of applied action event
 template <typename Evt>
-struct RunChoices
+struct RunCandidates
 {
     //! @brief Collection of candidates for choice.
-    const std::vector<std::string> coll;
+    const std::vector<std::string> candidates;
 };
-//! @brief Indication type of updating in the applied action.
+//! @brief Indication type of setting in the applied action.
 //! @tparam Msg - type of message
 template <typename Msg>
-struct UpdatingIndication;
+struct SettingIndication;
 //! @brief Indication type of running in the applied action.
 //! @tparam Msg - type of message
 template <typename Msg>
@@ -186,42 +186,42 @@ struct MessageTypeList
 };
 //! @brief Alias for the message type list.
 using MessageTypes = MessageTypeList<
-    UpdatingIndication<UpdateChoice<reg_algo::MatchMethod>>,
-    RunningIndication<RunChoices<reg_algo::MatchMethod>>,
-    UpdatingIndication<UpdateChoice<reg_algo::NotationMethod>>,
-    RunningIndication<RunChoices<reg_algo::NotationMethod>>,
-    UpdatingIndication<UpdateChoice<reg_algo::OptimalMethod>>,
-    RunningIndication<RunChoices<reg_algo::OptimalMethod>>,
-    UpdatingIndication<UpdateChoice<reg_algo::SearchMethod>>,
-    RunningIndication<RunChoices<reg_algo::SearchMethod>>,
-    UpdatingIndication<UpdateChoice<reg_algo::SortMethod>>,
-    RunningIndication<RunChoices<reg_algo::SortMethod>>,
-    UpdatingIndication<UpdateChoice<reg_dp::BehavioralInstance>>,
-    RunningIndication<RunChoices<reg_dp::BehavioralInstance>>,
-    UpdatingIndication<UpdateChoice<reg_dp::CreationalInstance>>,
-    RunningIndication<RunChoices<reg_dp::CreationalInstance>>,
-    UpdatingIndication<UpdateChoice<reg_dp::StructuralInstance>>,
-    RunningIndication<RunChoices<reg_dp::StructuralInstance>>,
-    UpdatingIndication<UpdateChoice<reg_ds::CacheInstance>>,
-    RunningIndication<RunChoices<reg_ds::CacheInstance>>,
-    UpdatingIndication<UpdateChoice<reg_ds::FilterInstance>>,
-    RunningIndication<RunChoices<reg_ds::FilterInstance>>,
-    UpdatingIndication<UpdateChoice<reg_ds::GraphInstance>>,
-    RunningIndication<RunChoices<reg_ds::GraphInstance>>,
-    UpdatingIndication<UpdateChoice<reg_ds::HeapInstance>>,
-    RunningIndication<RunChoices<reg_ds::HeapInstance>>,
-    UpdatingIndication<UpdateChoice<reg_ds::LinearInstance>>,
-    RunningIndication<RunChoices<reg_ds::LinearInstance>>,
-    UpdatingIndication<UpdateChoice<reg_ds::TreeInstance>>,
-    RunningIndication<RunChoices<reg_ds::TreeInstance>>,
-    UpdatingIndication<UpdateChoice<reg_num::ArithmeticMethod>>,
-    RunningIndication<RunChoices<reg_num::ArithmeticMethod>>,
-    UpdatingIndication<UpdateChoice<reg_num::DivisorMethod>>,
-    RunningIndication<RunChoices<reg_num::DivisorMethod>>,
-    UpdatingIndication<UpdateChoice<reg_num::IntegralMethod>>,
-    RunningIndication<RunChoices<reg_num::IntegralMethod>>,
-    UpdatingIndication<UpdateChoice<reg_num::PrimeMethod>>,
-    RunningIndication<RunChoices<reg_num::PrimeMethod>>>;
+    SettingIndication<SetChoice<reg_algo::MatchMethod>>,
+    RunningIndication<RunCandidates<reg_algo::MatchMethod>>,
+    SettingIndication<SetChoice<reg_algo::NotationMethod>>,
+    RunningIndication<RunCandidates<reg_algo::NotationMethod>>,
+    SettingIndication<SetChoice<reg_algo::OptimalMethod>>,
+    RunningIndication<RunCandidates<reg_algo::OptimalMethod>>,
+    SettingIndication<SetChoice<reg_algo::SearchMethod>>,
+    RunningIndication<RunCandidates<reg_algo::SearchMethod>>,
+    SettingIndication<SetChoice<reg_algo::SortMethod>>,
+    RunningIndication<RunCandidates<reg_algo::SortMethod>>,
+    SettingIndication<SetChoice<reg_dp::BehavioralInstance>>,
+    RunningIndication<RunCandidates<reg_dp::BehavioralInstance>>,
+    SettingIndication<SetChoice<reg_dp::CreationalInstance>>,
+    RunningIndication<RunCandidates<reg_dp::CreationalInstance>>,
+    SettingIndication<SetChoice<reg_dp::StructuralInstance>>,
+    RunningIndication<RunCandidates<reg_dp::StructuralInstance>>,
+    SettingIndication<SetChoice<reg_ds::CacheInstance>>,
+    RunningIndication<RunCandidates<reg_ds::CacheInstance>>,
+    SettingIndication<SetChoice<reg_ds::FilterInstance>>,
+    RunningIndication<RunCandidates<reg_ds::FilterInstance>>,
+    SettingIndication<SetChoice<reg_ds::GraphInstance>>,
+    RunningIndication<RunCandidates<reg_ds::GraphInstance>>,
+    SettingIndication<SetChoice<reg_ds::HeapInstance>>,
+    RunningIndication<RunCandidates<reg_ds::HeapInstance>>,
+    SettingIndication<SetChoice<reg_ds::LinearInstance>>,
+    RunningIndication<RunCandidates<reg_ds::LinearInstance>>,
+    SettingIndication<SetChoice<reg_ds::TreeInstance>>,
+    RunningIndication<RunCandidates<reg_ds::TreeInstance>>,
+    SettingIndication<SetChoice<reg_num::ArithmeticMethod>>,
+    RunningIndication<RunCandidates<reg_num::ArithmeticMethod>>,
+    SettingIndication<SetChoice<reg_num::DivisorMethod>>,
+    RunningIndication<RunCandidates<reg_num::DivisorMethod>>,
+    SettingIndication<SetChoice<reg_num::IntegralMethod>>,
+    RunningIndication<RunCandidates<reg_num::IntegralMethod>>,
+    SettingIndication<SetChoice<reg_num::PrimeMethod>>,
+    RunningIndication<RunCandidates<reg_num::PrimeMethod>>>;
 
 //! @brief Alias for the message handler.
 //! @tparam Msg - type of message
@@ -231,11 +231,11 @@ using Handler = std::function<void(const Msg&)>;
 //! @tparam Is - type of indications
 template <typename... Is>
 class Dispatcher;
-//! @brief Message dispatcher of the updating indication.
+//! @brief Message dispatcher of the setting indication.
 //! @tparam Msg - type of message
 //! @tparam Is - type of indications
 template <typename Msg, typename... Is>
-class Dispatcher<UpdatingIndication<Msg>, Is...> : public Dispatcher<Is...>
+class Dispatcher<SettingIndication<Msg>, Is...> : public Dispatcher<Is...>
 {
 public:
     using Dispatcher<Is...>::registerHandler;
@@ -282,11 +282,11 @@ public:
 //! @tparam Is - type of indications
 template <typename... Is>
 class Receiver;
-//! @brief Message receiver of the updating indication.
+//! @brief Message receiver of the setting indication.
 //! @tparam Msg - type of message
 //! @tparam Is - type of indications
 template <typename Msg, typename... Is>
-class Receiver<UpdatingIndication<Msg>, Is...> : public Receiver<Is...>
+class Receiver<SettingIndication<Msg>, Is...> : public Receiver<Is...>
 {
 public:
     using Receiver<Is...>::onMessage;
@@ -338,11 +338,11 @@ struct ForwardBase : public MessageTypes::AsParameterPackFor<Dispatcher>,
 //! @tparam Is - type of indications
 template <typename... Is>
 class Forward;
-//! @brief Forward message of the updating indication.
+//! @brief Forward message of the setting indication.
 //! @tparam Msg - type of message
 //! @tparam Is - type of indications
 template <typename Msg, typename... Is>
-class Forward<UpdatingIndication<Msg>, Is...> : public Forward<Is...>
+class Forward<SettingIndication<Msg>, Is...> : public Forward<Is...>
 {
 public:
     //! @brief Alias for the base class.

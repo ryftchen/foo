@@ -63,15 +63,15 @@ const char* version() noexcept
     return app_num::arithmetic::version;
 }
 } // namespace arithmetic
-//! @brief Update arithmetic-related choice.
-//! @param target - target method
+//! @brief Set arithmetic-related choice.
+//! @param choice - target choice
 template <>
-void updateChoice<ArithmeticMethod>(const std::string& target)
+void setChoice<ArithmeticMethod>(const std::string& choice)
 {
     constexpr auto category = Category::arithmetic;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(ArithmeticMethod::addition):
             bits.set(mappedPos<ArithmeticMethod>(MACRO_STRINGIFY(addition)));
@@ -87,13 +87,13 @@ void updateChoice<ArithmeticMethod>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run arithmetic-related choices.
-//! @param candidates - container for the candidate target methods
+//! @brief Run arithmetic-related candidates.
+//! @param candidates - container for the candidate target choices
 template <>
-void runChoices<ArithmeticMethod>(const std::vector<std::string>& candidates)
+void runCandidates<ArithmeticMethod>(const std::vector<std::string>& candidates)
 {
     app_num::applyingArithmetic(candidates);
 }
@@ -107,15 +107,15 @@ const char* version() noexcept
     return app_num::divisor::version;
 }
 } // namespace divisor
-//! @brief Update divisor-related choice.
-//! @param target - target method
+//! @brief Set divisor-related choice.
+//! @param choice - target choice
 template <>
-void updateChoice<DivisorMethod>(const std::string& target)
+void setChoice<DivisorMethod>(const std::string& choice)
 {
     constexpr auto category = Category::divisor;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(DivisorMethod::euclidean):
             bits.set(mappedPos<DivisorMethod>(MACRO_STRINGIFY(euclidean)));
@@ -125,13 +125,13 @@ void updateChoice<DivisorMethod>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run divisor-related choices.
-//! @param candidates - container for the candidate target methods
+//! @brief Run divisor-related candidates.
+//! @param candidates - container for the candidate target choices
 template <>
-void runChoices<DivisorMethod>(const std::vector<std::string>& candidates)
+void runCandidates<DivisorMethod>(const std::vector<std::string>& candidates)
 {
     app_num::applyingDivisor(candidates);
 }
@@ -145,15 +145,15 @@ const char* version() noexcept
     return app_num::integral::version;
 }
 } // namespace integral
-//! @brief Update integral-related choice.
-//! @param target - target method
+//! @brief Set integral-related choice.
+//! @param choice - target choice
 template <>
-void updateChoice<IntegralMethod>(const std::string& target)
+void setChoice<IntegralMethod>(const std::string& choice)
 {
     constexpr auto category = Category::integral;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(IntegralMethod::trapezoidal):
             bits.set(mappedPos<IntegralMethod>(MACRO_STRINGIFY(trapezoidal)));
@@ -172,13 +172,13 @@ void updateChoice<IntegralMethod>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run integral-related choices.
-//! @param candidates - container for the candidate target methods
+//! @brief Run integral-related candidates.
+//! @param candidates - container for the candidate target choices
 template <>
-void runChoices<IntegralMethod>(const std::vector<std::string>& candidates)
+void runCandidates<IntegralMethod>(const std::vector<std::string>& candidates)
 {
     app_num::applyingIntegral(candidates);
 }
@@ -192,15 +192,15 @@ const char* version() noexcept
     return app_num::prime::version;
 }
 } // namespace prime
-//! @brief Update prime-related choice.
-//! @param target - target method
+//! @brief Set prime-related choice.
+//! @param choice - target choice
 template <>
-void updateChoice<PrimeMethod>(const std::string& target)
+void setChoice<PrimeMethod>(const std::string& choice)
 {
     constexpr auto category = Category::prime;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(PrimeMethod::eratosthenes):
             bits.set(mappedPos<PrimeMethod>(MACRO_STRINGIFY(eratosthenes)));
@@ -210,13 +210,13 @@ void updateChoice<PrimeMethod>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run prime-related choices.
-//! @param candidates - container for the candidate target methods
+//! @brief Run prime-related candidates.
+//! @param candidates - container for the candidate target choices
 template <>
-void runChoices<PrimeMethod>(const std::vector<std::string>& candidates)
+void runCandidates<PrimeMethod>(const std::vector<std::string>& candidates)
 {
     app_num::applyingPrime(candidates);
 }

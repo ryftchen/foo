@@ -108,8 +108,8 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(instance).c_str(), err.what());
 }
 } // namespace cache
-//! @brief To apply cache-related instances.
-//! @param candidates - container for the candidate target instances
+//! @brief To apply cache-related instances that are mapped to choices.
+//! @param candidates - container for the candidate target choices
 void applyingCache(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::cache;
@@ -119,7 +119,8 @@ void applyingCache(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(data_structure::cache::name());
+    const std::string_view title = data_structure::cache::name();
+    APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
@@ -132,24 +133,24 @@ void applyingCache(const std::vector<std::string>& candidates)
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
-        const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.c_str()))
+        const auto& choice = candidates.at(index);
+        switch (utility::common::bkdrHash(choice.c_str()))
         {
             case abbrLitHash(CacheInstance::firstInFirstOut):
-                addTask(target, CacheInstance::firstInFirstOut);
+                addTask(choice, CacheInstance::firstInFirstOut);
                 break;
             case abbrLitHash(CacheInstance::leastFrequentlyUsed):
-                addTask(target, CacheInstance::leastFrequentlyUsed);
+                addTask(choice, CacheInstance::leastFrequentlyUsed);
                 break;
             case abbrLitHash(CacheInstance::leastRecentlyUsed):
-                addTask(target, CacheInstance::leastRecentlyUsed);
+                addTask(choice, CacheInstance::leastRecentlyUsed);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
-    APP_DS_PRINT_TASK_TITLE_SCOPE_END(data_structure::cache::name());
+    APP_DS_PRINT_TASK_TITLE_SCOPE_END(title);
 }
 
 namespace filter
@@ -187,8 +188,8 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(instance).c_str(), err.what());
 }
 } // namespace filter
-//! @brief To apply filter-related instances.
-//! @param candidates - container for the candidate target instances
+//! @brief To apply filter-related instances that are mapped to choices.
+//! @param candidates - container for the candidate target choices
 void applyingFilter(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::filter;
@@ -198,7 +199,8 @@ void applyingFilter(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(data_structure::filter::name());
+    const std::string_view title = data_structure::filter::name();
+    APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
@@ -211,21 +213,21 @@ void applyingFilter(const std::vector<std::string>& candidates)
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
-        const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.c_str()))
+        const auto& choice = candidates.at(index);
+        switch (utility::common::bkdrHash(choice.c_str()))
         {
             case abbrLitHash(FilterInstance::bloom):
-                addTask(target, FilterInstance::bloom);
+                addTask(choice, FilterInstance::bloom);
                 break;
             case abbrLitHash(FilterInstance::quotient):
-                addTask(target, FilterInstance::quotient);
+                addTask(choice, FilterInstance::quotient);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
-    APP_DS_PRINT_TASK_TITLE_SCOPE_END(data_structure::filter::name());
+    APP_DS_PRINT_TASK_TITLE_SCOPE_END(title);
 }
 
 namespace graph
@@ -263,8 +265,8 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(instance).c_str(), err.what());
 }
 } // namespace graph
-//! @brief To apply graph-related instances.
-//! @param candidates - container for the candidate target instances
+//! @brief To apply graph-related instances that are mapped to choices.
+//! @param candidates - container for the candidate target choices
 void applyingGraph(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::graph;
@@ -274,7 +276,8 @@ void applyingGraph(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(data_structure::graph::name());
+    const std::string_view title = data_structure::graph::name();
+    APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
@@ -287,21 +290,21 @@ void applyingGraph(const std::vector<std::string>& candidates)
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
-        const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.c_str()))
+        const auto& choice = candidates.at(index);
+        switch (utility::common::bkdrHash(choice.c_str()))
         {
             case abbrLitHash(GraphInstance::undirected):
-                addTask(target, GraphInstance::undirected);
+                addTask(choice, GraphInstance::undirected);
                 break;
             case abbrLitHash(GraphInstance::directed):
-                addTask(target, GraphInstance::directed);
+                addTask(choice, GraphInstance::directed);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
-    APP_DS_PRINT_TASK_TITLE_SCOPE_END(data_structure::graph::name());
+    APP_DS_PRINT_TASK_TITLE_SCOPE_END(title);
 }
 
 namespace heap
@@ -342,8 +345,8 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(instance).c_str(), err.what());
 }
 } // namespace heap
-//! @brief To apply heap-related instances.
-//! @param candidates - container for the candidate target instances
+//! @brief To apply heap-related instances that are mapped to choices.
+//! @param candidates - container for the candidate target choices
 void applyingHeap(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::heap;
@@ -353,7 +356,8 @@ void applyingHeap(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(data_structure::heap::name());
+    const std::string_view title = data_structure::heap::name();
+    APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
@@ -366,24 +370,24 @@ void applyingHeap(const std::vector<std::string>& candidates)
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
-        const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.c_str()))
+        const auto& choice = candidates.at(index);
+        switch (utility::common::bkdrHash(choice.c_str()))
         {
             case abbrLitHash(HeapInstance::binary):
-                addTask(target, HeapInstance::binary);
+                addTask(choice, HeapInstance::binary);
                 break;
             case abbrLitHash(HeapInstance::leftist):
-                addTask(target, HeapInstance::leftist);
+                addTask(choice, HeapInstance::leftist);
                 break;
             case abbrLitHash(HeapInstance::skew):
-                addTask(target, HeapInstance::skew);
+                addTask(choice, HeapInstance::skew);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
-    APP_DS_PRINT_TASK_TITLE_SCOPE_END(data_structure::heap::name());
+    APP_DS_PRINT_TASK_TITLE_SCOPE_END(title);
 }
 
 namespace linear
@@ -424,8 +428,8 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(instance).c_str(), err.what());
 }
 } // namespace linear
-//! @brief To apply linear-related instances.
-//! @param candidates - container for the candidate target instances
+//! @brief To apply linear-related instances that are mapped to choices.
+//! @param candidates - container for the candidate target choices
 void applyingLinear(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::linear;
@@ -435,7 +439,8 @@ void applyingLinear(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(data_structure::linear::name());
+    const std::string_view title = data_structure::linear::name();
+    APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
@@ -448,24 +453,24 @@ void applyingLinear(const std::vector<std::string>& candidates)
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
-        const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.c_str()))
+        const auto& choice = candidates.at(index);
+        switch (utility::common::bkdrHash(choice.c_str()))
         {
             case abbrLitHash(LinearInstance::doublyLinkedList):
-                addTask(target, LinearInstance::doublyLinkedList);
+                addTask(choice, LinearInstance::doublyLinkedList);
                 break;
             case abbrLitHash(LinearInstance::stack):
-                addTask(target, LinearInstance::stack);
+                addTask(choice, LinearInstance::stack);
                 break;
             case abbrLitHash(LinearInstance::queue):
-                addTask(target, LinearInstance::queue);
+                addTask(choice, LinearInstance::queue);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
-    APP_DS_PRINT_TASK_TITLE_SCOPE_END(data_structure::linear::name());
+    APP_DS_PRINT_TASK_TITLE_SCOPE_END(title);
 }
 
 namespace tree
@@ -506,8 +511,8 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(instance).c_str(), err.what());
 }
 } // namespace tree
-//! @brief To apply tree-related instances.
-//! @param candidates - container for the candidate target instances
+//! @brief To apply tree-related instances that are mapped to choices.
+//! @param candidates - container for the candidate target choices
 void applyingTree(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::tree;
@@ -517,7 +522,8 @@ void applyingTree(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(data_structure::tree::name());
+    const std::string_view title = data_structure::tree::name();
+    APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
@@ -530,24 +536,24 @@ void applyingTree(const std::vector<std::string>& candidates)
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
-        const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.c_str()))
+        const auto& choice = candidates.at(index);
+        switch (utility::common::bkdrHash(choice.c_str()))
         {
             case abbrLitHash(TreeInstance::binarySearch):
-                addTask(target, TreeInstance::binarySearch);
+                addTask(choice, TreeInstance::binarySearch);
                 break;
             case abbrLitHash(TreeInstance::adelsonVelskyLandis):
-                addTask(target, TreeInstance::adelsonVelskyLandis);
+                addTask(choice, TreeInstance::adelsonVelskyLandis);
                 break;
             case abbrLitHash(TreeInstance::splay):
-                addTask(target, TreeInstance::splay);
+                addTask(choice, TreeInstance::splay);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
-    APP_DS_PRINT_TASK_TITLE_SCOPE_END(data_structure::tree::name());
+    APP_DS_PRINT_TASK_TITLE_SCOPE_END(title);
 }
 } // namespace application::app_ds
 

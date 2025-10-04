@@ -122,8 +122,8 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(method).c_str(), err.what());
 }
 } // namespace arithmetic
-//! @brief To apply arithmetic-related methods.
-//! @param candidates - container for the candidate target methods
+//! @brief To apply arithmetic-related methods that are mapped to choices.
+//! @param candidates - container for the candidate target choices
 void applyingArithmetic(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::arithmetic;
@@ -133,7 +133,8 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(numeric::arithmetic::name());
+    const std::string_view title = numeric::arithmetic::name();
+    APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
@@ -155,27 +156,27 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
-        const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.c_str()))
+        const auto& choice = candidates.at(index);
+        switch (utility::common::bkdrHash(choice.c_str()))
         {
             case abbrLitHash(ArithmeticMethod::addition):
-                addTask(target, ArithmeticMethod::addition);
+                addTask(choice, ArithmeticMethod::addition);
                 break;
             case abbrLitHash(ArithmeticMethod::subtraction):
-                addTask(target, ArithmeticMethod::subtraction);
+                addTask(choice, ArithmeticMethod::subtraction);
                 break;
             case abbrLitHash(ArithmeticMethod::multiplication):
-                addTask(target, ArithmeticMethod::multiplication);
+                addTask(choice, ArithmeticMethod::multiplication);
                 break;
             case abbrLitHash(ArithmeticMethod::division):
-                addTask(target, ArithmeticMethod::division);
+                addTask(choice, ArithmeticMethod::division);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
-    APP_NUM_PRINT_TASK_TITLE_SCOPE_END(numeric::arithmetic::name());
+    APP_NUM_PRINT_TASK_TITLE_SCOPE_END(title);
 }
 
 namespace divisor
@@ -223,8 +224,8 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(method).c_str(), err.what());
 }
 } // namespace divisor
-//! @brief To apply divisor-related methods.
-//! @param candidates - container for the candidate target methods
+//! @brief To apply divisor-related methods that are mapped to choices.
+//! @param candidates - container for the candidate target choices
 void applyingDivisor(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::divisor;
@@ -234,7 +235,8 @@ void applyingDivisor(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(numeric::divisor::name());
+    const std::string_view title = numeric::divisor::name();
+    APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
@@ -256,21 +258,21 @@ void applyingDivisor(const std::vector<std::string>& candidates)
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
-        const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.c_str()))
+        const auto& choice = candidates.at(index);
+        switch (utility::common::bkdrHash(choice.c_str()))
         {
             case abbrLitHash(DivisorMethod::euclidean):
-                addTask(target, DivisorMethod::euclidean);
+                addTask(choice, DivisorMethod::euclidean);
                 break;
             case abbrLitHash(DivisorMethod::stein):
-                addTask(target, DivisorMethod::stein);
+                addTask(choice, DivisorMethod::stein);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
-    APP_NUM_PRINT_TASK_TITLE_SCOPE_END(numeric::divisor::name());
+    APP_NUM_PRINT_TASK_TITLE_SCOPE_END(title);
 }
 
 namespace integral
@@ -323,8 +325,8 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(method).c_str(), err.what());
 }
 } // namespace integral
-//! @brief To apply integral-related methods.
-//! @param candidates - container for the candidate target methods
+//! @brief To apply integral-related methods that are mapped to choices.
+//! @param candidates - container for the candidate target choices
 void applyingIntegral(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::integral;
@@ -334,7 +336,8 @@ void applyingIntegral(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(numeric::integral::name());
+    const std::string_view title = numeric::integral::name();
+    APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
@@ -359,30 +362,30 @@ void applyingIntegral(const std::vector<std::string>& candidates)
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
-        const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.c_str()))
+        const auto& choice = candidates.at(index);
+        switch (utility::common::bkdrHash(choice.c_str()))
         {
             case abbrLitHash(IntegralMethod::trapezoidal):
-                addTask(target, IntegralMethod::trapezoidal);
+                addTask(choice, IntegralMethod::trapezoidal);
                 break;
             case abbrLitHash(IntegralMethod::simpson):
-                addTask(target, IntegralMethod::simpson);
+                addTask(choice, IntegralMethod::simpson);
                 break;
             case abbrLitHash(IntegralMethod::romberg):
-                addTask(target, IntegralMethod::romberg);
+                addTask(choice, IntegralMethod::romberg);
                 break;
             case abbrLitHash(IntegralMethod::gauss):
-                addTask(target, IntegralMethod::gauss);
+                addTask(choice, IntegralMethod::gauss);
                 break;
             case abbrLitHash(IntegralMethod::monteCarlo):
-                addTask(target, IntegralMethod::monteCarlo);
+                addTask(choice, IntegralMethod::monteCarlo);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
-    APP_NUM_PRINT_TASK_TITLE_SCOPE_END(numeric::integral::name());
+    APP_NUM_PRINT_TASK_TITLE_SCOPE_END(title);
 }
 
 namespace prime
@@ -429,8 +432,8 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(method).c_str(), err.what());
 }
 } // namespace prime
-//! @brief To apply prime-related methods.
-//! @param candidates - container for the candidate target methods
+//! @brief To apply prime-related methods that are mapped to choices.
+//! @param candidates - container for the candidate target choices
 void applyingPrime(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::prime;
@@ -440,7 +443,8 @@ void applyingPrime(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(numeric::prime::name());
+    const std::string_view title = numeric::prime::name();
+    APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
@@ -455,21 +459,21 @@ void applyingPrime(const std::vector<std::string>& candidates)
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
-        const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.c_str()))
+        const auto& choice = candidates.at(index);
+        switch (utility::common::bkdrHash(choice.c_str()))
         {
             case abbrLitHash(PrimeMethod::eratosthenes):
-                addTask(target, PrimeMethod::eratosthenes);
+                addTask(choice, PrimeMethod::eratosthenes);
                 break;
             case abbrLitHash(PrimeMethod::euler):
-                addTask(target, PrimeMethod::euler);
+                addTask(choice, PrimeMethod::euler);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
-    APP_NUM_PRINT_TASK_TITLE_SCOPE_END(numeric::prime::name());
+    APP_NUM_PRINT_TASK_TITLE_SCOPE_END(title);
 }
 } // namespace application::app_num
 

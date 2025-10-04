@@ -63,15 +63,15 @@ const char* version() noexcept
     return app_ds::cache::version;
 }
 } // namespace cache
-//! @brief Update cache-related choice.
-//! @param target - target instance
+//! @brief Set cache-related choice.
+//! @param choice - target choice
 template <>
-void updateChoice<CacheInstance>(const std::string& target)
+void setChoice<CacheInstance>(const std::string& choice)
 {
     constexpr auto category = Category::cache;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(CacheInstance::firstInFirstOut):
             bits.set(mappedPos<CacheInstance>(MACRO_STRINGIFY(firstInFirstOut)));
@@ -84,13 +84,13 @@ void updateChoice<CacheInstance>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " instance: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run cache-related choices.
-//! @param candidates - container for the candidate target instances
+//! @brief Run cache-related candidates.
+//! @param candidates - container for the candidate target choices
 template <>
-void runChoices<CacheInstance>(const std::vector<std::string>& candidates)
+void runCandidates<CacheInstance>(const std::vector<std::string>& candidates)
 {
     app_ds::applyingCache(candidates);
 }
@@ -104,15 +104,15 @@ const char* version() noexcept
     return app_ds::filter::version;
 }
 } // namespace filter
-//! @brief Update filter-related choice.
-//! @param target - target instance
+//! @brief Set filter-related choice.
+//! @param choice - target choice
 template <>
-void updateChoice<FilterInstance>(const std::string& target)
+void setChoice<FilterInstance>(const std::string& choice)
 {
     constexpr auto category = Category::filter;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(FilterInstance::bloom):
             bits.set(mappedPos<FilterInstance>(MACRO_STRINGIFY(bloom)));
@@ -122,13 +122,13 @@ void updateChoice<FilterInstance>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " instance: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run filter-related choices.
-//! @param candidates - container for the candidate target instances
+//! @brief Run filter-related candidates.
+//! @param candidates - container for the candidate target choices
 template <>
-void runChoices<FilterInstance>(const std::vector<std::string>& candidates)
+void runCandidates<FilterInstance>(const std::vector<std::string>& candidates)
 {
     app_ds::applyingFilter(candidates);
 }
@@ -142,15 +142,15 @@ const char* version() noexcept
     return app_ds::graph::version;
 }
 } // namespace graph
-//! @brief Update graph-related choice.
-//! @param target - target instance
+//! @brief Set graph-related choice.
+//! @param choice - target choice
 template <>
-void updateChoice<GraphInstance>(const std::string& target)
+void setChoice<GraphInstance>(const std::string& choice)
 {
     constexpr auto category = Category::graph;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(GraphInstance::undirected):
             bits.set(mappedPos<GraphInstance>(MACRO_STRINGIFY(undirected)));
@@ -160,13 +160,13 @@ void updateChoice<GraphInstance>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " instance: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run graph-related choices.
-//! @param candidates - container for the candidate target instances
+//! @brief Run graph-related candidates.
+//! @param candidates - container for the candidate target choices
 template <>
-void runChoices<GraphInstance>(const std::vector<std::string>& candidates)
+void runCandidates<GraphInstance>(const std::vector<std::string>& candidates)
 {
     app_ds::applyingGraph(candidates);
 }
@@ -180,15 +180,15 @@ const char* version() noexcept
     return app_ds::heap::version;
 }
 } // namespace heap
-//! @brief Update heap-related choice.
-//! @param target - target instance
+//! @brief Set heap-related choice.
+//! @param choice - target choice
 template <>
-void updateChoice<HeapInstance>(const std::string& target)
+void setChoice<HeapInstance>(const std::string& choice)
 {
     constexpr auto category = Category::heap;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(HeapInstance::binary):
             bits.set(mappedPos<HeapInstance>(MACRO_STRINGIFY(binary)));
@@ -201,13 +201,13 @@ void updateChoice<HeapInstance>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " instance: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run heap-related choices.
-//! @param candidates - container for the candidate target instances
+//! @brief Run heap-related candidates.
+//! @param candidates - container for the candidate target choices
 template <>
-void runChoices<HeapInstance>(const std::vector<std::string>& candidates)
+void runCandidates<HeapInstance>(const std::vector<std::string>& candidates)
 {
     app_ds::applyingHeap(candidates);
 }
@@ -221,15 +221,15 @@ const char* version() noexcept
     return app_ds::linear::version;
 }
 } // namespace linear
-//! @brief Update linear-related choice.
-//! @param target - target instance
+//! @brief Set linear-related choice.
+//! @param choice - target choice
 template <>
-void updateChoice<LinearInstance>(const std::string& target)
+void setChoice<LinearInstance>(const std::string& choice)
 {
     constexpr auto category = Category::linear;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(LinearInstance::doublyLinkedList):
             bits.set(mappedPos<LinearInstance>(MACRO_STRINGIFY(doublyLinkedList)));
@@ -242,13 +242,13 @@ void updateChoice<LinearInstance>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " instance: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run linear-related choices.
-//! @param candidates - container for the candidate target instances
+//! @brief Run linear-related candidates.
+//! @param candidates - container for the candidate target choices
 template <>
-void runChoices<LinearInstance>(const std::vector<std::string>& candidates)
+void runCandidates<LinearInstance>(const std::vector<std::string>& candidates)
 {
     app_ds::applyingLinear(candidates);
 }
@@ -262,15 +262,15 @@ const char* version() noexcept
     return app_ds::tree::version;
 }
 } // namespace tree
-//! @brief Update tree-related choice.
-//! @param target - target instance
+//! @brief Set tree-related choice.
+//! @param choice - target choice
 template <>
-void updateChoice<TreeInstance>(const std::string& target)
+void setChoice<TreeInstance>(const std::string& choice)
 {
     constexpr auto category = Category::tree;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(TreeInstance::binarySearch):
             bits.set(mappedPos<TreeInstance>(MACRO_STRINGIFY(binarySearch)));
@@ -283,13 +283,13 @@ void updateChoice<TreeInstance>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " instance: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run tree-related choices.
-//! @param candidates - container for the candidate target instances
+//! @brief Run tree-related candidates.
+//! @param candidates - container for the candidate target choices
 template <>
-void runChoices<TreeInstance>(const std::vector<std::string>& candidates)
+void runCandidates<TreeInstance>(const std::vector<std::string>& candidates)
 {
     app_ds::applyingTree(candidates);
 }

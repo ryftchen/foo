@@ -143,8 +143,8 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(method).c_str(), err.what());
 }
 } // namespace match
-//! @brief To apply match-related methods.
-//! @param candidates - container for the candidate target methods
+//! @brief To apply match-related methods that are mapped to choices.
+//! @param candidates - container for the candidate target choices
 void applyingMatch(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::match;
@@ -154,7 +154,8 @@ void applyingMatch(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(algorithm::match::name());
+    const std::string_view title = algorithm::match::name();
+    APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
@@ -179,30 +180,30 @@ void applyingMatch(const std::vector<std::string>& candidates)
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
-        const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.c_str()))
+        const auto& choice = candidates.at(index);
+        switch (utility::common::bkdrHash(choice.c_str()))
         {
             case abbrLitHash(MatchMethod::rabinKarp):
-                addTask(target, MatchMethod::rabinKarp);
+                addTask(choice, MatchMethod::rabinKarp);
                 break;
             case abbrLitHash(MatchMethod::knuthMorrisPratt):
-                addTask(target, MatchMethod::knuthMorrisPratt);
+                addTask(choice, MatchMethod::knuthMorrisPratt);
                 break;
             case abbrLitHash(MatchMethod::boyerMoore):
-                addTask(target, MatchMethod::boyerMoore);
+                addTask(choice, MatchMethod::boyerMoore);
                 break;
             case abbrLitHash(MatchMethod::horspool):
-                addTask(target, MatchMethod::horspool);
+                addTask(choice, MatchMethod::horspool);
                 break;
             case abbrLitHash(MatchMethod::sunday):
-                addTask(target, MatchMethod::sunday);
+                addTask(choice, MatchMethod::sunday);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
-    APP_ALGO_PRINT_TASK_TITLE_SCOPE_END(algorithm::match::name());
+    APP_ALGO_PRINT_TASK_TITLE_SCOPE_END(title);
 }
 
 namespace notation
@@ -244,8 +245,8 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(method).c_str(), err.what());
 }
 } // namespace notation
-//! @brief To apply notation-related methods.
-//! @param candidates - container for the candidate target methods
+//! @brief To apply notation-related methods that are mapped to choices.
+//! @param candidates - container for the candidate target choices
 void applyingNotation(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::notation;
@@ -255,7 +256,8 @@ void applyingNotation(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(algorithm::notation::name());
+    const std::string_view title = algorithm::notation::name();
+    APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
@@ -270,21 +272,21 @@ void applyingNotation(const std::vector<std::string>& candidates)
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
-        const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.c_str()))
+        const auto& choice = candidates.at(index);
+        switch (utility::common::bkdrHash(choice.c_str()))
         {
             case abbrLitHash(NotationMethod::prefix):
-                addTask(target, NotationMethod::prefix);
+                addTask(choice, NotationMethod::prefix);
                 break;
             case abbrLitHash(NotationMethod::postfix):
-                addTask(target, NotationMethod::postfix);
+                addTask(choice, NotationMethod::postfix);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
-    APP_ALGO_PRINT_TASK_TITLE_SCOPE_END(algorithm::notation::name());
+    APP_ALGO_PRINT_TASK_TITLE_SCOPE_END(title);
 }
 
 namespace optimal
@@ -355,8 +357,8 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(method).c_str(), err.what());
 }
 } // namespace optimal
-//! @brief To apply optimal-related methods.
-//! @param candidates - container for the candidate target methods
+//! @brief To apply optimal-related methods that are mapped to choices.
+//! @param candidates - container for the candidate target choices
 void applyingOptimal(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::optimal;
@@ -366,7 +368,8 @@ void applyingOptimal(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(algorithm::optimal::name());
+    const std::string_view title = algorithm::optimal::name();
+    APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
@@ -391,33 +394,33 @@ void applyingOptimal(const std::vector<std::string>& candidates)
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
-        const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.c_str()))
+        const auto& choice = candidates.at(index);
+        switch (utility::common::bkdrHash(choice.c_str()))
         {
             case abbrLitHash(OptimalMethod::gradient):
-                addTask(target, OptimalMethod::gradient);
+                addTask(choice, OptimalMethod::gradient);
                 break;
             case abbrLitHash(OptimalMethod::tabu):
-                addTask(target, OptimalMethod::tabu);
+                addTask(choice, OptimalMethod::tabu);
                 break;
             case abbrLitHash(OptimalMethod::annealing):
-                addTask(target, OptimalMethod::annealing);
+                addTask(choice, OptimalMethod::annealing);
                 break;
             case abbrLitHash(OptimalMethod::particle):
-                addTask(target, OptimalMethod::particle);
+                addTask(choice, OptimalMethod::particle);
                 break;
             case abbrLitHash(OptimalMethod::ant):
-                addTask(target, OptimalMethod::ant);
+                addTask(choice, OptimalMethod::ant);
                 break;
             case abbrLitHash(OptimalMethod::genetic):
-                addTask(target, OptimalMethod::genetic);
+                addTask(choice, OptimalMethod::genetic);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
-    APP_ALGO_PRINT_TASK_TITLE_SCOPE_END(algorithm::optimal::name());
+    APP_ALGO_PRINT_TASK_TITLE_SCOPE_END(title);
 }
 
 namespace search
@@ -480,8 +483,8 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(method).c_str(), err.what());
 }
 } // namespace search
-//! @brief To apply search-related methods.
-//! @param candidates - container for the candidate target methods
+//! @brief To apply search-related methods that are mapped to choices.
+//! @param candidates - container for the candidate target choices
 void applyingSearch(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::search;
@@ -491,7 +494,8 @@ void applyingSearch(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(algorithm::search::name());
+    const std::string_view title = algorithm::search::name();
+    APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
@@ -515,24 +519,24 @@ void applyingSearch(const std::vector<std::string>& candidates)
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
-        const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.c_str()))
+        const auto& choice = candidates.at(index);
+        switch (utility::common::bkdrHash(choice.c_str()))
         {
             case abbrLitHash(SearchMethod::binary):
-                addTask(target, SearchMethod::binary);
+                addTask(choice, SearchMethod::binary);
                 break;
             case abbrLitHash(SearchMethod::interpolation):
-                addTask(target, SearchMethod::interpolation);
+                addTask(choice, SearchMethod::interpolation);
                 break;
             case abbrLitHash(SearchMethod::fibonacci):
-                addTask(target, SearchMethod::fibonacci);
+                addTask(choice, SearchMethod::fibonacci);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
-    APP_ALGO_PRINT_TASK_TITLE_SCOPE_END(algorithm::search::name());
+    APP_ALGO_PRINT_TASK_TITLE_SCOPE_END(title);
 }
 
 namespace sort
@@ -605,8 +609,8 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(method).c_str(), err.what());
 }
 } // namespace sort
-//! @brief To apply sort-related methods.
-//! @param candidates - container for the candidate target methods
+//! @brief To apply sort-related methods that are mapped to choices.
+//! @param candidates - container for the candidate target choices
 void applyingSort(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::sort;
@@ -616,7 +620,8 @@ void applyingSort(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(algorithm::sort::name());
+    const std::string_view title = algorithm::sort::name();
+    APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
@@ -634,45 +639,45 @@ void applyingSort(const std::vector<std::string>& candidates)
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
-        const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.c_str()))
+        const auto& choice = candidates.at(index);
+        switch (utility::common::bkdrHash(choice.c_str()))
         {
             case abbrLitHash(SortMethod::bubble):
-                addTask(target, SortMethod::bubble);
+                addTask(choice, SortMethod::bubble);
                 break;
             case abbrLitHash(SortMethod::selection):
-                addTask(target, SortMethod::selection);
+                addTask(choice, SortMethod::selection);
                 break;
             case abbrLitHash(SortMethod::insertion):
-                addTask(target, SortMethod::insertion);
+                addTask(choice, SortMethod::insertion);
                 break;
             case abbrLitHash(SortMethod::shell):
-                addTask(target, SortMethod::shell);
+                addTask(choice, SortMethod::shell);
                 break;
             case abbrLitHash(SortMethod::merge):
-                addTask(target, SortMethod::merge);
+                addTask(choice, SortMethod::merge);
                 break;
             case abbrLitHash(SortMethod::quick):
-                addTask(target, SortMethod::quick);
+                addTask(choice, SortMethod::quick);
                 break;
             case abbrLitHash(SortMethod::heap):
-                addTask(target, SortMethod::heap);
+                addTask(choice, SortMethod::heap);
                 break;
             case abbrLitHash(SortMethod::counting):
-                addTask(target, SortMethod::counting);
+                addTask(choice, SortMethod::counting);
                 break;
             case abbrLitHash(SortMethod::bucket):
-                addTask(target, SortMethod::bucket);
+                addTask(choice, SortMethod::bucket);
                 break;
             case abbrLitHash(SortMethod::radix):
-                addTask(target, SortMethod::radix);
+                addTask(choice, SortMethod::radix);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
-    APP_ALGO_PRINT_TASK_TITLE_SCOPE_END(algorithm::sort::name());
+    APP_ALGO_PRINT_TASK_TITLE_SCOPE_END(title);
 }
 } // namespace application::app_algo
 

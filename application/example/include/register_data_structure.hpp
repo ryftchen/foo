@@ -178,16 +178,16 @@ extern bool present();
 extern void clear();
 } // namespace manage
 
-//! @brief Update choice.
+//! @brief Set choice.
 //! @tparam T - type of target instance
-//! @param target - target instance
+//! @param choice - target choice
 template <typename T>
-void updateChoice(const std::string& target);
-//! @brief Run choices.
+void setChoice(const std::string& choice);
+//! @brief Run candidates.
 //! @tparam T - type of target instance
-//! @param candidates - container for the candidate target instances
+//! @param candidates - container for the candidate target choices
 template <typename T>
-void runChoices(const std::vector<std::string>& candidates);
+void runCandidates(const std::vector<std::string>& candidates);
 
 //! @brief Register cache.
 namespace cache
@@ -195,9 +195,9 @@ namespace cache
 extern const char* version() noexcept;
 } // namespace cache
 template <>
-void updateChoice<CacheInstance>(const std::string& target);
+void setChoice<CacheInstance>(const std::string& choice);
 template <>
-void runChoices<CacheInstance>(const std::vector<std::string>& candidates);
+void runCandidates<CacheInstance>(const std::vector<std::string>& candidates);
 
 //! @brief Register filter.
 namespace filter
@@ -205,9 +205,9 @@ namespace filter
 extern const char* version() noexcept;
 } // namespace filter
 template <>
-void updateChoice<FilterInstance>(const std::string& target);
+void setChoice<FilterInstance>(const std::string& choice);
 template <>
-void runChoices<FilterInstance>(const std::vector<std::string>& candidates);
+void runCandidates<FilterInstance>(const std::vector<std::string>& candidates);
 
 //! @brief Register graph.
 namespace graph
@@ -215,9 +215,9 @@ namespace graph
 extern const char* version() noexcept;
 } // namespace graph
 template <>
-void updateChoice<GraphInstance>(const std::string& target);
+void setChoice<GraphInstance>(const std::string& choice);
 template <>
-void runChoices<GraphInstance>(const std::vector<std::string>& candidates);
+void runCandidates<GraphInstance>(const std::vector<std::string>& candidates);
 
 //! @brief Register heap.
 namespace heap
@@ -225,9 +225,9 @@ namespace heap
 extern const char* version() noexcept;
 } // namespace heap
 template <>
-void updateChoice<HeapInstance>(const std::string& target);
+void setChoice<HeapInstance>(const std::string& choice);
 template <>
-void runChoices<HeapInstance>(const std::vector<std::string>& candidates);
+void runCandidates<HeapInstance>(const std::vector<std::string>& candidates);
 
 //! @brief Register linear.
 namespace linear
@@ -235,9 +235,9 @@ namespace linear
 extern const char* version() noexcept;
 } // namespace linear
 template <>
-void updateChoice<LinearInstance>(const std::string& target);
+void setChoice<LinearInstance>(const std::string& choice);
 template <>
-void runChoices<LinearInstance>(const std::vector<std::string>& candidates);
+void runCandidates<LinearInstance>(const std::vector<std::string>& candidates);
 
 //! @brief Register tree.
 namespace tree
@@ -245,9 +245,9 @@ namespace tree
 extern const char* version() noexcept;
 } // namespace tree
 template <>
-void updateChoice<TreeInstance>(const std::string& target);
+void setChoice<TreeInstance>(const std::string& choice);
 template <>
-void runChoices<TreeInstance>(const std::vector<std::string>& candidates);
+void runCandidates<TreeInstance>(const std::vector<std::string>& candidates);
 } // namespace reg_ds
 } // namespace application
 

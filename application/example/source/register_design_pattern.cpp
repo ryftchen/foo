@@ -63,15 +63,15 @@ const char* version() noexcept
     return app_dp::behavioral::version;
 }
 } // namespace behavioral
-//! @brief Update behavioral-related choice.
-//! @param target - target instance
+//! @brief Set behavioral-related choice.
+//! @param choice - target choice
 template <>
-void updateChoice<BehavioralInstance>(const std::string& target)
+void setChoice<BehavioralInstance>(const std::string& choice)
 {
     constexpr auto category = Category::behavioral;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(BehavioralInstance::chainOfResponsibility):
             bits.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(chainOfResponsibility)));
@@ -108,13 +108,13 @@ void updateChoice<BehavioralInstance>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " instance: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run behavioral-related choices.
-//! @param candidates - container for the candidate target instances
+//! @brief Run behavioral-related candidates.
+//! @param candidates - container for the candidate target choices
 template <>
-void runChoices<BehavioralInstance>(const std::vector<std::string>& candidates)
+void runCandidates<BehavioralInstance>(const std::vector<std::string>& candidates)
 {
     app_dp::applyingBehavioral(candidates);
 }
@@ -128,15 +128,15 @@ const char* version() noexcept
     return app_dp::creational::version;
 }
 } // namespace creational
-//! @brief Update creational-related choice.
-//! @param target - target instance
+//! @brief Set creational-related choice.
+//! @param choice - target choice
 template <>
-void updateChoice<CreationalInstance>(const std::string& target)
+void setChoice<CreationalInstance>(const std::string& choice)
 {
     constexpr auto category = Category::creational;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(CreationalInstance::abstractFactory):
             bits.set(mappedPos<CreationalInstance>(MACRO_STRINGIFY(abstractFactory)));
@@ -155,13 +155,13 @@ void updateChoice<CreationalInstance>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " instance: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run creational-related choices.
-//! @param candidates - container for the candidate target instances
+//! @brief Run creational-related candidates.
+//! @param candidates - container for the candidate target choices
 template <>
-void runChoices<CreationalInstance>(const std::vector<std::string>& candidates)
+void runCandidates<CreationalInstance>(const std::vector<std::string>& candidates)
 {
     app_dp::applyingCreational(candidates);
 }
@@ -175,15 +175,15 @@ const char* version() noexcept
     return app_dp::structural::version;
 }
 } // namespace structural
-//! @brief Update structural-related choice.
-//! @param target - target instance
+//! @brief Set structural-related choice.
+//! @param choice - target choice
 template <>
-void updateChoice<StructuralInstance>(const std::string& target)
+void setChoice<StructuralInstance>(const std::string& choice)
 {
     constexpr auto category = Category::structural;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(StructuralInstance::adapter):
             bits.set(mappedPos<StructuralInstance>(MACRO_STRINGIFY(adapter)));
@@ -208,13 +208,13 @@ void updateChoice<StructuralInstance>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " instance: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run structural-related choices.
-//! @param candidates - container for the candidate target instances
+//! @brief Run structural-related candidates.
+//! @param candidates - container for the candidate target choices
 template <>
-void runChoices<StructuralInstance>(const std::vector<std::string>& candidates)
+void runCandidates<StructuralInstance>(const std::vector<std::string>& candidates)
 {
     app_dp::applyingStructural(candidates);
 }

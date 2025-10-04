@@ -132,8 +132,8 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(instance).c_str(), err.what());
 }
 } // namespace behavioral
-//! @brief To apply behavioral-related instances.
-//! @param candidates - container for the candidate target instances
+//! @brief To apply behavioral-related instances that are mapped to choices.
+//! @param candidates - container for the candidate target choices
 void applyingBehavioral(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::behavioral;
@@ -143,7 +143,8 @@ void applyingBehavioral(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(design_pattern::behavioral::name());
+    const std::string_view title = design_pattern::behavioral::name();
+    APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
@@ -156,48 +157,48 @@ void applyingBehavioral(const std::vector<std::string>& candidates)
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
-        const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.c_str()))
+        const auto& choice = candidates.at(index);
+        switch (utility::common::bkdrHash(choice.c_str()))
         {
             case abbrLitHash(BehavioralInstance::chainOfResponsibility):
-                addTask(target, BehavioralInstance::chainOfResponsibility);
+                addTask(choice, BehavioralInstance::chainOfResponsibility);
                 break;
             case abbrLitHash(BehavioralInstance::command):
-                addTask(target, BehavioralInstance::command);
+                addTask(choice, BehavioralInstance::command);
                 break;
             case abbrLitHash(BehavioralInstance::interpreter):
-                addTask(target, BehavioralInstance::interpreter);
+                addTask(choice, BehavioralInstance::interpreter);
                 break;
             case abbrLitHash(BehavioralInstance::iterator):
-                addTask(target, BehavioralInstance::iterator);
+                addTask(choice, BehavioralInstance::iterator);
                 break;
             case abbrLitHash(BehavioralInstance::mediator):
-                addTask(target, BehavioralInstance::mediator);
+                addTask(choice, BehavioralInstance::mediator);
                 break;
             case abbrLitHash(BehavioralInstance::memento):
-                addTask(target, BehavioralInstance::memento);
+                addTask(choice, BehavioralInstance::memento);
                 break;
             case abbrLitHash(BehavioralInstance::observer):
-                addTask(target, BehavioralInstance::observer);
+                addTask(choice, BehavioralInstance::observer);
                 break;
             case abbrLitHash(BehavioralInstance::state):
-                addTask(target, BehavioralInstance::state);
+                addTask(choice, BehavioralInstance::state);
                 break;
             case abbrLitHash(BehavioralInstance::strategy):
-                addTask(target, BehavioralInstance::strategy);
+                addTask(choice, BehavioralInstance::strategy);
                 break;
             case abbrLitHash(BehavioralInstance::templateMethod):
-                addTask(target, BehavioralInstance::templateMethod);
+                addTask(choice, BehavioralInstance::templateMethod);
                 break;
             case abbrLitHash(BehavioralInstance::visitor):
-                addTask(target, BehavioralInstance::visitor);
+                addTask(choice, BehavioralInstance::visitor);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
-    APP_DP_PRINT_TASK_TITLE_SCOPE_END(design_pattern::behavioral::name());
+    APP_DP_PRINT_TASK_TITLE_SCOPE_END(title);
 }
 
 namespace creational
@@ -244,8 +245,8 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(instance).c_str(), err.what());
 }
 } // namespace creational
-//! @brief To apply creational-related instances.
-//! @param candidates - container for the candidate target instances
+//! @brief To apply creational-related instances that are mapped to choices.
+//! @param candidates - container for the candidate target choices
 void applyingCreational(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::creational;
@@ -255,7 +256,8 @@ void applyingCreational(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(design_pattern::creational::name());
+    const std::string_view title = design_pattern::creational::name();
+    APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
@@ -268,30 +270,30 @@ void applyingCreational(const std::vector<std::string>& candidates)
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
-        const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.c_str()))
+        const auto& choice = candidates.at(index);
+        switch (utility::common::bkdrHash(choice.c_str()))
         {
             case abbrLitHash(CreationalInstance::abstractFactory):
-                addTask(target, CreationalInstance::abstractFactory);
+                addTask(choice, CreationalInstance::abstractFactory);
                 break;
             case abbrLitHash(CreationalInstance::builder):
-                addTask(target, CreationalInstance::builder);
+                addTask(choice, CreationalInstance::builder);
                 break;
             case abbrLitHash(CreationalInstance::factoryMethod):
-                addTask(target, CreationalInstance::factoryMethod);
+                addTask(choice, CreationalInstance::factoryMethod);
                 break;
             case abbrLitHash(CreationalInstance::prototype):
-                addTask(target, CreationalInstance::prototype);
+                addTask(choice, CreationalInstance::prototype);
                 break;
             case abbrLitHash(CreationalInstance::singleton):
-                addTask(target, CreationalInstance::singleton);
+                addTask(choice, CreationalInstance::singleton);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
-    APP_DP_PRINT_TASK_TITLE_SCOPE_END(design_pattern::creational::name());
+    APP_DP_PRINT_TASK_TITLE_SCOPE_END(title);
 }
 
 namespace structural
@@ -344,8 +346,8 @@ catch (const std::exception& err)
     LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(instance).c_str(), err.what());
 }
 } // namespace structural
-//! @brief To apply structural-related instances.
-//! @param candidates - container for the candidate target instances
+//! @brief To apply structural-related instances that are mapped to choices.
+//! @param candidates - container for the candidate target choices
 void applyingStructural(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::structural;
@@ -355,7 +357,8 @@ void applyingStructural(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(design_pattern::structural::name());
+    const std::string_view title = design_pattern::structural::name();
+    APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
@@ -368,36 +371,36 @@ void applyingStructural(const std::vector<std::string>& candidates)
     for (const auto index :
          std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
     {
-        const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.c_str()))
+        const auto& choice = candidates.at(index);
+        switch (utility::common::bkdrHash(choice.c_str()))
         {
             case abbrLitHash(StructuralInstance::adapter):
-                addTask(target, StructuralInstance::adapter);
+                addTask(choice, StructuralInstance::adapter);
                 break;
             case abbrLitHash(StructuralInstance::bridge):
-                addTask(target, StructuralInstance::bridge);
+                addTask(choice, StructuralInstance::bridge);
                 break;
             case abbrLitHash(StructuralInstance::composite):
-                addTask(target, StructuralInstance::composite);
+                addTask(choice, StructuralInstance::composite);
                 break;
             case abbrLitHash(StructuralInstance::decorator):
-                addTask(target, StructuralInstance::decorator);
+                addTask(choice, StructuralInstance::decorator);
                 break;
             case abbrLitHash(StructuralInstance::facade):
-                addTask(target, StructuralInstance::facade);
+                addTask(choice, StructuralInstance::facade);
                 break;
             case abbrLitHash(StructuralInstance::flyweight):
-                addTask(target, StructuralInstance::flyweight);
+                addTask(choice, StructuralInstance::flyweight);
                 break;
             case abbrLitHash(StructuralInstance::proxy):
-                addTask(target, StructuralInstance::proxy);
+                addTask(choice, StructuralInstance::proxy);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
-    APP_DP_PRINT_TASK_TITLE_SCOPE_END(design_pattern::structural::name());
+    APP_DP_PRINT_TASK_TITLE_SCOPE_END(title);
 }
 } // namespace application::app_dp
 

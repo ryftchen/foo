@@ -30,7 +30,6 @@ extern const char* version() noexcept;
 constexpr std::size_t bkdrHashSeed = 131;
 //! @brief Hash mask for BKDR hash function.
 constexpr std::size_t bkdrHashMask = 0x7FFFFFFF;
-extern std::size_t bkdrHash(const char* str) noexcept;
 //! @brief The Brian-Kernighan Dennis-Ritchie hash function (recursive).
 //! @param str - input data
 //! @param hash - recursive hash value
@@ -53,6 +52,7 @@ constexpr std::size_t operator""_bkdrHash(const char* const str) noexcept
 {
     return bkdrHashRecursive(str);
 }
+extern std::size_t bkdrHash(const char* str) noexcept;
 
 extern std::string base64Encode(const std::string_view data);
 extern std::string base64Decode(const std::string_view data);
