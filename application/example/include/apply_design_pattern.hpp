@@ -220,34 +220,6 @@ private:
         return process;
     }
 };
-
-//! @brief Pattern of behavioral.
-class BehavioralPattern
-{
-public:
-    //! @brief The chain of responsibility instance.
-    static void chainOfResponsibilityInstance();
-    //! @brief The command instance.
-    static void commandInstance();
-    //! @brief The interpreter instance.
-    static void interpreterInstance();
-    //! @brief The iterator instance.
-    static void iteratorInstance();
-    //! @brief The mediator instance.
-    static void mediatorInstance();
-    //! @brief The memento instance.
-    static void mementoInstance();
-    //! @brief The observer instance.
-    static void observerInstance();
-    //! @brief The state instance.
-    static void stateInstance();
-    //! @brief The strategy instance.
-    static void strategyInstance();
-    //! @brief The template method instance.
-    static void templateMethodInstance();
-    //! @brief The visitor instance.
-    static void visitorInstance();
-};
 } // namespace behavioral
 extern void applyingBehavioral(const std::vector<std::string>& candidates);
 
@@ -361,22 +333,6 @@ private:
 
         return process;
     }
-};
-
-//! @brief Pattern of creational.
-class CreationalPattern
-{
-public:
-    //! @brief The abstract factory instance.
-    static void abstractFactoryInstance();
-    //! @brief The builder instance.
-    static void builderInstance();
-    //! @brief The factory method instance.
-    static void factoryMethodInstance();
-    //! @brief The prototype instance.
-    static void prototypeInstance();
-    //! @brief The singleton instance.
-    static void singletonInstance();
 };
 } // namespace creational
 extern void applyingCreational(const std::vector<std::string>& candidates);
@@ -498,26 +454,6 @@ private:
         return process;
     }
     // NOLINTEND(google-build-using-namespace)
-};
-
-//! @brief Pattern of structural.
-class StructuralPattern
-{
-public:
-    //! @brief The adapter instance.
-    static void adapterInstance();
-    //! @brief The bridge instance.
-    static void bridgeInstance();
-    //! @brief The composite instance.
-    static void compositeInstance();
-    //! @brief The decorator instance.
-    static void decoratorInstance();
-    //! @brief The facade instance.
-    static void facadeInstance();
-    //! @brief The flyweight instance.
-    static void flyweightInstance();
-    //! @brief The proxy instance.
-    static void proxyInstance();
 };
 } // namespace structural
 extern void applyingStructural(const std::vector<std::string>& candidates);

@@ -67,28 +67,6 @@ private:
     //! @brief Second operand for elementary arithmetic.
     const std::int32_t operand2 : 17 {0};
 };
-
-//! @brief Calculation of arithmetic.
-class ArithmeticCalculation
-{
-public:
-    //! @brief The addition method.
-    //! @param augend - augend of addition
-    //! @param addend - addend of addition
-    static void additionMethod(const std::int32_t augend, const std::int32_t addend);
-    //! @brief The subtraction method.
-    //! @param minuend - minuend of subtraction
-    //! @param subtrahend - subtrahend of subtraction
-    static void subtractionMethod(const std::int32_t minuend, const std::int32_t subtrahend);
-    //! @brief The multiplication method.
-    //! @param multiplier - multiplier of multiplication
-    //! @param multiplicand - multiplicand of multiplication
-    static void multiplicationMethod(const std::int32_t multiplier, const std::int32_t multiplicand);
-    //! @brief The division method.
-    //! @param dividend - dividend of division
-    //! @param divisor - divisor of division
-    static void divisionMethod(const std::int32_t dividend, const std::int32_t divisor);
-};
 } // namespace arithmetic
 extern void applyingArithmetic(const std::vector<std::string>& candidates);
 
@@ -171,20 +149,6 @@ private:
     //! @brief Second number.
     const std::int32_t number2{0};
 };
-
-//! @brief Calculation of divisor.
-class DivisorCalculation
-{
-public:
-    //! @brief The Euclidean method.
-    //! @param a - first integer
-    //! @param b - second integer
-    static void euclideanMethod(const std::int32_t a, const std::int32_t b);
-    //! @brief The Stein method.
-    //! @param a - first integer
-    //! @param b - second integer
-    static void steinMethod(const std::int32_t a, const std::int32_t b);
-};
 } // namespace divisor
 extern void applyingDivisor(const std::vector<std::string>& candidates);
 
@@ -197,29 +161,29 @@ const char* const version = numeric::integral::version();
 //! @brief Alias for the target expression.
 using Expression = std::function<double(const double)>;
 //! @brief Wrapper for the target expression.
-class ExprBase
+class ExprIntf
 {
 public:
-    //! @brief Construct a new ExprBase object.
-    ExprBase() = default;
-    //! @brief Destroy the ExprBase object.
-    virtual ~ExprBase() = default;
-    //! @brief Construct a new ExprBase object.
-    ExprBase(const ExprBase&) = default;
-    //! @brief Construct a new ExprBase object.
-    ExprBase(ExprBase&&) noexcept = default;
-    //! @brief The operator (=) overloading of ExprBase class.
-    //! @return reference of the ExprBase object
-    ExprBase& operator=(const ExprBase&) = default;
-    //! @brief The operator (=) overloading of ExprBase class.
-    //! @return reference of the ExprBase object
-    ExprBase& operator=(ExprBase&&) noexcept = default;
+    //! @brief Construct a new ExprIntf object.
+    ExprIntf() = default;
+    //! @brief Destroy the ExprIntf object.
+    virtual ~ExprIntf() = default;
+    //! @brief Construct a new ExprIntf object.
+    ExprIntf(const ExprIntf&) = default;
+    //! @brief Construct a new ExprIntf object.
+    ExprIntf(ExprIntf&&) noexcept = default;
+    //! @brief The operator (=) overloading of ExprIntf class.
+    //! @return reference of the ExprIntf object
+    ExprIntf& operator=(const ExprIntf&) = default;
+    //! @brief The operator (=) overloading of ExprIntf class.
+    //! @return reference of the ExprIntf object
+    ExprIntf& operator=(ExprIntf&&) noexcept = default;
 
-    //! @brief The operator (()) overloading of ExprBase class.
+    //! @brief The operator (()) overloading of ExprIntf class.
     //! @param x - independent variable
     //! @return dependent variable
     virtual double operator()(const double x) const = 0;
-    //! @brief The operator (Expression) overloading of ExprBase class.
+    //! @brief The operator (Expression) overloading of ExprIntf class.
     //! @return Expression object
     virtual explicit operator Expression() const
     {
@@ -231,7 +195,7 @@ public:
 namespace input
 {
 //! @brief Cylindrical Bessel.
-class CylindricalBessel : public ExprBase
+class CylindricalBessel : public ExprIntf
 {
 public:
     //! @brief The operator (()) overloading of CylindricalBessel class.
@@ -283,37 +247,6 @@ private:
     const double range1{0.0};
     //! @brief Upper endpoint.
     const double range2{0.0};
-};
-
-//! @brief Calculation of integral.
-class IntegralCalculation
-{
-public:
-    //! @brief The trapezoidal method.
-    //! @param expr - target expression
-    //! @param lower - lower endpoint
-    //! @param upper - upper endpoint
-    static void trapezoidalMethod(const Expression& expr, const double lower, const double upper);
-    //! @brief The adaptive Simpson's 1/3 method.
-    //! @param expr - target expression
-    //! @param lower - lower endpoint
-    //! @param upper - upper endpoint
-    static void adaptiveSimpsonMethod(const Expression& expr, const double lower, const double upper);
-    //! @brief The Romberg method.
-    //! @param expr - target expression
-    //! @param lower - lower endpoint
-    //! @param upper - upper endpoint
-    static void rombergMethod(const Expression& expr, const double lower, const double upper);
-    //! @brief The Gauss-Legendre's 5-points method.
-    //! @param expr - target expression
-    //! @param lower - lower endpoint
-    //! @param upper - upper endpoint
-    static void gaussLegendreMethod(const Expression& expr, const double lower, const double upper);
-    //! @brief The Monte-Carlo method.
-    //! @param expr - target expression
-    //! @param lower - lower endpoint
-    //! @param upper - upper endpoint
-    static void monteCarloMethod(const Expression& expr, const double lower, const double upper);
 };
 } // namespace integral
 extern void applyingIntegral(const std::vector<std::string>& candidates);
@@ -387,18 +320,6 @@ public:
 private:
     //! @brief Upper bound.
     const std::uint32_t upperBound{0};
-};
-
-//! @brief Calculation of prime.
-class PrimeCalculation
-{
-public:
-    //! @brief The Eratosthenes method.
-    //! @param max - maximum positive integer
-    static void eratosthenesMethod(const std::uint32_t max);
-    //! @brief The Euler method.
-    //! @param max - maximum positive integer
-    static void eulerMethod(const std::uint32_t max);
 };
 } // namespace prime
 extern void applyingPrime(const std::vector<std::string>& candidates);

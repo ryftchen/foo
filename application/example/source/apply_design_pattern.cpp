@@ -19,16 +19,16 @@
 #include "utility/include/currying.hpp"
 
 //! @brief Title of printing when design pattern tasks are beginning.
-#define APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(category)                                                         \
-    std::osyncstream(std::cout) << "\nDESIGN PATTERN TASK: " << std::setiosflags(std::ios_base::left)         \
-                                << std::setfill('.') << std::setw(50) << (category) << "BEGIN"                \
+#define APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(title)                                                            \
+    std::osyncstream(std::cout) << "\nAPPLY DESIGN PATTERN: " << std::setiosflags(std::ios_base::left)        \
+                                << std::setfill('.') << std::setw(50) << (title) << "BEGIN"                   \
                                 << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl; \
     {
 //! @brief Title of printing when design pattern tasks are ending.
-#define APP_DP_PRINT_TASK_TITLE_SCOPE_END(category)                                                     \
+#define APP_DP_PRINT_TASK_TITLE_SCOPE_END(title)                                                        \
     }                                                                                                   \
-    std::osyncstream(std::cout) << "\nDESIGN PATTERN TASK: " << std::setiosflags(std::ios_base::left)   \
-                                << std::setfill('.') << std::setw(50) << (category) << "END"            \
+    std::osyncstream(std::cout) << "\nAPPLY DESIGN PATTERN: " << std::setiosflags(std::ios_base::left)  \
+                                << std::setfill('.') << std::setw(50) << (title) << "END"               \
                                 << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << '\n' \
                                 << std::endl;
 
@@ -75,130 +75,61 @@ namespace behavioral
 //! @brief Show the contents of the behavioral result.
 //! @param instance - used behavioral instance
 //! @param result - behavioral result
-static void showResult(const BehavioralInstance instance, const std::string& result)
+static void display(const BehavioralInstance instance, const std::string& result)
 {
     std::printf("\n==> %-21s Instance <==\n%s", customTitle(instance).c_str(), result.c_str());
 }
 
-void BehavioralPattern::chainOfResponsibilityInstance()
+//! @brief Pattern of behavioral.
+//! @param instance - used behavioral instance
+static void pattern(const BehavioralInstance instance)
 try
 {
-    const auto output = Showcase().chainOfResponsibility();
-    showResult(BehavioralInstance::chainOfResponsibility, output.str());
+    std::ostringstream result{};
+    switch (instance)
+    {
+        static_assert(utility::common::isStatelessClass<Showcase>());
+        case BehavioralInstance::chainOfResponsibility:
+            result = Showcase().chainOfResponsibility();
+            break;
+        case BehavioralInstance::command:
+            result = Showcase().command();
+            break;
+        case BehavioralInstance::interpreter:
+            result = Showcase().interpreter();
+            break;
+        case BehavioralInstance::iterator:
+            result = Showcase().iterator();
+            break;
+        case BehavioralInstance::mediator:
+            result = Showcase().mediator();
+            break;
+        case BehavioralInstance::memento:
+            result = Showcase().memento();
+            break;
+        case BehavioralInstance::observer:
+            result = Showcase().observer();
+            break;
+        case BehavioralInstance::state:
+            result = Showcase().state();
+            break;
+        case BehavioralInstance::strategy:
+            result = Showcase().strategy();
+            break;
+        case BehavioralInstance::templateMethod:
+            result = Showcase().templateMethod();
+            break;
+        case BehavioralInstance::visitor:
+            result = Showcase().visitor();
+            break;
+        default:
+            return;
+    }
+    display(instance, result.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
-}
-
-void BehavioralPattern::commandInstance()
-try
-{
-    const auto output = Showcase().command();
-    showResult(BehavioralInstance::command, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
-}
-
-void BehavioralPattern::interpreterInstance()
-try
-{
-    const auto output = Showcase().interpreter();
-    showResult(BehavioralInstance::interpreter, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
-}
-
-void BehavioralPattern::iteratorInstance()
-try
-{
-    const auto output = Showcase().iterator();
-    showResult(BehavioralInstance::iterator, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
-}
-
-void BehavioralPattern::mediatorInstance()
-try
-{
-    const auto output = Showcase().mediator();
-    showResult(BehavioralInstance::mediator, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
-}
-
-void BehavioralPattern::mementoInstance()
-try
-{
-    const auto output = Showcase().memento();
-    showResult(BehavioralInstance::memento, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
-}
-
-void BehavioralPattern::observerInstance()
-try
-{
-    const auto output = Showcase().observer();
-    showResult(BehavioralInstance::observer, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
-}
-
-void BehavioralPattern::stateInstance()
-try
-{
-    const auto output = Showcase().state();
-    showResult(BehavioralInstance::state, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
-}
-
-void BehavioralPattern::strategyInstance()
-try
-{
-    const auto output = Showcase().strategy();
-    showResult(BehavioralInstance::strategy, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
-}
-
-void BehavioralPattern::templateMethodInstance()
-try
-{
-    const auto output = Showcase().templateMethod();
-    showResult(BehavioralInstance::templateMethod, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
-}
-
-void BehavioralPattern::visitorInstance()
-try
-{
-    const auto output = Showcase().visitor();
-    showResult(BehavioralInstance::visitor, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(instance).c_str(), err.what());
 }
 } // namespace behavioral
 //! @brief To apply behavioral-related instances.
@@ -212,13 +143,13 @@ void applyingBehavioral(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
+    APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(design_pattern::behavioral::name());
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, void (*targetInstance)())
-    { allocatedJob->enqueue(taskNamer(subTask), targetInstance); };
+    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const BehavioralInstance instance)
+    { allocatedJob->enqueue(taskNamer(subTask), &behavioral::pattern, instance); };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " pattern:" << std::endl;
@@ -228,47 +159,45 @@ void applyingBehavioral(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
-            using behavioral::BehavioralPattern;
-            static_assert(utility::common::isStatelessClass<BehavioralPattern>());
             case abbrLitHash(BehavioralInstance::chainOfResponsibility):
-                addTask(target, &BehavioralPattern::chainOfResponsibilityInstance);
+                addTask(target, BehavioralInstance::chainOfResponsibility);
                 break;
             case abbrLitHash(BehavioralInstance::command):
-                addTask(target, &BehavioralPattern::commandInstance);
+                addTask(target, BehavioralInstance::command);
                 break;
             case abbrLitHash(BehavioralInstance::interpreter):
-                addTask(target, &BehavioralPattern::interpreterInstance);
+                addTask(target, BehavioralInstance::interpreter);
                 break;
             case abbrLitHash(BehavioralInstance::iterator):
-                addTask(target, &BehavioralPattern::iteratorInstance);
+                addTask(target, BehavioralInstance::iterator);
                 break;
             case abbrLitHash(BehavioralInstance::mediator):
-                addTask(target, &BehavioralPattern::mediatorInstance);
+                addTask(target, BehavioralInstance::mediator);
                 break;
             case abbrLitHash(BehavioralInstance::memento):
-                addTask(target, &BehavioralPattern::mementoInstance);
+                addTask(target, BehavioralInstance::memento);
                 break;
             case abbrLitHash(BehavioralInstance::observer):
-                addTask(target, &BehavioralPattern::observerInstance);
+                addTask(target, BehavioralInstance::observer);
                 break;
             case abbrLitHash(BehavioralInstance::state):
-                addTask(target, &BehavioralPattern::stateInstance);
+                addTask(target, BehavioralInstance::state);
                 break;
             case abbrLitHash(BehavioralInstance::strategy):
-                addTask(target, &BehavioralPattern::strategyInstance);
+                addTask(target, BehavioralInstance::strategy);
                 break;
             case abbrLitHash(BehavioralInstance::templateMethod):
-                addTask(target, &BehavioralPattern::templateMethodInstance);
+                addTask(target, BehavioralInstance::templateMethod);
                 break;
             case abbrLitHash(BehavioralInstance::visitor):
-                addTask(target, &BehavioralPattern::visitorInstance);
+                addTask(target, BehavioralInstance::visitor);
                 break;
             default:
                 throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
         }
     }
 
-    APP_DP_PRINT_TASK_TITLE_SCOPE_END(category);
+    APP_DP_PRINT_TASK_TITLE_SCOPE_END(design_pattern::behavioral::name());
 }
 
 namespace creational
@@ -276,64 +205,43 @@ namespace creational
 //! @brief Show the contents of the creational result.
 //! @param instance - used creational instance
 //! @param result - creational result
-static void showResult(const CreationalInstance instance, const std::string& result)
+static void display(const CreationalInstance instance, const std::string& result)
 {
     std::printf("\n==> %-15s Instance <==\n%s", customTitle(instance).c_str(), result.c_str());
 }
 
-void CreationalPattern::abstractFactoryInstance()
+//! @brief Pattern of creational.
+//! @param instance - used creational instance
+static void pattern(const CreationalInstance instance)
 try
 {
-    const auto output = Showcase().abstractFactory();
-    showResult(CreationalInstance::abstractFactory, output.str());
+    std::ostringstream result{};
+    switch (instance)
+    {
+        static_assert(utility::common::isStatelessClass<Showcase>());
+        case CreationalInstance::abstractFactory:
+            result = Showcase().abstractFactory();
+            break;
+        case CreationalInstance::builder:
+            result = Showcase().builder();
+            break;
+        case CreationalInstance::factoryMethod:
+            result = Showcase().factoryMethod();
+            break;
+        case CreationalInstance::prototype:
+            result = Showcase().prototype();
+            break;
+        case CreationalInstance::singleton:
+            result = Showcase().singleton();
+            break;
+        default:
+            return;
+    }
+    display(instance, result.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
-}
-
-void CreationalPattern::builderInstance()
-try
-{
-    const auto output = Showcase().builder();
-    showResult(CreationalInstance::builder, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
-}
-
-void CreationalPattern::factoryMethodInstance()
-try
-{
-    const auto output = Showcase().factoryMethod();
-    showResult(CreationalInstance::factoryMethod, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
-}
-
-void CreationalPattern::prototypeInstance()
-try
-{
-    const auto output = Showcase().prototype();
-    showResult(CreationalInstance::prototype, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
-}
-
-void CreationalPattern::singletonInstance()
-try
-{
-    const auto output = Showcase().singleton();
-    showResult(CreationalInstance::singleton, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(instance).c_str(), err.what());
 }
 } // namespace creational
 //! @brief To apply creational-related instances.
@@ -347,13 +255,13 @@ void applyingCreational(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
+    APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(design_pattern::creational::name());
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, void (*targetInstance)())
-    { allocatedJob->enqueue(taskNamer(subTask), targetInstance); };
+    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const CreationalInstance instance)
+    { allocatedJob->enqueue(taskNamer(subTask), &creational::pattern, instance); };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " pattern:" << std::endl;
@@ -363,29 +271,27 @@ void applyingCreational(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
-            using creational::CreationalPattern;
-            static_assert(utility::common::isStatelessClass<CreationalPattern>());
             case abbrLitHash(CreationalInstance::abstractFactory):
-                addTask(target, &CreationalPattern::abstractFactoryInstance);
+                addTask(target, CreationalInstance::abstractFactory);
                 break;
             case abbrLitHash(CreationalInstance::builder):
-                addTask(target, &CreationalPattern::builderInstance);
+                addTask(target, CreationalInstance::builder);
                 break;
             case abbrLitHash(CreationalInstance::factoryMethod):
-                addTask(target, &CreationalPattern::factoryMethodInstance);
+                addTask(target, CreationalInstance::factoryMethod);
                 break;
             case abbrLitHash(CreationalInstance::prototype):
-                addTask(target, &CreationalPattern::prototypeInstance);
+                addTask(target, CreationalInstance::prototype);
                 break;
             case abbrLitHash(CreationalInstance::singleton):
-                addTask(target, &CreationalPattern::singletonInstance);
+                addTask(target, CreationalInstance::singleton);
                 break;
             default:
                 throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
         }
     }
 
-    APP_DP_PRINT_TASK_TITLE_SCOPE_END(category);
+    APP_DP_PRINT_TASK_TITLE_SCOPE_END(design_pattern::creational::name());
 }
 
 namespace structural
@@ -393,86 +299,49 @@ namespace structural
 //! @brief Show the contents of the structural result.
 //! @param instance - used structural instance
 //! @param result - structural result
-static void showResult(const StructuralInstance instance, const std::string& result)
+static void display(const StructuralInstance instance, const std::string& result)
 {
     std::printf("\n==> %-9s Instance <==\n%s", customTitle(instance).c_str(), result.c_str());
 }
 
-void StructuralPattern::adapterInstance()
+//! @brief Pattern of structural.
+//! @param instance - used structural instance
+static void pattern(const StructuralInstance instance)
 try
 {
-    const auto output = Showcase().adapter();
-    showResult(StructuralInstance::adapter, output.str());
+    std::ostringstream result{};
+    switch (instance)
+    {
+        static_assert(utility::common::isStatelessClass<Showcase>());
+        case StructuralInstance::adapter:
+            result = Showcase().adapter();
+            break;
+        case StructuralInstance::bridge:
+            result = Showcase().bridge();
+            break;
+        case StructuralInstance::composite:
+            result = Showcase().composite();
+            break;
+        case StructuralInstance::decorator:
+            result = Showcase().decorator();
+            break;
+        case StructuralInstance::facade:
+            result = Showcase().facade();
+            break;
+        case StructuralInstance::flyweight:
+            result = Showcase().flyweight();
+            break;
+        case StructuralInstance::proxy:
+            result = Showcase().proxy();
+            break;
+        default:
+            return;
+    }
+    display(instance, result.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
-}
-
-void StructuralPattern::bridgeInstance()
-try
-{
-    const auto output = Showcase().bridge();
-    showResult(StructuralInstance::bridge, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
-}
-
-void StructuralPattern::compositeInstance()
-try
-{
-    const auto output = Showcase().composite();
-    showResult(StructuralInstance::composite, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
-}
-
-void StructuralPattern::decoratorInstance()
-try
-{
-    const auto output = Showcase().decorator();
-    showResult(StructuralInstance::decorator, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
-}
-
-void StructuralPattern::facadeInstance()
-try
-{
-    const auto output = Showcase().facade();
-    showResult(StructuralInstance::facade, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
-}
-
-void StructuralPattern::flyweightInstance()
-try
-{
-    const auto output = Showcase().flyweight();
-    showResult(StructuralInstance::flyweight, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
-}
-
-void StructuralPattern::proxyInstance()
-try
-{
-    const auto output = Showcase().proxy();
-    showResult(StructuralInstance::proxy, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in pattern (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(instance).c_str(), err.what());
 }
 } // namespace structural
 //! @brief To apply structural-related instances.
@@ -486,13 +355,13 @@ void applyingStructural(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
+    APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(design_pattern::structural::name());
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, void (*targetInstance)())
-    { allocatedJob->enqueue(taskNamer(subTask), targetInstance); };
+    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const StructuralInstance instance)
+    { allocatedJob->enqueue(taskNamer(subTask), &structural::pattern, instance); };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " pattern:" << std::endl;
@@ -502,35 +371,33 @@ void applyingStructural(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
-            using structural::StructuralPattern;
-            static_assert(utility::common::isStatelessClass<StructuralPattern>());
             case abbrLitHash(StructuralInstance::adapter):
-                addTask(target, &StructuralPattern::adapterInstance);
+                addTask(target, StructuralInstance::adapter);
                 break;
             case abbrLitHash(StructuralInstance::bridge):
-                addTask(target, &StructuralPattern::bridgeInstance);
+                addTask(target, StructuralInstance::bridge);
                 break;
             case abbrLitHash(StructuralInstance::composite):
-                addTask(target, &StructuralPattern::compositeInstance);
+                addTask(target, StructuralInstance::composite);
                 break;
             case abbrLitHash(StructuralInstance::decorator):
-                addTask(target, &StructuralPattern::decoratorInstance);
+                addTask(target, StructuralInstance::decorator);
                 break;
             case abbrLitHash(StructuralInstance::facade):
-                addTask(target, &StructuralPattern::facadeInstance);
+                addTask(target, StructuralInstance::facade);
                 break;
             case abbrLitHash(StructuralInstance::flyweight):
-                addTask(target, &StructuralPattern::flyweightInstance);
+                addTask(target, StructuralInstance::flyweight);
                 break;
             case abbrLitHash(StructuralInstance::proxy):
-                addTask(target, &StructuralPattern::proxyInstance);
+                addTask(target, StructuralInstance::proxy);
                 break;
             default:
                 throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
         }
     }
 
-    APP_DP_PRINT_TASK_TITLE_SCOPE_END(category);
+    APP_DP_PRINT_TASK_TITLE_SCOPE_END(design_pattern::structural::name());
 }
 } // namespace application::app_dp
 

@@ -133,32 +133,6 @@ public:
     std::bitset<Bottom<CreationalInstance>::value> creationalOpts;
     //! @brief Bit flags for managing structural instances.
     std::bitset<Bottom<StructuralInstance>::value> structuralOpts;
-
-protected:
-    //! @brief The operator (<<) overloading of the Category enum.
-    //! @param os - output stream object
-    //! @param cat - current category
-    //! @return reference of the output stream object
-    friend std::ostream& operator<<(std::ostream& os, const Category cat)
-    {
-        switch (cat)
-        {
-            case Category::behavioral:
-                os << "BEHAVIORAL";
-                break;
-            case Category::creational:
-                os << "CREATIONAL";
-                break;
-            case Category::structural:
-                os << "STRUCTURAL";
-                break;
-            default:
-                os << "UNKNOWN (" << static_cast<std::underlying_type_t<Category>>(cat) << ')';
-                break;
-        }
-
-        return os;
-    }
 };
 
 //! @brief Manage the design pattern choices.

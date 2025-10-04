@@ -10,9 +10,9 @@
 #include "application/example/include/apply_design_pattern.hpp"
 
 //! @brief Title of printing for design pattern task tests.
-#define TST_DP_PRINT_TASK_TITLE(category, state)                                                    \
+#define TST_DP_PRINT_TASK_TITLE(title, state)                                                       \
     std::osyncstream(std::cout) << "TEST DESIGN PATTERN: " << std::setiosflags(std::ios_base::left) \
-                                << std::setfill('.') << std::setw(50) << (category) << (state)      \
+                                << std::setfill('.') << std::setw(50) << (title) << (state)         \
                                 << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
 
 //! @brief The test module.
@@ -28,10 +28,12 @@ class BehavioralTestBase : public ::testing::Test
 {
 protected:
     //! @brief Set up the test case.
-    static void SetUpTestSuite() { TST_DP_PRINT_TASK_TITLE("BEHAVIORAL", "BEGIN"); }
+    static void SetUpTestSuite() { TST_DP_PRINT_TASK_TITLE(title, "BEGIN"); }
     //! @brief Tear down the test case.
-    static void TearDownTestSuite() { TST_DP_PRINT_TASK_TITLE("BEHAVIORAL", "END"); }
+    static void TearDownTestSuite() { TST_DP_PRINT_TASK_TITLE(title, "END"); }
 
+    //! @brief Test title.
+    static const std::string_view title;
     //! @brief System under test.
     [[no_unique_address]] const behavioral::Showcase sut{};
     // clang-format off
@@ -119,9 +121,10 @@ protected:
     };
     // clang-format on
 };
+const std::string_view BehavioralTestBase::title = design_pattern::behavioral::name();
 
 //! @brief Test for the chain of responsibility instance in the pattern of behavioral.
-TEST_F(BehavioralTestBase, chainOfResponsibilityInstance)
+TEST_F(BehavioralTestBase, ChainOfResponsibilityInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.chainOfResponsibility());
@@ -129,7 +132,7 @@ TEST_F(BehavioralTestBase, chainOfResponsibilityInstance)
 }
 
 //! @brief Test for the command instance in the pattern of behavioral.
-TEST_F(BehavioralTestBase, commandInstance)
+TEST_F(BehavioralTestBase, CommandInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.command());
@@ -137,7 +140,7 @@ TEST_F(BehavioralTestBase, commandInstance)
 }
 
 //! @brief Test for the interpreter instance in the pattern of behavioral.
-TEST_F(BehavioralTestBase, interpreterInstance)
+TEST_F(BehavioralTestBase, InterpreterInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.interpreter());
@@ -145,7 +148,7 @@ TEST_F(BehavioralTestBase, interpreterInstance)
 }
 
 //! @brief Test for the iterator instance in the pattern of behavioral.
-TEST_F(BehavioralTestBase, iteratorInstance)
+TEST_F(BehavioralTestBase, IteratorInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.iterator());
@@ -153,7 +156,7 @@ TEST_F(BehavioralTestBase, iteratorInstance)
 }
 
 //! @brief Test for the mediator instance in the pattern of behavioral.
-TEST_F(BehavioralTestBase, mediatorInstance)
+TEST_F(BehavioralTestBase, MediatorInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.mediator());
@@ -161,7 +164,7 @@ TEST_F(BehavioralTestBase, mediatorInstance)
 }
 
 //! @brief Test for the memento instance in the pattern of behavioral.
-TEST_F(BehavioralTestBase, mementoInstance)
+TEST_F(BehavioralTestBase, MementoInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.memento());
@@ -169,7 +172,7 @@ TEST_F(BehavioralTestBase, mementoInstance)
 }
 
 //! @brief Test for the observer instance in the pattern of behavioral.
-TEST_F(BehavioralTestBase, observerInstance)
+TEST_F(BehavioralTestBase, ObserverInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.observer());
@@ -177,7 +180,7 @@ TEST_F(BehavioralTestBase, observerInstance)
 }
 
 //! @brief Test for the state instance in the pattern of behavioral.
-TEST_F(BehavioralTestBase, stateInstance)
+TEST_F(BehavioralTestBase, StateInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.state());
@@ -185,7 +188,7 @@ TEST_F(BehavioralTestBase, stateInstance)
 }
 
 //! @brief Test for the strategy instance in the pattern of behavioral.
-TEST_F(BehavioralTestBase, strategyInstance)
+TEST_F(BehavioralTestBase, StrategyInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.strategy());
@@ -193,7 +196,7 @@ TEST_F(BehavioralTestBase, strategyInstance)
 }
 
 //! @brief Test for the template method instance in the pattern of behavioral.
-TEST_F(BehavioralTestBase, templateMethodInstance)
+TEST_F(BehavioralTestBase, TemplateMethodInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.templateMethod());
@@ -201,7 +204,7 @@ TEST_F(BehavioralTestBase, templateMethodInstance)
 }
 
 //! @brief Test for the visitor instance in the pattern of behavioral.
-TEST_F(BehavioralTestBase, visitorInstance)
+TEST_F(BehavioralTestBase, VisitorInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.visitor());
@@ -213,10 +216,12 @@ class CreationalTestBase : public ::testing::Test
 {
 protected:
     //! @brief Set up the test case.
-    static void SetUpTestSuite() { TST_DP_PRINT_TASK_TITLE("CREATIONAL", "BEGIN"); }
+    static void SetUpTestSuite() { TST_DP_PRINT_TASK_TITLE(title, "BEGIN"); }
     //! @brief Tear down the test case.
-    static void TearDownTestSuite() { TST_DP_PRINT_TASK_TITLE("CREATIONAL", "END"); }
+    static void TearDownTestSuite() { TST_DP_PRINT_TASK_TITLE(title, "END"); }
 
+    //! @brief Test title.
+    static const std::string_view title;
     //! @brief System under test.
     [[no_unique_address]] const creational::Showcase sut{};
     // clang-format off
@@ -253,9 +258,10 @@ protected:
     };
     // clang-format on
 };
+const std::string_view CreationalTestBase::title = design_pattern::creational::name();
 
 //! @brief Test for the abstract factory instance in the pattern of creational.
-TEST_F(CreationalTestBase, abstractFactoryInstance)
+TEST_F(CreationalTestBase, AbstractFactoryInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.abstractFactory());
@@ -263,7 +269,7 @@ TEST_F(CreationalTestBase, abstractFactoryInstance)
 }
 
 //! @brief Test for the builder instance in the pattern of creational.
-TEST_F(CreationalTestBase, builderInstance)
+TEST_F(CreationalTestBase, BuilderInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.builder());
@@ -271,7 +277,7 @@ TEST_F(CreationalTestBase, builderInstance)
 }
 
 //! @brief Test for the factory method instance in the pattern of creational.
-TEST_F(CreationalTestBase, factoryMethodInstance)
+TEST_F(CreationalTestBase, FactoryMethodInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.factoryMethod());
@@ -279,7 +285,7 @@ TEST_F(CreationalTestBase, factoryMethodInstance)
 }
 
 //! @brief Test for the prototype instance in the pattern of creational.
-TEST_F(CreationalTestBase, prototypeInstance)
+TEST_F(CreationalTestBase, PrototypeInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.prototype());
@@ -287,7 +293,7 @@ TEST_F(CreationalTestBase, prototypeInstance)
 }
 
 //! @brief Test for the singleton instance in the pattern of creational.
-TEST_F(CreationalTestBase, singletonInstance)
+TEST_F(CreationalTestBase, SingletonInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.singleton());
@@ -299,10 +305,12 @@ class StructuralTestBase : public ::testing::Test
 {
 protected:
     //! @brief Set up the test case.
-    static void SetUpTestSuite() { TST_DP_PRINT_TASK_TITLE("STRUCTURAL", "BEGIN"); }
+    static void SetUpTestSuite() { TST_DP_PRINT_TASK_TITLE(title, "BEGIN"); }
     //! @brief Tear down the test case.
-    static void TearDownTestSuite() { TST_DP_PRINT_TASK_TITLE("STRUCTURAL", "END"); }
+    static void TearDownTestSuite() { TST_DP_PRINT_TASK_TITLE(title, "END"); }
 
+    //! @brief Test title.
+    static const std::string_view title;
     //! @brief System under test.
     [[no_unique_address]] const structural::Showcase sut{};
     // clang-format off
@@ -352,9 +360,10 @@ protected:
     };
     // clang-format on
 };
+const std::string_view StructuralTestBase::title = design_pattern::structural::name();
 
 //! @brief Test for the adapter instance in the pattern of structural.
-TEST_F(StructuralTestBase, adapterInstance)
+TEST_F(StructuralTestBase, AdapterInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.adapter());
@@ -362,7 +371,7 @@ TEST_F(StructuralTestBase, adapterInstance)
 }
 
 //! @brief Test for the bridge instance in the pattern of structural.
-TEST_F(StructuralTestBase, bridgeInstance)
+TEST_F(StructuralTestBase, BridgeInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.bridge());
@@ -370,7 +379,7 @@ TEST_F(StructuralTestBase, bridgeInstance)
 }
 
 //! @brief Test for the composite instance in the pattern of structural.
-TEST_F(StructuralTestBase, compositeInstance)
+TEST_F(StructuralTestBase, CompositeInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.composite());
@@ -378,7 +387,7 @@ TEST_F(StructuralTestBase, compositeInstance)
 }
 
 //! @brief Test for the decorator instance in the pattern of structural.
-TEST_F(StructuralTestBase, decoratorInstance)
+TEST_F(StructuralTestBase, DecoratorInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.decorator());
@@ -386,7 +395,7 @@ TEST_F(StructuralTestBase, decoratorInstance)
 }
 
 //! @brief Test for the facade instance in the pattern of structural.
-TEST_F(StructuralTestBase, facadeInstance)
+TEST_F(StructuralTestBase, FacadeInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.facade());
@@ -394,7 +403,7 @@ TEST_F(StructuralTestBase, facadeInstance)
 }
 
 //! @brief Test for the flyweight instance in the pattern of structural.
-TEST_F(StructuralTestBase, flyweightInstance)
+TEST_F(StructuralTestBase, FlyweightInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.flyweight());
@@ -402,7 +411,7 @@ TEST_F(StructuralTestBase, flyweightInstance)
 }
 
 //! @brief Test for the proxy instance in the pattern of structural.
-TEST_F(StructuralTestBase, proxyInstance)
+TEST_F(StructuralTestBase, ProxyInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.proxy());

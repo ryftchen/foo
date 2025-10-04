@@ -20,17 +20,17 @@
 #include "utility/include/time.hpp"
 
 //! @brief Title of printing when algorithm tasks are beginning.
-#define APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(category)                                                               \
-    std::osyncstream(std::cout) << "\nALGORITHM TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
-                                << std::setw(50) << (category) << "BEGIN" << std::resetiosflags(std::ios_base::left)  \
-                                << std::setfill(' ') << std::endl;                                                    \
+#define APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title)                                                                   \
+    std::osyncstream(std::cout) << "\nAPPLY ALGORITHM: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
+                                << std::setw(50) << (title) << "BEGIN" << std::resetiosflags(std::ios_base::left)      \
+                                << std::setfill(' ') << std::endl;                                                     \
     {
 //! @brief Title of printing when algorithm tasks are ending.
-#define APP_ALGO_PRINT_TASK_TITLE_SCOPE_END(category)                                                                 \
-    }                                                                                                                 \
-    std::osyncstream(std::cout) << "\nALGORITHM TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
-                                << std::setw(50) << (category) << "END" << std::resetiosflags(std::ios_base::left)    \
-                                << std::setfill(' ') << '\n'                                                          \
+#define APP_ALGO_PRINT_TASK_TITLE_SCOPE_END(title)                                                                     \
+    }                                                                                                                  \
+    std::osyncstream(std::cout) << "\nAPPLY ALGORITHM: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
+                                << std::setw(50) << (title) << "END" << std::resetiosflags(std::ios_base::left)        \
+                                << std::setfill(' ') << '\n'                                                           \
                                 << std::endl;
 
 namespace application::app_algo
@@ -77,7 +77,7 @@ namespace match
 //! @param result - match result
 //! @param pattern - single pattern
 //! @param interval - time interval
-static void showResult(
+static void display(
     const MatchMethod method, const std::int64_t result, const unsigned char* const pattern, const double interval)
 {
     if (result != -1)
@@ -99,84 +99,48 @@ static void showResult(
     }
 }
 
-void MatchSolution::rkMethod(
+//! @brief Solution of match.
+//! @param method - used match method
+//! @param text - matching text
+//! @param pattern - single pattern
+//! @param textLen - length of matching text
+//! @param patternLen - length of single pattern
+static void solution(
+    const MatchMethod method,
     const unsigned char* const text,
     const unsigned char* const pattern,
     const std::uint32_t textLen,
     const std::uint32_t patternLen)
 try
 {
+    std::int64_t result = 0;
     const utility::time::Stopwatch timing{};
-    const auto shift = algorithm::match::Match().rk(text, pattern, textLen, patternLen);
-    showResult(MatchMethod::rabinKarp, shift, pattern, timing.elapsedTime());
+    switch (method)
+    {
+        using algorithm::match::Match;
+        case MatchMethod::rabinKarp:
+            result = Match().rk(text, pattern, textLen, patternLen);
+            break;
+        case MatchMethod::knuthMorrisPratt:
+            result = Match().kmp(text, pattern, textLen, patternLen);
+            break;
+        case MatchMethod::boyerMoore:
+            result = Match().bm(text, pattern, textLen, patternLen);
+            break;
+        case MatchMethod::horspool:
+            result = Match().horspool(text, pattern, textLen, patternLen);
+            break;
+        case MatchMethod::sunday:
+            result = Match().sunday(text, pattern, textLen, patternLen);
+            break;
+        default:
+            return;
+    }
+    display(method, result, pattern, timing.elapsedTime());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
-}
-
-void MatchSolution::kmpMethod(
-    const unsigned char* const text,
-    const unsigned char* const pattern,
-    const std::uint32_t textLen,
-    const std::uint32_t patternLen)
-try
-{
-    const utility::time::Stopwatch timing{};
-    const auto shift = algorithm::match::Match().kmp(text, pattern, textLen, patternLen);
-    showResult(MatchMethod::knuthMorrisPratt, shift, pattern, timing.elapsedTime());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
-}
-
-void MatchSolution::bmMethod(
-    const unsigned char* const text,
-    const unsigned char* const pattern,
-    const std::uint32_t textLen,
-    const std::uint32_t patternLen)
-try
-{
-    const utility::time::Stopwatch timing{};
-    const auto shift = algorithm::match::Match().bm(text, pattern, textLen, patternLen);
-    showResult(MatchMethod::boyerMoore, shift, pattern, timing.elapsedTime());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
-}
-
-void MatchSolution::horspoolMethod(
-    const unsigned char* const text,
-    const unsigned char* const pattern,
-    const std::uint32_t textLen,
-    const std::uint32_t patternLen)
-try
-{
-    const utility::time::Stopwatch timing{};
-    const auto shift = algorithm::match::Match().horspool(text, pattern, textLen, patternLen);
-    showResult(MatchMethod::horspool, shift, pattern, timing.elapsedTime());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
-}
-
-void MatchSolution::sundayMethod(
-    const unsigned char* const text,
-    const unsigned char* const pattern,
-    const std::uint32_t textLen,
-    const std::uint32_t patternLen)
-try
-{
-    const utility::time::Stopwatch timing{};
-    const auto shift = algorithm::match::Match().sunday(text, pattern, textLen, patternLen);
-    showResult(MatchMethod::sunday, shift, pattern, timing.elapsedTime());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(method).c_str(), err.what());
 }
 } // namespace match
 //! @brief To apply match-related methods.
@@ -190,7 +154,7 @@ void applyingMatch(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
+    APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(algorithm::match::name());
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
@@ -199,14 +163,12 @@ void applyingMatch(const std::vector<std::string>& candidates)
     const auto inputData = std::make_shared<InputBuilder>(patternString);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
-        [allocatedJob, &inputData, &taskNamer](
-            const std::string_view subTask,
-            void (*targetMethod)(
-                const unsigned char* const, const unsigned char* const, const std::uint32_t, const std::uint32_t))
+        [allocatedJob, &inputData, &taskNamer](const std::string_view subTask, const MatchMethod method)
     {
         allocatedJob->enqueue(
             taskNamer(subTask),
-            targetMethod,
+            &match::solution,
+            method,
             inputData->getMatchingText().get(),
             inputData->getSinglePattern().get(),
             inputData->getTextLength(),
@@ -220,29 +182,27 @@ void applyingMatch(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
-            using match::MatchSolution;
-            static_assert(utility::common::isStatelessClass<MatchSolution>());
             case abbrLitHash(MatchMethod::rabinKarp):
-                addTask(target, &MatchSolution::rkMethod);
+                addTask(target, MatchMethod::rabinKarp);
                 break;
             case abbrLitHash(MatchMethod::knuthMorrisPratt):
-                addTask(target, &MatchSolution::kmpMethod);
+                addTask(target, MatchMethod::knuthMorrisPratt);
                 break;
             case abbrLitHash(MatchMethod::boyerMoore):
-                addTask(target, &MatchSolution::bmMethod);
+                addTask(target, MatchMethod::boyerMoore);
                 break;
             case abbrLitHash(MatchMethod::horspool):
-                addTask(target, &MatchSolution::horspoolMethod);
+                addTask(target, MatchMethod::horspool);
                 break;
             case abbrLitHash(MatchMethod::sunday):
-                addTask(target, &MatchSolution::sundayMethod);
+                addTask(target, MatchMethod::sunday);
                 break;
             default:
                 throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
         }
     }
 
-    APP_ALGO_PRINT_TASK_TITLE_SCOPE_END(category);
+    APP_ALGO_PRINT_TASK_TITLE_SCOPE_END(algorithm::match::name());
 }
 
 namespace notation
@@ -251,31 +211,37 @@ namespace notation
 //! @param method - used notation method
 //! @param result - notation result
 //! @param descr - notation description
-static void showResult(const NotationMethod method, const std::string& result, const std::string& descr)
+static void display(const NotationMethod method, const std::string& result, const std::string& descr)
 {
     std::printf("\n==> %-7s Method <==\n%s: %s\n", customTitle(method).c_str(), descr.c_str(), result.c_str());
 }
 
-void NotationSolution::prefixMethod(const std::string_view infix)
+//! @brief Solution of notation.
+//! @param method - used notation method
+//! @param infix - infix notation
+static void solution(const NotationMethod method, const std::string_view infix)
 try
 {
-    const auto expr = algorithm::notation::Notation().prefix(infix);
-    showResult(NotationMethod::prefix, expr, "polish notation");
+    std::string result{}, descr{};
+    switch (method)
+    {
+        using algorithm::notation::Notation;
+        case NotationMethod::prefix:
+            result = Notation().prefix(infix);
+            descr = "polish notation";
+            break;
+        case NotationMethod::postfix:
+            result = Notation().postfix(infix);
+            descr = "reverse polish notation";
+            break;
+        default:
+            return;
+    }
+    display(method, result, descr);
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
-}
-
-void NotationSolution::postfixMethod(const std::string_view infix)
-try
-{
-    const auto expr = algorithm::notation::Notation().postfix(infix);
-    showResult(NotationMethod::postfix, expr, "reverse polish notation");
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(method).c_str(), err.what());
 }
 } // namespace notation
 //! @brief To apply notation-related methods.
@@ -289,16 +255,16 @@ void applyingNotation(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
+    APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(algorithm::notation::name());
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
     using notation::InputBuilder, notation::input::infixString;
     const auto inputData = std::make_shared<InputBuilder>(infixString);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = [allocatedJob, &inputData, &taskNamer](
-                             const std::string_view subTask, void (*targetMethod)(const std::string_view))
-    { allocatedJob->enqueue(taskNamer(subTask), targetMethod, inputData->getInfixNotation()); };
+    const auto addTask =
+        [allocatedJob, &inputData, &taskNamer](const std::string_view subTask, const NotationMethod method)
+    { allocatedJob->enqueue(taskNamer(subTask), &notation::solution, method, inputData->getInfixNotation()); };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     for (const auto index :
@@ -307,20 +273,18 @@ void applyingNotation(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
-            using notation::NotationSolution;
-            static_assert(utility::common::isStatelessClass<NotationSolution>());
             case abbrLitHash(NotationMethod::prefix):
-                addTask(target, &NotationSolution::prefixMethod);
+                addTask(target, NotationMethod::prefix);
                 break;
             case abbrLitHash(NotationMethod::postfix):
-                addTask(target, &NotationSolution::postfixMethod);
+                addTask(target, NotationMethod::postfix);
                 break;
             default:
                 throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
         }
     }
 
-    APP_ALGO_PRINT_TASK_TITLE_SCOPE_END(category);
+    APP_ALGO_PRINT_TASK_TITLE_SCOPE_END(algorithm::notation::name());
 }
 
 namespace optimal
@@ -329,7 +293,7 @@ namespace optimal
 //! @param method - used optimal method
 //! @param result - optimal result
 //! @param interval - time interval
-static void showResult(
+static void display(
     const OptimalMethod method, const std::optional<std::tuple<double, double>>& result, const double interval)
 {
     if (result.has_value())
@@ -350,76 +314,45 @@ static void showResult(
     }
 }
 
-void OptimalSolution::gradientDescentMethod(const Function& func, const double left, const double right)
+//! @brief Solution of optimal.
+//! @param method - used optimal method
+//! @param func - target function
+//! @param left - left endpoint
+//! @param right - right endpoint
+static void solution(const OptimalMethod method, const Function& func, const double left, const double right)
 try
 {
+    std::optional<std::tuple<double, double>> result = std::nullopt;
     const utility::time::Stopwatch timing{};
-    const auto tuple = algorithm::optimal::Gradient(func)(left, right, algorithm::optimal::epsilon);
-    showResult(OptimalMethod::gradient, tuple, timing.elapsedTime());
+    switch (method)
+    {
+        using namespace algorithm::optimal; // NOLINT(google-build-using-namespace)
+        case OptimalMethod::gradient:
+            result = Gradient(func)(left, right, epsilon);
+            break;
+        case OptimalMethod::tabu:
+            result = Tabu(func)(left, right, epsilon);
+            break;
+        case OptimalMethod::annealing:
+            result = Annealing(func)(left, right, epsilon);
+            break;
+        case OptimalMethod::particle:
+            result = Particle(func)(left, right, epsilon);
+            break;
+        case OptimalMethod::ant:
+            result = Ant(func)(left, right, epsilon);
+            break;
+        case OptimalMethod::genetic:
+            result = Genetic(func)(left, right, epsilon);
+            break;
+        default:
+            return;
+    }
+    display(method, result, timing.elapsedTime());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
-}
-
-void OptimalSolution::tabuMethod(const Function& func, const double left, const double right)
-try
-{
-    const utility::time::Stopwatch timing{};
-    const auto tuple = algorithm::optimal::Tabu(func)(left, right, algorithm::optimal::epsilon);
-    showResult(OptimalMethod::tabu, tuple, timing.elapsedTime());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
-}
-
-void OptimalSolution::simulatedAnnealingMethod(const Function& func, const double left, const double right)
-try
-{
-    const utility::time::Stopwatch timing{};
-    const auto tuple = algorithm::optimal::Annealing(func)(left, right, algorithm::optimal::epsilon);
-    showResult(OptimalMethod::annealing, tuple, timing.elapsedTime());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
-}
-
-void OptimalSolution::particleSwarmMethod(const Function& func, const double left, const double right)
-try
-{
-    const utility::time::Stopwatch timing{};
-    const auto tuple = algorithm::optimal::Particle(func)(left, right, algorithm::optimal::epsilon);
-    showResult(OptimalMethod::particle, tuple, timing.elapsedTime());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
-}
-
-void OptimalSolution::antColonyMethod(const Function& func, const double left, const double right)
-try
-{
-    const utility::time::Stopwatch timing{};
-    const auto tuple = algorithm::optimal::Ant(func)(left, right, algorithm::optimal::epsilon);
-    showResult(OptimalMethod::ant, tuple, timing.elapsedTime());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
-}
-
-void OptimalSolution::geneticMethod(const Function& func, const double left, const double right)
-try
-{
-    const utility::time::Stopwatch timing{};
-    const auto tuple = algorithm::optimal::Genetic(func)(left, right, algorithm::optimal::epsilon);
-    showResult(OptimalMethod::genetic, tuple, timing.elapsedTime());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(method).c_str(), err.what());
 }
 } // namespace optimal
 //! @brief To apply optimal-related methods.
@@ -433,7 +366,7 @@ void applyingOptimal(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
+    APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(algorithm::optimal::name());
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
@@ -443,12 +376,12 @@ void applyingOptimal(const std::vector<std::string>& candidates)
         SphericalBessel{}, SphericalBessel::range1, SphericalBessel::range2, SphericalBessel::funcDescr);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
-        [allocatedJob, &inputData, &taskNamer](
-            const std::string_view subTask, void (*targetMethod)(const Function&, const double, const double))
+        [allocatedJob, &inputData, &taskNamer](const std::string_view subTask, const OptimalMethod method)
     {
         allocatedJob->enqueue(
             taskNamer(subTask),
-            targetMethod,
+            &optimal::solution,
+            method,
             inputData->getFunction(),
             inputData->getRanges().first,
             inputData->getRanges().second);
@@ -461,32 +394,30 @@ void applyingOptimal(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
-            using optimal::OptimalSolution;
-            static_assert(utility::common::isStatelessClass<OptimalSolution>());
             case abbrLitHash(OptimalMethod::gradient):
-                addTask(target, &OptimalSolution::gradientDescentMethod);
+                addTask(target, OptimalMethod::gradient);
                 break;
             case abbrLitHash(OptimalMethod::tabu):
-                addTask(target, &OptimalSolution::tabuMethod);
+                addTask(target, OptimalMethod::tabu);
                 break;
             case abbrLitHash(OptimalMethod::annealing):
-                addTask(target, &OptimalSolution::simulatedAnnealingMethod);
+                addTask(target, OptimalMethod::annealing);
                 break;
             case abbrLitHash(OptimalMethod::particle):
-                addTask(target, &OptimalSolution::particleSwarmMethod);
+                addTask(target, OptimalMethod::particle);
                 break;
             case abbrLitHash(OptimalMethod::ant):
-                addTask(target, &OptimalSolution::antColonyMethod);
+                addTask(target, OptimalMethod::ant);
                 break;
             case abbrLitHash(OptimalMethod::genetic):
-                addTask(target, &OptimalSolution::geneticMethod);
+                addTask(target, OptimalMethod::genetic);
                 break;
             default:
                 throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
         }
     }
 
-    APP_ALGO_PRINT_TASK_TITLE_SCOPE_END(category);
+    APP_ALGO_PRINT_TASK_TITLE_SCOPE_END(algorithm::optimal::name());
 }
 
 namespace search
@@ -496,7 +427,7 @@ namespace search
 //! @param result - search result
 //! @param key - search key
 //! @param interval - time interval
-static void showResult(const SearchMethod method, const std::int64_t result, const float key, const double interval)
+static void display(const SearchMethod method, const std::int64_t result, const float key, const double interval)
 {
     if (result != -1)
     {
@@ -517,40 +448,36 @@ static void showResult(const SearchMethod method, const std::int64_t result, con
     }
 }
 
-void SearchSolution::binaryMethod(const float* const array, const std::uint32_t length, const float key)
+//! @brief Solution of search.
+//! @param method - used search method
+//! @param array - ordered array to be searched
+//! @param length - length of array
+//! @param key - search key
+static void solution(const SearchMethod method, const float* const array, const std::uint32_t length, const float key)
 try
 {
+    std::int64_t result = 0;
     const utility::time::Stopwatch timing{};
-    const auto index = algorithm::search::Search<float>().binary(array, length, key);
-    showResult(SearchMethod::binary, index, key, timing.elapsedTime());
+    switch (method)
+    {
+        using algorithm::search::Search;
+        case SearchMethod::binary:
+            result = Search<float>().binary(array, length, key);
+            break;
+        case SearchMethod::interpolation:
+            result = Search<float>().interpolation(array, length, key);
+            break;
+        case SearchMethod::fibonacci:
+            result = Search<float>().fibonacci(array, length, key);
+            break;
+        default:
+            return;
+    }
+    display(method, result, key, timing.elapsedTime());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
-}
-
-void SearchSolution::interpolationMethod(const float* const array, const std::uint32_t length, const float key)
-try
-{
-    const utility::time::Stopwatch timing{};
-    const auto index = algorithm::search::Search<float>().interpolation(array, length, key);
-    showResult(SearchMethod::interpolation, index, key, timing.elapsedTime());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
-}
-
-void SearchSolution::fibonacciMethod(const float* const array, const std::uint32_t length, const float key)
-try
-{
-    const utility::time::Stopwatch timing{};
-    const auto index = algorithm::search::Search<float>().fibonacci(array, length, key);
-    showResult(SearchMethod::fibonacci, index, key, timing.elapsedTime());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(method).c_str(), err.what());
 }
 } // namespace search
 //! @brief To apply search-related methods.
@@ -564,7 +491,7 @@ void applyingSearch(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
+    APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(algorithm::search::name());
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
@@ -573,12 +500,12 @@ void applyingSearch(const std::vector<std::string>& candidates)
     const auto inputData = std::make_shared<InputBuilder<float>>(arrayLength, arrayRangeMin, arrayRangeMax);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
-        [allocatedJob, &inputData, &taskNamer](
-            const std::string_view subTask, void (*targetMethod)(const float* const, const std::uint32_t, const float))
+        [allocatedJob, &inputData, &taskNamer](const std::string_view subTask, const SearchMethod method)
     {
         allocatedJob->enqueue(
             taskNamer(subTask),
-            targetMethod,
+            &search::solution,
+            method,
             inputData->getOrderedArray().get(),
             inputData->getLength(),
             inputData->getSearchKey());
@@ -591,23 +518,21 @@ void applyingSearch(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
-            using search::SearchSolution;
-            static_assert(utility::common::isStatelessClass<SearchSolution>());
             case abbrLitHash(SearchMethod::binary):
-                addTask(target, &SearchSolution::binaryMethod);
+                addTask(target, SearchMethod::binary);
                 break;
             case abbrLitHash(SearchMethod::interpolation):
-                addTask(target, &SearchSolution::interpolationMethod);
+                addTask(target, SearchMethod::interpolation);
                 break;
             case abbrLitHash(SearchMethod::fibonacci):
-                addTask(target, &SearchSolution::fibonacciMethod);
+                addTask(target, SearchMethod::fibonacci);
                 break;
             default:
                 throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
         }
     }
 
-    APP_ALGO_PRINT_TASK_TITLE_SCOPE_END(category);
+    APP_ALGO_PRINT_TASK_TITLE_SCOPE_END(algorithm::search::name());
 }
 
 namespace sort
@@ -616,7 +541,7 @@ namespace sort
 //! @param method - used sort method
 //! @param result - sort result
 //! @param interval - time interval
-static void showResult(const SortMethod method, const std::vector<std::int32_t>& result, const double interval)
+static void display(const SortMethod method, const std::vector<std::int32_t>& result, const double interval)
 {
     const std::uint32_t bufferSize = result.size() * maxAlignOfPrint;
     std::vector<char> fmtBuffer(bufferSize + 1);
@@ -628,124 +553,56 @@ static void showResult(const SortMethod method, const std::vector<std::int32_t>&
         interval);
 }
 
-void SortSolution::bubbleMethod(const std::int32_t* const array, const std::uint32_t length)
+//! @brief Solution of sort.
+//! @param method - used sort method
+//! @param array - array to be sorted
+//! @param length - length of array
+static void solution(const SortMethod method, const std::int32_t* const array, const std::uint32_t length)
 try
 {
+    std::vector<std::int32_t> result{};
     const utility::time::Stopwatch timing{};
-    const auto coll = algorithm::sort::Sort<std::int32_t>().bubble(array, length);
-    showResult(SortMethod::bubble, coll, timing.elapsedTime());
+    switch (method)
+    {
+        using algorithm::sort::Sort;
+        case SortMethod::bubble:
+            result = Sort<std::int32_t>().bubble(array, length);
+            break;
+        case SortMethod::selection:
+            result = Sort<std::int32_t>().selection(array, length);
+            break;
+        case SortMethod::insertion:
+            result = Sort<std::int32_t>().insertion(array, length);
+            break;
+        case SortMethod::shell:
+            result = Sort<std::int32_t>().shell(array, length);
+            break;
+        case SortMethod::merge:
+            result = Sort<std::int32_t>().merge(array, length);
+            break;
+        case SortMethod::quick:
+            result = Sort<std::int32_t>().quick(array, length);
+            break;
+        case SortMethod::heap:
+            result = Sort<std::int32_t>().heap(array, length);
+            break;
+        case SortMethod::counting:
+            result = Sort<std::int32_t>().counting(array, length);
+            break;
+        case SortMethod::bucket:
+            result = Sort<std::int32_t>().bucket(array, length);
+            break;
+        case SortMethod::radix:
+            result = Sort<std::int32_t>().radix(array, length);
+            break;
+        default:
+            return;
+    }
+    display(method, result, timing.elapsedTime());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
-}
-
-void SortSolution::selectionMethod(const std::int32_t* const array, const std::uint32_t length)
-try
-{
-    const utility::time::Stopwatch timing{};
-    const auto coll = algorithm::sort::Sort<std::int32_t>().selection(array, length);
-    showResult(SortMethod::selection, coll, timing.elapsedTime());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
-}
-
-void SortSolution::insertionMethod(const std::int32_t* const array, const std::uint32_t length)
-try
-{
-    const utility::time::Stopwatch timing{};
-    const auto coll = algorithm::sort::Sort<std::int32_t>().insertion(array, length);
-    showResult(SortMethod::insertion, coll, timing.elapsedTime());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
-}
-
-void SortSolution::shellMethod(const std::int32_t* const array, const std::uint32_t length)
-try
-{
-    const utility::time::Stopwatch timing{};
-    const auto coll = algorithm::sort::Sort<std::int32_t>().shell(array, length);
-    showResult(SortMethod::shell, coll, timing.elapsedTime());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
-}
-
-void SortSolution::mergeMethod(const std::int32_t* const array, const std::uint32_t length)
-try
-{
-    const utility::time::Stopwatch timing{};
-    const auto coll = algorithm::sort::Sort<std::int32_t>().merge(array, length);
-    showResult(SortMethod::merge, coll, timing.elapsedTime());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
-}
-
-void SortSolution::quickMethod(const std::int32_t* const array, const std::uint32_t length)
-try
-{
-    const utility::time::Stopwatch timing{};
-    const auto coll = algorithm::sort::Sort<std::int32_t>().quick(array, length);
-    showResult(SortMethod::quick, coll, timing.elapsedTime());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
-}
-
-void SortSolution::heapMethod(const std::int32_t* const array, const std::uint32_t length)
-try
-{
-    const utility::time::Stopwatch timing{};
-    const auto coll = algorithm::sort::Sort<std::int32_t>().heap(array, length);
-    showResult(SortMethod::heap, coll, timing.elapsedTime());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
-}
-
-void SortSolution::countingMethod(const std::int32_t* const array, const std::uint32_t length)
-try
-{
-    const utility::time::Stopwatch timing{};
-    const auto coll = algorithm::sort::Sort<std::int32_t>().counting(array, length);
-    showResult(SortMethod::counting, coll, timing.elapsedTime());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
-}
-
-void SortSolution::bucketMethod(const std::int32_t* const array, const std::uint32_t length)
-try
-{
-    const utility::time::Stopwatch timing{};
-    const auto coll = algorithm::sort::Sort<std::int32_t>().bucket(array, length);
-    showResult(SortMethod::bucket, coll, timing.elapsedTime());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
-}
-
-void SortSolution::radixMethod(const std::int32_t* const array, const std::uint32_t length)
-try
-{
-    const utility::time::Stopwatch timing{};
-    const auto coll = algorithm::sort::Sort<std::int32_t>().radix(array, length);
-    showResult(SortMethod::radix, coll, timing.elapsedTime());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in solution (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(method).c_str(), err.what());
 }
 } // namespace sort
 //! @brief To apply sort-related methods.
@@ -759,7 +616,7 @@ void applyingSort(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
+    APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(algorithm::sort::name());
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
@@ -767,12 +624,10 @@ void applyingSort(const std::vector<std::string>& candidates)
     static_assert((arrayRangeMin < arrayRangeMax) && (arrayLength > 0));
     const auto inputData = std::make_shared<InputBuilder<std::int32_t>>(arrayLength, arrayRangeMin, arrayRangeMax);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask =
-        [allocatedJob, &inputData, &taskNamer](
-            const std::string_view subTask, void (*targetMethod)(const std::int32_t* const, const std::uint32_t))
+    const auto addTask = [allocatedJob, &inputData, &taskNamer](const std::string_view subTask, const SortMethod method)
     {
         allocatedJob->enqueue(
-            taskNamer(subTask), targetMethod, inputData->getRandomArray().get(), inputData->getLength());
+            taskNamer(subTask), &sort::solution, method, inputData->getRandomArray().get(), inputData->getLength());
     };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
@@ -782,44 +637,42 @@ void applyingSort(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
-            using sort::SortSolution;
-            static_assert(utility::common::isStatelessClass<SortSolution>());
             case abbrLitHash(SortMethod::bubble):
-                addTask(target, &SortSolution::bubbleMethod);
+                addTask(target, SortMethod::bubble);
                 break;
             case abbrLitHash(SortMethod::selection):
-                addTask(target, &SortSolution::selectionMethod);
+                addTask(target, SortMethod::selection);
                 break;
             case abbrLitHash(SortMethod::insertion):
-                addTask(target, &SortSolution::insertionMethod);
+                addTask(target, SortMethod::insertion);
                 break;
             case abbrLitHash(SortMethod::shell):
-                addTask(target, &SortSolution::shellMethod);
+                addTask(target, SortMethod::shell);
                 break;
             case abbrLitHash(SortMethod::merge):
-                addTask(target, &SortSolution::mergeMethod);
+                addTask(target, SortMethod::merge);
                 break;
             case abbrLitHash(SortMethod::quick):
-                addTask(target, &SortSolution::quickMethod);
+                addTask(target, SortMethod::quick);
                 break;
             case abbrLitHash(SortMethod::heap):
-                addTask(target, &SortSolution::heapMethod);
+                addTask(target, SortMethod::heap);
                 break;
             case abbrLitHash(SortMethod::counting):
-                addTask(target, &SortSolution::countingMethod);
+                addTask(target, SortMethod::counting);
                 break;
             case abbrLitHash(SortMethod::bucket):
-                addTask(target, &SortSolution::bucketMethod);
+                addTask(target, SortMethod::bucket);
                 break;
             case abbrLitHash(SortMethod::radix):
-                addTask(target, &SortSolution::radixMethod);
+                addTask(target, SortMethod::radix);
                 break;
             default:
                 throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
         }
     }
 
-    APP_ALGO_PRINT_TASK_TITLE_SCOPE_END(category);
+    APP_ALGO_PRINT_TASK_TITLE_SCOPE_END(algorithm::sort::name());
 }
 } // namespace application::app_algo
 

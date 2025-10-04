@@ -29,7 +29,7 @@ namespace app_ds
 namespace cache
 {
 //! @brief The version used to apply.
-const char* const version = date_structure::cache::version();
+const char* const version = data_structure::cache::version();
 
 //! @brief Separator for each KeyValue or KeyOptValue.
 static constexpr std::string_view separator = ", ";
@@ -102,7 +102,7 @@ public:
                        keyValueD = {'D', "qux"};
         std::ostringstream process{};
 
-        date_structure::cache::FIFO<Key, Value> fifoCache{3};
+        data_structure::cache::FIFO<Key, Value> fifoCache{3};
         process << std::boolalpha;
         process << "insert " << keyValueA << '\n';
         fifoCache.insert('A', "foo");
@@ -153,7 +153,7 @@ public:
                        keyValueD = {'D', "qux"};
         std::ostringstream process{};
 
-        date_structure::cache::LFU<Key, Value> lfuCache{3};
+        data_structure::cache::LFU<Key, Value> lfuCache{3};
         process << std::boolalpha;
         process << "insert " << keyValueA << '\n';
         lfuCache.insert('A', "foo");
@@ -204,7 +204,7 @@ public:
                        keyValueD = {'D', "qux"};
         std::ostringstream process{};
 
-        date_structure::cache::LRU<Key, Value> lruCache{3};
+        data_structure::cache::LRU<Key, Value> lruCache{3};
         process << std::boolalpha;
         process << "insert " << keyValueA << '\n';
         lruCache.insert('A', "foo");
@@ -247,18 +247,6 @@ public:
         return std::ostringstream{process.str().substr(0, process.tellp()) + '\n'};
     }
 };
-
-//! @brief Structure of cache.
-class CacheStructure
-{
-public:
-    //! @brief The first in first out instance.
-    static void fifoInstance();
-    //! @brief The least frequently used instance.
-    static void lfuInstance();
-    //! @brief The least recently used instance.
-    static void lruInstance();
-};
 } // namespace cache
 extern void applyingCache(const std::vector<std::string>& candidates);
 
@@ -266,7 +254,7 @@ extern void applyingCache(const std::vector<std::string>& candidates);
 namespace filter
 {
 //! @brief The version used to apply.
-const char* const version = date_structure::filter::version();
+const char* const version = data_structure::filter::version();
 
 //! @brief Showcase for filter instances.
 class Showcase
@@ -295,7 +283,7 @@ public:
             urls2.emplace_back(std::move(url2));
         }
 
-        date_structure::filter::Bloom bf(1e5, 1e-5, 0);
+        data_structure::filter::Bloom bf(1e5, 1e-5, 0);
         process << std::boolalpha;
         const std::uint32_t inserted = std::accumulate(
             urls1.cbegin(),
@@ -348,7 +336,7 @@ public:
             urls2.emplace_back(std::move(url2));
         }
 
-        date_structure::filter::Quotient qfA(16, 8, 0), qfB(16, 8, 0), qfC(16, 8, 0);
+        data_structure::filter::Quotient qfA(16, 8, 0), qfB(16, 8, 0), qfC(16, 8, 0);
         process << std::boolalpha;
         const std::uint32_t insertedA = std::accumulate(
             urls1.cbegin(),
@@ -394,16 +382,6 @@ public:
         return process;
     }
 };
-
-//! @brief Structure of filter.
-class FilterStructure
-{
-public:
-    //! @brief The Bloom instance.
-    static void bloomInstance();
-    //! @brief The quotient instance.
-    static void quotientInstance();
-};
 } // namespace filter
 extern void applyingFilter(const std::vector<std::string>& candidates);
 
@@ -411,7 +389,7 @@ extern void applyingFilter(const std::vector<std::string>& candidates);
 namespace graph
 {
 //! @brief The version used to apply.
-const char* const version = date_structure::graph::version();
+const char* const version = data_structure::graph::version();
 
 //! @brief Alias for the data.
 using Data = char;
@@ -434,7 +412,7 @@ public:
     //! @return procedure output
     static std::ostringstream undirected()
     {
-        namespace undirected = date_structure::graph::undirected;
+        namespace undirected = data_structure::graph::undirected;
         using undirected::Traverse;
         constexpr std::array<Data, 7> vertices = {'A', 'B', 'C', 'D', 'E', 'F', 'G'};
         constexpr std::array<std::array<Data, 2>, 7> edges = {
@@ -484,7 +462,7 @@ public:
     //! @return procedure output
     static std::ostringstream directed()
     {
-        namespace directed = date_structure::graph::directed;
+        namespace directed = data_structure::graph::directed;
         using directed::Traverse;
         constexpr std::array<Data, 7> vertices = {'A', 'B', 'C', 'D', 'E', 'F', 'G'};
         constexpr std::array<std::array<Data, 2>, 9> edges = {
@@ -544,16 +522,6 @@ public:
     }
     // NOLINTEND(readability-magic-numbers)
 };
-
-//! @brief Structure of graph.
-class GraphStructure
-{
-public:
-    //! @brief The undirected instance.
-    static void undirectedInstance();
-    //! @brief The directed instance.
-    static void directedInstance();
-};
 } // namespace graph
 extern void applyingGraph(const std::vector<std::string>& candidates);
 
@@ -561,7 +529,7 @@ extern void applyingGraph(const std::vector<std::string>& candidates);
 namespace heap
 {
 //! @brief The version used to apply.
-const char* const version = date_structure::heap::version();
+const char* const version = data_structure::heap::version();
 
 //! @brief Alias for the key.
 using Key = std::int16_t;
@@ -583,7 +551,7 @@ public:
     //! @return procedure output
     static std::ostringstream binary()
     {
-        namespace binary = date_structure::heap::binary;
+        namespace binary = data_structure::heap::binary;
         constexpr std::array<Key, 9> keys = {80, 40, 30, 60, 90, 70, 10, 50, 20};
         constexpr int capacity = 30;
         std::ostringstream process{};
@@ -622,9 +590,9 @@ public:
     //! @return procedure output
     static std::ostringstream leftist()
     {
-        namespace leftist = date_structure::heap::leftist;
-        using Traverse = date_structure::heap::Traverse<leftist::LeftistHeap, leftist::Node>;
-        using Printer = date_structure::heap::Printer<leftist::Node, Key>;
+        namespace leftist = data_structure::heap::leftist;
+        using Traverse = data_structure::heap::Traverse<leftist::LeftistHeap, leftist::Node>;
+        using Printer = data_structure::heap::Printer<leftist::Node, Key>;
         constexpr std::array<Key, 8> keys1 = {10, 40, 24, 30, 36, 20, 12, 16};
         constexpr std::array<Key, 7> keys2 = {17, 13, 11, 15, 19, 21, 23};
         std::ostringstream process{};
@@ -676,9 +644,9 @@ public:
     //! @return procedure output
     static std::ostringstream skew()
     {
-        namespace skew = date_structure::heap::skew;
-        using Traverse = date_structure::heap::Traverse<skew::SkewHeap, skew::Node>;
-        using Printer = date_structure::heap::Printer<skew::Node, Key>;
+        namespace skew = data_structure::heap::skew;
+        using Traverse = data_structure::heap::Traverse<skew::SkewHeap, skew::Node>;
+        using Printer = data_structure::heap::Printer<skew::Node, Key>;
         constexpr std::array<Key, 8> keys1 = {10, 40, 24, 30, 36, 20, 12, 16};
         constexpr std::array<Key, 7> keys2 = {17, 13, 11, 15, 19, 21, 23};
         std::ostringstream process{};
@@ -726,18 +694,6 @@ public:
         return std::ostringstream{process.str()};
     }
 };
-
-//! @brief Structure of heap.
-class HeapStructure
-{
-public:
-    //! @brief The binary instance.
-    static void binaryInstance();
-    //! @brief The leftist instance.
-    static void leftistInstance();
-    //! @brief The skew instance.
-    static void skewInstance();
-};
 } // namespace heap
 extern void applyingHeap(const std::vector<std::string>& candidates);
 
@@ -745,7 +701,7 @@ extern void applyingHeap(const std::vector<std::string>& candidates);
 namespace linear
 {
 //! @brief The version used to apply.
-const char* const version = date_structure::linear::version();
+const char* const version = data_structure::linear::version();
 
 //! @brief Alias for the value.
 using Value = std::int16_t;
@@ -758,8 +714,8 @@ public:
     //! @return procedure output
     static std::ostringstream dll()
     {
-        namespace dll = date_structure::linear::dll;
-        using date_structure::linear::Traverse;
+        namespace dll = data_structure::linear::dll;
+        using data_structure::linear::Traverse;
         using Printer = dll::Printer<Value>;
         constexpr std::array<Value, 4> values = {'a', 'b', 'c', 'd'};
         std::ostringstream process{};
@@ -796,8 +752,8 @@ public:
     //! @return procedure output
     static std::ostringstream stack()
     {
-        namespace stack = date_structure::linear::stack;
-        using date_structure::linear::Traverse;
+        namespace stack = data_structure::linear::stack;
+        using data_structure::linear::Traverse;
         using Printer = stack::Printer<Value>;
         constexpr std::array<Value, 4> values = {'a', 'b', 'c', 'd'};
         std::ostringstream process{};
@@ -828,8 +784,8 @@ public:
     //! @return procedure output
     static std::ostringstream queue()
     {
-        namespace queue = date_structure::linear::queue;
-        using date_structure::linear::Traverse;
+        namespace queue = data_structure::linear::queue;
+        using data_structure::linear::Traverse;
         using Printer = queue::Printer<Value>;
         constexpr std::array<Value, 4> values = {'a', 'b', 'c', 'd'};
         std::ostringstream process{};
@@ -857,18 +813,6 @@ public:
         return std::ostringstream{process.str()};
     }
 };
-
-//! @brief Structure of linear.
-class LinearStructure
-{
-public:
-    //! @brief The doubly linked list instance.
-    static void dllInstance();
-    //! @brief The stack instance.
-    static void stackInstance();
-    //! @brief The queue instance.
-    static void queueInstance();
-};
 } // namespace linear
 extern void applyingLinear(const std::vector<std::string>& candidates);
 
@@ -876,7 +820,7 @@ extern void applyingLinear(const std::vector<std::string>& candidates);
 namespace tree
 {
 //! @brief The version used to apply.
-const char* const version = date_structure::tree::version();
+const char* const version = data_structure::tree::version();
 
 //! @brief Alias for the key.
 using Key = std::int16_t;
@@ -898,9 +842,9 @@ public:
     //! @return procedure output
     static std::ostringstream bs()
     {
-        namespace bs = date_structure::tree::bs;
-        using Traverse = date_structure::tree::Traverse<bs::BSTree, bs::Node>;
-        using Printer = date_structure::tree::Printer<bs::Node, Key>;
+        namespace bs = data_structure::tree::bs;
+        using Traverse = data_structure::tree::Traverse<bs::BSTree, bs::Node>;
+        using Printer = data_structure::tree::Printer<bs::Node, Key>;
         constexpr std::array<Key, 6> keys = {1, 5, 4, 3, 2, 6};
         std::ostringstream process{};
         const auto opInTraversal = [&process](const void* const key)
@@ -949,9 +893,9 @@ public:
     //! @return procedure output
     static std::ostringstream avl()
     {
-        namespace avl = date_structure::tree::avl;
-        using Traverse = date_structure::tree::Traverse<avl::AVLTree, avl::Node>;
-        using Printer = date_structure::tree::Printer<avl::Node, Key>;
+        namespace avl = data_structure::tree::avl;
+        using Traverse = data_structure::tree::Traverse<avl::AVLTree, avl::Node>;
+        using Printer = data_structure::tree::Printer<avl::Node, Key>;
         constexpr std::array<Key, 16> keys = {3, 2, 1, 4, 5, 6, 7, 16, 15, 14, 13, 12, 11, 10, 8, 9};
         std::ostringstream process{};
         const auto opInTraversal = [&process](const void* const key)
@@ -998,9 +942,9 @@ public:
     //! @return procedure output
     static std::ostringstream splay()
     {
-        namespace splay = date_structure::tree::splay;
-        using Traverse = date_structure::tree::Traverse<splay::SplayTree, splay::Node>;
-        using Printer = date_structure::tree::Printer<splay::Node, Key>;
+        namespace splay = data_structure::tree::splay;
+        using Traverse = data_structure::tree::Traverse<splay::SplayTree, splay::Node>;
+        using Printer = data_structure::tree::Printer<splay::Node, Key>;
         constexpr std::array<Key, 7> keys = {10, 50, 40, 70, 30, 20, 60};
         std::ostringstream process{};
         const auto opInTraversal = [&process](const void* const key)
@@ -1047,18 +991,6 @@ public:
 
         return std::ostringstream{process.str()};
     }
-};
-
-//! @brief Structure of tree.
-class TreeStructure
-{
-public:
-    //! @brief The binary search instance.
-    static void bsInstance();
-    //! @brief The Adelson-Velsky-Landis instance.
-    static void avlInstance();
-    //! @brief The splay instance.
-    static void splayInstance();
 };
 } // namespace tree
 extern void applyingTree(const std::vector<std::string>& candidates);

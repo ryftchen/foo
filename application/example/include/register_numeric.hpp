@@ -129,35 +129,6 @@ public:
     std::bitset<Bottom<IntegralMethod>::value> integralOpts;
     //! @brief Bit flags for managing prime methods.
     std::bitset<Bottom<PrimeMethod>::value> primeOpts;
-
-protected:
-    //! @brief The operator (<<) overloading of the Category enum.
-    //! @param os - output stream object
-    //! @param cat - current category
-    //! @return reference of the output stream object
-    friend std::ostream& operator<<(std::ostream& os, const Category cat)
-    {
-        switch (cat)
-        {
-            case Category::arithmetic:
-                os << "ARITHMETIC";
-                break;
-            case Category::divisor:
-                os << "DIVISOR";
-                break;
-            case Category::integral:
-                os << "INTEGRAL";
-                break;
-            case Category::prime:
-                os << "PRIME";
-                break;
-            default:
-                os << "UNKNOWN (" << static_cast<std::underlying_type_t<Category>>(cat) << ')';
-                break;
-        }
-
-        return os;
-    }
 };
 
 //! @brief Manage the numeric choices.

@@ -143,62 +143,6 @@ private:
         return 1 + static_cast<int>(std::ceil(static_cast<double>(digit) * std::log2(mpfrBase)));
     }
 };
-
-//! @brief Solution of match.
-class MatchSolution
-{
-public:
-    //! @brief The Rabin-Karp method.
-    //! @param text - matching text
-    //! @param pattern - single pattern
-    //! @param textLen - length of matching text
-    //! @param patternLen - length of single pattern
-    static void rkMethod(
-        const unsigned char* const text,
-        const unsigned char* const pattern,
-        const std::uint32_t textLen,
-        const std::uint32_t patternLen);
-    //! @brief The Knuth-Morris-Pratt method.
-    //! @param text - matching text
-    //! @param pattern - single pattern
-    //! @param textLen - length of matching text
-    //! @param patternLen - length of single pattern
-    static void kmpMethod(
-        const unsigned char* const text,
-        const unsigned char* const pattern,
-        const std::uint32_t textLen,
-        const std::uint32_t patternLen);
-    //! @brief The Boyer-Moore method.
-    //! @param text - matching text
-    //! @param pattern - single pattern
-    //! @param textLen - length of matching text
-    //! @param patternLen - length of single pattern
-    static void bmMethod(
-        const unsigned char* const text,
-        const unsigned char* const pattern,
-        const std::uint32_t textLen,
-        const std::uint32_t patternLen);
-    //! @brief The Horspool method.
-    //! @param text - matching text
-    //! @param pattern - single pattern
-    //! @param textLen - length of matching text
-    //! @param patternLen - length of single pattern
-    static void horspoolMethod(
-        const unsigned char* const text,
-        const unsigned char* const pattern,
-        const std::uint32_t textLen,
-        const std::uint32_t patternLen);
-    //! @brief The Sunday method.
-    //! @param text - matching text
-    //! @param pattern - single pattern
-    //! @param textLen - length of matching text
-    //! @param patternLen - length of single pattern
-    static void sundayMethod(
-        const unsigned char* const text,
-        const unsigned char* const pattern,
-        const std::uint32_t textLen,
-        const std::uint32_t patternLen);
-};
 } // namespace match
 extern void applyingMatch(const std::vector<std::string>& candidates);
 
@@ -236,18 +180,6 @@ private:
     //! @brief Infix notation.
     const std::string infixNotation;
 };
-
-//! @brief Solution of notation.
-class NotationSolution
-{
-public:
-    //! @brief The prefix method.
-    //! @param infix - infix notation
-    static void prefixMethod(const std::string_view infix);
-    //! @brief The postfix method.
-    //! @param infix - infix notation
-    static void postfixMethod(const std::string_view infix);
-};
 } // namespace notation
 extern void applyingNotation(const std::vector<std::string>& candidates);
 
@@ -260,29 +192,29 @@ const char* const version = algorithm::optimal::version();
 //! @brief Alias for the target function.
 using Function = std::function<double(const double)>;
 //! @brief Wrapper for the target function.
-class FuncBase
+class FuncIntf
 {
 public:
-    //! @brief Construct a new FuncBase object.
-    FuncBase() = default;
-    //! @brief Destroy the FuncBase object.
-    virtual ~FuncBase() = default;
-    //! @brief Construct a new FuncBase object.
-    FuncBase(const FuncBase&) = default;
-    //! @brief Construct a new FuncBase object.
-    FuncBase(FuncBase&&) noexcept = default;
-    //! @brief The operator (=) overloading of FuncBase class.
-    //! @return reference of the FuncBase object
-    FuncBase& operator=(const FuncBase&) = default;
-    //! @brief The operator (=) overloading of FuncBase class.
-    //! @return reference of the FuncBase object
-    FuncBase& operator=(FuncBase&&) noexcept = default;
+    //! @brief Construct a new FuncIntf object.
+    FuncIntf() = default;
+    //! @brief Destroy the FuncIntf object.
+    virtual ~FuncIntf() = default;
+    //! @brief Construct a new FuncIntf object.
+    FuncIntf(const FuncIntf&) = default;
+    //! @brief Construct a new FuncIntf object.
+    FuncIntf(FuncIntf&&) noexcept = default;
+    //! @brief The operator (=) overloading of FuncIntf class.
+    //! @return reference of the FuncIntf object
+    FuncIntf& operator=(const FuncIntf&) = default;
+    //! @brief The operator (=) overloading of FuncIntf class.
+    //! @return reference of the FuncIntf object
+    FuncIntf& operator=(FuncIntf&&) noexcept = default;
 
-    //! @brief The operator (()) overloading of FuncBase class.
+    //! @brief The operator (()) overloading of FuncIntf class.
     //! @param x - independent variable
     //! @return dependent variable
     virtual double operator()(const double x) const = 0;
-    //! @brief The operator (Function) overloading of FuncBase class.
+    //! @brief The operator (Function) overloading of FuncIntf class.
     //! @return Function object
     virtual explicit operator Function() const
     {
@@ -294,7 +226,7 @@ public:
 namespace input
 {
 //! @brief Spherical Bessel.
-class SphericalBessel : public FuncBase
+class SphericalBessel : public FuncIntf
 {
 public:
     //! @brief The operator (()) overloading of SphericalBessel class.
@@ -346,42 +278,6 @@ private:
     const double range1{0.0};
     //! @brief Right endpoint.
     const double range2{0.0};
-};
-
-//! @brief Solution of optimal.
-class OptimalSolution
-{
-public:
-    //! @brief The gradient descent method.
-    //! @param func - target function
-    //! @param left - left endpoint
-    //! @param right - right endpoint
-    static void gradientDescentMethod(const Function& func, const double left, const double right);
-    //! @brief The tabu method.
-    //! @param func - target function
-    //! @param left - left endpoint
-    //! @param right - right endpoint
-    static void tabuMethod(const Function& func, const double left, const double right);
-    //! @brief The simulated annealing method.
-    //! @param func - target function
-    //! @param left - left endpoint
-    //! @param right - right endpoint
-    static void simulatedAnnealingMethod(const Function& func, const double left, const double right);
-    //! @brief The particle swarm method.
-    //! @param func - target function
-    //! @param left - left endpoint
-    //! @param right - right endpoint
-    static void particleSwarmMethod(const Function& func, const double left, const double right);
-    //! @brief The ant colony method.
-    //! @param func - target function
-    //! @param left - left endpoint
-    //! @param right - right endpoint
-    static void antColonyMethod(const Function& func, const double left, const double right);
-    //! @brief The genetic method.
-    //! @param func - target function
-    //! @param left - left endpoint
-    //! @param right - right endpoint
-    static void geneticMethod(const Function& func, const double left, const double right);
 };
 } // namespace optimal
 extern void applyingOptimal(const std::vector<std::string>& candidates);
@@ -570,27 +466,6 @@ private:
 #endif // _RUNTIME_PRINTING
     }
 };
-
-//! @brief Solution of search.
-class SearchSolution
-{
-public:
-    //! @brief The binary method.
-    //! @param array - ordered array to be searched
-    //! @param length - length of array
-    //! @param key - search key
-    static void binaryMethod(const float* const array, const std::uint32_t length, const float key);
-    //! @brief The interpolation method.
-    //! @param array - ordered array to be searched
-    //! @param length - length of array
-    //! @param key - search key
-    static void interpolationMethod(const float* const array, const std::uint32_t length, const float key);
-    //! @brief The Fibonacci method.
-    //! @param array - ordered array to be searched
-    //! @param length - length of array
-    //! @param key - search key
-    static void fibonacciMethod(const float* const array, const std::uint32_t length, const float key);
-};
 } // namespace search
 extern void applyingSearch(const std::vector<std::string>& candidates);
 
@@ -772,52 +647,6 @@ private:
                   << spliceAll<T>(array, length, fmtBuffer.data(), bufferSize + 1) << std::endl;
 #endif // _RUNTIME_PRINTING
     }
-};
-
-//! @brief Solution of sort.
-class SortSolution
-{
-public:
-    //! @brief The bubble method.
-    //! @param array - array to be sorted
-    //! @param length - length of array
-    static void bubbleMethod(const std::int32_t* const array, const std::uint32_t length);
-    //! @brief The selection method.
-    //! @param array - array to be sorted
-    //! @param length - length of array
-    static void selectionMethod(const std::int32_t* const array, const std::uint32_t length);
-    //! @brief The insertion method.
-    //! @param array - array to be sorted
-    //! @param length - length of array
-    static void insertionMethod(const std::int32_t* const array, const std::uint32_t length);
-    //! @brief The shell method.
-    //! @param array - array to be sorted
-    //! @param length - length of array
-    static void shellMethod(const std::int32_t* const array, const std::uint32_t length);
-    //! @brief The merge method.
-    //! @param array - array to be sorted
-    //! @param length - length of array
-    static void mergeMethod(const std::int32_t* const array, const std::uint32_t length);
-    //! @brief The quick method.
-    //! @param array - array to be sorted
-    //! @param length - length of array
-    static void quickMethod(const std::int32_t* const array, const std::uint32_t length);
-    //! @brief The heap method.
-    //! @param array - array to be sorted
-    //! @param length - length of array
-    static void heapMethod(const std::int32_t* const array, const std::uint32_t length);
-    //! @brief The counting method.
-    //! @param array - array to be sorted
-    //! @param length - length of array
-    static void countingMethod(const std::int32_t* const array, const std::uint32_t length);
-    //! @brief The bucket method.
-    //! @param array - array to be sorted
-    //! @param length - length of array
-    static void bucketMethod(const std::int32_t* const array, const std::uint32_t length);
-    //! @brief The radix method.
-    //! @param array - array to be sorted
-    //! @param length - length of array
-    static void radixMethod(const std::int32_t* const array, const std::uint32_t length);
 };
 } // namespace sort
 extern void applyingSort(const std::vector<std::string>& candidates);

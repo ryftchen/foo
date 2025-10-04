@@ -10,9 +10,9 @@
 #include "application/example/include/apply_data_structure.hpp"
 
 //! @brief Title of printing for data structure task tests.
-#define TST_DS_PRINT_TASK_TITLE(category, state)                                                    \
+#define TST_DS_PRINT_TASK_TITLE(title, state)                                                       \
     std::osyncstream(std::cout) << "TEST DATA STRUCTURE: " << std::setiosflags(std::ios_base::left) \
-                                << std::setfill('.') << std::setw(50) << (category) << (state)      \
+                                << std::setfill('.') << std::setw(50) << (title) << (state)         \
                                 << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
 
 //! @brief The test module.
@@ -28,10 +28,12 @@ class CacheTestBase : public ::testing::Test
 {
 protected:
     //! @brief Set up the test case.
-    static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE("CACHE", "BEGIN"); }
+    static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "BEGIN"); }
     //! @brief Tear down the test case.
-    static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE("CACHE", "END"); }
+    static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "END"); }
 
+    //! @brief Test title.
+    static const std::string_view title;
     //! @brief System under test.
     [[no_unique_address]] const cache::Showcase sut{};
     // clang-format off
@@ -103,9 +105,10 @@ protected:
     };
     // clang-format on
 };
+const std::string_view CacheTestBase::title = data_structure::cache::name();
 
 //! @brief Test for the first in first out instance in the structure of cache.
-TEST_F(CacheTestBase, fifoInstance)
+TEST_F(CacheTestBase, FIFOInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.fifo());
@@ -113,7 +116,7 @@ TEST_F(CacheTestBase, fifoInstance)
 }
 
 //! @brief Test for the least frequently used instance in the structure of cache.
-TEST_F(CacheTestBase, lfuInstance)
+TEST_F(CacheTestBase, LFUInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.lfu());
@@ -121,7 +124,7 @@ TEST_F(CacheTestBase, lfuInstance)
 }
 
 //! @brief Test for the least recently used instance in the structure of cache.
-TEST_F(CacheTestBase, lruInstance)
+TEST_F(CacheTestBase, LRUInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.lru());
@@ -133,10 +136,12 @@ class FilterTestBase : public ::testing::Test
 {
 protected:
     //! @brief Set up the test case.
-    static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE("FILTER", "BEGIN"); }
+    static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "BEGIN"); }
     //! @brief Tear down the test case.
-    static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE("FILTER", "END"); }
+    static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "END"); }
 
+    //! @brief Test title.
+    static const std::string_view title;
     //! @brief System under test.
     [[no_unique_address]] const filter::Showcase sut{};
     // clang-format off
@@ -159,9 +164,10 @@ protected:
     };
     // clang-format on
 };
+const std::string_view FilterTestBase::title = data_structure::filter::name();
 
 //! @brief Test for the Bloom instance in the structure of filter.
-TEST_F(FilterTestBase, bloomInstance)
+TEST_F(FilterTestBase, BloomInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.bloom());
@@ -169,7 +175,7 @@ TEST_F(FilterTestBase, bloomInstance)
 }
 
 //! @brief Test for the quotient instance in the structure of filter.
-TEST_F(FilterTestBase, quotientInstance)
+TEST_F(FilterTestBase, QuotientInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.quotient());
@@ -181,10 +187,12 @@ class GraphTestBase : public ::testing::Test
 {
 protected:
     //! @brief Set up the test case.
-    static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE("GRAPH", "BEGIN"); }
+    static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "BEGIN"); }
     //! @brief Tear down the test case.
-    static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE("GRAPH", "END"); }
+    static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "END"); }
 
+    //! @brief Test title.
+    static const std::string_view title;
     //! @brief System under test.
     [[no_unique_address]] const graph::Showcase sut{};
     // clang-format off
@@ -246,9 +254,10 @@ protected:
     };
     // clang-format on
 };
+const std::string_view GraphTestBase::title = data_structure::graph::name();
 
 //! @brief Test for the undirected instance in the structure of graph.
-TEST_F(GraphTestBase, undirectedInstance)
+TEST_F(GraphTestBase, UndirectedInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.undirected());
@@ -256,7 +265,7 @@ TEST_F(GraphTestBase, undirectedInstance)
 }
 
 //! @brief Test for the directed instance in the structure of graph.
-TEST_F(GraphTestBase, directedInstance)
+TEST_F(GraphTestBase, DirectedInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.directed());
@@ -268,10 +277,12 @@ class HeapTestBase : public ::testing::Test
 {
 protected:
     //! @brief Set up the test case.
-    static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE("HEAP", "BEGIN"); }
+    static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "BEGIN"); }
     //! @brief Tear down the test case.
-    static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE("HEAP", "END"); }
+    static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "END"); }
 
+    //! @brief Test title.
+    static const std::string_view title;
     //! @brief System under test.
     [[no_unique_address]] const heap::Showcase sut{};
     // clang-format off
@@ -375,9 +386,10 @@ protected:
     };
     // clang-format on
 };
+const std::string_view HeapTestBase::title = data_structure::heap::name();
 
 //! @brief Test for the binary instance in the structure of heap.
-TEST_F(HeapTestBase, binaryInstance)
+TEST_F(HeapTestBase, BinaryInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.binary());
@@ -385,7 +397,7 @@ TEST_F(HeapTestBase, binaryInstance)
 }
 
 //! @brief Test for the leftist instance in the structure of heap.
-TEST_F(HeapTestBase, leftistInstance)
+TEST_F(HeapTestBase, LeftistInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.leftist());
@@ -393,7 +405,7 @@ TEST_F(HeapTestBase, leftistInstance)
 }
 
 //! @brief Test for the skew instance in the structure of heap.
-TEST_F(HeapTestBase, skewInstance)
+TEST_F(HeapTestBase, SkewInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.skew());
@@ -405,10 +417,12 @@ class LinearTestBase : public ::testing::Test
 {
 protected:
     //! @brief Set up the test case.
-    static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE("LINEAR", "BEGIN"); }
+    static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "BEGIN"); }
     //! @brief Tear down the test case.
-    static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE("LINEAR", "END"); }
+    static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "END"); }
 
+    //! @brief Test title.
+    static const std::string_view title;
     //! @brief System under test.
     [[no_unique_address]] const linear::Showcase sut{};
     // clang-format off
@@ -464,9 +478,10 @@ protected:
     };
     // clang-format on
 };
+const std::string_view LinearTestBase::title = data_structure::linear::name();
 
 //! @brief Test for the doubly linked list instance in the structure of linear.
-TEST_F(LinearTestBase, dllInstance)
+TEST_F(LinearTestBase, DLLInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.dll());
@@ -474,7 +489,7 @@ TEST_F(LinearTestBase, dllInstance)
 }
 
 //! @brief Test for the stack instance in the structure of linear.
-TEST_F(LinearTestBase, stackInstance)
+TEST_F(LinearTestBase, StackInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.stack());
@@ -482,7 +497,7 @@ TEST_F(LinearTestBase, stackInstance)
 }
 
 //! @brief Test for the queue instance in the structure of linear.
-TEST_F(LinearTestBase, queueInstance)
+TEST_F(LinearTestBase, QueueInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.queue());
@@ -494,10 +509,12 @@ class TreeTestBase : public ::testing::Test
 {
 protected:
     //! @brief Set up the test case.
-    static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE("TREE", "BEGIN"); }
+    static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "BEGIN"); }
     //! @brief Tear down the test case.
-    static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE("TREE", "END"); }
+    static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "END"); }
 
+    //! @brief Test title.
+    static const std::string_view title;
     //! @brief System under test.
     [[no_unique_address]] const tree::Showcase sut{};
     // clang-format off
@@ -616,9 +633,10 @@ protected:
     };
     // clang-format on
 };
+const std::string_view TreeTestBase::title = data_structure::tree::name();
 
 //! @brief Test for the binary search instance in the structure of tree.
-TEST_F(TreeTestBase, bsInstance)
+TEST_F(TreeTestBase, BSInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.bs());
@@ -626,7 +644,7 @@ TEST_F(TreeTestBase, bsInstance)
 }
 
 //! @brief Test for the Adelson-Velsky-Landis instance in the structure of tree.
-TEST_F(TreeTestBase, avlInstance)
+TEST_F(TreeTestBase, AVLInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.avl());
@@ -634,7 +652,7 @@ TEST_F(TreeTestBase, avlInstance)
 }
 
 //! @brief Test for the splay instance in the structure of tree.
-TEST_F(TreeTestBase, splayInstance)
+TEST_F(TreeTestBase, SplayInstance)
 {
     std::ostringstream result{};
     ASSERT_NO_THROW(result = sut.splay());

@@ -20,17 +20,17 @@
 #include "utility/include/time.hpp"
 
 //! @brief Title of printing when numeric tasks are beginning.
-#define APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(category)                                                               \
-    std::osyncstream(std::cout) << "\nNUMERIC TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.')  \
-                                << std::setw(50) << (category) << "BEGIN" << std::resetiosflags(std::ios_base::left) \
+#define APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(title)                                                                  \
+    std::osyncstream(std::cout) << "\nAPPLY NUMERIC: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
+                                << std::setw(50) << (title) << "BEGIN" << std::resetiosflags(std::ios_base::left)    \
                                 << std::setfill(' ') << std::endl;                                                   \
     {
 //! @brief Title of printing when numeric tasks are ending.
-#define APP_NUM_PRINT_TASK_TITLE_SCOPE_END(category)                                                                \
-    }                                                                                                               \
-    std::osyncstream(std::cout) << "\nNUMERIC TASK: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
-                                << std::setw(50) << (category) << "END" << std::resetiosflags(std::ios_base::left)  \
-                                << std::setfill(' ') << '\n'                                                        \
+#define APP_NUM_PRINT_TASK_TITLE_SCOPE_END(title)                                                                    \
+    }                                                                                                                \
+    std::osyncstream(std::cout) << "\nAPPLY NUMERIC: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
+                                << std::setw(50) << (title) << "END" << std::resetiosflags(std::ios_base::left)      \
+                                << std::setfill(' ') << '\n'                                                         \
                                 << std::endl;
 
 namespace application::app_num
@@ -78,54 +78,48 @@ namespace arithmetic
 //! @param a - first integer for elementary arithmetic
 //! @param b - second integer for elementary arithmetic
 //! @param op - operator of arithmetic
-static void showResult(
+static void display(
     const ArithmeticMethod method, const std::int32_t result, const std::int32_t a, const std::int32_t b, const char op)
 {
     std::printf("\n==> %-14s Method <==\n(%d) %c (%d) = %d\n", customTitle(method).c_str(), a, op, b, result);
 }
 
-void ArithmeticCalculation::additionMethod(const std::int32_t augend, const std::int32_t addend)
+//! @brief Calculation of arithmetic.
+//! @param method - used arithmetic method
+//! @param a - first integer for elementary arithmetic
+//! @param b - second integer for elementary arithmetic
+static void calculation(const ArithmeticMethod method, const std::int32_t a, const std::int32_t b)
 try
 {
-    const auto calc = numeric::arithmetic::Arithmetic().addition(augend, addend);
-    showResult(ArithmeticMethod::addition, calc, augend, addend, '+');
+    std::int32_t result = 0;
+    char op = ' ';
+    switch (method)
+    {
+        using numeric::arithmetic::Arithmetic;
+        case ArithmeticMethod::addition:
+            result = Arithmetic().addition(a, b);
+            op = '+';
+            break;
+        case ArithmeticMethod::subtraction:
+            result = Arithmetic().subtraction(a, b);
+            op = '-';
+            break;
+        case ArithmeticMethod::multiplication:
+            result = Arithmetic().multiplication(a, b);
+            op = '*';
+            break;
+        case ArithmeticMethod::division:
+            result = Arithmetic().division(a, b);
+            op = '/';
+            break;
+        default:
+            return;
+    }
+    display(method, result, a, b, op);
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in calculation (%s): %s", __func__, err.what());
-}
-
-void ArithmeticCalculation::subtractionMethod(const std::int32_t minuend, const std::int32_t subtrahend)
-try
-{
-    const auto calc = numeric::arithmetic::Arithmetic().subtraction(minuend, subtrahend);
-    showResult(ArithmeticMethod::subtraction, calc, minuend, subtrahend, '-');
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in calculation (%s): %s", __func__, err.what());
-}
-
-void ArithmeticCalculation::multiplicationMethod(const std::int32_t multiplier, const std::int32_t multiplicand)
-try
-{
-    const auto calc = numeric::arithmetic::Arithmetic().multiplication(multiplier, multiplicand);
-    showResult(ArithmeticMethod::multiplication, calc, multiplier, multiplicand, '*');
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in calculation (%s): %s", __func__, err.what());
-}
-
-void ArithmeticCalculation::divisionMethod(const std::int32_t dividend, const std::int32_t divisor)
-try
-{
-    const auto calc = numeric::arithmetic::Arithmetic().division(dividend, divisor);
-    showResult(ArithmeticMethod::division, calc, dividend, divisor, '/');
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in calculation (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(method).c_str(), err.what());
 }
 } // namespace arithmetic
 //! @brief To apply arithmetic-related methods.
@@ -139,7 +133,7 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
+    APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(numeric::arithmetic::name());
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
@@ -147,11 +141,14 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
     const auto inputData = std::make_shared<InputBuilder>(operandA, operandB);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
-        [allocatedJob, &inputData, &taskNamer](
-            const std::string_view subTask, void (*targetMethod)(const std::int32_t, const std::int32_t))
+        [allocatedJob, &inputData, &taskNamer](const std::string_view subTask, const ArithmeticMethod method)
     {
         allocatedJob->enqueue(
-            taskNamer(subTask), targetMethod, inputData->getOperands().first, inputData->getOperands().second);
+            taskNamer(subTask),
+            &arithmetic::calculation,
+            method,
+            inputData->getOperands().first,
+            inputData->getOperands().second);
     };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
@@ -161,26 +158,24 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
-            using arithmetic::ArithmeticCalculation;
-            static_assert(utility::common::isStatelessClass<ArithmeticCalculation>());
             case abbrLitHash(ArithmeticMethod::addition):
-                addTask(target, &ArithmeticCalculation::additionMethod);
+                addTask(target, ArithmeticMethod::addition);
                 break;
             case abbrLitHash(ArithmeticMethod::subtraction):
-                addTask(target, &ArithmeticCalculation::subtractionMethod);
+                addTask(target, ArithmeticMethod::subtraction);
                 break;
             case abbrLitHash(ArithmeticMethod::multiplication):
-                addTask(target, &ArithmeticCalculation::multiplicationMethod);
+                addTask(target, ArithmeticMethod::multiplication);
                 break;
             case abbrLitHash(ArithmeticMethod::division):
-                addTask(target, &ArithmeticCalculation::divisionMethod);
+                addTask(target, ArithmeticMethod::division);
                 break;
             default:
                 throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
         }
     }
 
-    APP_NUM_PRINT_TASK_TITLE_SCOPE_END(category);
+    APP_NUM_PRINT_TASK_TITLE_SCOPE_END(numeric::arithmetic::name());
 }
 
 namespace divisor
@@ -189,7 +184,7 @@ namespace divisor
 //! @param method - used divisor method
 //! @param result - divisor result
 //! @param interval - time interval
-static void showResult(const DivisorMethod method, const std::set<std::int32_t>& result, const double interval)
+static void display(const DivisorMethod method, const std::set<std::int32_t>& result, const double interval)
 {
     const std::uint32_t bufferSize = result.size() * maxAlignOfPrint;
     std::vector<char> fmtBuffer(bufferSize + 1);
@@ -200,28 +195,32 @@ static void showResult(const DivisorMethod method, const std::set<std::int32_t>&
         interval);
 }
 
-void DivisorCalculation::euclideanMethod(const std::int32_t a, const std::int32_t b)
+//! @brief Calculation of divisor.
+//! @param method - used divisor method
+//! @param a - first integer
+//! @param b - second integer
+static void calculation(const DivisorMethod method, const std::int32_t a, const std::int32_t b)
 try
 {
+    std::set<std::int32_t> result{};
     const utility::time::Stopwatch timing{};
-    const auto coll = numeric::divisor::Divisor().euclidean(a, b);
-    showResult(DivisorMethod::euclidean, coll, timing.elapsedTime());
+    switch (method)
+    {
+        using numeric::divisor::Divisor;
+        case DivisorMethod::euclidean:
+            result = Divisor().euclidean(a, b);
+            break;
+        case DivisorMethod::stein:
+            result = Divisor().stein(a, b);
+            break;
+        default:
+            return;
+    }
+    display(method, result, timing.elapsedTime());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in calculation (%s): %s", __func__, err.what());
-}
-
-void DivisorCalculation::steinMethod(const std::int32_t a, const std::int32_t b)
-try
-{
-    const utility::time::Stopwatch timing{};
-    const auto coll = numeric::divisor::Divisor().stein(a, b);
-    showResult(DivisorMethod::stein, coll, timing.elapsedTime());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in calculation (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(method).c_str(), err.what());
 }
 } // namespace divisor
 //! @brief To apply divisor-related methods.
@@ -235,7 +234,7 @@ void applyingDivisor(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
+    APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(numeric::divisor::name());
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
@@ -243,11 +242,14 @@ void applyingDivisor(const std::vector<std::string>& candidates)
     const auto inputData = std::make_shared<InputBuilder>(numberA, numberB);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
-        [allocatedJob, &inputData, &taskNamer](
-            const std::string_view subTask, void (*targetMethod)(const std::int32_t, const std::int32_t))
+        [allocatedJob, &inputData, &taskNamer](const std::string_view subTask, const DivisorMethod method)
     {
         allocatedJob->enqueue(
-            taskNamer(subTask), targetMethod, inputData->getNumbers().first, inputData->getNumbers().second);
+            taskNamer(subTask),
+            &divisor::calculation,
+            method,
+            inputData->getNumbers().first,
+            inputData->getNumbers().second);
     };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
@@ -257,20 +259,18 @@ void applyingDivisor(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
-            using divisor::DivisorCalculation;
-            static_assert(utility::common::isStatelessClass<DivisorCalculation>());
             case abbrLitHash(DivisorMethod::euclidean):
-                addTask(target, &DivisorCalculation::euclideanMethod);
+                addTask(target, DivisorMethod::euclidean);
                 break;
             case abbrLitHash(DivisorMethod::stein):
-                addTask(target, &DivisorCalculation::steinMethod);
+                addTask(target, DivisorMethod::stein);
                 break;
             default:
                 throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
         }
     }
 
-    APP_NUM_PRINT_TASK_TITLE_SCOPE_END(category);
+    APP_NUM_PRINT_TASK_TITLE_SCOPE_END(numeric::divisor::name());
 }
 
 namespace integral
@@ -279,70 +279,48 @@ namespace integral
 //! @param method - used integral method
 //! @param result - integral result
 //! @param interval - time interval
-static void showResult(const IntegralMethod method, const double result, const double interval)
+static void display(const IntegralMethod method, const double result, const double interval)
 {
     std::printf(
         "\n==> %-11s Method <==\nI(def)=%+.5f, run time: %8.5f ms\n", customTitle(method).c_str(), result, interval);
 }
 
-void IntegralCalculation::trapezoidalMethod(const Expression& expr, const double lower, const double upper)
+//! @brief Calculation of integral.
+//! @param method - used integral method
+//! @param expr - target expression
+//! @param lower - lower endpoint
+//! @param upper - upper endpoint
+static void calculation(const IntegralMethod method, const Expression& expr, const double lower, const double upper)
 try
 {
+    double result = 0.0;
     const utility::time::Stopwatch timing{};
-    const auto sum = numeric::integral::Trapezoidal(expr)(lower, upper, numeric::integral::epsilon);
-    showResult(IntegralMethod::trapezoidal, sum, timing.elapsedTime());
+    switch (method)
+    {
+        using namespace numeric::integral; // NOLINT(google-build-using-namespace)
+        case IntegralMethod::trapezoidal:
+            result = Trapezoidal(expr)(lower, upper, epsilon);
+            break;
+        case IntegralMethod::simpson:
+            result = Simpson(expr)(lower, upper, epsilon);
+            break;
+        case IntegralMethod::romberg:
+            result = Romberg(expr)(lower, upper, epsilon);
+            break;
+        case IntegralMethod::gauss:
+            result = Gauss(expr)(lower, upper, epsilon);
+            break;
+        case IntegralMethod::monteCarlo:
+            result = MonteCarlo(expr)(lower, upper, epsilon);
+            break;
+        default:
+            return;
+    }
+    display(method, result, timing.elapsedTime());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in calculation (%s): %s", __func__, err.what());
-}
-
-void IntegralCalculation::adaptiveSimpsonMethod(const Expression& expr, const double lower, const double upper)
-try
-{
-    const utility::time::Stopwatch timing{};
-    const auto sum = numeric::integral::Simpson(expr)(lower, upper, numeric::integral::epsilon);
-    showResult(IntegralMethod::simpson, sum, timing.elapsedTime());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in calculation (%s): %s", __func__, err.what());
-}
-
-void IntegralCalculation::rombergMethod(const Expression& expr, const double lower, const double upper)
-try
-{
-    const utility::time::Stopwatch timing{};
-    const auto sum = numeric::integral::Romberg(expr)(lower, upper, numeric::integral::epsilon);
-    showResult(IntegralMethod::romberg, sum, timing.elapsedTime());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in calculation (%s): %s", __func__, err.what());
-}
-
-void IntegralCalculation::gaussLegendreMethod(const Expression& expr, const double lower, const double upper)
-try
-{
-    const utility::time::Stopwatch timing{};
-    const auto sum = numeric::integral::Gauss(expr)(lower, upper, numeric::integral::epsilon);
-    showResult(IntegralMethod::gauss, sum, timing.elapsedTime());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in calculation (%s): %s", __func__, err.what());
-}
-
-void IntegralCalculation::monteCarloMethod(const Expression& expr, const double lower, const double upper)
-try
-{
-    const utility::time::Stopwatch timing{};
-    const auto sum = numeric::integral::MonteCarlo(expr)(lower, upper, numeric::integral::epsilon);
-    showResult(IntegralMethod::monteCarlo, sum, timing.elapsedTime());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in calculation (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(method).c_str(), err.what());
 }
 } // namespace integral
 //! @brief To apply integral-related methods.
@@ -356,7 +334,7 @@ void applyingIntegral(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
+    APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(numeric::integral::name());
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
@@ -366,12 +344,12 @@ void applyingIntegral(const std::vector<std::string>& candidates)
         CylindricalBessel{}, CylindricalBessel::range1, CylindricalBessel::range2, CylindricalBessel::exprDescr);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
-        [allocatedJob, &inputData, &taskNamer](
-            const std::string_view subTask, void (*targetMethod)(const Expression&, const double, const double))
+        [allocatedJob, &inputData, &taskNamer](const std::string_view subTask, const IntegralMethod method)
     {
         allocatedJob->enqueue(
             taskNamer(subTask),
-            targetMethod,
+            &integral::calculation,
+            method,
             inputData->getExpression(),
             inputData->getRanges().first,
             inputData->getRanges().second);
@@ -384,29 +362,27 @@ void applyingIntegral(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
-            using integral::IntegralCalculation;
-            static_assert(utility::common::isStatelessClass<IntegralCalculation>());
             case abbrLitHash(IntegralMethod::trapezoidal):
-                addTask(target, &IntegralCalculation::trapezoidalMethod);
+                addTask(target, IntegralMethod::trapezoidal);
                 break;
             case abbrLitHash(IntegralMethod::simpson):
-                addTask(target, &IntegralCalculation::adaptiveSimpsonMethod);
+                addTask(target, IntegralMethod::simpson);
                 break;
             case abbrLitHash(IntegralMethod::romberg):
-                addTask(target, &IntegralCalculation::rombergMethod);
+                addTask(target, IntegralMethod::romberg);
                 break;
             case abbrLitHash(IntegralMethod::gauss):
-                addTask(target, &IntegralCalculation::gaussLegendreMethod);
+                addTask(target, IntegralMethod::gauss);
                 break;
             case abbrLitHash(IntegralMethod::monteCarlo):
-                addTask(target, &IntegralCalculation::monteCarloMethod);
+                addTask(target, IntegralMethod::monteCarlo);
                 break;
             default:
                 throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
         }
     }
 
-    APP_NUM_PRINT_TASK_TITLE_SCOPE_END(category);
+    APP_NUM_PRINT_TASK_TITLE_SCOPE_END(numeric::integral::name());
 }
 
 namespace prime
@@ -415,7 +391,7 @@ namespace prime
 //! @param method - used prime method
 //! @param result - prime result
 //! @param interval - time interval
-static void showResult(const PrimeMethod method, const std::vector<std::uint32_t>& result, const double interval)
+static void display(const PrimeMethod method, const std::vector<std::uint32_t>& result, const double interval)
 {
     const std::uint32_t bufferSize = result.size() * maxAlignOfPrint;
     std::vector<char> fmtBuffer(bufferSize + 1);
@@ -426,28 +402,31 @@ static void showResult(const PrimeMethod method, const std::vector<std::uint32_t
         interval);
 }
 
-void PrimeCalculation::eratosthenesMethod(const std::uint32_t max)
+//! @brief Calculation of prime.
+//! @param method - used prime method
+//! @param max - maximum positive integer
+static void calculation(const PrimeMethod method, const std::uint32_t max)
 try
 {
+    std::vector<std::uint32_t> result{};
     const utility::time::Stopwatch timing{};
-    const auto coll = numeric::prime::Prime().eratosthenes(max);
-    showResult(PrimeMethod::eratosthenes, coll, timing.elapsedTime());
+    switch (method)
+    {
+        using numeric::prime::Prime;
+        case PrimeMethod::eratosthenes:
+            result = Prime().eratosthenes(max);
+            break;
+        case PrimeMethod::euler:
+            result = Prime().euler(max);
+            break;
+        default:
+            return;
+    }
+    display(method, result, timing.elapsedTime());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in calculation (%s): %s", __func__, err.what());
-}
-
-void PrimeCalculation::eulerMethod(const std::uint32_t max)
-try
-{
-    const utility::time::Stopwatch timing{};
-    const auto coll = numeric::prime::Prime().euler(max);
-    showResult(PrimeMethod::euler, coll, timing.elapsedTime());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in calculation (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(method).c_str(), err.what());
 }
 } // namespace prime
 //! @brief To apply prime-related methods.
@@ -461,16 +440,16 @@ void applyingPrime(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
+    APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(numeric::prime::name());
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
     using prime::InputBuilder, prime::input::upperBound;
     const auto inputData = std::make_shared<InputBuilder>(upperBound);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = [allocatedJob, &inputData, &taskNamer](
-                             const std::string_view subTask, void (*targetMethod)(const std::uint32_t))
-    { allocatedJob->enqueue(taskNamer(subTask), targetMethod, inputData->getUpperBound()); };
+    const auto addTask =
+        [allocatedJob, &inputData, &taskNamer](const std::string_view subTask, const PrimeMethod method)
+    { allocatedJob->enqueue(taskNamer(subTask), &prime::calculation, method, inputData->getUpperBound()); };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     for (const auto index :
@@ -479,20 +458,18 @@ void applyingPrime(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
-            using prime::PrimeCalculation;
-            static_assert(utility::common::isStatelessClass<PrimeCalculation>());
             case abbrLitHash(PrimeMethod::eratosthenes):
-                addTask(target, &PrimeCalculation::eratosthenesMethod);
+                addTask(target, PrimeMethod::eratosthenes);
                 break;
             case abbrLitHash(PrimeMethod::euler):
-                addTask(target, &PrimeCalculation::eulerMethod);
+                addTask(target, PrimeMethod::euler);
                 break;
             default:
                 throw std::logic_error{"Unknown " + std::string{toString(category)} + " method: " + target + '.'};
         }
     }
 
-    APP_NUM_PRINT_TASK_TITLE_SCOPE_END(category);
+    APP_NUM_PRINT_TASK_TITLE_SCOPE_END(numeric::prime::name());
 }
 } // namespace application::app_num
 
