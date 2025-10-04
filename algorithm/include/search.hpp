@@ -16,6 +16,12 @@ namespace algorithm // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Search-related functions in the algorithm module.
 namespace search
 {
+//! @brief Function name string.
+//! @return name string (module_function)
+inline const char* name() noexcept
+{
+    return "ALGO_SEARCH";
+}
 extern const char* version() noexcept;
 
 //! @brief Search methods.

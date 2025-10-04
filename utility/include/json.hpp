@@ -17,6 +17,12 @@ namespace utility // NOLINT(modernize-concat-nested-namespaces)
 //! @brief JSON-related functions in the utility module.
 namespace json
 {
+//! @brief Function name string.
+//! @return name string (module_function)
+inline const char* name() noexcept
+{
+    return "UTIL_JSON";
+}
 extern const char* version() noexcept;
 
 //! @brief Javascript object notation.

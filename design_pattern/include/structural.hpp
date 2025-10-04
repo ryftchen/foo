@@ -17,6 +17,12 @@ namespace design_pattern // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Structural-related functions in the design pattern module.
 namespace structural
 {
+//! @brief Function name string.
+//! @return name string (module_function)
+inline const char* name() noexcept
+{
+    return "DP_STRUCTURAL";
+}
 extern const char* version() noexcept;
 
 //! @brief The adapter pattern.

@@ -17,6 +17,12 @@ namespace algorithm // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Sort-related functions in the algorithm module.
 namespace sort
 {
+//! @brief Function name string.
+//! @return name string (module_function)
+inline const char* name() noexcept
+{
+    return "ALGO_SORT";
+}
 extern const char* version() noexcept;
 
 //! @brief Sort methods.

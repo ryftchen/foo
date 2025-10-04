@@ -17,6 +17,12 @@ namespace utility // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Timing-related functions in the utility module.
 namespace time
 {
+//! @brief Function name string.
+//! @return name string (module_function)
+inline const char* name() noexcept
+{
+    return "UTIL_TIME";
+}
 extern const char* version() noexcept;
 
 //! @brief Timer.

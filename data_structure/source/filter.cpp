@@ -9,7 +9,7 @@
 #include <cmath>
 #include <cstring>
 
-namespace date_structure::filter
+namespace data_structure::filter
 {
 //! @brief Function version number.
 //! @return version number (major.minor.patch)
@@ -664,4 +664,4 @@ std::uint64_t Quotient::filterSizeInBytes(const std::uint8_t q, const std::uint8
     return (bits % 8) ? (bytes + 1) : bytes;
 }
 // NOLINTEND(readability-magic-numbers)
-} // namespace date_structure::filter
+} // namespace data_structure::filter

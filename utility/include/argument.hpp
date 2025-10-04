@@ -23,6 +23,12 @@ namespace utility // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Argument-parsing-related functions in the utility module.
 namespace argument
 {
+//! @brief Function name string.
+//! @return name string (module_function)
+inline const char* name() noexcept
+{
+    return "UTIL_ARGUMENT";
+}
 extern const char* version() noexcept;
 
 //! @brief Confirm container traits. Value is false.

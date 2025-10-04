@@ -6,7 +6,7 @@
 
 #include "cache.hpp"
 
-namespace date_structure::cache
+namespace data_structure::cache
 {
 //! @brief Function version number.
 //! @return version number (major.minor.patch)
@@ -15,4 +15,4 @@ const char* version() noexcept
     static const char* const ver = "0.1.0";
     return ver;
 }
-} // namespace date_structure::cache
+} // namespace data_structure::cache

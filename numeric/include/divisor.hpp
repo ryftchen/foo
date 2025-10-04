@@ -15,6 +15,12 @@ namespace numeric // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Divisor-related functions in the numeric module.
 namespace divisor
 {
+//! @brief Function name string.
+//! @return name string (module_function)
+inline const char* name() noexcept
+{
+    return "NUM_DIVISOR";
+}
 extern const char* version() noexcept;
 
 //! @brief Divisor methods.

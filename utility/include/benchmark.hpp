@@ -12,6 +12,12 @@ namespace utility // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Benchmark-related functions in the utility module.
 namespace benchmark
 {
+//! @brief Function name string.
+//! @return name string (module_function)
+inline const char* name() noexcept
+{
+    return "UTIL_BENCHMARK";
+}
 extern const char* version() noexcept;
 
 // NOLINTBEGIN(hicpp-no-assembler)

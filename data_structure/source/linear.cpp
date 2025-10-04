@@ -6,7 +6,7 @@
 
 #include "linear.hpp"
 
-namespace date_structure::linear
+namespace data_structure::linear
 {
 //! @brief Function version number.
 //! @return version number (major.minor.patch)
@@ -428,4 +428,4 @@ void Traverse::order(const Operation& op) const
         op(dll::get(*linear, i));
     }
 }
-} // namespace date_structure::linear
+} // namespace data_structure::linear

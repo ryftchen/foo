@@ -6,7 +6,7 @@
 
 #include "tree.hpp"
 
-namespace date_structure::tree
+namespace data_structure::tree
 {
 //! @brief Function version number.
 //! @return version number (major.minor.patch)
@@ -1083,4 +1083,4 @@ void splay(SplayTree* const tree, const void* const key)
 }
 } // namespace splay
 // NOLINTEND(cppcoreguidelines-owning-memory, cppcoreguidelines-pro-type-const-cast)
-} // namespace date_structure::tree
+} // namespace data_structure::tree

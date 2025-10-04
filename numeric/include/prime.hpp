@@ -15,6 +15,12 @@ namespace numeric // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Prime-related functions in the numeric module.
 namespace prime
 {
+//! @brief Function name string.
+//! @return name string (module_function)
+inline const char* name() noexcept
+{
+    return "NUM_PRIME";
+}
 extern const char* version() noexcept;
 
 //! @brief Prime methods.

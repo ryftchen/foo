@@ -25,6 +25,12 @@ namespace utility // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Static-reflection-related functions in the utility module.
 namespace reflection
 {
+//! @brief Function name string.
+//! @return name string (module_function)
+inline const char* name() noexcept
+{
+    return "UTIL_REFLECTION";
+}
 extern const char* version() noexcept;
 
 //! @brief Reflection.

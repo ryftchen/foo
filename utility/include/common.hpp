@@ -18,6 +18,12 @@ namespace utility // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Common-interface-related functions in the utility module.
 namespace common
 {
+//! @brief Function name string.
+//! @return name string (module_function)
+inline const char* name() noexcept
+{
+    return "UTIL_COMMON";
+}
 extern const char* version() noexcept;
 
 //! @brief Hash seed for BKDR hash function.

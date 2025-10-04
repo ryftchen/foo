@@ -10,11 +10,17 @@
 #include <ostream>
 
 //! @brief The data structure module.
-namespace date_structure // NOLINT(modernize-concat-nested-namespaces)
+namespace data_structure // NOLINT(modernize-concat-nested-namespaces)
 {
 //! @brief Tree-related functions in the data structure module.
 namespace tree
 {
+//! @brief Function name string.
+//! @return name string (module_function)
+inline const char* name() noexcept
+{
+    return "DS_TREE";
+}
 extern const char* version() noexcept;
 
 //! @brief The binary search tree.
@@ -345,4 +351,4 @@ std::ostream& operator<<(std::ostream& os, const Printer<N, K>& printer)
     return os;
 }
 } // namespace tree
-} // namespace date_structure
+} // namespace data_structure

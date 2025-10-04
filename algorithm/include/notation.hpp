@@ -15,6 +15,12 @@ namespace algorithm // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Notation-related functions in the algorithm module.
 namespace notation
 {
+//! @brief Function name string.
+//! @return name string (module_function)
+inline const char* name() noexcept
+{
+    return "ALGO_NOTATION";
+}
 extern const char* version() noexcept;
 
 //! @brief Notation methods.

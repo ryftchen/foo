@@ -8,7 +8,7 @@
 
 #include <cstring>
 
-namespace date_structure::heap
+namespace data_structure::heap
 {
 //! @brief Function version number.
 //! @return version number (major.minor.patch)
@@ -541,4 +541,4 @@ void merge(SkewHeap* const dst, SkewHeap* const src)
 }
 } // namespace skew
 // NOLINTEND(cppcoreguidelines-owning-memory, cppcoreguidelines-pro-type-const-cast)
-} // namespace date_structure::heap
+} // namespace data_structure::heap

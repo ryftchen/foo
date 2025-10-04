@@ -16,6 +16,12 @@ namespace utility // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Thread-pool-related functions in the utility module.
 namespace thread
 {
+//! @brief Function name string.
+//! @return name string (module_function)
+inline const char* name() noexcept
+{
+    return "UTIL_THREAD";
+}
 extern const char* version() noexcept;
 
 //! @brief Thread pool.

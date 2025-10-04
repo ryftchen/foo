@@ -18,6 +18,12 @@ namespace utility // NOLINT(modernize-concat-nested-namespaces)
 //! @brief I/O-operation-related functions in the utility module.
 namespace io
 {
+//! @brief Function name string.
+//! @return name string (module_function)
+inline const char* name() noexcept
+{
+    return "UTIL_IO";
+}
 extern const char* version() noexcept;
 
 extern std::string executeCommand(const std::string& command);

@@ -15,11 +15,17 @@
 #include <vector>
 
 //! @brief The data structure module.
-namespace date_structure // NOLINT(modernize-concat-nested-namespaces)
+namespace data_structure // NOLINT(modernize-concat-nested-namespaces)
 {
 //! @brief Cache-related functions in the data structure module.
 namespace cache
 {
+//! @brief Function name string.
+//! @return name string (module_function)
+inline const char* name() noexcept
+{
+    return "DS_CACHE";
+}
 extern const char* version() noexcept;
 
 //! @brief The FIFO (first in first out) cache replacement policy.
@@ -1036,4 +1042,4 @@ void LRU<Key, Value>::doPrune()
     }
 }
 } // namespace cache
-} // namespace date_structure
+} // namespace data_structure

@@ -14,6 +14,12 @@ namespace numeric // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Arithmetic-related functions in the numeric module.
 namespace arithmetic
 {
+//! @brief Function name string.
+//! @return name string (module_function)
+inline const char* name() noexcept
+{
+    return "NUM_ARITHMETIC";
+}
 extern const char* version() noexcept;
 
 //! @brief Arithmetic methods.

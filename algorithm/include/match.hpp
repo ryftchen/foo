@@ -14,6 +14,12 @@ namespace algorithm // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Match-related functions in the algorithm module.
 namespace match
 {
+//! @brief Function name string.
+//! @return name string (module_function)
+inline const char* name() noexcept
+{
+    return "ALGO_MATCH";
+}
 extern const char* version() noexcept;
 
 //! @brief Match methods.

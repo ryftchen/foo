@@ -9,11 +9,17 @@
 #include <memory>
 
 //! @brief The data structure module.
-namespace date_structure // NOLINT(modernize-concat-nested-namespaces)
+namespace data_structure // NOLINT(modernize-concat-nested-namespaces)
 {
 //! @brief Filter-related functions in the data structure module.
 namespace filter
 {
+//! @brief Function name string.
+//! @return name string (module_function)
+inline const char* name() noexcept
+{
+    return "DS_FILTER";
+}
 extern const char* version() noexcept;
 
 //! @brief The Bloom filter. A space-efficient probabilistic data structure.
@@ -310,4 +316,4 @@ bool Quotient::merge(const Quotient& qf, const QFs&... others)
     return true;
 }
 } // namespace filter
-} // namespace date_structure
+} // namespace data_structure
