@@ -144,16 +144,16 @@ extern bool present();
 extern void clear();
 } // namespace manage
 
-//! @brief Update choice.
+//! @brief Set choice.
 //! @tparam T - type of target instance
-//! @param target - target instance
+//! @param choice - target choice
 template <typename T>
-void updateChoice(const std::string& target);
-//! @brief Run choices.
+void setChoice(const std::string& choice);
+//! @brief Run candidates.
 //! @tparam T - type of target instance
-//! @param candidates - container for the candidate target instances
+//! @param candidates - container for the candidate target choices
 template <typename T>
-void runChoices(const std::vector<std::string>& candidates);
+void runCandidates(const std::vector<std::string>& candidates);
 
 //! @brief Register behavioral.
 namespace behavioral
@@ -161,9 +161,9 @@ namespace behavioral
 extern const char* version() noexcept;
 } // namespace behavioral
 template <>
-void updateChoice<BehavioralInstance>(const std::string& target);
+void setChoice<BehavioralInstance>(const std::string& choice);
 template <>
-void runChoices<BehavioralInstance>(const std::vector<std::string>& candidates);
+void runCandidates<BehavioralInstance>(const std::vector<std::string>& candidates);
 
 //! @brief Register creational.
 namespace creational
@@ -171,9 +171,9 @@ namespace creational
 extern const char* version() noexcept;
 } // namespace creational
 template <>
-void updateChoice<CreationalInstance>(const std::string& target);
+void setChoice<CreationalInstance>(const std::string& choice);
 template <>
-void runChoices<CreationalInstance>(const std::vector<std::string>& candidates);
+void runCandidates<CreationalInstance>(const std::vector<std::string>& candidates);
 
 //! @brief Register structural.
 namespace structural
@@ -181,9 +181,9 @@ namespace structural
 extern const char* version() noexcept;
 } // namespace structural
 template <>
-void updateChoice<StructuralInstance>(const std::string& target);
+void setChoice<StructuralInstance>(const std::string& choice);
 template <>
-void runChoices<StructuralInstance>(const std::vector<std::string>& candidates);
+void runCandidates<StructuralInstance>(const std::vector<std::string>& candidates);
 } // namespace reg_dp
 } // namespace application
 

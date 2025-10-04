@@ -63,15 +63,15 @@ const char* version() noexcept
     return app_algo::match::version;
 }
 } // namespace match
-//! @brief Update match-related choice.
-//! @param target - target method
+//! @brief Set match-related choice.
+//! @param choice - target choice
 template <>
-void updateChoice<MatchMethod>(const std::string& target)
+void setChoice<MatchMethod>(const std::string& choice)
 {
     constexpr auto category = Category::match;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(MatchMethod::rabinKarp):
             bits.set(mappedPos<MatchMethod>(MACRO_STRINGIFY(rabinKarp)));
@@ -90,13 +90,13 @@ void updateChoice<MatchMethod>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run match-related choices.
-//! @param candidates - container for the candidate target methods
+//! @brief Run match-related candidates.
+//! @param candidates - container for the candidate target choices
 template <>
-void runChoices<MatchMethod>(const std::vector<std::string>& candidates)
+void runCandidates<MatchMethod>(const std::vector<std::string>& candidates)
 {
     app_algo::applyingMatch(candidates);
 }
@@ -110,15 +110,15 @@ const char* version() noexcept
     return app_algo::notation::version;
 }
 } // namespace notation
-//! @brief Update notation-related choice.
-//! @param target - target method
+//! @brief Set notation-related choice.
+//! @param choice - target choice
 template <>
-void updateChoice<NotationMethod>(const std::string& target)
+void setChoice<NotationMethod>(const std::string& choice)
 {
     constexpr auto category = Category::notation;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(NotationMethod::prefix):
             bits.set(mappedPos<NotationMethod>(MACRO_STRINGIFY(prefix)));
@@ -128,13 +128,13 @@ void updateChoice<NotationMethod>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run notation-related choices.
-//! @param candidates - container for the candidate target methods
+//! @brief Run notation-related candidates.
+//! @param candidates - container for the candidate target choices
 template <>
-void runChoices<NotationMethod>(const std::vector<std::string>& candidates)
+void runCandidates<NotationMethod>(const std::vector<std::string>& candidates)
 {
     app_algo::applyingNotation(candidates);
 }
@@ -148,15 +148,15 @@ const char* version() noexcept
     return app_algo::optimal::version;
 }
 } // namespace optimal
-//! @brief Update optimal-related choice.
-//! @param target - target method
+//! @brief Set optimal-related choice.
+//! @param choice - target choice
 template <>
-void updateChoice<OptimalMethod>(const std::string& target)
+void setChoice<OptimalMethod>(const std::string& choice)
 {
     constexpr auto category = Category::optimal;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(OptimalMethod::gradient):
             bits.set(mappedPos<OptimalMethod>(MACRO_STRINGIFY(gradient)));
@@ -178,13 +178,13 @@ void updateChoice<OptimalMethod>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run optimal-related choices.
-//! @param candidates - container for the candidate target methods
+//! @brief Run optimal-related candidates.
+//! @param candidates - container for the candidate target choices
 template <>
-void runChoices<OptimalMethod>(const std::vector<std::string>& candidates)
+void runCandidates<OptimalMethod>(const std::vector<std::string>& candidates)
 {
     app_algo::applyingOptimal(candidates);
 }
@@ -198,15 +198,15 @@ const char* version() noexcept
     return app_algo::search::version;
 }
 } // namespace search
-//! @brief Update search-related choice.
-//! @param target - target method
+//! @brief Set search-related choice.
+//! @param choice - target choice
 template <>
-void updateChoice<SearchMethod>(const std::string& target)
+void setChoice<SearchMethod>(const std::string& choice)
 {
     constexpr auto category = Category::search;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(SearchMethod::binary):
             bits.set(mappedPos<SearchMethod>(MACRO_STRINGIFY(binary)));
@@ -219,13 +219,13 @@ void updateChoice<SearchMethod>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run search-related choices.
-//! @param candidates - container for the candidate target methods
+//! @brief Run search-related candidates.
+//! @param candidates - container for the candidate target choices
 template <>
-void runChoices<SearchMethod>(const std::vector<std::string>& candidates)
+void runCandidates<SearchMethod>(const std::vector<std::string>& candidates)
 {
     app_algo::applyingSearch(candidates);
 }
@@ -239,15 +239,15 @@ const char* version() noexcept
     return app_algo::sort::version;
 }
 } // namespace sort
-//! @brief Update sort-related choice.
-//! @param target - target method
+//! @brief Set sort-related choice.
+//! @param choice - target choice
 template <>
-void updateChoice<SortMethod>(const std::string& target)
+void setChoice<SortMethod>(const std::string& choice)
 {
     constexpr auto category = Category::sort;
     auto& bits = categoryOpts<category>();
 
-    switch (utility::common::bkdrHash(target.c_str()))
+    switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(SortMethod::bubble):
             bits.set(mappedPos<SortMethod>(MACRO_STRINGIFY(bubble)));
@@ -281,13 +281,13 @@ void updateChoice<SortMethod>(const std::string& target)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " method: " + target + '.'};
+            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run sort-related choices.
-//! @param candidates - container for the candidate target methods
+//! @brief Run sort-related candidates.
+//! @param candidates - container for the candidate target choices
 template <>
-void runChoices<SortMethod>(const std::vector<std::string>& candidates)
+void runCandidates<SortMethod>(const std::vector<std::string>& candidates)
 {
     app_algo::applyingSort(candidates);
 }

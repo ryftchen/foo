@@ -294,10 +294,10 @@ void Command::setupSubCLI<reg_algo::ApplyAlgorithm>()
         .remaining()
         .metaVariable(metaVar)
         .help(descr<MatchMethod>());
-    applyingForwarder.registerHandler([](const action::UpdateChoice<MatchMethod>& msg)
-                                      { updateChoice<MatchMethod>(msg.cho); });
-    applyingForwarder.registerHandler([](const action::RunChoices<MatchMethod>& msg)
-                                      { runChoices<MatchMethod>(msg.coll); });
+    applyingForwarder.registerHandler([](const action::SetChoice<MatchMethod>& msg)
+                                      { setChoice<MatchMethod>(msg.choice); });
+    applyingForwarder.registerHandler([](const action::RunCandidates<MatchMethod>& msg)
+                                      { runCandidates<MatchMethod>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyAlgorithm>(), match::version()}, name<MatchMethod>());
     candidates = extractChoices<NotationMethod>();
     registry.emplace(name<NotationMethod>(), Attr{candidates, NotationMethod{}});
@@ -309,10 +309,10 @@ void Command::setupSubCLI<reg_algo::ApplyAlgorithm>()
         .remaining()
         .metaVariable(metaVar)
         .help(descr<NotationMethod>());
-    applyingForwarder.registerHandler([](const action::UpdateChoice<NotationMethod>& msg)
-                                      { updateChoice<NotationMethod>(msg.cho); });
-    applyingForwarder.registerHandler([](const action::RunChoices<NotationMethod>& msg)
-                                      { runChoices<NotationMethod>(msg.coll); });
+    applyingForwarder.registerHandler([](const action::SetChoice<NotationMethod>& msg)
+                                      { setChoice<NotationMethod>(msg.choice); });
+    applyingForwarder.registerHandler([](const action::RunCandidates<NotationMethod>& msg)
+                                      { runCandidates<NotationMethod>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyAlgorithm>(), notation::version()}, name<NotationMethod>());
     candidates = extractChoices<OptimalMethod>();
     registry.emplace(name<OptimalMethod>(), Attr{candidates, OptimalMethod{}});
@@ -323,10 +323,10 @@ void Command::setupSubCLI<reg_algo::ApplyAlgorithm>()
         .remaining()
         .metaVariable(metaVar)
         .help(descr<OptimalMethod>());
-    applyingForwarder.registerHandler([](const action::UpdateChoice<OptimalMethod>& msg)
-                                      { updateChoice<OptimalMethod>(msg.cho); });
-    applyingForwarder.registerHandler([](const action::RunChoices<OptimalMethod>& msg)
-                                      { runChoices<OptimalMethod>(msg.coll); });
+    applyingForwarder.registerHandler([](const action::SetChoice<OptimalMethod>& msg)
+                                      { setChoice<OptimalMethod>(msg.choice); });
+    applyingForwarder.registerHandler([](const action::RunCandidates<OptimalMethod>& msg)
+                                      { runCandidates<OptimalMethod>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyAlgorithm>(), optimal::version()}, name<OptimalMethod>());
     candidates = extractChoices<SearchMethod>();
     registry.emplace(name<SearchMethod>(), Attr{candidates, SearchMethod{}});
@@ -337,10 +337,10 @@ void Command::setupSubCLI<reg_algo::ApplyAlgorithm>()
         .remaining()
         .metaVariable(metaVar)
         .help(descr<SearchMethod>());
-    applyingForwarder.registerHandler([](const action::UpdateChoice<SearchMethod>& msg)
-                                      { updateChoice<SearchMethod>(msg.cho); });
-    applyingForwarder.registerHandler([](const action::RunChoices<SearchMethod>& msg)
-                                      { runChoices<SearchMethod>(msg.coll); });
+    applyingForwarder.registerHandler([](const action::SetChoice<SearchMethod>& msg)
+                                      { setChoice<SearchMethod>(msg.choice); });
+    applyingForwarder.registerHandler([](const action::RunCandidates<SearchMethod>& msg)
+                                      { runCandidates<SearchMethod>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyAlgorithm>(), search::version()}, name<SearchMethod>());
     candidates = extractChoices<SortMethod>();
     registry.emplace(name<SortMethod>(), Attr{candidates, SortMethod{}});
@@ -351,10 +351,10 @@ void Command::setupSubCLI<reg_algo::ApplyAlgorithm>()
         .remaining()
         .metaVariable(metaVar)
         .help(descr<SortMethod>());
-    applyingForwarder.registerHandler([](const action::UpdateChoice<SortMethod>& msg)
-                                      { updateChoice<SortMethod>(msg.cho); });
-    applyingForwarder.registerHandler([](const action::RunChoices<SortMethod>& msg)
-                                      { runChoices<SortMethod>(msg.coll); });
+    applyingForwarder.registerHandler([](const action::SetChoice<SortMethod>& msg)
+                                      { setChoice<SortMethod>(msg.choice); });
+    applyingForwarder.registerHandler([](const action::RunCandidates<SortMethod>& msg)
+                                      { runCandidates<SortMethod>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyAlgorithm>(), sort::version()}, name<SortMethod>());
 
     mainCLI.addSubParser(subCLIAppAlgo);
@@ -389,10 +389,10 @@ void Command::setupSubCLI<reg_dp::ApplyDesignPattern>()
         .remaining()
         .metaVariable(metaVar)
         .help(descr<BehavioralInstance>());
-    applyingForwarder.registerHandler([](const action::UpdateChoice<BehavioralInstance>& msg)
-                                      { updateChoice<BehavioralInstance>(msg.cho); });
-    applyingForwarder.registerHandler([](const action::RunChoices<BehavioralInstance>& msg)
-                                      { runChoices<BehavioralInstance>(msg.coll); });
+    applyingForwarder.registerHandler([](const action::SetChoice<BehavioralInstance>& msg)
+                                      { setChoice<BehavioralInstance>(msg.choice); });
+    applyingForwarder.registerHandler([](const action::RunCandidates<BehavioralInstance>& msg)
+                                      { runCandidates<BehavioralInstance>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyDesignPattern>(), behavioral::version()}, name<BehavioralInstance>());
     candidates = extractChoices<CreationalInstance>();
     registry.emplace(name<CreationalInstance>(), Attr{candidates, CreationalInstance{}});
@@ -405,10 +405,10 @@ void Command::setupSubCLI<reg_dp::ApplyDesignPattern>()
         .remaining()
         .metaVariable(metaVar)
         .help(descr<CreationalInstance>());
-    applyingForwarder.registerHandler([](const action::UpdateChoice<CreationalInstance>& msg)
-                                      { updateChoice<CreationalInstance>(msg.cho); });
-    applyingForwarder.registerHandler([](const action::RunChoices<CreationalInstance>& msg)
-                                      { runChoices<CreationalInstance>(msg.coll); });
+    applyingForwarder.registerHandler([](const action::SetChoice<CreationalInstance>& msg)
+                                      { setChoice<CreationalInstance>(msg.choice); });
+    applyingForwarder.registerHandler([](const action::RunCandidates<CreationalInstance>& msg)
+                                      { runCandidates<CreationalInstance>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyDesignPattern>(), creational::version()}, name<CreationalInstance>());
     candidates = extractChoices<StructuralInstance>();
     registry.emplace(name<StructuralInstance>(), Attr{candidates, StructuralInstance{}});
@@ -421,10 +421,10 @@ void Command::setupSubCLI<reg_dp::ApplyDesignPattern>()
         .remaining()
         .metaVariable(metaVar)
         .help(descr<StructuralInstance>());
-    applyingForwarder.registerHandler([](const action::UpdateChoice<StructuralInstance>& msg)
-                                      { updateChoice<StructuralInstance>(msg.cho); });
-    applyingForwarder.registerHandler([](const action::RunChoices<StructuralInstance>& msg)
-                                      { runChoices<StructuralInstance>(msg.coll); });
+    applyingForwarder.registerHandler([](const action::SetChoice<StructuralInstance>& msg)
+                                      { setChoice<StructuralInstance>(msg.choice); });
+    applyingForwarder.registerHandler([](const action::RunCandidates<StructuralInstance>& msg)
+                                      { runCandidates<StructuralInstance>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyDesignPattern>(), structural::version()}, name<StructuralInstance>());
 
     mainCLI.addSubParser(subCLIAppDp);
@@ -457,10 +457,10 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
         .remaining()
         .metaVariable(metaVar)
         .help(descr<CacheInstance>());
-    applyingForwarder.registerHandler([](const action::UpdateChoice<CacheInstance>& msg)
-                                      { updateChoice<CacheInstance>(msg.cho); });
-    applyingForwarder.registerHandler([](const action::RunChoices<CacheInstance>& msg)
-                                      { runChoices<CacheInstance>(msg.coll); });
+    applyingForwarder.registerHandler([](const action::SetChoice<CacheInstance>& msg)
+                                      { setChoice<CacheInstance>(msg.choice); });
+    applyingForwarder.registerHandler([](const action::RunCandidates<CacheInstance>& msg)
+                                      { runCandidates<CacheInstance>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyDataStructure>(), cache::version()}, name<CacheInstance>());
     candidates = extractChoices<FilterInstance>();
     registry.emplace(name<FilterInstance>(), Attr{candidates, FilterInstance{}});
@@ -472,10 +472,10 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
         .remaining()
         .metaVariable(metaVar)
         .help(descr<FilterInstance>());
-    applyingForwarder.registerHandler([](const action::UpdateChoice<FilterInstance>& msg)
-                                      { updateChoice<FilterInstance>(msg.cho); });
-    applyingForwarder.registerHandler([](const action::RunChoices<FilterInstance>& msg)
-                                      { runChoices<FilterInstance>(msg.coll); });
+    applyingForwarder.registerHandler([](const action::SetChoice<FilterInstance>& msg)
+                                      { setChoice<FilterInstance>(msg.choice); });
+    applyingForwarder.registerHandler([](const action::RunCandidates<FilterInstance>& msg)
+                                      { runCandidates<FilterInstance>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyDataStructure>(), filter::version()}, name<FilterInstance>());
     candidates = extractChoices<GraphInstance>();
     registry.emplace(name<GraphInstance>(), Attr{candidates, GraphInstance{}});
@@ -486,10 +486,10 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
         .remaining()
         .metaVariable(metaVar)
         .help(descr<GraphInstance>());
-    applyingForwarder.registerHandler([](const action::UpdateChoice<GraphInstance>& msg)
-                                      { updateChoice<GraphInstance>(msg.cho); });
-    applyingForwarder.registerHandler([](const action::RunChoices<GraphInstance>& msg)
-                                      { runChoices<GraphInstance>(msg.coll); });
+    applyingForwarder.registerHandler([](const action::SetChoice<GraphInstance>& msg)
+                                      { setChoice<GraphInstance>(msg.choice); });
+    applyingForwarder.registerHandler([](const action::RunCandidates<GraphInstance>& msg)
+                                      { runCandidates<GraphInstance>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyDataStructure>(), graph::version()}, name<GraphInstance>());
     candidates = extractChoices<HeapInstance>();
     registry.emplace(name<HeapInstance>(), Attr{candidates, HeapInstance{}});
@@ -500,10 +500,10 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
         .remaining()
         .metaVariable(metaVar)
         .help(descr<HeapInstance>());
-    applyingForwarder.registerHandler([](const action::UpdateChoice<HeapInstance>& msg)
-                                      { updateChoice<HeapInstance>(msg.cho); });
-    applyingForwarder.registerHandler([](const action::RunChoices<HeapInstance>& msg)
-                                      { runChoices<HeapInstance>(msg.coll); });
+    applyingForwarder.registerHandler([](const action::SetChoice<HeapInstance>& msg)
+                                      { setChoice<HeapInstance>(msg.choice); });
+    applyingForwarder.registerHandler([](const action::RunCandidates<HeapInstance>& msg)
+                                      { runCandidates<HeapInstance>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyDataStructure>(), heap::version()}, name<HeapInstance>());
     candidates = extractChoices<LinearInstance>();
     registry.emplace(name<LinearInstance>(), Attr{candidates, LinearInstance{}});
@@ -515,10 +515,10 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
         .remaining()
         .metaVariable(metaVar)
         .help(descr<LinearInstance>());
-    applyingForwarder.registerHandler([](const action::UpdateChoice<LinearInstance>& msg)
-                                      { updateChoice<LinearInstance>(msg.cho); });
-    applyingForwarder.registerHandler([](const action::RunChoices<LinearInstance>& msg)
-                                      { runChoices<LinearInstance>(msg.coll); });
+    applyingForwarder.registerHandler([](const action::SetChoice<LinearInstance>& msg)
+                                      { setChoice<LinearInstance>(msg.choice); });
+    applyingForwarder.registerHandler([](const action::RunCandidates<LinearInstance>& msg)
+                                      { runCandidates<LinearInstance>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyDataStructure>(), linear::version()}, name<LinearInstance>());
     candidates = extractChoices<TreeInstance>();
     registry.emplace(name<TreeInstance>(), Attr{candidates, TreeInstance{}});
@@ -529,10 +529,10 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
         .remaining()
         .metaVariable(metaVar)
         .help(descr<TreeInstance>());
-    applyingForwarder.registerHandler([](const action::UpdateChoice<TreeInstance>& msg)
-                                      { updateChoice<TreeInstance>(msg.cho); });
-    applyingForwarder.registerHandler([](const action::RunChoices<TreeInstance>& msg)
-                                      { runChoices<TreeInstance>(msg.coll); });
+    applyingForwarder.registerHandler([](const action::SetChoice<TreeInstance>& msg)
+                                      { setChoice<TreeInstance>(msg.choice); });
+    applyingForwarder.registerHandler([](const action::RunCandidates<TreeInstance>& msg)
+                                      { runCandidates<TreeInstance>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyDataStructure>(), tree::version()}, name<TreeInstance>());
 
     mainCLI.addSubParser(subCLIAppDs);
@@ -566,10 +566,10 @@ void Command::setupSubCLI<reg_num::ApplyNumeric>()
         .remaining()
         .metaVariable(metaVar)
         .help(descr<ArithmeticMethod>());
-    applyingForwarder.registerHandler([](const action::UpdateChoice<ArithmeticMethod>& msg)
-                                      { updateChoice<ArithmeticMethod>(msg.cho); });
-    applyingForwarder.registerHandler([](const action::RunChoices<ArithmeticMethod>& msg)
-                                      { runChoices<ArithmeticMethod>(msg.coll); });
+    applyingForwarder.registerHandler([](const action::SetChoice<ArithmeticMethod>& msg)
+                                      { setChoice<ArithmeticMethod>(msg.choice); });
+    applyingForwarder.registerHandler([](const action::RunCandidates<ArithmeticMethod>& msg)
+                                      { runCandidates<ArithmeticMethod>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyNumeric>(), arithmetic::version()}, name<ArithmeticMethod>());
     candidates = extractChoices<DivisorMethod>();
     registry.emplace(name<DivisorMethod>(), Attr{candidates, DivisorMethod{}});
@@ -580,10 +580,10 @@ void Command::setupSubCLI<reg_num::ApplyNumeric>()
         .remaining()
         .metaVariable(metaVar)
         .help(descr<DivisorMethod>());
-    applyingForwarder.registerHandler([](const action::UpdateChoice<DivisorMethod>& msg)
-                                      { updateChoice<DivisorMethod>(msg.cho); });
-    applyingForwarder.registerHandler([](const action::RunChoices<DivisorMethod>& msg)
-                                      { runChoices<DivisorMethod>(msg.coll); });
+    applyingForwarder.registerHandler([](const action::SetChoice<DivisorMethod>& msg)
+                                      { setChoice<DivisorMethod>(msg.choice); });
+    applyingForwarder.registerHandler([](const action::RunCandidates<DivisorMethod>& msg)
+                                      { runCandidates<DivisorMethod>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyNumeric>(), divisor::version()}, name<DivisorMethod>());
     candidates = extractChoices<IntegralMethod>();
     registry.emplace(name<IntegralMethod>(), Attr{candidates, IntegralMethod{}});
@@ -595,10 +595,10 @@ void Command::setupSubCLI<reg_num::ApplyNumeric>()
         .remaining()
         .metaVariable(metaVar)
         .help(descr<IntegralMethod>());
-    applyingForwarder.registerHandler([](const action::UpdateChoice<IntegralMethod>& msg)
-                                      { updateChoice<IntegralMethod>(msg.cho); });
-    applyingForwarder.registerHandler([](const action::RunChoices<IntegralMethod>& msg)
-                                      { runChoices<IntegralMethod>(msg.coll); });
+    applyingForwarder.registerHandler([](const action::SetChoice<IntegralMethod>& msg)
+                                      { setChoice<IntegralMethod>(msg.choice); });
+    applyingForwarder.registerHandler([](const action::RunCandidates<IntegralMethod>& msg)
+                                      { runCandidates<IntegralMethod>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyNumeric>(), integral::version()}, name<IntegralMethod>());
     candidates = extractChoices<PrimeMethod>();
     registry.emplace(name<PrimeMethod>(), Attr{candidates, PrimeMethod{}});
@@ -609,10 +609,10 @@ void Command::setupSubCLI<reg_num::ApplyNumeric>()
         .remaining()
         .metaVariable(metaVar)
         .help(descr<PrimeMethod>());
-    applyingForwarder.registerHandler([](const action::UpdateChoice<PrimeMethod>& msg)
-                                      { updateChoice<PrimeMethod>(msg.cho); });
-    applyingForwarder.registerHandler([](const action::RunChoices<PrimeMethod>& msg)
-                                      { runChoices<PrimeMethod>(msg.coll); });
+    applyingForwarder.registerHandler([](const action::SetChoice<PrimeMethod>& msg)
+                                      { setChoice<PrimeMethod>(msg.choice); });
+    applyingForwarder.registerHandler([](const action::RunCandidates<PrimeMethod>& msg)
+                                      { runCandidates<PrimeMethod>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyNumeric>(), prime::version()}, name<PrimeMethod>());
 
     mainCLI.addSubParser(subCLIAppNum);
@@ -701,12 +701,12 @@ void Command::precheck()
                      [this, &subCLI](const auto& categoryPair)
                      { return subCLI.isUsed(categoryPair.first) ? (checkExcessArgs(), true) : false; }))
         {
-            for (const auto& target : subCLI.get<std::vector<std::string>>(categoryName))
+            for (const auto& choice : subCLI.get<std::vector<std::string>>(categoryName))
             {
                 std::visit(
                     action::EvtVisitor{
-                        [this, &target](auto&& event)
-                        { applyingForwarder.onMessage(action::UpdateChoice<std::decay_t<decltype(event)>>{target}); }},
+                        [this, &choice](auto&& event)
+                        { applyingForwarder.onMessage(action::SetChoice<std::decay_t<decltype(event)>>{choice}); }},
                     categoryTrait.event);
             }
         }
@@ -753,7 +753,7 @@ void Command::dispatch()
             std::visit(
                 action::EvtVisitor{
                     [this, &candidates = categoryTrait.choices](auto&& event)
-                    { applyingForwarder.onMessage(action::RunChoices<std::decay_t<decltype(event)>>{candidates}); }},
+                    { applyingForwarder.onMessage(action::RunCandidates<std::decay_t<decltype(event)>>{candidates}); }},
                 categoryTrait.event);
         }
     }

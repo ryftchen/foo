@@ -114,6 +114,8 @@ private:
     };
     //! @brief Internal terminal.
     const std::unique_ptr<Terminal> terminal;
+    //! @brief Dummy callback function.
+    const Callback dummyCallback{[](const Args& /*inputs*/) { return RetCode::success; }};
 
     //! @brief Get all registered options with help information.
     //! @return all registered options with help information

@@ -69,9 +69,9 @@ Console::RetCode Console::optionExecutor(const std::string& option) const
         throw std::runtime_error{
             "The console option (" + inputs.front() + ") could not be found. Enter the \"usage\" for help."};
     }
-    const auto& callback = std::get<Callback>(regIter->second);
+    const auto& mappedCallback = std::get<Callback>(regIter->second);
 
-    return callback ? callback(inputs) : RetCode::success;
+    return mappedCallback ? mappedCallback(inputs) : dummyCallback(inputs);
 }
 
 Console::RetCode Console::fileExecutor(const std::string& filename) const
