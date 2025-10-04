@@ -167,41 +167,6 @@ public:
     std::bitset<Bottom<LinearInstance>::value> linearOpts;
     //! @brief Bit flags for managing tree instances.
     std::bitset<Bottom<TreeInstance>::value> treeOpts;
-
-protected:
-    //! @brief The operator (<<) overloading of the Category enum.
-    //! @param os - output stream object
-    //! @param cat - current category
-    //! @return reference of the output stream object
-    friend std::ostream& operator<<(std::ostream& os, const Category cat)
-    {
-        switch (cat)
-        {
-            case Category::cache:
-                os << "CACHE";
-                break;
-            case Category::filter:
-                os << "FILTER";
-                break;
-            case Category::graph:
-                os << "GRAPH";
-                break;
-            case Category::heap:
-                os << "HEAP";
-                break;
-            case Category::linear:
-                os << "LINEAR";
-                break;
-            case Category::tree:
-                os << "TREE";
-                break;
-            default:
-                os << "UNKNOWN (" << static_cast<std::underlying_type_t<Category>>(cat) << ')';
-                break;
-        }
-
-        return os;
-    }
 };
 
 //! @brief Manage the data structure choices.

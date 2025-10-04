@@ -171,37 +171,6 @@ public:
     std::bitset<Bottom<SearchMethod>::value> searchOpts;
     //! @brief Bit flags for managing sort methods.
     std::bitset<Bottom<SortMethod>::value> sortOpts;
-
-protected:
-    //! @brief The operator (<<) overloading of the Category enum.
-    //! @param os - output stream object
-    //! @param cat - current category
-    //! @return reference of the output stream object
-    friend std::ostream& operator<<(std::ostream& os, const Category cat)
-    {
-        switch (cat)
-        {
-            case Category::match:
-                os << "MATCH";
-                break;
-            case Category::notation:
-                os << "NOTATION";
-                break;
-            case Category::optimal:
-                os << "OPTIMAL";
-                break;
-            case Category::search:
-                os << "SEARCH";
-                break;
-            case Category::sort:
-                os << "SORT";
-                break;
-            default:
-                os << "UNKNOWN (" << static_cast<std::underlying_type_t<Category>>(cat) << ')';
-        }
-
-        return os;
-    }
 };
 
 //! @brief Manage the algorithm choices.

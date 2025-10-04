@@ -10,9 +10,9 @@
 #include "application/example/include/apply_numeric.hpp"
 
 //! @brief Title of printing for numeric task tests.
-#define TST_NUM_PRINT_TASK_TITLE(category, state)                                                                    \
-    std::osyncstream(std::cout) << "TEST NUMERIC: " << std::setiosflags(std::ios_base::left) << std::setfill('.')    \
-                                << std::setw(50) << (category) << (state) << std::resetiosflags(std::ios_base::left) \
+#define TST_NUM_PRINT_TASK_TITLE(title, state)                                                                    \
+    std::osyncstream(std::cout) << "TEST NUMERIC: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
+                                << std::setw(50) << (title) << (state) << std::resetiosflags(std::ios_base::left) \
                                 << std::setfill(' ') << std::endl;
 
 //! @brief The test module.
@@ -30,16 +30,18 @@ protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
-        TST_NUM_PRINT_TASK_TITLE("ARITHMETIC", "BEGIN");
+        TST_NUM_PRINT_TASK_TITLE(title, "BEGIN");
         fixture = std::make_unique<arithmetic::InputBuilder>(arithmetic::input::operandA, arithmetic::input::operandB);
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
-        TST_NUM_PRINT_TASK_TITLE("ARITHMETIC", "END");
+        TST_NUM_PRINT_TASK_TITLE(title, "END");
         fixture.reset();
     }
 
+    //! @brief Test title.
+    static const std::string_view title;
     //! @brief System under test.
     [[no_unique_address]] const numeric::arithmetic::Arithmetic sut{};
     //! @brief Fixture data.
@@ -53,28 +55,29 @@ protected:
     //! @brief Expected result 4.
     static constexpr std::int32_t expRes4{-1};
 };
+const std::string_view ArithmeticTestBase::title = numeric::arithmetic::name();
 std::unique_ptr<arithmetic::InputBuilder> ArithmeticTestBase::fixture = {};
 
 //! @brief Test for the addition method in the calculation of arithmetic.
-TEST_F(ArithmeticTestBase, additionMethod)
+TEST_F(ArithmeticTestBase, AdditionMethod)
 {
     ASSERT_EQ(expRes1, sut.addition(fixture->getOperands().first, fixture->getOperands().second));
 }
 
 //! @brief Test for the subtraction method in the calculation of arithmetic.
-TEST_F(ArithmeticTestBase, subtractionMethod)
+TEST_F(ArithmeticTestBase, SubtractionMethod)
 {
     ASSERT_EQ(expRes2, sut.subtraction(fixture->getOperands().first, fixture->getOperands().second));
 }
 
 //! @brief Test for the multiplication method in the calculation of arithmetic.
-TEST_F(ArithmeticTestBase, multiplicationMethod)
+TEST_F(ArithmeticTestBase, MultiplicationMethod)
 {
     ASSERT_EQ(expRes3, sut.multiplication(fixture->getOperands().first, fixture->getOperands().second));
 }
 
 //! @brief Test for the division method in the calculation of arithmetic.
-TEST_F(ArithmeticTestBase, divisionMethod)
+TEST_F(ArithmeticTestBase, DivisionMethod)
 {
     ASSERT_EQ(expRes4, sut.division(fixture->getOperands().first, fixture->getOperands().second));
 }
@@ -86,16 +89,18 @@ protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
-        TST_NUM_PRINT_TASK_TITLE("DIVISOR", "BEGIN");
+        TST_NUM_PRINT_TASK_TITLE(title, "BEGIN");
         fixture = std::make_unique<divisor::InputBuilder>(divisor::input::numberA, divisor::input::numberB);
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
-        TST_NUM_PRINT_TASK_TITLE("DIVISOR", "END");
+        TST_NUM_PRINT_TASK_TITLE(title, "END");
         fixture.reset();
     }
 
+    //! @brief Test title.
+    static const std::string_view title;
     //! @brief System under test.
     [[no_unique_address]] const numeric::divisor::Divisor sut{};
     //! @brief Fixture data.
@@ -103,16 +108,17 @@ protected:
     //! @brief Expected result.
     const std::set<std::int32_t> expRes{1, 2, 3, 5, 6, 7, 10, 14, 15, 21, 30, 35, 42, 70, 105, 210};
 };
+const std::string_view DivisorTestBase::title = numeric::divisor::name();
 std::unique_ptr<divisor::InputBuilder> DivisorTestBase::fixture = {};
 
 //! @brief Test for the Euclidean method in the calculation of divisor.
-TEST_F(DivisorTestBase, euclideanMethod)
+TEST_F(DivisorTestBase, EuclideanMethod)
 {
     ASSERT_EQ(expRes, sut.euclidean(fixture->getNumbers().first, fixture->getNumbers().second));
 }
 
 //! @brief Test for the Stein method in the calculation of divisor.
-TEST_F(DivisorTestBase, steinMethod)
+TEST_F(DivisorTestBase, SteinMethod)
 {
     ASSERT_EQ(expRes, sut.stein(fixture->getNumbers().first, fixture->getNumbers().second));
 }
@@ -124,7 +130,7 @@ protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
-        TST_NUM_PRINT_TASK_TITLE("INTEGRAL", "BEGIN");
+        TST_NUM_PRINT_TASK_TITLE(title, "BEGIN");
         using CylindricalBessel = integral::input::CylindricalBessel;
         fixture = std::make_unique<integral::InputBuilder>(
             CylindricalBessel{}, CylindricalBessel::range1, CylindricalBessel::range2, CylindricalBessel::exprDescr);
@@ -132,10 +138,12 @@ protected:
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
-        TST_NUM_PRINT_TASK_TITLE("INTEGRAL", "END");
+        TST_NUM_PRINT_TASK_TITLE(title, "END");
         fixture.reset();
     }
 
+    //! @brief Test title.
+    static const std::string_view title;
     //! @brief System under test.
     //! @tparam T - type of system under test
     //! @return system under test
@@ -153,10 +161,11 @@ protected:
     //! @brief Default precision.
     static constexpr double defPrec{numeric::integral::epsilon};
 };
+const std::string_view IntegralTestBase::title = numeric::integral::name();
 std::unique_ptr<integral::InputBuilder> IntegralTestBase::fixture = {};
 
 //! @brief Test for the trapezoidal method in the calculation of integral.
-TEST_F(IntegralTestBase, trapezoidalMethod)
+TEST_F(IntegralTestBase, TrapezoidalMethod)
 {
     const auto result =
         (*sut<numeric::integral::Trapezoidal>())(fixture->getRanges().first, fixture->getRanges().second, defPrec);
@@ -165,7 +174,7 @@ TEST_F(IntegralTestBase, trapezoidalMethod)
 }
 
 //! @brief Test for the adaptive Simpson's 1/3 method in the calculation of integral.
-TEST_F(IntegralTestBase, adaptiveSimpsonMethod)
+TEST_F(IntegralTestBase, AdaptiveSimpsonMethod)
 {
     const auto result =
         (*sut<numeric::integral::Simpson>())(fixture->getRanges().first, fixture->getRanges().second, defPrec);
@@ -174,7 +183,7 @@ TEST_F(IntegralTestBase, adaptiveSimpsonMethod)
 }
 
 //! @brief Test for the Romberg method in the calculation of integral.
-TEST_F(IntegralTestBase, rombergMethod)
+TEST_F(IntegralTestBase, RombergMethod)
 {
     const auto result =
         (*sut<numeric::integral::Romberg>())(fixture->getRanges().first, fixture->getRanges().second, defPrec);
@@ -183,7 +192,7 @@ TEST_F(IntegralTestBase, rombergMethod)
 }
 
 //! @brief Test for the Gauss-Legendre's 5-points method in the calculation of integral.
-TEST_F(IntegralTestBase, gaussLegendreMethod)
+TEST_F(IntegralTestBase, GaussLegendreMethod)
 {
     const auto result =
         (*sut<numeric::integral::Gauss>())(fixture->getRanges().first, fixture->getRanges().second, defPrec);
@@ -192,7 +201,7 @@ TEST_F(IntegralTestBase, gaussLegendreMethod)
 }
 
 //! @brief Test for the Monte-Carlo method in the calculation of integral.
-TEST_F(IntegralTestBase, monteCarloMethod)
+TEST_F(IntegralTestBase, MonteCarloMethod)
 {
     const auto result =
         (*sut<numeric::integral::MonteCarlo>())(fixture->getRanges().first, fixture->getRanges().second, defPrec);
@@ -207,16 +216,18 @@ protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
-        TST_NUM_PRINT_TASK_TITLE("PRIME", "BEGIN");
+        TST_NUM_PRINT_TASK_TITLE(title, "BEGIN");
         fixture = std::make_unique<prime::InputBuilder>(prime::input::upperBound);
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
-        TST_NUM_PRINT_TASK_TITLE("PRIME", "END");
+        TST_NUM_PRINT_TASK_TITLE(title, "END");
         fixture.reset();
     }
 
+    //! @brief Test title.
+    static const std::string_view title;
     //! @brief System under test.
     [[no_unique_address]] const numeric::prime::Prime sut{};
     //! @brief Fixture data.
@@ -238,16 +249,17 @@ protected:
         // NOLINTEND(readability-magic-numbers)
     }
 };
+const std::string_view PrimeTestBase::title = numeric::prime::name();
 std::unique_ptr<prime::InputBuilder> PrimeTestBase::fixture = {};
 
 //! @brief Test for the Eratosthenes method in the calculation of prime.
-TEST_F(PrimeTestBase, eratosthenesMethod)
+TEST_F(PrimeTestBase, EratosthenesMethod)
 {
     ASSERT_EQ(expRes(), sut.eratosthenes(fixture->getUpperBound()));
 }
 
 //! @brief Test for the Euler method in the calculation of prime.
-TEST_F(PrimeTestBase, eulerMethod)
+TEST_F(PrimeTestBase, EulerMethod)
 {
     ASSERT_EQ(expRes(), sut.euler(fixture->getUpperBound()));
 }

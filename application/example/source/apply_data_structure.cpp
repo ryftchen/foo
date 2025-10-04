@@ -19,16 +19,16 @@
 #include "utility/include/currying.hpp"
 
 //! @brief Title of printing when data structure tasks are beginning.
-#define APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(category)                                                         \
-    std::osyncstream(std::cout) << "\nDATA STRUCTURE TASK: " << std::setiosflags(std::ios_base::left)         \
-                                << std::setfill('.') << std::setw(50) << (category) << "BEGIN"                \
+#define APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title)                                                            \
+    std::osyncstream(std::cout) << "\nAPPLY DATA STRUCTURE: " << std::setiosflags(std::ios_base::left)        \
+                                << std::setfill('.') << std::setw(50) << (title) << "BEGIN"                   \
                                 << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl; \
     {
 //! @brief Title of printing when data structure tasks are ending.
-#define APP_DS_PRINT_TASK_TITLE_SCOPE_END(category)                                                     \
+#define APP_DS_PRINT_TASK_TITLE_SCOPE_END(title)                                                        \
     }                                                                                                   \
-    std::osyncstream(std::cout) << "\nDATA STRUCTURE TASK: " << std::setiosflags(std::ios_base::left)   \
-                                << std::setfill('.') << std::setw(50) << (category) << "END"            \
+    std::osyncstream(std::cout) << "\nAPPLY DATA STRUCTURE: " << std::setiosflags(std::ios_base::left)  \
+                                << std::setfill('.') << std::setw(50) << (title) << "END"               \
                                 << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << '\n' \
                                 << std::endl;
 
@@ -70,286 +70,42 @@ static consteval std::string_view categoryAlias()
     return attr.value;
 }
 
-namespace filter
-{
-//! @brief Show the contents of the filter result.
-//! @param instance - used filter instance
-//! @param result - filter result
-static void showResult(const FilterInstance instance, const std::string& result)
-{
-    std::printf("\n==> %-8s Instance <==\n%s", customTitle(instance).c_str(), result.c_str());
-}
-
-void FilterStructure::bloomInstance()
-try
-{
-    const auto output = Showcase().bloom();
-    showResult(FilterInstance::bloom, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
-}
-
-void FilterStructure::quotientInstance()
-try
-{
-    const auto output = Showcase().quotient();
-    showResult(FilterInstance::quotient, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
-}
-} // namespace filter
-//! @brief To apply filter-related instances.
-//! @param candidates - container for the candidate target instances
-void applyingFilter(const std::vector<std::string>& candidates)
-{
-    constexpr auto category = Category::filter;
-    const auto& bits = categoryOpts<category>();
-    if (bits.none())
-    {
-        return;
-    }
-
-    APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
-
-    auto& pooling = configure::task::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(bits.count());
-    const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, void (*targetInstance)())
-    { allocatedJob->enqueue(taskNamer(subTask), targetInstance); };
-    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
-
-    std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
-    for (const auto index :
-         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
-    {
-        const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.c_str()))
-        {
-            using filter::FilterStructure;
-            static_assert(utility::common::isStatelessClass<FilterStructure>());
-            case abbrLitHash(FilterInstance::bloom):
-                addTask(target, &FilterStructure::bloomInstance);
-                break;
-            case abbrLitHash(FilterInstance::quotient):
-                addTask(target, &FilterStructure::quotientInstance);
-                break;
-            default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
-        }
-    }
-
-    APP_DS_PRINT_TASK_TITLE_SCOPE_END(category);
-}
-
-namespace graph
-{
-//! @brief Show the contents of the graph result.
-//! @param instance - used graph instance
-//! @param result - graph result
-static void showResult(const GraphInstance instance, const std::string& result)
-{
-    std::printf("\n==> %-10s Instance <==\n%s", customTitle(instance).c_str(), result.c_str());
-}
-
-void GraphStructure::undirectedInstance()
-try
-{
-    const auto output = Showcase().undirected();
-    showResult(GraphInstance::undirected, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
-}
-
-void GraphStructure::directedInstance()
-try
-{
-    const auto output = Showcase().directed();
-    showResult(GraphInstance::directed, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
-}
-} // namespace graph
-//! @brief To apply graph-related instances.
-//! @param candidates - container for the candidate target instances
-void applyingGraph(const std::vector<std::string>& candidates)
-{
-    constexpr auto category = Category::graph;
-    const auto& bits = categoryOpts<category>();
-    if (bits.none())
-    {
-        return;
-    }
-
-    APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
-
-    auto& pooling = configure::task::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(bits.count());
-    const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, void (*targetInstance)())
-    { allocatedJob->enqueue(taskNamer(subTask), targetInstance); };
-    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
-
-    std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
-    for (const auto index :
-         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
-    {
-        const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.c_str()))
-        {
-            using graph::GraphStructure;
-            static_assert(utility::common::isStatelessClass<GraphStructure>());
-            case abbrLitHash(GraphInstance::undirected):
-                addTask(target, &GraphStructure::undirectedInstance);
-                break;
-            case abbrLitHash(GraphInstance::directed):
-                addTask(target, &GraphStructure::directedInstance);
-                break;
-            default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
-        }
-    }
-
-    APP_DS_PRINT_TASK_TITLE_SCOPE_END(category);
-}
-
-namespace heap
-{
-//! @brief Show the contents of the heap result.
-//! @param instance - used heap instance
-//! @param result - heap result
-static void showResult(const HeapInstance instance, const std::string& result)
-{
-    std::printf("\n==> %-7s Instance <==\n%s", customTitle(instance).c_str(), result.c_str());
-}
-
-void HeapStructure::binaryInstance()
-try
-{
-    const auto output = Showcase().binary();
-    showResult(HeapInstance::binary, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
-}
-
-void HeapStructure::leftistInstance()
-try
-{
-    const auto output = Showcase().leftist();
-    showResult(HeapInstance::leftist, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
-}
-
-void HeapStructure::skewInstance()
-try
-{
-    const auto output = Showcase().skew();
-    showResult(HeapInstance::skew, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
-}
-} // namespace heap
-//! @brief To apply heap-related instances.
-//! @param candidates - container for the candidate target instances
-void applyingHeap(const std::vector<std::string>& candidates)
-{
-    constexpr auto category = Category::heap;
-    const auto& bits = categoryOpts<category>();
-    if (bits.none())
-    {
-        return;
-    }
-
-    APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
-
-    auto& pooling = configure::task::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(bits.count());
-    const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, void (*targetInstance)())
-    { allocatedJob->enqueue(taskNamer(subTask), targetInstance); };
-    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
-
-    std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
-    for (const auto index :
-         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
-    {
-        const auto& target = candidates.at(index);
-        switch (utility::common::bkdrHash(target.c_str()))
-        {
-            using heap::HeapStructure;
-            static_assert(utility::common::isStatelessClass<HeapStructure>());
-            case abbrLitHash(HeapInstance::binary):
-                addTask(target, &HeapStructure::binaryInstance);
-                break;
-            case abbrLitHash(HeapInstance::leftist):
-                addTask(target, &HeapStructure::leftistInstance);
-                break;
-            case abbrLitHash(HeapInstance::skew):
-                addTask(target, &HeapStructure::skewInstance);
-                break;
-            default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
-        }
-    }
-
-    APP_DS_PRINT_TASK_TITLE_SCOPE_END(category);
-}
-
 namespace cache
 {
 //! @brief Show the contents of the cache result.
 //! @param instance - used cache instance
 //! @param result - cache result
-static void showResult(const CacheInstance instance, const std::string& result)
+static void display(const CacheInstance instance, const std::string& result)
 {
     std::printf("\n==> %-19s Instance <==\n%s", customTitle(instance).c_str(), result.c_str());
 }
 
-void CacheStructure::fifoInstance()
+//! @brief Structure of cache.
+//! @param instance - used cache instance
+static void structure(const CacheInstance instance)
 try
 {
-    const auto output = Showcase().fifo();
-    showResult(CacheInstance::firstInFirstOut, output.str());
+    std::ostringstream result{};
+    switch (instance)
+    {
+        static_assert(utility::common::isStatelessClass<Showcase>());
+        case CacheInstance::firstInFirstOut:
+            result = Showcase().fifo();
+            break;
+        case CacheInstance::leastFrequentlyUsed:
+            result = Showcase().lfu();
+            break;
+        case CacheInstance::leastRecentlyUsed:
+            result = Showcase().lru();
+            break;
+        default:
+            return;
+    }
+    display(instance, result.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
-}
-
-void CacheStructure::lfuInstance()
-try
-{
-    const auto output = Showcase().lfu();
-    showResult(CacheInstance::leastFrequentlyUsed, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
-}
-
-void CacheStructure::lruInstance()
-try
-{
-    const auto output = Showcase().lru();
-    showResult(CacheInstance::leastRecentlyUsed, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(instance).c_str(), err.what());
 }
 } // namespace cache
 //! @brief To apply cache-related instances.
@@ -363,13 +119,13 @@ void applyingCache(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
+    APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(data_structure::cache::name());
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, void (*targetInstance)())
-    { allocatedJob->enqueue(taskNamer(subTask), targetInstance); };
+    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const CacheInstance instance)
+    { allocatedJob->enqueue(taskNamer(subTask), &cache::structure, instance); };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
@@ -379,23 +135,255 @@ void applyingCache(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
-            using cache::CacheStructure;
-            static_assert(utility::common::isStatelessClass<CacheStructure>());
             case abbrLitHash(CacheInstance::firstInFirstOut):
-                addTask(target, &CacheStructure::fifoInstance);
+                addTask(target, CacheInstance::firstInFirstOut);
                 break;
             case abbrLitHash(CacheInstance::leastFrequentlyUsed):
-                addTask(target, &CacheStructure::lfuInstance);
+                addTask(target, CacheInstance::leastFrequentlyUsed);
                 break;
             case abbrLitHash(CacheInstance::leastRecentlyUsed):
-                addTask(target, &CacheStructure::lruInstance);
+                addTask(target, CacheInstance::leastRecentlyUsed);
                 break;
             default:
                 throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
         }
     }
 
-    APP_DS_PRINT_TASK_TITLE_SCOPE_END(category);
+    APP_DS_PRINT_TASK_TITLE_SCOPE_END(data_structure::cache::name());
+}
+
+namespace filter
+{
+//! @brief Show the contents of the filter result.
+//! @param instance - used filter instance
+//! @param result - filter result
+static void display(const FilterInstance instance, const std::string& result)
+{
+    std::printf("\n==> %-8s Instance <==\n%s", customTitle(instance).c_str(), result.c_str());
+}
+
+//! @brief Structure of filter.
+//! @param instance - used filter instance
+static void structure(const FilterInstance instance)
+try
+{
+    std::ostringstream result{};
+    switch (instance)
+    {
+        static_assert(utility::common::isStatelessClass<Showcase>());
+        case FilterInstance::bloom:
+            result = Showcase().bloom();
+            break;
+        case FilterInstance::quotient:
+            result = Showcase().quotient();
+            break;
+        default:
+            return;
+    }
+    display(instance, result.str());
+}
+catch (const std::exception& err)
+{
+    LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(instance).c_str(), err.what());
+}
+} // namespace filter
+//! @brief To apply filter-related instances.
+//! @param candidates - container for the candidate target instances
+void applyingFilter(const std::vector<std::string>& candidates)
+{
+    constexpr auto category = Category::filter;
+    const auto& bits = categoryOpts<category>();
+    if (bits.none())
+    {
+        return;
+    }
+
+    APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(data_structure::filter::name());
+
+    auto& pooling = configure::task::resourcePool();
+    auto* const allocatedJob = pooling.newEntry(bits.count());
+    const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
+    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const FilterInstance instance)
+    { allocatedJob->enqueue(taskNamer(subTask), &filter::structure, instance); };
+    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
+
+    std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
+    for (const auto index :
+         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
+    {
+        const auto& target = candidates.at(index);
+        switch (utility::common::bkdrHash(target.c_str()))
+        {
+            case abbrLitHash(FilterInstance::bloom):
+                addTask(target, FilterInstance::bloom);
+                break;
+            case abbrLitHash(FilterInstance::quotient):
+                addTask(target, FilterInstance::quotient);
+                break;
+            default:
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
+        }
+    }
+
+    APP_DS_PRINT_TASK_TITLE_SCOPE_END(data_structure::filter::name());
+}
+
+namespace graph
+{
+//! @brief Show the contents of the graph result.
+//! @param instance - used graph instance
+//! @param result - graph result
+static void display(const GraphInstance instance, const std::string& result)
+{
+    std::printf("\n==> %-10s Instance <==\n%s", customTitle(instance).c_str(), result.c_str());
+}
+
+//! @brief Structure of graph.
+//! @param instance - used graph instance
+static void structure(const GraphInstance instance)
+try
+{
+    std::ostringstream result{};
+    switch (instance)
+    {
+        static_assert(utility::common::isStatelessClass<Showcase>());
+        case GraphInstance::undirected:
+            result = Showcase().undirected();
+            break;
+        case GraphInstance::directed:
+            result = Showcase().directed();
+            break;
+        default:
+            return;
+    }
+    display(instance, result.str());
+}
+catch (const std::exception& err)
+{
+    LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(instance).c_str(), err.what());
+}
+} // namespace graph
+//! @brief To apply graph-related instances.
+//! @param candidates - container for the candidate target instances
+void applyingGraph(const std::vector<std::string>& candidates)
+{
+    constexpr auto category = Category::graph;
+    const auto& bits = categoryOpts<category>();
+    if (bits.none())
+    {
+        return;
+    }
+
+    APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(data_structure::graph::name());
+
+    auto& pooling = configure::task::resourcePool();
+    auto* const allocatedJob = pooling.newEntry(bits.count());
+    const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
+    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const GraphInstance instance)
+    { allocatedJob->enqueue(taskNamer(subTask), &graph::structure, instance); };
+    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
+
+    std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
+    for (const auto index :
+         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
+    {
+        const auto& target = candidates.at(index);
+        switch (utility::common::bkdrHash(target.c_str()))
+        {
+            case abbrLitHash(GraphInstance::undirected):
+                addTask(target, GraphInstance::undirected);
+                break;
+            case abbrLitHash(GraphInstance::directed):
+                addTask(target, GraphInstance::directed);
+                break;
+            default:
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
+        }
+    }
+
+    APP_DS_PRINT_TASK_TITLE_SCOPE_END(data_structure::graph::name());
+}
+
+namespace heap
+{
+//! @brief Show the contents of the heap result.
+//! @param instance - used heap instance
+//! @param result - heap result
+static void display(const HeapInstance instance, const std::string& result)
+{
+    std::printf("\n==> %-7s Instance <==\n%s", customTitle(instance).c_str(), result.c_str());
+}
+
+//! @brief Structure of heap.
+//! @param instance - used heap instance
+static void structure(const HeapInstance instance)
+try
+{
+    std::ostringstream result{};
+    switch (instance)
+    {
+        static_assert(utility::common::isStatelessClass<Showcase>());
+        case HeapInstance::binary:
+            result = Showcase().binary();
+            break;
+        case HeapInstance::leftist:
+            result = Showcase().leftist();
+            break;
+        case HeapInstance::skew:
+            result = Showcase().skew();
+            break;
+        default:
+            return;
+    }
+    display(instance, result.str());
+}
+catch (const std::exception& err)
+{
+    LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(instance).c_str(), err.what());
+}
+} // namespace heap
+//! @brief To apply heap-related instances.
+//! @param candidates - container for the candidate target instances
+void applyingHeap(const std::vector<std::string>& candidates)
+{
+    constexpr auto category = Category::heap;
+    const auto& bits = categoryOpts<category>();
+    if (bits.none())
+    {
+        return;
+    }
+
+    APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(data_structure::heap::name());
+
+    auto& pooling = configure::task::resourcePool();
+    auto* const allocatedJob = pooling.newEntry(bits.count());
+    const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
+    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const HeapInstance instance)
+    { allocatedJob->enqueue(taskNamer(subTask), &heap::structure, instance); };
+    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
+
+    std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
+    for (const auto index :
+         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
+    {
+        const auto& target = candidates.at(index);
+        switch (utility::common::bkdrHash(target.c_str()))
+        {
+            case abbrLitHash(HeapInstance::binary):
+                addTask(target, HeapInstance::binary);
+                break;
+            case abbrLitHash(HeapInstance::leftist):
+                addTask(target, HeapInstance::leftist);
+                break;
+            case abbrLitHash(HeapInstance::skew):
+                addTask(target, HeapInstance::skew);
+                break;
+            default:
+                throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
+        }
+    }
+
+    APP_DS_PRINT_TASK_TITLE_SCOPE_END(data_structure::heap::name());
 }
 
 namespace linear
@@ -403,42 +391,37 @@ namespace linear
 //! @brief Show the contents of the linear result.
 //! @param instance - used linear instance
 //! @param result - linear result
-static void showResult(const LinearInstance instance, const std::string& result)
+static void display(const LinearInstance instance, const std::string& result)
 {
     std::printf("\n==> %-16s Instance <==\n%s", customTitle(instance).c_str(), result.c_str());
 }
 
-void LinearStructure::dllInstance()
+//! @brief Structure of linear.
+//! @param instance - used linear instance
+static void structure(const LinearInstance instance)
 try
 {
-    const auto output = Showcase().dll();
-    showResult(LinearInstance::doublyLinkedList, output.str());
+    std::ostringstream result{};
+    switch (instance)
+    {
+        static_assert(utility::common::isStatelessClass<Showcase>());
+        case LinearInstance::doublyLinkedList:
+            result = Showcase().dll();
+            break;
+        case LinearInstance::stack:
+            result = Showcase().stack();
+            break;
+        case LinearInstance::queue:
+            result = Showcase().queue();
+            break;
+        default:
+            return;
+    }
+    display(instance, result.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
-}
-
-void LinearStructure::stackInstance()
-try
-{
-    const auto output = Showcase().stack();
-    showResult(LinearInstance::stack, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
-}
-
-void LinearStructure::queueInstance()
-try
-{
-    const auto output = Showcase().queue();
-    showResult(LinearInstance::queue, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(instance).c_str(), err.what());
 }
 } // namespace linear
 //! @brief To apply linear-related instances.
@@ -452,13 +435,13 @@ void applyingLinear(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
+    APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(data_structure::linear::name());
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, void (*targetInstance)())
-    { allocatedJob->enqueue(taskNamer(subTask), targetInstance); };
+    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const LinearInstance instance)
+    { allocatedJob->enqueue(taskNamer(subTask), &linear::structure, instance); };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
@@ -468,23 +451,21 @@ void applyingLinear(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
-            using linear::LinearStructure;
-            static_assert(utility::common::isStatelessClass<LinearStructure>());
             case abbrLitHash(LinearInstance::doublyLinkedList):
-                addTask(target, &LinearStructure::dllInstance);
+                addTask(target, LinearInstance::doublyLinkedList);
                 break;
             case abbrLitHash(LinearInstance::stack):
-                addTask(target, &LinearStructure::stackInstance);
+                addTask(target, LinearInstance::stack);
                 break;
             case abbrLitHash(LinearInstance::queue):
-                addTask(target, &LinearStructure::queueInstance);
+                addTask(target, LinearInstance::queue);
                 break;
             default:
                 throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
         }
     }
 
-    APP_DS_PRINT_TASK_TITLE_SCOPE_END(category);
+    APP_DS_PRINT_TASK_TITLE_SCOPE_END(data_structure::linear::name());
 }
 
 namespace tree
@@ -492,42 +473,37 @@ namespace tree
 //! @brief Show the contents of the tree result.
 //! @param instance - used tree instance
 //! @param result - tree result
-static void showResult(const TreeInstance instance, const std::string& result)
+static void display(const TreeInstance instance, const std::string& result)
 {
     std::printf("\n==> %-19s Instance <==\n%s", customTitle(instance).c_str(), result.c_str());
 }
 
-void TreeStructure::bsInstance()
+//! @brief Structure of tree.
+//! @param instance - used tree instance
+static void structure(const TreeInstance instance)
 try
 {
-    const auto output = Showcase().bs();
-    showResult(TreeInstance::binarySearch, output.str());
+    std::ostringstream result{};
+    switch (instance)
+    {
+        static_assert(utility::common::isStatelessClass<Showcase>());
+        case TreeInstance::binarySearch:
+            result = Showcase().bs();
+            break;
+        case TreeInstance::adelsonVelskyLandis:
+            result = Showcase().avl();
+            break;
+        case TreeInstance::splay:
+            result = Showcase().splay();
+            break;
+        default:
+            return;
+    }
+    display(instance, result.str());
 }
 catch (const std::exception& err)
 {
-    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
-}
-
-void TreeStructure::avlInstance()
-try
-{
-    const auto output = Showcase().avl();
-    showResult(TreeInstance::adelsonVelskyLandis, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
-}
-
-void TreeStructure::splayInstance()
-try
-{
-    const auto output = Showcase().splay();
-    showResult(TreeInstance::splay, output.str());
-}
-catch (const std::exception& err)
-{
-    LOG_WRN_P("Exception in structure (%s): %s", __func__, err.what());
+    LOG_WRN_P("Exception in %s (%s): %s", __func__, customTitle(instance).c_str(), err.what());
 }
 } // namespace tree
 //! @brief To apply tree-related instances.
@@ -541,13 +517,13 @@ void applyingTree(const std::vector<std::string>& candidates)
         return;
     }
 
-    APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(category);
+    APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(data_structure::tree::name());
 
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(bits.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, void (*targetInstance)())
-    { allocatedJob->enqueue(taskNamer(subTask), targetInstance); };
+    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const TreeInstance instance)
+    { allocatedJob->enqueue(taskNamer(subTask), &tree::structure, instance); };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
@@ -557,23 +533,21 @@ void applyingTree(const std::vector<std::string>& candidates)
         const auto& target = candidates.at(index);
         switch (utility::common::bkdrHash(target.c_str()))
         {
-            using tree::TreeStructure;
-            static_assert(utility::common::isStatelessClass<TreeStructure>());
             case abbrLitHash(TreeInstance::binarySearch):
-                addTask(target, &TreeStructure::bsInstance);
+                addTask(target, TreeInstance::binarySearch);
                 break;
             case abbrLitHash(TreeInstance::adelsonVelskyLandis):
-                addTask(target, &TreeStructure::avlInstance);
+                addTask(target, TreeInstance::adelsonVelskyLandis);
                 break;
             case abbrLitHash(TreeInstance::splay):
-                addTask(target, &TreeStructure::splayInstance);
+                addTask(target, TreeInstance::splay);
                 break;
             default:
                 throw std::logic_error{"Unknown " + std::string{toString(category)} + " instance: " + target + '.'};
         }
     }
 
-    APP_DS_PRINT_TASK_TITLE_SCOPE_END(category);
+    APP_DS_PRINT_TASK_TITLE_SCOPE_END(data_structure::tree::name());
 }
 } // namespace application::app_ds
 

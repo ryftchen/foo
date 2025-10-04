@@ -10,9 +10,9 @@
 #include "application/example/include/apply_algorithm.hpp"
 
 //! @brief Title of printing for algorithm task tests.
-#define TST_ALGO_PRINT_TASK_TITLE(category, state)                                                                   \
-    std::osyncstream(std::cout) << "TEST ALGORITHM: " << std::setiosflags(std::ios_base::left) << std::setfill('.')  \
-                                << std::setw(50) << (category) << (state) << std::resetiosflags(std::ios_base::left) \
+#define TST_ALGO_PRINT_TASK_TITLE(title, state)                                                                     \
+    std::osyncstream(std::cout) << "TEST ALGORITHM: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
+                                << std::setw(50) << (title) << (state) << std::resetiosflags(std::ios_base::left)   \
                                 << std::setfill(' ') << std::endl;
 
 //! @brief The test module.
@@ -30,16 +30,18 @@ protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
-        TST_ALGO_PRINT_TASK_TITLE("MATCH", "BEGIN");
+        TST_ALGO_PRINT_TASK_TITLE(title, "BEGIN");
         fixture = std::make_unique<match::InputBuilder>(match::input::patternString);
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
-        TST_ALGO_PRINT_TASK_TITLE("MATCH", "END");
+        TST_ALGO_PRINT_TASK_TITLE(title, "END");
         fixture.reset();
     }
 
+    //! @brief Test title.
+    static const std::string_view title;
     //! @brief System under test.
     [[no_unique_address]] const algorithm::match::Match sut{};
     //! @brief Fixture data.
@@ -47,10 +49,11 @@ protected:
     //! @brief Expected result.
     static constexpr std::int64_t expRes{49702};
 };
+const std::string_view MatchTestBase::title = algorithm::match::name();
 std::unique_ptr<match::InputBuilder> MatchTestBase::fixture = {};
 
 //! @brief Test for the Rabin-Karp method in the solution of match.
-TEST_F(MatchTestBase, rkMethod)
+TEST_F(MatchTestBase, RKMethod)
 {
     ASSERT_EQ(
         expRes,
@@ -62,7 +65,7 @@ TEST_F(MatchTestBase, rkMethod)
 }
 
 //! @brief Test for the Knuth-Morris-Pratt method in the solution of match.
-TEST_F(MatchTestBase, kmpMethod)
+TEST_F(MatchTestBase, KMPMethod)
 {
     ASSERT_EQ(
         expRes,
@@ -74,7 +77,7 @@ TEST_F(MatchTestBase, kmpMethod)
 }
 
 //! @brief Test for the Boyer-Moore method in the solution of match.
-TEST_F(MatchTestBase, bmMethod)
+TEST_F(MatchTestBase, BMMethod)
 {
     ASSERT_EQ(
         expRes,
@@ -86,7 +89,7 @@ TEST_F(MatchTestBase, bmMethod)
 }
 
 //! @brief Test for the Horspool method in the solution of match.
-TEST_F(MatchTestBase, horspoolMethod)
+TEST_F(MatchTestBase, HorspoolMethod)
 {
     ASSERT_EQ(
         expRes,
@@ -98,7 +101,7 @@ TEST_F(MatchTestBase, horspoolMethod)
 }
 
 //! @brief Test for the Sunday method in the solution of match.
-TEST_F(MatchTestBase, sundayMethod)
+TEST_F(MatchTestBase, SundayMethod)
 {
     ASSERT_EQ(
         expRes,
@@ -116,16 +119,18 @@ protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
-        TST_ALGO_PRINT_TASK_TITLE("NOTATION", "BEGIN");
+        TST_ALGO_PRINT_TASK_TITLE(title, "BEGIN");
         fixture = std::make_unique<notation::InputBuilder>(notation::input::infixString);
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
-        TST_ALGO_PRINT_TASK_TITLE("NOTATION", "END");
+        TST_ALGO_PRINT_TASK_TITLE(title, "END");
         fixture.reset();
     }
 
+    //! @brief Test title.
+    static const std::string_view title;
     //! @brief System under test.
     [[no_unique_address]] const algorithm::notation::Notation sut{};
     //! @brief Fixture data.
@@ -135,16 +140,17 @@ protected:
     //! @brief Expected result 2.
     static constexpr std::string_view expRes2{"abcd^e-fgh*+^*+i-"};
 };
+const std::string_view NotationTestBase::title = algorithm::notation::name();
 std::unique_ptr<notation::InputBuilder> NotationTestBase::fixture = {};
 
 //! @brief Test for the prefix method in the solution of notation.
-TEST_F(NotationTestBase, prefixMethod)
+TEST_F(NotationTestBase, PrefixMethod)
 {
     ASSERT_EQ(expRes1, sut.prefix(fixture->getInfixNotation()));
 }
 
 //! @brief Test for the postfix method in the solution of notation.
-TEST_F(NotationTestBase, postfixMethod)
+TEST_F(NotationTestBase, PostfixMethod)
 {
     ASSERT_EQ(expRes2, sut.postfix(fixture->getInfixNotation()));
 }
@@ -156,7 +162,7 @@ protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
-        TST_ALGO_PRINT_TASK_TITLE("OPTIMAL", "BEGIN");
+        TST_ALGO_PRINT_TASK_TITLE(title, "BEGIN");
         using SphericalBessel = optimal::input::SphericalBessel;
         fixture = std::make_unique<optimal::InputBuilder>(
             SphericalBessel{}, SphericalBessel::range1, SphericalBessel::range2, SphericalBessel::funcDescr);
@@ -164,10 +170,12 @@ protected:
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
-        TST_ALGO_PRINT_TASK_TITLE("OPTIMAL", "END");
+        TST_ALGO_PRINT_TASK_TITLE(title, "END");
         fixture.reset();
     }
 
+    //! @brief Test title.
+    static const std::string_view title;
     //! @brief System under test.
     //! @tparam T - type of system under test
     //! @return system under test
@@ -185,10 +193,11 @@ protected:
     //! @brief Default precision.
     static constexpr double defPrec{algorithm::optimal::epsilon};
 };
+const std::string_view OptimalTestBase::title = algorithm::optimal::name();
 std::unique_ptr<optimal::InputBuilder> OptimalTestBase::fixture = {};
 
 //! @brief Test for the gradient descent method in the solution of optimal.
-TEST_F(OptimalTestBase, gradientDescentMethod)
+TEST_F(OptimalTestBase, GradientDescentMethod)
 {
     const auto result =
         (*sut<algorithm::optimal::Gradient>())(fixture->getRanges().first, fixture->getRanges().second, defPrec);
@@ -198,7 +207,7 @@ TEST_F(OptimalTestBase, gradientDescentMethod)
 }
 
 //! @brief Test for the tabu method in the solution of optimal.
-TEST_F(OptimalTestBase, tabuMethod)
+TEST_F(OptimalTestBase, TabuMethod)
 {
     const auto result =
         (*sut<algorithm::optimal::Tabu>())(fixture->getRanges().first, fixture->getRanges().second, defPrec);
@@ -208,7 +217,7 @@ TEST_F(OptimalTestBase, tabuMethod)
 }
 
 //! @brief Test for the simulated annealing method in the solution of optimal.
-TEST_F(OptimalTestBase, simulatedAnnealingMethod)
+TEST_F(OptimalTestBase, SimulatedAnnealingMethod)
 {
     const auto result =
         (*sut<algorithm::optimal::Annealing>())(fixture->getRanges().first, fixture->getRanges().second, defPrec);
@@ -218,7 +227,7 @@ TEST_F(OptimalTestBase, simulatedAnnealingMethod)
 }
 
 //! @brief Test for the particle swarm method in the solution of optimal.
-TEST_F(OptimalTestBase, particleSwarmMethod)
+TEST_F(OptimalTestBase, ParticleSwarmMethod)
 {
     const auto result =
         (*sut<algorithm::optimal::Particle>())(fixture->getRanges().first, fixture->getRanges().second, defPrec);
@@ -228,7 +237,7 @@ TEST_F(OptimalTestBase, particleSwarmMethod)
 }
 
 //! @brief Test for the ant colony method in the solution of optimal.
-TEST_F(OptimalTestBase, antColonyMethod)
+TEST_F(OptimalTestBase, AntColonyMethod)
 {
     const auto result =
         (*sut<algorithm::optimal::Ant>())(fixture->getRanges().first, fixture->getRanges().second, defPrec);
@@ -238,7 +247,7 @@ TEST_F(OptimalTestBase, antColonyMethod)
 }
 
 //! @brief Test for the genetic method in the solution of optimal.
-TEST_F(OptimalTestBase, geneticMethod)
+TEST_F(OptimalTestBase, GeneticMethod)
 {
     const auto result =
         (*sut<algorithm::optimal::Genetic>())(fixture->getRanges().first, fixture->getRanges().second, defPrec);
@@ -271,7 +280,7 @@ protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
-        TST_ALGO_PRINT_TASK_TITLE("SEARCH", "BEGIN");
+        TST_ALGO_PRINT_TASK_TITLE(title, "BEGIN");
         fixture = std::make_unique<search::InputBuilder<float>>(
             search::input::arrayLength, search::input::arrayRangeMin, search::input::arrayRangeMax);
         updateExpRes();
@@ -279,11 +288,13 @@ protected:
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
-        TST_ALGO_PRINT_TASK_TITLE("SEARCH", "END");
+        TST_ALGO_PRINT_TASK_TITLE(title, "END");
         fixture.reset();
         expRes.clear();
     }
 
+    //! @brief Test title.
+    static const std::string_view title;
     //! @brief System under test.
     [[no_unique_address]] const algorithm::search::Search<float> sut{};
     //! @brief Fixture data.
@@ -291,25 +302,26 @@ protected:
     //! @brief Expected result.
     static std::set<std::int64_t> expRes;
 };
+const std::string_view SearchTestBase::title = algorithm::search::name();
 std::unique_ptr<search::InputBuilder<float>> SearchTestBase::fixture = {};
 std::set<std::int64_t> SearchTestBase::expRes = {};
 
 //! @brief Test for the binary method in the solution of search.
-TEST_F(SearchTestBase, binaryMethod)
+TEST_F(SearchTestBase, BinaryMethod)
 {
     ASSERT_TRUE(
         expRes.contains(sut.binary(fixture->getOrderedArray().get(), fixture->getLength(), fixture->getSearchKey())));
 }
 
 //! @brief Test for the interpolation method in the solution of search.
-TEST_F(SearchTestBase, interpolationMethod)
+TEST_F(SearchTestBase, InterpolationMethod)
 {
     ASSERT_TRUE(expRes.contains(
         sut.interpolation(fixture->getOrderedArray().get(), fixture->getLength(), fixture->getSearchKey())));
 }
 
 //! @brief Test for the Fibonacci method in the solution of search.
-TEST_F(SearchTestBase, fibonacciMethod)
+TEST_F(SearchTestBase, FibonacciMethod)
 {
     ASSERT_TRUE(expRes.contains(
         sut.fibonacci(fixture->getOrderedArray().get(), fixture->getLength(), fixture->getSearchKey())));
@@ -331,7 +343,7 @@ protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
-        TST_ALGO_PRINT_TASK_TITLE("SORT", "BEGIN");
+        TST_ALGO_PRINT_TASK_TITLE(title, "BEGIN");
         fixture = std::make_unique<sort::InputBuilder<std::int32_t>>(
             sort::input::arrayLength, sort::input::arrayRangeMin, sort::input::arrayRangeMax);
         updateExpRes();
@@ -339,11 +351,13 @@ protected:
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
-        TST_ALGO_PRINT_TASK_TITLE("SORT", "END");
+        TST_ALGO_PRINT_TASK_TITLE(title, "END");
         fixture.reset();
         expRes.clear();
     }
 
+    //! @brief Test title.
+    static const std::string_view title;
     //! @brief System under test.
     [[no_unique_address]] algorithm::sort::Sort<std::int32_t> sut{};
     //! @brief Fixture data.
@@ -351,65 +365,66 @@ protected:
     //! @brief Expected result.
     static std::vector<std::int32_t> expRes;
 };
+const std::string_view SortTestBase::title = algorithm::sort::name();
 std::unique_ptr<sort::InputBuilder<std::int32_t>> SortTestBase::fixture = {};
 std::vector<std::int32_t> SortTestBase::expRes = {};
 
 //! @brief Test for the bubble method in the solution of sort.
-TEST_F(SortTestBase, bubbleMethod)
+TEST_F(SortTestBase, BubbleMethod)
 {
     ASSERT_EQ(expRes, sut.bubble(fixture->getRandomArray().get(), fixture->getLength()));
 }
 
 //! @brief Test for the selection method in the solution of sort.
-TEST_F(SortTestBase, selectionMethod)
+TEST_F(SortTestBase, SelectionMethod)
 {
     ASSERT_EQ(expRes, sut.selection(fixture->getRandomArray().get(), fixture->getLength()));
 }
 
 //! @brief Test for the insertion method in the solution of sort.
-TEST_F(SortTestBase, insertionMethod)
+TEST_F(SortTestBase, InsertionMethod)
 {
     ASSERT_EQ(expRes, sut.insertion(fixture->getRandomArray().get(), fixture->getLength()));
 }
 
 //! @brief Test for the shell method in the solution of sort.
-TEST_F(SortTestBase, shellMethod)
+TEST_F(SortTestBase, ShellMethod)
 {
     ASSERT_EQ(expRes, sut.shell(fixture->getRandomArray().get(), fixture->getLength()));
 }
 
 //! @brief Test for the merge method in the solution of sort.
-TEST_F(SortTestBase, mergeMethod)
+TEST_F(SortTestBase, MergeMethod)
 {
     ASSERT_EQ(expRes, sut.merge(fixture->getRandomArray().get(), fixture->getLength()));
 }
 
 //! @brief Test for the quick method in the solution of sort.
-TEST_F(SortTestBase, quickMethod)
+TEST_F(SortTestBase, QuickMethod)
 {
     ASSERT_EQ(expRes, sut.quick(fixture->getRandomArray().get(), fixture->getLength()));
 }
 
 //! @brief Test for the heap method in the solution of sort.
-TEST_F(SortTestBase, heapMethod)
+TEST_F(SortTestBase, HeapMethod)
 {
     ASSERT_EQ(expRes, sut.heap(fixture->getRandomArray().get(), fixture->getLength()));
 }
 
 //! @brief Test for the counting method in the solution of sort.
-TEST_F(SortTestBase, countingMethod)
+TEST_F(SortTestBase, CountingMethod)
 {
     ASSERT_EQ(expRes, sut.counting(fixture->getRandomArray().get(), fixture->getLength()));
 }
 
 //! @brief Test for the bucket method in the solution of sort.
-TEST_F(SortTestBase, bucketMethod)
+TEST_F(SortTestBase, BucketMethod)
 {
     ASSERT_EQ(expRes, sut.bucket(fixture->getRandomArray().get(), fixture->getLength()));
 }
 
 //! @brief Test for the radix method in the solution of sort.
-TEST_F(SortTestBase, radixMethod)
+TEST_F(SortTestBase, RadixMethod)
 {
     ASSERT_EQ(expRes, sut.radix(fixture->getRandomArray().get(), fixture->getLength()));
 }
