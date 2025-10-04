@@ -17,6 +17,12 @@ namespace algorithm // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Optimal-related functions in the algorithm module.
 namespace optimal
 {
+//! @brief Function name string.
+//! @return name string (module_function)
+inline const char* name() noexcept
+{
+    return "ALGO_OPTIMAL";
+}
 extern const char* version() noexcept;
 
 //! @brief Target functions.

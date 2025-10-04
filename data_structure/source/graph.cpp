@@ -8,7 +8,7 @@
 
 #include <cstring>
 
-namespace date_structure::graph
+namespace data_structure::graph
 {
 //! @brief Function version number.
 //! @return version number (major.minor.patch)
@@ -783,4 +783,4 @@ void Traverse::sortNeighbors(int neighbors[], const int size) const
 }
 } // namespace directed
 // NOLINTEND(cppcoreguidelines-owning-memory, cppcoreguidelines-pro-type-const-cast)
-} // namespace date_structure::graph
+} // namespace data_structure::graph

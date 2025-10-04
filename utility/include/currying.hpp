@@ -15,6 +15,12 @@ namespace utility // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Currying-related functions in the utility module.
 namespace currying
 {
+//! @brief Function name string.
+//! @return name string (module_function)
+inline const char* name() noexcept
+{
+    return "UTIL_CURRYING";
+}
 extern const char* version() noexcept;
 
 //! @brief Alias for the tuple concat result.

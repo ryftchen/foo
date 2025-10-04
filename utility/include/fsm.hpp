@@ -14,6 +14,12 @@ namespace utility // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Finite-state-machine-related functions in the utility module.
 namespace fsm
 {
+//! @brief Function name string.
+//! @return name string (module_function)
+inline const char* name() noexcept
+{
+    return "UTIL_FSM";
+}
 extern const char* version() noexcept;
 
 //! @brief Alias for the invoke result type.

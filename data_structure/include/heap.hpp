@@ -10,11 +10,17 @@
 #include <ostream>
 
 //! @brief The data structure module.
-namespace date_structure // NOLINT(modernize-concat-nested-namespaces)
+namespace data_structure // NOLINT(modernize-concat-nested-namespaces)
 {
 //! @brief Heap-related functions in the data structure module.
 namespace heap
 {
+//! @brief Function name string.
+//! @return name string (module_function)
+inline const char* name() noexcept
+{
+    return "DS_HEAP";
+}
 extern const char* version() noexcept;
 
 //! @brief The binary heap (min heap).
@@ -351,4 +357,4 @@ std::ostream& operator<<(std::ostream& os, const Printer<N, K>& printer)
     return os;
 }
 } // namespace heap
-} // namespace date_structure
+} // namespace data_structure

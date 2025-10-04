@@ -9,11 +9,17 @@
 #include <functional>
 
 //! @brief The data structure module.
-namespace date_structure // NOLINT(modernize-concat-nested-namespaces)
+namespace data_structure // NOLINT(modernize-concat-nested-namespaces)
 {
 //! @brief Graph-related functions in the data structure module.
 namespace graph
 {
+//! @brief Function name string.
+//! @return name string (module_function)
+inline const char* name() noexcept
+{
+    return "DS_GRAPH";
+}
 extern const char* version() noexcept;
 
 //! @brief The undirected graph structure.
@@ -204,4 +210,4 @@ private:
 };
 } // namespace directed
 } // namespace graph
-} // namespace date_structure
+} // namespace data_structure

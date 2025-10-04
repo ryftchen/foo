@@ -10,11 +10,17 @@
 #include <ostream>
 
 //! @brief The data structure module.
-namespace date_structure // NOLINT(modernize-concat-nested-namespaces)
+namespace data_structure // NOLINT(modernize-concat-nested-namespaces)
 {
 //! @brief Linear-related functions in the data structure module.
 namespace linear
 {
+//! @brief Function name string.
+//! @return name string (module_function)
+inline const char* name() noexcept
+{
+    return "DS_LINEAR";
+}
 extern const char* version() noexcept;
 
 #ifdef __cplusplus
@@ -245,4 +251,4 @@ private:
     const dll::DLL* const linear{nullptr};
 };
 } // namespace linear
-} // namespace date_structure
+} // namespace data_structure

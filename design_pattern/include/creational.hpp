@@ -15,6 +15,12 @@ namespace design_pattern // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Creational-related functions in the design pattern module.
 namespace creational
 {
+//! @brief Function name string.
+//! @return name string (module_function)
+inline const char* name() noexcept
+{
+    return "DP_CREATIONAL";
+}
 extern const char* version() noexcept;
 
 //! @brief The abstract factory pattern.

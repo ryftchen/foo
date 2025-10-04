@@ -16,6 +16,12 @@ namespace utility // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Network-socket-related functions in the utility module.
 namespace socket
 {
+//! @brief Function name string.
+//! @return name string (module_function)
+inline const char* name() noexcept
+{
+    return "UTIL_SOCKET";
+}
 extern const char* version() noexcept;
 
 //! @brief Network socket.
