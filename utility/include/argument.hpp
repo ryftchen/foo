@@ -10,7 +10,6 @@
 #include <any>
 #include <cstdint>
 #include <functional>
-#include <limits>
 #include <list>
 #include <map>
 #include <optional>
@@ -23,9 +22,9 @@ namespace utility // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Argument-parsing-related functions in the utility module.
 namespace argument
 {
-//! @brief Function name string.
-//! @return name string (module_function)
-inline const char* name() noexcept
+//! @brief Brief function description.
+//! @return function description (module_function)
+inline static const char* description() noexcept
 {
     return "UTIL_ARGUMENT";
 }
@@ -91,6 +90,45 @@ enum class ArgsNumPattern : std::uint8_t
     any,
     //! @brief At least one.
     atLeastOne
+};
+//! @brief Indicate the range for the number of arguments.
+class ArgsNumRange
+{
+public:
+    //! @brief Construct a new ArgsNumRange object.
+    //! @param minimum - minimum of range
+    //! @param maximum - maximum of range
+    ArgsNumRange(const std::size_t minimum, const std::size_t maximum);
+
+    //! @brief The operator (==) overloading of Trait class.
+    //! @param rhs - right-hand side
+    //! @return be equal or not
+    bool operator==(const ArgsNumRange& rhs) const;
+    //! @brief The operator (!=) overloading of Trait class.
+    //! @param rhs - right-hand side
+    //! @return be unequal or not
+    bool operator!=(const ArgsNumRange& rhs) const;
+
+    friend class Trait;
+    //! @brief Check whether the number of arguments is within the range.
+    //! @param value - number of arguments
+    //! @return within or not
+    [[nodiscard]] bool within(const std::size_t value) const;
+    //! @brief Check whether the number of arguments is exact.
+    //! @return be exact or not
+    [[nodiscard]] bool isExact() const;
+    //! @brief Check whether the maximum of the range is set.
+    //! @return exist or not
+    [[nodiscard]] bool existRightBound() const;
+
+private:
+    //! @brief Minimum of range.
+    std::size_t min{0};
+    //! @brief Maximum of range.
+    std::size_t max{0};
+
+protected:
+    friend std::ostream& operator<<(std::ostream& os, const ArgsNumRange& range);
 };
 
 class Argument;
@@ -244,80 +282,8 @@ private:
     std::string prefixChars;
     //! @brief Maximum size for representing.
     static constexpr std::size_t maxRepresentSize{5};
-
-    //! @brief Indicate the range for the number of arguments.
-    class ArgsNumRange
-    {
-    public:
-        //! @brief Construct a new ArgsNumRange object.
-        //! @param minimum - minimum of range
-        //! @param maximum - maximum of range
-        ArgsNumRange(const std::size_t minimum, const std::size_t maximum) : min{minimum}, max{maximum}
-        {
-            if (minimum > maximum)
-            {
-                throw std::runtime_error{"The range of number of arguments is invalid."};
-            }
-        }
-
-        //! @brief The operator (==) overloading of Trait class.
-        //! @param rhs - right-hand side
-        //! @return be equal or not
-        bool operator==(const ArgsNumRange& rhs) const { return std::tie(rhs.min, rhs.max) == std::tie(min, max); }
-        //! @brief The operator (!=) overloading of Trait class.
-        //! @param rhs - right-hand side
-        //! @return be unequal or not
-        bool operator!=(const ArgsNumRange& rhs) const { return !(rhs == *this); }
-
-        //! @brief Check whether the number of arguments is within the range.
-        //! @param value - number of arguments
-        //! @return within or not
-        [[nodiscard]] bool within(const std::size_t value) const { return (value >= min) && (value <= max); }
-        //! @brief Check whether the number of arguments is exact.
-        //! @return be exact or not
-        [[nodiscard]] bool isExact() const { return min == max; }
-        //! @brief Check whether the maximum of the range is set.
-        //! @return exist or not
-        [[nodiscard]] bool existRightBound() const { return max < std::numeric_limits<std::size_t>::max(); }
-        //! @brief Get the minimum of the range.
-        //! @return minimum of range
-        [[nodiscard]] std::size_t getMin() const { return min; }
-        //! @brief Get the maximum of the range.
-        //! @return maximum of range
-        [[nodiscard]] std::size_t getMax() const { return max; }
-
-    private:
-        //! @brief Minimum of range.
-        std::size_t min{0};
-        //! @brief Maximum of range.
-        std::size_t max{0};
-
-    protected:
-        //! @brief The operator (<<) overloading of the ArgsNumRange class.
-        //! @param os - output stream object
-        //! @param range - specific ArgsNumRange object
-        //! @return reference of the output stream object
-        friend std::ostream& operator<<(std::ostream& os, const ArgsNumRange& range)
-        {
-            if (range.min == range.max)
-            {
-                if ((range.min != 0) && (range.min != 1))
-                {
-                    os << "[args: " << range.min << "] ";
-                }
-            }
-            else if (range.max == std::numeric_limits<std::size_t>::max())
-            {
-                os << "[args: " << range.min << " or more] ";
-            }
-            else
-            {
-                os << "[args=" << range.min << ".." << range.max << "] ";
-            }
-
-            return os;
-        }
-    } /** @brief The range for the number of arguments. */ argsNumRange{1, 1};
+    //! @brief The range for the number of arguments.
+    ArgsNumRange argsNumRange{1, 1};
 
     //! @brief Represent target value.
     //! @tparam T - type of target value
@@ -348,8 +314,8 @@ private:
     //! @return wrapping of calls
     template <typename Func, typename Tuple, typename Extra>
     static constexpr decltype(auto) applyScopedOne(Func&& func, Tuple&& tup, Extra&& ext);
-    //! @brief Throw an exception when ArgsNumRange is invalid.
-    [[noreturn]] void throwArgsNumRangeValidationException() const;
+    //! @brief Throw an exception when the range for the number of arguments is invalid.
+    [[noreturn]] void throwInvalidArgsNumRange() const;
     //! @brief Find the character in the argument.
     //! @param name - name of argument
     //! @return character
@@ -500,7 +466,7 @@ Iterator Trait::consume(const Iterator start, Iterator end, const std::string_vi
 
     isUsed = true;
     usedName = argName;
-    const auto numMax = argsNumRange.getMax(), numMin = argsNumRange.getMin();
+    const auto numMin = argsNumRange.min, numMax = argsNumRange.max;
     if (numMax == 0)
     {
         values.emplace_back(implicitVal);
@@ -741,11 +707,11 @@ public:
     //! @brief Check whether the sub-command is used.
     //! @param subCommandName - target sub-command name
     //! @return be used or not
-    inline auto isSubCommandUsed(const std::string_view subCommandName) const;
+    bool isSubCommandUsed(const std::string_view subCommandName) const;
     //! @brief Check whether the sub-command is used.
     //! @param subParser - target sub-parser
     //! @return be used or not
-    inline auto isSubCommandUsed(const Argument& subParser) const;
+    bool isSubCommandUsed(const Argument& subParser) const;
     //! @brief Get the title name.
     //! @return title name
     std::string title() const;
@@ -872,16 +838,6 @@ template <typename T>
 std::optional<T> Argument::present(const std::string_view argName) const
 {
     return (*this)[argName].present<T>();
-}
-
-inline auto Argument::isSubCommandUsed(const std::string_view subCommandName) const
-{
-    return subParserUsed.at(subCommandName);
-}
-
-inline auto Argument::isSubCommandUsed(const Argument& subParser) const
-{
-    return isSubCommandUsed(subParser.titleName);
 }
 
 template <typename Iterator>

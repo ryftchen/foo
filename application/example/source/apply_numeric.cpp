@@ -133,7 +133,7 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
         return;
     }
 
-    const std::string_view title = numeric::arithmetic::name();
+    const std::string_view title = numeric::arithmetic::description();
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
@@ -235,7 +235,7 @@ void applyingDivisor(const std::vector<std::string>& candidates)
         return;
     }
 
-    const std::string_view title = numeric::divisor::name();
+    const std::string_view title = numeric::divisor::description();
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
@@ -336,7 +336,7 @@ void applyingIntegral(const std::vector<std::string>& candidates)
         return;
     }
 
-    const std::string_view title = numeric::integral::name();
+    const std::string_view title = numeric::integral::description();
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
@@ -443,7 +443,7 @@ void applyingPrime(const std::vector<std::string>& candidates)
         return;
     }
 
-    const std::string_view title = numeric::prime::name();
+    const std::string_view title = numeric::prime::description();
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();

@@ -154,7 +154,7 @@ void applyingMatch(const std::vector<std::string>& candidates)
         return;
     }
 
-    const std::string_view title = algorithm::match::name();
+    const std::string_view title = algorithm::match::description();
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
@@ -256,7 +256,7 @@ void applyingNotation(const std::vector<std::string>& candidates)
         return;
     }
 
-    const std::string_view title = algorithm::notation::name();
+    const std::string_view title = algorithm::notation::description();
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
@@ -368,7 +368,7 @@ void applyingOptimal(const std::vector<std::string>& candidates)
         return;
     }
 
-    const std::string_view title = algorithm::optimal::name();
+    const std::string_view title = algorithm::optimal::description();
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
@@ -494,7 +494,7 @@ void applyingSearch(const std::vector<std::string>& candidates)
         return;
     }
 
-    const std::string_view title = algorithm::search::name();
+    const std::string_view title = algorithm::search::description();
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
@@ -620,7 +620,7 @@ void applyingSort(const std::vector<std::string>& candidates)
         return;
     }
 
-    const std::string_view title = algorithm::sort::name();
+    const std::string_view title = algorithm::sort::description();
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();

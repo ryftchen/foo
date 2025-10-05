@@ -42,9 +42,9 @@ namespace utility // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Public-macro-related functions in the utility module.
 namespace macro
 {
-//! @brief Function name string.
-//! @return name string (module_function)
-inline const char* name() noexcept
+//! @brief Brief function description.
+//! @return function description (module_function)
+inline static const char* description() noexcept
 {
     return "UTIL_MACRO";
 }

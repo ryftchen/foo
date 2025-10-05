@@ -143,7 +143,7 @@ void applyingBehavioral(const std::vector<std::string>& candidates)
         return;
     }
 
-    const std::string_view title = design_pattern::behavioral::name();
+    const std::string_view title = design_pattern::behavioral::description();
     APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
@@ -256,7 +256,7 @@ void applyingCreational(const std::vector<std::string>& candidates)
         return;
     }
 
-    const std::string_view title = design_pattern::creational::name();
+    const std::string_view title = design_pattern::creational::description();
     APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
@@ -357,7 +357,7 @@ void applyingStructural(const std::vector<std::string>& candidates)
         return;
     }
 
-    const std::string_view title = design_pattern::structural::name();
+    const std::string_view title = design_pattern::structural::description();
     APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
