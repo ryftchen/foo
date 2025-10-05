@@ -119,7 +119,7 @@ void applyingCache(const std::vector<std::string>& candidates)
         return;
     }
 
-    const std::string_view title = data_structure::cache::name();
+    const std::string_view title = data_structure::cache::description();
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
@@ -199,7 +199,7 @@ void applyingFilter(const std::vector<std::string>& candidates)
         return;
     }
 
-    const std::string_view title = data_structure::filter::name();
+    const std::string_view title = data_structure::filter::description();
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
@@ -276,7 +276,7 @@ void applyingGraph(const std::vector<std::string>& candidates)
         return;
     }
 
-    const std::string_view title = data_structure::graph::name();
+    const std::string_view title = data_structure::graph::description();
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
@@ -356,7 +356,7 @@ void applyingHeap(const std::vector<std::string>& candidates)
         return;
     }
 
-    const std::string_view title = data_structure::heap::name();
+    const std::string_view title = data_structure::heap::description();
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
@@ -439,7 +439,7 @@ void applyingLinear(const std::vector<std::string>& candidates)
         return;
     }
 
-    const std::string_view title = data_structure::linear::name();
+    const std::string_view title = data_structure::linear::description();
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
@@ -522,7 +522,7 @@ void applyingTree(const std::vector<std::string>& candidates)
         return;
     }
 
-    const std::string_view title = data_structure::tree::name();
+    const std::string_view title = data_structure::tree::description();
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();

@@ -25,7 +25,7 @@ static volatile std::sig_atomic_t signalStatus = 0;
 
 //! @brief Get the executable name.
 //! @return executable name
-[[gnu::always_inline]] static inline std::string executableName()
+[[gnu::always_inline]] inline static std::string executableName()
 {
     return std::filesystem::canonical(std::filesystem::path{"/proc/self/exe"}).filename().string();
 }

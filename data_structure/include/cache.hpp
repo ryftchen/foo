@@ -20,9 +20,9 @@ namespace data_structure // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Cache-related functions in the data structure module.
 namespace cache
 {
-//! @brief Function name string.
-//! @return name string (module_function)
-inline const char* name() noexcept
+//! @brief Brief function description.
+//! @return function description (module_function)
+inline static const char* description() noexcept
 {
     return "DS_CACHE";
 }

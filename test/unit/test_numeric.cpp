@@ -55,7 +55,7 @@ protected:
     //! @brief Expected result 4.
     static constexpr std::int32_t expRes4{-1};
 };
-const std::string_view ArithmeticTestBase::title = numeric::arithmetic::name();
+const std::string_view ArithmeticTestBase::title = numeric::arithmetic::description();
 std::unique_ptr<arithmetic::InputBuilder> ArithmeticTestBase::fixture = {};
 
 //! @brief Test for the addition method in the calculation of arithmetic.
@@ -108,7 +108,7 @@ protected:
     //! @brief Expected result.
     const std::set<std::int32_t> expRes{1, 2, 3, 5, 6, 7, 10, 14, 15, 21, 30, 35, 42, 70, 105, 210};
 };
-const std::string_view DivisorTestBase::title = numeric::divisor::name();
+const std::string_view DivisorTestBase::title = numeric::divisor::description();
 std::unique_ptr<divisor::InputBuilder> DivisorTestBase::fixture = {};
 
 //! @brief Test for the Euclidean method in the calculation of divisor.
@@ -161,7 +161,7 @@ protected:
     //! @brief Default precision.
     static constexpr double defPrec{numeric::integral::epsilon};
 };
-const std::string_view IntegralTestBase::title = numeric::integral::name();
+const std::string_view IntegralTestBase::title = numeric::integral::description();
 std::unique_ptr<integral::InputBuilder> IntegralTestBase::fixture = {};
 
 //! @brief Test for the trapezoidal method in the calculation of integral.
@@ -249,7 +249,7 @@ protected:
         // NOLINTEND(readability-magic-numbers)
     }
 };
-const std::string_view PrimeTestBase::title = numeric::prime::name();
+const std::string_view PrimeTestBase::title = numeric::prime::description();
 std::unique_ptr<prime::InputBuilder> PrimeTestBase::fixture = {};
 
 //! @brief Test for the Eratosthenes method in the calculation of prime.

@@ -105,7 +105,7 @@ protected:
     };
     // clang-format on
 };
-const std::string_view CacheTestBase::title = data_structure::cache::name();
+const std::string_view CacheTestBase::title = data_structure::cache::description();
 
 //! @brief Test for the first in first out instance in the structure of cache.
 TEST_F(CacheTestBase, FIFOInstance)
@@ -164,7 +164,7 @@ protected:
     };
     // clang-format on
 };
-const std::string_view FilterTestBase::title = data_structure::filter::name();
+const std::string_view FilterTestBase::title = data_structure::filter::description();
 
 //! @brief Test for the Bloom instance in the structure of filter.
 TEST_F(FilterTestBase, BloomInstance)
@@ -254,7 +254,7 @@ protected:
     };
     // clang-format on
 };
-const std::string_view GraphTestBase::title = data_structure::graph::name();
+const std::string_view GraphTestBase::title = data_structure::graph::description();
 
 //! @brief Test for the undirected instance in the structure of graph.
 TEST_F(GraphTestBase, UndirectedInstance)
@@ -386,7 +386,7 @@ protected:
     };
     // clang-format on
 };
-const std::string_view HeapTestBase::title = data_structure::heap::name();
+const std::string_view HeapTestBase::title = data_structure::heap::description();
 
 //! @brief Test for the binary instance in the structure of heap.
 TEST_F(HeapTestBase, BinaryInstance)
@@ -478,7 +478,7 @@ protected:
     };
     // clang-format on
 };
-const std::string_view LinearTestBase::title = data_structure::linear::name();
+const std::string_view LinearTestBase::title = data_structure::linear::description();
 
 //! @brief Test for the doubly linked list instance in the structure of linear.
 TEST_F(LinearTestBase, DLLInstance)
@@ -633,7 +633,7 @@ protected:
     };
     // clang-format on
 };
-const std::string_view TreeTestBase::title = data_structure::tree::name();
+const std::string_view TreeTestBase::title = data_structure::tree::description();
 
 //! @brief Test for the binary search instance in the structure of tree.
 TEST_F(TreeTestBase, BSInstance)

@@ -18,9 +18,9 @@ namespace utility // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Common-interface-related functions in the utility module.
 namespace common
 {
-//! @brief Function name string.
-//! @return name string (module_function)
-inline const char* name() noexcept
+//! @brief Brief function description.
+//! @return function description (module_function)
+inline static const char* description() noexcept
 {
     return "UTIL_COMMON";
 }
@@ -70,14 +70,6 @@ inline std::string formatString(
     return std::vformat(fmt, std::make_format_args(args...));
 }
 
-//! @brief Compare whether two strings are equal.
-//! @param str1 - string 1
-//! @param str2 - string 2
-//! @return be equal or not
-inline bool areStringsEqual(const char* const str1, const char* const str2)
-{
-    return std::strcmp(str1, str2) == 0;
-}
 //! @brief Compare whether multiple strings are equal.
 //! @tparam Others - type of arguments of string
 //! @param str1 - string 1
@@ -85,9 +77,9 @@ inline bool areStringsEqual(const char* const str1, const char* const str2)
 //! @param others - arguments of string
 //! @return be equal or not
 template <typename... Others>
-inline bool areStringsEqual(const char* const str1, const char* const str2, Others&&... others)
+inline bool areStringsEqual(const char* const str1, const char* const str2, const Others&... others)
 {
-    return areStringsEqual(str1, str2) && areStringsEqual(str2, std::forward<Others>(others)...);
+    return (std::strcmp(str1, str2) == 0) && ((std::strcmp(str1, others) == 0) && ...);
 }
 
 //! @brief Splice strings into constexpr type.

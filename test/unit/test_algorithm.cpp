@@ -49,7 +49,7 @@ protected:
     //! @brief Expected result.
     static constexpr std::int64_t expRes{49702};
 };
-const std::string_view MatchTestBase::title = algorithm::match::name();
+const std::string_view MatchTestBase::title = algorithm::match::description();
 std::unique_ptr<match::InputBuilder> MatchTestBase::fixture = {};
 
 //! @brief Test for the Rabin-Karp method in the solution of match.
@@ -140,7 +140,7 @@ protected:
     //! @brief Expected result 2.
     static constexpr std::string_view expRes2{"abcd^e-fgh*+^*+i-"};
 };
-const std::string_view NotationTestBase::title = algorithm::notation::name();
+const std::string_view NotationTestBase::title = algorithm::notation::description();
 std::unique_ptr<notation::InputBuilder> NotationTestBase::fixture = {};
 
 //! @brief Test for the prefix method in the solution of notation.
@@ -193,7 +193,7 @@ protected:
     //! @brief Default precision.
     static constexpr double defPrec{algorithm::optimal::epsilon};
 };
-const std::string_view OptimalTestBase::title = algorithm::optimal::name();
+const std::string_view OptimalTestBase::title = algorithm::optimal::description();
 std::unique_ptr<optimal::InputBuilder> OptimalTestBase::fixture = {};
 
 //! @brief Test for the gradient descent method in the solution of optimal.
@@ -302,7 +302,7 @@ protected:
     //! @brief Expected result.
     static std::set<std::int64_t> expRes;
 };
-const std::string_view SearchTestBase::title = algorithm::search::name();
+const std::string_view SearchTestBase::title = algorithm::search::description();
 std::unique_ptr<search::InputBuilder<float>> SearchTestBase::fixture = {};
 std::set<std::int64_t> SearchTestBase::expRes = {};
 
@@ -365,7 +365,7 @@ protected:
     //! @brief Expected result.
     static std::vector<std::int32_t> expRes;
 };
-const std::string_view SortTestBase::title = algorithm::sort::name();
+const std::string_view SortTestBase::title = algorithm::sort::description();
 std::unique_ptr<sort::InputBuilder<std::int32_t>> SortTestBase::fixture = {};
 std::vector<std::int32_t> SortTestBase::expRes = {};
 

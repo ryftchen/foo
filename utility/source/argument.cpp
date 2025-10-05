@@ -7,6 +7,7 @@
 #include "argument.hpp"
 
 #include <iomanip>
+#include <limits>
 #include <numeric>
 #include <ranges>
 #include <utility>
@@ -19,6 +20,65 @@ const char* version() noexcept
 {
     static const char* const ver = "0.1.0";
     return ver;
+}
+
+ArgsNumRange::ArgsNumRange(const std::size_t minimum, const std::size_t maximum) : min{minimum}, max{maximum}
+{
+    if (minimum > maximum)
+    {
+        throw std::runtime_error{"The range of number of arguments is invalid."};
+    }
+}
+
+bool ArgsNumRange::operator==(const ArgsNumRange& rhs) const
+{
+    return std::tie(rhs.min, rhs.max) == std::tie(min, max);
+}
+
+bool ArgsNumRange::operator!=(const ArgsNumRange& rhs) const
+{
+    return !(rhs == *this);
+}
+
+bool ArgsNumRange::within(const std::size_t value) const
+{
+    return (value >= min) && (value <= max);
+}
+
+bool ArgsNumRange::isExact() const
+{
+    return min == max;
+}
+
+bool ArgsNumRange::existRightBound() const
+{
+    return max < std::numeric_limits<std::size_t>::max();
+}
+
+//! @brief The operator (<<) overloading of the ArgsNumRange class.
+//! @param os - output stream object
+//! @param range - specific ArgsNumRange object
+//! @return reference of the output stream object
+std::ostream& operator<<(std::ostream& os, const ArgsNumRange& range)
+{
+    const auto numMin = range.min, numMax = range.max;
+    if (numMin == numMax)
+    {
+        if ((numMin != 0) && (numMin != 1))
+        {
+            os << "[args: " << numMin << "] ";
+        }
+    }
+    else if (numMax == std::numeric_limits<std::size_t>::max())
+    {
+        os << "[args: " << numMin << " or more] ";
+    }
+    else
+    {
+        os << "[args=" << numMin << ".." << numMax << "] ";
+    }
+
+    return os;
 }
 
 Trait& Trait::help(const std::string_view message)
@@ -111,7 +171,7 @@ void Trait::validate() const
     }
     else if (!argsNumRange.within(values.size()) && !defaultVal.has_value())
     {
-        throwArgsNumRangeValidationException();
+        throwInvalidArgsNumRange();
     }
 }
 
@@ -132,10 +192,10 @@ std::string Trait::getInlineUsage() const
     }
     out << longestName;
     const auto var = metaVar.empty() ? "VAR" : metaVar;
-    if (argsNumRange.getMax() > 0)
+    if (const auto numMax = argsNumRange.max; numMax > 0)
     {
         out << ' ' << var;
-        if (argsNumRange.getMax() > 1)
+        if (numMax > 1)
         {
             out << "...";
         }
@@ -166,15 +226,16 @@ std::size_t Trait::getArgumentsLength() const
     return size;
 }
 
-void Trait::throwArgsNumRangeValidationException() const
+void Trait::throwInvalidArgsNumRange() const
 {
+    const auto numMin = argsNumRange.min, numMax = argsNumRange.max;
     std::ostringstream out{};
-    out << (usedName.empty() ? names.at(0) : usedName) << ": " << argsNumRange.getMin();
+    out << (usedName.empty() ? names.at(0) : usedName) << ": " << numMin;
     if (!argsNumRange.isExact())
     {
         if (argsNumRange.existRightBound())
         {
-            out << " to " << argsNumRange.getMax();
+            out << " to " << numMax;
         }
         else
         {
@@ -253,7 +314,7 @@ std::ostream& operator<<(std::ostream& os, const Trait& tra)
     else
     {
         out << join(tra.names.cbegin(), tra.names.cend(), ", ");
-        if (!tra.metaVar.empty() && (tra.argsNumRange == Trait::ArgsNumRange{1, 1}))
+        if (!tra.metaVar.empty() && (tra.argsNumRange == ArgsNumRange{1, 1}))
         {
             out << ' ' << tra.metaVar;
         }
@@ -303,7 +364,7 @@ std::ostream& operator<<(std::ostream& os, const Trait& tra)
     }
     os << tra.argsNumRange;
 
-    if (tra.defaultVal.has_value() && (tra.argsNumRange != Trait::ArgsNumRange{0, 0}))
+    if (tra.defaultVal.has_value() && (tra.argsNumRange != ArgsNumRange{0, 0}))
     {
         os << "[default: " << tra.representedDefVal << ']';
     }
@@ -416,6 +477,16 @@ void Argument::parseArgs(const int argc, const char* const argv[])
 bool Argument::isUsed(const std::string_view argName) const
 {
     return (*this)[argName].isUsed;
+}
+
+bool Argument::isSubCommandUsed(const std::string_view subCommandName) const
+{
+    return subParserUsed.at(subCommandName);
+}
+
+bool Argument::isSubCommandUsed(const Argument& subParser) const
+{
+    return isSubCommandUsed(subParser.titleName);
 }
 
 std::string Argument::title() const

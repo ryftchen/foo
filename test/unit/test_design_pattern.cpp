@@ -121,7 +121,7 @@ protected:
     };
     // clang-format on
 };
-const std::string_view BehavioralTestBase::title = design_pattern::behavioral::name();
+const std::string_view BehavioralTestBase::title = design_pattern::behavioral::description();
 
 //! @brief Test for the chain of responsibility instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, ChainOfResponsibilityInstance)
@@ -258,7 +258,7 @@ protected:
     };
     // clang-format on
 };
-const std::string_view CreationalTestBase::title = design_pattern::creational::name();
+const std::string_view CreationalTestBase::title = design_pattern::creational::description();
 
 //! @brief Test for the abstract factory instance in the pattern of creational.
 TEST_F(CreationalTestBase, AbstractFactoryInstance)
@@ -360,7 +360,7 @@ protected:
     };
     // clang-format on
 };
-const std::string_view StructuralTestBase::title = design_pattern::structural::name();
+const std::string_view StructuralTestBase::title = design_pattern::structural::description();
 
 //! @brief Test for the adapter instance in the pattern of structural.
 TEST_F(StructuralTestBase, AdapterInstance)
