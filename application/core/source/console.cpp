@@ -242,7 +242,7 @@ void Console::reserveConsole()
 
 char** Console::customCompleter(const char* text, int start, int /*end*/)
 {
-    return (start == 0) ? ::rl_completion_matches(text, &Console::customCompentry) : nullptr;
+    return (start == 0) ? ::rl_completion_matches(text, customCompentry) : nullptr;
 }
 
 char* Console::customCompentry(const char* text, int state)

@@ -281,7 +281,7 @@ void Command::setupSubCLI<reg_algo::ApplyAlgorithm>()
     auto& registry = taskDispatcher.extraChoiceRegistry[subCLIAppAlgo.title()];
     std::vector<std::string> candidates{};
 
-    taskDispatcher.extraChecklist.emplace(subCLIAppAlgo.title(), Intf{&manage::present, &manage::clear});
+    taskDispatcher.extraChecklist.emplace(subCLIAppAlgo.title(), Intf{manage::present, manage::clear});
     subCLIAppAlgo.addDescription(descr<ApplyAlgorithm>());
     subCLIAppAlgo.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
 
@@ -374,7 +374,7 @@ void Command::setupSubCLI<reg_dp::ApplyDesignPattern>()
     auto& registry = taskDispatcher.extraChoiceRegistry[subCLIAppDp.title()];
     std::vector<std::string> candidates{};
 
-    taskDispatcher.extraChecklist.emplace(subCLIAppDp.title(), Intf{&manage::present, &manage::clear});
+    taskDispatcher.extraChecklist.emplace(subCLIAppDp.title(), Intf{manage::present, manage::clear});
     subCLIAppDp.addDescription(descr<ApplyDesignPattern>());
     subCLIAppDp.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
 
@@ -444,7 +444,7 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
     auto& registry = taskDispatcher.extraChoiceRegistry[subCLIAppDs.title()];
     std::vector<std::string> candidates{};
 
-    taskDispatcher.extraChecklist.emplace(subCLIAppDs.title(), Intf{&manage::present, &manage::clear});
+    taskDispatcher.extraChecklist.emplace(subCLIAppDs.title(), Intf{manage::present, manage::clear});
     subCLIAppDs.addDescription(descr<ApplyDataStructure>());
     subCLIAppDs.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
 
@@ -552,7 +552,7 @@ void Command::setupSubCLI<reg_num::ApplyNumeric>()
     auto& registry = taskDispatcher.extraChoiceRegistry[subCLIAppNum.title()];
     std::vector<std::string> candidates{};
 
-    taskDispatcher.extraChecklist.emplace(subCLIAppNum.title(), Intf{&manage::present, &manage::clear});
+    taskDispatcher.extraChecklist.emplace(subCLIAppNum.title(), Intf{manage::present, manage::clear});
     subCLIAppNum.addDescription(descr<ApplyNumeric>());
     subCLIAppNum.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
 
