@@ -173,9 +173,9 @@ void TCPSocket::toConnect(const std::string& ip, const std::uint16_t port)
     toReceive();
 }
 
-void TCPSocket::toReceive(const bool toDetach)
+void TCPSocket::toReceive(const bool detach)
 {
-    if (auto self = shared_from_this(); !toDetach)
+    if (auto self = shared_from_this(); !detach)
     {
         launchAsyncTask(toRecv, self);
     }
@@ -288,9 +288,9 @@ void TCPServer::toListen()
     }
 }
 
-void TCPServer::toAccept(const bool toDetach)
+void TCPServer::toAccept(const bool detach)
 {
-    if (auto weakSelf = std::weak_ptr<TCPServer>(shared_from_this()); !toDetach)
+    if (auto weakSelf = std::weak_ptr<TCPServer>(shared_from_this()); !detach)
     {
         launchAsyncTask(
             [weakSelf]
@@ -444,9 +444,9 @@ void UDPSocket::toConnect(const std::string& ip, const std::uint16_t port)
     }
 }
 
-void UDPSocket::toReceive(const bool toDetach)
+void UDPSocket::toReceive(const bool detach)
 {
-    if (auto self = shared_from_this(); !toDetach)
+    if (auto self = shared_from_this(); !detach)
     {
         launchAsyncTask(toRecv, self);
     }
@@ -456,10 +456,10 @@ void UDPSocket::toReceive(const bool toDetach)
     }
 }
 
-void UDPSocket::toReceiveFrom(const bool toDetach)
+void UDPSocket::toReceiveFrom(const bool detach)
 {
     auto self = shared_from_this();
-    if (!toDetach)
+    if (!detach)
     {
         launchAsyncTask(toRecvFrom, self);
     }
