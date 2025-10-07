@@ -146,7 +146,7 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
     {
         allocatedJob->enqueue(
             taskNamer(subTask),
-            &arithmetic::calculation,
+            arithmetic::calculation,
             method,
             inputData->getOperands().first,
             inputData->getOperands().second);
@@ -248,7 +248,7 @@ void applyingDivisor(const std::vector<std::string>& candidates)
     {
         allocatedJob->enqueue(
             taskNamer(subTask),
-            &divisor::calculation,
+            divisor::calculation,
             method,
             inputData->getNumbers().first,
             inputData->getNumbers().second);
@@ -351,7 +351,7 @@ void applyingIntegral(const std::vector<std::string>& candidates)
     {
         allocatedJob->enqueue(
             taskNamer(subTask),
-            &integral::calculation,
+            integral::calculation,
             method,
             inputData->getExpression(),
             inputData->getRanges().first,
@@ -453,7 +453,7 @@ void applyingPrime(const std::vector<std::string>& candidates)
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
         [allocatedJob, &inputData, &taskNamer](const std::string_view subTask, const PrimeMethod method)
-    { allocatedJob->enqueue(taskNamer(subTask), &prime::calculation, method, inputData->getUpperBound()); };
+    { allocatedJob->enqueue(taskNamer(subTask), prime::calculation, method, inputData->getUpperBound()); };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     for (const auto index :

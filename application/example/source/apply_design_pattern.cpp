@@ -150,7 +150,7 @@ void applyingBehavioral(const std::vector<std::string>& candidates)
     auto* const allocatedJob = pooling.newEntry(bits.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const BehavioralInstance instance)
-    { allocatedJob->enqueue(taskNamer(subTask), &behavioral::pattern, instance); };
+    { allocatedJob->enqueue(taskNamer(subTask), behavioral::pattern, instance); };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " pattern:" << std::endl;
@@ -263,7 +263,7 @@ void applyingCreational(const std::vector<std::string>& candidates)
     auto* const allocatedJob = pooling.newEntry(bits.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const CreationalInstance instance)
-    { allocatedJob->enqueue(taskNamer(subTask), &creational::pattern, instance); };
+    { allocatedJob->enqueue(taskNamer(subTask), creational::pattern, instance); };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " pattern:" << std::endl;
@@ -364,7 +364,7 @@ void applyingStructural(const std::vector<std::string>& candidates)
     auto* const allocatedJob = pooling.newEntry(bits.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const StructuralInstance instance)
-    { allocatedJob->enqueue(taskNamer(subTask), &structural::pattern, instance); };
+    { allocatedJob->enqueue(taskNamer(subTask), structural::pattern, instance); };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " pattern:" << std::endl;

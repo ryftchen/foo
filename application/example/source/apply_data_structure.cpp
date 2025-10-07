@@ -126,7 +126,7 @@ void applyingCache(const std::vector<std::string>& candidates)
     auto* const allocatedJob = pooling.newEntry(bits.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const CacheInstance instance)
-    { allocatedJob->enqueue(taskNamer(subTask), &cache::structure, instance); };
+    { allocatedJob->enqueue(taskNamer(subTask), cache::structure, instance); };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
@@ -206,7 +206,7 @@ void applyingFilter(const std::vector<std::string>& candidates)
     auto* const allocatedJob = pooling.newEntry(bits.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const FilterInstance instance)
-    { allocatedJob->enqueue(taskNamer(subTask), &filter::structure, instance); };
+    { allocatedJob->enqueue(taskNamer(subTask), filter::structure, instance); };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
@@ -283,7 +283,7 @@ void applyingGraph(const std::vector<std::string>& candidates)
     auto* const allocatedJob = pooling.newEntry(bits.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const GraphInstance instance)
-    { allocatedJob->enqueue(taskNamer(subTask), &graph::structure, instance); };
+    { allocatedJob->enqueue(taskNamer(subTask), graph::structure, instance); };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
@@ -363,7 +363,7 @@ void applyingHeap(const std::vector<std::string>& candidates)
     auto* const allocatedJob = pooling.newEntry(bits.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const HeapInstance instance)
-    { allocatedJob->enqueue(taskNamer(subTask), &heap::structure, instance); };
+    { allocatedJob->enqueue(taskNamer(subTask), heap::structure, instance); };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
@@ -446,7 +446,7 @@ void applyingLinear(const std::vector<std::string>& candidates)
     auto* const allocatedJob = pooling.newEntry(bits.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const LinearInstance instance)
-    { allocatedJob->enqueue(taskNamer(subTask), &linear::structure, instance); };
+    { allocatedJob->enqueue(taskNamer(subTask), linear::structure, instance); };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
@@ -529,7 +529,7 @@ void applyingTree(const std::vector<std::string>& candidates)
     auto* const allocatedJob = pooling.newEntry(bits.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const TreeInstance instance)
-    { allocatedJob->enqueue(taskNamer(subTask), &tree::structure, instance); };
+    { allocatedJob->enqueue(taskNamer(subTask), tree::structure, instance); };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;

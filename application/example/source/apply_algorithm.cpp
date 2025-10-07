@@ -168,7 +168,7 @@ void applyingMatch(const std::vector<std::string>& candidates)
     {
         allocatedJob->enqueue(
             taskNamer(subTask),
-            &match::solution,
+            match::solution,
             method,
             inputData->getMatchingText().get(),
             inputData->getSinglePattern().get(),
@@ -266,7 +266,7 @@ void applyingNotation(const std::vector<std::string>& candidates)
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
         [allocatedJob, &inputData, &taskNamer](const std::string_view subTask, const NotationMethod method)
-    { allocatedJob->enqueue(taskNamer(subTask), &notation::solution, method, inputData->getInfixNotation()); };
+    { allocatedJob->enqueue(taskNamer(subTask), notation::solution, method, inputData->getInfixNotation()); };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     for (const auto index :
@@ -383,7 +383,7 @@ void applyingOptimal(const std::vector<std::string>& candidates)
     {
         allocatedJob->enqueue(
             taskNamer(subTask),
-            &optimal::solution,
+            optimal::solution,
             method,
             inputData->getFunction(),
             inputData->getRanges().first,
@@ -508,7 +508,7 @@ void applyingSearch(const std::vector<std::string>& candidates)
     {
         allocatedJob->enqueue(
             taskNamer(subTask),
-            &search::solution,
+            search::solution,
             method,
             inputData->getOrderedArray().get(),
             inputData->getLength(),
@@ -632,7 +632,7 @@ void applyingSort(const std::vector<std::string>& candidates)
     const auto addTask = [allocatedJob, &inputData, &taskNamer](const std::string_view subTask, const SortMethod method)
     {
         allocatedJob->enqueue(
-            taskNamer(subTask), &sort::solution, method, inputData->getRandomArray().get(), inputData->getLength());
+            taskNamer(subTask), sort::solution, method, inputData->getRandomArray().get(), inputData->getLength());
     };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
