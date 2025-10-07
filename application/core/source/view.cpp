@@ -813,10 +813,10 @@ std::string View::logContentsPreview()
     log::Log::Access().onPreviewing(
         [&transfer](const std::string& filePath)
         {
-            constexpr std::uint16_t maxRows = 24 * 100;
-            auto contents = utility::io::getFileContents(filePath, false, true, maxRows);
-            std::for_each(contents.begin(), contents.end(), [](auto& line) { log::changeToLogStyle(line); });
-            std::copy(contents.cbegin(), contents.cend(), std::ostream_iterator<std::string>(transfer, "\n"));
+            constexpr std::uint16_t lineLimit = 24 * 100;
+            auto logRows = utility::io::readFileLines(filePath, false, true, lineLimit);
+            std::for_each(logRows.begin(), logRows.end(), [](auto& line) { log::changeToLogStyle(line); });
+            std::copy(logRows.cbegin(), logRows.cend(), std::ostream_iterator<std::string>(transfer, "\n"));
         });
 
     return std::move(transfer).str();

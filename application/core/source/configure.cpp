@@ -71,7 +71,7 @@ utility::json::JSON Configure::parseConfigFile(const std::string_view configFile
     }
 
     using utility::json::JSON;
-    const auto configRows = utility::io::getFileContents(configFile, true);
+    const auto configRows = utility::io::readFileLines(configFile, true);
     std::ostringstream transfer{};
     std::copy(configRows.cbegin(), configRows.cend(), std::ostream_iterator<std::string>(transfer, ""));
     auto preprocessedData = JSON::load(transfer.str());

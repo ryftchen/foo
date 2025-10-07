@@ -489,7 +489,7 @@ void Log::doRollback()
     {
         logQueue.pop();
     }
-    if (logWriter.isOpen())
+    if (logWriter.isOpened())
     {
         try
         {
@@ -514,12 +514,12 @@ void Log::doRollback()
 
 bool Log::isLogFileOpen(const GoLogging& /*event*/) const
 {
-    return logWriter.isOpen();
+    return logWriter.isOpened();
 }
 
 bool Log::isLogFileClose(const NoLogging& /*event*/) const
 {
-    return !logWriter.isOpen();
+    return !logWriter.isOpened();
 }
 
 void Log::notificationLoop()

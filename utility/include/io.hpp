@@ -8,8 +8,6 @@
 
 #include <functional>
 #include <istream>
-#include <limits>
-#include <list>
 #include <memory>
 
 //! @brief The utility module.
@@ -28,11 +26,8 @@ extern const char* version() noexcept;
 
 extern std::string executeCommand(const std::string& command);
 extern void waitForUserInput(const std::function<bool(const std::string&)>& operation, const int timeout = -1);
-extern std::list<std::string> getFileContents(
-    const std::string_view filename,
-    const bool toLock = false,
-    const bool toReverse = false,
-    const std::size_t lineLimit = std::numeric_limits<std::size_t>::max());
+extern std::vector<std::string> readFileLines(
+    const std::string_view filename, const bool lock = false, const bool reverse = false, const int limit = -1);
 
 //! @brief Custom stream buffer for file descriptors.
 class FDStreamBuffer : public std::streambuf
@@ -122,17 +117,20 @@ public:
     //! @return reference of the FileReader object
     FileReader& operator=(FileReader&&) = delete;
 
-    //! @brief Checks if the file is currently open.
-    //! @return be open or not
-    bool isOpen() const;
+    //! @brief Checks if the file is currently opened.
+    //! @return be opened or not
+    bool isOpened() const;
     //! @brief Open the file for reading.
     void open();
     //! @brief Close the file.
     void close();
+    //! @brief Checks if the file is currently locked.
+    //! @return be locked or not
+    bool isLocked() const;
     //! @brief Lock the file for shared reading.
-    void lock() const;
+    void lock();
     //! @brief Unlock the file.
-    void unlock() const;
+    void unlock();
     //! @brief Get the input stream.
     //! @return reference to the input stream
     std::istream& stream();
@@ -146,6 +144,8 @@ private:
     FDStreamBuffer strBuf;
     //! @brief Input stream associated with the file.
     std::istream input{&strBuf};
+    //! @brief Locking status.
+    bool lockActive{false};
 };
 
 //! @brief Handle writing from a file using a custom stream buffer.
@@ -168,18 +168,21 @@ public:
     //! @return reference of the FileWriter object
     FileWriter& operator=(FileWriter&&) = delete;
 
-    //! @brief Checks if the file is currently open.
-    //! @return be open or not
-    bool isOpen() const;
+    //! @brief Checks if the file is currently opened.
+    //! @return be opened or not
+    bool isOpened() const;
     //! @brief Open the file for reading.
     //! @param overwrite - overwrite or not
     void open(const bool overwrite = false);
     //! @brief Close the file.
     void close();
+    //! @brief Checks if the file is currently locked.
+    //! @return be locked or not
+    bool isLocked() const;
     //! @brief Lock the file for exclusive reading.
-    void lock() const;
+    void lock();
     //! @brief Unlock the file.
-    void unlock() const;
+    void unlock();
     //! @brief Get the output stream.
     //! @return reference to the output stream
     std::ostream& stream();
@@ -193,6 +196,8 @@ private:
     FDStreamBuffer strBuf;
     //! @brief Output stream associated with the file.
     std::ostream output{&strBuf};
+    //! @brief Locking status.
+    bool lockActive{false};
 };
 } // namespace io
 } // namespace utility

@@ -8,9 +8,10 @@
 
 #include <sys/epoll.h>
 #include <sys/file.h>
-#include <algorithm>
+#include <deque>
 #include <filesystem>
 #include <iostream>
+#include <ranges>
 
 namespace utility::io
 {
@@ -104,55 +105,61 @@ void waitForUserInput(const std::function<bool(const std::string&)>& operation, 
     ::close(epollFD);
 }
 
-//! @brief Get the file contents.
+//! @brief Read lines from the file.
 //! @param filename - file path
-//! @param toLock - lock or not
-//! @param toReverse - reverse or not
-//! @param lineLimit - maximum number of lines
+//! @param lock - lock or not
+//! @param reverse - reverse or not
+//! @param limit - maximum number of lines
 //! @return file contents
-std::list<std::string> getFileContents(
-    const std::string_view filename, const bool toLock, const bool toReverse, const std::size_t lineLimit)
+std::vector<std::string> readFileLines(
+    const std::string_view filename, const bool lock, const bool reverse, const int limit)
 {
-    FileReader fileReader(filename);
-    fileReader.open();
-    if (toLock)
+    FileReader reader(filename);
+    reader.open();
+    if (lock)
     {
-        fileReader.lock();
+        reader.lock();
     }
 
-    auto& input = fileReader.stream();
+    auto& input = reader.stream();
     input.seekg(0, std::ios::beg);
-    std::string line{};
-    std::list<std::string> contents{};
-    if (!toReverse)
+    std::vector<std::string> contents{};
+    if (std::string line{}; !reverse)
     {
-        while ((contents.size() < lineLimit) && std::getline(input, line))
+        contents.reserve((limit >= 0) ? limit : 1024);
+        while (std::getline(input, line))
         {
-            contents.emplace_back(line);
+            if ((limit >= 0) && (static_cast<int>(contents.size()) == limit))
+            {
+                break;
+            }
+            contents.emplace_back(std::move(line));
         }
+        contents.shrink_to_fit();
     }
     else
     {
-        const std::size_t numOfLines =
-                              std::count(std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>{}, '\n'),
-                          startLine = (numOfLines > lineLimit) ? (numOfLines - lineLimit + 1) : 1;
-        input.clear();
-        input.seekg(0, std::ios::beg);
-        for (std::size_t i = 0; i < (startLine - 1); ++i)
-        {
-            input.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        }
+        std::deque<std::string> buffer{};
         while (std::getline(input, line))
         {
-            contents.emplace_front(line);
+            buffer.emplace_back(std::move(line));
+            if ((limit >= 0) && (static_cast<int>(buffer.size()) > limit))
+            {
+                buffer.pop_front();
+            }
+        }
+        contents.reserve(buffer.size());
+        for (auto& temp : std::ranges::reverse_view(buffer))
+        {
+            contents.emplace_back(std::move(temp));
         }
     }
 
-    if (toLock)
+    if (lock)
     {
-        fileReader.unlock();
+        reader.unlock();
     }
-    fileReader.close();
+    reader.close();
 
     return contents;
 }
@@ -330,17 +337,18 @@ std::streamsize FDStreamBuffer::showmanyc()
 
 FileReader::~FileReader()
 {
+    unlock();
     close();
 }
 
-bool FileReader::isOpen() const
+bool FileReader::isOpened() const
 {
     return fd >= 0;
 }
 
 void FileReader::open()
 {
-    if (isOpen())
+    if (isOpened())
     {
         return;
     }
@@ -356,7 +364,7 @@ void FileReader::open()
 
 void FileReader::close()
 {
-    if (!isOpen())
+    if (!isOpened())
     {
         return;
     }
@@ -366,20 +374,34 @@ void FileReader::close()
     fd = -1;
 }
 
-void FileReader::lock() const
+bool FileReader::isLocked() const
 {
+    return lockActive;
+}
+
+void FileReader::lock()
+{
+    if (isLocked())
+    {
+        return;
+    }
+
     if (::flock(fd, LOCK_SH | LOCK_NB))
     {
         throw std::runtime_error{"Failed to lock file descriptor " + std::to_string(fd) + " for reading."};
     }
+    lockActive = true;
 }
 
-void FileReader::unlock() const
+void FileReader::unlock()
 {
-    if (::flock(fd, LOCK_UN))
+    if (!isLocked())
     {
-        throw std::runtime_error{"Failed to unlock file descriptor " + std::to_string(fd) + " for reading."};
+        return;
     }
+
+    ::flock(fd, LOCK_UN);
+    lockActive = false;
 }
 
 std::istream& FileReader::stream()
@@ -389,17 +411,18 @@ std::istream& FileReader::stream()
 
 FileWriter::~FileWriter()
 {
+    unlock();
     close();
 }
 
-bool FileWriter::isOpen() const
+bool FileWriter::isOpened() const
 {
     return fd >= 0;
 }
 
 void FileWriter::open(const bool overwrite)
 {
-    if (isOpen())
+    if (isOpened())
     {
         return;
     }
@@ -416,7 +439,7 @@ void FileWriter::open(const bool overwrite)
 
 void FileWriter::close()
 {
-    if (!isOpen())
+    if (!isOpened())
     {
         return;
     }
@@ -426,20 +449,34 @@ void FileWriter::close()
     fd = -1;
 }
 
-void FileWriter::lock() const
+bool FileWriter::isLocked() const
 {
+    return lockActive;
+}
+
+void FileWriter::lock()
+{
+    if (isLocked())
+    {
+        return;
+    }
+
     if (::flock(fd, LOCK_EX | LOCK_NB))
     {
         throw std::runtime_error{"Failed to lock file descriptor " + std::to_string(fd) + " for writing."};
     }
+    lockActive = true;
 }
 
-void FileWriter::unlock() const
+void FileWriter::unlock()
 {
-    if (::flock(fd, LOCK_UN))
+    if (!isLocked())
     {
-        throw std::runtime_error{"Failed to unlock file descriptor " + std::to_string(fd) + " for writing."};
+        return;
     }
+
+    ::flock(fd, LOCK_UN);
+    lockActive = false;
 }
 
 std::ostream& FileWriter::stream()
