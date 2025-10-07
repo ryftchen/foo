@@ -147,8 +147,8 @@ public:
     //! @param port - peer port number
     void toConnect(const std::string& ip, const std::uint16_t port);
     //! @brief Create the thread to receive.
-    //! @param toDetach - whether to detach
-    void toReceive(const bool toDetach = false);
+    //! @param detach - whether to detach
+    void toReceive(const bool detach = false);
 
     //! @brief Alias for the handling on message received.
     using MessageCallback = std::function<void(const std::string_view)>;
@@ -197,8 +197,8 @@ public:
     //! @brief Listen on a port number. Wait for the connection to be established.
     void toListen();
     //! @brief Create the thread to accept the connection from the client.
-    //! @param toDetach - whether to detach
-    void toAccept(const bool toDetach = false);
+    //! @param detach - whether to detach
+    void toAccept(const bool detach = false);
 
     //! @brief Alias for the handling on new connection.
     using ConnectionCallback = std::function<void(const std::shared_ptr<TCPSocket>)>;
@@ -254,11 +254,11 @@ public:
     //! @param port - peer port number
     void toConnect(const std::string& ip, const std::uint16_t port);
     //! @brief Create the thread to receive.
-    //! @param toDetach - whether to detach
-    void toReceive(const bool toDetach = false);
+    //! @param detach - whether to detach
+    void toReceive(const bool detach = false);
     //! @brief Create the thread to receive from peer.
-    //! @param toDetach - whether to detach
-    void toReceiveFrom(const bool toDetach = false);
+    //! @param detach - whether to detach
+    void toReceiveFrom(const bool detach = false);
 
     //! @brief Alias for the handling on message received.
     using MessageCallback = std::function<void(const std::string_view, const std::string&, const std::uint16_t)>;
