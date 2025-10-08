@@ -250,31 +250,14 @@ private:
     //! @param buf - TLV packet buffer
     //! @return buffer length
     static int buildFinTLVPacket(char* buf);
-    //! @brief Build the TLV packet of the response message to get library information.
+    //! @brief Build the TLV packet of the response message in a customized way.
+    //! @tparam T - type of option attribute
     //! @param args - container of arguments
     //! @param buf - TLV packet buffer
     //! @return buffer length
-    static int buildTLVPacket4Depend(const Args& args, char* buf);
-    //! @brief Build the TLV packet of the response message to get bash outputs.
-    //! @param args - container of arguments
-    //! @param buf - TLV packet buffer
-    //! @return buffer length
-    static int buildTLVPacket4Execute(const Args& args, char* buf);
-    //! @brief Build the TLV packet of the response message to get log contents.
-    //! @param args - container of arguments
-    //! @param buf - TLV packet buffer
-    //! @return buffer length
-    static int buildTLVPacket4Journal(const Args& args, char* buf);
-    //! @brief Build the TLV packet of the response message to get status reports.
-    //! @param args - container of arguments
-    //! @param buf - TLV packet buffer
-    //! @return buffer length
-    static int buildTLVPacket4Monitor(const Args& args, char* buf);
-    //! @brief Build the TLV packet of the response message to get current configuration.
-    //! @param args - container of arguments
-    //! @param buf - TLV packet buffer
-    //! @return buffer length
-    static int buildTLVPacket4Profile(const Args& args, char* buf);
+    template <typename T>
+    requires std::derived_from<T, OptBase>
+    static int buildCustomTLVPacket(const Args& args, char* buf);
     //! @brief Fill the shared memory.
     //! @param contents - contents to be filled
     //! @return shm id

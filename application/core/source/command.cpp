@@ -846,13 +846,13 @@ void Command::executeInConsole() const
     launchClient(udpClient);
     registerOnConsole(*session, udpClient);
 
-    for (const auto& opt : pendingInputs)
+    for (const auto& input : pendingInputs)
     {
         try
         {
             using RetCode = console::Console::RetCode;
-            std::cout << greeting << opt << std::endl;
-            if (session->optionExecutor(opt) == RetCode::quit)
+            std::cout << greeting << input << std::endl;
+            if (session->optionExecutor(input) == RetCode::quit)
             {
                 break;
             }
@@ -995,6 +995,27 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
+auto Command::processConsoleInputs(const std::function<void()>& handling)
+{
+    using RetCode = console::Console::RetCode;
+    auto retCode = RetCode::success;
+    try
+    {
+        if (handling)
+        {
+            handling();
+        }
+    }
+    catch (const std::exception& err)
+    {
+        retCode = RetCode::error;
+        LOG_WRN << err.what();
+    }
+    interactionLatency();
+
+    return retCode;
+}
+
 template <typename T>
 void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& client)
 {
@@ -1003,77 +1024,53 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
         triggerHelper<Helper>(ExtEvent::reload);
         triggerHelper<Helper>(ExtEvent::startup);
     };
-    const auto asyncReqSender = [&client](const console::Console::Args& inputs)
+    const auto asyncReqSender = [&client](const auto& inputs)
     {
-        using RetCode = console::Console::RetCode;
-        auto retCode = RetCode::success;
-        try
-        {
-            auto reqBuffer = utility::common::base64Encode(std::accumulate(
-                inputs.cbegin(),
-                inputs.cend(),
-                std::string{},
-                [](const auto& acc, const auto& token) { return acc.empty() ? token : (acc + ' ' + token); }));
-            client->toSend(std::move(reqBuffer));
-            waitClientOutputDone();
-        }
-        catch (const std::exception& err)
-        {
-            retCode = RetCode::error;
-            LOG_WRN << err.what();
-            interactionLatency();
-        }
-        return retCode;
+        return processConsoleInputs(
+            [&client, &inputs]()
+            {
+                auto reqBuffer = utility::common::base64Encode(std::accumulate(
+                    inputs.cbegin(),
+                    inputs.cend(),
+                    std::string{},
+                    [](const auto& acc, const auto& token) { return acc.empty() ? token : (acc + ' ' + token); }));
+                client->toSend(std::move(reqBuffer));
+                waitClientOutputDone();
+            });
     };
 
     session.registerOption(
         "refresh",
         "refresh the outputs",
-        [](const console::Console::Args& /*inputs*/)
+        [](const auto& /*inputs*/)
         {
-            using RetCode = console::Console::RetCode;
-            auto retCode = RetCode::success;
-            try
-            {
-                using log::Log;
-                gracefulReset.template operator()<Log>();
-                LOG_INF_F("Refreshed the {} outputs.", Log::name);
-            }
-            catch (const std::exception& err)
-            {
-                retCode = RetCode::error;
-                LOG_WRN << err.what();
-            }
-            interactionLatency();
-            return retCode;
+            return processConsoleInputs(
+                []()
+                {
+                    using log::Log;
+                    gracefulReset.template operator()<Log>();
+                    LOG_INF_F("Refreshed the {} outputs.", Log::name);
+                });
         });
     session.registerOption(
         "reconnect",
         "reconnect to the servers",
-        [&client](const console::Console::Args& /*inputs*/)
+        [&client](const auto& /*inputs*/)
         {
-            using RetCode = console::Console::RetCode;
-            auto retCode = RetCode::success;
-            try
-            {
-                client->toSend(buildDisconnectReq());
-                client->toJoin();
-                interactionLatency();
-                client.reset();
+            return processConsoleInputs(
+                [&client]()
+                {
+                    client->toSend(buildDisconnectReq());
+                    client->toJoin();
+                    interactionLatency();
+                    client.reset();
 
-                using view::View;
-                gracefulReset.template operator()<View>();
-                client = std::make_shared<T>();
-                launchClient(client);
-                LOG_INF_F("Reconnected to the {} servers.", View::name);
-            }
-            catch (const std::exception& err)
-            {
-                retCode = RetCode::error;
-                LOG_WRN << err.what();
-            }
-            interactionLatency();
-            return retCode;
+                    using view::View;
+                    gracefulReset.template operator()<View>();
+                    client = std::make_shared<T>();
+                    launchClient(client);
+                    LOG_INF_F("Reconnected to the {} servers.", View::name);
+                });
         });
 
     auto supportedOptions = view::info::viewerSupportedOptions();

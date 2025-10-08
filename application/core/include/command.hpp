@@ -375,6 +375,10 @@ private:
     //! @param client - client to be launched
     template <typename T>
     static void launchClient(std::shared_ptr<T>& client);
+    //! @brief Process the inputs  in console mode.
+    //! @param handling - handling for inputs
+    //! @return console return code
+    static auto processConsoleInputs(const std::function<void()>& handling);
     //! @brief Parse the message inside the client in console mode.
     //! @param buffer - message buffer
     //! @param length - message length

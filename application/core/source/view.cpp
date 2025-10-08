@@ -431,15 +431,175 @@ void View::Sync::notifyTaskDone() const
     inst.outputCond.notify_one();
 }
 
+//! @brief Build the TLV packet of the response message to get library information.
+//! @param buf - TLV packet buffer
+//! @return buffer length
+template <>
+int View::buildCustomTLVPacket<View::OptDepend>(const Args& /*args*/, char* buf)
+{
+    tlv::TLVValue val{};
+    std::string extLibraries{};
+#if defined(__GLIBC__) && defined(__GLIBC_MINOR__)
+    extLibraries += "GNU C Library " MACRO_STRINGIFY(__GLIBC__) "." MACRO_STRINGIFY(__GLIBC_MINOR__) "\n";
+#else
+#error Could not find the GNU C Library version.
+#endif // defined(__GLIBC__) && defined(__GLIBC_MINOR__)
+#if defined(_GLIBCXX_RELEASE) && defined(__GLIBCXX__)
+    extLibraries +=
+        "GNU C++ Standard Library " MACRO_STRINGIFY(_GLIBCXX_RELEASE) " (" MACRO_STRINGIFY(__GLIBCXX__) ")\n";
+#else
+#error Could not find the GNU C++ Standard Library version.
+#endif // defined(_GLIBCXX_RELEASE) && defined(__GLIBCXX__)
+#if defined(__GNU_MP_VERSION) && defined(__GNU_MP_VERSION_MINOR) && defined(__GNU_MP_VERSION_PATCHLEVEL)
+    extLibraries += "GNU MP Library " MACRO_STRINGIFY(__GNU_MP_VERSION) "." MACRO_STRINGIFY(
+        __GNU_MP_VERSION_MINOR) "." MACRO_STRINGIFY(__GNU_MP_VERSION_PATCHLEVEL) "\n";
+#else
+#error Could not find the GNU MP Library version.
+#endif // defined(__GNU_MP_VERSION) && defined(__GNU_MP_VERSION_MINOR) && defined(__GNU_MP_VERSION_PATCHLEVEL)
+#if defined(MPFR_VERSION_STRING)
+    extLibraries += "GNU MPFR Library " MPFR_VERSION_STRING "\n";
+#else
+#error Could not find the GNU MPFR Library version.
+#endif // defined(MPFR_VERSION_STRING)
+#if defined(GSL_VERSION)
+    extLibraries += "GNU Scientific Library " GSL_VERSION " (CBLAS)\n";
+#else
+#error Could not find the GNU Scientific Library (CBLAS) version.
+#endif // defined(GSL_VERSION)
+#if defined(RL_VERSION_MAJOR) && defined(RL_VERSION_MINOR)
+    extLibraries +=
+        "GNU Readline Library " MACRO_STRINGIFY(RL_VERSION_MAJOR) "." MACRO_STRINGIFY(RL_VERSION_MINOR) "\n";
+#else
+#error Could not find the GNU Readline Library version.
+#endif // defined(RL_VERSION_MAJOR) && defined(RL_VERSION_MINOR)
+#if defined(LZ4_VERSION_STRING)
+    extLibraries += "LZ4 Library " LZ4_VERSION_STRING "\n";
+#else
+#error Could not find the LZ4 Library version.
+#endif // defined(LZ4_VERSION_STRING)
+#if defined(NCURSES_VERSION)
+    extLibraries += "Ncurses Library " NCURSES_VERSION "\n";
+#else
+#error Could not find the Ncurses Library version.
+#endif // defined(NCURSES_VERSION)
+#if defined(OPENSSL_VERSION_STR)
+    extLibraries += "OpenSSL Library " OPENSSL_VERSION_STR "";
+#else
+#error Could not find the OpenSSL Library version.
+#endif // defined(OPENSSL_VERSION_STR)
+    std::strncpy(val.libDetail, extLibraries.c_str(), sizeof(val.libDetail) - 1);
+    val.libDetail[sizeof(val.libDetail) - 1] = '\0';
+    int len = 0;
+    if (!tlv::encodeTLV(buf, len, val))
+    {
+        throw std::runtime_error{"Failed to build packet for the " + std::string{OptDepend::name} + " option."};
+    }
+    data::encryptMessage(buf, len);
+
+    return len;
+}
+
+//! @brief Build the TLV packet of the response message to get bash outputs.
+//! @param args - container of arguments
+//! @param buf - TLV packet buffer
+//! @return buffer length
+template <>
+int View::buildCustomTLVPacket<View::OptExecute>(const Args& args, char* buf)
+{
+    const auto cmd = std::accumulate(
+        args.cbegin(),
+        args.cend(),
+        std::string{},
+        [](const auto& acc, const auto& arg) { return acc.empty() ? arg : (acc + ' ' + arg); });
+    if (((cmd.find_first_not_of('\'') == 0) || (cmd.find_last_not_of('\'') == (cmd.length() - 1)))
+        && ((cmd.find_first_not_of('"') == 0) || (cmd.find_last_not_of('"') == (cmd.length() - 1))))
+    {
+        throw std::runtime_error{"Please enter the \"execute\" and append with 'CMD' (include quotes)."};
+    }
+
+    int len = 0;
+    if (const int shmId = fillSharedMemory(utility::io::executeCommand("/bin/bash -c " + cmd));
+        !tlv::encodeTLV(buf, len, tlv::TLVValue{.bashShmId = shmId}))
+    {
+        throw std::runtime_error{"Failed to build packet for the " + std::string{OptExecute::name} + " option."};
+    }
+    data::encryptMessage(buf, len);
+
+    return len;
+}
+
+//! @brief Build the TLV packet of the response message to get log contents.
+//! @param buf - TLV packet buffer
+//! @return buffer length
+template <>
+int View::buildCustomTLVPacket<View::OptJournal>(const Args& /*args*/, char* buf)
+{
+    int len = 0;
+    if (const int shmId = fillSharedMemory(logContentsPreview());
+        !tlv::encodeTLV(buf, len, tlv::TLVValue{.logShmId = shmId}))
+    {
+        throw std::runtime_error{"Failed to build packet for the " + std::string{OptJournal::name} + " option."};
+    }
+    data::encryptMessage(buf, len);
+
+    return len;
+}
+
+//! @brief Build the TLV packet of the response message to get status reports.
+//! @param args - container of arguments
+//! @param buf - TLV packet buffer
+//! @return buffer length
+template <>
+int View::buildCustomTLVPacket<View::OptMonitor>(const Args& args, char* buf)
+{
+    if (!args.empty())
+    {
+        if (const auto& input = args.front(); (input.length() != 1) || !std::isdigit(input.front()))
+        {
+            throw std::runtime_error{"Please enter the \"monitor\" and append with or without NUM (0 to 9)."};
+        }
+    }
+
+    int len = 0;
+    if (const int shmId = fillSharedMemory(statusReportsPreview(args.empty() ? 0 : std::stoul(args.front())));
+        !tlv::encodeTLV(buf, len, tlv::TLVValue{.statusShmId = shmId}))
+    {
+        throw std::runtime_error{"Failed to build packet for the " + std::string{OptMonitor::name} + " option."};
+    }
+    data::encryptMessage(buf, len);
+
+    return len;
+}
+
+//! @brief Build the TLV packet of the response message to get current configuration.
+//! @param buf - TLV packet buffer
+//! @return buffer length
+template <>
+int View::buildCustomTLVPacket<View::OptProfile>(const Args& /*args*/, char* buf)
+{
+    tlv::TLVValue val{};
+    std::strncpy(
+        val.configDetail, configure::retrieveDataRepo().toUnescapedString().c_str(), sizeof(val.configDetail) - 1);
+    val.configDetail[sizeof(val.configDetail) - 1] = '\0';
+    int len = 0;
+    if (!tlv::encodeTLV(buf, len, val))
+    {
+        throw std::runtime_error{"Failed to build packet for the " + std::string{OptProfile::name} + " option."};
+    }
+    data::encryptMessage(buf, len);
+
+    return len;
+}
+
 int View::buildResponse(const std::string& reqPlaintext, char* respBuffer)
 {
     return std::visit(
         OptionVisitor{
-            [&respBuffer](const OptDepend& opt) { return buildTLVPacket4Depend(opt.args, respBuffer); },
-            [&respBuffer](const OptExecute& opt) { return buildTLVPacket4Execute(opt.args, respBuffer); },
-            [&respBuffer](const OptJournal& opt) { return buildTLVPacket4Journal(opt.args, respBuffer); },
-            [&respBuffer](const OptMonitor& opt) { return buildTLVPacket4Monitor(opt.args, respBuffer); },
-            [&respBuffer](const OptProfile& opt) { return buildTLVPacket4Profile(opt.args, respBuffer); },
+            [&respBuffer](const OptDepend& opt) { return buildCustomTLVPacket<OptDepend>(opt.args, respBuffer); },
+            [&respBuffer](const OptExecute& opt) { return buildCustomTLVPacket<OptExecute>(opt.args, respBuffer); },
+            [&respBuffer](const OptJournal& opt) { return buildCustomTLVPacket<OptJournal>(opt.args, respBuffer); },
+            [&respBuffer](const OptMonitor& opt) { return buildCustomTLVPacket<OptMonitor>(opt.args, respBuffer); },
+            [&respBuffer](const OptProfile& opt) { return buildCustomTLVPacket<OptProfile>(opt.args, respBuffer); },
             [](const auto& opt)
             {
                 if (const auto* origPtr = &opt; dynamic_cast<const OptBase*>(origPtr))
@@ -510,144 +670,6 @@ int View::buildFinTLVPacket(char* buf)
     if (!tlv::encodeTLV(buf, len, tlv::TLVValue{.stopTag = true}))
     {
         throw std::runtime_error{"Failed to build finish packet."};
-    }
-    data::encryptMessage(buf, len);
-
-    return len;
-}
-
-int View::buildTLVPacket4Depend(const Args& /*args*/, char* buf)
-{
-    tlv::TLVValue val{};
-    std::string extLibraries{};
-#if defined(__GLIBC__) && defined(__GLIBC_MINOR__)
-    extLibraries += "GNU C Library " MACRO_STRINGIFY(__GLIBC__) "." MACRO_STRINGIFY(__GLIBC_MINOR__) "\n";
-#else
-#error Could not find the GNU C Library version.
-#endif // defined(__GLIBC__) && defined(__GLIBC_MINOR__)
-#if defined(_GLIBCXX_RELEASE) && defined(__GLIBCXX__)
-    extLibraries +=
-        "GNU C++ Standard Library " MACRO_STRINGIFY(_GLIBCXX_RELEASE) " (" MACRO_STRINGIFY(__GLIBCXX__) ")\n";
-#else
-#error Could not find the GNU C++ Standard Library version.
-#endif // defined(_GLIBCXX_RELEASE) && defined(__GLIBCXX__)
-#if defined(__GNU_MP_VERSION) && defined(__GNU_MP_VERSION_MINOR) && defined(__GNU_MP_VERSION_PATCHLEVEL)
-    extLibraries += "GNU MP Library " MACRO_STRINGIFY(__GNU_MP_VERSION) "." MACRO_STRINGIFY(
-        __GNU_MP_VERSION_MINOR) "." MACRO_STRINGIFY(__GNU_MP_VERSION_PATCHLEVEL) "\n";
-#else
-#error Could not find the GNU MP Library version.
-#endif // defined(__GNU_MP_VERSION) && defined(__GNU_MP_VERSION_MINOR) && defined(__GNU_MP_VERSION_PATCHLEVEL)
-#if defined(MPFR_VERSION_STRING)
-    extLibraries += "GNU MPFR Library " MPFR_VERSION_STRING "\n";
-#else
-#error Could not find the GNU MPFR Library version.
-#endif // defined(MPFR_VERSION_STRING)
-#if defined(GSL_VERSION)
-    extLibraries += "GNU Scientific Library " GSL_VERSION " (CBLAS)\n";
-#else
-#error Could not find the GNU Scientific Library (CBLAS) version.
-#endif // defined(GSL_VERSION)
-#if defined(RL_VERSION_MAJOR) && defined(RL_VERSION_MINOR)
-    extLibraries +=
-        "GNU Readline Library " MACRO_STRINGIFY(RL_VERSION_MAJOR) "." MACRO_STRINGIFY(RL_VERSION_MINOR) "\n";
-#else
-#error Could not find the GNU Readline Library version.
-#endif // defined(RL_VERSION_MAJOR) && defined(RL_VERSION_MINOR)
-#if defined(LZ4_VERSION_STRING)
-    extLibraries += "LZ4 Library " LZ4_VERSION_STRING "\n";
-#else
-#error Could not find the LZ4 Library version.
-#endif // defined(LZ4_VERSION_STRING)
-#if defined(NCURSES_VERSION)
-    extLibraries += "Ncurses Library " NCURSES_VERSION "\n";
-#else
-#error Could not find the Ncurses Library version.
-#endif // defined(NCURSES_VERSION)
-#if defined(OPENSSL_VERSION_STR)
-    extLibraries += "OpenSSL Library " OPENSSL_VERSION_STR "";
-#else
-#error Could not find the OpenSSL Library version.
-#endif // defined(OPENSSL_VERSION_STR)
-    std::strncpy(val.libDetail, extLibraries.c_str(), sizeof(val.libDetail) - 1);
-    val.libDetail[sizeof(val.libDetail) - 1] = '\0';
-    int len = 0;
-    if (!tlv::encodeTLV(buf, len, val))
-    {
-        throw std::runtime_error{"Failed to build packet for the depend option."};
-    }
-    data::encryptMessage(buf, len);
-
-    return len;
-}
-
-int View::buildTLVPacket4Execute(const Args& args, char* buf)
-{
-    const auto cmd = std::accumulate(
-        args.cbegin(),
-        args.cend(),
-        std::string{},
-        [](const auto& acc, const auto& arg) { return acc.empty() ? arg : (acc + ' ' + arg); });
-    if (((cmd.find_first_not_of('\'') == 0) || (cmd.find_last_not_of('\'') == (cmd.length() - 1)))
-        && ((cmd.find_first_not_of('"') == 0) || (cmd.find_last_not_of('"') == (cmd.length() - 1))))
-    {
-        throw std::runtime_error{"Please enter the \"execute\" and append with 'CMD' (include quotes)."};
-    }
-
-    int len = 0;
-    if (const int shmId = fillSharedMemory(utility::io::executeCommand("/bin/bash -c " + cmd));
-        !tlv::encodeTLV(buf, len, tlv::TLVValue{.bashShmId = shmId}))
-    {
-        throw std::runtime_error{"Failed to build packet for the execute option."};
-    }
-    data::encryptMessage(buf, len);
-
-    return len;
-}
-
-int View::buildTLVPacket4Journal(const Args& /*args*/, char* buf)
-{
-    int len = 0;
-    if (const int shmId = fillSharedMemory(logContentsPreview());
-        !tlv::encodeTLV(buf, len, tlv::TLVValue{.logShmId = shmId}))
-    {
-        throw std::runtime_error{"Failed to build packet for the journal option."};
-    }
-    data::encryptMessage(buf, len);
-
-    return len;
-}
-
-int View::buildTLVPacket4Monitor(const Args& args, char* buf)
-{
-    if (!args.empty())
-    {
-        if (const auto& input = args.front(); (input.length() != 1) || !std::isdigit(input.front()))
-        {
-            throw std::runtime_error{"Please enter the \"monitor\" and append with or without NUM (0 to 9)."};
-        }
-    }
-
-    int len = 0;
-    if (const int shmId = fillSharedMemory(statusReportsPreview(args.empty() ? 0 : std::stoul(args.front())));
-        !tlv::encodeTLV(buf, len, tlv::TLVValue{.statusShmId = shmId}))
-    {
-        throw std::runtime_error{"Failed to build packet for the monitor option."};
-    }
-    data::encryptMessage(buf, len);
-
-    return len;
-}
-
-int View::buildTLVPacket4Profile(const Args& /*args*/, char* buf)
-{
-    tlv::TLVValue val{};
-    std::strncpy(
-        val.configDetail, configure::retrieveDataRepo().toUnescapedString().c_str(), sizeof(val.configDetail) - 1);
-    val.configDetail[sizeof(val.configDetail) - 1] = '\0';
-    int len = 0;
-    if (!tlv::encodeTLV(buf, len, val))
-    {
-        throw std::runtime_error{"Failed to build packet for the profile option."};
     }
     data::encryptMessage(buf, len);
 
