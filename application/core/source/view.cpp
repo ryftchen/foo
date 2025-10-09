@@ -655,10 +655,7 @@ std::vector<std::string> View::splitString(const std::string& str)
 int View::buildAckTLVPacket(char* buf)
 {
     int len = 0;
-    if (!tlv::encodeTLV(buf, len, tlv::TLVValue{}))
-    {
-        throw std::runtime_error{"Failed to build acknowledgement packet."};
-    }
+    tlv::encodeTLV(buf, len, tlv::TLVValue{});
     data::encryptMessage(buf, len);
 
     return len;
@@ -667,10 +664,7 @@ int View::buildAckTLVPacket(char* buf)
 int View::buildFinTLVPacket(char* buf)
 {
     int len = 0;
-    if (!tlv::encodeTLV(buf, len, tlv::TLVValue{.stopTag = true}))
-    {
-        throw std::runtime_error{"Failed to build finish packet."};
-    }
+    tlv::encodeTLV(buf, len, tlv::TLVValue{.stopTag = true});
     data::encryptMessage(buf, len);
 
     return len;
@@ -931,9 +925,10 @@ void View::renewServer<utility::socket::TCPServer>()
                     try
                     {
                         const auto reqPlaintext = utility::common::base64Decode(message);
-                        (reqPlaintext != exitSymbol)
-                            ? newSocket->toSend(respBuffer.data(), buildResponse(reqPlaintext, respBuffer.data()))
-                            : newSocket->toSend(respBuffer.data(), buildFinTLVPacket(respBuffer.data()));
+                        newSocket->toSend(
+                            respBuffer.data(),
+                            (reqPlaintext != exitSymbol) ? buildResponse(reqPlaintext, respBuffer.data())
+                                                         : buildFinTLVPacket(respBuffer.data()));
                     }
                     catch (const std::exception& err)
                     {
@@ -961,9 +956,12 @@ void View::renewServer<utility::socket::UDPServer>()
             try
             {
                 const auto reqPlaintext = utility::common::base64Decode(message);
-                (reqPlaintext != exitSymbol)
-                    ? udpServer->toSendTo(respBuffer.data(), buildResponse(reqPlaintext, respBuffer.data()), ip, port)
-                    : udpServer->toSendTo(respBuffer.data(), buildFinTLVPacket(respBuffer.data()), ip, port);
+                udpServer->toSendTo(
+                    respBuffer.data(),
+                    (reqPlaintext != exitSymbol) ? buildResponse(reqPlaintext, respBuffer.data())
+                                                 : buildFinTLVPacket(respBuffer.data()),
+                    ip,
+                    port);
             }
             catch (const std::exception& err)
             {
