@@ -413,7 +413,7 @@ void Log::backUpLogFileIfNeeded() const
 
     const std::regex pattern(
         std::regex_replace(
-            std::filesystem::path(filePath).filename().string(), std::regex(R"([-[\]{}()*+?.,\^$|#\s])"), R"(\$&)")
+            std::filesystem::path{filePath}.filename().string(), std::regex{R"([-[\]{}()*+?.,\^$|#\s])"}, R"(\$&)")
         + R"(\.(\d+))");
     auto transformed = std::filesystem::directory_iterator(std::filesystem::absolute(filePath).parent_path())
         | std::views::transform(

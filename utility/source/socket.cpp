@@ -50,18 +50,16 @@ static std::string errnoString()
 Socket::Socket(const Type socketType, const int socketId)
 {
     ::pthread_spin_init(&sockLock, ::PTHREAD_PROCESS_PRIVATE);
-    if (socketId == -1)
-    {
-        const Guard lock(*this);
-        sock = ::socket(AF_INET, static_cast<std::uint8_t>(socketType), 0);
-        if (sock == -1)
-        {
-            throw std::runtime_error{"Socket creation error, errno: " + errnoString() + '.'};
-        }
-    }
-    else
+    if (socketId != -1)
     {
         sock = socketId;
+        return;
+    }
+
+    sock = ::socket(AF_INET, static_cast<std::uint8_t>(socketType), 0);
+    if (sock == -1)
+    {
+        throw std::runtime_error{"Socket creation error, errno: " + errnoString() + '.'};
     }
 }
 
