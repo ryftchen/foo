@@ -166,10 +166,10 @@ std::vector<std::string> readFileLines(
 
 FDStreamBuffer::~FDStreamBuffer()
 {
-    close();
+    reset();
 }
 
-void FDStreamBuffer::reset(const int newFD)
+void FDStreamBuffer::set(const int newFD)
 {
     if (fd == newFD)
     {
@@ -188,7 +188,7 @@ void FDStreamBuffer::reset(const int newFD)
     fd = newFD;
 }
 
-void FDStreamBuffer::close()
+void FDStreamBuffer::reset()
 {
     if (fd < 0)
     {
@@ -357,9 +357,9 @@ void FileReader::open()
     if (fd < 0)
     {
         throw std::runtime_error{
-            "Failed to open " + std::filesystem::path(name).filename().string() + " file for reading."};
+            "Failed to open " + std::filesystem::path{name}.filename().string() + " file for reading."};
     }
-    strBuf.reset(fd);
+    strBuf.set(fd);
 }
 
 void FileReader::close()
@@ -369,8 +369,7 @@ void FileReader::close()
         return;
     }
 
-    strBuf.close();
-    ::close(fd);
+    strBuf.reset();
     fd = -1;
 }
 
@@ -432,9 +431,9 @@ void FileWriter::open(const bool overwrite)
     if (fd < 0)
     {
         throw std::runtime_error{
-            "Failed to open " + std::filesystem::path(name).filename().string() + " file for writing."};
+            "Failed to open " + std::filesystem::path{name}.filename().string() + " file for writing."};
     }
-    strBuf.reset(fd);
+    strBuf.set(fd);
 }
 
 void FileWriter::close()
@@ -444,8 +443,7 @@ void FileWriter::close()
         return;
     }
 
-    strBuf.close();
-    ::close(fd);
+    strBuf.reset();
     fd = -1;
 }
 

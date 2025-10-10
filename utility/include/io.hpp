@@ -49,11 +49,11 @@ public:
     //! @return reference of the FDStreamBuffer object
     FDStreamBuffer& operator=(FDStreamBuffer&&) noexcept = default;
 
-    //! @brief Reset by setting the file descriptor.
+    //! @brief Set the file descriptor.
     //! @param newFD - new file descriptor to associate with the stream buffer
-    void reset(const int newFD);
-    //! @brief Closes the file descriptor.
-    void close();
+    void set(const int newFD);
+    //! @brief Reset the file descriptor.
+    void reset();
 
 private:
     //! @brief File descriptor associated with the stream buffer.
