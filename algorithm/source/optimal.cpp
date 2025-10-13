@@ -20,6 +20,11 @@ const char* version() noexcept
 
 std::optional<std::tuple<double, double>> Gradient::operator()(const double left, const double right, const double eps)
 {
+    if (!func)
+    {
+        return std::nullopt;
+    }
+
     const auto climbing = createClimbers(left, right);
     double xBest = *climbing.cbegin(), yBest = func(xBest);
 
@@ -68,6 +73,11 @@ double Gradient::calculateFirstDerivative(const double x, const double eps) cons
 
 std::optional<std::tuple<double, double>> Tabu::operator()(const double left, const double right, const double eps)
 {
+    if (!func)
+    {
+        return std::nullopt;
+    }
+
     std::mt19937_64 engine(std::random_device{}());
     double solution = std::uniform_real_distribution<double>{left, right}(engine), xBest = solution,
            yBest = func(xBest), stepLen = initialStep;
@@ -140,6 +150,11 @@ std::tuple<double, double> Tabu::neighborhoodSearch(
 
 std::optional<std::tuple<double, double>> Annealing::operator()(const double left, const double right, const double eps)
 {
+    if (!func)
+    {
+        return std::nullopt;
+    }
+
     std::mt19937_64 engine(std::random_device{}());
     std::uniform_real_distribution<double> perturbation(left, right), pr(0.0, 1.0);
     double temperature = initialT, x = std::round(perturbation(engine) / eps) * eps, y = func(x), xBest = x, yBest = y;
@@ -186,6 +201,11 @@ bool Annealing::metropolisAcceptanceCriterion(const double deltaE, const double 
 
 std::optional<std::tuple<double, double>> Particle::operator()(const double left, const double right, const double eps)
 {
+    if (!func)
+    {
+        return std::nullopt;
+    }
+
     auto swarm = swarmInit(left, right);
     const auto initialBest = std::min_element(
         swarm.cbegin(), swarm.cend(), [](const auto& min1, const auto& min2) { return min1.fitness < min2.fitness; });
@@ -264,6 +284,11 @@ void Particle::updateBests(Swarm& swarm, double& gloBest, double& gloBestFitness
 
 std::optional<std::tuple<double, double>> Ant::operator()(const double left, const double right, const double eps)
 {
+    if (!func)
+    {
+        return std::nullopt;
+    }
+
     auto colony = colonyInit(left, right);
     double xBest = colony.front().position, yBest = func(xBest), stepLen = initialStep;
 
@@ -350,7 +375,7 @@ void Ant::updatePheromones(Colony& colony)
 
 std::optional<std::tuple<double, double>> Genetic::operator()(const double left, const double right, const double eps)
 {
-    if (!updateSpecies(left, right, eps))
+    if (!func || !updateSpecies(left, right, eps))
     {
         return std::nullopt;
     }

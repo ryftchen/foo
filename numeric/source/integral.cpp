@@ -35,6 +35,11 @@ double Integral::trapezoidalRule(
 
 double Trapezoidal::operator()(const double lower, const double upper, const double eps) const
 {
+    if (!expr)
+    {
+        return 0.0;
+    }
+
     const double height = upper - lower;
     double s1 = 0.0, s2 = 0.0;
     std::uint32_t n = 1;
@@ -52,8 +57,12 @@ double Trapezoidal::operator()(const double lower, const double upper, const dou
 
 double Simpson::operator()(const double lower, const double upper, const double eps) const
 {
-    const double sum = simpsonIntegral(lower, upper, eps);
-    return sum;
+    if (!expr)
+    {
+        return 0.0;
+    }
+
+    return simpsonIntegral(lower, upper, eps);
 }
 
 double Simpson::simpsonIntegral(const double left, const double right, const double eps) const
@@ -86,6 +95,11 @@ double Simpson::simpsonOneThird(const double left, const double right) const
 
 double Romberg::operator()(const double lower, const double upper, const double eps) const
 {
+    if (!expr)
+    {
+        return 0.0;
+    }
+
     const double height = upper - lower;
     const auto trapezoid = std::bind(trapezoidalRule, std::ref(expr), lower, height, std::placeholders::_1);
     std::uint32_t k = 0;
@@ -117,6 +131,11 @@ double Romberg::richardsonExtrapolation(const double lowPrec, const double highP
 
 double Gauss::operator()(const double lower, const double upper, const double eps) const
 {
+    if (!expr)
+    {
+        return 0.0;
+    }
+
     double s1 = 0.0, s2 = 0.0;
     std::uint32_t n = 1;
     do
@@ -144,8 +163,12 @@ double Gauss::operator()(const double lower, const double upper, const double ep
 
 double MonteCarlo::operator()(const double lower, const double upper, const double eps) const
 {
-    const double sum = sampleFromUniformDistribution(lower, upper, eps);
-    return sum;
+    if (!expr)
+    {
+        return 0.0;
+    }
+
+    return sampleFromUniformDistribution(lower, upper, eps);
 }
 
 double MonteCarlo::sampleFromUniformDistribution(const double lower, const double upper, const double eps) const
