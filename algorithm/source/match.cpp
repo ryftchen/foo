@@ -6,6 +6,7 @@
 
 #include "match.hpp"
 
+#include <cstring>
 #include <vector>
 
 namespace algorithm::match
@@ -41,22 +42,10 @@ std::int64_t Match::rk(
 
     for (std::uint32_t i = 0; i <= (textLen - patternLen); ++i)
     {
-        if (patternHash == textHash)
+        if ((patternHash == textHash) && (std::memcmp(text + i, pattern, patternLen) == 0))
         {
-            std::uint32_t j = 0;
-            for (j = 0; j < patternLen; ++j)
-            {
-                if (text[i + j] != pattern[j])
-                {
-                    break;
-                }
-            }
-
-            if (j == patternLen)
-            {
-                shift = i;
-                break;
-            }
+            shift = i;
+            break;
         }
 
         if (i < (textLen - patternLen))
