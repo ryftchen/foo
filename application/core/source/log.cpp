@@ -119,7 +119,7 @@ static const HlRegex& logStyle()
     return highlight;
 }
 
-Log::Log() : FSM(State::init)
+Log::Log() : FSM(State::initial)
 {
     if (!configure::detail::activateHelper()) [[unlikely]]
     {
@@ -140,26 +140,26 @@ retry:
     try
     {
         logStyle();
-        assert(currentState() == State::init);
+        assert(currentState() == State::initial);
         processEvent(OpenFile{});
 
-        assert(currentState() == State::idle);
+        assert(currentState() == State::active);
         awaitNotification2Proceed();
         processEvent(GoLogging{});
 
-        assert(currentState() == State::work);
+        assert(currentState() == State::established);
         notificationLoop();
-        if (toReset.load())
+        if (inResetting.load())
         {
             processEvent(Relaunch{});
             goto retry;
         }
         processEvent(CloseFile{});
 
-        assert(currentState() == State::idle);
+        assert(currentState() == State::active);
         processEvent(NoLogging{});
 
-        assert(currentState() == State::done);
+        assert(currentState() == State::inactive);
     }
     catch (const std::exception& err)
     {
@@ -179,9 +179,12 @@ retry:
 void Log::Access::startup() const
 try
 {
-    waitOr(State::idle, [this]() { throw std::runtime_error{"The " + inst.name + " did not setup successfully ..."}; });
-    notifyVia([this]() { inst.ongoing.store(true); });
-    waitOr(State::work, [this]() { throw std::runtime_error{"The " + inst.name + " did not start successfully ..."}; });
+    waitOr(
+        State::active, [this]() { throw std::runtime_error{"The " + inst.name + " did not setup successfully ..."}; });
+    notifyVia([this]() { inst.isOngoing.store(true); });
+    waitOr(
+        State::established,
+        [this]() { throw std::runtime_error{"The " + inst.name + " did not start successfully ..."}; });
 }
 catch (const std::exception& err)
 {
@@ -191,8 +194,9 @@ catch (const std::exception& err)
 void Log::Access::shutdown() const
 try
 {
-    notifyVia([this]() { inst.ongoing.store(false); });
-    waitOr(State::done, [this]() { throw std::runtime_error{"The " + inst.name + " did not stop successfully ..."}; });
+    notifyVia([this]() { inst.isOngoing.store(false); });
+    waitOr(
+        State::inactive, [this]() { throw std::runtime_error{"The " + inst.name + " did not stop successfully ..."}; });
 }
 catch (const std::exception& err)
 {
@@ -202,9 +206,9 @@ catch (const std::exception& err)
 void Log::Access::reload() const
 try
 {
-    notifyVia([this]() { inst.toReset.store(true); });
+    notifyVia([this]() { inst.inResetting.store(true); });
     countdownIf(
-        [this]() { return inst.toReset.load(); },
+        [this]() { return inst.inResetting.load(); },
         [this]()
         {
             throw std::runtime_error{
@@ -229,7 +233,7 @@ void Log::Access::waitOr(const State state, const std::function<void()>& handlin
 {
     do
     {
-        if (inst.isInServingState(State::hold) && handling)
+        if (inst.isInServingState(State::idle) && handling)
         {
             handling();
         }
@@ -278,7 +282,7 @@ void Log::flush(const OutputLevel severity, const std::string_view labelTpl, con
         if (auto rows = reformatContents(
                 utility::common::formatString(
                     labelTpl,
-                    isInServingState(State::work) ? (daemonLock.lock(), getPrefix(severity)) : traceLevelPrefix),
+                    isInServingState(State::established) ? (daemonLock.lock(), getPrefix(severity)) : traceLevelPrefix),
                 formatted);
             daemonLock.owns_lock())
         {
@@ -378,7 +382,7 @@ std::vector<std::string> Log::reformatContents(const std::string_view label, con
 
 bool Log::isInServingState(const State state) const
 {
-    return (currentState() == state) && !toReset.load();
+    return (currentState() == state) && !inResetting.load();
 }
 
 std::string Log::getFullLogPath(const std::string_view filename)
@@ -467,8 +471,8 @@ void Log::startLogging()
 void Log::stopLogging()
 {
     const std::lock_guard<std::mutex> daemonLock(daemonMtx);
-    ongoing.store(false);
-    toReset.store(false);
+    isOngoing.store(false);
+    inResetting.store(false);
 
     while (!logQueue.empty())
     {
@@ -483,7 +487,7 @@ void Log::doToggle()
 void Log::doRollback()
 {
     const std::lock_guard<std::mutex> daemonLock(daemonMtx);
-    ongoing.store(false);
+    isOngoing.store(false);
 
     while (!logQueue.empty())
     {
@@ -497,7 +501,7 @@ void Log::doRollback()
         }
         catch (...)
         {
-            toReset.store(false);
+            inResetting.store(false);
             return;
         }
 
@@ -509,26 +513,26 @@ void Log::doRollback()
         tempOfs.close();
     }
 
-    toReset.store(false);
+    inResetting.store(false);
 }
 
-bool Log::isLogFileOpen(const GoLogging& /*event*/) const
+bool Log::isLogFileOpened(const GoLogging& /*event*/) const
 {
     return logWriter.isOpened();
 }
 
-bool Log::isLogFileClose(const NoLogging& /*event*/) const
+bool Log::isLogFileClosed(const NoLogging& /*event*/) const
 {
     return !logWriter.isOpened();
 }
 
 void Log::notificationLoop()
 {
-    while (ongoing.load())
+    while (isOngoing.load())
     {
         std::unique_lock<std::mutex> daemonLock(daemonMtx);
-        daemonCond.wait(daemonLock, [this]() { return !ongoing.load() || !logQueue.empty() || toReset.load(); });
-        if (toReset.load())
+        daemonCond.wait(daemonLock, [this]() { return !isOngoing.load() || !logQueue.empty() || inResetting.load(); });
+        if (inResetting.load())
         {
             break;
         }
@@ -559,7 +563,7 @@ void Log::notificationLoop()
 void Log::awaitNotification2Proceed()
 {
     std::unique_lock<std::mutex> daemonLock(daemonMtx);
-    daemonCond.wait(daemonLock, [this]() { return ongoing.load(); });
+    daemonCond.wait(daemonLock, [this]() { return isOngoing.load(); });
 }
 
 bool Log::awaitNotification2Retry()
@@ -567,7 +571,7 @@ bool Log::awaitNotification2Retry()
     std::unique_lock<std::mutex> daemonLock(daemonMtx);
     daemonCond.wait(daemonLock);
 
-    return toReset.load();
+    return inResetting.load();
 }
 
 template class Holder<Log::OutputLevel::debug>;
@@ -584,20 +588,20 @@ std::ostream& operator<<(std::ostream& os, const Log::State state)
     using enum Log::State;
     switch (state)
     {
-        case init:
-            os << "INIT";
+        case initial:
+            os << "INITIAL";
+            break;
+        case active:
+            os << "ACTIVE";
+            break;
+        case established:
+            os << "ESTABLISHED";
+            break;
+        case inactive:
+            os << "INACTIVE";
             break;
         case idle:
             os << "IDLE";
-            break;
-        case work:
-            os << "WORK";
-            break;
-        case done:
-            os << "DONE";
-            break;
-        case hold:
-            os << "HOLD";
             break;
         default:
             os << "UNKNOWN (" << static_cast<std::underlying_type_t<Log::State>>(state) << ')';
