@@ -102,13 +102,13 @@ private:
     //! @param badCharShiftTable - bad character shift table
     //! @param pattern - single pattern
     //! @param patternLen - length of single pattern
-    static void fillBadCharShiftTableForHorspool(
+    static void fillHorspoolBadCharShiftTable(
         std::uint32_t badCharShiftTable[], const unsigned char* const pattern, const std::uint32_t patternLen);
     //! @brief Fill the bad character shift table of the Sunday method.
     //! @param badCharShiftTable - bad character shift table
     //! @param pattern - single pattern
     //! @param patternLen - length of single pattern
-    static void fillBadCharShiftTableForSunday(
+    static void fillSundayBadCharShiftTable(
         std::uint32_t badCharShiftTable[], const unsigned char* const pattern, const std::uint32_t patternLen);
 };
 } // namespace match

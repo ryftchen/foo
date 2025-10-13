@@ -59,6 +59,11 @@ private:
 template <typename T>
 std::int64_t Search<T>::binary(const T* const array, const std::uint32_t length, const T key)
 {
+    if (!array || (length == 0))
+    {
+        return -1;
+    }
+
     std::int64_t index = -1;
     std::uint32_t lower = 0, upper = length - 1;
     if ((key < array[lower]) || (key > array[upper]))
@@ -90,6 +95,11 @@ std::int64_t Search<T>::binary(const T* const array, const std::uint32_t length,
 template <typename T>
 std::int64_t Search<T>::interpolation(const T* const array, const std::uint32_t length, const T key)
 {
+    if (!array || (length == 0))
+    {
+        return -1;
+    }
+
     std::int64_t index = -1;
     std::uint32_t lower = 0, upper = length - 1;
     if ((key < array[lower]) || (key > array[upper]))
@@ -121,6 +131,11 @@ std::int64_t Search<T>::interpolation(const T* const array, const std::uint32_t 
 template <typename T>
 std::int64_t Search<T>::fibonacci(const T* const array, const std::uint32_t length, const T key)
 {
+    if (!array || (length == 0))
+    {
+        return -1;
+    }
+
     std::int64_t index = -1;
     std::uint32_t lower = 0, upper = length - 1;
     if ((key < array[lower]) || (key > array[upper]))

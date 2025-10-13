@@ -115,6 +115,11 @@ private:
 template <typename T>
 std::vector<T> Sort<T>::bubble(const T* const array, const std::uint32_t length)
 {
+    if (!array || (length == 0))
+    {
+        return {};
+    }
+
     std::vector<T> sorting(array, array + length);
     for (std::uint32_t i = 0; i < length - 1; ++i)
     {
@@ -133,6 +138,11 @@ std::vector<T> Sort<T>::bubble(const T* const array, const std::uint32_t length)
 template <typename T>
 std::vector<T> Sort<T>::selection(const T* const array, const std::uint32_t length)
 {
+    if (!array || (length == 0))
+    {
+        return {};
+    }
+
     std::vector<T> sorting(array, array + length);
     for (std::uint32_t i = 0; i < length - 1; ++i)
     {
@@ -153,6 +163,11 @@ std::vector<T> Sort<T>::selection(const T* const array, const std::uint32_t leng
 template <typename T>
 std::vector<T> Sort<T>::insertion(const T* const array, const std::uint32_t length)
 {
+    if (!array || (length == 0))
+    {
+        return {};
+    }
+
     std::vector<T> sorting(array, array + length);
     for (std::uint32_t i = 1; i < length; ++i)
     {
@@ -172,6 +187,11 @@ std::vector<T> Sort<T>::insertion(const T* const array, const std::uint32_t leng
 template <typename T>
 std::vector<T> Sort<T>::shell(const T* const array, const std::uint32_t length)
 {
+    if (!array || (length == 0))
+    {
+        return {};
+    }
+
     std::vector<T> sorting(array, array + length);
     std::uint32_t gap = length / 2;
     while (gap >= 1)
@@ -192,6 +212,11 @@ std::vector<T> Sort<T>::shell(const T* const array, const std::uint32_t length)
 template <typename T>
 std::vector<T> Sort<T>::merge(const T* const array, const std::uint32_t length)
 {
+    if (!array || (length == 0))
+    {
+        return {};
+    }
+
     std::vector<T> sorting(array, array + length);
     mergeSortRecursive(sorting.data(), 0, length - 1);
 
@@ -232,6 +257,11 @@ void Sort<T>::mergeSortRecursive(T* const sorting, const std::uint32_t begin, co
 template <typename T>
 std::vector<T> Sort<T>::quick(const T* const array, const std::uint32_t length)
 {
+    if (!array || (length == 0))
+    {
+        return {};
+    }
+
     std::vector<T> sorting(array, array + length);
     quickSortRecursive(sorting.data(), 0, length - 1);
 
@@ -279,6 +309,11 @@ void Sort<T>::quickSortRecursive(T* const sorting, const std::uint32_t begin, co
 template <typename T>
 std::vector<T> Sort<T>::heap(const T* const array, const std::uint32_t length)
 {
+    if (!array || (length == 0))
+    {
+        return {};
+    }
+
     std::vector<T> sorting(array, array + length);
     for (std::int64_t i = (length / 2) + 1; i >= 0; --i)
     {
@@ -317,7 +352,7 @@ void Sort<T>::buildMaxHeap(T* const sorting, const std::uint32_t begin, const st
 template <typename T>
 std::vector<T> Sort<T>::counting(const T* const array, const std::uint32_t length)
 {
-    if constexpr (!std::is_integral_v<T>)
+    if (!std::is_integral_v<T> || !array || (length == 0))
     {
         return {};
     }
@@ -352,6 +387,11 @@ std::vector<T> Sort<T>::counting(const T* const array, const std::uint32_t lengt
 template <typename T>
 std::vector<T> Sort<T>::bucket(const T* const array, const std::uint32_t length)
 {
+    if (!array || (length == 0))
+    {
+        return {};
+    }
+
     std::vector<T> sorting(array, array + length);
     T max = std::numeric_limits<T>::min(), min = std::numeric_limits<T>::max();
     for (std::uint32_t i = 0; i < length; ++i)
@@ -384,7 +424,7 @@ std::vector<T> Sort<T>::bucket(const T* const array, const std::uint32_t length)
 template <typename T>
 std::vector<T> Sort<T>::radix(const T* const array, const std::uint32_t length)
 {
-    if constexpr (!std::is_integral_v<T>)
+    if (!std::is_integral_v<T> || !array || (length == 0))
     {
         return {};
     }
