@@ -53,16 +53,16 @@ public:
     //! @brief Enumerate specific states for FSM.
     enum State : std::uint8_t
     {
-        //! @brief Init.
-        init,
+        //! @brief Initial.
+        initial,
+        //! @brief Active.
+        active,
+        //! @brief Established.
+        established,
+        //! @brief Inactive.
+        inactive,
         //! @brief Idle.
-        idle,
-        //! @brief Work.
-        work,
-        //! @brief Done.
-        done,
-        //! @brief Hold.
-        hold
+        idle
     };
     //! @brief Access for the instance.
     class Access
@@ -204,20 +204,13 @@ private:
     using OptionType = std::variant<OptBase, OptDepend, OptExecute, OptJournal, OptMonitor, OptProfile>;
     //! @brief Alias for the map of option name and OptionAttr.
     using OptionMap = std::map<std::string, std::string>;
-    // clang-format off
     //! @brief Mapping table of all viewer options.
-    const OptionMap supportedOptions
-    {
-        // ---- Option ----+---------- Help ----------
-        // ----------------+--------------------------
-        { OptDepend::name  , OptDepend::description  },
-        { OptExecute::name , OptExecute::description },
-        { OptJournal::name , OptJournal::description },
-        { OptMonitor::name , OptMonitor::description },
-        { OptProfile::name , OptProfile::description }
-        // ----------------+--------------------------
-    };
-    // clang-format on
+    const OptionMap supportedOptions{
+        {OptDepend::name, OptDepend::description},
+        {OptExecute::name, OptExecute::description},
+        {OptJournal::name, OptJournal::description},
+        {OptMonitor::name, OptMonitor::description},
+        {OptProfile::name, OptProfile::description}};
     //! @brief Maximum size of the shared memory.
     static constexpr std::uint64_t maxShmSize{static_cast<std::uint64_t>(65536) * 10};
     //! @brief Memory that can be accessed by multiple programs simultaneously.
@@ -290,15 +283,15 @@ private:
     //! @brief The synchronization condition for daemon. Use with daemonMtx.
     std::condition_variable daemonCond;
     //! @brief Flag to indicate whether it is viewing.
-    std::atomic_bool ongoing{false};
+    std::atomic_bool isOngoing{false};
     //! @brief Flag for rollback request.
-    std::atomic_bool toReset{false};
+    std::atomic_bool inResetting{false};
     //! @brief Mutex for controlling output.
     mutable std::mutex outputMtx;
     //! @brief The synchronization condition for output. Use with outputMtx.
     std::condition_variable outputCond;
     //! @brief Flag to indicate whether the output is complete.
-    std::atomic_bool outputCompleted{false};
+    std::atomic_bool outputCompleted{true};
     //! @brief Renew the server.
     //! @tparam T - type of server
     template <typename T>
@@ -348,19 +341,19 @@ private:
     //! @brief Alias for the transition table of the viewer.
     using TransitionTable = Table
     <
-        // --- Source ---+---- Event ----+--- Target ---+--------- Action ---------+--- Guard (Optional) ---
-        // --------------+---------------+--------------+--------------------------+------------------------
-        Row< State::init , CreateServer  , State::idle  , &View::createViewServer                         >,
-        Row< State::idle , GoViewing     , State::work  , &View::startViewing                             >,
-        Row< State::work , DestroyServer , State::idle  , &View::destroyViewServer                        >,
-        Row< State::idle , NoViewing     , State::done  , &View::stopViewing                              >,
-        Row< State::init , Standby       , State::hold  , &View::doToggle                                 >,
-        Row< State::idle , Standby       , State::hold  , &View::doToggle                                 >,
-        Row< State::work , Standby       , State::hold  , &View::doToggle                                 >,
-        Row< State::done , Standby       , State::hold  , &View::doToggle                                 >,
-        Row< State::work , Relaunch      , State::init  , &View::doRollback                               >,
-        Row< State::hold , Relaunch      , State::init  , &View::doRollback                               >
-        // --------------+---------------+--------------+--------------------------+------------------------
+        // +------ Source ------+---- Event ----+------ Target ------+--------- Action ---------+- Guard -+
+        // +--------------------+---------------+--------------------+--------------------------+---------+
+        Row< State::initial     , CreateServer  , State::active      , &View::createViewServer            >,
+        Row< State::active      , GoViewing     , State::established , &View::startViewing                >,
+        Row< State::established , DestroyServer , State::active      , &View::destroyViewServer           >,
+        Row< State::active      , NoViewing     , State::inactive    , &View::stopViewing                 >,
+        Row< State::initial     , Standby       , State::idle        , &View::doToggle                    >,
+        Row< State::active      , Standby       , State::idle        , &View::doToggle                    >,
+        Row< State::established , Standby       , State::idle        , &View::doToggle                    >,
+        Row< State::inactive    , Standby       , State::idle        , &View::doToggle                    >,
+        Row< State::established , Relaunch      , State::initial     , &View::doRollback                  >,
+        Row< State::idle        , Relaunch      , State::initial     , &View::doRollback                  >
+        // +--------------------+---------------+--------------------+--------------------------+---------+
     >;
     // clang-format on
     //! @brief The notification loop.

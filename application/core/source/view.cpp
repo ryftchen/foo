@@ -233,7 +233,7 @@ static bool decodeTLV(char* buf, const int len, TLVValue& val)
 }
 } // namespace tlv
 
-View::View() : FSM(State::init)
+View::View() : FSM(State::initial)
 {
     if (!configure::detail::activateHelper()) [[unlikely]]
     {
@@ -257,26 +257,26 @@ void View::service()
 retry:
     try
     {
-        assert(currentState() == State::init);
+        assert(currentState() == State::initial);
         processEvent(CreateServer{});
 
-        assert(currentState() == State::idle);
+        assert(currentState() == State::active);
         awaitNotification2Proceed();
         processEvent(GoViewing{});
 
-        assert(currentState() == State::work);
+        assert(currentState() == State::established);
         notificationLoop();
-        if (toReset.load())
+        if (inResetting.load())
         {
             processEvent(Relaunch{});
             goto retry;
         }
         processEvent(DestroyServer{});
 
-        assert(currentState() == State::idle);
+        assert(currentState() == State::active);
         processEvent(NoViewing{});
 
-        assert(currentState() == State::done);
+        assert(currentState() == State::inactive);
     }
     catch (const std::exception& err)
     {
@@ -296,9 +296,12 @@ retry:
 void View::Access::startup() const
 try
 {
-    waitOr(State::idle, [this]() { throw std::runtime_error{"The " + inst.name + " did not setup successfully ..."}; });
-    notifyVia([this]() { inst.ongoing.store(true); });
-    waitOr(State::work, [this]() { throw std::runtime_error{"The " + inst.name + " did not start successfully ..."}; });
+    waitOr(
+        State::active, [this]() { throw std::runtime_error{"The " + inst.name + " did not setup successfully ..."}; });
+    notifyVia([this]() { inst.isOngoing.store(true); });
+    waitOr(
+        State::established,
+        [this]() { throw std::runtime_error{"The " + inst.name + " did not start successfully ..."}; });
 }
 catch (const std::exception& err)
 {
@@ -308,8 +311,9 @@ catch (const std::exception& err)
 void View::Access::shutdown() const
 try
 {
-    notifyVia([this]() { inst.ongoing.store(false); });
-    waitOr(State::done, [this]() { throw std::runtime_error{"The " + inst.name + " did not stop successfully ..."}; });
+    notifyVia([this]() { inst.isOngoing.store(false); });
+    waitOr(
+        State::inactive, [this]() { throw std::runtime_error{"The " + inst.name + " did not stop successfully ..."}; });
 }
 catch (const std::exception& err)
 {
@@ -319,9 +323,9 @@ catch (const std::exception& err)
 void View::Access::reload() const
 try
 {
-    notifyVia([this]() { inst.toReset.store(true); });
+    notifyVia([this]() { inst.inResetting.store(true); });
     countdownIf(
-        [this]() { return inst.toReset.load(); },
+        [this]() { return inst.inResetting.load(); },
         [this]()
         {
             throw std::runtime_error{
@@ -353,7 +357,7 @@ bool View::Access::onParsing(char* buffer, const int length) const
     }
     if (value.logShmId != tlv::invalidShmId)
     {
-        printSharedMemory(value.logShmId, !inst.isInServingState(State::work));
+        printSharedMemory(value.logShmId, !inst.isInServingState(State::established));
     }
     if (value.statusShmId != tlv::invalidShmId)
     {
@@ -372,7 +376,7 @@ void View::Access::waitOr(const State state, const std::function<void()>& handli
 {
     do
     {
-        if (inst.isInServingState(State::hold) && handling)
+        if (inst.isInServingState(State::idle) && handling)
         {
             handling();
         }
@@ -411,15 +415,13 @@ void View::Access::countdownIf(const std::function<bool()>& condition, const std
 void View::Sync::waitTaskDone() const
 {
     std::unique_lock<std::mutex> outputLock(inst.outputMtx);
-    const auto maxWaitTime = std::chrono::milliseconds{inst.timeoutPeriod};
-    utility::time::Timer expiryTimer(
-        inst.isInServingState(State::work) ? []() {}
-                                           : (inst.outputCompleted.store(false), []() { Sync().notifyTaskDone(); }));
-    expiryTimer.start(maxWaitTime);
-
-    inst.outputCond.wait(outputLock, [this]() { return inst.outputCompleted.load(); });
     inst.outputCompleted.store(false);
 
+    const auto maxWaitTime = std::chrono::milliseconds{inst.timeoutPeriod};
+    utility::time::Timer expiryTimer(
+        inst.isInServingState(State::established) ? []() {} : []() { Sync().notifyTaskDone(); });
+    expiryTimer.start(maxWaitTime);
+    inst.outputCond.wait(outputLock, [this]() { return inst.outputCompleted.load(); });
     expiryTimer.stop();
 }
 
@@ -973,7 +975,7 @@ void View::renewServer<utility::socket::UDPServer>()
 
 bool View::isInServingState(const State state) const
 {
-    return (currentState() == state) && !toReset.load();
+    return (currentState() == state) && !inResetting.load();
 }
 
 void View::createViewServer()
@@ -1004,9 +1006,9 @@ void View::startViewing()
 void View::stopViewing()
 {
     const std::scoped_lock locks(daemonMtx, outputMtx);
-    ongoing.store(false);
-    toReset.store(false);
-    outputCompleted.store(false);
+    isOngoing.store(false);
+    inResetting.store(false);
+    outputCompleted.store(true);
 }
 
 void View::doToggle()
@@ -1016,7 +1018,7 @@ void View::doToggle()
 void View::doRollback()
 {
     const std::scoped_lock locks(daemonMtx, outputMtx);
-    ongoing.store(false);
+    isOngoing.store(false);
 
     if (tcpServer)
     {
@@ -1043,17 +1045,17 @@ void View::doRollback()
         udpServer.reset();
     }
 
-    toReset.store(false);
-    outputCompleted.store(false);
+    inResetting.store(false);
+    outputCompleted.store(true);
 }
 
 void View::notificationLoop()
 {
-    while (ongoing.load())
+    while (isOngoing.load())
     {
         std::unique_lock<std::mutex> daemonLock(daemonMtx);
-        daemonCond.wait(daemonLock, [this]() { return !ongoing.load() || toReset.load(); });
-        if (toReset.load())
+        daemonCond.wait(daemonLock, [this]() { return !isOngoing.load() || inResetting.load(); });
+        if (inResetting.load())
         {
             break;
         }
@@ -1063,7 +1065,7 @@ void View::notificationLoop()
 void View::awaitNotification2Proceed()
 {
     std::unique_lock<std::mutex> daemonLock(daemonMtx);
-    daemonCond.wait(daemonLock, [this]() { return ongoing.load(); });
+    daemonCond.wait(daemonLock, [this]() { return isOngoing.load(); });
 }
 
 bool View::awaitNotification2Retry()
@@ -1071,7 +1073,7 @@ bool View::awaitNotification2Retry()
     std::unique_lock<std::mutex> daemonLock(daemonMtx);
     daemonCond.wait(daemonLock);
 
-    return toReset.load();
+    return inResetting.load();
 }
 
 //! @brief The operator (<<) overloading of the State enum.
@@ -1083,20 +1085,20 @@ std::ostream& operator<<(std::ostream& os, const View::State state)
     using enum View::State;
     switch (state)
     {
-        case init:
-            os << "INIT";
+        case initial:
+            os << "INITIAL";
+            break;
+        case active:
+            os << "ACTIVE";
+            break;
+        case established:
+            os << "ESTABLISHED";
+            break;
+        case inactive:
+            os << "INACTIVE";
             break;
         case idle:
             os << "IDLE";
-            break;
-        case work:
-            os << "WORK";
-            break;
-        case done:
-            os << "DONE";
-            break;
-        case hold:
-            os << "HOLD";
             break;
         default:
             os << "UNKNOWN (" << static_cast<std::underlying_type_t<View::State>>(state) << ')';

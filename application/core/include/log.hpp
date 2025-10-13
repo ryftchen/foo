@@ -100,16 +100,16 @@ public:
     //! @brief Enumerate specific states for FSM.
     enum State : std::uint8_t
     {
-        //! @brief Init.
-        init,
+        //! @brief Initial.
+        initial,
+        //! @brief Active.
+        active,
+        //! @brief Established.
+        established,
+        //! @brief Inactive.
+        inactive,
         //! @brief Idle.
-        idle,
-        //! @brief Work.
-        work,
-        //! @brief Done.
-        done,
-        //! @brief Hold.
-        hold
+        idle
     };
     //! @brief Access for the instance.
     class Access
@@ -210,9 +210,9 @@ private:
     //! @brief The synchronization condition for daemon. Use with daemonMtx.
     std::condition_variable daemonCond;
     //! @brief Flag to indicate whether it is logging.
-    std::atomic_bool ongoing{false};
+    std::atomic_bool isOngoing{false};
     //! @brief Flag for rollback request.
-    std::atomic_bool toReset{false};
+    std::atomic_bool inResetting{false};
     //! @brief Writer of the log content.
     utility::io::FileWriter logWriter{filePath};
     //! @brief Operation lock for the log file.
@@ -295,28 +295,28 @@ private:
     //! @brief Check whether the log file is opened.
     //! @param event - FSM event
     //! @return whether the log file is open or not
-    bool isLogFileOpen(const GoLogging& event) const;
+    bool isLogFileOpened(const GoLogging& event) const;
     //! @brief Check whether the log file is closed.
     //! @param event - FSM event
     //! @return whether the log file is close or not
-    bool isLogFileClose(const NoLogging& event) const;
+    bool isLogFileClosed(const NoLogging& event) const;
     // clang-format off
     //! @brief Alias for the transition table of the logger.
     using TransitionTable = Table
     <
-        // --- Source ---+-- Event --+--- Target ---+------ Action ------+--- Guard (Optional) ---
-        // --------------+-----------+--------------+--------------------+------------------------
-        Row< State::init , OpenFile  , State::idle  , &Log::openLogFile                         >,
-        Row< State::idle , GoLogging , State::work  , &Log::startLogging , &Log::isLogFileOpen  >,
-        Row< State::work , CloseFile , State::idle  , &Log::closeLogFile                        >,
-        Row< State::idle , NoLogging , State::done  , &Log::stopLogging  , &Log::isLogFileClose >,
-        Row< State::init , Standby   , State::hold  , &Log::doToggle                            >,
-        Row< State::idle , Standby   , State::hold  , &Log::doToggle                            >,
-        Row< State::work , Standby   , State::hold  , &Log::doToggle                            >,
-        Row< State::done , Standby   , State::hold  , &Log::doToggle                            >,
-        Row< State::work , Relaunch  , State::init  , &Log::doRollback                          >,
-        Row< State::hold , Relaunch  , State::init  , &Log::doRollback                          >
-        // --------------+-----------+--------------+--------------------+------------------------
+        // +------ Source ------+-- Event --+------ Target ------+------ Action ------+-------- Guard --------+
+        // +--------------------+-----------+--------------------+--------------------+-----------------------+
+        Row< State::initial     , OpenFile  , State::active      , &Log::openLogFile                          >,
+        Row< State::active      , GoLogging , State::established , &Log::startLogging , &Log::isLogFileOpened >,
+        Row< State::established , CloseFile , State::active      , &Log::closeLogFile                         >,
+        Row< State::active      , NoLogging , State::inactive    , &Log::stopLogging  , &Log::isLogFileClosed >,
+        Row< State::initial     , Standby   , State::idle        , &Log::doToggle                             >,
+        Row< State::active      , Standby   , State::idle        , &Log::doToggle                             >,
+        Row< State::established , Standby   , State::idle        , &Log::doToggle                             >,
+        Row< State::inactive    , Standby   , State::idle        , &Log::doToggle                             >,
+        Row< State::established , Relaunch  , State::initial     , &Log::doRollback                           >,
+        Row< State::idle        , Relaunch  , State::initial     , &Log::doRollback                           >
+        // +--------------------+-----------+--------------------+--------------------+-----------------------+
     >;
     // clang-format on
     //! @brief The notification loop.
