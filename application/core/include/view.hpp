@@ -78,7 +78,7 @@ public:
         //! @brief Parse the TLV packet.
         //! @param buffer - TLV packet buffer
         //! @param length - buffer length
-        //! @return need to stop the connection or not
+        //! @return need to continue parsing or not
         bool onParsing(char* buffer, const int length) const;
         //! @brief Get the supported options.
         //! @return supported options
