@@ -72,9 +72,9 @@ static Node* getNode(const DLL head, const int index)
     }
 
     Node* pNode = head->prev;
-    const int rIndex = counter - index - 1;
+    const int rIdx = counter - index - 1;
     int j = 0;
-    while ((j++) < rIndex)
+    while ((j++) < rIdx)
     {
         pNode = pNode->prev;
     }
