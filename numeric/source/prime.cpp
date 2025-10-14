@@ -16,18 +16,18 @@ const char* version() noexcept
     return ver;
 }
 
-std::vector<std::uint32_t> Prime::eratosthenes(const std::uint32_t max)
+std::vector<std::uint32_t> Prime::eratosthenes(const std::uint32_t limit)
 {
     std::vector<std::uint32_t> storage{};
-    std::vector<bool> isPrime(max + 1, true);
+    std::vector<bool> isPrime(limit + 1, true);
 
     isPrime[0] = false;
     isPrime[1] = false;
-    for (std::uint32_t i = 2; i <= max; ++i)
+    for (std::uint32_t i = 2; i <= limit; ++i)
     {
         if (isPrime[i])
         {
-            for (std::uint32_t j = (i * i); j <= max; j += i)
+            for (std::uint32_t j = (i * i); j <= limit; j += i)
             {
                 isPrime[j] = false;
             }
@@ -38,21 +38,21 @@ std::vector<std::uint32_t> Prime::eratosthenes(const std::uint32_t max)
     return storage;
 }
 
-std::vector<std::uint32_t> Prime::euler(const std::uint32_t max)
+std::vector<std::uint32_t> Prime::euler(const std::uint32_t limit)
 {
     std::vector<std::uint32_t> storage{};
-    std::vector<bool> isPrime(max + 1, true);
+    std::vector<bool> isPrime(limit + 1, true);
 
     isPrime[0] = false;
     isPrime[1] = false;
-    for (std::uint32_t i = 2; i <= max; ++i)
+    for (std::uint32_t i = 2; i <= limit; ++i)
     {
         if (isPrime[i])
         {
             storage.emplace_back(i);
         }
 
-        for (std::uint32_t j = 1; (j <= storage.size()) && ((i * storage[j - 1]) <= max); ++j)
+        for (std::uint32_t j = 1; (j <= storage.size()) && ((i * storage[j - 1]) <= limit); ++j)
         {
             const std::uint32_t composite = i * storage[j - 1];
             isPrime[composite] = false;

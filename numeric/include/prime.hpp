@@ -28,13 +28,13 @@ class Prime
 {
 public:
     //! @brief Eratosthenes.
-    //! @param max - maximum positive integer
+    //! @param limit - maximum positive integer
     //! @return all prime numbers that are not greater than the maximum positive integer
-    static std::vector<std::uint32_t> eratosthenes(const std::uint32_t max);
+    static std::vector<std::uint32_t> eratosthenes(const std::uint32_t limit);
     //! @brief Euler.
-    //! @param max - maximum positive integer
+    //! @param limit - maximum positive integer
     //! @return all prime numbers that are not greater than the maximum positive integer
-    static std::vector<std::uint32_t> euler(const std::uint32_t max);
+    static std::vector<std::uint32_t> euler(const std::uint32_t limit);
 };
 } // namespace prime
 } // namespace numeric
