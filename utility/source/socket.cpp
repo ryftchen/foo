@@ -240,12 +240,12 @@ void TCPSocket::onMessage(const std::string_view message) const
     }
 }
 
-void TCPSocket::onRawMessage(char* buffer, const int length) const
+void TCPSocket::onRawMessage(char* bytes, const int length) const
 {
     const auto& callback = rawMsgCb.load(std::memory_order_acquire);
     if (callback && *callback)
     {
-        (*callback)(buffer, length);
+        (*callback)(bytes, length);
     }
 }
 
@@ -568,12 +568,12 @@ void UDPSocket::onMessage(const std::string_view message, const std::string& ip,
     }
 }
 
-void UDPSocket::onRawMessage(char* buffer, const int length, const std::string& ip, const std::uint16_t port) const
+void UDPSocket::onRawMessage(char* bytes, const int length, const std::string& ip, const std::uint16_t port) const
 {
     const auto& callback = rawMsgCb.load(std::memory_order_acquire);
     if (callback && *callback)
     {
-        (*callback)(buffer, length, ip, port);
+        (*callback)(bytes, length, ip, port);
     }
 }
 
