@@ -131,22 +131,22 @@ std::int64_t Match::bm(
     fillBadCharRuleTable(badCharRuleTable, pattern, patternLen);
     fillGoodSuffixRuleTable(goodSuffixIndexTable, pattern, patternLen);
 
-    std::uint32_t textIndex = patternLen - 1;
-    while (textIndex < textLen)
+    std::uint32_t textIdx = patternLen - 1;
+    while (textIdx < textLen)
     {
-        std::uint32_t patternIndex = patternLen - 1;
-        while ((patternIndex > 0) && (text[textIndex] == pattern[patternIndex]))
+        std::uint32_t patternIdx = patternLen - 1;
+        while ((patternIdx > 0) && (text[textIdx] == pattern[patternIdx]))
         {
-            --textIndex;
-            --patternIndex;
+            --textIdx;
+            --patternIdx;
         }
-        if ((patternIndex == 0) && (text[textIndex] == pattern[patternIndex]))
+        if ((patternIdx == 0) && (text[textIdx] == pattern[patternIdx]))
         {
-            shift = textIndex;
+            shift = textIdx;
             break;
         }
 
-        textIndex += std::max(badCharRuleTable[text[textIndex]], goodSuffixIndexTable[patternIndex]);
+        textIdx += std::max(badCharRuleTable[text[textIdx]], goodSuffixIndexTable[patternIdx]);
     }
 
     return shift;
@@ -169,7 +169,7 @@ void Match::fillBadCharRuleTable(
 void Match::fillGoodSuffixRuleTable(
     std::uint32_t goodSuffixRuleTable[], const unsigned char* const pattern, const std::uint32_t patternLen)
 {
-    std::uint32_t lastPrefixIndex = 1;
+    std::uint32_t lastPrefixIdx = 1;
     for (std::int64_t pos = (patternLen - 1); pos >= 0; --pos)
     {
         const std::uint32_t suffixLen = patternLen - (pos + 1);
@@ -184,10 +184,10 @@ void Match::fillGoodSuffixRuleTable(
         }
         if (isPrefix)
         {
-            lastPrefixIndex = pos + 1;
+            lastPrefixIdx = pos + 1;
         }
 
-        goodSuffixRuleTable[pos] = lastPrefixIndex + (patternLen - 1 - pos);
+        goodSuffixRuleTable[pos] = lastPrefixIdx + (patternLen - 1 - pos);
     }
 
     for (std::uint32_t pos = 0; pos < (patternLen - 1); ++pos)
@@ -273,21 +273,21 @@ std::int64_t Match::sunday(
 
     fillSundayBadCharShiftTable(badCharShiftTable, pattern, patternLen);
 
-    std::uint32_t textIndex = 0;
-    while (textIndex <= (textLen - patternLen))
+    std::uint32_t textIdx = 0;
+    while (textIdx <= (textLen - patternLen))
     {
         std::uint32_t matchLen = 0;
-        while (text[textIndex + matchLen] == pattern[matchLen])
+        while (text[textIdx + matchLen] == pattern[matchLen])
         {
             ++matchLen;
             if (matchLen == patternLen)
             {
-                shift = textIndex;
+                shift = textIdx;
                 return shift;
             }
         }
 
-        textIndex += badCharShiftTable[text[textIndex + patternLen]];
+        textIdx += badCharShiftTable[text[textIdx + patternLen]];
     }
 
     return shift;

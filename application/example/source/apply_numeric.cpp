@@ -407,8 +407,8 @@ static void display(const PrimeMethod method, const std::vector<std::uint32_t>& 
 
 //! @brief Calculation of prime.
 //! @param method - used prime method
-//! @param max - maximum positive integer
-static void calculation(const PrimeMethod method, const std::uint32_t max)
+//! @param limit - maximum positive integer
+static void calculation(const PrimeMethod method, const std::uint32_t limit)
 try
 {
     std::vector<std::uint32_t> result{};
@@ -417,10 +417,10 @@ try
     {
         using numeric::prime::Prime;
         case PrimeMethod::eratosthenes:
-            result = Prime().eratosthenes(max);
+            result = Prime().eratosthenes(limit);
             break;
         case PrimeMethod::euler:
-            result = Prime().euler(max);
+            result = Prime().euler(limit);
             break;
         default:
             return;
