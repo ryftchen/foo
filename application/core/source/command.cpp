@@ -783,11 +783,11 @@ template <>
 void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::socket::TCPSocket>& client)
 {
     client->subscribeRawMessage(
-        [&client](char* buffer, const int length)
+        [&client](char* bytes, const int length)
         {
             try
             {
-                if (!client->stopRequested() && onParsing4Client(buffer, length))
+                if (!client->stopRequested() && !onParsing4Client(bytes, length))
                 {
                     client->requestStop();
                 }
@@ -807,11 +807,11 @@ template <>
 void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::socket::UDPSocket>& client)
 {
     client->subscribeRawMessage(
-        [&client](char* buffer, const int length, const std::string& /*ip*/, const std::uint16_t /*port*/)
+        [&client](char* bytes, const int length, const std::string& /*ip*/, const std::uint16_t /*port*/)
         {
             try
             {
-                if (!client->stopRequested() && onParsing4Client(buffer, length))
+                if (!client->stopRequested() && !onParsing4Client(bytes, length))
                 {
                     client->requestStop();
                 }
@@ -1092,7 +1092,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
 
 bool Command::onParsing4Client(char* buffer, const int length)
 {
-    return (length != 0) ? view::View::Access().onParsing(buffer, length) : false;
+    return (length != 0) ? view::View::Access().onParsing(buffer, length) : true;
 }
 
 void Command::waitClientOutputDone()

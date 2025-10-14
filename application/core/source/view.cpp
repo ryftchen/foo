@@ -369,7 +369,7 @@ bool View::Access::onParsing(char* buffer, const int length) const
         std::cout << JSON::load(value.configDetail) << std::endl;
     }
 
-    return value.stopTag;
+    return !value.stopTag;
 }
 
 void View::Access::waitOr(const State state, const std::function<void()>& handling) const
