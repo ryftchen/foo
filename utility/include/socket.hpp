@@ -175,9 +175,9 @@ private:
     //! @param message - received message
     void onMessage(const std::string_view message) const;
     //! @brief Emit the received raw message.
-    //! @param buffer - received bytes buffer
+    //! @param bytes - received bytes buffer
     //! @param length - length of buffer
-    void onRawMessage(char* buffer, const int length) const;
+    void onRawMessage(char* bytes, const int length) const;
 };
 
 //! @brief TCP server.
@@ -290,11 +290,11 @@ private:
     //! @param port - source port number
     void onMessage(const std::string_view message, const std::string& ip, const std::uint16_t port) const;
     //! @brief Emit the received raw message.
-    //! @param buffer - received bytes buffer
+    //! @param bytes - received bytes buffer
     //! @param length - length of buffer
     //! @param ip - source ip address
     //! @param port - source port number
-    void onRawMessage(char* buffer, const int length, const std::string& ip, const std::uint16_t port) const;
+    void onRawMessage(char* bytes, const int length, const std::string& ip, const std::uint16_t port) const;
 };
 
 //! @brief UDP server.
