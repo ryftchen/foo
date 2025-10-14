@@ -290,7 +290,7 @@ bool deleteEdge(AMLGraph* const graph, const void* const vert1, const void* cons
 
 void Traverse::dfs(const void* const vert, const Operation& op) const
 {
-    if (!graph || !vert)
+    if (!graph || !vert || !op)
     {
         return;
     }
@@ -331,10 +331,10 @@ void Traverse::bfs(const void* const vert, const Operation& op) const
         const EdgeNode* curr = graph->adjMultiList[q].firstEdge;
         while (curr)
         {
-            const int nbrIndex = (curr->iVex == q) ? curr->jVex : curr->iVex;
-            if (!visited[nbrIndex])
+            const int nbrIdx = (curr->iVex == q) ? curr->jVex : curr->iVex;
+            if (!visited[nbrIdx])
             {
-                neighbors[counter++] = nbrIndex;
+                neighbors[counter++] = nbrIdx;
             }
             curr = (curr->iVex == q) ? curr->iLink : curr->jLink;
         }
@@ -354,7 +354,7 @@ void Traverse::bfs(const void* const vert, const Operation& op) const
 
 void Traverse::dfsRecursive(const int index, bool visited[], const Operation& op) const
 {
-    if (!graph || (index < 0) || !op)
+    if (index < 0)
     {
         return;
     }
@@ -366,10 +366,10 @@ void Traverse::dfsRecursive(const int index, bool visited[], const Operation& op
     const EdgeNode* curr = graph->adjMultiList[index].firstEdge;
     while (curr)
     {
-        const int nbrIndex = (curr->iVex == index) ? curr->jVex : curr->iVex;
-        if (!visited[nbrIndex])
+        const int nbrIdx = (curr->iVex == index) ? curr->jVex : curr->iVex;
+        if (!visited[nbrIdx])
         {
-            neighbors[counter++] = nbrIndex;
+            neighbors[counter++] = nbrIdx;
         }
         curr = (curr->iVex == index) ? curr->iLink : curr->jLink;
     }
@@ -386,11 +386,6 @@ void Traverse::dfsRecursive(const int index, bool visited[], const Operation& op
 
 void Traverse::sortNeighbors(int neighbors[], const int size) const
 {
-    if (!graph)
-    {
-        return;
-    }
-
     for (int i = 1; i < size; ++i)
     {
         const int temp = neighbors[i];
@@ -676,7 +671,7 @@ bool deleteArc(OLGraph* const graph, const void* const vert1, const void* const 
 
 void Traverse::dfs(const void* const vert, const Operation& op) const
 {
-    if (!graph || !vert)
+    if (!graph || !vert || !op)
     {
         return;
     }
@@ -736,7 +731,7 @@ void Traverse::bfs(const void* const vert, const Operation& op) const
 
 void Traverse::dfsRecursive(const int index, bool visited[], const Operation& op) const
 {
-    if (!graph || (index < 0) || !op)
+    if (index < 0)
     {
         return;
     }
@@ -764,11 +759,6 @@ void Traverse::dfsRecursive(const int index, bool visited[], const Operation& op
 
 void Traverse::sortNeighbors(int neighbors[], const int size) const
 {
-    if (!graph)
-    {
-        return;
-    }
-
     for (int i = 1; i < size; ++i)
     {
         const int temp = neighbors[i];
