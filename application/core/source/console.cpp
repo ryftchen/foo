@@ -28,7 +28,7 @@ thread_local constinit Console* currentSession = nullptr;
 
 Console::Console(const std::string_view greeting) : terminal{std::make_unique<Terminal>(greeting)}
 {
-    ::rl_attempted_completion_function = &Console::customCompleter;
+    ::rl_attempted_completion_function = customCompleter;
     setDefaultOptions();
 }
 
