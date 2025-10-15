@@ -37,7 +37,6 @@
 #include <cassert>
 #include <coroutine>
 #include <csignal>
-#include <cstdint>
 #include <cstring>
 #include <filesystem>
 #include <forward_list>

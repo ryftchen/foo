@@ -33,6 +33,11 @@ constexpr std::string_view base64Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 //! @return hash value
 std::size_t bkdrHash(const char* str) noexcept
 {
+    if (!str)
+    {
+        return 0;
+    }
+
     std::size_t hash = 0;
     while (*str)
     {
@@ -148,6 +153,11 @@ std::string base64Decode(const std::string_view data)
 //! @return string after formatting
 std::string printfString(const char* const fmt, ...) // NOLINT(cert-dcl50-cpp)
 {
+    if (!fmt)
+    {
+        return {};
+    }
+
     std::va_list argList{};
     ::va_start(argList, fmt);
     const int reservedSize = std::vsnprintf(nullptr, 0, fmt, argList);

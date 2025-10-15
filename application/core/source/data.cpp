@@ -18,8 +18,21 @@
 
 namespace application::data
 {
+Packet::Packet(char* buf, const int len) : buffer{buf}, tail{buffer + len}, writer{buffer}, reader{buffer}
+{
+    if (!buffer || (len < 0))
+    {
+        throw std::runtime_error{"The attempt to create the data packet failed."};
+    }
+}
+
 bool Packet::write(const void* const dst, const int offset)
 {
+    if (!dst || (offset <= 0))
+    {
+        return false;
+    }
+
     std::memcpy(writer, dst, offset);
     writer += offset;
 
@@ -28,6 +41,11 @@ bool Packet::write(const void* const dst, const int offset)
 
 bool Packet::read(void* const dst, const int offset)
 {
+    if (!dst || (offset <= 0))
+    {
+        return false;
+    }
+
     std::memcpy(dst, reader, offset);
     reader += offset;
 
@@ -40,7 +58,12 @@ bool Packet::read(void* const dst, const int offset)
 //! @param length - buffer length
 void encryptMessage(char* buffer, const int length)
 {
-    ::EVP_CIPHER_CTX* const ctx = ::EVP_CIPHER_CTX_new();
+    if (!buffer || (length <= 0))
+    {
+        return;
+    }
+
+    auto* const ctx = ::EVP_CIPHER_CTX_new();
     do
     {
         if (constexpr std::array<unsigned char, 16> key =
@@ -78,7 +101,12 @@ void encryptMessage(char* buffer, const int length)
 //! @param length - buffer length
 void decryptMessage(char* buffer, const int length)
 {
-    ::EVP_CIPHER_CTX* const ctx = ::EVP_CIPHER_CTX_new();
+    if (!buffer || (length <= 0))
+    {
+        return;
+    }
+
+    auto* const ctx = ::EVP_CIPHER_CTX_new();
     do
     {
         if (constexpr std::array<unsigned char, 16> key =
@@ -151,6 +179,11 @@ void decompressData(std::vector<char>& cache)
 //! @return hexadecimal string representation of the buffer
 std::string toHexString(const char* const buffer, const int length)
 {
+    if (!buffer || (length <= 0))
+    {
+        return {};
+    }
+
     std::ostringstream body{};
     for (int i = 0; i < length; ++i)
     {
