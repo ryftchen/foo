@@ -104,6 +104,11 @@ private:
     //! @param textLen - length of matching text
     static void createMatchingText(unsigned char* const text, const std::uint32_t textLen)
     {
+        if (!text || (textLen == 0))
+        {
+            return;
+        }
+
         ::mpfr_t operand{};
         ::mpfr_init2(operand, calculatePrecision(textLen));
         ::mpfr_const_pi(operand, ::MPFR_RNDN);
@@ -366,6 +371,11 @@ public:
     static char* spliceAll(
         const T* const array, const std::uint32_t length, char* const fmtBuffer, const std::uint32_t bufferSize)
     {
+        if (!array || (length == 0) || !fmtBuffer || (bufferSize == 0))
+        {
+            return fmtBuffer;
+        }
+
         std::uint32_t align = 0;
         for (std::uint32_t i = 0; i < length; ++i)
         {
@@ -426,6 +436,11 @@ private:
     requires std::is_integral_v<N>
     static void setOrderedArray(T array[], const std::uint32_t length, const T left, const T right)
     {
+        if (!array || (length == 0) || (left > right))
+        {
+            return;
+        }
+
         std::ranlux48 engine(std::random_device{}());
         std::uniform_int_distribution<T> dist(left, right);
         for (std::uint32_t i = 0; i < length; ++i)
@@ -450,6 +465,11 @@ private:
     requires std::is_floating_point_v<N>
     static void setOrderedArray(T array[], const std::uint32_t length, const T left, const T right)
     {
+        if (!array || (length == 0) || (left > right))
+        {
+            return;
+        }
+
         std::ranlux48 engine(std::random_device{}());
         std::uniform_real_distribution<T> dist(left, right);
         for (std::uint32_t i = 0; i < length; ++i)
@@ -550,6 +570,11 @@ public:
     static char* spliceAll(
         const T* const array, const std::uint32_t length, char* const fmtBuffer, const std::uint32_t bufferSize)
     {
+        if (!array || (length == 0) || !fmtBuffer || (bufferSize == 0))
+        {
+            return fmtBuffer;
+        }
+
         std::uint32_t align = 0;
         for (std::uint32_t i = 0; i < length; ++i)
         {
@@ -610,6 +635,11 @@ private:
     requires std::is_integral_v<N>
     static void setRandomArray(T array[], const std::uint32_t length, const T left, const T right)
     {
+        if (!array || (length == 0) || (left > right))
+        {
+            return;
+        }
+
         std::ranlux48 engine(std::random_device{}());
         std::uniform_int_distribution<T> dist(left, right);
         for (std::uint32_t i = 0; i < length; ++i)
@@ -633,6 +663,11 @@ private:
     requires std::is_floating_point_v<N>
     static void setRandomArray(T array[], const std::uint32_t length, const T left, const T right)
     {
+        if (!array || (length == 0) || (left > right))
+        {
+            return;
+        }
+
         std::ranlux48 engine(std::random_device{}());
         std::uniform_real_distribution<T> dist(left, right);
         for (std::uint32_t i = 0; i < length; ++i)

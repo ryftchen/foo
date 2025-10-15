@@ -36,21 +36,21 @@ constexpr std::size_t bkdrHashMask = 0x7FFFFFFF;
 //! @return hash value
 constexpr std::size_t bkdrHashRecursive(const char* const str, const std::size_t hash = 0) noexcept
 {
-    return *str ? bkdrHashRecursive(str + 1, (hash * bkdrHashSeed + *str) & bkdrHashMask) : hash;
+    return str ? (*str ? bkdrHashRecursive(str + 1, (hash * bkdrHashSeed + *str) & bkdrHashMask) : hash) : 0;
 }
 //! @brief The operator ("") overloading with BKDR hash function.
 //! @param str - input data
 //! @return hash value
 constexpr std::size_t operator""_bkdrHash(const char* const str, const std::size_t /*len*/) noexcept
 {
-    return bkdrHashRecursive(str);
+    return str ? bkdrHashRecursive(str) : 0;
 }
 //! @brief The operator ("") overloading with BKDR hash function.
 //! @param str - input data
 //! @return hash value
 constexpr std::size_t operator""_bkdrHash(const char* const str) noexcept
 {
-    return bkdrHashRecursive(str);
+    return str ? bkdrHashRecursive(str) : 0;
 }
 extern std::size_t bkdrHash(const char* str) noexcept;
 
@@ -79,7 +79,9 @@ inline std::string formatString(
 template <typename... Others>
 inline bool areStringsEqual(const char* const str1, const char* const str2, const Others&... others)
 {
-    return (std::strcmp(str1, str2) == 0) && ((std::strcmp(str1, others) == 0) && ...);
+    return (str1 && str2 && (... && others))
+        ? ((std::strcmp(str1, str2) == 0) && ((std::strcmp(str1, others) == 0) && ...))
+        : false;
 }
 
 //! @brief Splice strings into constexpr type.

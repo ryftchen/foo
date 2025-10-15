@@ -8,7 +8,6 @@
 
 #ifndef _PRECOMPILED_HEADER
 #include <netinet/in.h>
-#include <cstdint>
 #include <string>
 #include <vector>
 #else
@@ -28,7 +27,7 @@ public:
     //! @brief Construct a new Packet object.
     //! @param buf - packet buffer
     //! @param len - buffer length
-    Packet(char* buf, const std::uint32_t len) : buffer{buf}, tail{buffer + len}, writer{buffer}, reader{buffer} {}
+    Packet(char* buf, const int len);
 
     //! @brief Write data to the packet buffer.
     //! @tparam T - type of data to be written
@@ -87,6 +86,11 @@ bool Packet::write(const T data)
 template <typename T>
 bool Packet::read(T* const data)
 {
+    if (!data)
+    {
+        return false;
+    }
+
     const bool isEnd = read(data, sizeof(T));
     if constexpr (sizeof(T) == sizeof(int))
     {

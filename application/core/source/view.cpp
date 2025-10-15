@@ -87,8 +87,13 @@ struct TLVValue
 //! @return summary offset of length-value
 template <typename T>
 requires std::is_arithmetic_v<T>
-static int serialize(data::Packet& pkt, const TLVValue& val, T TLVValue::* pl)
+static int serialize(data::Packet& pkt, const TLVValue& val, const T TLVValue::* pl)
 {
+    if (!pl)
+    {
+        return 0;
+    }
+
     constexpr int length = sizeof(T);
     pkt.write<int>(length);
     pkt.write<T>(val.*pl);
@@ -101,8 +106,13 @@ static int serialize(data::Packet& pkt, const TLVValue& val, T TLVValue::* pl)
 //! @param val - value of TLV to encode
 //! @param pl - target payload that has been included in the value of TLV
 //! @return summary offset of length-value
-static int serialize(data::Packet& pkt, const TLVValue& val, char (TLVValue::*pl)[])
+static int serialize(data::Packet& pkt, const TLVValue& val, const char (TLVValue::*pl)[])
 {
+    if (!pl)
+    {
+        return 0;
+    }
+
     const int length = std::strlen(val.*pl);
     pkt.write<int>(length);
     pkt.write(val.*pl, length);
@@ -120,6 +130,11 @@ template <typename T>
 requires std::is_arithmetic_v<T>
 static int deserialize(data::Packet& pkt, TLVValue& val, T TLVValue::* pl)
 {
+    if (!pl)
+    {
+        return 0;
+    }
+
     int length = 0;
     pkt.read<int>(&length);
     pkt.read<T>(&(val.*pl));
@@ -134,6 +149,11 @@ static int deserialize(data::Packet& pkt, TLVValue& val, T TLVValue::* pl)
 //! @return summary offset of length-value
 static int deserialize(data::Packet& pkt, TLVValue& val, char (TLVValue::*pl)[])
 {
+    if (!pl)
+    {
+        return 0;
+    }
+
     int length = 0;
     pkt.read<int>(&length);
     pkt.read(&(val.*pl), length);
@@ -185,7 +205,7 @@ static bool encodeTLV(char* buf, int& len, const TLVValue& val)
 //! @return success or failure
 static bool decodeTLV(char* buf, const int len, TLVValue& val)
 {
-    if (!buf)
+    if (!buf || (len <= 0))
     {
         return false;
     }
@@ -195,7 +215,7 @@ static bool decodeTLV(char* buf, const int len, TLVValue& val)
     dec.read<int>(&type);
     if (type != TLVType::header)
     {
-        return -1;
+        return false;
     }
 
     int sum = 0;

@@ -120,6 +120,11 @@ public:
     requires std::is_integral_v<T>
     static char* spliceAllIntegers(const std::set<T>& container, char* const fmtBuffer, const std::uint32_t bufferSize)
     {
+        if (container.empty() || !fmtBuffer || (bufferSize == 0))
+        {
+            return fmtBuffer;
+        }
+
         const std::uint32_t align = std::reduce(
             container.cbegin(),
             container.cend(),
@@ -296,6 +301,11 @@ public:
     static char* spliceAllIntegers(
         const std::vector<T>& container, char* const fmtBuffer, const std::uint32_t bufferSize)
     {
+        if (container.empty() || !fmtBuffer || (bufferSize == 0))
+        {
+            return fmtBuffer;
+        }
+
         const std::uint32_t align = std::reduce(
             container.cbegin(),
             container.cend(),
