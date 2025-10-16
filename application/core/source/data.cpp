@@ -144,15 +144,20 @@ void decryptMessage(char* buffer, const int length)
 //! @param cache - data cache
 void compressData(std::vector<char>& cache)
 {
+    if (cache.empty())
+    {
+        return;
+    }
+
     const int compressedCap = ::LZ4_compressBound(cache.size());
     std::vector<char> compressed(compressedCap);
-
     const int compressedSize = ::LZ4_compress_default(cache.data(), compressed.data(), cache.size(), compressedCap);
     if (compressedSize < 0)
     {
         throw std::runtime_error{"Failed to compress data."};
     }
     compressed.resize(compressedSize);
+    compressed.shrink_to_fit();
     cache = std::move(compressed);
 }
 
@@ -160,9 +165,13 @@ void compressData(std::vector<char>& cache)
 //! @param cache - data cache
 void decompressData(std::vector<char>& cache)
 {
+    if (cache.empty())
+    {
+        return;
+    }
+
     constexpr int decompressedCap = 65536 * 10 * 10;
     std::vector<char> decompressed(decompressedCap);
-
     const int decompressedSize =
         ::LZ4_decompress_safe(cache.data(), decompressed.data(), cache.size(), decompressedCap);
     if (decompressedSize < 0)
@@ -170,6 +179,7 @@ void decompressData(std::vector<char>& cache)
         throw std::runtime_error{"Failed to decompress data."};
     }
     decompressed.resize(decompressedSize);
+    decompressed.shrink_to_fit();
     cache = std::move(decompressed);
 }
 

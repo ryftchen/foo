@@ -718,11 +718,15 @@ int View::fillSharedMemory(const std::string_view contents)
 
         std::vector<char> processed(contents.data(), contents.data() + contents.length());
         data::compressData(processed);
+        if (processed.size() > sizeof(shrMem->data))
+        {
+            shrMem->signal.store(true);
+            break;
+        }
         data::encryptMessage(processed.data(), processed.size());
-        std::memset(shrMem->buffer, 0, sizeof(shrMem->buffer));
-        *reinterpret_cast<int*>(shrMem->buffer) = processed.size();
-        std::memcpy(
-            shrMem->buffer + sizeof(int), processed.data(), std::min(maxShmSize, processed.size()) * sizeof(char));
+        std::memset(shrMem->data, 0, sizeof(shrMem->data));
+        std::memcpy(shrMem->data, processed.data(), processed.size() * sizeof(char));
+        shrMem->size = processed.size();
 
         shrMem->signal.store(true);
         break;
@@ -749,10 +753,15 @@ void View::fetchSharedMemory(const int shmId, std::string& contents)
             continue;
         }
 
-        std::vector<char> processed(*reinterpret_cast<int*>(shrMem->buffer));
-        std::memcpy(
-            processed.data(), shrMem->buffer + sizeof(int), std::min(maxShmSize, processed.size()) * sizeof(char));
-        std::memset(shrMem->buffer, 0, sizeof(shrMem->buffer));
+        if (shrMem->size > sizeof(shrMem->data))
+        {
+            shrMem->signal.store(false);
+            break;
+        }
+        std::vector<char> processed(shrMem->size);
+        shrMem->size = 0;
+        std::memcpy(processed.data(), shrMem->data, processed.size() * sizeof(char));
+        std::memset(shrMem->data, 0, sizeof(shrMem->data));
         data::decryptMessage(processed.data(), processed.size());
         data::decompressData(processed);
         contents = std::string{processed.data(), processed.data() + processed.size()};

@@ -211,13 +211,15 @@ private:
         {OptJournal::name, OptJournal::description},
         {OptMonitor::name, OptMonitor::description},
         {OptProfile::name, OptProfile::description}};
-    //! @brief Maximum size of the shared memory.
-    static constexpr std::uint64_t maxShmSize{static_cast<std::uint64_t>(65536) * 10};
+    //! @brief Maximum size of the shared memory buffer.
+    static constexpr std::size_t shmLimitSize{static_cast<std::size_t>(65536 * 10)};
     //! @brief Memory that can be accessed by multiple programs simultaneously.
     struct ShrMemBlock
     {
-        //! @brief Shared memory buffer.
-        alignas(64) char buffer[sizeof(int) + maxShmSize];
+        //! @brief Data of the shared memory buffer.
+        alignas(64) char data[shmLimitSize];
+        //! @brief Size of the shared memory buffer.
+        alignas(64) std::size_t size;
         //! @brief Flag for operable.
         alignas(64) std::atomic_bool signal;
     };
