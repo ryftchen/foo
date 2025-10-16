@@ -633,6 +633,7 @@ EOF"
         shell_command "echo '${gdb_load_cmd}' >>~/${gdb_config_folder}/gdbinit"
     fi
     shell_command "echo 'core.%s.%e.%p' | ${SUDO_PREFIX}tee /proc/sys/kernel/core_pattern"
+    shell_command "echo 0 | ${SUDO_PREFIX}tee /proc/sys/kernel/yama/ptrace_scope"
     shell_command "git config --local commit.template ./.gitmessage"
 
     echo "To initialize for effect, type \"exec bash\" manually."
