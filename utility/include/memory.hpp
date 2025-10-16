@@ -210,14 +210,20 @@ template <typename T, std::size_t BlockSize>
 template <typename U, typename... Args>
 inline void Memory<T, BlockSize>::construct(U* const res, Args&&... args)
 {
-    ::new (res) U(std::forward<Args>(args)...);
+    if (res)
+    {
+        ::new (res) U(std::forward<Args>(args)...);
+    }
 }
 
 template <typename T, std::size_t BlockSize>
 template <typename U>
 inline void Memory<T, BlockSize>::destroy(const U* const res)
 {
-    res->~U();
+    if (res)
+    {
+        res->~U();
+    }
 }
 
 template <typename T, std::size_t BlockSize>
@@ -264,8 +270,13 @@ inline void Memory<T, BlockSize>::createBlock()
 template <typename T, std::size_t BlockSize>
 inline std::size_t Memory<T, BlockSize>::pointerPadding(const std::byte* const data, const std::size_t align) const
 {
-    const auto padding = std::bit_cast<std::uintptr_t>(data);
-    return (align - (padding % align)) % align;
+    if (align != 0)
+    {
+        const auto padding = std::bit_cast<std::uintptr_t>(data);
+        return (align - (padding % align)) % align;
+    }
+
+    return 0;
 }
 // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
 } // namespace memory
