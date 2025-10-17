@@ -563,7 +563,7 @@ std::vector<std::string> Argument::preprocessArguments(const std::vector<std::st
     const auto startWithPrefixChars = [this](const std::string_view str)
     {
         const auto legalPrefix = [this](const char c) { return prefixChars.find(c) != std::string::npos; };
-        return (str.length() > 1) ? (legalPrefix(str.at(0)) && legalPrefix(str.at(1))) : false;
+        return (str.length() > 1) && (legalPrefix(str.at(0)) && legalPrefix(str.at(1)));
     };
 
     for (const auto& arg : rawArguments)

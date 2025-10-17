@@ -681,11 +681,9 @@ void Command::precheck()
     }
 
     for (constexpr auto helpArgInExtra = toString(Category::help);
-         [[maybe_unused]] const auto& [subCLIName, categoryMap] :
-         taskDispatcher.extraChoiceRegistry
-             | std::views::filter(
-                 [this](const auto& subCLIPair)
-                 { return mainCLI.isSubCommandUsed(subCLIPair.first) ? (checkExcessArgs(), true) : false; }))
+         [[maybe_unused]] const auto& [subCLIName, categoryMap] : taskDispatcher.extraChoiceRegistry
+             | std::views::filter([this](const auto& subCLIPair)
+                                  { return mainCLI.isSubCommandUsed(subCLIPair.first) && (checkExcessArgs(), true); }))
     {
         const auto& subCLI = mainCLI.at<utility::argument::Argument>(subCLIName);
         const bool notAssigned = !subCLI;
@@ -695,11 +693,9 @@ void Command::precheck()
             return;
         }
 
-        for ([[maybe_unused]] const auto& [categoryName, categoryTrait] :
-             categoryMap
-                 | std::views::filter(
-                     [this, &subCLI](const auto& categoryPair)
-                     { return subCLI.isUsed(categoryPair.first) ? (checkExcessArgs(), true) : false; }))
+        for ([[maybe_unused]] const auto& [categoryName, categoryTrait] : categoryMap
+                 | std::views::filter([this, &subCLI](const auto& categoryPair)
+                                      { return subCLI.isUsed(categoryPair.first) && (checkExcessArgs(), true); }))
         {
             for (const auto& choice : subCLI.get<std::vector<std::string>>(categoryName))
             {
@@ -1092,7 +1088,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
 
 bool Command::onParsing4Client(char* buffer, const int length)
 {
-    return (length != 0) ? view::View::Access().onParsing(buffer, length) : true;
+    return (length == 0) || view::View::Access().onParsing(buffer, length);
 }
 
 void Command::waitClientOutputDone()

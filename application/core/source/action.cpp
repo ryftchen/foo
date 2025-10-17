@@ -26,6 +26,6 @@ void Awaitable::resume() const
 
 bool Awaitable::done() const
 {
-    return handle ? handle.done() : true;
+    return !handle || handle.done();
 }
 } // namespace application::action

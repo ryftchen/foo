@@ -538,7 +538,7 @@ int JSON::size() const
 
 bool JSON::hasKey(const std::string& key) const
 {
-    return holdsData<Object>() ? getData<Object>()->contains(key) : false;
+    return holdsData<Object>() && getData<Object>()->contains(key);
 }
 
 bool JSON::isNullType() const

@@ -194,17 +194,17 @@ Quotient::Quotient(const std::uint8_t qBits, const std::uint8_t rBits, const std
 
 bool Quotient::insert(const void* const key, const int length)
 {
-    return (key && (length > 0)) ? insert(quotientHash(key, length)) : false;
+    return (key && (length > 0)) && insert(quotientHash(key, length));
 }
 
 bool Quotient::mayContain(const void* const key, const int length)
 {
-    return (key && (length > 0)) ? mayContain(quotientHash(key, length)) : false;
+    return (key && (length > 0)) && mayContain(quotientHash(key, length));
 }
 
 bool Quotient::remove(const void* const key, const int length)
 {
-    return (key && (length > 0)) ? remove(quotientHash(key, length)) : false;
+    return (key && (length > 0)) && remove(quotientHash(key, length));
 }
 
 void Quotient::clear()
