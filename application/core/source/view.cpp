@@ -871,10 +871,14 @@ std::string View::logContentsPreview()
 
 std::string View::statusReportsPreview(const std::uint16_t frame)
 {
-    // NOLINTNEXTLINE(cert-env33-c, concurrency-mt-unsafe)
-    if ((frame > 0) && (::system("which eu-stack >/dev/null 2>&1") != EXIT_SUCCESS))
+    if ((frame > 0)
+        && (::system( // NOLINT(cert-env33-c, concurrency-mt-unsafe)
+                "which eu-stack >/dev/null 2>&1 "
+                "&& grep -qx '0' /proc/sys/kernel/yama/ptrace_scope >/dev/null 2>&1")
+            != EXIT_SUCCESS))
     {
-        throw std::runtime_error{"No eu-stack program. Please install it."};
+        throw std::runtime_error{"Please confirm that the eu-stack program has been installed and "
+                                 "that the classic ptrace permissions have been set."};
     }
 
     const int pid = ::getpid();

@@ -154,7 +154,7 @@ void compressData(std::vector<char>& cache)
     const int compressedSize = ::LZ4_compress_default(cache.data(), compressed.data(), cache.size(), compressedCap);
     if (compressedSize < 0)
     {
-        throw std::runtime_error{"Failed to compress data."};
+        throw std::runtime_error{"Failed to compress data, return " + std::to_string(compressedSize) + '.'};
     }
     compressed.resize(compressedSize);
     compressed.shrink_to_fit();
@@ -176,7 +176,7 @@ void decompressData(std::vector<char>& cache)
         ::LZ4_decompress_safe(cache.data(), decompressed.data(), cache.size(), decompressedCap);
     if (decompressedSize < 0)
     {
-        throw std::runtime_error{"Failed to decompress data."};
+        throw std::runtime_error{"Failed to decompress data, return " + std::to_string(decompressedSize) + '.'};
     }
     decompressed.resize(decompressedSize);
     decompressed.shrink_to_fit();
