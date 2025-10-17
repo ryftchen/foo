@@ -80,8 +80,7 @@ template <typename... Others>
 inline bool areStringsEqual(const char* const str1, const char* const str2, const Others&... others)
 {
     return (str1 && str2 && (... && others))
-        ? ((std::strcmp(str1, str2) == 0) && ((std::strcmp(str1, others) == 0) && ...))
-        : false;
+        && ((std::strcmp(str1, str2) == 0) && ((std::strcmp(str1, others) == 0) && ...));
 }
 
 //! @brief Splice strings into constexpr type.
