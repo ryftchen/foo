@@ -466,7 +466,8 @@ Iterator Trait::consume(const Iterator start, Iterator end, const std::string_vi
 
     isUsed = true;
     usedName = argName;
-    const auto numMin = argsNumRange.min, numMax = argsNumRange.max;
+    const auto numMin = argsNumRange.min;
+    const auto numMax = argsNumRange.max;
     if (numMax == 0)
     {
         values.emplace_back(implicitVal);

@@ -63,7 +63,6 @@ Checks: >
   -readability-avoid-nested-conditional-operator,
   -readability-identifier-length,
   -readability-implicit-bool-conversion,
-  -readability-isolate-declaration,
   -readability-static-accessed-through-instance
 CheckOptions:
   readability-function-cognitive-complexity.Threshold: 20

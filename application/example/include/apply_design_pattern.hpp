@@ -59,9 +59,9 @@ public:
     static std::ostringstream interpreter()
     {
         using namespace design_pattern::behavioral::interpreter;
-        const std::shared_ptr<AbstractExpression> a = std::make_shared<TerminalExpression>("A"),
-                                                  b = std::make_shared<TerminalExpression>("B"),
-                                                  exp = std::make_shared<NonTerminalExpression>(a, b);
+        const std::shared_ptr<AbstractExpression> a = std::make_shared<TerminalExpression>("A");
+        const std::shared_ptr<AbstractExpression> b = std::make_shared<TerminalExpression>("B");
+        const std::shared_ptr<AbstractExpression> exp = std::make_shared<NonTerminalExpression>(a, b);
 
         const std::shared_ptr<Context> context = std::make_shared<Context>();
         context->set("A", true);
@@ -92,11 +92,13 @@ public:
     static std::ostringstream mediator()
     {
         using namespace design_pattern::behavioral::mediator;
-        constexpr std::uint32_t id1 = 1, id2 = 2, id3 = 3;
+        constexpr std::uint32_t id1 = 1;
+        constexpr std::uint32_t id2 = 2;
+        constexpr std::uint32_t id3 = 3;
         const std::shared_ptr<Mediator> mediators = std::make_shared<ConcreteMediator>();
-        const std::shared_ptr<Colleague> c1 = std::make_shared<ConcreteColleague>(mediators, id1),
-                                         c2 = std::make_shared<ConcreteColleague>(mediators, id2),
-                                         c3 = std::make_shared<ConcreteColleague>(mediators, id3);
+        const std::shared_ptr<Colleague> c1 = std::make_shared<ConcreteColleague>(mediators, id1);
+        const std::shared_ptr<Colleague> c2 = std::make_shared<ConcreteColleague>(mediators, id2);
+        const std::shared_ptr<Colleague> c3 = std::make_shared<ConcreteColleague>(mediators, id3);
 
         mediators->add(c1);
         mediators->add(c2);
@@ -111,7 +113,9 @@ public:
     static std::ostringstream memento()
     {
         using namespace design_pattern::behavioral::memento;
-        constexpr int state1 = 1, state2 = 2, state3 = 3;
+        constexpr int state1 = 1;
+        constexpr int state2 = 2;
+        constexpr int state3 = 3;
         const std::shared_ptr<Originator> originator = std::make_shared<Originator>();
         const std::shared_ptr<CareTaker> caretaker = std::make_shared<CareTaker>(originator);
 
@@ -131,9 +135,11 @@ public:
     static std::ostringstream observer()
     {
         using namespace design_pattern::behavioral::observer;
-        constexpr int state1 = 1, state2 = 2, state3 = 3;
-        const std::shared_ptr<ConcreteObserver> observer1 = std::make_shared<ConcreteObserver>(state1),
-                                                observer2 = std::make_shared<ConcreteObserver>(state2);
+        constexpr int state1 = 1;
+        constexpr int state2 = 2;
+        constexpr int state3 = 3;
+        const std::shared_ptr<ConcreteObserver> observer1 = std::make_shared<ConcreteObserver>(state1);
+        const std::shared_ptr<ConcreteObserver> observer2 = std::make_shared<ConcreteObserver>(state2);
 
         output() << "observer1 state: " << observer1->getState() << '\n';
         output() << "observer2 state: " << observer2->getState() << '\n';

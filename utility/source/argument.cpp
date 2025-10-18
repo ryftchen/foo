@@ -61,7 +61,8 @@ bool ArgsNumRange::existRightBound() const
 //! @return reference of the output stream object
 std::ostream& operator<<(std::ostream& os, const ArgsNumRange& range)
 {
-    const auto numMin = range.min, numMax = range.max;
+    const auto numMin = range.min;
+    const auto numMax = range.max;
     if (numMin == numMax)
     {
         if ((numMin != 0) && (numMin != 1))
@@ -228,7 +229,8 @@ std::size_t Trait::getArgumentsLength() const
 
 void Trait::throwInvalidArgsNumRange() const
 {
-    const auto numMin = argsNumRange.min, numMax = argsNumRange.max;
+    const auto numMin = argsNumRange.min;
+    const auto numMax = argsNumRange.max;
     std::ostringstream out{};
     out << (usedName.empty() ? names.at(0) : usedName) << ": " << numMin;
     if (!argsNumRange.isExact())
@@ -324,7 +326,8 @@ std::ostream& operator<<(std::ostream& os, const Trait& tra)
     const auto namePadding = std::string(out.str().length(), ' ');
     os << out.str();
 
-    std::size_t pos = 0, prev = 0;
+    std::size_t pos = 0;
+    std::size_t prev = 0;
     bool firstLine = true;
     const std::string_view helpView = tra.helpMsg;
     const char* tabSpace = "    ";
@@ -417,10 +420,11 @@ Argument& Argument::operator=(const Argument& arg)
 
 Argument::operator bool() const
 {
-    const bool isArgUsed = std::any_of(
-                   argumentMap.cbegin(), argumentMap.cend(), [](const auto& iter) { return iter.second->isUsed; }),
-               isSubParserUsed = std::any_of(
-                   subParserUsed.cbegin(), subParserUsed.cend(), [](const auto& iter) { return iter.second; });
+    const bool isArgUsed =
+        std::any_of(argumentMap.cbegin(), argumentMap.cend(), [](const auto& iter) { return iter.second->isUsed; });
+    const bool isSubParserUsed =
+        std::any_of(subParserUsed.cbegin(), subParserUsed.cend(), [](const auto& iter) { return iter.second; });
+
     return isParsed && (isArgUsed || isSubParserUsed);
 }
 

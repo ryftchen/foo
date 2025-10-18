@@ -93,7 +93,8 @@ static Node* insertNode(Node* root, Node* node, const Compare cmp)
         return root;
     }
 
-    Node *x = root, *y = nullptr;
+    Node* x = root;
+    Node* y = nullptr;
     while (x)
     {
         y = x;
@@ -802,7 +803,8 @@ static Node* insertNode(Node* root, Node* node, const Compare cmp)
         return root;
     }
 
-    Node *x = root, *y = nullptr;
+    Node* x = root;
+    Node* y = nullptr;
     while (x)
     {
         y = x;
@@ -887,7 +889,9 @@ static Node* splay(Node* root, const void* const key, const Compare cmp)
         return root;
     }
 
-    Node n{}, *l = nullptr, *r = nullptr;
+    Node n{};
+    Node* l = nullptr;
+    Node* r = nullptr;
     n.left = n.right = nullptr;
     l = r = &n;
     while (cmp(key, root->key) != 0)

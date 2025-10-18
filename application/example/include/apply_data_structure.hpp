@@ -98,8 +98,10 @@ public:
     //! @return procedure output
     static std::ostringstream fifo()
     {
-        const KeyValue keyValueA = {'A', "foo"}, keyValueB = {'B', "bar"}, keyValueC = {'C', "baz"},
-                       keyValueD = {'D', "qux"};
+        const KeyValue keyValueA = {'A', "foo"};
+        const KeyValue keyValueB = {'B', "bar"};
+        const KeyValue keyValueC = {'C', "baz"};
+        const KeyValue keyValueD = {'D', "qux"};
         std::ostringstream process{};
 
         data_structure::cache::FIFO<Key, Value> fifoCache{3};
@@ -149,8 +151,10 @@ public:
     //! @return procedure output
     static std::ostringstream lfu()
     {
-        const KeyValue keyValueA = {'A', "foo"}, keyValueB = {'B', "bar"}, keyValueC = {'C', "baz"},
-                       keyValueD = {'D', "qux"};
+        const KeyValue keyValueA = {'A', "foo"};
+        const KeyValue keyValueB = {'B', "bar"};
+        const KeyValue keyValueC = {'C', "baz"};
+        const KeyValue keyValueD = {'D', "qux"};
         std::ostringstream process{};
 
         data_structure::cache::LFU<Key, Value> lfuCache{3};
@@ -200,8 +204,10 @@ public:
     //! @return procedure output
     static std::ostringstream lru()
     {
-        const KeyValue keyValueA = {'A', "foo"}, keyValueB = {'B', "bar"}, keyValueC = {'C', "baz"},
-                       keyValueD = {'D', "qux"};
+        const KeyValue keyValueA = {'A', "foo"};
+        const KeyValue keyValueB = {'B', "bar"};
+        const KeyValue keyValueC = {'C', "baz"};
+        const KeyValue keyValueD = {'D', "qux"};
         std::ostringstream process{};
 
         data_structure::cache::LRU<Key, Value> lruCache{3};
@@ -265,9 +271,11 @@ public:
     static std::ostringstream bloom()
     {
         constexpr std::uint32_t totalSize = 1000;
-        const std::string keyPart1 = "foo://bar/", keyPart2 = "/baz.qux";
+        const std::string keyPart1 = "foo://bar/";
+        const std::string keyPart2 = "/baz.qux";
         std::ostringstream process{};
-        std::vector<std::string> urls1{}, urls2{};
+        std::vector<std::string> urls1{};
+        std::vector<std::string> urls2{};
         urls1.reserve(totalSize);
         urls1.reserve(totalSize);
         for (std::uint32_t i = 0; i < totalSize; ++i)
@@ -318,9 +326,11 @@ public:
     static std::ostringstream quotient()
     {
         constexpr std::uint32_t totalSize = 500;
-        const std::string keyPart1 = "foo://bar/", keyPart2 = "/baz.qux";
+        const std::string keyPart1 = "foo://bar/";
+        const std::string keyPart2 = "/baz.qux";
         std::ostringstream process{};
-        std::vector<std::string> urls1{}, urls2{};
+        std::vector<std::string> urls1{};
+        std::vector<std::string> urls2{};
         urls1.reserve(totalSize);
         urls1.reserve(totalSize);
         for (std::uint32_t i = 0; i < totalSize; ++i)
@@ -336,7 +346,9 @@ public:
             urls2.emplace_back(std::move(url2));
         }
 
-        data_structure::filter::Quotient qfA(16, 8, 0), qfB(16, 8, 0), qfC(16, 8, 0);
+        data_structure::filter::Quotient qfA(16, 8, 0);
+        data_structure::filter::Quotient qfB(16, 8, 0);
+        data_structure::filter::Quotient qfC(16, 8, 0);
         process << std::boolalpha;
         const std::uint32_t insertedA = std::accumulate(
             urls1.cbegin(),
@@ -399,7 +411,9 @@ using Data = char;
 //! @return a is less than b if returns -1, a is greater than b if returns 1, and a is equal to b if returns 0
 static int compareData(const void* const a, const void* const b)
 {
-    const auto l = *static_cast<const Data*>(a), r = *static_cast<const Data*>(b);
+    const auto l = *static_cast<const Data*>(a);
+    const auto r = *static_cast<const Data*>(b);
+
     return (l > r) - (l < r);
 }
 
@@ -539,7 +553,9 @@ using Key = std::int16_t;
 //! @return a is less than b if returns -1, a is greater than b if returns 1, and a is equal to b if returns 0
 static int compareKey(const void* const a, const void* const b)
 {
-    const auto l = *static_cast<const Key*>(a), r = *static_cast<const Key*>(b);
+    const auto l = *static_cast<const Key*>(a);
+    const auto r = *static_cast<const Key*>(b);
+
     return (l > r) - (l < r);
 }
 
@@ -830,7 +846,9 @@ using Key = std::int16_t;
 //! @return a is less than b if returns -1, a is greater than b if returns 1, and a is equal to b if returns 0
 static int compareKey(const void* const a, const void* const b)
 {
-    const auto l = *static_cast<const Key*>(a), r = *static_cast<const Key*>(b);
+    const auto l = *static_cast<const Key*>(a);
+    const auto r = *static_cast<const Key*>(b);
+
     return (l > r) - (l < r);
 }
 

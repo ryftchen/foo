@@ -53,7 +53,8 @@ static void filterUp(const BinaryHeap* const heap, const int start)
         return;
     }
 
-    int child = start, parent = (child - 1) / 2;
+    int child = start;
+    int parent = (child - 1) / 2;
     void* const temp = heap->data[child];
     while (child > 0)
     {
@@ -80,7 +81,8 @@ static void filterDown(const BinaryHeap* const heap, const int start)
     }
 
     const int end = heap->size - 1;
-    int child = start, selected = (2 * child) + 1;
+    int child = start;
+    int selected = (2 * child) + 1;
     void* const temp = heap->data[child];
     while (selected <= end)
     {
@@ -352,7 +354,8 @@ void remove(LeftistHeap* const heap)
         return;
     }
 
-    Node *const left = heap->root->left, *const right = heap->root->right;
+    Node* const left = heap->root->left;
+    Node* const right = heap->root->right;
     ::delete heap->root;
 
     heap->root = mergeNode(left, right, heap->compare);
@@ -512,7 +515,8 @@ void remove(SkewHeap* const heap)
         return;
     }
 
-    Node *const left = heap->root->left, *const right = heap->root->right;
+    Node* const left = heap->root->left;
+    Node* const right = heap->root->right;
     ::delete heap->root;
 
     heap->root = mergeNode(left, right, heap->compare);

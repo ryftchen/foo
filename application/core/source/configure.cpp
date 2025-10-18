@@ -93,7 +93,8 @@ void Configure::checkObjectInHelperList<log::Log>(const utility::json::JSON& hel
     }
 
     bool isVerified = helper.isObjectType();
-    const auto &loggerProperties = helper.at(field::properties), &loggerRequired = helper.at(field::required);
+    const auto& loggerProperties = helper.at(field::properties);
+    const auto& loggerRequired = helper.at(field::required);
     isVerified &= loggerProperties.isObjectType() && loggerRequired.isArrayType()
         && (loggerProperties.size() == loggerRequired.length());
     for (const auto& item : loggerRequired.arrayRange())
@@ -155,7 +156,8 @@ void Configure::checkObjectInHelperList<view::View>(const utility::json::JSON& h
     }
 
     bool isVerified = helper.isObjectType();
-    const auto &viewerProperties = helper.at(field::properties), &viewerRequired = helper.at(field::required);
+    const auto& viewerProperties = helper.at(field::properties);
+    const auto& viewerRequired = helper.at(field::required);
     isVerified &= viewerProperties.isObjectType() && viewerRequired.isArrayType()
         && (viewerProperties.size() == viewerRequired.length());
     for (const auto& item : viewerRequired.arrayRange())
@@ -309,8 +311,9 @@ static void initializeConfiguration(const std::string_view filePath)
 //! @return whether to continue throwing exception
 static bool handleConfigurationException(const std::string_view filePath)
 {
-    constexpr std::string_view prompt = "Type y to force an update to the default configuration, n to exit: ",
-                               escapeClear = "\x1b[1A\x1b[2K\r", escapeMoveUp = "\n\x1b[1A\x1b[";
+    constexpr std::string_view prompt = "Type y to force an update to the default configuration, n to exit: ";
+    constexpr std::string_view escapeClear = "\x1b[1A\x1b[2K\r";
+    constexpr std::string_view escapeMoveUp = "\n\x1b[1A\x1b[";
     std::cout << prompt << escapeMoveUp << prompt.length() << 'C' << std::flush;
 
     bool keepThrowing = true;

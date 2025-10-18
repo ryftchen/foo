@@ -67,7 +67,8 @@ static void removeEdgeFromList(VertexNode* const vNode, const int index, const E
         return;
     }
 
-    EdgeNode *curr = vNode->firstEdge, *prev = nullptr;
+    EdgeNode* curr = vNode->firstEdge;
+    EdgeNode* prev = nullptr;
     while (curr)
     {
         if (curr != eNode)
@@ -117,7 +118,8 @@ void destroy(AMLGraph* graph)
         return;
     }
 
-    const EdgeNode *curr = nullptr, *del = nullptr;
+    const EdgeNode* curr = nullptr;
+    const EdgeNode* del = nullptr;
     for (int i = 0; i < graph->vexNum; ++i)
     {
         curr = graph->adjMultiList[i].firstEdge;
@@ -163,7 +165,8 @@ bool addEdge(AMLGraph* const graph, const void* const vert1, const void* const v
         return false;
     }
 
-    const int index1 = locateVertex(graph, vert1), index2 = locateVertex(graph, vert2);
+    const int index1 = locateVertex(graph, vert1);
+    const int index2 = locateVertex(graph, vert2);
     if ((index1 < 0) || (index2 < 0))
     {
         return false;
@@ -257,7 +260,8 @@ bool deleteEdge(AMLGraph* const graph, const void* const vert1, const void* cons
         return false;
     }
 
-    const int index1 = locateVertex(graph, vert1), index2 = locateVertex(graph, vert2);
+    const int index1 = locateVertex(graph, vert1);
+    const int index2 = locateVertex(graph, vert2);
     if ((index1 < 0) || (index2 < 0))
     {
         return false;
@@ -322,12 +326,15 @@ void Traverse::bfs(const void* const vert, const Operation& op) const
     visited[start] = true;
     op(graph->adjMultiList[start].data);
 
-    int queue[maxVertexNum] = {}, front = 0, rear = 0;
+    int queue[maxVertexNum] = {};
+    int front = 0;
+    int rear = 0;
     queue[rear++] = start;
     while (front < rear)
     {
         const int q = queue[front++];
-        int neighbors[maxVertexNum] = {}, counter = 0;
+        int neighbors[maxVertexNum] = {};
+        int counter = 0;
         const EdgeNode* curr = graph->adjMultiList[q].firstEdge;
         while (curr)
         {
@@ -362,7 +369,8 @@ void Traverse::dfsRecursive(const int index, bool visited[], const Operation& op
     visited[index] = true;
     op(graph->adjMultiList[index].data);
 
-    int neighbors[maxVertexNum] = {}, counter = 0;
+    int neighbors[maxVertexNum] = {};
+    int counter = 0;
     const EdgeNode* curr = graph->adjMultiList[index].firstEdge;
     while (curr)
     {
@@ -434,7 +442,8 @@ static void deleteOutgoingArcs(OLGraph* const graph, const int index)
         return;
     }
 
-    const ArcNode *curr = graph->xList[index].firstOut, *del = nullptr;
+    const ArcNode* curr = graph->xList[index].firstOut;
+    const ArcNode* del = nullptr;
     while (curr)
     {
         del = curr;
@@ -459,7 +468,8 @@ static void deleteIncomingArcs(OLGraph* const graph, const int index)
 
     for (int i = 0; i < graph->vexNum; ++i)
     {
-        ArcNode *curr = graph->xList[i].firstOut, *prev = nullptr;
+        ArcNode* curr = graph->xList[i].firstOut;
+        ArcNode* prev = nullptr;
         while (curr)
         {
             if (curr->headVex != index)
@@ -507,7 +517,8 @@ void destroy(OLGraph* graph)
         return;
     }
 
-    const ArcNode *curr = nullptr, *del = nullptr;
+    const ArcNode* curr = nullptr;
+    const ArcNode* del = nullptr;
     for (int i = 0; i < graph->vexNum; ++i)
     {
         curr = graph->xList[i].firstOut;
@@ -557,7 +568,8 @@ bool addArc(OLGraph* const graph, const void* const vert1, const void* const ver
         return false;
     }
 
-    const int index1 = locateVertex(graph, vert1), index2 = locateVertex(graph, vert2);
+    const int index1 = locateVertex(graph, vert1);
+    const int index2 = locateVertex(graph, vert2);
     if ((index1 < 0) || (index2 < 0))
     {
         return false;
@@ -642,13 +654,15 @@ bool deleteArc(OLGraph* const graph, const void* const vert1, const void* const 
         return false;
     }
 
-    const int index1 = locateVertex(graph, vert1), index2 = locateVertex(graph, vert2);
+    const int index1 = locateVertex(graph, vert1);
+    const int index2 = locateVertex(graph, vert2);
     if ((index1 < 0) || (index2 < 0))
     {
         return false;
     }
 
-    ArcNode *curr = graph->xList[index1].firstOut, *prev = nullptr;
+    ArcNode* curr = graph->xList[index1].firstOut;
+    ArcNode* prev = nullptr;
     while (curr)
     {
         if (curr->headVex != index2)
@@ -703,12 +717,15 @@ void Traverse::bfs(const void* const vert, const Operation& op) const
     visited[start] = true;
     op(graph->xList[start].data);
 
-    int queue[maxVertexNum] = {}, front = 0, rear = 0;
+    int queue[maxVertexNum] = {};
+    int front = 0;
+    int rear = 0;
     queue[rear++] = start;
     while (front < rear)
     {
         const int q = queue[front++];
-        int neighbors[maxVertexNum], counter = 0;
+        int neighbors[maxVertexNum];
+        int counter = 0;
         const ArcNode* curr = graph->xList[q].firstOut;
         while (curr)
         {
@@ -739,7 +756,8 @@ void Traverse::dfsRecursive(const int index, bool visited[], const Operation& op
     visited[index] = true;
     op(graph->xList[index].data);
 
-    int neighbors[maxVertexNum], counter = 0;
+    int neighbors[maxVertexNum];
+    int counter = 0;
     const ArcNode* curr = graph->xList[index].firstOut;
     while (curr)
     {

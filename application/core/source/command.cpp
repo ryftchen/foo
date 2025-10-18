@@ -276,8 +276,8 @@ void Command::setupSubCLI<reg_algo::ApplyAlgorithm>()
     using Attr = ExtraManager::Attr;
     using action::name, action::alias, action::descr;
     constexpr std::string_view helpDescr = mappedDescr(Category::help);
-    const std::string helpArg1 = shortPrefix + std::string{mappedAlias(Category::help)},
-                      helpArg2 = longPrefix + std::string{toString(Category::help)};
+    const std::string helpArg1 = shortPrefix + std::string{mappedAlias(Category::help)};
+    const std::string helpArg2 = longPrefix + std::string{toString(Category::help)};
     auto& registry = taskDispatcher.extraChoiceRegistry[subCLIAppAlgo.title()];
     std::vector<std::string> candidates{};
 
@@ -369,8 +369,8 @@ void Command::setupSubCLI<reg_dp::ApplyDesignPattern>()
     using Attr = ExtraManager::Attr;
     using action::name, action::alias, action::descr;
     constexpr std::string_view helpDescr = mappedDescr(Category::help);
-    const std::string helpArg1 = shortPrefix + std::string{mappedAlias(Category::help)},
-                      helpArg2 = longPrefix + std::string{toString(Category::help)};
+    const std::string helpArg1 = shortPrefix + std::string{mappedAlias(Category::help)};
+    const std::string helpArg2 = longPrefix + std::string{toString(Category::help)};
     auto& registry = taskDispatcher.extraChoiceRegistry[subCLIAppDp.title()];
     std::vector<std::string> candidates{};
 
@@ -439,8 +439,8 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
     using Attr = ExtraManager::Attr;
     using action::name, action::alias, action::descr;
     constexpr std::string_view helpDescr = mappedDescr(Category::help);
-    const std::string helpArg1 = shortPrefix + std::string{mappedAlias(Category::help)},
-                      helpArg2 = longPrefix + std::string{toString(Category::help)};
+    const std::string helpArg1 = shortPrefix + std::string{mappedAlias(Category::help)};
+    const std::string helpArg2 = longPrefix + std::string{toString(Category::help)};
     auto& registry = taskDispatcher.extraChoiceRegistry[subCLIAppDs.title()];
     std::vector<std::string> candidates{};
 
@@ -547,8 +547,8 @@ void Command::setupSubCLI<reg_num::ApplyNumeric>()
     using Attr = ExtraManager::Attr;
     using action::name, action::alias, action::descr;
     constexpr std::string_view helpDescr = mappedDescr(Category::help);
-    const std::string helpArg1 = shortPrefix + std::string{mappedAlias(Category::help)},
-                      helpArg2 = longPrefix + std::string{toString(Category::help)};
+    const std::string helpArg1 = shortPrefix + std::string{mappedAlias(Category::help)};
+    const std::string helpArg2 = longPrefix + std::string{toString(Category::help)};
     auto& registry = taskDispatcher.extraChoiceRegistry[subCLIAppNum.title()];
     std::vector<std::string> candidates{};
 
@@ -879,21 +879,17 @@ void Command::displayVersionInfo() const
     validateDependenciesVersion();
 
     const auto basicInfo = std::format(
-                   "\033[7m\033[49m{}"
+        "\033[7m\033[49m{}"
 #ifndef NDEBUG
-                   "            DEBUG VERSION {} "
+        "            DEBUG VERSION {} "
 #else
-                   "          RELEASE VERSION {} "
+        "          RELEASE VERSION {} "
 #endif // NDEBUG
-                   "\033[0m\n",
-                   note::banner(),
-                   mainCLI.version()),
-               additionalInfo = std::format(
-                   "{}\nBuilt with {} for {} on {}.\n",
-                   note::copyright(),
-                   note::compiler(),
-                   note::processor(),
-                   note::date());
+        "\033[0m\n",
+        note::banner(),
+        mainCLI.version());
+    const auto additionalInfo = std::format(
+        "{}\nBuilt with {} for {} on {}.\n", note::copyright(), note::compiler(), note::processor(), note::date());
     std::cout << basicInfo << additionalInfo << std::flush;
 }
 
@@ -1115,30 +1111,30 @@ void Command::interactionLatency()
 void Command::validateDependenciesVersion() const
 {
     const auto& choiceRegistry = taskDispatcher.extraChoiceRegistry;
-    const bool isNativeMatched = utility::common::areStringsEqual(
-                   mainCLI.version().data(),
-                   utility::argument::version(),
-                   utility::benchmark::version(),
-                   utility::common::version(),
-                   utility::currying::version(),
-                   utility::fsm::version(),
-                   utility::io::version(),
-                   utility::json::version(),
-                   utility::macro::version(),
-                   utility::memory::version(),
-                   utility::reflection::version(),
-                   utility::socket::version(),
-                   utility::thread::version(),
-                   utility::time::version()),
-               isExtraMatched = (versionLinks.count({subCLIAppAlgo.title(), subCLIAppAlgo.version()})
-                                 == choiceRegistry.at(subCLIAppAlgo.title()).size())
+    const bool isNativeVersionMatched = utility::common::areStringsEqual(
+        mainCLI.version().data(),
+        utility::argument::version(),
+        utility::benchmark::version(),
+        utility::common::version(),
+        utility::currying::version(),
+        utility::fsm::version(),
+        utility::io::version(),
+        utility::json::version(),
+        utility::macro::version(),
+        utility::memory::version(),
+        utility::reflection::version(),
+        utility::socket::version(),
+        utility::thread::version(),
+        utility::time::version());
+    const bool isExtraVersionMatched = (versionLinks.count({subCLIAppAlgo.title(), subCLIAppAlgo.version()})
+                                        == choiceRegistry.at(subCLIAppAlgo.title()).size())
         && (versionLinks.count({subCLIAppDp.title(), subCLIAppDp.version()})
             == choiceRegistry.at(subCLIAppDp.title()).size())
         && (versionLinks.count({subCLIAppDs.title(), subCLIAppDs.version()})
             == choiceRegistry.at(subCLIAppDs.title()).size())
         && (versionLinks.count({subCLIAppNum.title(), subCLIAppNum.version()})
             == choiceRegistry.at(subCLIAppNum.title()).size());
-    if (!isNativeMatched || !isExtraMatched)
+    if (!isNativeVersionMatched || !isExtraVersionMatched)
     {
         throw std::runtime_error{std::format(
             "Dependencies version number mismatch. Expected main version: {} ({})"

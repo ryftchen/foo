@@ -65,7 +65,8 @@ std::int64_t Search<T>::binary(const T* const array, const std::uint32_t length,
     }
 
     std::int64_t index = -1;
-    std::uint32_t lower = 0, upper = length - 1;
+    std::uint32_t lower = 0;
+    std::uint32_t upper = length - 1;
     if ((key < array[lower]) || (key > array[upper]))
     {
         return index;
@@ -101,7 +102,8 @@ std::int64_t Search<T>::interpolation(const T* const array, const std::uint32_t 
     }
 
     std::int64_t index = -1;
-    std::uint32_t lower = 0, upper = length - 1;
+    std::uint32_t lower = 0;
+    std::uint32_t upper = length - 1;
     if ((key < array[lower]) || (key > array[upper]))
     {
         return index;
@@ -137,7 +139,8 @@ std::int64_t Search<T>::fibonacci(const T* const array, const std::uint32_t leng
     }
 
     std::int64_t index = -1;
-    std::uint32_t lower = 0, upper = length - 1;
+    std::uint32_t lower = 0;
+    std::uint32_t upper = length - 1;
     if ((key < array[lower]) || (key > array[upper]))
     {
         return index;

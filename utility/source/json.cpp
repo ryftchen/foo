@@ -344,7 +344,8 @@ static JSON parseNumber(const std::string_view fmt, std::size_t& offset)
 //! @return JSON boolean
 static JSON parseBoolean(const std::string_view fmt, std::size_t& offset)
 {
-    constexpr std::string_view trueLit = "true", falseLit = "false";
+    constexpr std::string_view trueLit = "true";
+    constexpr std::string_view falseLit = "false";
     JSON boolean{};
     if (fmt.substr(offset, trueLit.length()) == trueLit)
     {

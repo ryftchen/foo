@@ -42,7 +42,8 @@ static void signalHandler(const int sig)
     char** const symbols = ::backtrace_symbols(callStack.data(), numOfFrame);
 
     std::array<char, 1024> buffer{};
-    std::ostringstream originalTrace{}, detailedTrace{};
+    std::ostringstream originalTrace{};
+    std::ostringstream detailedTrace{};
     for (int i = 1; i < numOfFrame; ++i)
     {
         originalTrace << symbols[i] << '\n';
