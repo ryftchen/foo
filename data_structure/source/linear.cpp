@@ -100,7 +100,8 @@ bool destroy(DLL* const dll)
         return false;
     }
 
-    const Node *nNode = (*dll)->next, *temp = nullptr;
+    const Node* nNode = (*dll)->next;
+    const Node* temp = nullptr;
     while (nNode != *dll)
     {
         temp = nNode;

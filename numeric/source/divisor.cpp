@@ -20,7 +20,8 @@ const char* version() noexcept
 
 std::set<std::int32_t> Divisor::euclidean(const std::int32_t a, const std::int32_t b)
 {
-    std::int32_t x = std::abs(a), y = std::abs(b);
+    std::int32_t x = std::abs(a);
+    std::int32_t y = std::abs(b);
     while (y)
     {
         const std::int32_t temp = x % y;
@@ -33,7 +34,10 @@ std::set<std::int32_t> Divisor::euclidean(const std::int32_t a, const std::int32
 
 std::set<std::int32_t> Divisor::stein(const std::int32_t a, const std::int32_t b)
 {
-    std::int32_t x = std::abs(a), y = std::abs(b), gcd = 0, c = 0;
+    std::int32_t x = std::abs(a);
+    std::int32_t y = std::abs(b);
+    std::int32_t gcd = 0;
+    std::int32_t c = 0;
     while (isEven(x) && isEven(y))
     {
         x >>= 1;

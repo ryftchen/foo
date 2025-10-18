@@ -353,7 +353,8 @@ std::vector<std::string> Log::reformatContents(const std::string_view label, con
     }
     else
     {
-        std::size_t pos = 0, prev = 0;
+        std::size_t pos = 0;
+        std::size_t prev = 0;
         while ((pos = formatted.find('\n', prev)) != std::string_view::npos)
         {
             rows.emplace_back(formatted.substr(prev, pos - prev + 1));

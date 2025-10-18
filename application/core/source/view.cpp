@@ -796,14 +796,17 @@ void View::printSharedMemory(const int shmId, const bool withoutPaging)
 void View::segmentedOutput(const std::string& buffer)
 {
     constexpr std::uint8_t terminalRows = 24;
-    constexpr std::string_view prompt = "--- Type <CR> for more, c to continue, n to show next page, q to quit ---: ",
-                               escapeClear = "\x1b[1A\x1b[2K\r", escapeMoveUp = "\n\x1b[1A\x1b[";
+    constexpr std::string_view prompt = "--- Type <CR> for more, c to continue, n to show next page, q to quit ---: ";
+    constexpr std::string_view escapeClear = "\x1b[1A\x1b[2K\r";
+    constexpr std::string_view escapeMoveUp = "\n\x1b[1A\x1b[";
     std::istringstream transfer(buffer);
     const std::size_t lineNum =
         std::count(std::istreambuf_iterator<char>(transfer), std::istreambuf_iterator<char>{}, '\n');
     transfer.seekg(std::ios::beg);
 
-    bool moreRows = false, forcedCancel = false, withoutPaging = (lineNum <= terminalRows);
+    bool moreRows = false;
+    bool forcedCancel = false;
+    bool withoutPaging = (lineNum <= terminalRows);
     std::string line{};
     std::size_t counter = 0;
     const auto handling = utility::common::wrapClosure(
@@ -891,7 +894,8 @@ std::string View::statusReportsPreview(const std::uint16_t frame)
                                              "Threads|SigQ|voluntary_ctxt_switches|nonvoluntary_ctxt_switches";
     const auto queryResult = utility::io::executeCommand(queryStmt.data());
     std::vector<std::string> statements{};
-    std::size_t pos = 0, prev = 0;
+    std::size_t pos = 0;
+    std::size_t prev = 0;
     while ((pos = queryResult.find('\n', prev)) != std::string::npos)
     {
         const int tid = std::stoi(queryResult.substr(prev, pos - prev + 1));

@@ -48,7 +48,10 @@ std::int32_t Arithmetic::division(const std::int32_t dividend, const std::int32_
         return 0;
     }
 
-    std::int32_t quotient = 0, remainder = 0, absDividend = bitAbs(dividend), absDivisor = bitAbs(divisor);
+    const std::int32_t absDividend = bitAbs(dividend);
+    const std::int32_t absDivisor = bitAbs(divisor);
+    std::int32_t quotient = 0;
+    std::int32_t remainder = 0;
     for (std::int32_t i = ((sizeof(std::int32_t) * 8) - 1); i >= 0; --i)
     {
         quotient <<= 1;
@@ -70,7 +73,9 @@ std::int32_t Arithmetic::division(const std::int32_t dividend, const std::int32_
 
 std::int32_t Arithmetic::bitAdd(const std::int32_t a, const std::int32_t b)
 {
-    const std::int32_t sum = a ^ b, carry = (a & b) << 1;
+    const std::int32_t sum = a ^ b;
+    const std::int32_t carry = (a & b) << 1;
+
     return (sum & carry) ? bitAdd(sum, carry) : (sum ^ carry);
 }
 

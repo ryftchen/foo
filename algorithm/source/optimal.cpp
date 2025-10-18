@@ -26,12 +26,15 @@ std::optional<std::tuple<double, double>> Gradient::operator()(const double left
     }
 
     const auto climbing = createClimbers(left, right);
-    double xBest = *climbing.cbegin(), yBest = func(xBest);
+    double xBest = *climbing.cbegin();
+    double yBest = func(xBest);
 
     for (std::uint32_t iteration = 0; auto x : climbing)
     {
         iteration = 0;
-        double learningRate = initialLR, gradient = calculateFirstDerivative(x, eps), dx = learningRate * gradient;
+        double learningRate = initialLR;
+        double gradient = calculateFirstDerivative(x, eps);
+        double dx = learningRate * gradient;
         while ((std::fabs(dx) > eps) && ((x - dx) >= left) && ((x - dx) <= right))
         {
             x -= dx;
@@ -79,10 +82,13 @@ std::optional<std::tuple<double, double>> Tabu::operator()(const double left, co
     }
 
     std::mt19937_64 engine(std::random_device{}());
-    double solution = std::uniform_real_distribution<double>{left, right}(engine), xBest = solution,
-           yBest = func(xBest), stepLen = initialStep;
+    double solution = std::uniform_real_distribution<double>{left, right}(engine);
+    double xBest = solution;
+    double yBest = func(xBest);
+    double stepLen = initialStep;
 
-    std::vector<double> neighborhood{}, tabuList{};
+    std::vector<double> neighborhood{};
+    std::vector<double> tabuList{};
     neighborhood.reserve(neighborSize);
     tabuList.reserve(tabuTenure);
     tabuList.emplace_back(solution);
@@ -132,7 +138,8 @@ void Tabu::updateNeighborhood(
 std::tuple<double, double> Tabu::neighborhoodSearch(
     const std::vector<double>& neighborhood, const double solution, const std::vector<double>& tabuList)
 {
-    double xBestNbr = solution, yBestNbr = func(xBestNbr);
+    double xBestNbr = solution;
+    double yBestNbr = func(xBestNbr);
     for (const auto neighbor : neighborhood)
     {
         if (std::find(tabuList.cbegin(), tabuList.cend(), neighbor) == tabuList.cend())
@@ -156,8 +163,13 @@ std::optional<std::tuple<double, double>> Annealing::operator()(const double lef
     }
 
     std::mt19937_64 engine(std::random_device{}());
-    std::uniform_real_distribution<double> perturbation(left, right), pr(0.0, 1.0);
-    double temperature = initialT, x = std::round(perturbation(engine) / eps) * eps, y = func(x), xBest = x, yBest = y;
+    std::uniform_real_distribution<double> perturbation(left, right);
+    std::uniform_real_distribution<double> pr(0.0, 1.0);
+    double temperature = initialT;
+    double x = std::round(perturbation(engine) / eps) * eps;
+    double y = func(x);
+    double xBest = x;
+    double yBest = y;
 
     while (temperature > minimalT)
     {
@@ -209,7 +221,8 @@ std::optional<std::tuple<double, double>> Particle::operator()(const double left
     auto swarm = swarmInit(left, right);
     const auto initialBest = std::min_element(
         swarm.cbegin(), swarm.cend(), [](const auto& min1, const auto& min2) { return min1.fitness < min2.fitness; });
-    double gloBest = initialBest->x, gloBestFitness = initialBest->fitness;
+    double gloBest = initialBest->x;
+    double gloBestFitness = initialBest->fitness;
 
     for (std::uint32_t i = 0; i < maxIterations; ++i)
     {
@@ -248,8 +261,8 @@ void Particle::updateParticles(
 {
     for (const double w = nonlinearDecreasingWeight(iteration); auto& ind : swarm)
     {
-        const double rand1 = std::round(perturbation(engine) / eps) * eps,
-                     rand2 = std::round(perturbation(engine) / eps) * eps;
+        const double rand1 = std::round(perturbation(engine) / eps) * eps;
+        const double rand2 = std::round(perturbation(engine) / eps) * eps;
         ind.v = w * ind.v + c1 * rand1 * (ind.persBest - ind.x) + c2 * rand2 * (gloBest - ind.x);
         ind.v = std::clamp(ind.v, vMin, vMax);
 
@@ -290,7 +303,9 @@ std::optional<std::tuple<double, double>> Ant::operator()(const double left, con
     }
 
     auto colony = colonyInit(left, right);
-    double xBest = colony.front().position, yBest = func(xBest), stepLen = initialStep;
+    double xBest = colony.front().position;
+    double yBest = func(xBest);
+    double stepLen = initialStep;
 
     for (std::uint32_t i = 0; i < maxIterations; ++i)
     {
@@ -339,8 +354,8 @@ void Ant::stateTransition(Colony& colony, const double eps)
                               colony.cbegin(),
                               colony.cend(),
                               [](const auto& min1, const auto& min2) { return min1.pheromone < min2.pheromone; })
-                              ->pheromone,
-                 maxTau = std::max_element(
+                              ->pheromone;
+    const double maxTau = std::max_element(
                               colony.cbegin(),
                               colony.cend(),
                               [](const auto& max1, const auto& max2) { return max1.pheromone < max2.pheromone; })
@@ -445,7 +460,8 @@ Genetic::Population Genetic::populationInit()
 
 void Genetic::geneticCross(Chromosome& chr1, Chromosome& chr2)
 {
-    std::uint32_t pmxBegin = 0, pmxEnd = 0;
+    std::uint32_t pmxBegin = 0;
+    std::uint32_t pmxEnd = 0;
     std::uniform_int_distribution<std::uint32_t> randomPos(0, chromosomeLength - 1);
     do
     {
@@ -472,7 +488,8 @@ void Genetic::crossover(Population& pop)
     {
         if (crossPr > probability(engine))
         {
-            auto &parent1 = chrIter->get(), &parent2 = std::next(chrIter, 1)->get();
+            auto& parent1 = chrIter->get();
+            auto& parent2 = std::next(chrIter, 1)->get();
             geneticCross(parent1, parent2);
         }
     }
@@ -505,14 +522,14 @@ double Genetic::calculateFitness(const Chromosome& chr)
 std::optional<std::pair<double, double>> Genetic::goldbergLinearScaling(
     const std::vector<double>& fitness, const double eps)
 {
-    const double fitMax = *std::max_element(fitness.cbegin(), fitness.cend()),
-                 fitAvg = std::reduce(fitness.cbegin(), fitness.cend(), 0.0) / fitness.size();
+    const double fitMax = *std::max_element(fitness.cbegin(), fitness.cend());
+    const double fitAvg = std::reduce(fitness.cbegin(), fitness.cend(), 0.0) / fitness.size();
     if (std::fabs(fitMax - fitAvg) < eps)
     {
         return std::nullopt;
     }
-    const double alpha = (cMult - 1.0) * fitAvg / (fitMax - fitAvg),
-                 beta = (fitMax - cMult * fitAvg) * fitAvg / (fitMax - fitAvg);
+    const double alpha = (cMult - 1.0) * fitAvg / (fitMax - fitAvg);
+    const double beta = (fitMax - cMult * fitAvg) * fitAvg / (fitMax - fitAvg);
 
     return std::make_optional(std::pair<double, double>(alpha, beta));
 }
@@ -532,8 +549,8 @@ void Genetic::stochasticTournamentSelection(Population& pop, const std::vector<d
     selected.reserve(pop.size());
     while (selected.size() < pop.size())
     {
-        auto competitor1 = *rouletteWheelSelection(pop, cumFitness),
-             competitor2 = *rouletteWheelSelection(pop, cumFitness);
+        auto competitor1 = *rouletteWheelSelection(pop, cumFitness);
+        auto competitor2 = *rouletteWheelSelection(pop, cumFitness);
         selected.emplace_back(
             std::move((calculateFitness(competitor1) > calculateFitness(competitor2)) ? competitor1 : competitor2));
     }

@@ -223,7 +223,8 @@ static void display(const NotationMethod method, const std::string& result, cons
 static void solution(const NotationMethod method, const std::string_view infix)
 try
 {
-    std::string result{}, descr{};
+    std::string result{};
+    std::string descr{};
     switch (method)
     {
         using algorithm::notation::Notation;

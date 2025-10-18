@@ -136,8 +136,8 @@ void Bloom::clear()
 
 void Bloom::bloomHash(const void* const key, const int length)
 {
-    const std::uint64_t hash1 = murmurHash2X64(key, length, hashSeed),
-                        hash2 = murmurHash2X64(key, length, static_cast<std::uint32_t>((hash1 >> 32) ^ hash1));
+    const std::uint64_t hash1 = murmurHash2X64(key, length, hashSeed);
+    const std::uint64_t hash2 = murmurHash2X64(key, length, static_cast<std::uint32_t>((hash1 >> 32) ^ hash1));
     for (std::uint32_t i = 0; i < hashFuncNum; ++i)
     {
         hashPos[i] = (hash1 + i * hash2) % filterBitsNum;
@@ -220,7 +220,9 @@ bool Quotient::insert(const std::uint64_t hash)
         return false;
     }
 
-    const std::uint64_t hq = hashToQuotient(hash), hr = hashToRemainder(hash), hqElem = getElement(*this, hq);
+    const std::uint64_t hq = hashToQuotient(hash);
+    const std::uint64_t hr = hashToRemainder(hash);
+    const std::uint64_t hqElem = getElement(*this, hq);
     std::uint64_t entry = (hr << 3) & ~7;
     if (isEmptyElement(hqElem))
     {
@@ -277,7 +279,8 @@ bool Quotient::insert(const std::uint64_t hash)
 void Quotient::insertAt(const std::uint64_t start, const std::uint64_t elem)
 {
     bool isEmpty = false;
-    std::uint64_t slot = start, currElem = elem;
+    std::uint64_t slot = start;
+    std::uint64_t currElem = elem;
     do
     {
         std::uint64_t prevElem = getElement(*this, slot);
@@ -315,7 +318,9 @@ bool Quotient::isCompatibleWith(const Quotient& qf) const
 
 bool Quotient::mayContain(const std::uint64_t hash)
 {
-    const std::uint64_t hq = hashToQuotient(hash), hr = hashToRemainder(hash), hqElem = getElement(*this, hq);
+    const std::uint64_t hq = hashToQuotient(hash);
+    const std::uint64_t hr = hashToRemainder(hash);
+    const std::uint64_t hqElem = getElement(*this, hq);
     if (!isOccupied(hqElem))
     {
         return false;
@@ -348,14 +353,16 @@ bool Quotient::remove(const std::uint64_t hash)
         return false;
     }
 
-    const std::uint64_t hq = hashToQuotient(hash), hr = hashToRemainder(hash);
+    const std::uint64_t hq = hashToQuotient(hash);
+    const std::uint64_t hr = hashToRemainder(hash);
     std::uint64_t hqElem = getElement(*this, hq);
     if (!isOccupied(hqElem) || (entries == 0))
     {
         return true;
     }
 
-    std::uint64_t slot = findRunIndex(hq), rem = 0;
+    std::uint64_t slot = findRunIndex(hq);
+    std::uint64_t rem = 0;
     do
     {
         rem = getRemainder(getElement(*this, slot));
@@ -405,7 +412,10 @@ bool Quotient::remove(const std::uint64_t hash)
 void Quotient::removeAt(const std::uint64_t start, const std::uint64_t quot)
 {
     const std::uint64_t orig = start;
-    std::uint64_t slot = start, currElem = getElement(*this, slot), scanPos = increase(*this, slot), quotient = quot;
+    std::uint64_t slot = start;
+    std::uint64_t currElem = getElement(*this, slot);
+    std::uint64_t scanPos = increase(*this, slot);
+    std::uint64_t quotient = quot;
     for (;;)
     {
         const std::uint64_t nextElem = getElement(*this, scanPos);
@@ -529,8 +539,9 @@ std::uint64_t Quotient::next(const Quotient& qf, Iterator& iter)
         iter.index = increase(qf, iter.index);
         if (!isEmptyElement(entry))
         {
-            const std::uint64_t quotient = iter.quotient, rem = getRemainder(entry),
-                                hash = (quotient << qf.rBits) | rem;
+            const std::uint64_t quotient = iter.quotient;
+            const std::uint64_t rem = getRemainder(entry);
+            const std::uint64_t hash = (quotient << qf.rBits) | rem;
             ++iter.visited;
             return hash;
         }
@@ -541,7 +552,8 @@ std::uint64_t Quotient::next(const Quotient& qf, Iterator& iter)
 
 void Quotient::setElement(Quotient& qf, const std::uint64_t index, std::uint64_t elem)
 {
-    const std::size_t bitPos = qf.elemBits * index, slotPos = bitPos % 64;
+    const std::size_t bitPos = qf.elemBits * index;
+    const std::size_t slotPos = bitPos % 64;
     const int spillBits = (slotPos + qf.elemBits) - 64;
     std::size_t tabPos = bitPos / 64;
 
@@ -558,7 +570,8 @@ void Quotient::setElement(Quotient& qf, const std::uint64_t index, std::uint64_t
 
 std::uint64_t Quotient::getElement(const Quotient& qf, const std::uint64_t index)
 {
-    const std::size_t bitPos = qf.elemBits * index, slotPos = bitPos % 64;
+    const std::size_t bitPos = qf.elemBits * index;
+    const std::size_t slotPos = bitPos % 64;
     const int spillBits = (slotPos + qf.elemBits) - 64;
     std::size_t tabPos = bitPos / 64;
     std::uint64_t elem = (qf.filter[tabPos] >> slotPos) & qf.elemMask;
@@ -659,7 +672,9 @@ std::uint64_t Quotient::filterSizeInBytes(const std::uint8_t q, const std::uint8
     {
         return 0;
     }
-    const std::uint64_t bits = static_cast<std::uint64_t>(1 << q) * (r + 3), bytes = bits / 8;
+
+    const std::uint64_t bits = static_cast<std::uint64_t>(1 << q) * (r + 3);
+    const std::uint64_t bytes = bits / 8;
 
     return (bits % 8) ? (bytes + 1) : bytes;
 }

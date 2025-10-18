@@ -31,8 +31,11 @@ std::int64_t Match::rk(
     }
 
     std::int64_t shift = -1;
-    constexpr std::int64_t rollingHashBase = maxASCII, rollingHashMod = 1e9 + 7;
-    std::int64_t textHash = 0, patternHash = 0, pow = 1;
+    constexpr std::int64_t rollingHashBase = maxASCII;
+    constexpr std::int64_t rollingHashMod = 1e9 + 7;
+    std::int64_t textHash = 0;
+    std::int64_t patternHash = 0;
+    std::int64_t pow = 1;
 
     for (std::uint32_t i = 0; i < (patternLen - 1); ++i)
     {
@@ -126,7 +129,8 @@ std::int64_t Match::bm(
     }
 
     std::int64_t shift = -1;
-    std::uint32_t badCharRuleTable[maxASCII] = {}, goodSuffixIndexTable[maxASCII] = {};
+    std::uint32_t badCharRuleTable[maxASCII] = {};
+    std::uint32_t goodSuffixIndexTable[maxASCII] = {};
 
     fillBadCharRuleTable(badCharRuleTable, pattern, patternLen);
     fillGoodSuffixRuleTable(goodSuffixIndexTable, pattern, patternLen);

@@ -235,8 +235,10 @@ void Sort<T>::mergeSortRecursive(T* const sorting, const std::uint32_t begin, co
     mergeSortRecursive(sorting, begin, mid);
     mergeSortRecursive(sorting, mid + 1, end);
 
-    std::uint32_t leftIdx = 0, rightIdx = 0;
-    std::vector<T> leftSub(sorting + begin, sorting + mid + 1), rightSub(sorting + mid + 1, sorting + end + 1);
+    std::uint32_t leftIdx = 0;
+    std::uint32_t rightIdx = 0;
+    std::vector<T> leftSub(sorting + begin, sorting + mid + 1);
+    std::vector<T> rightSub(sorting + mid + 1, sorting + end + 1);
     leftSub.emplace(leftSub.cend(), std::numeric_limits<T>::max());
     rightSub.emplace(rightSub.cend(), std::numeric_limits<T>::max());
     for (std::uint32_t i = begin; i <= end; ++i)
@@ -277,7 +279,8 @@ void Sort<T>::quickSortRecursive(T* const sorting, const std::uint32_t begin, co
     }
 
     T pivot = sorting[end];
-    std::uint32_t leftIdx = begin, rightIdx = end - 1;
+    std::uint32_t leftIdx = begin;
+    std::uint32_t rightIdx = end - 1;
     while (leftIdx < rightIdx)
     {
         while ((leftIdx < rightIdx) && (sorting[leftIdx] < pivot))
@@ -331,7 +334,8 @@ std::vector<T> Sort<T>::heap(const T* const array, const std::uint32_t length)
 template <typename T>
 void Sort<T>::buildMaxHeap(T* const sorting, const std::uint32_t begin, const std::uint32_t end)
 {
-    std::uint32_t parent = begin, child = (parent * 2) + 1;
+    std::uint32_t parent = begin;
+    std::uint32_t child = (parent * 2) + 1;
     while (child <= end)
     {
         if (((child + 1) <= end) && (sorting[child] < sorting[child + 1]))
@@ -358,7 +362,8 @@ std::vector<T> Sort<T>::counting(const T* const array, const std::uint32_t lengt
     }
 
     std::vector<T> sorting(array, array + length);
-    T max = std::numeric_limits<T>::min(), min = std::numeric_limits<T>::max();
+    T max = std::numeric_limits<T>::min();
+    T min = std::numeric_limits<T>::max();
     for (std::uint32_t i = 0; i < length; ++i)
     {
         max = std::max(sorting[i], max);
@@ -393,7 +398,8 @@ std::vector<T> Sort<T>::bucket(const T* const array, const std::uint32_t length)
     }
 
     std::vector<T> sorting(array, array + length);
-    T max = std::numeric_limits<T>::min(), min = std::numeric_limits<T>::max();
+    T max = std::numeric_limits<T>::min();
+    T min = std::numeric_limits<T>::max();
     for (std::uint32_t i = 0; i < length; ++i)
     {
         max = std::max(sorting[i], max);
@@ -430,7 +436,8 @@ std::vector<T> Sort<T>::radix(const T* const array, const std::uint32_t length)
     }
 
     std::vector<T> sorting(array, array + length);
-    T max = std::numeric_limits<T>::min(), min = std::numeric_limits<T>::max();
+    T max = std::numeric_limits<T>::min();
+    T min = std::numeric_limits<T>::max();
     for (std::uint32_t i = 0; i < length; ++i)
     {
         max = std::max(sorting[i], max);
@@ -446,11 +453,13 @@ std::vector<T> Sort<T>::radix(const T* const array, const std::uint32_t length)
         ++maxDigit;
     }
 
-    constexpr std::uint32_t naturalNumberRdx = 10, negativeIntegerRdx = 9;
-    const bool hasPositive = (max > 0), hasNegative = (min < 0);
+    constexpr std::uint32_t naturalNumberRdx = 10;
+    constexpr std::uint32_t negativeIntegerRdx = 9;
+    const bool hasPositive = (max > 0);
+    const bool hasNegative = (min < 0);
     const std::uint32_t bucketSize =
-                            (hasPositive ^ hasNegative) ? naturalNumberRdx : (naturalNumberRdx + negativeIntegerRdx),
-                        indexOffset = (!hasNegative) ? 0 : negativeIntegerRdx;
+        (hasPositive ^ hasNegative) ? naturalNumberRdx : (naturalNumberRdx + negativeIntegerRdx);
+    const std::uint32_t indexOffset = (!hasNegative) ? 0 : negativeIntegerRdx;
     leastSignificantDigit(sorting.data(), length, maxDigit, bucketSize, indexOffset);
 
     return sorting;
@@ -465,7 +474,8 @@ void Sort<T>::leastSignificantDigit(
     const std::uint32_t indexOffset)
 {
     constexpr std::uint32_t base = 10;
-    std::vector<T> countOld(bucketSize, 0), countNew(bucketSize, 0);
+    std::vector<T> countOld(bucketSize, 0);
+    std::vector<T> countNew(bucketSize, 0);
     std::vector<std::queue<T>> bucket(bucketSize, std::queue<T>{});
     for (std::uint32_t i = 0; i < length; ++i)
     {

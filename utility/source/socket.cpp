@@ -140,7 +140,8 @@ int TCPSocket::toSend(const std::string_view message)
 
 void TCPSocket::toConnect(const std::string& ip, const std::uint16_t port)
 {
-    ::addrinfo hints{}, *addrInfo = nullptr;
+    ::addrinfo hints{};
+    ::addrinfo* addrInfo = nullptr;
     hints.ai_family = AF_INET;
     hints.ai_socktype = ::SOCK_STREAM;
 
@@ -252,7 +253,8 @@ void TCPSocket::onRawMessage(char* bytes, const int length) const
 TCPServer::TCPServer() : Socket(Type::tcp)
 {
     const Guard lock(*this);
-    int opt1 = 1, opt2 = 0;
+    int opt1 = 1;
+    int opt2 = 0;
     ::setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &opt1, sizeof(opt1));
     ::setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, &opt2, sizeof(opt2));
 }
@@ -360,7 +362,8 @@ int UDPSocket::toSendTo(
     const char* const bytes, const std::size_t length, const std::string& ip, const std::uint16_t port)
 {
     ::sockaddr_in addr{};
-    ::addrinfo hints{}, *addrInfo = nullptr;
+    ::addrinfo hints{};
+    ::addrinfo* addrInfo = nullptr;
     hints.ai_family = AF_INET;
     hints.ai_socktype = ::SOCK_DGRAM;
 
@@ -413,7 +416,8 @@ int UDPSocket::toSend(const std::string_view message)
 
 void UDPSocket::toConnect(const std::string& ip, const std::uint16_t port)
 {
-    ::addrinfo hints{}, *addrInfo = nullptr;
+    ::addrinfo hints{};
+    ::addrinfo* addrInfo = nullptr;
     hints.ai_family = AF_INET;
     hints.ai_socktype = ::SOCK_DGRAM;
 

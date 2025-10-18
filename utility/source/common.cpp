@@ -53,7 +53,8 @@ std::size_t bkdrHash(const char* str) noexcept
 //! @return encoded data
 std::string base64Encode(const std::string_view data)
 {
-    std::size_t counter = 0, offset = 0;
+    std::size_t counter = 0;
+    std::size_t offset = 0;
     std::uint32_t bitStream = 0;
     std::string encoded{};
 
@@ -106,7 +107,8 @@ std::string base64Encode(const std::string_view data)
 //! @return decoded data
 std::string base64Decode(const std::string_view data)
 {
-    std::size_t counter = 0, offset = 0;
+    std::size_t counter = 0;
+    std::size_t offset = 0;
     std::uint32_t bitStream = 0;
     std::string decoded{};
 

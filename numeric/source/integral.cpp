@@ -21,7 +21,8 @@ const char* version() noexcept
 double Integral::trapezoidalRule(
     const Expression& expr, const double left, const double height, const std::uint32_t step)
 {
-    double sum = 0.0, x = left;
+    double sum = 0.0;
+    double x = left;
     const double delta = height / step;
     for (std::uint32_t i = 0; i < step; ++i)
     {
@@ -41,7 +42,8 @@ double Trapezoidal::operator()(const double lower, const double upper, const dou
     }
 
     const double height = upper - lower;
-    double s1 = 0.0, s2 = 0.0;
+    double s1 = 0.0;
+    double s2 = 0.0;
     std::uint32_t n = 1;
     do
     {
@@ -67,7 +69,8 @@ double Simpson::operator()(const double lower, const double upper, const double 
 
 double Simpson::simpsonIntegral(const double left, const double right, const double eps) const
 {
-    const double mid = (left + right) / 2.0, sum = simpsonOneThird(left, right);
+    const double mid = (left + right) / 2.0;
+    const double sum = simpsonOneThird(left, right);
     if (std::fabs(sum - (compositeSimpsonOneThird(left, mid, 2) + compositeSimpsonOneThird(mid, right, 2))) > eps)
     {
         return simpsonIntegral(left, mid, eps) + simpsonIntegral(mid, right, eps);
@@ -136,7 +139,8 @@ double Gauss::operator()(const double lower, const double upper, const double ep
         return 0.0;
     }
 
-    double s1 = 0.0, s2 = 0.0;
+    double s1 = 0.0;
+    double s2 = 0.0;
     std::uint32_t n = 1;
     do
     {
@@ -144,11 +148,12 @@ double Gauss::operator()(const double lower, const double upper, const double ep
         const double stepLen = (upper - lower) / n;
         for (std::uint32_t i = 0; i < n; ++i)
         {
-            const double left = lower + (i * stepLen), right = left + stepLen;
+            const double left = lower + (i * stepLen);
+            const double right = left + stepLen;
             for (const auto& coeff : gaussLegendreTbl)
             {
-                const double x = ((right - left) * coeff[0] + (left + right)) / 2.0,
-                             polynomial = expr(x) * coeff[1] * (right - left) / 2.0;
+                const double x = ((right - left) * coeff[0] + (left + right)) / 2.0;
+                const double polynomial = expr(x) * coeff[1] * (right - left) / 2.0;
                 sum += polynomial;
             }
         }
@@ -189,15 +194,19 @@ double MonteCarlo::sampleFromUniformDistribution(const double lower, const doubl
 double MonteCarlo::sampleFromNormalDistribution(const double lower, const double upper, const double eps) const
 {
     const std::uint32_t n = 1.0 / eps;
-    const double mu = (lower + upper) / 2.0, sigma = (upper - lower) / 6.0;
+    const double mu = (lower + upper) / 2.0;
+    const double sigma = (upper - lower) / 6.0;
     std::mt19937_64 engine(std::random_device{}());
     std::uniform_real_distribution<double> dist(0.0, 1.0);
-    double sum = 0.0, x = 0.0;
+    double sum = 0.0;
+    double x = 0.0;
     for (std::uint32_t i = 0; i < n; ++i)
     {
         do
         {
-            const double u1 = dist(engine), u2 = dist(engine), mag = sigma * std::sqrt(-2.0 * std::log(u1));
+            const double u1 = dist(engine);
+            const double u2 = dist(engine);
+            const double mag = sigma * std::sqrt(-2.0 * std::log(u1));
             x = mag * std::sin(2.0 * std::numbers::pi * u2) + mu;
         }
         while ((x < lower) || (x > upper));
