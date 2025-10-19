@@ -229,7 +229,7 @@ void Client::remove()
 
 std::unique_ptr<Prototype> Client::make(const int index)
 {
-    return (index >= nTypes) ? nullptr : types[index]->clone();
+    return (index < nTypes) ? types[index]->clone() : nullptr;
 }
 
 //! @brief Output stream for the prototype pattern. Need to be cleared manually.
@@ -251,7 +251,6 @@ std::shared_ptr<Singleton>& Singleton::get()
     {
         instance = std::shared_ptr<Singleton>();
     }
-
     return instance;
 }
 

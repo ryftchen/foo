@@ -26,10 +26,10 @@ Thread::Thread(const std::size_t capacity)
 
 void Thread::workLoop()
 {
-    for (;;)
+    std::string thdName{};
+    std::packaged_task<void()> thdTask{};
+    for (constexpr std::uint8_t nameLen = 15;;)
     {
-        std::string thdName{};
-        std::packaged_task<void()> thdTask{};
         if (std::unique_lock<std::mutex> lock(mtx); true)
         {
             cond.wait(lock, [this]() { return releaseReady.load() || !taskQueue.empty(); });
@@ -49,9 +49,16 @@ void Thread::workLoop()
 
         if (!thdName.empty())
         {
+            if (thdName.size() > nameLen)
+            {
+                thdName.resize(nameLen);
+            }
             ::pthread_setname_np(::pthread_self(), thdName.c_str());
         }
-        thdTask();
+        if (thdTask.valid())
+        {
+            thdTask();
+        }
     }
 }
 

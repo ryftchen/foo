@@ -34,7 +34,6 @@ bool present()
     bool isExist = false;
     TypeInfo<ApplyAlgorithm>::forEachVarOf(
         choiceApplier(), [&isExist](const auto /*field*/, auto&& var) { isExist |= !var.none(); });
-
     return isExist;
 }
 //! @brief Reset bit flags that manage algorithm choices.

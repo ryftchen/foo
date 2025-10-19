@@ -34,7 +34,6 @@ bool present()
     bool isExist = false;
     TypeInfo<ApplyNumeric>::forEachVarOf(
         choiceApplier(), [&isExist](const auto /*field*/, auto&& var) { isExist |= !var.none(); });
-
     return isExist;
 }
 //! @brief Reset bit flags that manage numeric choices.

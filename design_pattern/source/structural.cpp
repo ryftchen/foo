@@ -206,7 +206,6 @@ std::unique_ptr<Flyweight>& FlyweightFactory::getFlyweight(const int key)
 
     std::unique_ptr<Flyweight> fly = std::make_unique<ConcreteFlyweight>(key);
     flies.emplace(key, std::move(fly));
-
     return flies[key];
 }
 
@@ -237,7 +236,6 @@ RealSubject& Proxy::realSubject()
     {
         subject = std::make_unique<RealSubject>();
     }
-
     return *subject;
 }
 

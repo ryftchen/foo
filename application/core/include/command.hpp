@@ -358,7 +358,6 @@ private:
             std::size_t seed = 0;
             seed ^= hash1 + magicNumber + (seed << leftShift) + (seed >> rightShift);
             seed ^= hash2 + magicNumber + (seed << leftShift) + (seed >> rightShift);
-
             return seed;
         }
     };

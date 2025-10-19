@@ -79,7 +79,6 @@ bool Packet::write(const T data)
     {
         temp = data;
     }
-
     return write(&temp, sizeof(T));
 }
 
@@ -100,7 +99,6 @@ bool Packet::read(T* const data)
     {
         *data = ::ntohs(*data);
     }
-
     return isEnd;
 }
 

@@ -97,7 +97,6 @@ static int serialize(data::Packet& pkt, const TLVValue& val, const T TLVValue::*
     constexpr int length = sizeof(T);
     pkt.write<int>(length);
     pkt.write<T>(val.*pl);
-
     return sizeof(int) + length;
 }
 
@@ -116,7 +115,6 @@ static int serialize(data::Packet& pkt, const TLVValue& val, const char (TLVValu
     const int length = std::strlen(val.*pl);
     pkt.write<int>(length);
     pkt.write(val.*pl, length);
-
     return sizeof(int) + length;
 }
 
@@ -138,7 +136,6 @@ static int deserialize(data::Packet& pkt, TLVValue& val, T TLVValue::* pl)
     int length = 0;
     pkt.read<int>(&length);
     pkt.read<T>(&(val.*pl));
-
     return sizeof(int) + length;
 }
 
@@ -157,7 +154,6 @@ static int deserialize(data::Packet& pkt, TLVValue& val, char (TLVValue::*pl)[])
     int length = 0;
     pkt.read<int>(&length);
     pkt.read(&(val.*pl), length);
-
     return sizeof(int) + length;
 }
 
@@ -194,7 +190,6 @@ static bool encodeTLV(char* buf, int& len, const TLVValue& val)
     int temp = ::htonl(sum);
     std::memcpy(buf + sizeof(int), &temp, sizeof(temp));
     len = sizeof(int) + sizeof(int) + sum;
-
     return true;
 }
 
@@ -248,7 +243,6 @@ static bool decodeTLV(char* buf, const int len, TLVValue& val)
                 break;
         }
     }
-
     return true;
 }
 } // namespace tlv
@@ -388,7 +382,6 @@ bool View::Access::onParsing(char* buffer, const int length) const
         using utility::json::JSON;
         std::cout << JSON::load(value.configDetail) << std::endl;
     }
-
     return !value.stopTag;
 }
 
@@ -517,7 +510,6 @@ int View::buildCustomTLVPacket<View::OptDepend>(const Args& /*args*/, char* buf)
         throw std::runtime_error{"Failed to build packet for the " + std::string{OptDepend::name} + " option."};
     }
     data::encryptMessage(buf, len);
-
     return len;
 }
 
@@ -546,7 +538,6 @@ int View::buildCustomTLVPacket<View::OptExecute>(const Args& args, char* buf)
         throw std::runtime_error{"Failed to build packet for the " + std::string{OptExecute::name} + " option."};
     }
     data::encryptMessage(buf, len);
-
     return len;
 }
 
@@ -563,7 +554,6 @@ int View::buildCustomTLVPacket<View::OptJournal>(const Args& /*args*/, char* buf
         throw std::runtime_error{"Failed to build packet for the " + std::string{OptJournal::name} + " option."};
     }
     data::encryptMessage(buf, len);
-
     return len;
 }
 
@@ -589,7 +579,6 @@ int View::buildCustomTLVPacket<View::OptMonitor>(const Args& args, char* buf)
         throw std::runtime_error{"Failed to build packet for the " + std::string{OptMonitor::name} + " option."};
     }
     data::encryptMessage(buf, len);
-
     return len;
 }
 
@@ -609,7 +598,6 @@ int View::buildCustomTLVPacket<View::OptProfile>(const Args& /*args*/, char* buf
         throw std::runtime_error{"Failed to build packet for the " + std::string{OptProfile::name} + " option."};
     }
     data::encryptMessage(buf, len);
-
     return len;
 }
 
@@ -657,7 +645,6 @@ View::OptionType View::extractOption(const std::string& reqPlaintext)
         default:
             break;
     }
-
     return {};
 }
 
@@ -670,7 +657,6 @@ std::vector<std::string> View::splitString(const std::string& str)
     {
         split.emplace_back(token);
     }
-
     return split;
 }
 
@@ -679,7 +665,6 @@ int View::buildAckTLVPacket(char* buf)
     int len = 0;
     tlv::encodeTLV(buf, len, tlv::TLVValue{});
     data::encryptMessage(buf, len);
-
     return len;
 }
 
@@ -688,7 +673,6 @@ int View::buildFinTLVPacket(char* buf)
     int len = 0;
     tlv::encodeTLV(buf, len, tlv::TLVValue{.stopTag = true});
     data::encryptMessage(buf, len);
-
     return len;
 }
 
@@ -732,7 +716,6 @@ int View::fillSharedMemory(const std::string_view contents)
         break;
     }
     ::shmdt(shm);
-
     return shmId;
 }
 
@@ -868,7 +851,6 @@ std::string View::logContentsPreview()
             std::for_each(logRows.begin(), logRows.end(), [](auto& line) { log::changeToLogStyle(line); });
             std::copy(logRows.cbegin(), logRows.cend(), std::ostream_iterator<std::string>(transfer, "\n"));
         });
-
     return std::move(transfer).str();
 }
 
@@ -929,7 +911,6 @@ std::string View::statusReportsPreview(const std::uint16_t frame)
         statements.emplace_back(execStmt.data());
         prev += pos - prev + 1;
     }
-
     return std::accumulate(
         statements.cbegin(),
         statements.cend(),
@@ -1109,7 +1090,6 @@ bool View::awaitNotification2Retry()
 {
     std::unique_lock<std::mutex> daemonLock(daemonMtx);
     daemonCond.wait(daemonLock);
-
     return inResetting.load();
 }
 
@@ -1141,7 +1121,6 @@ std::ostream& operator<<(std::ostream& os, const View::State state)
             os << "UNKNOWN (" << static_cast<std::underlying_type_t<View::State>>(state) << ')';
             break;
     }
-
     return os;
 }
 } // namespace application::view

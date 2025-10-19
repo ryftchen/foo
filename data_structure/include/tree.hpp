@@ -347,7 +347,6 @@ std::ostream& operator<<(std::ostream& os, const Printer<N, K>& printer)
     {
         printer.printNode(os, printer.root, printer.root->key, 0);
     }
-
     return os;
 }
 } // namespace tree

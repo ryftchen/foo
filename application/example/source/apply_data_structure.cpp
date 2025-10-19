@@ -45,7 +45,6 @@ static std::string customTitle(const T instance)
 {
     std::string title(TypeInfo<T>::fields.nameOfValue(instance));
     title.at(0) = std::toupper(title.at(0));
-
     return title;
 }
 

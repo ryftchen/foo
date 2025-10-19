@@ -430,7 +430,6 @@ Trait& Trait::defaultValue(T&& value)
 {
     representedDefVal = represent(value);
     defaultVal = std::forward<T>(value);
-
     return *this;
 }
 
@@ -452,7 +451,6 @@ auto Trait::action(Func&& callable, Args&&... boundArgs)
                                      tup = std::make_tuple(std::forward<Args>(boundArgs)...)](const std::string& opt)
                                     { return applyScopedOne(func, tup, opt); });
     }
-
     return *this;
 }
 
@@ -490,14 +488,12 @@ Iterator Trait::consume(const Iterator start, Iterator end, const std::string_vi
             }
         }
         std::visit(ApplyAction<Iterator>{start, end, *this}, actions);
-
         return end;
     }
     if (defaultVal.has_value())
     {
         return start;
     }
-
     throw std::runtime_error{"Too few arguments for '" + usedName + "'."};
 }
 
@@ -597,7 +593,6 @@ T Trait::get() const
             return anyCastContainer<T>(values);
         }
     }
-
     throw std::runtime_error{"No value specified for '" + names.back() + "'."};
 }
 
@@ -616,7 +611,6 @@ std::optional<T> Trait::present() const
     {
         return anyCastContainer<T>(values);
     }
-
     return std::any_cast<T>(values.front());
 }
 
@@ -629,7 +623,6 @@ T Trait::anyCastContainer(const std::vector<std::any>& operand)
         operand.cend(),
         std::back_inserter(result),
         [](const auto& value) { return std::any_cast<typename T::value_type>(value); });
-
     return result;
 }
 
@@ -805,7 +798,6 @@ Trait& Argument::addArgument(ArgsType... fewArgs)
         positionalArgs.splice(positionalArgs.cend(), optionalArgs, argument);
     }
     indexArgument(argument);
-
     return *argument;
 }
 
@@ -820,7 +812,6 @@ T& Argument::at(const std::string_view name)
     {
         return subParserIter->second->get();
     }
-
     throw std::runtime_error{"No such sub-parser: " + std::string{name} + '.'};
 }
 
@@ -831,7 +822,6 @@ T Argument::get(const std::string_view argName) const
     {
         throw std::runtime_error{"Nothing parsed, no arguments are available."};
     }
-
     return (*this)[argName].get<T>();
 }
 
@@ -869,7 +859,6 @@ Iterator Argument::processRegArgument(Iterator current, const Iterator end, cons
     {
         throw std::runtime_error{"Unknown argument: " + std::string{argName} + '.'};
     }
-
     return current;
 }
 } // namespace argument

@@ -34,9 +34,9 @@ std::string Notation::prefix(const std::string_view infix)
             c = '(';
         }
     }
+
     std::string notation(infixToPostfix(preprocess));
     std::reverse(notation.begin(), notation.end());
-
     return notation;
 }
 
@@ -85,7 +85,6 @@ std::string Notation::infixToPostfix(const std::string_view infix)
         postfix += charStack.top();
         charStack.pop();
     }
-
     return postfix;
 }
 
@@ -106,7 +105,6 @@ Notation::Priority Notation::getPriority(const char c)
         default:
             break;
     }
-
     return Priority::none;
 }
 

@@ -78,7 +78,6 @@ std::ostream& operator<<(std::ostream& os, const ArgsNumRange& range)
     {
         os << "[args=" << numMin << ".." << numMax << "] ";
     }
-
     return os;
 }
 
@@ -103,7 +102,6 @@ Trait& Trait::implicitValue(std::any value)
 {
     implicitVal = std::move(value);
     argsNumRange = ArgsNumRange{0, 0};
-
     return *this;
 }
 
@@ -153,7 +151,6 @@ Trait& Trait::argsNum(const ArgsNumPattern pattern)
         default:
             break;
     }
-
     return *this;
 }
 
@@ -205,7 +202,6 @@ std::string Trait::getInlineUsage() const
     {
         out << ']';
     }
-
     return std::move(out).str();
 }
 
@@ -223,7 +219,6 @@ std::size_t Trait::getArgumentsLength() const
     {
         size += metaVar.length() + 1;
     }
-
     return size;
 }
 
@@ -245,7 +240,6 @@ void Trait::throwInvalidArgsNumRange() const
         }
     }
     out << " argument(s) expected. " << values.size() << " provided.";
-
     throw std::runtime_error{out.str()};
 }
 
@@ -272,7 +266,6 @@ bool Trait::checkIfPositional(const std::string_view name, const std::string_vie
         remain.remove_prefix(1);
         return remain.empty();
     }
-
     return true;
 }
 
@@ -298,7 +291,6 @@ static std::string join(StrIter first, StrIter last, const std::string_view sepa
         out << separator << *first;
         ++first;
     }
-
     return std::move(out).str();
 }
 
@@ -376,7 +368,6 @@ std::ostream& operator<<(std::ostream& os, const Trait& tra)
         os << "[required]";
     }
     os << '\n';
-
     return os;
 }
 
@@ -414,7 +405,6 @@ Argument& Argument::operator=(const Argument& arg)
         auto temp = arg;
         std::swap(*this, temp);
     }
-
     return *this;
 }
 
@@ -424,7 +414,6 @@ Argument::operator bool() const
         std::any_of(argumentMap.cbegin(), argumentMap.cend(), [](const auto& iter) { return iter.second->isUsed; });
     const bool isSubParserUsed =
         std::any_of(subParserUsed.cbegin(), subParserUsed.cend(), [](const auto& iter) { return iter.second; });
-
     return isParsed && (isArgUsed || isSubParserUsed);
 }
 
@@ -454,7 +443,6 @@ Trait& Argument::operator[](const std::string_view argName) const
             return *(iterator->second);
         }
     }
-
     throw std::runtime_error{"No such argument: " + std::string{argName} + '.'};
 }
 
@@ -507,7 +495,6 @@ std::ostringstream Argument::help() const
 {
     std::ostringstream out{};
     out << *this;
-
     return out;
 }
 
@@ -539,7 +526,6 @@ std::string Argument::usage() const
         }
         out << '}';
     }
-
     return std::move(out).str();
 }
 
@@ -584,7 +570,6 @@ std::vector<std::string> Argument::preprocessArguments(const std::vector<std::st
         }
         arguments.emplace_back(arg);
     }
-
     return arguments;
 }
 
@@ -643,7 +628,6 @@ std::size_t Argument::getLengthOfLongestArgument() const
     {
         maxSize = std::max<std::size_t>(maxSize, command.length());
     }
-
     return maxSize;
 }
 
@@ -699,7 +683,6 @@ std::ostream& operator<<(std::ostream& os, const Argument& arg)
         }
     }
     os << std::flush;
-
     return os;
 }
 } // namespace utility::argument

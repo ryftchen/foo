@@ -28,7 +28,6 @@ std::set<std::int32_t> Divisor::euclidean(const std::int32_t a, const std::int32
         x = y;
         y = temp;
     }
-
     return getAllDivisors(x);
 }
 
@@ -54,7 +53,6 @@ std::set<std::int32_t> Divisor::stein(const std::int32_t a, const std::int32_t b
     {
         gcd = steinRecursive(y, x) << c;
     }
-
     return getAllDivisors(gcd);
 }
 
@@ -84,7 +82,6 @@ std::int32_t Divisor::steinRecursive(std::int32_t a, std::int32_t b)
         return steinRecursive(b, a);
     }
     a = (a - b) >> 1;
-
     return steinRecursive(a, b);
 }
 
@@ -102,7 +99,6 @@ std::set<std::int32_t> Divisor::getAllDivisors(const std::int32_t gcd)
             }
         }
     }
-
     return divisors;
 }
 } // namespace numeric::divisor

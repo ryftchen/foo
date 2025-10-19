@@ -340,7 +340,6 @@ std::string_view Log::getPrefix(const OutputLevel level)
         default:
             break;
     }
-
     return traceLevelPrefix;
 }
 
@@ -365,6 +364,7 @@ std::vector<std::string> Log::reformatContents(const std::string_view label, con
             rows.emplace_back(formatted.substr(prev));
         }
     }
+
     auto reformatted =
         rows
         | std::views::transform(
@@ -377,7 +377,6 @@ std::vector<std::string> Log::reformatContents(const std::string_view label, con
             })
         | std::views::filter([](const auto& line) { return !line.empty(); })
         | std::views::transform([&label](const auto& line) { return label.data() + line; });
-
     return std::vector<std::string>{std::ranges::begin(reformatted), std::ranges::end(reformatted)};
 }
 
@@ -393,7 +392,6 @@ std::string Log::getFullLogPath(const std::string_view filename)
     {
         throw std::runtime_error{"The environment variable FOO_HOME is not set."};
     }
-
     return std::string{processHome} + '/' + filename.data();
 }
 
@@ -571,7 +569,6 @@ bool Log::awaitNotification2Retry()
 {
     std::unique_lock<std::mutex> daemonLock(daemonMtx);
     daemonCond.wait(daemonLock);
-
     return inResetting.load();
 }
 
@@ -608,7 +605,6 @@ std::ostream& operator<<(std::ostream& os, const Log::State state)
             os << "UNKNOWN (" << static_cast<std::underlying_type_t<Log::State>>(state) << ')';
             break;
     }
-
     return os;
 }
 
@@ -634,7 +630,6 @@ std::string& changeToLogStyle(std::string& line)
             line = match.prefix().str() + scheme + match.str() + escOff.data() + match.suffix().str();
         }
     }
-
     return line;
 }
 } // namespace application::log

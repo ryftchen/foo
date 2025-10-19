@@ -89,7 +89,6 @@ std::int64_t Search<T>::binary(const T* const array, const std::uint32_t length,
             upper = mid - 1;
         }
     }
-
     return index;
 }
 
@@ -126,7 +125,6 @@ std::int64_t Search<T>::interpolation(const T* const array, const std::uint32_t 
             upper = mid - 1;
         }
     }
-
     return index;
 }
 
@@ -183,7 +181,6 @@ std::int64_t Search<T>::fibonacci(const T* const array, const std::uint32_t leng
             break;
         }
     }
-
     return index;
 }
 
@@ -210,7 +207,6 @@ std::vector<std::uint32_t> Search<T>::generateFibonacciNumber(const std::uint32_
             break;
         }
     }
-
     return fibonacci;
 }
 } // namespace search

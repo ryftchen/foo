@@ -131,7 +131,6 @@ std::vector<T> Sort<T>::bubble(const T* const array, const std::uint32_t length)
             }
         }
     }
-
     return sorting;
 }
 
@@ -156,7 +155,6 @@ std::vector<T> Sort<T>::selection(const T* const array, const std::uint32_t leng
         }
         std::swap(sorting[i], sorting[min]);
     }
-
     return sorting;
 }
 
@@ -180,7 +178,6 @@ std::vector<T> Sort<T>::insertion(const T* const array, const std::uint32_t leng
         }
         sorting[n + 1] = temp;
     }
-
     return sorting;
 }
 
@@ -205,7 +202,6 @@ std::vector<T> Sort<T>::shell(const T* const array, const std::uint32_t length)
         }
         gap /= 2;
     }
-
     return sorting;
 }
 
@@ -219,7 +215,6 @@ std::vector<T> Sort<T>::merge(const T* const array, const std::uint32_t length)
 
     std::vector<T> sorting(array, array + length);
     mergeSortRecursive(sorting.data(), 0, length - 1);
-
     return sorting;
 }
 
@@ -266,7 +261,6 @@ std::vector<T> Sort<T>::quick(const T* const array, const std::uint32_t length)
 
     std::vector<T> sorting(array, array + length);
     quickSortRecursive(sorting.data(), 0, length - 1);
-
     return sorting;
 }
 
@@ -327,7 +321,6 @@ std::vector<T> Sort<T>::heap(const T* const array, const std::uint32_t length)
         std::swap(sorting[0], sorting[i]);
         buildMaxHeap(sorting.data(), 0, i - 1);
     }
-
     return sorting;
 }
 
@@ -385,7 +378,6 @@ std::vector<T> Sort<T>::counting(const T* const array, const std::uint32_t lengt
             --count[j];
         }
     }
-
     return sorting;
 }
 
@@ -423,7 +415,6 @@ std::vector<T> Sort<T>::bucket(const T* const array, const std::uint32_t length)
             sorting[index++] = elem;
         }
     }
-
     return sorting;
 }
 
@@ -461,7 +452,6 @@ std::vector<T> Sort<T>::radix(const T* const array, const std::uint32_t length)
         (hasPositive ^ hasNegative) ? naturalNumberRdx : (naturalNumberRdx + negativeIntegerRdx);
     const std::uint32_t indexOffset = (!hasNegative) ? 0 : negativeIntegerRdx;
     leastSignificantDigit(sorting.data(), length, maxDigit, bucketSize, indexOffset);
-
     return sorting;
 }
 

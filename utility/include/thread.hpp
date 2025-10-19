@@ -77,7 +77,7 @@ decltype(auto) Thread::enqueue(const std::string_view name, Func&& func, Args&&.
 {
     std::packaged_task<std::invoke_result_t<Func, Args...>()> task(
         std::bind(std::forward<Func>(func), std::forward<Args>(args)...));
-    auto future = task.get_future();
+    auto taskFuture = task.get_future();
 
     std::unique_lock<std::mutex> lock(mtx);
     if (releaseReady.load())
@@ -87,8 +87,7 @@ decltype(auto) Thread::enqueue(const std::string_view name, Func&& func, Args&&.
     taskQueue.emplace(std::make_pair(name, std::move(task)));
     lock.unlock();
     cond.notify_one();
-
-    return future;
+    return taskFuture;
 }
 } // namespace thread
 } // namespace utility

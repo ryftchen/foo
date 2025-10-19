@@ -34,7 +34,6 @@ bool present()
     bool isExist = false;
     TypeInfo<ApplyDataStructure>::forEachVarOf(
         choiceApplier(), [&isExist](const auto /*field*/, auto&& var) { isExist |= !var.none(); });
-
     return isExist;
 }
 //! @brief Reset bit flags that manage data structure choices.

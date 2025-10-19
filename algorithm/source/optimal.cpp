@@ -50,7 +50,6 @@ std::optional<std::tuple<double, double>> Gradient::operator()(const double left
             yBest = y;
         }
     }
-
     return std::make_optional(std::make_tuple(yBest, xBest));
 }
 
@@ -64,7 +63,6 @@ std::unordered_multiset<double> Gradient::createClimbers(const double left, cons
     {
         climbing.emplace(candidate(engine));
     }
-
     return climbing;
 }
 
@@ -114,7 +112,6 @@ std::optional<std::tuple<double, double>> Tabu::operator()(const double left, co
             break;
         }
     }
-
     return std::make_optional(std::make_tuple(yBest, xBest));
 }
 
@@ -151,7 +148,6 @@ std::tuple<double, double> Tabu::neighborhoodSearch(
             }
         }
     }
-
     return std::make_tuple(yBestNbr, xBestNbr);
 }
 
@@ -195,7 +191,6 @@ std::optional<std::tuple<double, double>> Annealing::operator()(const double lef
         }
         temperature *= coolingRate;
     }
-
     return std::make_optional(std::make_tuple(yBest, xBest));
 }
 
@@ -229,7 +224,6 @@ std::optional<std::tuple<double, double>> Particle::operator()(const double left
         updateParticles(swarm, i, gloBest, left, right, eps);
         updateBests(swarm, gloBest, gloBestFitness);
     }
-
     return std::make_optional(std::make_tuple(gloBestFitness, gloBest));
 }
 
@@ -247,7 +241,6 @@ Particle::Swarm Particle::swarmInit(const double left, const double right)
             const double x = candidate(engine);
             return Individual{x, velocity(engine), x, func(x), func(x)};
         });
-
     return swarm;
 }
 
@@ -328,7 +321,6 @@ std::optional<std::tuple<double, double>> Ant::operator()(const double left, con
             break;
         }
     }
-
     return std::make_optional(std::make_tuple(yBest, xBest));
 }
 
@@ -344,7 +336,6 @@ Ant::Colony Ant::colonyInit(const double left, const double right)
             const double x = candidate(engine);
             return State{x, func(x), 0.0};
         });
-
     return colony;
 }
 
@@ -403,7 +394,6 @@ std::optional<std::tuple<double, double>> Genetic::operator()(const double left,
         mutate(pop);
     }
     const double xBest = geneticDecode(getBestIndividual(pop));
-
     return std::make_optional(std::make_tuple(func(xBest), xBest));
 }
 
@@ -420,7 +410,6 @@ bool Genetic::updateSpecies(const double left, const double right, const double 
     property.lower = left;
     property.upper = right;
     property.prec = eps;
-
     return true;
 }
 
@@ -433,7 +422,6 @@ double Genetic::geneticDecode(const Chromosome& chr) const
         [&currDecoded, index = 0](const auto bit) mutable
         { currDecoded |= static_cast<std::uint32_t>(bit) << index++; });
     const auto maxDecoded = static_cast<double>((1ULL << chromosomeLength) - 1ULL);
-
     return property.lower + ((property.upper - property.lower) * static_cast<double>(currDecoded) / maxDecoded);
 }
 
@@ -454,7 +442,6 @@ Genetic::Population Genetic::populationInit()
                 [this, bit = std::uniform_int_distribution<std::uint8_t>(0, 1)]() mutable { return bit(engine); });
             return chr;
         });
-
     return pop;
 }
 
@@ -530,7 +517,6 @@ std::optional<std::pair<double, double>> Genetic::goldbergLinearScaling(
     }
     const double alpha = (cMult - 1.0) * fitAvg / (fitMax - fitAvg);
     const double beta = (fitMax - cMult * fitAvg) * fitAvg / (fitMax - fitAvg);
-
     return std::make_optional(std::pair<double, double>(alpha, beta));
 }
 
@@ -597,7 +583,6 @@ Genetic::Chromosome Genetic::getBestIndividual(const Population& pop)
         pop.cend(),
         std::back_inserter(fitness),
         [this](const auto& ind) { return calculateFitness(ind); });
-
     return *std::next(
         pop.cbegin(), std::distance(fitness.cbegin(), std::max_element(fitness.cbegin(), fitness.cend())));
 }

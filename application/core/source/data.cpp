@@ -35,7 +35,6 @@ bool Packet::write(const void* const dst, const int offset)
 
     std::memcpy(writer, dst, offset);
     writer += offset;
-
     return writer < tail;
 }
 
@@ -48,7 +47,6 @@ bool Packet::read(void* const dst, const int offset)
 
     std::memcpy(dst, reader, offset);
     reader += offset;
-
     return reader < tail;
 }
 
@@ -204,7 +202,6 @@ std::string toHexString(const char* const buffer, const int length)
             body << ' ';
         }
     }
-
     return body.str();
 }
 } // namespace application::data

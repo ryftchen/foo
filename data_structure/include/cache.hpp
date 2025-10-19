@@ -179,7 +179,6 @@ std::size_t FIFO<Key, Value>::insertRange(Range&& keyValueRange)
         doInsertOrUpdate(key, std::move(value));
         ++inserted;
     }
-
     return inserted;
 }
 
@@ -192,7 +191,6 @@ bool FIFO<Key, Value>::erase(const Key& key)
         doErase(keyedPos->second);
         return true;
     }
-
     return false;
 }
 
@@ -211,7 +209,6 @@ std::size_t FIFO<Key, Value>::erase(Iterator begin, const Iterator end)
         }
         ++begin;
     }
-
     return erased;
 }
 
@@ -245,7 +242,6 @@ auto FIFO<Key, Value>::find(Iterator begin, const Iterator end, const std::size_
         result.emplace_back(*begin, doFind(*begin));
         ++begin;
     }
-
     return result;
 }
 
@@ -359,7 +355,6 @@ std::optional<Value> FIFO<Key, Value>::doFind(const Key& key)
         const auto& elem = *fifoPos;
         return std::make_optional(elem.value);
     }
-
     return std::nullopt;
 }
 
@@ -520,7 +515,6 @@ std::size_t LFU<Key, Value>::insertRange(Range&& keyValueRange)
         doInsertOrUpdate(key, std::move(value));
         ++inserted;
     }
-
     return inserted;
 }
 
@@ -533,7 +527,6 @@ bool LFU<Key, Value>::erase(const Key& key)
         doErase(keyedPos->second);
         return true;
     }
-
     return false;
 }
 
@@ -551,7 +544,6 @@ std::size_t LFU<Key, Value>::eraseRange(const Range& keyRange)
             doErase(keyedPos->second);
         }
     }
-
     return erased;
 }
 
@@ -581,7 +573,6 @@ auto LFU<Key, Value>::findRange(const Range& keyRange, const bool peek)
     {
         result.emplace_back(key, doFind(key, peek));
     }
-
     return result;
 }
 
@@ -682,7 +673,6 @@ std::optional<Value> LFU<Key, Value>::doFind(const Key& key, const bool peek)
         }
         return std::make_optional(elem.value);
     }
-
     return std::nullopt;
 }
 
@@ -699,7 +689,6 @@ auto LFU<Key, Value>::doFindWithRefcount(const Key& key, const bool peek)
         }
         return std::make_optional(std::make_pair(elem.value, elem.lfuPosition->first));
     }
-
     return std::nullopt;
 }
 
@@ -866,7 +855,6 @@ std::size_t LRU<Key, Value>::insertRange(Range&& keyValueRange)
         doInsertOrUpdate(key, std::move(value));
         ++inserted;
     }
-
     return inserted;
 }
 
@@ -879,7 +867,6 @@ bool LRU<Key, Value>::erase(const Key& key)
         doErase(keyedPos->second);
         return true;
     }
-
     return false;
 }
 
@@ -897,7 +884,6 @@ std::size_t LRU<Key, Value>::eraseRange(const Range& keyRange)
             doErase(keyedPos->second);
         }
     }
-
     return erased;
 }
 
@@ -920,7 +906,6 @@ auto LRU<Key, Value>::findRange(const Range& keyRange, const bool peek)
     {
         result.emplace_back(key, doFind(key, peek));
     }
-
     return result;
 }
 
@@ -1023,7 +1008,6 @@ std::optional<Value> LRU<Key, Value>::doFind(const Key& key, const bool peek)
         }
         return std::make_optional(elem.value);
     }
-
     return std::nullopt;
 }
 

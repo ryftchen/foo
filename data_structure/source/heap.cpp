@@ -39,7 +39,6 @@ static int getIndex(const BinaryHeap* const heap, const void* const key)
             return i;
         }
     }
-
     return -1;
 }
 
@@ -119,7 +118,6 @@ BinaryHeap* create(const int cap, const Compare cmp)
     heap->capacity = cap;
     heap->size = 0;
     heap->compare = cmp;
-
     return heap;
 }
 
@@ -152,7 +150,6 @@ bool insert(BinaryHeap* const heap, const void* const key)
     heap->data[heap->size] = const_cast<void*>(key);
     filterUp(heap, heap->size);
     ++heap->size;
-
     return true;
 }
 
@@ -175,7 +172,6 @@ bool remove(BinaryHeap* const heap, const void* const key)
 
     heap->data[index] = heap->data[--heap->size];
     filterDown(heap, index);
-
     return true;
 }
 
@@ -214,7 +210,6 @@ static Node* createNode(const void* const key)
     newNode->left = newNode->right = nullptr;
     newNode->key = const_cast<void*>(key);
     newNode->npl = 0;
-
     return newNode;
 }
 
@@ -276,7 +271,6 @@ static Node* mergeNode(Node* d, Node* s, const CompareFunc cmp)
     {
         d->npl = (d->right->npl < d->left->npl) ? (d->right->npl + 1) : (d->left->npl + 1);
     }
-
     return d;
 }
 
@@ -301,7 +295,6 @@ LeftistHeap* create(const CompareFunc cmp)
     auto* const heap = ::new (std::nothrow) LeftistHeap;
     heap->root = nullptr;
     heap->compare = cmp;
-
     return heap;
 }
 
@@ -396,7 +389,6 @@ static Node* createNode(const void* const key)
 
     newNode->left = newNode->right = nullptr;
     newNode->key = const_cast<void*>(key);
-
     return newNode;
 }
 
@@ -445,7 +437,6 @@ static Node* mergeNode(Node* d, Node* s, const CompareFunc cmp)
     Node* const merged = mergeNode(d->right, s, cmp);
     d->right = d->left;
     d->left = merged;
-
     return d;
 }
 
@@ -462,7 +453,6 @@ SkewHeap* create(const CompareFunc cmp)
     auto* const heap = ::new (std::nothrow) SkewHeap;
     heap->root = nullptr;
     heap->compare = cmp;
-
     return heap;
 }
 

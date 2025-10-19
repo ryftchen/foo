@@ -65,7 +65,6 @@ std::int64_t Match::rk(
             }
         }
     }
-
     return shift;
 }
 
@@ -113,7 +112,6 @@ std::int64_t Match::kmp(
             --i;
         }
     }
-
     return shift;
 }
 
@@ -152,7 +150,6 @@ std::int64_t Match::bm(
 
         textIdx += std::max(badCharRuleTable[text[textIdx]], goodSuffixIndexTable[patternIdx]);
     }
-
     return shift;
 }
 
@@ -243,7 +240,6 @@ std::int64_t Match::horspool(
 
         moveLen += badCharShiftTable[text[moveLen]];
     }
-
     return shift;
 }
 
@@ -293,7 +289,6 @@ std::int64_t Match::sunday(
 
         textIdx += badCharShiftTable[text[textIdx + patternLen]];
     }
-
     return shift;
 }
 

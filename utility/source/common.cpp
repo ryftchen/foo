@@ -43,7 +43,6 @@ std::size_t bkdrHash(const char* str) noexcept
     {
         hash = hash * bkdrHashSeed + (*str++);
     }
-
     return hash & bkdrHashMask;
 }
 
@@ -98,7 +97,6 @@ std::string base64Encode(const std::string_view data)
         default:
             break;
     }
-
     return encoded;
 }
 
@@ -144,7 +142,6 @@ std::string base64Decode(const std::string_view data)
         }
         ++counter;
     }
-
     return decoded;
 }
 // NOLINTEND(readability-magic-numbers)
@@ -173,7 +170,6 @@ std::string printfString(const char* const fmt, ...) // NOLINT(cert-dcl50-cpp)
     std::vector<char> buffer(reservedSize + 1);
     std::vsnprintf(buffer.data(), reservedSize + 1, fmt, argList);
     ::va_end(argList);
-
     return std::string{buffer.cbegin(), buffer.cbegin() + reservedSize};
 }
 

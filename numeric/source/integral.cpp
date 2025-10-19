@@ -30,7 +30,6 @@ double Integral::trapezoidalRule(
         sum += area;
         x += delta;
     }
-
     return sum;
 }
 
@@ -53,18 +52,12 @@ double Trapezoidal::operator()(const double lower, const double upper, const dou
         n *= 2;
     }
     while (std::fabs(s1 - s2) > eps);
-
     return s2;
 }
 
 double Simpson::operator()(const double lower, const double upper, const double eps) const
 {
-    if (!expr)
-    {
-        return 0.0;
-    }
-
-    return simpsonIntegral(lower, upper, eps);
+    return expr ? simpsonIntegral(lower, upper, eps) : 0.0;
 }
 
 double Simpson::simpsonIntegral(const double left, const double right, const double eps) const
@@ -75,7 +68,6 @@ double Simpson::simpsonIntegral(const double left, const double right, const dou
     {
         return simpsonIntegral(left, mid, eps) + simpsonIntegral(mid, right, eps);
     }
-
     return sum;
 }
 
@@ -87,7 +79,6 @@ double Simpson::compositeSimpsonOneThird(const double left, const double right, 
     {
         sum += simpsonOneThird(left + (i * stepLen), left + ((i + 1) * stepLen));
     }
-
     return sum;
 }
 
@@ -123,7 +114,6 @@ double Romberg::operator()(const double lower, const double upper, const double 
         }
     }
     while (std::fabs(rombergTbl[k][k] - rombergTbl[k - 1][k - 1]) > eps);
-
     return rombergTbl[k][k];
 }
 
@@ -162,18 +152,12 @@ double Gauss::operator()(const double lower, const double upper, const double ep
         n *= 2;
     }
     while (std::fabs(s1 - s2) > eps);
-
     return s2;
 }
 
 double MonteCarlo::operator()(const double lower, const double upper, const double eps) const
 {
-    if (!expr)
-    {
-        return 0.0;
-    }
-
-    return sampleFromUniformDistribution(lower, upper, eps);
+    return expr ? sampleFromUniformDistribution(lower, upper, eps) : 0.0;
 }
 
 double MonteCarlo::sampleFromUniformDistribution(const double lower, const double upper, const double eps) const
@@ -187,7 +171,6 @@ double MonteCarlo::sampleFromUniformDistribution(const double lower, const doubl
         sum += expr(dist(engine));
     }
     sum *= (upper - lower) / n;
-
     return sum;
 }
 
@@ -215,7 +198,6 @@ double MonteCarlo::sampleFromNormalDistribution(const double lower, const double
         sum += expr(x) / probabilityDensity;
     }
     sum /= n;
-
     return sum;
 }
 } // namespace numeric::integral

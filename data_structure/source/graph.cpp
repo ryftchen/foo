@@ -39,7 +39,6 @@ static int locateVertex(const AMLGraph* const graph, const void* const vert)
             return i;
         }
     }
-
     return -1;
 }
 
@@ -52,7 +51,6 @@ static EdgeNode* getNextEdge(const EdgeNode* const eNode, const int index)
     {
         return nullptr;
     }
-
     return (eNode->iVex == index) ? eNode->iLink : eNode->jLink;
 }
 
@@ -105,7 +103,6 @@ AMLGraph* create(const Compare cmp)
     graph->edgeNum = 0;
     std::memset(graph->adjMultiList, 0, sizeof(graph->adjMultiList));
     graph->compare = cmp;
-
     return graph;
 }
 
@@ -149,7 +146,6 @@ bool addVertex(AMLGraph* const graph, const void* const vert)
     graph->adjMultiList[graph->vexNum].firstEdge = nullptr;
     graph->adjMultiList[graph->vexNum].data = const_cast<void*>(vert);
     ++graph->vexNum;
-
     return true;
 }
 
@@ -190,7 +186,6 @@ bool addEdge(AMLGraph* const graph, const void* const vert1, const void* const v
     newNode->jLink = graph->adjMultiList[index2].firstEdge;
     graph->adjMultiList[index2].firstEdge = newNode;
     ++graph->edgeNum;
-
     return true;
 }
 
@@ -244,7 +239,6 @@ bool deleteVertex(AMLGraph* const graph, const void* const vert)
         }
     }
     --graph->vexNum;
-
     return true;
 }
 
@@ -288,7 +282,6 @@ bool deleteEdge(AMLGraph* const graph, const void* const vert1, const void* cons
     ::delete curr;
     curr = nullptr;
     --graph->edgeNum;
-
     return true;
 }
 
@@ -428,7 +421,6 @@ static int locateVertex(const OLGraph* const graph, const void* const vert)
             return i;
         }
     }
-
     return -1;
 }
 
@@ -504,7 +496,6 @@ OLGraph* create(const Compare cmp)
     graph->arcNum = 0;
     std::memset(graph->xList, 0, sizeof(graph->xList));
     graph->compare = cmp;
-
     return graph;
 }
 
@@ -552,7 +543,6 @@ bool addVertex(OLGraph* const graph, const void* const vert)
     graph->xList[graph->vexNum].firstOut = nullptr;
     graph->xList[graph->vexNum].data = const_cast<void*>(vert);
     ++graph->vexNum;
-
     return true;
 }
 
@@ -592,7 +582,6 @@ bool addArc(OLGraph* const graph, const void* const vert1, const void* const ver
     newNode->tailLink = graph->xList[index1].firstOut;
     graph->xList[index2].firstIn = graph->xList[index1].firstOut = newNode;
     ++graph->arcNum;
-
     return true;
 }
 
@@ -638,7 +627,6 @@ bool deleteVertex(OLGraph* const graph, const void* const vert)
             curr = curr->tailLink;
         }
     }
-
     return true;
 }
 
@@ -679,7 +667,6 @@ bool deleteArc(OLGraph* const graph, const void* const vert1, const void* const 
         --graph->arcNum;
         return true;
     }
-
     return false;
 }
 

@@ -60,7 +60,6 @@ static std::ostream& operator<<(std::ostream& os, const KeyValueRange& keyValueR
     {
         os << keyValue << separator;
     }
-
     return os;
 }
 //! @brief Alias for the pair of key and optional value.
@@ -86,7 +85,6 @@ static std::ostream& operator<<(std::ostream& os, const KeyOptValueRange& keyOpt
     {
         os << keyOptValue << separator;
     }
-
     return os;
 }
 
@@ -143,7 +141,6 @@ public:
         process << "capacity: " << fifoCache.capacity() << '\n';
         process << "current status: " << fifoCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
         process.seekp(process.str().length() - separator.length());
-
         return std::ostringstream{process.str().substr(0, process.tellp()) + '\n'};
     }
 
@@ -196,7 +193,6 @@ public:
         process << "capacity: " << lfuCache.capacity() << '\n';
         process << "current status: " << lfuCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
         process.seekp(process.str().length() - separator.length());
-
         return std::ostringstream{process.str().substr(0, process.tellp()) + '\n'};
     }
 
@@ -249,7 +245,6 @@ public:
         process << "capacity: " << lruCache.capacity() << '\n';
         process << "current status: " << lruCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
         process.seekp(process.str().length() - separator.length());
-
         return std::ostringstream{process.str().substr(0, process.tellp()) + '\n'};
     }
 };
@@ -317,7 +312,6 @@ public:
         process << "may not contain {" << urls2.at(0) << " ... " << urls2.at(urls2.size() - 1)
                 << "}: " << mayNotContained << '\n';
         bf.clear();
-
         return process;
     }
 
@@ -390,7 +384,6 @@ public:
         process << "C may not contain {" << urls2.at(0) << " ... " << urls2.at(urls2.size() - 1)
                 << "}: " << mayNotContainedC << '\n';
         qfC.clear();
-
         return process;
     }
 };
@@ -413,7 +406,6 @@ static int compareData(const void* const a, const void* const b)
 {
     const auto l = *static_cast<const Data*>(a);
     const auto r = *static_cast<const Data*>(b);
-
     return (l > r) - (l < r);
 }
 
@@ -468,7 +460,6 @@ public:
         traverse.bfs(&vertices[5], opInTraversal);
         process << '\n';
         undirected::destroy(graph);
-
         return std::ostringstream{process.str()};
     }
 
@@ -531,7 +522,6 @@ public:
         traverse.bfs(&vertices[5], opInTraversal);
         process << '\n';
         directed::destroy(graph);
-
         return std::ostringstream{process.str()};
     }
     // NOLINTEND(readability-magic-numbers)
@@ -555,7 +545,6 @@ static int compareKey(const void* const a, const void* const b)
 {
     const auto l = *static_cast<const Key*>(a);
     const auto r = *static_cast<const Key*>(b);
-
     return (l > r) - (l < r);
 }
 
@@ -598,7 +587,6 @@ public:
         traverse.order(opInTraversal);
         process << '\n';
         binary::destroy(heap);
-
         return std::ostringstream{process.str()};
     }
 
@@ -652,7 +640,6 @@ public:
         process << "A all details:\n" << Printer(heapA->root);
         leftist::destroy(heapA);
         leftist::destroy(heapB);
-
         return std::ostringstream{process.str()};
     }
 
@@ -706,7 +693,6 @@ public:
         process << "A all details:\n" << Printer(heapA->root);
         skew::destroy(heapA);
         skew::destroy(heapB);
-
         return std::ostringstream{process.str()};
     }
 };
@@ -761,7 +747,6 @@ public:
         process << "size: " << dll::size(linear) << '\n';
         process << "all details: " << Printer(&linear) << '\n';
         dll::destroy(&linear);
-
         return std::ostringstream{process.str()};
     }
     //! @brief Stack.
@@ -793,7 +778,6 @@ public:
         process << "size: " << stack::size(linear) << '\n';
         process << "all details: " << Printer(&linear) << '\n';
         stack::destroy(&linear);
-
         return std::ostringstream{process.str()};
     }
     //! @brief Queue.
@@ -825,7 +809,6 @@ public:
         process << "size: " << queue::size(linear) << '\n';
         process << "all details: " << Printer(&linear) << '\n';
         queue::destroy(&linear);
-
         return std::ostringstream{process.str()};
     }
 };
@@ -848,7 +831,6 @@ static int compareKey(const void* const a, const void* const b)
 {
     const auto l = *static_cast<const Key*>(a);
     const auto r = *static_cast<const Key*>(b);
-
     return (l > r) - (l < r);
 }
 
@@ -904,7 +886,6 @@ public:
         traverse.inOrder(opInTraversal);
         process << "\nall details:\n" << Printer(tree->root);
         bs::destroy(tree);
-
         return std::ostringstream{process.str()};
     }
     //! @brief Adelson-Velsky-Landis.
@@ -953,7 +934,6 @@ public:
         traverse.inOrder(opInTraversal);
         process << "\nall details:\n" << Printer(tree->root);
         avl::destroy(tree);
-
         return std::ostringstream{process.str()};
     }
     //! @brief Splay.
@@ -1006,7 +986,6 @@ public:
 
         process << "all details:\n" << Printer(tree->root);
         splay::destroy(tree);
-
         return std::ostringstream{process.str()};
     }
 };
