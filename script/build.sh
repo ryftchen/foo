@@ -28,7 +28,6 @@ function shell()
 function die()
 {
     echo "$(basename "${0}"): $*"
-
     exit 1
 } >&2
 
@@ -64,7 +63,6 @@ function wait_until_get_input()
     answer=$(while ! head -c 1 | grep -i '[yn]'; do true; done)
     stty "${old_stty}"
     echo "${answer}"
-
     return 0
 }
 
@@ -84,7 +82,6 @@ function clean_up_temporary_files()
 function signal_handler()
 {
     clean_up_temporary_files
-
     exit 1
 }
 
@@ -141,7 +138,6 @@ function count_enabled_single_choice_parameters()
         fi
     done
     echo "${number}"
-
     return 0
 }
 
@@ -158,7 +154,6 @@ function count_enabled_multiple_choice_parameters()
         fi
     done
     echo "${number}"
-
     return 0
 }
 
@@ -240,7 +235,6 @@ function perform_help_option()
     echo "  -q, --query           scan and query source code only"
     echo "  -d, --doxygen         project documentation with doxygen"
     echo "  -b, --browser         generate web-based code browser like IDE"
-
     exit "${STATUS}"
 }
 
@@ -567,7 +561,6 @@ function build_native_if_needed()
         NINJA_STATUS=$(echo -e "\e[92m[\e[92m%f/\e[92m%t\e[92m]\e[39m\e[49m ")
         export NINJA_STATUS CLICOLOR_FORCE=1 TERM=dumb
         shell_command "cmake --build ./${FOLDER[bld]}""${CMAKE_BUILD_OPTION}"
-
         exit "${STATUS}"
     fi
 
@@ -581,7 +574,6 @@ function build_native_if_needed()
         NINJA_STATUS=$(echo -e "\e[92m[\e[92m%f/\e[92m%t\e[92m]\e[39m\e[49m ")
         export NINJA_STATUS CLICOLOR_FORCE=1 TERM=dumb
         shell_command "cmake --build ./${FOLDER[tst]}/${FOLDER[bld]}""${CMAKE_BUILD_OPTION}"
-
         exit "${STATUS}"
     fi
 }
@@ -621,7 +613,6 @@ FOO_BLD_DISTCC=localhost # HOST
 FOO_BLD_TMPFS=off # on / off
 
 export FOO_BLD_COMPILER FOO_BLD_PARALLEL FOO_BLD_PCH FOO_BLD_UNITY FOO_BLD_CCACHE FOO_BLD_DISTCC FOO_BLD_TMPFS
-
 return 0
 EOF"
     local gdb_config_folder=".config/gdb"
@@ -637,7 +628,6 @@ EOF"
     shell_command "git config --local commit.template ./.gitmessage"
 
     echo "To initialize for effect, type \"exec bash\" manually."
-
     exit "${STATUS}"
 }
 
@@ -670,7 +660,6 @@ function perform_clean_option()
     fi
 
     echo "To clean up for effect, type \"exec bash\" manually."
-
     exit "${STATUS}"
 }
 
@@ -711,7 +700,6 @@ function perform_install_option()
     fi
 
     echo "Manually type \"exec bash\" to install for effect."
-
     exit "${STATUS}"
 }
 
@@ -741,7 +729,6 @@ function perform_uninstall_option()
     fi
 
     echo "Manually type \"exec bash\" to uninstall for effect."
-
     exit "${STATUS}"
 }
 
@@ -762,7 +749,6 @@ function perform_container_option()
         echo "Yes"
     else
         echo "No"
-
         exit "${STATUS}"
     fi
 
@@ -772,7 +758,6 @@ function perform_container_option()
     else
         die "The container exists."
     fi
-
     exit "${STATUS}"
 }
 
@@ -861,7 +846,6 @@ EOF
             echo "No"
         fi
     fi
-
     exit "${STATUS}"
 }
 
@@ -1343,7 +1327,6 @@ function main()
     build_native_if_needed
     try_perform_single_choice_options
     try_perform_multiple_choice_options
-
     exit "${STATUS}"
 }
 

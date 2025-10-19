@@ -17,8 +17,8 @@ async fn run(args: arg::Args) {
         });
         hint += format!("=> http://{}/ for directory {}\n", addr, abs_path!(root_dir)).as_str();
     }
-    print!("The archive server starts listening ...\n{}", hint);
 
+    print!("The archive server starts listening ...\n{}", hint);
     let _ret = futures_util::future::join_all(srv_group).await;
 }
 
@@ -27,6 +27,5 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let args = arg::parse_args();
 
     run(args).await;
-
     Ok(())
 }

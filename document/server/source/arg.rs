@@ -20,7 +20,6 @@ impl Parser {
         options.optmulti("r", "root-dir", "set root directory", "DIR");
         options.optopt("H", "host", "set host IP address", "IP");
         options.optopt("p", "port", "set starting port", "NUM");
-
         Parser { options }
     }
 
@@ -71,12 +70,10 @@ pub fn parse_args() -> Args {
             fatal!("Illegal root directory: {}.", root_dir);
         }
     }
-
     let host = match matches.opt_str("H") {
         Some(h) => h.parse().unwrap_or_else(|_| fatal!("Invalid IP address.")),
         _none => IpAddr::V4(Ipv4Addr::LOCALHOST),
     };
-
     let port = match matches.opt_str("p") {
         Some(p) => match p.parse() {
             Ok(p) if (0..=65535).contains(&p) => p,
@@ -87,6 +84,5 @@ pub fn parse_args() -> Args {
     if port as usize + root_dirs.len() - 1 > 65535 {
         fatal!("Not enough available port numbers.");
     }
-
     Args { root_dirs, port, host }
 }
