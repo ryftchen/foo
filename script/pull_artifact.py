@@ -170,7 +170,6 @@ class Schedule:  # pylint: disable=too-few-public-methods
             if error.status != http.HTTPStatus.FOUND:
                 raise urllib.error.HTTPError(url, error.status, "URL redirect expected.", error.headers, None) from None
             location = error.headers["location"]
-
         return location
 
     def _executor(self, command: str) -> tuple[str, str, int]:
@@ -208,7 +207,6 @@ def create_logger(log_level: int, log_file: str) -> logging.Logger:
     formatter = logging.Formatter("%(asctime)s - %(levelname)-8s - %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
-
     return logger
 
 

@@ -778,7 +778,6 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
             if not cov_per:
                 for cat in category:
                     cov_per[cat] = "-"
-
         return dur_time, fail_res, cov_per, mem_leak
 
     def _format_as_table(self, data: dict[str, str], key_title: str, value_title: str) -> str:
@@ -814,7 +813,6 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
                 rows.append(new_line)
 
             rows.append("-" * (self._tbl_key_width + 2 + self._tbl_value_width + 1))
-
         return "\n".join(rows)
 
 
@@ -874,7 +872,6 @@ def execute_in_pty(command: str):
 
             if process.poll() is not None:
                 continue
-
         return process.wait()
 
 
