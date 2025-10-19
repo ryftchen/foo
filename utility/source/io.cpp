@@ -54,7 +54,6 @@ std::string executeCommand(const std::string& command)
     {
         throw std::runtime_error{"The command was terminated by signal " + std::to_string(WTERMSIG(status)) + '.'};
     }
-
     return output;
 }
 
@@ -160,7 +159,6 @@ std::vector<std::string> readFileLines(
         reader.unlock();
     }
     reader.close();
-
     return contents;
 }
 
@@ -222,7 +220,6 @@ int FDStreamBuffer::flush()
         ptr += writtenSize;
     }
     setp(writeBuffer.get(), writeBuffer.get() + bufferSize);
-
     return 0;
 }
 
@@ -248,7 +245,6 @@ FDStreamBuffer::int_type FDStreamBuffer::underflow()
         return traits_type::eof();
     }
     setg(readBuffer.get(), readBuffer.get(), readBuffer.get() + readSize);
-
     return traits_type::to_int_type(*gptr());
 }
 
@@ -277,7 +273,6 @@ FDStreamBuffer::int_type FDStreamBuffer::overflow(const int_type c)
         *pptr() = traits_type::to_char_type(c);
         pbump(1);
     }
-
     return c;
 }
 
@@ -316,7 +311,6 @@ std::streampos FDStreamBuffer::seekoff(
         return -1;
     }
     setg(nullptr, nullptr, nullptr);
-
     return newOffset;
 }
 
@@ -327,12 +321,7 @@ std::streampos FDStreamBuffer::seekpos(const std::streampos sp, const std::ios_b
 
 std::streamsize FDStreamBuffer::showmanyc()
 {
-    if ((fd < 0) || !gptr() || !egptr())
-    {
-        return 0;
-    }
-
-    return egptr() - gptr();
+    return ((fd >= 0) && gptr() && egptr()) ? (egptr() - gptr()) : 0;
 }
 
 FileReader::~FileReader()

@@ -406,7 +406,6 @@ std::enable_if_t<std::is_convertible_v<T, std::string>, JSON&> JSON::operator=(c
 {
     setType<String>();
     *getData<String>() = String{s};
-
     return *this;
 }
 
@@ -415,7 +414,6 @@ std::enable_if_t<std::is_floating_point_v<T>, JSON&> JSON::operator=(const T f)
 {
     setType<Floating>();
     data.value = static_cast<Floating>(f);
-
     return *this;
 }
 
@@ -424,7 +422,6 @@ std::enable_if_t<std::is_integral_v<T> && !std::is_same_v<T, bool>, JSON&> JSON:
 {
     setType<Integral>();
     data.value = static_cast<Integral>(i);
-
     return *this;
 }
 
@@ -433,7 +430,6 @@ std::enable_if_t<std::is_same_v<T, bool>, JSON&> JSON::operator=(const T b)
 {
     setType<Boolean>();
     data.value = static_cast<Boolean>(b);
-
     return *this;
 }
 // NOLINTEND(misc-unconventional-assign-operator)

@@ -32,7 +32,6 @@ static Node* createNode(const void* const value)
 
     newNode->prev = newNode->next = newNode;
     newNode->value = const_cast<void*>(value);
-
     return newNode;
 }
 
@@ -67,7 +66,6 @@ static Node* getNode(const DLL head, const int index)
         {
             nNext = nNext->next;
         }
-
         return nNext;
     }
 
@@ -78,7 +76,6 @@ static Node* getNode(const DLL head, const int index)
     {
         pNode = pNode->prev;
     }
-
     return pNode;
 }
 
@@ -112,7 +109,6 @@ bool destroy(DLL* const dll)
 
     ::delete *dll;
     *dll = nullptr;
-
     return true;
 }
 
@@ -133,7 +129,6 @@ int size(const DLL head)
         ++counter;
         nNode = nNode->next;
     }
-
     return counter;
 }
 
@@ -199,7 +194,6 @@ bool insert(const DLL head, const int index, const void* const value)
     newNode->next = iNode;
     iNode->prev->next = newNode;
     iNode->prev = newNode;
-
     return true;
 }
 
@@ -224,7 +218,6 @@ bool insertFirst(const DLL head, const void* const value)
     newNode->next = head->next;
     head->next->prev = newNode;
     head->next = newNode;
-
     return true;
 }
 
@@ -249,7 +242,6 @@ bool insertLast(const DLL head, const void* const value)
     newNode->prev = head->prev;
     head->prev->next = newNode;
     head->prev = newNode;
-
     return true;
 }
 
@@ -269,7 +261,6 @@ bool remove(const DLL head, const int index)
     iNode->prev->next = iNode->next;
     ::delete iNode;
     iNode = nullptr;
-
     return true;
 }
 
@@ -348,7 +339,6 @@ void* pop(const Stack head)
 {
     void* const value = top(head);
     dll::removeFirst(head);
-
     return value;
 }
 } // namespace stack
@@ -411,7 +401,6 @@ void* pop(const Queue head)
 {
     void* const value = dll::getFirst(head);
     dll::removeFirst(head);
-
     return value;
 }
 } // namespace queue

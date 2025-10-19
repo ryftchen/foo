@@ -161,7 +161,6 @@ Memory<T, BlockSize>& Memory<T, BlockSize>::operator=(Memory&& memory) noexcept
         std::swap(lastSlot, memory.lastSlot);
         std::swap(freeSlots, memory.freeSlots);
     }
-
     return *this;
 }
 
@@ -172,7 +171,6 @@ inline T* Memory<T, BlockSize>::newEntry(Args&&... args)
     const std::lock_guard<std::recursive_mutex> lock(mtx);
     auto* const res = allocate();
     construct<T>(res, std::forward<Args>(args)...);
-
     return res;
 }
 
@@ -240,7 +238,6 @@ inline T* Memory<T, BlockSize>::allocate(const std::size_t /*size*/, const T* /*
     {
         createBlock();
     }
-
     return reinterpret_cast<T*>(currentSlot++);
 }
 
@@ -275,7 +272,6 @@ inline std::size_t Memory<T, BlockSize>::pointerPadding(const std::byte* const d
         const auto padding = std::bit_cast<std::uintptr_t>(data);
         return (align - (padding % align)) % align;
     }
-
     return 0;
 }
 // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)

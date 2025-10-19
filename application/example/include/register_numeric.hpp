@@ -368,7 +368,6 @@ consteval std::string_view toString(const Category cat)
         default:
             break;
     }
-
     return {};
 }
 //! @brief Get the bit flags of the category in numeric choices.
@@ -403,7 +402,6 @@ consteval std::size_t abbrLitHash(const T method)
             }
             return false;
         });
-
     return value;
 }
 } // namespace application::reg_num

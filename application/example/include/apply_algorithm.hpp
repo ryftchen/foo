@@ -343,7 +343,6 @@ public:
         {
             clone(rhs);
         }
-
         return *this;
     }
     //! @brief The operator (=) overloading of InputBuilder class.
@@ -407,7 +406,6 @@ public:
             }
             offset += written;
         }
-
         return fmtBuffer;
     }
 
@@ -545,7 +543,6 @@ public:
         {
             clone(rhs);
         }
-
         return *this;
     }
     //! @brief The operator (=) overloading of InputBuilder class.
@@ -606,7 +603,6 @@ public:
             }
             offset += written;
         }
-
         return fmtBuffer;
     }
 

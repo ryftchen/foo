@@ -105,7 +105,6 @@ std::ostream& operator<<(std::ostream& os, const Printer<V>& printer)
         }
         os << " <- TAIL";
     }
-
     return os;
 }
 } // namespace dll
@@ -166,7 +165,6 @@ std::ostream& operator<<(std::ostream& os, const Printer<V>& printer)
         }
         os << " ] BOTTOM";
     }
-
     return os;
 }
 } // namespace stack
@@ -227,7 +225,6 @@ std::ostream& operator<<(std::ostream& os, const Printer<V>& printer)
         }
         os << " ] REAR";
     }
-
     return os;
 }
 } // namespace queue

@@ -208,14 +208,12 @@ try
     {
         establishCtrl.resume();
     }
-
     return !isFaulty.load();
 }
 catch (const std::exception& err)
 {
     isFaulty.store(true);
     LOG_ERR << err.what();
-
     return !isFaulty.load();
 }
 
@@ -769,7 +767,6 @@ std::vector<std::string> Command::extractChoices()
             static_assert(attr.hasValue);
             choices.emplace_back(attr.value);
         });
-
     return choices;
 }
 
@@ -1004,7 +1001,6 @@ auto Command::processConsoleInputs(const std::function<void()>& handling)
         LOG_WRN << err.what();
     }
     interactionLatency();
-
     return retCode;
 }
 

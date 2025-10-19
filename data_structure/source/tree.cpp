@@ -34,7 +34,6 @@ static Node* getMinimum(Node* const root)
     {
         curr = curr->left;
     }
-
     return curr;
 }
 
@@ -53,7 +52,6 @@ static Node* getMaximum(Node* const root)
     {
         curr = curr->right;
     }
-
     return curr;
 }
 
@@ -75,7 +73,6 @@ static Node* createNode(const void* const key, Node* const parent, Node* const l
     newNode->right = right;
     newNode->parent = parent;
     newNode->key = const_cast<void*>(key);
-
     return newNode;
 }
 
@@ -114,7 +111,6 @@ static Node* insertNode(Node* root, Node* node, const Compare cmp)
     {
         y->right = node;
     }
-
     return root;
 }
 
@@ -161,7 +157,6 @@ static Node* removeNode(Node* root, Node* const node)
     const bool yIsRoot = (root == y);
     ::delete y;
     y = nullptr;
-
     return !yIsRoot ? root : nullptr;
 }
 
@@ -198,7 +193,6 @@ static Node* search(Node* const root, const void* const key, const Compare cmp)
     {
         return nullptr;
     }
-
     return (cmp(root->key, key) == 0) ? root : search((cmp(key, root->key) < 0) ? root->left : root->right, key, cmp);
 }
 
@@ -240,7 +234,6 @@ Node* getPredecessor(const Node* x)
         x = y;
         y = y->parent;
     }
-
     return y;
 }
 
@@ -266,7 +259,6 @@ Node* getSuccessor(const Node* x)
         x = y;
         y = y->parent;
     }
-
     return y;
 }
 
@@ -283,7 +275,6 @@ BSTree* create(const Compare cmp)
     auto* const tree = ::new (std::nothrow) BSTree;
     tree->root = nullptr;
     tree->compare = cmp;
-
     return tree;
 }
 
@@ -368,7 +359,6 @@ static Node* getMinimum(Node* const root)
     {
         curr = curr->left;
     }
-
     return curr;
 }
 
@@ -387,7 +377,6 @@ static Node* getMaximum(Node* const root)
     {
         curr = curr->right;
     }
-
     return curr;
 }
 
@@ -407,7 +396,6 @@ static Node* leftLeftRotation(Node* const k2)
 
     k2->height = std::max(getHeight(k2->left), getHeight(k2->right)) + 1;
     k1->height = std::max(getHeight(k1->left), k2->height) + 1;
-
     return k1;
 }
 
@@ -427,7 +415,6 @@ static Node* rightRightRotation(Node* const k1)
 
     k1->height = std::max(getHeight(k1->left), getHeight(k1->right)) + 1;
     k2->height = std::max(getHeight(k2->right), k1->height) + 1;
-
     return k2;
 }
 
@@ -440,8 +427,8 @@ static Node* leftRightRotation(Node* const k3)
     {
         return nullptr;
     }
-    k3->left = rightRightRotation(k3->left);
 
+    k3->left = rightRightRotation(k3->left);
     return leftLeftRotation(k3);
 }
 
@@ -454,8 +441,8 @@ static Node* rightLeftRotation(Node* const k1)
     {
         return nullptr;
     }
-    k1->right = leftLeftRotation(k1->right);
 
+    k1->right = leftLeftRotation(k1->right);
     return rightRightRotation(k1);
 }
 
@@ -476,7 +463,6 @@ static Node* createNode(const void* const key, Node* const left, Node* const rig
     newNode->right = right;
     newNode->key = const_cast<void*>(key);
     newNode->height = 0;
-
     return newNode;
 }
 
@@ -540,7 +526,6 @@ static Node* removeNode(Node* root, const Node* const node, const Compare cmp)
         const Node* const r = root->right;
         root = (getHeight(r->left) > getHeight(r->right)) ? rightLeftRotation(root) : rightRightRotation(root);
     }
-
     return root;
 }
 
@@ -577,7 +562,6 @@ static Node* search(Node* const root, const void* const key, const Compare cmp)
     {
         return nullptr;
     }
-
     return (cmp(root->key, key) == 0) ? root : search((cmp(key, root->key) < 0) ? root->left : root->right, key, cmp);
 }
 
@@ -619,7 +603,6 @@ static Node* insert(Node* root, const void* const key, const Compare cmp)
     }
 
     root->height = std::max(getHeight(root->left), getHeight(root->right)) + 1;
-
     return root;
 }
 
@@ -634,7 +617,6 @@ static Node* remove(Node* root, const void* const key, const Compare cmp)
     {
         root = removeNode(root, z, cmp);
     }
-
     return root;
 }
 
@@ -675,7 +657,6 @@ AVLTree* create(const Compare cmp)
     auto* const tree = ::new (std::nothrow) AVLTree;
     tree->root = nullptr;
     tree->compare = cmp;
-
     return tree;
 }
 
@@ -746,7 +727,6 @@ static Node* getMinimum(Node* const root)
     {
         curr = curr->left;
     }
-
     return curr;
 }
 
@@ -765,7 +745,6 @@ static Node* getMaximum(Node* const root)
     {
         curr = curr->right;
     }
-
     return curr;
 }
 
@@ -785,7 +764,6 @@ static Node* createNode(const void* const key, Node* const left, Node* const rig
     newNode->left = left;
     newNode->right = right;
     newNode->key = const_cast<void*>(key);
-
     return newNode;
 }
 
@@ -836,7 +814,6 @@ static Node* insertNode(Node* root, Node* node, const Compare cmp)
     {
         y->right = node;
     }
-
     return root;
 }
 
@@ -873,7 +850,6 @@ static Node* search(Node* const root, const void* const key, const Compare cmp)
     {
         return nullptr;
     }
-
     return (cmp(root->key, key) == 0) ? root : search((cmp(key, root->key) < 0) ? root->left : root->right, key, cmp);
 }
 
@@ -938,7 +914,6 @@ static Node* splay(Node* root, const void* const key, const Compare cmp)
     r->left = root->right;
     root->left = n.right;
     root->right = n.left;
-
     return root;
 }
 
@@ -957,7 +932,6 @@ static Node* insert(Node* root, const void* const key, const Compare cmp)
 
     root = insertNode(root, z, cmp);
     root = splay(root, key, cmp);
-
     return root;
 }
 
@@ -987,7 +961,6 @@ static Node* remove(Node* root, const void* const key, const Compare cmp)
 
     ::delete root;
     root = nullptr;
-
     return x;
 }
 
@@ -1020,7 +993,6 @@ SplayTree* create(const Compare cmp)
     auto* const tree = ::new (std::nothrow) SplayTree;
     tree->root = nullptr;
     tree->compare = cmp;
-
     return tree;
 }
 

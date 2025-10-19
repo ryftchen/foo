@@ -144,7 +144,6 @@ public:
             }
             offset += written;
         }
-
         return fmtBuffer;
     }
 
@@ -323,7 +322,6 @@ public:
             }
             offset += written;
         }
-
         return fmtBuffer;
     }
 

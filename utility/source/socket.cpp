@@ -30,7 +30,6 @@ static std::string ipAddrString(const ::sockaddr_in& addr)
 {
     std::array<char, INET_ADDRSTRLEN> ip{};
     ::inet_ntop(AF_INET, &addr.sin_addr, ip.data(), ip.size());
-
     return std::string{ip.data()};
 }
 
@@ -394,7 +393,6 @@ int UDPSocket::toSendTo(
             throw std::runtime_error{"Unable to send message to address, errno: " + errnoString() + '.'};
         }
     }
-
     return sent;
 }
 

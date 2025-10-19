@@ -46,7 +46,6 @@ static std::string customTitle(const T method)
 {
     std::string title(TypeInfo<T>::fields.nameOfValue(method));
     title.at(0) = std::toupper(title.at(0));
-
     return title;
 }
 

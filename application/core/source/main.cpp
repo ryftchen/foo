@@ -38,6 +38,7 @@ try
     {
         return EXIT_FAILURE;
     }
+
     auto running = std::async(
         std::launch::async,
         [=]()
@@ -46,7 +47,6 @@ try
             ::pthread_setname_np(::pthread_self(), Command::title.c_str());
             return Command::getInstance().execute(argc, argv);
         });
-
     return running.get() ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 catch (const std::exception& err)
@@ -85,7 +85,6 @@ static int watchdog(const ::pid_t pid)
             return EXIT_FAILURE;
         }
     }
-
     return EXIT_SUCCESS;
 }
 } // namespace application
@@ -112,6 +111,5 @@ int main(int argc, char* argv[])
         ::prctl(PR_SET_PDEATHSIG, SIGTERM);
         return (::getppid() == ppidBeforeFork) ? application::run(argc, argv) : EXIT_FAILURE;
     }
-
     return application::watchdog(pid);
 }

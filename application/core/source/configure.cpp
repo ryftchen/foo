@@ -33,7 +33,6 @@ std::string getFullConfigPath(const std::string_view filename)
     {
         throw std::runtime_error{"The environment variable FOO_HOME is not set."};
     }
-
     return std::string{processHome} + '/' + filename.data();
 }
 
@@ -43,7 +42,6 @@ try
     configSem.acquire();
     const auto& dataRepo = Configure::getInstance().retrieve();
     configSem.release();
-
     return dataRepo;
 }
 catch (...)
@@ -76,7 +74,6 @@ utility::json::JSON Configure::parseConfigFile(const std::string_view configFile
     std::copy(configRows.cbegin(), configRows.cend(), std::ostream_iterator<std::string>(transfer, ""));
     auto preprocessedData = JSON::load(transfer.str());
     verifyConfigData(preprocessedData);
-
     return preprocessedData;
 }
 
@@ -259,7 +256,6 @@ utility::json::JSON getDefaultConfiguration()
     viewerProperties.at(field::udpPort) = 61502;
     auto viewerRequired = utility::json::array();
     viewerRequired.append(field::tcpHost, field::tcpPort, field::udpHost, field::udpPort);
-
     // clang-format off
     return utility::json::JSON
     (
@@ -338,7 +334,6 @@ static bool handleConfigurationException(const std::string_view filePath)
                 return true;
             }),
         timeoutPeriod);
-
     return keepThrowing;
 }
 
@@ -355,7 +350,6 @@ bool loadConfiguration(const std::string_view filename)
             initializeConfiguration(filePath);
         }
         Configure::getInstance(filename);
-
         return true;
     }
     catch (...)
@@ -368,7 +362,6 @@ bool loadConfiguration(const std::string_view filename)
         }
         std::cout << std::endl;
     }
-
     return false;
 }
 

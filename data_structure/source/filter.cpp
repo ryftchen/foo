@@ -76,7 +76,6 @@ static std::uint64_t murmurHash2X64(const void* const key, const int length, con
     hash ^= hash >> shift;
     hash *= mix;
     hash ^= hash >> shift;
-
     return hash;
 }
 
@@ -105,7 +104,6 @@ bool Bloom::insert(const void* const key, const int length)
         setBit(filter.get(), hashPos[i]);
     }
     ++entries;
-
     return entries <= capacity;
 }
 
@@ -124,7 +122,6 @@ bool Bloom::mayContain(const void* const key, const int length)
             return false;
         }
     }
-
     return true;
 }
 
@@ -160,9 +157,9 @@ std::uint32_t Bloom::calculateParamM(const std::uint32_t n, const double p)
     {
         return 0;
     }
+
     std::uint32_t m = std::ceil(-1.0 * n * std::log(p) / (std::numbers::ln2 * std::numbers::ln2));
     m = (m - m % 64) + 64;
-
     return m;
 }
 
@@ -172,8 +169,8 @@ std::uint32_t Bloom::calculateParamK(const std::uint32_t m, const std::uint32_t 
     {
         return 0;
     }
-    const std::uint32_t k = std::round(std::numbers::ln2 * m / n);
 
+    const std::uint32_t k = std::round(std::numbers::ln2 * m / n);
     return k;
 }
 
@@ -272,7 +269,6 @@ bool Quotient::insert(const std::uint64_t hash)
 
     insertAt(slot, entry);
     ++entries;
-
     return true;
 }
 
@@ -341,7 +337,6 @@ bool Quotient::mayContain(const std::uint64_t hash)
         slot = increase(*this, slot);
     }
     while (isContinuation(getElement(*this, slot)));
-
     return false;
 }
 
@@ -405,7 +400,6 @@ bool Quotient::remove(const std::uint64_t hash)
         }
     }
     --entries;
-
     return true;
 }
 
@@ -486,7 +480,6 @@ std::uint64_t Quotient::findRunIndex(const std::uint64_t quot) const
         }
         while (!isOccupied(getElement(*this, start)));
     }
-
     return slot;
 }
 
@@ -546,7 +539,6 @@ std::uint64_t Quotient::next(const Quotient& qf, Iterator& iter)
             return hash;
         }
     }
-
     return 0;
 }
 
@@ -582,7 +574,6 @@ std::uint64_t Quotient::getElement(const Quotient& qf, const std::uint64_t index
         const std::uint64_t x = qf.filter[tabPos] & lowMask(spillBits);
         elem |= x << (qf.elemBits - spillBits);
     }
-
     return elem;
 }
 
@@ -675,7 +666,6 @@ std::uint64_t Quotient::filterSizeInBytes(const std::uint8_t q, const std::uint8
 
     const std::uint64_t bits = static_cast<std::uint64_t>(1 << q) * (r + 3);
     const std::uint64_t bytes = bits / 8;
-
     return (bits % 8) ? (bytes + 1) : bytes;
 }
 // NOLINTEND(readability-magic-numbers)

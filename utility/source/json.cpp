@@ -61,7 +61,6 @@ static std::string jsonEscape(const std::string_view fmt)
                 break;
         }
     }
-
     return output;
 }
 
@@ -119,10 +118,8 @@ static JSON parseObject(const std::string_view fmt, std::size_t& offset)
             ++offset;
             break;
         }
-
         throw std::runtime_error{"For JSON object, expected ',' or '}', found '" + std::string{fmt.at(offset)} + "'."};
     }
-
     return object;
 }
 
@@ -155,10 +152,8 @@ static JSON parseArray(const std::string_view fmt, std::size_t& offset)
             ++offset;
             break;
         }
-
         throw std::runtime_error{"For JSON array, expected ',' or ']', found '" + std::string{fmt.at(offset)} + "'."};
     }
-
     return array;
 }
 
@@ -238,7 +233,6 @@ static JSON parseString(const std::string_view fmt, std::size_t& offset)
         }
     }
     ++offset;
-
     return val;
 }
 
@@ -277,7 +271,6 @@ static std::string extractExponent(const std::string_view fmt, std::size_t& offs
             break;
         }
     }
-
     return expStr;
 }
 
@@ -334,7 +327,6 @@ static JSON parseNumber(const std::string_view fmt, std::size_t& offset)
     {
         number = std::stol(val);
     }
-
     return number;
 }
 
@@ -362,7 +354,6 @@ static JSON parseBoolean(const std::string_view fmt, std::size_t& offset)
             + std::string{fmt.substr(offset, falseLit.length())} + "\"."};
     }
     offset += (boolean.toBoolean() ? trueLit.length() : falseLit.length());
-
     return boolean;
 }
 
@@ -380,7 +371,6 @@ static JSON parseNull(const std::string_view fmt, std::size_t& offset)
             + std::string{fmt.substr(offset, nullLit.length())} + "\"."};
     }
     offset += nullLit.length();
-
     return {};
 }
 
@@ -409,7 +399,6 @@ static JSON parseNext(const std::string_view fmt, std::size_t& offset)
             }
             break;
     }
-
     throw std::runtime_error{"JSON syntax error, unknown starting character '" + std::string{c} + "'."};
 }
 
@@ -463,7 +452,6 @@ JSON& JSON::operator=(JSON&& json) noexcept
     {
         std::swap(data, json.data);
     }
-
     return *this;
 }
 
@@ -480,7 +468,6 @@ JSON JSON::load(const std::string_view fmt)
     {
         throw std::runtime_error{"JSON syntax error, expected 'EOF' (" + std::string{fmt} + ")."};
     }
-
     return object;
 }
 
@@ -498,7 +485,6 @@ JSON& JSON::operator[](std::size_t index)
     {
         arrayVal->resize(index + 1);
     }
-
     return arrayVal->operator[](index);
 }
 

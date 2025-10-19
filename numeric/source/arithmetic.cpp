@@ -37,7 +37,6 @@ std::int32_t Arithmetic::multiplication(const std::int32_t multiplier, const std
             product = bitAdd(product, multiplier);
         }
     }
-
     return product;
 }
 
@@ -67,7 +66,6 @@ std::int32_t Arithmetic::division(const std::int32_t dividend, const std::int32_
     {
         quotient = bitSub(0, quotient);
     }
-
     return quotient;
 }
 
@@ -75,7 +73,6 @@ std::int32_t Arithmetic::bitAdd(const std::int32_t a, const std::int32_t b)
 {
     const std::int32_t sum = a ^ b;
     const std::int32_t carry = (a & b) << 1;
-
     return (sum & carry) ? bitAdd(sum, carry) : (sum ^ carry);
 }
 

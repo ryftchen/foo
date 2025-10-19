@@ -37,7 +37,6 @@ public:
 
         handler1->setHandler(handler2);
         handler1->handleRequest();
-
         return transferOutputs(output());
     }
     //! @brief Command.
@@ -51,7 +50,6 @@ public:
         Invoker invoker{};
         invoker.set(commands);
         invoker.confirm();
-
         return transferOutputs(output());
     }
     //! @brief Interpreter.
@@ -69,7 +67,6 @@ public:
 
         output() << context->get("A") << " AND " << context->get("B");
         output() << " = " << exp->interpret(context) << '\n';
-
         return transferOutputs(output());
     }
     //! @brief Iterator.
@@ -84,7 +81,6 @@ public:
         {
             output() << "item value: " << iter->currentItem() << '\n';
         }
-
         return transferOutputs(output());
     }
     //! @brief Mediator.
@@ -105,7 +101,6 @@ public:
         mediators->add(c3);
         c1->send("hi!");
         c3->send("hello!");
-
         return transferOutputs(output());
     }
     //! @brief Memento.
@@ -127,7 +122,6 @@ public:
         caretaker->undo();
 
         output() << "actual state is " << originator->getState() << '\n';
-
         return transferOutputs(output());
     }
     //! @brief Observer.
@@ -152,7 +146,6 @@ public:
 
         output() << "observer1 state: " << observer1->getState() << '\n';
         output() << "observer2 state: " << observer2->getState() << '\n';
-
         return transferOutputs(output());
     }
     //! @brief State.
@@ -167,7 +160,6 @@ public:
 
         context->setState(std::make_unique<ConcreteStateB>());
         context->request();
-
         return transferOutputs(output());
     }
     //! @brief Strategy.
@@ -180,7 +172,6 @@ public:
 
         Context contextB(std::make_unique<ConcreteStrategyB>());
         contextB.contextInterface();
-
         return transferOutputs(output());
     }
     //! @brief Template method.
@@ -191,7 +182,6 @@ public:
         const std::shared_ptr<AbstractClass> tm = std::make_shared<ConcreteClass>();
 
         tm->templateMethod();
-
         return transferOutputs(output());
     }
     //! @brief Visitor.
@@ -208,7 +198,6 @@ public:
         elementA->accept(visitor2);
         elementB->accept(visitor1);
         elementB->accept(visitor2);
-
         return transferOutputs(output());
     }
     // NOLINTEND(google-build-using-namespace)
@@ -222,7 +211,6 @@ private:
         std::ostringstream process(outputs.str());
         outputs.str("");
         outputs.clear();
-
         return process;
     }
 };
@@ -259,7 +247,6 @@ public:
 
         const std::unique_ptr<ProductB> p4 = factoryY->createProductB();
         output() << "product: " << p4->getName() << '\n';
-
         return transferOutputs(output());
     }
     //! @brief Builder.
@@ -277,7 +264,6 @@ public:
         director.construct();
         const Product product2 = director.get();
         output() << "2nd product parts: " << product2.get() << '\n';
-
         return transferOutputs(output());
     }
     //! @brief Factory method.
@@ -294,7 +280,6 @@ public:
         std::unique_ptr<Product> p2 = creator->createProductB();
         output() << "product: " << p2->getName() << '\n';
         creator->removeProduct(p2);
-
         return transferOutputs(output());
     }
     //! @brief Prototype.
@@ -311,7 +296,6 @@ public:
         output() << "prototype: " << prototype2->type() << '\n';
 
         Client::remove();
-
         return transferOutputs(output());
     }
     //! @brief Singleton.
@@ -322,7 +306,6 @@ public:
         Singleton::get()->tell();
 
         Singleton::restart();
-
         return transferOutputs(output());
     }
     // NOLINTEND(google-build-using-namespace)
@@ -336,7 +319,6 @@ private:
         std::ostringstream process(outputs.str());
         outputs.str("");
         outputs.clear();
-
         return process;
     }
 };
@@ -362,7 +344,6 @@ public:
         const std::shared_ptr<Target> adp = std::make_shared<Adapter>();
 
         adp->request();
-
         return transferOutputs(output());
     }
     //! @brief Bridge.
@@ -377,7 +358,6 @@ public:
         const std::unique_ptr<Abstraction> abstract2 =
             std::make_unique<RefinedAbstraction>(std::make_unique<ConcreteImplementorB>());
         abstract2->operation();
-
         return transferOutputs(output());
     }
     //! @brief Composite.
@@ -394,7 +374,6 @@ public:
         }
         composites.remove(0);
         composites.operation();
-
         return transferOutputs(output());
     }
     //! @brief Decorator.
@@ -408,7 +387,6 @@ public:
 
         const std::shared_ptr<Component> component = db;
         component->operation();
-
         return transferOutputs(output());
     }
     //! @brief Facade.
@@ -420,7 +398,6 @@ public:
 
         facades->operation1();
         facades->operation2();
-
         return transferOutputs(output());
     }
     //! @brief Flyweight.
@@ -432,7 +409,6 @@ public:
 
         factory->getFlyweight(1)->operation();
         factory->getFlyweight(2)->operation();
-
         return transferOutputs(output());
     }
     //! @brief Proxy.
@@ -443,7 +419,6 @@ public:
         const std::shared_ptr<Proxy> proxies = std::make_shared<Proxy>();
 
         proxies->request();
-
         return transferOutputs(output());
     }
 
@@ -456,7 +431,6 @@ private:
         std::ostringstream process(outputs.str());
         outputs.str("");
         outputs.clear();
-
         return process;
     }
     // NOLINTEND(google-build-using-namespace)

@@ -34,7 +34,6 @@ std::vector<std::uint32_t> Prime::eratosthenes(const std::uint32_t limit)
             storage.emplace_back(i);
         }
     }
-
     return storage;
 }
 
@@ -62,7 +61,6 @@ std::vector<std::uint32_t> Prime::euler(const std::uint32_t limit)
             }
         }
     }
-
     return storage;
 }
 } // namespace numeric::prime

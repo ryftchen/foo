@@ -312,7 +312,6 @@ bool Quotient::merge(const Quotient& qf, const QFs&... others)
 
     insertFrom(qf);
     (insertFrom(others), ...);
-
     return true;
 }
 } // namespace filter

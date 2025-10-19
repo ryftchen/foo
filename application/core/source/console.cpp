@@ -70,7 +70,6 @@ Console::RetCode Console::optionExecutor(const std::string& option) const
             "The console option (" + inputs.front() + ") could not be found. Enter the \"usage\" for help."};
     }
     const auto& mappedCallback = std::get<Callback>(regIter->second);
-
     return mappedCallback ? mappedCallback(inputs) : dummyCallback(inputs);
 }
 
@@ -103,7 +102,6 @@ Console::RetCode Console::fileExecutor(const std::string& filename) const
         }
         std::cout << std::endl;
     }
-
     return RetCode::success;
 }
 
@@ -123,7 +121,6 @@ Console::RetCode Console::readLine()
     }
     const auto input = std::string{buffer};
     ::rl_free(buffer);
-
     return optionExecutor(input);
 }
 
@@ -268,7 +265,6 @@ char* Console::customCompentry(const char* text, int state)
             return ::strdup(option.c_str());
         }
     }
-
     return nullptr;
 }
 } // namespace application::console
