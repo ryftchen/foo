@@ -94,11 +94,8 @@ static void signalHandler(const int sig)
         originalTrace.str().c_str(),
         detailedTrace.str().c_str());
 
-    if (signalStatus != SIGINT)
-    {
-        std::signal(sig, SIG_DFL);
-        std::raise(sig);
-    }
+    std::signal(sig, SIG_DFL);
+    std::raise(sig);
 }
 // NOLINTEND(cppcoreguidelines-no-malloc, cppcoreguidelines-owning-memory)
 
@@ -134,7 +131,7 @@ static void signalHandler(const int sig)
 //! @brief The destructor function before finishing the main function. Check the signal status.
 [[using gnu: destructor, noinline]] static void onFinal()
 {
-    if (signalStatus)
+    if (signalStatus != 0)
     {
         std::fprintf(::stdout, "%s: Signal %d was the last signal received.\n", executableName().c_str(), signalStatus);
     }

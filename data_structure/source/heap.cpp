@@ -113,7 +113,17 @@ BinaryHeap* create(const int cap, const Compare cmp)
     }
 
     auto* const heap = ::new (std::nothrow) BinaryHeap;
+    if (!heap)
+    {
+        return nullptr;
+    }
     heap->data = ::new (std::nothrow) void*[cap];
+    if (!heap->data)
+    {
+        ::delete heap;
+        return nullptr;
+    }
+
     std::memset(static_cast<void*>(heap->data), 0, sizeof(void*) * cap);
     heap->capacity = cap;
     heap->size = 0;
@@ -293,6 +303,11 @@ LeftistHeap* create(const CompareFunc cmp)
     }
 
     auto* const heap = ::new (std::nothrow) LeftistHeap;
+    if (!heap)
+    {
+        return nullptr;
+    }
+
     heap->root = nullptr;
     heap->compare = cmp;
     return heap;
@@ -451,6 +466,11 @@ SkewHeap* create(const CompareFunc cmp)
     }
 
     auto* const heap = ::new (std::nothrow) SkewHeap;
+    if (!heap)
+    {
+        return nullptr;
+    }
+
     heap->root = nullptr;
     heap->compare = cmp;
     return heap;
