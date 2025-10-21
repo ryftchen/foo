@@ -273,6 +273,11 @@ BSTree* create(const Compare cmp)
     }
 
     auto* const tree = ::new (std::nothrow) BSTree;
+    if (!tree)
+    {
+        return nullptr;
+    }
+
     tree->root = nullptr;
     tree->compare = cmp;
     return tree;
@@ -655,6 +660,11 @@ AVLTree* create(const Compare cmp)
     }
 
     auto* const tree = ::new (std::nothrow) AVLTree;
+    if (!tree)
+    {
+        return nullptr;
+    }
+
     tree->root = nullptr;
     tree->compare = cmp;
     return tree;
@@ -991,6 +1001,11 @@ SplayTree* create(const Compare cmp)
     }
 
     auto* const tree = ::new (std::nothrow) SplayTree;
+    if (!tree)
+    {
+        return nullptr;
+    }
+
     tree->root = nullptr;
     tree->compare = cmp;
     return tree;

@@ -99,6 +99,11 @@ AMLGraph* create(const Compare cmp)
     }
 
     auto* const graph = ::new (std::nothrow) AMLGraph;
+    if (!graph)
+    {
+        return nullptr;
+    }
+
     graph->vexNum = 0;
     graph->edgeNum = 0;
     std::memset(graph->adjMultiList, 0, sizeof(graph->adjMultiList));
@@ -179,6 +184,11 @@ bool addEdge(AMLGraph* const graph, const void* const vert1, const void* const v
     }
 
     auto* const newNode = ::new (std::nothrow) EdgeNode;
+    if (!newNode)
+    {
+        return false;
+    }
+
     newNode->iVex = index1;
     newNode->jVex = index2;
     newNode->iLink = graph->adjMultiList[index1].firstEdge;
@@ -302,6 +312,39 @@ void Traverse::dfs(const void* const vert, const Operation& op) const
     dfsRecursive(start, visited, op);
 }
 
+void Traverse::dfsRecursive(const int index, bool visited[], const Operation& op) const
+{
+    if (index < 0)
+    {
+        return;
+    }
+
+    visited[index] = true;
+    op(graph->adjMultiList[index].data);
+
+    int neighbors[maxVertexNum] = {};
+    int counter = 0;
+    const EdgeNode* curr = graph->adjMultiList[index].firstEdge;
+    while (curr)
+    {
+        const int nbrIdx = (curr->iVex == index) ? curr->jVex : curr->iVex;
+        if (!visited[nbrIdx])
+        {
+            neighbors[counter++] = nbrIdx;
+        }
+        curr = (curr->iVex == index) ? curr->iLink : curr->jLink;
+    }
+
+    sortNeighbors(neighbors, counter);
+    for (int i = 0; i < counter; ++i)
+    {
+        if (!visited[neighbors[i]])
+        {
+            dfsRecursive(neighbors[i], visited, op);
+        }
+    }
+}
+
 void Traverse::bfs(const void* const vert, const Operation& op) const
 {
     if (!graph || !vert || !op)
@@ -348,39 +391,6 @@ void Traverse::bfs(const void* const vert, const Operation& op) const
                 op(graph->adjMultiList[neighbors[i]].data);
                 queue[rear++] = neighbors[i];
             }
-        }
-    }
-}
-
-void Traverse::dfsRecursive(const int index, bool visited[], const Operation& op) const
-{
-    if (index < 0)
-    {
-        return;
-    }
-
-    visited[index] = true;
-    op(graph->adjMultiList[index].data);
-
-    int neighbors[maxVertexNum] = {};
-    int counter = 0;
-    const EdgeNode* curr = graph->adjMultiList[index].firstEdge;
-    while (curr)
-    {
-        const int nbrIdx = (curr->iVex == index) ? curr->jVex : curr->iVex;
-        if (!visited[nbrIdx])
-        {
-            neighbors[counter++] = nbrIdx;
-        }
-        curr = (curr->iVex == index) ? curr->iLink : curr->jLink;
-    }
-
-    sortNeighbors(neighbors, counter);
-    for (int i = 0; i < counter; ++i)
-    {
-        if (!visited[neighbors[i]])
-        {
-            dfsRecursive(neighbors[i], visited, op);
         }
     }
 }
@@ -492,6 +502,11 @@ OLGraph* create(const Compare cmp)
     }
 
     auto* const graph = ::new (std::nothrow) OLGraph;
+    if (!graph)
+    {
+        return nullptr;
+    }
+
     graph->vexNum = 0;
     graph->arcNum = 0;
     std::memset(graph->xList, 0, sizeof(graph->xList));
@@ -576,6 +591,11 @@ bool addArc(OLGraph* const graph, const void* const vert1, const void* const ver
     }
 
     auto* const newNode = ::new (std::nothrow) ArcNode;
+    if (!newNode)
+    {
+        return false;
+    }
+
     newNode->headVex = index2;
     newNode->tailVex = index1;
     newNode->headLink = graph->xList[index2].firstIn;
@@ -687,6 +707,35 @@ void Traverse::dfs(const void* const vert, const Operation& op) const
     dfsRecursive(start, visited, op);
 }
 
+void Traverse::dfsRecursive(const int index, bool visited[], const Operation& op) const
+{
+    if (index < 0)
+    {
+        return;
+    }
+
+    visited[index] = true;
+    op(graph->xList[index].data);
+
+    int neighbors[maxVertexNum];
+    int counter = 0;
+    const ArcNode* curr = graph->xList[index].firstOut;
+    while (curr)
+    {
+        neighbors[counter++] = curr->headVex;
+        curr = curr->tailLink;
+    }
+
+    sortNeighbors(neighbors, counter);
+    for (int i = 0; i < counter; ++i)
+    {
+        if (!visited[neighbors[i]])
+        {
+            dfsRecursive(neighbors[i], visited, op);
+        }
+    }
+}
+
 void Traverse::bfs(const void* const vert, const Operation& op) const
 {
     if (!graph || !vert || !op)
@@ -729,35 +778,6 @@ void Traverse::bfs(const void* const vert, const Operation& op) const
                 op(graph->xList[neighbors[i]].data);
                 queue[rear++] = neighbors[i];
             }
-        }
-    }
-}
-
-void Traverse::dfsRecursive(const int index, bool visited[], const Operation& op) const
-{
-    if (index < 0)
-    {
-        return;
-    }
-
-    visited[index] = true;
-    op(graph->xList[index].data);
-
-    int neighbors[maxVertexNum];
-    int counter = 0;
-    const ArcNode* curr = graph->xList[index].firstOut;
-    while (curr)
-    {
-        neighbors[counter++] = curr->headVex;
-        curr = curr->tailLink;
-    }
-
-    sortNeighbors(neighbors, counter);
-    for (int i = 0; i < counter; ++i)
-    {
-        if (!visited[neighbors[i]])
-        {
-            dfsRecursive(neighbors[i], visited, op);
         }
     }
 }

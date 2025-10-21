@@ -427,7 +427,7 @@ public:
         const auto opInTraversal = [&process](const void* const data)
         { process << *static_cast<const Data*>(data) << ' '; };
 
-        undirected::AMLGraph* const graph = undirected::create(&compareData);
+        undirected::AMLGraph* const graph = undirected::create(compareData);
         const auto traverse = Traverse(graph);
         process << std::boolalpha;
         for (const auto& vertex : vertices)
@@ -484,7 +484,7 @@ public:
         const auto opInTraversal = [&process](const void* const data)
         { process << *static_cast<const Data*>(data) << ' '; };
 
-        directed::OLGraph* const graph = directed::create(&compareData);
+        directed::OLGraph* const graph = directed::create(compareData);
         const auto traverse = Traverse(graph);
         process << std::boolalpha;
         for (const auto& vertex : vertices)
@@ -563,7 +563,7 @@ public:
         const auto opInTraversal = [&process](const void* const key)
         { process << *static_cast<const Key*>(key) << " ... "; };
 
-        binary::BinaryHeap* const heap = binary::create(capacity, &compareKey);
+        binary::BinaryHeap* const heap = binary::create(capacity, compareKey);
         const auto traverse = binary::Traverse(heap);
         process << std::boolalpha;
         process << "insert ";
@@ -603,7 +603,7 @@ public:
         const auto opInTraversal = [&process](const void* const key)
         { process << *static_cast<const Key*>(key) << " ... "; };
 
-        leftist::LeftistHeap* const heapA = leftist::create(&compareKey);
+        leftist::LeftistHeap* const heapA = leftist::create(compareKey);
         const auto traverseA = Traverse(heapA);
         process << std::boolalpha;
         process << "A insert ";
@@ -615,7 +615,7 @@ public:
         process.seekp(process.str().length() - 2);
         process << "\nA all details:\n" << Printer(heapA->root);
 
-        leftist::LeftistHeap* const heapB = leftist::create(&compareKey);
+        leftist::LeftistHeap* const heapB = leftist::create(compareKey);
         process << "B insert ";
         for (const auto& key : keys2)
         {
@@ -656,7 +656,7 @@ public:
         const auto opInTraversal = [&process](const void* const key)
         { process << *static_cast<const Key*>(key) << " ... "; };
 
-        skew::SkewHeap* const heapA = skew::create(&compareKey);
+        skew::SkewHeap* const heapA = skew::create(compareKey);
         const auto traverseA = Traverse(heapA);
         process << std::boolalpha;
         process << "A insert ";
@@ -668,7 +668,7 @@ public:
         process.seekp(process.str().length() - 2);
         process << "\nA all details:\n" << Printer(heapA->root);
 
-        skew::SkewHeap* const heapB = skew::create(&compareKey);
+        skew::SkewHeap* const heapB = skew::create(compareKey);
         process << "B insert ";
         for (const auto& key : keys2)
         {
@@ -850,7 +850,7 @@ public:
         const auto opInTraversal = [&process](const void* const key)
         { process << *static_cast<const Key*>(key) << " ... "; };
 
-        bs::BSTree* const tree = bs::create(&compareKey);
+        bs::BSTree* const tree = bs::create(compareKey);
         const auto traverse = Traverse(tree);
         process << std::boolalpha;
         process << "insert ";
@@ -900,7 +900,7 @@ public:
         const auto opInTraversal = [&process](const void* const key)
         { process << *static_cast<const Key*>(key) << " ... "; };
 
-        avl::AVLTree* const tree = avl::create(&compareKey);
+        avl::AVLTree* const tree = avl::create(compareKey);
         const auto traverse = Traverse(tree);
         process << std::boolalpha;
         process << "height: " << avl::getHeight(tree) << '\n';
@@ -948,7 +948,7 @@ public:
         const auto opInTraversal = [&process](const void* const key)
         { process << *static_cast<const Key*>(key) << " ... "; };
 
-        splay::SplayTree* const tree = splay::create(&compareKey);
+        splay::SplayTree* const tree = splay::create(compareKey);
         const auto traverse = Traverse(tree);
         process << std::boolalpha;
         process << "insert ";
