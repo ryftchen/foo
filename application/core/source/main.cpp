@@ -63,7 +63,7 @@ static int watchdog(const ::pid_t pid)
     std::signal(SIGALRM, [](const int sig) { application::alarmInterrupted = sig; });
     std::signal(SIGCHLD, [](const int sig) { application::childInterrupted = sig; });
 
-    constexpr std::uint8_t timeout = 90;
+    constexpr std::uint8_t timeout = 60;
     ::alarm(timeout);
     ::pause();
     if (application::alarmInterrupted != 0)
