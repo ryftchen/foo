@@ -868,7 +868,7 @@ std::string View::statusReportsPreview(const std::uint16_t frame)
                                  "that the classic ptrace permissions have been set."};
     }
 
-    const int pid = ::getpid();
+    const ::pid_t pid = ::getpid();
     constexpr std::uint16_t totalLen = 1024;
     std::array<char, totalLen> queryStmt{};
     std::snprintf(

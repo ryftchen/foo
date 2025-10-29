@@ -100,8 +100,8 @@ int main(int argc, char* argv[])
         return application::run(argc, argv);
     }
 
-    const int ppidBeforeFork = ::getpid();
-    const int pid = ::fork();
+    const ::pid_t ppidBeforeFork = ::getpid();
+    const ::pid_t pid = ::fork();
     if (pid < 0)
     {
         return EXIT_FAILURE;
