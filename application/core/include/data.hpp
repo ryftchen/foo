@@ -25,9 +25,9 @@ class Packet
 {
 public:
     //! @brief Construct a new Packet object.
-    //! @param buf - packet buffer
-    //! @param len - buffer length
-    Packet(char* buf, const int len);
+    //! @param pktBuf - packet buffer
+    //! @param pktLen - buffer length
+    Packet(char* const pktBuf, const std::size_t pktLen);
 
     //! @brief Write data to the packet buffer.
     //! @tparam T - type of data to be written
@@ -39,7 +39,7 @@ public:
     //! @param dst - data after conversion
     //! @param offset - data offset
     //! @return whether it is continuously writable
-    bool write(const void* const dst, const int offset);
+    bool write(const void* const dst, const std::size_t offset);
     //! @brief Read data to the packet buffer.
     //! @tparam T - type of data to be read
     //! @param data - original data
@@ -50,12 +50,12 @@ public:
     //! @param dst - data after conversion
     //! @param offset - data offset
     //! @return whether it is continuously readable
-    bool read(void* const dst, const int offset);
+    bool read(void* const dst, const std::size_t offset);
 
 private:
-    //! @brief Data packet buffer pointer.
-    char* buffer{nullptr};
-    //! @brief Pointer to the end of the buffer.
+    //! @brief Pointer to the beginning of the buffer.
+    char* const head{nullptr};
+    //! @brief Pointer to the ending of the buffer.
     const char* const tail{nullptr};
     //! @brief Pointer to the current writing location.
     char* writer{nullptr};
@@ -102,12 +102,12 @@ bool Packet::read(T* const data)
     return isEnd;
 }
 
-extern void encryptMessage(char* buffer, const int length);
-extern void decryptMessage(char* buffer, const int length);
+extern void encryptMessage(char* const buffer, const std::size_t length);
+extern void decryptMessage(char* const buffer, const std::size_t length);
 
 extern void compressData(std::vector<char>& cache);
 extern void decompressData(std::vector<char>& cache);
 
-extern std::string toHexString(const char* const buffer, const int length);
+extern std::string toHexString(const char* const buffer, const std::size_t length);
 } // namespace data
 } // namespace application
