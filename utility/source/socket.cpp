@@ -105,7 +105,7 @@ std::string Socket::transportAddress() const
     return ipAddrString(sockAddr);
 }
 
-int Socket::transportPort() const
+std::uint16_t Socket::transportPort() const
 {
     return ::ntohs(sockAddr.sin_port);
 }
@@ -126,21 +126,21 @@ void Socket::launchAsyncTask(Func&& func, Args&&... args)
     asyncTask = std::async(std::launch::async, std::forward<Func>(func), std::forward<Args>(args)...);
 }
 
-int TCPSocket::toSend(const char* const bytes, const std::size_t length)
+::ssize_t TCPSocket::toSend(const char* const bytes, const std::size_t size)
 {
     const Guard lock(*this);
-    return ::send(sock, bytes, length, 0);
+    return ::send(sock, bytes, size, 0);
 }
 
-int TCPSocket::toSend(const std::string_view message)
+::ssize_t TCPSocket::toSend(const std::string_view message)
 {
     return toSend(message.data(), message.length());
 }
 
 void TCPSocket::toConnect(const std::string& ip, const std::uint16_t port)
 {
-    ::addrinfo hints{};
     ::addrinfo* addrInfo = nullptr;
+    ::addrinfo hints{};
     hints.ai_family = AF_INET;
     hints.ai_socktype = ::SOCK_STREAM;
 
@@ -199,7 +199,7 @@ void TCPSocket::toRecv(const std::shared_ptr<TCPSocket> socket) // NOLINT(perfor
     std::vector<::pollfd> pollFDs(1);
     pollFDs.at(0).fd = socket->sock;
     pollFDs.at(0).events = POLLIN;
-    for (constexpr int timeout = 10; !socket->stopRequested();)
+    for (constexpr std::uint8_t timeout = 10; !socket->stopRequested();)
     {
         const int status = ::poll(pollFDs.data(), pollFDs.size(), timeout);
         if (status == -1)
@@ -211,7 +211,7 @@ void TCPSocket::toRecv(const std::shared_ptr<TCPSocket> socket) // NOLINT(perfor
             continue;
         }
 
-        if (int msgLen = 0; pollFDs.at(0).revents & POLLIN)
+        if (::ssize_t msgLen = 0; pollFDs.at(0).revents & POLLIN)
         {
             if (const Guard lock(*socket); true)
             {
@@ -240,12 +240,12 @@ void TCPSocket::onMessage(const std::string_view message) const
     }
 }
 
-void TCPSocket::onRawMessage(char* bytes, const int length) const
+void TCPSocket::onRawMessage(char* const bytes, const std::size_t size) const
 {
     const auto& callback = rawMsgCb.load(std::memory_order_acquire);
     if (callback && *callback)
     {
-        (*callback)(bytes, length);
+        (*callback)(bytes, size);
     }
 }
 
@@ -280,7 +280,7 @@ void TCPServer::toBind(const std::uint16_t port)
 
 void TCPServer::toListen()
 {
-    constexpr int retryTimes = 10;
+    constexpr std::uint8_t retryTimes = 10;
     if (const Guard lock(*this); ::listen(sock, retryTimes) == -1)
     {
         throw std::runtime_error{"Server could not listen on the socket, errno: " + errnoString() + '.'};
@@ -357,12 +357,11 @@ void TCPServer::onConnection(
     }
 }
 
-int UDPSocket::toSendTo(
-    const char* const bytes, const std::size_t length, const std::string& ip, const std::uint16_t port)
+::ssize_t UDPSocket::toSendTo(
+    const char* const bytes, const std::size_t size, const std::string& ip, const std::uint16_t port)
 {
-    ::sockaddr_in addr{};
-    ::addrinfo hints{};
     ::addrinfo* addrInfo = nullptr;
+    ::addrinfo hints{};
     hints.ai_family = AF_INET;
     hints.ai_socktype = ::SOCK_DGRAM;
 
@@ -372,6 +371,7 @@ int UDPSocket::toSendTo(
             "Invalid address, status: " + std::string{::gai_strerror(status)} + ", errno: " + errnoString() + '.'};
     }
 
+    ::sockaddr_in addr{};
     for (const ::addrinfo* entry = addrInfo; entry != nullptr; entry = entry->ai_next)
     {
         if (entry->ai_family == AF_INET)
@@ -384,10 +384,10 @@ int UDPSocket::toSendTo(
 
     addr.sin_port = ::htons(port);
     addr.sin_family = AF_INET;
-    int sent = 0;
+    ::ssize_t sent = 0;
     if (const Guard lock(*this); true)
     {
-        sent = ::sendto(sock, bytes, length, 0, reinterpret_cast<const ::sockaddr*>(&addr), sizeof(addr));
+        sent = ::sendto(sock, bytes, size, 0, reinterpret_cast<const ::sockaddr*>(&addr), sizeof(addr));
         if (sent == -1)
         {
             throw std::runtime_error{"Unable to send message to address, errno: " + errnoString() + '.'};
@@ -396,26 +396,26 @@ int UDPSocket::toSendTo(
     return sent;
 }
 
-int UDPSocket::toSendTo(const std::string_view message, const std::string& ip, const std::uint16_t port)
+::ssize_t UDPSocket::toSendTo(const std::string_view message, const std::string& ip, const std::uint16_t port)
 {
     return toSendTo(message.data(), message.length(), ip, port);
 }
 
-int UDPSocket::toSend(const char* const bytes, const std::size_t length)
+::ssize_t UDPSocket::toSend(const char* const bytes, const std::size_t size)
 {
     const Guard lock(*this);
-    return ::send(sock, bytes, length, 0);
+    return ::send(sock, bytes, size, 0);
 }
 
-int UDPSocket::toSend(const std::string_view message)
+::ssize_t UDPSocket::toSend(const std::string_view message)
 {
     return toSend(message.data(), message.length());
 }
 
 void UDPSocket::toConnect(const std::string& ip, const std::uint16_t port)
 {
-    ::addrinfo hints{};
     ::addrinfo* addrInfo = nullptr;
+    ::addrinfo hints{};
     hints.ai_family = AF_INET;
     hints.ai_socktype = ::SOCK_DGRAM;
 
@@ -485,7 +485,7 @@ void UDPSocket::toRecv(const std::shared_ptr<UDPSocket> socket) // NOLINT(perfor
     std::vector<::pollfd> pollFDs(1);
     pollFDs.at(0).fd = socket->sock;
     pollFDs.at(0).events = POLLIN;
-    for (constexpr int timeout = 10; !socket->stopRequested();)
+    for (constexpr std::uint8_t timeout = 10; !socket->stopRequested();)
     {
         const int status = ::poll(pollFDs.data(), pollFDs.size(), timeout);
         if (status == -1)
@@ -497,7 +497,7 @@ void UDPSocket::toRecv(const std::shared_ptr<UDPSocket> socket) // NOLINT(perfor
             continue;
         }
 
-        if (int msgLen = 0; pollFDs.at(0).revents & POLLIN)
+        if (::ssize_t msgLen = 0; pollFDs.at(0).revents & POLLIN)
         {
             if (const Guard lock(*socket); true)
             {
@@ -525,7 +525,7 @@ void UDPSocket::toRecvFrom(const std::shared_ptr<UDPSocket> socket) // NOLINT(pe
     std::vector<::pollfd> pollFDs(1);
     pollFDs.at(0).fd = socket->sock;
     pollFDs.at(0).events = POLLIN;
-    for (constexpr int timeout = 10; !socket->stopRequested();)
+    for (constexpr std::uint8_t timeout = 10; !socket->stopRequested();)
     {
         const int status = ::poll(pollFDs.data(), pollFDs.size(), timeout);
         if (status == -1)
@@ -537,7 +537,7 @@ void UDPSocket::toRecvFrom(const std::shared_ptr<UDPSocket> socket) // NOLINT(pe
             continue;
         }
 
-        if (int msgLen = 0; pollFDs.at(0).revents & POLLIN)
+        if (::ssize_t msgLen = 0; pollFDs.at(0).revents & POLLIN)
         {
             if (const Guard lock(*socket); true)
             {
@@ -570,12 +570,13 @@ void UDPSocket::onMessage(const std::string_view message, const std::string& ip,
     }
 }
 
-void UDPSocket::onRawMessage(char* bytes, const int length, const std::string& ip, const std::uint16_t port) const
+void UDPSocket::onRawMessage(
+    char* const bytes, const std::size_t size, const std::string& ip, const std::uint16_t port) const
 {
     const auto& callback = rawMsgCb.load(std::memory_order_acquire);
     if (callback && *callback)
     {
-        (*callback)(bytes, length, ip, port);
+        (*callback)(bytes, size, ip, port);
     }
 }
 

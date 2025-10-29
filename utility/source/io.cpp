@@ -212,7 +212,7 @@ int FDStreamBuffer::flush()
     const char* ptr = pbase();
     while (ptr < pptr())
     {
-        const int writtenSize = ::write(fd, ptr, pptr() - ptr);
+        const ::ssize_t writtenSize = ::write(fd, ptr, pptr() - ptr);
         if (writtenSize <= 0)
         {
             return -1;
@@ -239,7 +239,7 @@ FDStreamBuffer::int_type FDStreamBuffer::underflow()
         readBuffer = std::make_unique<char[]>(bufferSize);
     }
 
-    const int readSize = ::read(fd, readBuffer.get(), bufferSize);
+    const ::ssize_t readSize = ::read(fd, readBuffer.get(), bufferSize);
     if (readSize <= 0)
     {
         return traits_type::eof();

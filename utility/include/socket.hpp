@@ -53,7 +53,7 @@ public:
     std::string transportAddress() const;
     //! @brief Get the transport port number.
     //! @return transport port number
-    int transportPort() const;
+    std::uint16_t transportPort() const;
 
     //! @brief Transport information.
     ::sockaddr_in sockAddr{};
@@ -135,13 +135,13 @@ public:
 
     //! @brief Send bytes from the buffer to socket FD.
     //! @param bytes - bytes buffer
-    //! @param length - length of buffer
+    //! @param size - length of buffer
     //! @return sent size
-    int toSend(const char* const bytes, const std::size_t length);
+    ::ssize_t toSend(const char* const bytes, const std::size_t size);
     //! @brief Send the message string to socket FD.
     //! @param message - message string
     //! @return sent size
-    int toSend(const std::string_view message);
+    ::ssize_t toSend(const std::string_view message);
     //! @brief Open a connection on socket FD to peer.
     //! @param ip - peer ip address
     //! @param port - peer port number
@@ -153,7 +153,7 @@ public:
     //! @brief Alias for the handling on message received.
     using MessageCallback = std::function<void(const std::string_view)>;
     //! @brief Alias for the handling on raw message received.
-    using RawMessageCallback = std::function<void(char*, const int)>;
+    using RawMessageCallback = std::function<void(char* const, const std::size_t)>;
     //! @brief Bind the callback to handle the received message.
     //! @param callback - callback on received message
     void subscribeMessage(MessageCallback callback);
@@ -176,8 +176,8 @@ private:
     void onMessage(const std::string_view message) const;
     //! @brief Emit the received raw message.
     //! @param bytes - received bytes buffer
-    //! @param length - length of buffer
-    void onRawMessage(char* bytes, const int length) const;
+    //! @param size - length of buffer
+    void onRawMessage(char* const bytes, const std::size_t size) const;
 };
 
 //! @brief TCP server.
@@ -229,26 +229,27 @@ public:
 
     //! @brief Send bytes from the buffer on socket FD to peer.
     //! @param bytes - bytes buffer
-    //! @param length - length of buffer
+    //! @param size - length of buffer
     //! @param ip - peer ip address
     //! @param port - peer port number
     //! @return sent size
-    int toSendTo(const char* const bytes, const std::size_t length, const std::string& ip, const std::uint16_t port);
+    ::ssize_t toSendTo(
+        const char* const bytes, const std::size_t size, const std::string& ip, const std::uint16_t port);
     //! @brief Send the message string on socket FD to peer.
     //! @param message - message string
     //! @param ip - peer ip address
     //! @param port - peer port number
     //! @return sent size
-    int toSendTo(const std::string_view message, const std::string& ip, const std::uint16_t port);
+    ::ssize_t toSendTo(const std::string_view message, const std::string& ip, const std::uint16_t port);
     //! @brief Send bytes from the buffer to socket FD.
     //! @param bytes - bytes buffer
-    //! @param length - length of buffer
+    //! @param size - length of buffer
     //! @return sent size
-    int toSend(const char* const bytes, const std::size_t length);
+    ::ssize_t toSend(const char* const bytes, const std::size_t size);
     //! @brief Send the message string to socket FD.
     //! @param message - message string
     //! @return sent size
-    int toSend(const std::string_view message);
+    ::ssize_t toSend(const std::string_view message);
     //! @brief Open a connection on socket FD to peer.
     //! @param ip - peer ip address
     //! @param port - peer port number
@@ -263,7 +264,8 @@ public:
     //! @brief Alias for the handling on message received.
     using MessageCallback = std::function<void(const std::string_view, const std::string&, const std::uint16_t)>;
     //! @brief Alias for the handling on raw message received.
-    using RawMessageCallback = std::function<void(char*, const int, const std::string&, const std::uint16_t)>;
+    using RawMessageCallback =
+        std::function<void(char* const, const std::size_t, const std::string&, const std::uint16_t)>;
     //! @brief Bind the callback to handle the received message.
     //! @param callback - callback on received message
     void subscribeMessage(MessageCallback callback);
@@ -291,10 +293,10 @@ private:
     void onMessage(const std::string_view message, const std::string& ip, const std::uint16_t port) const;
     //! @brief Emit the received raw message.
     //! @param bytes - received bytes buffer
-    //! @param length - length of buffer
+    //! @param size - length of buffer
     //! @param ip - source ip address
     //! @param port - source port number
-    void onRawMessage(char* bytes, const int length, const std::string& ip, const std::uint16_t port) const;
+    void onRawMessage(char* const bytes, const std::size_t size, const std::string& ip, const std::uint16_t port) const;
 };
 
 //! @brief UDP server.

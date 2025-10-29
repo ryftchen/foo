@@ -101,18 +101,20 @@ static int serialize(data::Packet& pkt, const TLVValue& val, const T TLVValue::*
 }
 
 //! @brief TLV value serialization.
+//! @tparam N - size of target payload
 //! @param pkt - encoding packet that was filled type
 //! @param val - value of TLV to encode
 //! @param pl - target payload that has been included in the value of TLV
 //! @return summary offset of length-value
-static int serialize(data::Packet& pkt, const TLVValue& val, const char (TLVValue::*pl)[])
+template <std::size_t N>
+static int serialize(data::Packet& pkt, const TLVValue& val, const char (TLVValue::*pl)[N])
 {
     if (!pl)
     {
         return 0;
     }
 
-    const int length = std::strlen(val.*pl);
+    const int length = ::strnlen(val.*pl, N);
     pkt.write<int>(length);
     pkt.write(val.*pl, length);
     return sizeof(int) + length;
@@ -140,11 +142,13 @@ static int deserialize(data::Packet& pkt, TLVValue& val, T TLVValue::* pl)
 }
 
 //! @brief TLV value deserialization.
+//! @tparam N - size of target payload
 //! @param pkt - decoding packet that was filled type
 //! @param val - value of TLV to decode
 //! @param pl - target payload that has been included in the value of TLV
 //! @return summary offset of length-value
-static int deserialize(data::Packet& pkt, TLVValue& val, char (TLVValue::*pl)[])
+template <std::size_t N>
+static int deserialize(data::Packet& pkt, TLVValue& val, char (TLVValue::*pl)[N])
 {
     if (!pl)
     {
@@ -153,7 +157,7 @@ static int deserialize(data::Packet& pkt, TLVValue& val, char (TLVValue::*pl)[])
 
     int length = 0;
     pkt.read<int>(&length);
-    pkt.read(&(val.*pl), length);
+    pkt.read(val.*pl, std::min<std::size_t>(length, N));
     return sizeof(int) + length;
 }
 
@@ -162,7 +166,7 @@ static int deserialize(data::Packet& pkt, TLVValue& val, char (TLVValue::*pl)[])
 //! @param len - buffer length
 //! @param val - value of TLV to encode
 //! @return success or failure
-static bool encodeTLV(char* buf, int& len, const TLVValue& val)
+static bool encodeTLV(char* const buf, std::size_t& len, const TLVValue& val)
 {
     if (!buf)
     {
@@ -198,9 +202,9 @@ static bool encodeTLV(char* buf, int& len, const TLVValue& val)
 //! @param len - buffer length
 //! @param val - value of TLV to decode
 //! @return success or failure
-static bool decodeTLV(char* buf, const int len, TLVValue& val)
+static bool decodeTLV(char* const buf, const std::size_t len, TLVValue& val)
 {
-    if (!buf || (len <= 0))
+    if (!buf || (len == 0))
     {
         return false;
     }
@@ -257,12 +261,8 @@ View::View() : FSM(State::initial)
 
 View& View::getInstance()
 {
-    if (configure::detail::activateHelper()) [[likely]]
-    {
-        static View viewer{};
-        return viewer;
-    }
-    throw std::logic_error{"The " + name + " is disabled."};
+    static View viewer{};
+    return viewer;
 }
 
 // NOLINTBEGIN(cppcoreguidelines-avoid-goto)
@@ -351,7 +351,7 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-bool View::Access::onParsing(char* buffer, const int length) const
+bool View::Access::onParsing(char* const buffer, const std::size_t length) const
 {
     data::decryptMessage(buffer, length);
 
@@ -361,7 +361,8 @@ bool View::Access::onParsing(char* buffer, const int length) const
         throw std::runtime_error{"Invalid message content (" + data::toHexString(buffer, length) + ")."};
     }
 
-    if (std::strlen(value.libDetail) != 0)
+    if (const std::size_t libLen = ::strnlen(value.libDetail, sizeof(value.libDetail));
+        (libLen != 0) && (libLen < sizeof(value.libDetail)))
     {
         std::cout << value.libDetail << std::endl;
     }
@@ -377,7 +378,8 @@ bool View::Access::onParsing(char* buffer, const int length) const
     {
         printSharedMemory(value.statusShmId);
     }
-    if (std::strlen(value.configDetail) != 0)
+    if (const std::size_t configLen = ::strnlen(value.configDetail, sizeof(value.configDetail));
+        (configLen != 0) && (configLen < sizeof(value.configDetail)))
     {
         using utility::json::JSON;
         std::cout << JSON::load(value.configDetail) << std::endl;
@@ -450,7 +452,7 @@ void View::Sync::notifyTaskDone() const
 //! @param buf - TLV packet buffer
 //! @return buffer length
 template <>
-int View::buildCustomTLVPacket<View::OptDepend>(const Args& /*args*/, char* buf)
+std::size_t View::buildCustomTLVPacket<View::OptDepend>(const Args& /*args*/, char* const buf)
 {
     tlv::TLVValue val{};
     std::string extLibraries{};
@@ -504,7 +506,7 @@ int View::buildCustomTLVPacket<View::OptDepend>(const Args& /*args*/, char* buf)
 #endif // defined(OPENSSL_VERSION_STR)
     std::strncpy(val.libDetail, extLibraries.c_str(), sizeof(val.libDetail) - 1);
     val.libDetail[sizeof(val.libDetail) - 1] = '\0';
-    int len = 0;
+    std::size_t len = 0;
     if (!tlv::encodeTLV(buf, len, val))
     {
         throw std::runtime_error{"Failed to build packet for the " + std::string{OptDepend::name} + " option."};
@@ -518,7 +520,7 @@ int View::buildCustomTLVPacket<View::OptDepend>(const Args& /*args*/, char* buf)
 //! @param buf - TLV packet buffer
 //! @return buffer length
 template <>
-int View::buildCustomTLVPacket<View::OptExecute>(const Args& args, char* buf)
+std::size_t View::buildCustomTLVPacket<View::OptExecute>(const Args& args, char* const buf)
 {
     const auto cmd = std::accumulate(
         args.cbegin(),
@@ -531,7 +533,7 @@ int View::buildCustomTLVPacket<View::OptExecute>(const Args& args, char* buf)
         throw std::runtime_error{"Please enter the \"execute\" and append with 'CMD' (include quotes)."};
     }
 
-    int len = 0;
+    std::size_t len = 0;
     if (const int shmId = fillSharedMemory(utility::io::executeCommand("/bin/bash -c " + cmd));
         !tlv::encodeTLV(buf, len, tlv::TLVValue{.bashShmId = shmId}))
     {
@@ -545,9 +547,9 @@ int View::buildCustomTLVPacket<View::OptExecute>(const Args& args, char* buf)
 //! @param buf - TLV packet buffer
 //! @return buffer length
 template <>
-int View::buildCustomTLVPacket<View::OptJournal>(const Args& /*args*/, char* buf)
+std::size_t View::buildCustomTLVPacket<View::OptJournal>(const Args& /*args*/, char* const buf)
 {
-    int len = 0;
+    std::size_t len = 0;
     if (const int shmId = fillSharedMemory(logContentsPreview());
         !tlv::encodeTLV(buf, len, tlv::TLVValue{.logShmId = shmId}))
     {
@@ -562,7 +564,7 @@ int View::buildCustomTLVPacket<View::OptJournal>(const Args& /*args*/, char* buf
 //! @param buf - TLV packet buffer
 //! @return buffer length
 template <>
-int View::buildCustomTLVPacket<View::OptMonitor>(const Args& args, char* buf)
+std::size_t View::buildCustomTLVPacket<View::OptMonitor>(const Args& args, char* const buf)
 {
     if (!args.empty())
     {
@@ -572,7 +574,7 @@ int View::buildCustomTLVPacket<View::OptMonitor>(const Args& args, char* buf)
         }
     }
 
-    int len = 0;
+    std::size_t len = 0;
     if (const int shmId = fillSharedMemory(statusReportsPreview(args.empty() ? 0 : std::stoul(args.front())));
         !tlv::encodeTLV(buf, len, tlv::TLVValue{.statusShmId = shmId}))
     {
@@ -586,13 +588,13 @@ int View::buildCustomTLVPacket<View::OptMonitor>(const Args& args, char* buf)
 //! @param buf - TLV packet buffer
 //! @return buffer length
 template <>
-int View::buildCustomTLVPacket<View::OptProfile>(const Args& /*args*/, char* buf)
+std::size_t View::buildCustomTLVPacket<View::OptProfile>(const Args& /*args*/, char* const buf)
 {
     tlv::TLVValue val{};
     std::strncpy(
         val.configDetail, configure::retrieveDataRepo().toUnescapedString().c_str(), sizeof(val.configDetail) - 1);
     val.configDetail[sizeof(val.configDetail) - 1] = '\0';
-    int len = 0;
+    std::size_t len = 0;
     if (!tlv::encodeTLV(buf, len, val))
     {
         throw std::runtime_error{"Failed to build packet for the " + std::string{OptProfile::name} + " option."};
@@ -601,7 +603,7 @@ int View::buildCustomTLVPacket<View::OptProfile>(const Args& /*args*/, char* buf
     return len;
 }
 
-int View::buildResponse(const std::string& reqPlaintext, char* respBuffer)
+std::size_t View::buildResponse(const std::string& reqPlaintext, char* const respBuffer)
 {
     return std::visit(
         OptionVisitor{
@@ -618,7 +620,7 @@ int View::buildResponse(const std::string& reqPlaintext, char* respBuffer)
                         "The option is unprocessed due to unregistered or potential registration failures (typeid: "
                         + std::string{typeid(opt).name()} + ")."};
                 }
-                return 0;
+                return static_cast<std::size_t>(0);
             }},
         extractOption(reqPlaintext));
 }
@@ -660,17 +662,17 @@ std::vector<std::string> View::splitString(const std::string& str)
     return split;
 }
 
-int View::buildAckTLVPacket(char* buf)
+std::size_t View::buildAckTLVPacket(char* const buf)
 {
-    int len = 0;
+    std::size_t len = 0;
     tlv::encodeTLV(buf, len, tlv::TLVValue{});
     data::encryptMessage(buf, len);
     return len;
 }
 
-int View::buildFinTLVPacket(char* buf)
+std::size_t View::buildFinTLVPacket(char* const buf)
 {
-    int len = 0;
+    std::size_t len = 0;
     tlv::encodeTLV(buf, len, tlv::TLVValue{.stopTag = true});
     data::encryptMessage(buf, len);
     return len;

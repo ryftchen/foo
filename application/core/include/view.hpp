@@ -79,7 +79,7 @@ public:
         //! @param buffer - TLV packet buffer
         //! @param length - buffer length
         //! @return need to continue parsing or not
-        bool onParsing(char* buffer, const int length) const;
+        bool onParsing(char* const buffer, const std::size_t length) const;
         //! @brief Get the supported options.
         //! @return supported options
         [[nodiscard]] auto getSupportedOptions() const noexcept { return inst.supportedOptions; }
@@ -228,7 +228,7 @@ private:
     //! @param reqPlaintext - plaintext of the request
     //! @param respBuffer - buffer to store the response
     //! @return length of the response message
-    static int buildResponse(const std::string& reqPlaintext, char* respBuffer);
+    static std::size_t buildResponse(const std::string& reqPlaintext, char* const respBuffer);
     //! @brief Extract the option from the request.
     //! @param reqPlaintext - plaintext of the request
     //! @return option type
@@ -240,11 +240,11 @@ private:
     //! @brief Build the TLV packet of the response message to acknowledge only.
     //! @param buf - TLV packet buffer
     //! @return buffer length
-    static int buildAckTLVPacket(char* buf);
+    static std::size_t buildAckTLVPacket(char* const buf);
     //! @brief Build the TLV packet of the response message to stop connection.
     //! @param buf - TLV packet buffer
     //! @return buffer length
-    static int buildFinTLVPacket(char* buf);
+    static std::size_t buildFinTLVPacket(char* const buf);
     //! @brief Build the TLV packet of the response message in a customized way.
     //! @tparam T - type of option attribute
     //! @param args - container of arguments
@@ -252,7 +252,7 @@ private:
     //! @return buffer length
     template <typename T>
     requires std::derived_from<T, OptBase>
-    static int buildCustomTLVPacket(const Args& args, char* buf);
+    static std::size_t buildCustomTLVPacket(const Args& args, char* const buf);
     //! @brief Fill the shared memory.
     //! @param contents - contents to be filled
     //! @return shm id

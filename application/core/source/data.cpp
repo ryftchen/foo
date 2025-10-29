@@ -18,17 +18,18 @@
 
 namespace application::data
 {
-Packet::Packet(char* buf, const int len) : buffer{buf}, tail{buffer + len}, writer{buffer}, reader{buffer}
+Packet::Packet(char* const pktBuf, const std::size_t pktLen) :
+    head{pktBuf}, tail{head + pktLen}, writer{head}, reader{head}
 {
-    if (!buffer || (len < 0))
+    if (!pktBuf)
     {
         throw std::runtime_error{"The attempt to create the data packet failed."};
     }
 }
 
-bool Packet::write(const void* const dst, const int offset)
+bool Packet::write(const void* const dst, const std::size_t offset)
 {
-    if (!dst || (offset <= 0))
+    if (!dst || (offset == 0))
     {
         return false;
     }
@@ -38,9 +39,9 @@ bool Packet::write(const void* const dst, const int offset)
     return writer < tail;
 }
 
-bool Packet::read(void* const dst, const int offset)
+bool Packet::read(void* const dst, const std::size_t offset)
 {
-    if (!dst || (offset <= 0))
+    if (!dst || (offset == 0))
     {
         return false;
     }
@@ -54,9 +55,9 @@ bool Packet::read(void* const dst, const int offset)
 //! @brief Encrypt the message with AES-128-CFB-128.
 //! @param buffer - message buffer
 //! @param length - buffer length
-void encryptMessage(char* buffer, const int length)
+void encryptMessage(char* const buffer, const std::size_t length)
 {
-    if (!buffer || (length <= 0))
+    if (!buffer || (length == 0))
     {
         return;
     }
@@ -97,9 +98,9 @@ void encryptMessage(char* buffer, const int length)
 //! @brief Decrypt the message with AES-128-CFB-128.
 //! @param buffer - message buffer
 //! @param length - buffer length
-void decryptMessage(char* buffer, const int length)
+void decryptMessage(char* const buffer, const std::size_t length)
 {
-    if (!buffer || (length <= 0))
+    if (!buffer || (length == 0))
     {
         return;
     }
@@ -185,15 +186,15 @@ void decompressData(std::vector<char>& cache)
 //! @param buffer - byte buffer
 //! @param length - buffer length
 //! @return hexadecimal string representation of the buffer
-std::string toHexString(const char* const buffer, const int length)
+std::string toHexString(const char* const buffer, const std::size_t length)
 {
-    if (!buffer || (length <= 0))
+    if (!buffer || (length == 0))
     {
         return {};
     }
 
     std::ostringstream body{};
-    for (int i = 0; i < length; ++i)
+    for (std::size_t i = 0; i < length; ++i)
     {
         body << "0x" << std::setfill('0') << std::setw(2) << std::hex
              << static_cast<int>(static_cast<unsigned char>(buffer[i]));
