@@ -120,42 +120,42 @@ consteval bool isStatelessClass()
 }
 
 //! @brief Check whether the target value is part of the enumeration.
-//! @tparam EnumType - type of enumeration
+//! @tparam Enum - type of enumeration
 //! @tparam Values - arguments of enumeration
-template <typename EnumType, EnumType... Values>
-requires std::is_enum_v<EnumType>
+template <typename Enum, Enum... Values>
+requires std::is_enum_v<Enum>
 struct EnumCheck;
 //! @brief Check whether the target value is part of the enumeration.
-//! @tparam EnumType - type of enumeration
-template <typename EnumType>
-requires std::is_enum_v<EnumType>
-struct EnumCheck<EnumType>
+//! @tparam Enum - type of enumeration
+template <typename Enum>
+requires std::is_enum_v<Enum>
+struct EnumCheck<Enum>
 {
     //! @brief Check whether it contains the value as an enumeration.
-    //! @tparam IntType - type of integral
+    //! @tparam Int - type of integral
     //! @return has or not
-    template <typename IntType>
-    static constexpr bool has(const IntType /*val*/)
+    template <typename Int>
+    static constexpr bool has(const Int /*val*/)
     {
         return false;
     }
 };
 //! @brief Check whether the target value is part of the enumeration.
-//! @tparam EnumType - type of enumeration
+//! @tparam Enum - type of enumeration
 //! @tparam Value - current value
 //! @tparam Next - next enumeration value
-template <typename EnumType, EnumType Value, EnumType... Next>
-requires std::is_enum_v<EnumType>
-struct EnumCheck<EnumType, Value, Next...> : private EnumCheck<EnumType, Next...>
+template <typename Enum, Enum Value, Enum... Next>
+requires std::is_enum_v<Enum>
+struct EnumCheck<Enum, Value, Next...> : private EnumCheck<Enum, Next...>
 {
     //! @brief Check whether it contains the value as an enumeration.
-    //! @tparam IntType - type of integral
+    //! @tparam Int - type of integral
     //! @param val - target value
     //! @return has or not
-    template <typename IntType>
-    static constexpr bool has(const IntType val)
+    template <typename Int>
+    static constexpr bool has(const Int val)
     {
-        return (static_cast<IntType>(Value) == val) || EnumCheck<EnumType, Next...>::has(val);
+        return (static_cast<Int>(Value) == val) || EnumCheck<Enum, Next...>::has(val);
     }
 };
 
