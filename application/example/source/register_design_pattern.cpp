@@ -44,13 +44,13 @@ void clear()
 } // namespace manage
 
 //! @brief Find the position of bit flags to set a particular instance.
-//! @tparam T - type of target instance
+//! @tparam Inst - type of target instance
 //! @param stringify - instance name
 //! @return position of bit flags
-template <typename T>
+template <typename Inst>
 static consteval std::size_t mappedPos(const std::string_view stringify)
 {
-    return static_cast<std::size_t>(TypeInfo<T>::fields.template valueOfName<T>(stringify));
+    return static_cast<std::size_t>(TypeInfo<Inst>::fields.template valueOfName<Inst>(stringify));
 }
 
 namespace behavioral

@@ -75,74 +75,74 @@ private:
 };
 
 //! @brief Alias for the type information.
-//! @tparam T - type of target object
-template <typename T>
-using TypeInfo = utility::reflection::TypeInfo<T>;
+//! @tparam UDT - type of user defined data
+template <typename UDT>
+using TypeInfo = utility::reflection::TypeInfo<UDT>;
 //! @brief Get the name field directly for sub-cli related registrations.
-//! @tparam T - type of sub-cli or sub-cli's category
+//! @tparam MappedCLI - type of sub-cli or sub-cli's category
 //! @return name field
-template <typename T>
+template <typename MappedCLI>
 consteval std::string_view name()
 {
-    return TypeInfo<T>::name;
+    return TypeInfo<MappedCLI>::name;
 }
 //! @brief Get the alias attribute directly for sub-cli related registrations.
-//! @tparam T - type of sub-cli's category
+//! @tparam Meth - type of sub-cli's category
 //! @return alias attribute
-template <typename T>
-requires std::is_same_v<T, reg_algo::MatchMethod> || std::is_same_v<T, reg_algo::NotationMethod>
-    || std::is_same_v<T, reg_algo::OptimalMethod> || std::is_same_v<T, reg_algo::SearchMethod>
-    || std::is_same_v<T, reg_algo::SortMethod>
+template <typename Meth>
+requires std::is_same_v<Meth, reg_algo::MatchMethod> || std::is_same_v<Meth, reg_algo::NotationMethod>
+    || std::is_same_v<Meth, reg_algo::OptimalMethod> || std::is_same_v<Meth, reg_algo::SearchMethod>
+    || std::is_same_v<Meth, reg_algo::SortMethod>
 consteval std::string_view alias()
 {
-    return TypeInfo<reg_algo::ApplyAlgorithm>::fields.find(REFLECTION_STR(TypeInfo<T>::name))
+    return TypeInfo<reg_algo::ApplyAlgorithm>::fields.find(REFLECTION_STR(TypeInfo<Meth>::name))
         .attrs.find(REFLECTION_STR("alias"))
         .value;
 }
 //! @brief Get the alias attribute directly for sub-cli related registrations.
-//! @tparam T - type of sub-cli's category
+//! @tparam Inst - type of sub-cli's category
 //! @return alias attribute
-template <typename T>
-requires std::is_same_v<T, reg_dp::BehavioralInstance> || std::is_same_v<T, reg_dp::CreationalInstance>
-    || std::is_same_v<T, reg_dp::StructuralInstance>
+template <typename Inst>
+requires std::is_same_v<Inst, reg_dp::BehavioralInstance> || std::is_same_v<Inst, reg_dp::CreationalInstance>
+    || std::is_same_v<Inst, reg_dp::StructuralInstance>
 consteval std::string_view alias()
 {
-    return TypeInfo<reg_dp::ApplyDesignPattern>::fields.find(REFLECTION_STR(TypeInfo<T>::name))
+    return TypeInfo<reg_dp::ApplyDesignPattern>::fields.find(REFLECTION_STR(TypeInfo<Inst>::name))
         .attrs.find(REFLECTION_STR("alias"))
         .value;
 }
 //! @brief Get the alias attribute directly for sub-cli related registrations.
-//! @tparam T - type of sub-cli's category
+//! @tparam Inst - type of sub-cli's category
 //! @return alias attribute
-template <typename T>
-requires std::is_same_v<T, reg_ds::CacheInstance> || std::is_same_v<T, reg_ds::FilterInstance>
-    || std::is_same_v<T, reg_ds::GraphInstance> || std::is_same_v<T, reg_ds::HeapInstance>
-    || std::is_same_v<T, reg_ds::LinearInstance> || std::is_same_v<T, reg_ds::TreeInstance>
+template <typename Inst>
+requires std::is_same_v<Inst, reg_ds::CacheInstance> || std::is_same_v<Inst, reg_ds::FilterInstance>
+    || std::is_same_v<Inst, reg_ds::GraphInstance> || std::is_same_v<Inst, reg_ds::HeapInstance>
+    || std::is_same_v<Inst, reg_ds::LinearInstance> || std::is_same_v<Inst, reg_ds::TreeInstance>
 consteval std::string_view alias()
 {
-    return TypeInfo<reg_ds::ApplyDataStructure>::fields.find(REFLECTION_STR(TypeInfo<T>::name))
+    return TypeInfo<reg_ds::ApplyDataStructure>::fields.find(REFLECTION_STR(TypeInfo<Inst>::name))
         .attrs.find(REFLECTION_STR("alias"))
         .value;
 }
 //! @brief Get the alias attribute directly for sub-cli related registrations.
-//! @tparam T - type of sub-cli's category
+//! @tparam Meth - type of sub-cli's category
 //! @return alias attribute
-template <typename T>
-requires std::is_same_v<T, reg_num::ArithmeticMethod> || std::is_same_v<T, reg_num::DivisorMethod>
-    || std::is_same_v<T, reg_num::IntegralMethod> || std::is_same_v<T, reg_num::PrimeMethod>
+template <typename Meth>
+requires std::is_same_v<Meth, reg_num::ArithmeticMethod> || std::is_same_v<Meth, reg_num::DivisorMethod>
+    || std::is_same_v<Meth, reg_num::IntegralMethod> || std::is_same_v<Meth, reg_num::PrimeMethod>
 consteval std::string_view alias()
 {
-    return TypeInfo<reg_num::ApplyNumeric>::fields.find(REFLECTION_STR(TypeInfo<T>::name))
+    return TypeInfo<reg_num::ApplyNumeric>::fields.find(REFLECTION_STR(TypeInfo<Meth>::name))
         .attrs.find(REFLECTION_STR("alias"))
         .value;
 }
 //! @brief Get the description attribute directly for sub-cli related registrations.
-//! @tparam T - type of sub-cli or sub-cli's category
+//! @tparam MappedCLI - type of sub-cli or sub-cli's category
 //! @return description attribute
-template <typename T>
+template <typename MappedCLI>
 consteval std::string_view descr()
 {
-    return TypeInfo<T>::attrs.find(REFLECTION_STR("descr")).value;
+    return TypeInfo<MappedCLI>::attrs.find(REFLECTION_STR("descr")).value;
 }
 
 //! @brief The "Set Choice" message in the applied action.

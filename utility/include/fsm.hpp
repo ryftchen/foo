@@ -165,22 +165,22 @@ constexpr AdaptInvokeResultType<Func, Arg1, Arg2> adaptiveInvoke(Func&& func, Ar
 }
 
 //! @brief The list of behaviors.
-//! @tparam Types - type of behaviors
-template <typename... Types>
+//! @tparam Bs - type of behaviors
+template <typename... Bs>
 struct List;
 
 //! @brief Associate behaviors.
-//! @tparam Types - type of behaviors
-template <typename... Types>
+//! @tparam Bs - type of behaviors
+template <typename... Bs>
 struct Concat;
 //! @brief Associate events with behaviors.
-//! @tparam T - type of triggered event
-//! @tparam Types - type of behaviors
-template <typename T, typename... Types>
-struct Concat<T, List<Types...>>
+//! @tparam B0 - type of current behavior
+//! @tparam Bs - type of behaviors
+template <typename B0, typename... Bs>
+struct Concat<B0, List<Bs...>>
 {
     //! @brief Alias for the list.
-    using Type = List<T, Types...>;
+    using Type = List<B0, Bs...>;
 };
 //! @brief Associate.
 template <>
@@ -192,21 +192,21 @@ struct Concat<>
 
 //! @brief The filter of events and behaviors.
 //! @tparam Predicate - type of predicate
-//! @tparam Types - type of behaviors
-template <template <typename> class Predicate, typename... Types>
+//! @tparam Bs - type of behaviors
+template <template <typename> class Predicate, typename... Bs>
 struct Filter;
 //! @brief The filter of events and behaviors. Based on conditions.
 //! @tparam Predicate - type of predicate
-//! @tparam T - specific type for predicate
-//! @tparam Types - type of behaviors
-template <template <typename> class Predicate, typename T, typename... Types>
-struct Filter<Predicate, T, Types...>
+//! @tparam B0 - type of current behavior
+//! @tparam Bs - type of behaviors
+template <template <typename> class Predicate, typename B0, typename... Bs>
+struct Filter<Predicate, B0, Bs...>
 {
     //! @brief Alias for the concat or filter.
     using Type = std::conditional_t<
-        Predicate<T>::value,
-        typename Concat<T, typename Filter<Predicate, Types...>::Type>::Type,
-        typename Filter<Predicate, Types...>::Type>;
+        Predicate<B0>::value,
+        typename Concat<B0, typename Filter<Predicate, Bs...>::Type>::Type,
+        typename Filter<Predicate, Bs...>::Type>;
 };
 //! @brief The filter of behaviors.
 //! @tparam Predicate - type of predicate
@@ -294,21 +294,21 @@ private:
 
     //! @brief Classification by event type.
     //! @tparam Event - type of triggered event
-    //! @tparam Types - type of behaviors
-    template <typename Event, typename... Types>
+    //! @tparam Bs - type of behaviors
+    template <typename Event, typename... Bs>
     struct ByEventType;
     //! @brief Classification by event type. Include both event and behaviors.
     //! @tparam Event - type of triggered event
-    //! @tparam Types - type of behaviors
-    template <typename Event, typename... Types>
-    struct ByEventType<Event, List<Types...>>
+    //! @tparam Bs - type of behaviors
+    template <typename Event, typename... Bs>
+    struct ByEventType<Event, List<Bs...>>
     {
         //! @brief Alias for the predicate.
-        //! @tparam T - type of class to which the struct belongs
-        template <typename T>
-        using Predicate = std::is_same<typename T::EventType, Event>;
+        //! @tparam Beh - type of behavior
+        template <typename Beh>
+        using Pred = std::is_same<typename Beh::EventType, Event>;
         //! @brief Alias for the filter type.
-        using Type = typename Filter<Predicate, Types...>::Type;
+        using Type = typename Filter<Pred, Bs...>::Type;
     };
     //! @brief Classification by event type. Include only event.
     //! @tparam Event - type of triggered event
@@ -321,15 +321,15 @@ private:
 
     //! @brief Handle the specific event.
     //! @tparam Event - type of triggered event
-    //! @tparam Types - type of behaviors
-    template <typename Event, typename... Types>
+    //! @tparam Bs - type of behaviors
+    template <typename Event, typename... Bs>
     struct EventHandler;
     //! @brief Handle the specific event. Include both event and behaviors.
     //! @tparam Event - type of triggered event
-    //! @tparam T - type of derived class
-    //! @tparam Types - type of behaviors
-    template <typename Event, typename T, typename... Types>
-    struct EventHandler<Event, List<T, Types...>>
+    //! @tparam B0 - type of current behavior
+    //! @tparam Bs - type of behaviors
+    template <typename Event, typename B0, typename... Bs>
+    struct EventHandler<Event, List<B0, Bs...>>
     {
         //! @brief Execute handling.
         //! @param self - derived object
@@ -338,9 +338,9 @@ private:
         //! @return state after execute
         static constexpr State execute(Derived& self, const Event& event, const State state)
         {
-            return ((T::sourceState() == state) && T::checkGuard(self, event))
-                ? (T::processEvent(self, event), T::targetState())
-                : EventHandler<Event, List<Types...>>::execute(self, event, state);
+            return ((B0::sourceState() == state) && B0::checkGuard(self, event))
+                ? (B0::processEvent(self, event), B0::targetState())
+                : EventHandler<Event, List<Bs...>>::execute(self, event, state);
         }
     };
     //! @brief Handle the specific event. Include only event.

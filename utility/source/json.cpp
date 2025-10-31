@@ -443,7 +443,7 @@ JSON::JSON(const std::initializer_list<JSON>& list)
 
 JSON::JSON(JSON&& json) noexcept : data{std::move(json.data)}
 {
-    json.data = Data{};
+    json.data = ValidData{};
 }
 
 JSON& JSON::operator=(JSON&& json) noexcept
@@ -516,7 +516,7 @@ int JSON::length() const
 int JSON::size() const
 {
     return std::visit(
-        DataVisitor{
+        ValidDataVisitor{
             [](const ObjectPtr& val) { return static_cast<int>(val->size()); },
             [](const ArrayPtr& val) { return static_cast<int>(val->size()); },
             [](const auto& /*val*/) { return -1; }},
@@ -566,7 +566,7 @@ bool JSON::isBooleanType() const
 JSON::String JSON::toString() const
 {
     return std::visit(
-        DataVisitor{
+        ValidDataVisitor{
             [](const StringPtr& val) -> String { return jsonEscape(*val); },
             [this](const ObjectPtr& /*val*/) -> String { return dumpMinified(); },
             [this](const ArrayPtr& /*val*/) -> String { return dumpMinified(); },
@@ -581,7 +581,7 @@ JSON::String JSON::toString() const
 JSON::String JSON::toUnescapedString() const
 {
     return std::visit(
-        DataVisitor{
+        ValidDataVisitor{
             [](const StringPtr& val) -> String { return *val; },
             [this](const ObjectPtr& /*val*/) -> String { return dumpMinified(); },
             [this](const ArrayPtr& /*val*/) -> String { return dumpMinified(); },
@@ -596,7 +596,7 @@ JSON::String JSON::toUnescapedString() const
 JSON::Floating JSON::toFloating() const
 {
     return std::visit(
-        DataVisitor{
+        ValidDataVisitor{
             [](const Floating& val) -> Floating { return val; },
             [](const Integral& val) -> Floating { return val; },
             [](const Boolean& val) -> Floating { return val; },
@@ -622,7 +622,7 @@ JSON::Floating JSON::toFloating() const
 JSON::Integral JSON::toIntegral() const
 {
     return std::visit(
-        DataVisitor{
+        ValidDataVisitor{
             [](const Integral& val) -> Integral { return val; },
             [](const Boolean& val) -> Integral { return val; },
             [](const Floating& val) -> Integral { return val; },
@@ -644,7 +644,7 @@ JSON::Integral JSON::toIntegral() const
 JSON::Boolean JSON::toBoolean() const
 {
     return std::visit(
-        DataVisitor{
+        ValidDataVisitor{
             [](const Boolean& val) -> Boolean { return val; },
             [](const Floating& val) -> Boolean { return val; },
             [](const Integral& val) -> Boolean { return val; },
@@ -694,7 +694,7 @@ JSON::JSONConstWrapper<JSON::Array> JSON::arrayRange() const
 std::string JSON::dump(const std::uint32_t depth, const std::string_view tab) const
 {
     return std::visit(
-        DataVisitor{
+        ValidDataVisitor{
             [](const Null& /*val*/) -> std::string { return "null"; },
             [depth, &tab](const ObjectPtr& val) -> std::string
             {
@@ -742,7 +742,7 @@ std::string JSON::dump(const std::uint32_t depth, const std::string_view tab) co
 std::string JSON::dumpMinified() const
 {
     return std::visit(
-        DataVisitor{
+        ValidDataVisitor{
             [](const Null& /*val*/) -> std::string { return "null"; },
             [](const ObjectPtr& val) -> std::string
             {

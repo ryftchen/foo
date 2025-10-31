@@ -246,12 +246,12 @@ private:
     //! @return buffer length
     static std::size_t buildFinTLVPacket(char* const buf);
     //! @brief Build the TLV packet of the response message in a customized way.
-    //! @tparam T - type of option attribute
+    //! @tparam Opt - type of option attribute
     //! @param args - container of arguments
     //! @param buf - TLV packet buffer
     //! @return buffer length
-    template <typename T>
-    requires std::derived_from<T, OptBase>
+    template <typename Opt>
+    requires std::derived_from<Opt, OptBase>
     static std::size_t buildCustomTLVPacket(const Args& args, char* const buf);
     //! @brief Fill the shared memory.
     //! @param contents - contents to be filled
@@ -295,8 +295,8 @@ private:
     //! @brief Flag to indicate whether the output is complete.
     std::atomic_bool outputCompleted{true};
     //! @brief Renew the server.
-    //! @tparam T - type of server
-    template <typename T>
+    //! @tparam Sock - type of server
+    template <typename Sock>
     void renewServer();
 
     //! @brief Check whether it is in the uninterrupted serving state.

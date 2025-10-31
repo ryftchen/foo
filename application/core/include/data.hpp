@@ -30,22 +30,22 @@ public:
     Packet(char* const pktBuf, const std::size_t pktLen);
 
     //! @brief Write data to the packet buffer.
-    //! @tparam T - type of data to be written
+    //! @tparam Data - type of data to be written
     //! @param data - original data
     //! @return whether it is continuously writable
-    template <typename T>
-    bool write(const T data);
+    template <typename Data>
+    bool write(const Data data);
     //! @brief Write data to the packet buffer.
     //! @param dst - data after conversion
     //! @param offset - data offset
     //! @return whether it is continuously writable
     bool write(const void* const dst, const std::size_t offset);
     //! @brief Read data to the packet buffer.
-    //! @tparam T - type of data to be read
+    //! @tparam Data - type of data to be read
     //! @param data - original data
     //! @return whether it is continuously readable
-    template <typename T>
-    bool read(T* const data);
+    template <typename Data>
+    bool read(Data* const data);
     //! @brief Read data to the packet buffer.
     //! @param dst - data after conversion
     //! @param offset - data offset
@@ -63,15 +63,15 @@ private:
     const char* reader{nullptr};
 };
 
-template <typename T>
-bool Packet::write(const T data)
+template <typename Data>
+bool Packet::write(const Data data)
 {
-    T temp{};
-    if constexpr (sizeof(T) == sizeof(int))
+    Data temp{};
+    if constexpr (sizeof(Data) == sizeof(int))
     {
         temp = ::htonl(data);
     }
-    else if constexpr (sizeof(T) == sizeof(short))
+    else if constexpr (sizeof(Data) == sizeof(short))
     {
         temp = ::htons(data);
     }
@@ -79,23 +79,23 @@ bool Packet::write(const T data)
     {
         temp = data;
     }
-    return write(&temp, sizeof(T));
+    return write(&temp, sizeof(Data));
 }
 
-template <typename T>
-bool Packet::read(T* const data)
+template <typename Data>
+bool Packet::read(Data* const data)
 {
     if (!data)
     {
         return false;
     }
 
-    const bool isEnd = read(data, sizeof(T));
-    if constexpr (sizeof(T) == sizeof(int))
+    const bool isEnd = read(data, sizeof(Data));
+    if constexpr (sizeof(Data) == sizeof(int))
     {
         *data = ::ntohl(*data);
     }
-    else if constexpr (sizeof(T) == sizeof(short))
+    else if constexpr (sizeof(Data) == sizeof(short))
     {
         *data = ::ntohs(*data);
     }

@@ -280,7 +280,7 @@ void Traverse<Heap, Node>::postOrderTraversal(const Node* const node, const Oper
 
 //! @brief Print the heap structure.
 //! @tparam Node - type of heap node
-//! @tparam Key - type of key
+//! @tparam Key - type of node key
 template <typename Node, typename Key>
 class Printer
 {
@@ -303,8 +303,8 @@ private:
     mutable int indent{0};
 
 protected:
-    template <typename N, typename K>
-    friend std::ostream& operator<<(std::ostream&, const Printer<N, K>&);
+    template <typename HN, typename NK>
+    friend std::ostream& operator<<(std::ostream&, const Printer<HN, NK>&);
 };
 
 template <typename Node, typename Key>
@@ -341,13 +341,13 @@ void Printer<Node, Key>::printNode(
 }
 
 //! @brief The operator (<<) overloading of the Printer class.
-//! @tparam N - type of heap node
-//! @tparam K - type of key
+//! @tparam HN - type of heap node
+//! @tparam NK - type of node key
 //! @param os - output stream object
 //! @param printer - specific Printer object
 //! @return reference of the output stream object
-template <typename N, typename K>
-std::ostream& operator<<(std::ostream& os, const Printer<N, K>& printer)
+template <typename HN, typename NK>
+std::ostream& operator<<(std::ostream& os, const Printer<HN, NK>& printer)
 {
     if (printer.root)
     {

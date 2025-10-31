@@ -24,9 +24,9 @@ inline static const char* description() noexcept
 extern const char* version() noexcept;
 
 //! @brief Memory pool.
-//! @tparam T - type of resource to allocate
+//! @tparam Res - type of resource to allocate
 //! @tparam BlockSize - size of the chunk's memory pool allocates
-template <typename T, std::size_t BlockSize = 4096>
+template <typename Res, std::size_t BlockSize = 4096>
 class Memory
 {
 public:
@@ -37,9 +37,9 @@ public:
     //! @brief Construct a new Memory object.
     Memory(const Memory&) = delete;
     //! @brief Construct a new Memory object.
-    //! @tparam U - type of resource to allocate
-    template <typename U>
-    Memory(const Memory<U>&) = delete;
+    //! @tparam ResType - type of resource to allocate
+    template <typename ResType>
+    Memory(const Memory<ResType>&) = delete;
     //! @brief Construct a new Memory object.
     //! @param memory - object for move constructor
     Memory(Memory&& memory) noexcept;
@@ -56,28 +56,28 @@ public:
     //! @param args - arguments for constructing the resource
     //! @return pointer of the allocated resource
     template <typename... Args>
-    inline T* newEntry(Args&&... args);
+    inline Res* newEntry(Args&&... args);
     //! @brief Delete an element.
     //! @param res - pointer of the allocated resource
-    inline void deleteEntry(T* const res);
+    inline void deleteEntry(Res* const res);
     //! @brief Get the maximum number of elements.
     //! @return size of capacity
     inline std::size_t capacity() const;
     //! @brief Get the pointer of the allocated resource.
     //! @param res - reference of the allocated resource
     //! @return pointer of the allocated resource
-    inline T* address(T& res) const;
+    inline Res* address(Res& res) const;
     //! @brief Get the const pointer of the allocated resource.
     //! @param res - const reference of the allocated resource
     //! @return const pointer of the allocated resource
-    inline const T* address(const T& res) const;
+    inline const Res* address(const Res& res) const;
 
 private:
     //! @brief Union for the slot that stores element information.
-    union alignas(alignof(T)) Slot
+    union alignas(alignof(Res)) Slot
     {
         //! @brief Allocated resource.
-        T element;
+        Res element;
         //! @brief Next pointer of the slot.
         Slot* next;
     };
@@ -94,26 +94,26 @@ private:
     mutable std::recursive_mutex mtx;
 
     //! @brief Construct the resource.
-    //! @tparam U - type of allocated resource
+    //! @tparam Alloc - type of allocated resource
     //! @tparam Args - type of arguments for constructing the resource
-    //! @param res - pointer of the allocated resource
+    //! @param alloc - pointer of the allocated resource
     //! @param args - arguments for constructing the resource
-    template <typename U, typename... Args>
-    inline void construct(U* const res, Args&&... args);
+    template <typename Alloc, typename... Args>
+    inline void construct(Alloc* const alloc, Args&&... args);
     //! @brief Destroy the resource.
-    //! @tparam U - type of allocated resource
-    //! @param res - pointer of the allocated resource
-    template <typename U>
-    inline void destroy(const U* const res);
+    //! @tparam Alloc - type of allocated resource
+    //! @param alloc - pointer of the allocated resource
+    template <typename Alloc>
+    inline void destroy(const Alloc* const alloc);
     //! @brief Allocate resource.
     //! @param size - resource size
     //! @param hint - address hint to suggest where allocation could occur
     //! @return pointer of the allocated resource
-    inline T* allocate(const std::size_t size = 1, const T* hint = nullptr);
+    inline Res* allocate(const std::size_t size = 1, const Res* hint = nullptr);
     //! @brief Deallocate resource.
     //! @param res - pointer of the allocated resource
     //! @param size - resource size
-    inline void deallocate(T* const res, const std::size_t size = 1);
+    inline void deallocate(Res* const res, const std::size_t size = 1);
     //! @brief Create the block.
     inline void createBlock();
     //! @brief Calculate the padding size for the pointer of data in the element.
@@ -126,8 +126,8 @@ private:
 };
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
-template <typename T, std::size_t BlockSize>
-Memory<T, BlockSize>::~Memory()
+template <typename Res, std::size_t BlockSize>
+Memory<Res, BlockSize>::~Memory()
 {
     auto* curr = currentBlock;
     while (curr)
@@ -138,8 +138,8 @@ Memory<T, BlockSize>::~Memory()
     }
 }
 
-template <typename T, std::size_t BlockSize>
-Memory<T, BlockSize>::Memory(Memory&& memory) noexcept :
+template <typename Res, std::size_t BlockSize>
+Memory<Res, BlockSize>::Memory(Memory&& memory) noexcept :
     currentBlock{memory.currentBlock},
     currentSlot{memory.currentSlot},
     lastSlot{memory.lastSlot},
@@ -151,8 +151,8 @@ Memory<T, BlockSize>::Memory(Memory&& memory) noexcept :
     memory.freeSlots = nullptr;
 }
 
-template <typename T, std::size_t BlockSize>
-Memory<T, BlockSize>& Memory<T, BlockSize>::operator=(Memory&& memory) noexcept
+template <typename Res, std::size_t BlockSize>
+Memory<Res, BlockSize>& Memory<Res, BlockSize>::operator=(Memory&& memory) noexcept
 {
     if (&memory != this)
     {
@@ -164,18 +164,18 @@ Memory<T, BlockSize>& Memory<T, BlockSize>::operator=(Memory&& memory) noexcept
     return *this;
 }
 
-template <typename T, std::size_t BlockSize>
+template <typename Res, std::size_t BlockSize>
 template <typename... Args>
-inline T* Memory<T, BlockSize>::newEntry(Args&&... args)
+inline Res* Memory<Res, BlockSize>::newEntry(Args&&... args)
 {
     const std::lock_guard<std::recursive_mutex> lock(mtx);
     auto* const res = allocate();
-    construct<T>(res, std::forward<Args>(args)...);
+    construct<Res>(res, std::forward<Args>(args)...);
     return res;
 }
 
-template <typename T, std::size_t BlockSize>
-inline void Memory<T, BlockSize>::deleteEntry(T* const res)
+template <typename Res, std::size_t BlockSize>
+inline void Memory<Res, BlockSize>::deleteEntry(Res* const res)
 {
     const std::lock_guard<std::recursive_mutex> lock(mtx);
     if (res)
@@ -185,51 +185,51 @@ inline void Memory<T, BlockSize>::deleteEntry(T* const res)
     }
 }
 
-template <typename T, std::size_t BlockSize>
-inline std::size_t Memory<T, BlockSize>::capacity() const
+template <typename Res, std::size_t BlockSize>
+inline std::size_t Memory<Res, BlockSize>::capacity() const
 {
     constexpr std::size_t max = std::numeric_limits<std::size_t>::max() / BlockSize;
     return (BlockSize - sizeof(Slot*)) / sizeof(Slot) * max;
 }
 
-template <typename T, std::size_t BlockSize>
-inline T* Memory<T, BlockSize>::address(T& res) const
+template <typename Res, std::size_t BlockSize>
+inline Res* Memory<Res, BlockSize>::address(Res& res) const
 {
     return std::addressof(res);
 }
 
-template <typename T, std::size_t BlockSize>
-inline const T* Memory<T, BlockSize>::address(const T& res) const
+template <typename Res, std::size_t BlockSize>
+inline const Res* Memory<Res, BlockSize>::address(const Res& res) const
 {
     return std::addressof(res);
 }
 
-template <typename T, std::size_t BlockSize>
-template <typename U, typename... Args>
-inline void Memory<T, BlockSize>::construct(U* const res, Args&&... args)
+template <typename Res, std::size_t BlockSize>
+template <typename Alloc, typename... Args>
+inline void Memory<Res, BlockSize>::construct(Alloc* const alloc, Args&&... args)
 {
-    if (res)
+    if (alloc)
     {
-        ::new (res) U(std::forward<Args>(args)...);
+        ::new (alloc) Alloc(std::forward<Args>(args)...);
     }
 }
 
-template <typename T, std::size_t BlockSize>
-template <typename U>
-inline void Memory<T, BlockSize>::destroy(const U* const res)
+template <typename Res, std::size_t BlockSize>
+template <typename Alloc>
+inline void Memory<Res, BlockSize>::destroy(const Alloc* const alloc)
 {
-    if (res)
+    if (alloc)
     {
-        res->~U();
+        alloc->~Alloc();
     }
 }
 
-template <typename T, std::size_t BlockSize>
-inline T* Memory<T, BlockSize>::allocate(const std::size_t /*size*/, const T* /*hint*/)
+template <typename Res, std::size_t BlockSize>
+inline Res* Memory<Res, BlockSize>::allocate(const std::size_t /*size*/, const Res* /*hint*/)
 {
     if (freeSlots)
     {
-        auto* const res = std::launder(reinterpret_cast<T*>(freeSlots));
+        auto* const res = std::launder(reinterpret_cast<Res*>(freeSlots));
         freeSlots = freeSlots->next;
         return res;
     }
@@ -238,11 +238,11 @@ inline T* Memory<T, BlockSize>::allocate(const std::size_t /*size*/, const T* /*
     {
         createBlock();
     }
-    return reinterpret_cast<T*>(currentSlot++);
+    return reinterpret_cast<Res*>(currentSlot++);
 }
 
-template <typename T, std::size_t BlockSize>
-inline void Memory<T, BlockSize>::deallocate(T* const res, const std::size_t /*size*/)
+template <typename Res, std::size_t BlockSize>
+inline void Memory<Res, BlockSize>::deallocate(Res* const res, const std::size_t /*size*/)
 {
     if (res)
     {
@@ -251,8 +251,8 @@ inline void Memory<T, BlockSize>::deallocate(T* const res, const std::size_t /*s
     }
 }
 
-template <typename T, std::size_t BlockSize>
-inline void Memory<T, BlockSize>::createBlock()
+template <typename Res, std::size_t BlockSize>
+inline void Memory<Res, BlockSize>::createBlock()
 {
     auto* const newBlock = reinterpret_cast<std::byte*>(operator new(BlockSize));
     reinterpret_cast<Slot*>(newBlock)->next = currentBlock;
@@ -264,8 +264,8 @@ inline void Memory<T, BlockSize>::createBlock()
     lastSlot = reinterpret_cast<Slot*>(newBlock + BlockSize);
 }
 
-template <typename T, std::size_t BlockSize>
-inline std::size_t Memory<T, BlockSize>::pointerPadding(const std::byte* const data, const std::size_t align) const
+template <typename Res, std::size_t BlockSize>
+inline std::size_t Memory<Res, BlockSize>::pointerPadding(const std::byte* const data, const std::size_t align) const
 {
     if (align != 0)
     {

@@ -19,8 +19,8 @@ namespace application // NOLINT(modernize-concat-nested-namespaces)
 namespace command
 {
 //! @brief Represent the maximum value of an enum.
-//! @tparam T - type of specific enum
-template <typename T>
+//! @tparam Enum - type of specific enum
+template <typename Enum>
 struct Bottom;
 
 //! @brief Enumerate specific native categories.
@@ -182,8 +182,8 @@ private:
     //! @brief Setup the main command line interface.
     void setupMainCLI();
     //! @brief Setup the sub-command line interface.
-    //! @tparam T - type of type of sub-cli
-    template <typename T>
+    //! @tparam SubCLI - type of type of sub-cli
+    template <typename SubCLI>
     void setupSubCLI();
     //! @brief Front-end handler for parsing command line arguments.
     //! @param argc - argument count
@@ -218,9 +218,9 @@ private:
     //! @return description
     static consteval std::string_view mappedDescr(const Category cat);
     //! @brief Extract all choices in the sub-cli's category.
-    //! @tparam T - type of sub-cli's category
+    //! @tparam Cat - type of sub-cli's category
     //! @return all choices
-    template <typename T>
+    template <typename Cat>
     static std::vector<std::string> extractChoices();
 
     //! @brief Manage tasks.
@@ -367,16 +367,16 @@ private:
     //! @brief Go to console mode for troubleshooting.
     static void enterConsoleMode();
     //! @brief Register the command line to console mode.
-    //! @tparam T - type of client
+    //! @tparam Sock - type of client
     //! @param session - console to be registered
     //! @param client - client used to send
-    template <typename T>
-    static void registerOnConsole(console::Console& session, std::shared_ptr<T>& client);
+    template <typename Sock>
+    static void registerOnConsole(console::Console& session, std::shared_ptr<Sock>& client);
     //! @brief Launch the client for console mode.
-    //! @tparam T - type of client
+    //! @tparam Sock - type of client
     //! @param client - client to be launched
-    template <typename T>
-    static void launchClient(std::shared_ptr<T>& client);
+    template <typename Sock>
+    static void launchClient(std::shared_ptr<Sock>& client);
     //! @brief Process the inputs  in console mode.
     //! @param handling - handling for inputs
     //! @return console return code

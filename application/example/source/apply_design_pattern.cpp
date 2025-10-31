@@ -37,13 +37,13 @@ namespace application::app_dp
 using namespace reg_dp; // NOLINT(google-build-using-namespace)
 
 //! @brief Make the title of a particular instance in design pattern choices.
-//! @tparam T - type of target instance
+//! @tparam Inst - type of target instance
 //! @param instance - target instance
 //! @return initial capitalized title
-template <typename T>
-static std::string customTitle(const T instance)
+template <typename Inst>
+static std::string customTitle(const Inst instance)
 {
-    std::string title(TypeInfo<T>::fields.nameOfValue(instance));
+    std::string title(TypeInfo<Inst>::fields.nameOfValue(instance));
     title.at(0) = std::toupper(title.at(0));
     return title;
 }

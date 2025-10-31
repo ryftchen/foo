@@ -177,12 +177,12 @@ protected:
     //! @brief Test title.
     static const std::string_view title;
     //! @brief System under test.
-    //! @tparam T - type of system under test
+    //! @tparam SUT - type of system under test
     //! @return system under test
-    template <typename T>
+    template <typename SUT>
     static std::unique_ptr<algorithm::optimal::Optimal> sut()
     {
-        return std::make_unique<T>(fixture->getFunction());
+        return std::make_unique<SUT>(fixture->getFunction());
     }
     //! @brief Fixture data.
     static std::unique_ptr<optimal::InputBuilder> fixture;

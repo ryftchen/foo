@@ -26,8 +26,8 @@ namespace reg_ds
 extern const char* version() noexcept;
 
 //! @brief Represent the maximum value of an enum.
-//! @tparam T - type of specific enum
-template <typename T>
+//! @tparam Enum - type of specific enum
+template <typename Enum>
 struct Bottom;
 
 //! @brief Enumerate specific cache instances.
@@ -179,14 +179,14 @@ extern void clear();
 } // namespace manage
 
 //! @brief Set choice.
-//! @tparam T - type of target instance
+//! @tparam Inst - type of target instance
 //! @param choice - target choice
-template <typename T>
+template <typename Inst>
 void setChoice(const std::string& choice);
 //! @brief Run candidates.
-//! @tparam T - type of target instance
+//! @tparam Inst - type of target instance
 //! @param candidates - container for the candidate target choices
-template <typename T>
+template <typename Inst>
 void runCandidates(const std::vector<std::string>& candidates);
 
 //! @brief Register cache.
@@ -449,9 +449,9 @@ struct utility::reflection::TypeInfo<application::reg_ds::TreeInstance>
 namespace application::reg_ds
 {
 //! @brief Alias for the type information.
-//! @tparam T - type of target object
-template <typename T>
-using TypeInfo = utility::reflection::TypeInfo<T>;
+//! @tparam UDT - type of user defined data
+template <typename UDT>
+using TypeInfo = utility::reflection::TypeInfo<UDT>;
 //! @brief Alias for the category.
 using Category = ApplyDataStructure::Category;
 //! @brief Convert category enumeration to string.
@@ -488,19 +488,19 @@ constexpr auto& categoryOpts()
         TypeInfo<ApplyDataStructure>::fields.find(REFLECTION_STR(toString(Cat))).value, manage::choiceApplier());
 }
 //! @brief The literal hash value of the abbreviation for the candidate instance.
-//! @tparam T - type of candidate instance
+//! @tparam Inst - type of candidate instance
 //! @param instance - candidate instance
 //! @return literal hash value
-template <typename T>
-consteval std::size_t abbrLitHash(const T instance)
+template <typename Inst>
+consteval std::size_t abbrLitHash(const Inst instance)
 {
-    static_assert(Bottom<T>::value == TypeInfo<T>::fields.size);
+    static_assert(Bottom<Inst>::value == TypeInfo<Inst>::fields.size);
     constexpr auto refl = REFLECTION_STR("choice");
     std::size_t value = 0;
-    TypeInfo<T>::fields.findIf(
+    TypeInfo<Inst>::fields.findIf(
         [refl, instance, &value](const auto field)
         {
-            if (field.name == TypeInfo<T>::fields.nameOfValue(instance))
+            if (field.name == TypeInfo<Inst>::fields.nameOfValue(instance))
             {
                 static_assert(field.attrs.contains(refl) && (field.attrs.size == 1));
                 const auto attr = field.attrs.find(refl);
