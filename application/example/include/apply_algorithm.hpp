@@ -310,8 +310,8 @@ constexpr std::uint8_t maxAlignOfPrint = 16;
 constexpr std::uint8_t maxColumnOfPrint = 5;
 
 //! @brief Builder for the input.
-//! @tparam T - type of builder for the target
-template <typename T>
+//! @tparam Elem - type of builder for the target
+template <typename Elem>
 class InputBuilder
 {
 public:
@@ -319,16 +319,16 @@ public:
     //! @param length - length of array
     //! @param left - left boundary of the array
     //! @param right - right boundary of the array
-    InputBuilder(const std::uint32_t length, const T left, const T right) :
-        orderedArray{std::make_unique<T[]>(length + 1)}, length{length}
+    InputBuilder(const std::uint32_t length, const Elem left, const Elem right) :
+        orderedArray{std::make_unique<Elem[]>(length + 1)}, length{length}
     {
-        setOrderedArray<T>(orderedArray.get(), length, left, right);
+        setOrderedArray<Elem>(orderedArray.get(), length, left, right);
     }
     //! @brief Destroy the InputBuilder object.
     virtual ~InputBuilder() = default;
     //! @brief Construct a new InputBuilder object.
     //! @param rhs - right-hand side
-    InputBuilder(const InputBuilder& rhs) : orderedArray{std::make_unique<T[]>(rhs.length + 1)}, length{rhs.length}
+    InputBuilder(const InputBuilder& rhs) : orderedArray{std::make_unique<Elem[]>(rhs.length + 1)}, length{rhs.length}
     {
         clone(rhs);
     }
@@ -337,7 +337,7 @@ public:
     //! @brief The operator (!=) overloading of InputBuilder class.
     //! @param rhs - right-hand side
     //! @return reference of the InputBuilder object
-    InputBuilder<T>& operator=(const InputBuilder& rhs)
+    InputBuilder<Elem>& operator=(const InputBuilder& rhs)
     {
         if (&rhs != this)
         {
@@ -351,24 +351,21 @@ public:
 
     //! @brief Get the ordered array.
     //! @return ordered array
-    const std::unique_ptr<T[]>& getOrderedArray() const noexcept { return orderedArray; }
+    const std::unique_ptr<Elem[]>& getOrderedArray() const noexcept { return orderedArray; }
     //! @brief Get the length.
     //! @return length
     [[nodiscard]] std::uint32_t getLength() const noexcept { return length; }
     //! @brief Get the search key.
     //! @return search key
-    T getSearchKey() const noexcept { return orderedArray[length / 2]; }
+    Elem getSearchKey() const noexcept { return orderedArray[length / 2]; }
     //! @brief Splice from array for printing.
-    //! @tparam N - type of array
     //! @param array - target array
     //! @param length - length of array
     //! @param fmtBuffer - buffer for printing
     //! @param bufferSize - size of the buffer
     //! @return buffer after splicing
-    template <typename N>
-    requires std::is_integral_v<T> || std::is_floating_point_v<T>
     static char* spliceAll(
-        const T* const array, const std::uint32_t length, char* const fmtBuffer, const std::uint32_t bufferSize)
+        const Elem* const array, const std::uint32_t length, char* const fmtBuffer, const std::uint32_t bufferSize)
     {
         if (!array || (length == 0) || !fmtBuffer || (bufferSize == 0))
         {
@@ -382,11 +379,11 @@ public:
         }
 
         std::array<char, 16> spliceFmt{};
-        if constexpr (std::is_integral_v<T>)
+        if constexpr (std::is_integral_v<Elem>)
         {
             std::snprintf(spliceFmt.data(), spliceFmt.size(), "%%%dd%%c", align + 1);
         }
-        else if constexpr (std::is_floating_point_v<T>)
+        else if constexpr (std::is_floating_point_v<Elem>)
         {
             std::snprintf(spliceFmt.data(), spliceFmt.size(), "%%%d.5f%%c", align + 1);
         }
@@ -411,7 +408,7 @@ public:
 
 private:
     //! @brief Ordered array.
-    const std::unique_ptr<T[]> orderedArray{};
+    const std::unique_ptr<Elem[]> orderedArray{};
     //! @brief Length of the ordered array.
     const std::uint32_t length{0};
 
@@ -421,18 +418,18 @@ private:
     {
         if (rhs.orderedArray && orderedArray)
         {
-            std::memcpy(orderedArray.get(), rhs.orderedArray.get(), length * sizeof(T));
+            std::memcpy(orderedArray.get(), rhs.orderedArray.get(), length * sizeof(Elem));
         }
     }
     //! @brief Set the ordered array.
-    //! @tparam N - specific type of integral
+    //! @tparam Num - specific type of integral
     //! @param array - ordered array
     //! @param length - length of the ordered array
     //! @param left - left boundary of the ordered array
     //! @param right - left right of the ordered array
-    template <typename N>
-    requires std::is_integral_v<N>
-    static void setOrderedArray(T array[], const std::uint32_t length, const T left, const T right)
+    template <typename Num>
+    requires std::is_integral_v<Num>
+    static void setOrderedArray(Elem array[], const std::uint32_t length, const Elem left, const Elem right)
     {
         if (!array || (length == 0) || (left > right))
         {
@@ -440,7 +437,7 @@ private:
         }
 
         std::ranlux48 engine(std::random_device{}());
-        std::uniform_int_distribution<T> dist(left, right);
+        std::uniform_int_distribution<Elem> dist(left, right);
         for (std::uint32_t i = 0; i < length; ++i)
         {
             array[i] = dist(engine);
@@ -450,18 +447,18 @@ private:
         const std::uint32_t bufferSize = length * maxAlignOfPrint;
         std::vector<char> fmtBuffer(bufferSize + 1);
         std::cout << "\nGenerate " << length << " ordered integral numbers from " << left << " to " << right << ":\n"
-                  << spliceAll<T>(array, length, fmtBuffer.data(), bufferSize + 1) << std::endl;
+                  << spliceAll(array, length, fmtBuffer.data(), bufferSize + 1) << std::endl;
 #endif // _RUNTIME_PRINTING
     }
     //! @brief Set the ordered array.
-    //! @tparam N - specific type of floating point
+    //! @tparam Num - specific type of floating point
     //! @param array - ordered array
     //! @param length - length of the ordered array
     //! @param left - left boundary of the ordered array
     //! @param right - left right of the ordered array
-    template <typename N>
-    requires std::is_floating_point_v<N>
-    static void setOrderedArray(T array[], const std::uint32_t length, const T left, const T right)
+    template <typename Num>
+    requires std::is_floating_point_v<Num>
+    static void setOrderedArray(Elem array[], const std::uint32_t length, const Elem left, const Elem right)
     {
         if (!array || (length == 0) || (left > right))
         {
@@ -469,7 +466,7 @@ private:
         }
 
         std::ranlux48 engine(std::random_device{}());
-        std::uniform_real_distribution<T> dist(left, right);
+        std::uniform_real_distribution<Elem> dist(left, right);
         for (std::uint32_t i = 0; i < length; ++i)
         {
             array[i] = dist(engine);
@@ -480,7 +477,7 @@ private:
         std::vector<char> fmtBuffer(bufferSize + 1);
         std::cout << "\nGenerate " << length << " ordered floating point numbers from " << left << " to " << right
                   << ":\n"
-                  << spliceAll<T>(array, length, fmtBuffer.data(), bufferSize + 1) << std::endl;
+                  << spliceAll(array, length, fmtBuffer.data(), bufferSize + 1) << std::endl;
 #endif // _RUNTIME_PRINTING
     }
 };
@@ -510,8 +507,8 @@ constexpr std::uint8_t maxAlignOfPrint = 16;
 constexpr std::uint8_t maxColumnOfPrint = 10;
 
 //! @brief Builder for the input.
-//! @tparam T - type of builder for the target
-template <typename T>
+//! @tparam Elem - type of builder for the target
+template <typename Elem>
 class InputBuilder
 {
 public:
@@ -519,16 +516,16 @@ public:
     //! @param length - length of array
     //! @param left - left boundary of the array
     //! @param right - right boundary of the array
-    InputBuilder(const std::uint32_t length, const T left, const T right) :
-        randomArray{std::make_unique<T[]>(length + 1)}, length{length}
+    InputBuilder(const std::uint32_t length, const Elem left, const Elem right) :
+        randomArray{std::make_unique<Elem[]>(length + 1)}, length{length}
     {
-        setRandomArray<T>(randomArray.get(), length, left, right);
+        setRandomArray<Elem>(randomArray.get(), length, left, right);
     }
     //! @brief Destroy the InputBuilder object.
     virtual ~InputBuilder() = default;
     //! @brief Construct a new InputBuilder object.
     //! @param rhs - right-hand side
-    InputBuilder(const InputBuilder& rhs) : randomArray{std::make_unique<T[]>(rhs.length + 1)}, length{rhs.length}
+    InputBuilder(const InputBuilder& rhs) : randomArray{std::make_unique<Elem[]>(rhs.length + 1)}, length{rhs.length}
     {
         clone(rhs);
     }
@@ -537,7 +534,7 @@ public:
     //! @brief The operator (!=) overloading of InputBuilder class.
     //! @param rhs - right-hand side
     //! @return reference of the InputBuilder object
-    InputBuilder<T>& operator=(const InputBuilder& rhs)
+    InputBuilder<Elem>& operator=(const InputBuilder& rhs)
     {
         if (&rhs != this)
         {
@@ -551,21 +548,18 @@ public:
 
     //! @brief Get the random array.
     //! @return random array
-    const std::unique_ptr<T[]>& getRandomArray() const noexcept { return randomArray; }
+    const std::unique_ptr<Elem[]>& getRandomArray() const noexcept { return randomArray; }
     //! @brief Get the length.
     //! @return length
     [[nodiscard]] std::uint32_t getLength() const noexcept { return length; }
     //! @brief Splice from array for printing.
-    //! @tparam N - type of array
     //! @param array - target array
     //! @param length - length of array
     //! @param fmtBuffer - buffer for printing
     //! @param bufferSize - size of the buffer
     //! @return buffer after splicing
-    template <typename N>
-    requires std::is_integral_v<T> || std::is_floating_point_v<T>
     static char* spliceAll(
-        const T* const array, const std::uint32_t length, char* const fmtBuffer, const std::uint32_t bufferSize)
+        const Elem* const array, const std::uint32_t length, char* const fmtBuffer, const std::uint32_t bufferSize)
     {
         if (!array || (length == 0) || !fmtBuffer || (bufferSize == 0))
         {
@@ -579,11 +573,11 @@ public:
         }
 
         std::array<char, 16> spliceFmt{};
-        if constexpr (std::is_integral_v<T>)
+        if constexpr (std::is_integral_v<Elem>)
         {
             std::snprintf(spliceFmt.data(), spliceFmt.size(), "%%%dd%%c", align + 1);
         }
-        else if constexpr (std::is_floating_point_v<T>)
+        else if constexpr (std::is_floating_point_v<Elem>)
         {
             std::snprintf(spliceFmt.data(), spliceFmt.size(), "%%%d.5f%%c", align + 1);
         }
@@ -608,7 +602,7 @@ public:
 
 private:
     //! @brief Random array.
-    const std::unique_ptr<T[]> randomArray{};
+    const std::unique_ptr<Elem[]> randomArray{};
     //! @brief Length of the random array.
     const std::uint32_t length{0};
 
@@ -618,18 +612,18 @@ private:
     {
         if (rhs.randomArray && randomArray)
         {
-            std::memcpy(randomArray.get(), rhs.randomArray.get(), length * sizeof(T));
+            std::memcpy(randomArray.get(), rhs.randomArray.get(), length * sizeof(Elem));
         }
     }
     //! @brief Set the random array.
-    //! @tparam N - specific type of integral
+    //! @tparam Num - specific type of integral
     //! @param array - random array
     //! @param length - length of the random array
     //! @param left - left boundary of the random array
     //! @param right - left right of the random array
-    template <typename N>
-    requires std::is_integral_v<N>
-    static void setRandomArray(T array[], const std::uint32_t length, const T left, const T right)
+    template <typename Num>
+    requires std::is_integral_v<Num>
+    static void setRandomArray(Elem array[], const std::uint32_t length, const Elem left, const Elem right)
     {
         if (!array || (length == 0) || (left > right))
         {
@@ -637,7 +631,7 @@ private:
         }
 
         std::ranlux48 engine(std::random_device{}());
-        std::uniform_int_distribution<T> dist(left, right);
+        std::uniform_int_distribution<Elem> dist(left, right);
         for (std::uint32_t i = 0; i < length; ++i)
         {
             array[i] = dist(engine);
@@ -646,18 +640,18 @@ private:
         const std::uint32_t bufferSize = length * maxAlignOfPrint;
         std::vector<char> fmtBuffer(bufferSize + 1);
         std::cout << "\nGenerate " << length << " random integral numbers from " << left << " to " << right << ":\n"
-                  << spliceAll<T>(array, length, fmtBuffer.data(), bufferSize + 1) << std::endl;
+                  << spliceAll(array, length, fmtBuffer.data(), bufferSize + 1) << std::endl;
 #endif // _RUNTIME_PRINTING
     }
     //! @brief Set the random array.
-    //! @tparam N - specific type of floating point
+    //! @tparam Num - specific type of floating point
     //! @param array - random array
     //! @param length - length of the random array
     //! @param left - left boundary of the random array
     //! @param right - left right of the random array
-    template <typename N>
-    requires std::is_floating_point_v<N>
-    static void setRandomArray(T array[], const std::uint32_t length, const T left, const T right)
+    template <typename Num>
+    requires std::is_floating_point_v<Num>
+    static void setRandomArray(Elem array[], const std::uint32_t length, const Elem left, const Elem right)
     {
         if (!array || (length == 0) || (left > right))
         {
@@ -665,7 +659,7 @@ private:
         }
 
         std::ranlux48 engine(std::random_device{}());
-        std::uniform_real_distribution<T> dist(left, right);
+        std::uniform_real_distribution<Elem> dist(left, right);
         for (std::uint32_t i = 0; i < length; ++i)
         {
             array[i] = dist(engine);
@@ -675,7 +669,7 @@ private:
         std::vector<char> fmtBuffer(bufferSize + 1);
         std::cout << "\nGenerate " << length << " random floating point numbers from " << left << " to " << right
                   << ":\n"
-                  << spliceAll<T>(array, length, fmtBuffer.data(), bufferSize + 1) << std::endl;
+                  << spliceAll(array, length, fmtBuffer.data(), bufferSize + 1) << std::endl;
 #endif // _RUNTIME_PRINTING
     }
 };

@@ -89,60 +89,65 @@ public:
     //! @brief Construct a new JSON object.
     JSON(const std::nullptr_t /*null*/) {}
     //! @brief Construct a new JSON object.
-    //! @tparam T - type of string value
+    //! @tparam Value - type of string value
     //! @param s - string value
-    template <typename T>
-    JSON(const T s, std::enable_if_t<std::is_convertible_v<T, std::string>>* /*type*/ = nullptr) : data{String{s}}
+    template <typename Value>
+    JSON(const Value s, std::enable_if_t<std::is_convertible_v<Value, std::string>>* /*type*/ = nullptr) :
+        data{String{s}}
     {
     }
     //! @brief Construct a new JSON object.
-    //! @tparam T - type of floating value
+    //! @tparam Value - type of floating value
     //! @param f - floating value
-    template <typename T>
-    JSON(const T f, std::enable_if_t<std::is_floating_point_v<T>>* /*type*/ = nullptr) : data{static_cast<Floating>(f)}
+    template <typename Value>
+    JSON(const Value f, std::enable_if_t<std::is_floating_point_v<Value>>* /*type*/ = nullptr) :
+        data{static_cast<Floating>(f)}
     {
     }
     //! @brief Construct a new JSON object.
-    //! @tparam T - type of integral value
+    //! @tparam Value - type of integral value
     //! @param i - integral value
-    template <typename T>
-    JSON(const T i, std::enable_if_t<std::is_integral_v<T> && !std::is_same_v<T, bool>>* /*type*/ = nullptr) :
+    template <typename Value>
+    JSON(
+        const Value i,
+        std::enable_if_t<std::is_integral_v<Value> && !std::is_same_v<Value, bool>>* /*type*/ = nullptr) :
         data{static_cast<Integral>(i)}
     {
     }
     //! @brief Construct a new JSON object.
-    //! @tparam T - type of boolean value
+    //! @tparam Value - type of boolean value
     //! @param b - boolean value
-    template <typename T>
-    JSON(const T b, std::enable_if_t<std::is_same_v<T, bool>>* /*type*/ = nullptr) : data{static_cast<Boolean>(b)}
+    template <typename Value>
+    JSON(const Value b, std::enable_if_t<std::is_same_v<Value, bool>>* /*type*/ = nullptr) :
+        data{static_cast<Boolean>(b)}
     {
     }
     // NOLINTEND(google-explicit-constructor)
     // NOLINTBEGIN(misc-unconventional-assign-operator)
     //! @brief The operator (=) overloading of JSON class.
-    //! @tparam T - type of string value
+    //! @tparam Value - type of string value
     //! @param s - string value
     //! @return reference of the JSON object
-    template <typename T>
-    std::enable_if_t<std::is_convertible_v<T, std::string>, JSON&> operator=(const T s);
+    template <typename Value>
+    std::enable_if_t<std::is_convertible_v<Value, std::string>, JSON&> operator=(const Value s);
     //! @brief The operator (=) overloading of JSON class.
-    //! @tparam T - type of floating value
+    //! @tparam Value - type of floating value
     //! @param f - floating value
     //! @return reference of the JSON object
-    template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>, JSON&> operator=(const T f);
+    template <typename Value>
+    std::enable_if_t<std::is_floating_point_v<Value>, JSON&> operator=(const Value f);
     //! @brief The operator (=) overloading of JSON class.
-    //! @tparam T - type of integral value
+    //! @tparam Value - type of integral value
     //! @param i - integral value
     //! @return reference of the JSON object
-    template <typename T>
-    std::enable_if_t<std::is_integral_v<T> && !std::is_same_v<T, bool>, JSON&> operator=(const T i);
+    template <typename Value>
+    std::enable_if_t<std::is_integral_v<Value> && !std::is_same_v<Value, bool>, JSON&> operator=(const Value i);
     //! @brief The operator (=) overloading of JSON class.
-    //! @tparam T - type of boolean value
+    //! @tparam Value - type of boolean value
     //! @param b - boolean value
     //! @return reference of the JSON object
-    template <typename T>
-    std::enable_if_t<std::is_same_v<T, bool>, JSON&> operator=(const T b);
+    template <typename Value>
+    std::enable_if_t<std::is_same_v<Value, bool>, JSON&> operator=(const Value b);
     // NOLINTEND(misc-unconventional-assign-operator)
 
     //! @brief JSON wrapper.
@@ -216,17 +221,17 @@ public:
     //! @return JSON object
     static JSON load(const std::string_view fmt);
     //! @brief Append item to array. Convert to array type.
-    //! @tparam T - type of arg
-    //! @param arg - item
-    template <typename T>
-    void append(const T arg);
+    //! @tparam Item - type of item
+    //! @param item - item to append
+    template <typename Item>
+    void append(const Item item);
     //! @brief Append multiple items to array. Convert to array type.
-    //! @tparam T - type of arg
-    //! @tparam U - type of args
-    //! @param arg - item
-    //! @param args - multiple items
-    template <typename T, typename... U>
-    void append(const T arg, const U... args);
+    //! @tparam I0 - type of first item
+    //! @tparam Is - type of multiple items
+    //! @param item0 - first item to append
+    //! @param items - multiple items to append
+    template <typename I0, typename... Is>
+    void append(const I0 item0, const Is... items);
     //! @brief The operator ([]) overloading of JSON class.
     //! @param key - target key
     //! @return reference of the JSON object
@@ -318,17 +323,17 @@ public:
     //! @return minified formatted string
     [[nodiscard]] std::string dumpMinified() const;
 
-    //! @brief Data type object's helper type for the visitor.
+    //! @brief Valid data type object's helper type for the visitor.
     //! @tparam Ts - type of visitors
     template <typename... Ts>
-    struct DataVisitor : public Ts...
+    struct ValidDataVisitor : public Ts...
     {
         using Ts::operator()...;
     };
-    //! @brief Explicit deduction guide for DataVisitor.
+    //! @brief Explicit deduction guide for ValidDataVisitor.
     //! @tparam Ts - type of visitors
     template <typename... Ts>
-    DataVisitor(Ts...) -> DataVisitor<Ts...>;
+    ValidDataVisitor(Ts...) -> ValidDataVisitor<Ts...>;
     //! @brief Alias for the pointer of Object. Non-fundamental type.
     using ObjectPtr = std::shared_ptr<Object>;
     //! @brief Alias for the pointer of Array. Non-fundamental type.
@@ -336,97 +341,97 @@ public:
     //! @brief Alias for the pointer of String. Non-fundamental type.
     using StringPtr = std::shared_ptr<String>;
     //! @brief Alias for the value in the data.
-    using Value = std::variant<std::monostate, Null, ObjectPtr, ArrayPtr, StringPtr, Floating, Integral, Boolean>;
+    using ValueType = std::variant<std::monostate, Null, ObjectPtr, ArrayPtr, StringPtr, Floating, Integral, Boolean>;
     //! @brief The data that stores JSON information.
-    struct Data
+    struct ValidData
     {
-        //! @brief Construct a new Data object.
-        Data() : value{nullptr} {}
-        //! @brief Construct a new Data object.
+        //! @brief Construct a new ValidData object.
+        ValidData() : value{nullptr} {}
+        //! @brief Construct a new ValidData object.
         //! @param s - string value
-        explicit Data(const String& s) : value{std::make_shared<String>(s)} {}
-        //! @brief Construct a new Data object.
+        explicit ValidData(const String& s) : value{std::make_shared<String>(s)} {}
+        //! @brief Construct a new ValidData object.
         //! @param f - floating value
-        explicit Data(const Floating f) : value{f} {}
-        //! @brief Construct a new Data object.
+        explicit ValidData(const Floating f) : value{f} {}
+        //! @brief Construct a new ValidData object.
         //! @param i - integral value
-        explicit Data(const Integral i) : value{i} {}
-        //! @brief Construct a new Data object.
+        explicit ValidData(const Integral i) : value{i} {}
+        //! @brief Construct a new ValidData object.
         //! @param b - boolean value
-        explicit Data(const Boolean b) : value{b} {}
+        explicit ValidData(const Boolean b) : value{b} {}
 
         //! @brief Value of the data.
-        Value value;
+        ValueType value;
     } /** @brief JSON valid data. */ data;
 
 private:
     //! @brief Set the data type.
-    //! @tparam T - type of data
-    template <typename T>
+    //! @tparam Data - type of data
+    template <typename Data>
     void setType();
     //! @brief Check whether it holds data.
-    //! @tparam T - type of data
+    //! @tparam Data - type of data
     //! @return holds or not
-    template <typename T>
+    template <typename Data>
     [[nodiscard]] bool holdsData() const;
     //! @brief Get the data.
-    //! @tparam T - type of data
+    //! @tparam Data - type of data
     //! @return data value
-    template <typename T>
+    template <typename Data>
     [[nodiscard]] auto getData() const;
 
 protected:
     friend std::ostream& operator<<(std::ostream& os, const JSON& json);
 };
 
-template <typename T>
+template <typename Data>
 auto JSON::getData() const
 {
-    if constexpr (std::is_same_v<T, Object>)
+    if constexpr (std::is_same_v<Data, Object>)
     {
         return std::get<ObjectPtr>(data.value);
     }
-    else if constexpr (std::is_same_v<T, Array>)
+    else if constexpr (std::is_same_v<Data, Array>)
     {
         return std::get<ArrayPtr>(data.value);
     }
-    else if constexpr (std::is_same_v<T, String>)
+    else if constexpr (std::is_same_v<Data, String>)
     {
         return std::get<StringPtr>(data.value);
     }
     else
     {
-        return std::get<T>(data.value);
+        return std::get<Data>(data.value);
     }
 }
 
 // NOLINTBEGIN(misc-unconventional-assign-operator)
-template <typename T>
-std::enable_if_t<std::is_convertible_v<T, std::string>, JSON&> JSON::operator=(const T s)
+template <typename Value>
+std::enable_if_t<std::is_convertible_v<Value, std::string>, JSON&> JSON::operator=(const Value s)
 {
     setType<String>();
     *getData<String>() = String{s};
     return *this;
 }
 
-template <typename T>
-std::enable_if_t<std::is_floating_point_v<T>, JSON&> JSON::operator=(const T f)
+template <typename Value>
+std::enable_if_t<std::is_floating_point_v<Value>, JSON&> JSON::operator=(const Value f)
 {
     setType<Floating>();
     data.value = static_cast<Floating>(f);
     return *this;
 }
 
-template <typename T>
-std::enable_if_t<std::is_integral_v<T> && !std::is_same_v<T, bool>, JSON&> JSON::operator=(const T i)
+template <typename Value>
+std::enable_if_t<std::is_integral_v<Value> && !std::is_same_v<Value, bool>, JSON&> JSON::operator=(const Value i)
 {
     setType<Integral>();
     data.value = static_cast<Integral>(i);
     return *this;
 }
 
-template <typename T>
-std::enable_if_t<std::is_same_v<T, bool>, JSON&> JSON::operator=(const T b)
+template <typename Value>
+std::enable_if_t<std::is_same_v<Value, bool>, JSON&> JSON::operator=(const Value b)
 {
     setType<Boolean>();
     data.value = static_cast<Boolean>(b);
@@ -434,76 +439,76 @@ std::enable_if_t<std::is_same_v<T, bool>, JSON&> JSON::operator=(const T b)
 }
 // NOLINTEND(misc-unconventional-assign-operator)
 
-template <typename T>
-void JSON::append(const T arg)
+template <typename Item>
+void JSON::append(const Item item)
 {
     setType<Array>();
-    getData<Array>()->emplace_back(arg);
+    getData<Array>()->emplace_back(item);
 }
 
-template <typename T, typename... U>
-void JSON::append(const T arg, const U... args)
+template <typename I0, typename... Is>
+void JSON::append(const I0 item0, const Is... items)
 {
-    append(arg);
-    append(args...);
+    append(item0);
+    append(items...);
 }
 
-template <typename T>
+template <typename Data>
 void JSON::setType()
 {
-    if (holdsData<T>())
+    if (holdsData<Data>())
     {
         return;
     }
 
-    if constexpr (std::is_same_v<T, Null>)
+    if constexpr (std::is_same_v<Data, Null>)
     {
-        data = Data{};
+        data = ValidData{};
     }
-    else if constexpr (std::is_same_v<T, Object>)
+    else if constexpr (std::is_same_v<Data, Object>)
     {
         data.value = std::make_shared<Object>();
     }
-    else if constexpr (std::is_same_v<T, Array>)
+    else if constexpr (std::is_same_v<Data, Array>)
     {
         data.value = std::make_shared<Array>();
     }
-    else if constexpr (std::is_same_v<T, String>)
+    else if constexpr (std::is_same_v<Data, String>)
     {
         data.value = std::make_shared<String>();
     }
-    else if constexpr (std::is_same_v<T, Floating>)
+    else if constexpr (std::is_same_v<Data, Floating>)
     {
         data.value = static_cast<Floating>(0.0);
     }
-    else if constexpr (std::is_same_v<T, Integral>)
+    else if constexpr (std::is_same_v<Data, Integral>)
     {
         data.value = static_cast<Integral>(0);
     }
-    else if constexpr (std::is_same_v<T, Boolean>)
+    else if constexpr (std::is_same_v<Data, Boolean>)
     {
         data.value = static_cast<Boolean>(false);
     }
 }
 
-template <typename T>
+template <typename Data>
 bool JSON::holdsData() const
 {
-    if constexpr (std::is_same_v<T, Object>)
+    if constexpr (std::is_same_v<Data, Object>)
     {
         return std::holds_alternative<ObjectPtr>(data.value);
     }
-    else if constexpr (std::is_same_v<T, Array>)
+    else if constexpr (std::is_same_v<Data, Array>)
     {
         return std::holds_alternative<ArrayPtr>(data.value);
     }
-    else if constexpr (std::is_same_v<T, String>)
+    else if constexpr (std::is_same_v<Data, String>)
     {
         return std::holds_alternative<StringPtr>(data.value);
     }
     else
     {
-        return std::holds_alternative<T>(data.value);
+        return std::holds_alternative<Data>(data.value);
     }
 }
 

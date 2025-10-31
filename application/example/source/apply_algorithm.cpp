@@ -38,13 +38,13 @@ namespace application::app_algo
 using namespace reg_algo; // NOLINT(google-build-using-namespace)
 
 //! @brief Make the title of a particular method in algorithm choices.
-//! @tparam T - type of target method
+//! @tparam Meth - type of target method
 //! @param method - target method
 //! @return initial capitalized title
-template <typename T>
-static std::string customTitle(const T method)
+template <typename Meth>
+static std::string customTitle(const Meth method)
 {
-    std::string title(TypeInfo<T>::fields.nameOfValue(method));
+    std::string title(TypeInfo<Meth>::fields.nameOfValue(method));
     title.at(0) = std::toupper(title.at(0));
     return title;
 }
@@ -552,8 +552,7 @@ static void display(const SortMethod method, const std::vector<std::int32_t>& re
     std::printf(
         "\n==> %-9s Method <==\n%s\n(asc) run time: %8.5f ms\n",
         customTitle(method).c_str(),
-        InputBuilder<std::int32_t>::template spliceAll<std::int32_t>(
-            result.data(), result.size(), fmtBuffer.data(), bufferSize + 1),
+        InputBuilder<std::int32_t>::spliceAll(result.data(), result.size(), fmtBuffer.data(), bufferSize + 1),
         interval);
 }
 

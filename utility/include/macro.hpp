@@ -70,20 +70,21 @@ constexpr void ignoreAll(Args&&... /*args*/) noexcept
 }
 
 //! @brief Defer the execution of the callable until it is out of scope.
-//! @tparam T - type of deferred callable
-template <typename T>
+//! @tparam Call - type of deferred callable
+template <typename Call>
 class Defer
 {
 public:
     //! @brief Construct a new Defer object.
-    //! @tparam U - type of deferred callable
+    //! @tparam CallType - type of deferred callable
     //! @param deferred - deferred callable
-    template <typename U>
-    explicit Defer(U&& deferred) noexcept(noexcept(T(std::forward<U>(deferred)))) : deferred{std::forward<U>(deferred)}
+    template <typename CallType>
+    explicit Defer(CallType&& deferred) noexcept(noexcept(Call(std::forward<CallType>(deferred)))) :
+        deferred{std::forward<CallType>(deferred)}
     {
     }
     //! @brief Destroy the Defer object.
-    virtual ~Defer() noexcept(noexcept(deferred())) { deferred(); }
+    virtual ~Defer() noexcept(noexcept(deferred()));
     //! @brief Construct a new Defer object.
     Defer(const Defer&) = delete;
     //! @brief Construct a new Defer object.
@@ -97,16 +98,23 @@ public:
 
 private:
     //! @brief The deferred callable.
-    T deferred{};
+    Call deferred{};
 };
+
+template <typename Call>
+Defer<Call>::~Defer() noexcept(noexcept(deferred()))
+{
+    deferred();
+}
+
 //! @brief Create the deferral from a callable.
-//! @tparam T - type of deferred callable
+//! @tparam Call - type of deferred callable
 //! @param deferred - deferred callable
 //! @return deferral
-template <typename T>
-constexpr auto makeDeferral(T&& deferred) noexcept(noexcept(Defer<std::decay_t<T>>(std::forward<T>(deferred))))
+template <typename Call>
+constexpr auto makeDeferral(Call&& deferred) noexcept(noexcept(Defer<std::decay_t<Call>>(std::forward<Call>(deferred))))
 {
-    return Defer<std::decay_t<T>>(std::forward<T>(deferred));
+    return Defer<std::decay_t<Call>>(std::forward<Call>(deferred));
 }
 } // namespace macro
 } // namespace utility

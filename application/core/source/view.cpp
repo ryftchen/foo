@@ -80,55 +80,55 @@ struct TLVValue
 };
 
 //! @brief TLV value serialization.
-//! @tparam T - type of target payload
+//! @tparam Data - type of target payload
 //! @param pkt - encoding packet that was filled type
 //! @param val - value of TLV to encode
 //! @param pl - target payload that has been included in the value of TLV
 //! @return summary offset of length-value
-template <typename T>
-requires std::is_arithmetic_v<T>
-static int serialize(data::Packet& pkt, const TLVValue& val, const T TLVValue::* pl)
+template <typename Data>
+requires std::is_arithmetic_v<Data>
+static int serialize(data::Packet& pkt, const TLVValue& val, const Data TLVValue::* const pl)
 {
     if (!pl)
     {
         return 0;
     }
 
-    constexpr int length = sizeof(T);
+    constexpr int length = sizeof(Data);
     pkt.write<int>(length);
-    pkt.write<T>(val.*pl);
+    pkt.write<Data>(val.*pl);
     return sizeof(int) + length;
 }
 
 //! @brief TLV value serialization.
-//! @tparam N - size of target payload
+//! @tparam Size - size of target payload
 //! @param pkt - encoding packet that was filled type
 //! @param val - value of TLV to encode
 //! @param pl - target payload that has been included in the value of TLV
 //! @return summary offset of length-value
-template <std::size_t N>
-static int serialize(data::Packet& pkt, const TLVValue& val, const char (TLVValue::*pl)[N])
+template <std::size_t Size>
+static int serialize(data::Packet& pkt, const TLVValue& val, const char (TLVValue::* const pl)[Size])
 {
     if (!pl)
     {
         return 0;
     }
 
-    const int length = ::strnlen(val.*pl, N);
+    const int length = ::strnlen(val.*pl, Size);
     pkt.write<int>(length);
     pkt.write(val.*pl, length);
     return sizeof(int) + length;
 }
 
 //! @brief TLV value deserialization.
-//! @tparam T - type of target payload
+//! @tparam Data - type of target payload
 //! @param pkt - decoding packet that was filled type
 //! @param val - value of TLV to decode
 //! @param pl - target payload that has been included in the value of TLV
 //! @return summary offset of length-value
-template <typename T>
-requires std::is_arithmetic_v<T>
-static int deserialize(data::Packet& pkt, TLVValue& val, T TLVValue::* pl)
+template <typename Data>
+requires std::is_arithmetic_v<Data>
+static int deserialize(data::Packet& pkt, TLVValue& val, Data TLVValue::* const pl)
 {
     if (!pl)
     {
@@ -137,18 +137,18 @@ static int deserialize(data::Packet& pkt, TLVValue& val, T TLVValue::* pl)
 
     int length = 0;
     pkt.read<int>(&length);
-    pkt.read<T>(&(val.*pl));
+    pkt.read<Data>(&(val.*pl));
     return sizeof(int) + length;
 }
 
 //! @brief TLV value deserialization.
-//! @tparam N - size of target payload
+//! @tparam Size - size of target payload
 //! @param pkt - decoding packet that was filled type
 //! @param val - value of TLV to decode
 //! @param pl - target payload that has been included in the value of TLV
 //! @return summary offset of length-value
-template <std::size_t N>
-static int deserialize(data::Packet& pkt, TLVValue& val, char (TLVValue::*pl)[N])
+template <std::size_t Size>
+static int deserialize(data::Packet& pkt, TLVValue& val, char (TLVValue::* const pl)[Size])
 {
     if (!pl)
     {
@@ -157,7 +157,7 @@ static int deserialize(data::Packet& pkt, TLVValue& val, char (TLVValue::*pl)[N]
 
     int length = 0;
     pkt.read<int>(&length);
-    pkt.read(val.*pl, std::min<std::size_t>(length, N));
+    pkt.read(val.*pl, std::min<std::size_t>(length, Size));
     return sizeof(int) + length;
 }
 

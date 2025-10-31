@@ -31,8 +31,8 @@ inline static const char* description() noexcept
 extern const char* version() noexcept;
 
 //! @brief Confirm container traits. Value is false.
-//! @tparam T - type to be confirmed
-template <typename T, typename = void>
+//! @tparam Type - type to be confirmed
+template <typename Type, typename = void>
 struct HasContainerTraits : public std::false_type
 {
 };
@@ -47,39 +47,39 @@ struct HasContainerTraits<std::string_view> : public std::false_type
 {
 };
 //! @brief Confirm container traits. Value is true.
-//! @tparam T - type to be confirmed
-template <typename T>
+//! @tparam Type - type to be confirmed
+template <typename Type>
 struct HasContainerTraits<
-    T,
+    Type,
     std::void_t<
-        typename T::value_type,
-        decltype(std::declval<T>().begin()),
-        decltype(std::declval<T>().end()),
-        decltype(std::declval<T>().size())>> : public std::true_type
+        typename Type::value_type,
+        decltype(std::declval<Type>().begin()),
+        decltype(std::declval<Type>().end()),
+        decltype(std::declval<Type>().size())>> : public std::true_type
 {
 };
 //! @brief Confirm whether it is a container.
-//! @tparam T - type to be confirmed
-template <typename T>
-static constexpr bool isContainer = HasContainerTraits<T>::value;
+//! @tparam Type - type to be confirmed
+template <typename Type>
+static constexpr bool isContainer = HasContainerTraits<Type>::value;
 
 //! @brief Confirm streamable traits. Value is false.
-//! @tparam T - type to be confirmed
-template <typename T, typename = void>
+//! @tparam Type - type to be confirmed
+template <typename Type, typename = void>
 struct HasStreamableTraits : public std::false_type
 {
 };
 //! @brief Confirm streamable traits. Value is true.
-//! @tparam T - type to be confirmed
-template <typename T>
-struct HasStreamableTraits<T, std::void_t<decltype(std::declval<std::ostream&>() << std::declval<T>())>>
+//! @tparam Type - type to be confirmed
+template <typename Type>
+struct HasStreamableTraits<Type, std::void_t<decltype(std::declval<std::ostream&>() << std::declval<Type>())>>
     : public std::true_type
 {
 };
 //! @brief Confirm whether it is streamable.
-//! @tparam T - type to be confirmed
-template <typename T>
-static constexpr bool isStreamable = HasStreamableTraits<T>::value;
+//! @tparam Type - type to be confirmed
+template <typename Type>
+static constexpr bool isStreamable = HasStreamableTraits<Type>::value;
 
 //! @brief Enumerate specific argument patterns.
 enum class ArgsNumPattern : std::uint8_t
@@ -138,38 +138,38 @@ class Trait
 {
 public:
     //! @brief Construct a new Trait object.
-    //! @tparam N - number of arguments
-    //! @tparam I - index of sequences related to arguments
+    //! @tparam Num - number of arguments
+    //! @tparam Is - indices of sequence related to arguments
     //! @param prefix - prefix characters
     //! @param collection - collection of arguments to be registered
-    //! @param sequence - sequences related to arguments
-    template <std::size_t N, std::size_t... I>
+    //! @param sequence - sequence related to arguments
+    template <std::size_t Num, std::size_t... Is>
     explicit Trait(
         const std::string_view prefix,
-        std::array<std::string_view, N>&& collection,
-        const std::index_sequence<I...>& sequence);
+        std::array<std::string_view, Num>&& collection,
+        const std::index_sequence<Is...>& sequence);
     //! @brief Construct a new Trait object.
-    //! @tparam N - number of arguments
+    //! @tparam Num - number of arguments
     //! @param prefix - prefix characters
     //! @param collection - collection of arguments to be registered
-    template <std::size_t N>
-    explicit Trait(const std::string_view prefix, std::array<std::string_view, N>&& collection) :
-        Trait(prefix, std::move(collection), std::make_index_sequence<N>{})
+    template <std::size_t Num>
+    explicit Trait(const std::string_view prefix, std::array<std::string_view, Num>&& collection) :
+        Trait(prefix, std::move(collection), std::make_index_sequence<Num>{})
     {
     }
 
     //! @brief The operator (==) overloading of Trait class.
-    //! @tparam T - type of right-hand side
+    //! @tparam RHS - type of right-hand side
     //! @param rhs - right-hand side
     //! @return be equal or not
-    template <typename T>
-    bool operator==(const T& rhs) const;
+    template <typename RHS>
+    bool operator==(const RHS& rhs) const;
     //! @brief The operator (!=) overloading of Trait class.
-    //! @tparam T - type of right-hand side
+    //! @tparam RHS - type of right-hand side
     //! @param rhs - right-hand side
     //! @return be unequal or not
-    template <typename T>
-    bool operator!=(const T& rhs) const;
+    template <typename RHS>
+    bool operator!=(const RHS& rhs) const;
 
     //! @brief Set help message.
     //! @param message - help message
@@ -180,11 +180,11 @@ public:
     //! @return reference of the Trait object
     Trait& metaVariable(const std::string_view variable);
     //! @brief Set default value.
-    //! @tparam T - type of default value
+    //! @tparam Value - type of default value
     //! @param value - default value
     //! @return reference of the Trait object
-    template <typename T>
-    Trait& defaultValue(T&& value);
+    template <typename Value>
+    Trait& defaultValue(Value&& value);
     //! @brief Set default value.
     //! @param value - default value
     //! @return reference of the Trait object
@@ -286,24 +286,24 @@ private:
     ArgsNumRange argsNumRange{1, 1};
 
     //! @brief Represent target value.
-    //! @tparam T - type of target value
-    //! @param val - target value
+    //! @tparam Value - type of target value
+    //! @param value - target value
     //! @return content to be represented
-    template <typename T>
-    static std::string represent(const T& val);
+    template <typename Value>
+    static std::string represent(const Value& value);
     //! @brief Implementation of wrapping function calls that have scope.
     //! @tparam Func - type of callable function
     //! @tparam Tuple - type of bound arguments tuple
     //! @tparam Extra - type of extra option
-    //! @tparam I - number of sequence which converted from bound arguments tuple
+    //! @tparam Is - number of sequence which converted from bound arguments tuple
     //! @param func - callable function
     //! @param tup - bound arguments tuple
     //! @param ext - extra option
     //! @param seq - sequence which converted from bound arguments tuple
     //! @return wrapping of calls
-    template <typename Func, typename Tuple, typename Extra, std::size_t... I>
+    template <typename Func, typename Tuple, typename Extra, std::size_t... Is>
     static constexpr decltype(auto) applyScopedOneImpl(
-        Func&& func, Tuple&& tup, Extra&& ext, const std::index_sequence<I...>& seq);
+        Func&& func, Tuple&& tup, Extra&& ext, const std::index_sequence<Is...>& seq);
     //! @brief Wrap function calls that have scope.
     //! @tparam Func - type of callable function
     //! @tparam Tuple - type of bound arguments tuple
@@ -330,22 +330,22 @@ private:
     //! @param prefix - prefix characters
     //! @return be positional or not
     static bool checkIfPositional(const std::string_view name, const std::string_view prefix);
-    //! @brief Get the member.
-    //! @tparam T - type of member to be got
-    //! @return member corresponding to the specific type
-    template <typename T>
-    T get() const;
+    //! @brief Get the value.
+    //! @tparam Value - type of value
+    //! @return value corresponding to the specific type
+    template <typename Value>
+    Value get() const;
     //! @brief Retrieves the value of the argument, if any.
-    //! @tparam T - type of argument
+    //! @tparam Value - type of value
     //! @return an optional that contains the value of the argument if it exists, otherwise an empty optional
-    template <typename T>
-    std::optional<T> present() const;
+    template <typename Value>
+    std::optional<Value> present() const;
     //! @brief Convert the container type.
-    //! @tparam T - type of container
+    //! @tparam Container - type of container
     //! @param operand - container to be converted
     //! @return container after converting type
-    template <typename T>
-    static T anyCastContainer(const std::vector<std::any>& operand);
+    template <typename Container>
+    static Container anyCastContainer(const std::vector<std::any>& operand);
     //! @brief Wrap for applying actions.
     //! @tparam Iterator - type of argument iterator
     template <typename Iterator>
@@ -381,18 +381,18 @@ protected:
     friend std::ostream& operator<<(std::ostream& os, const Argument& arg);
 };
 
-template <std::size_t N, std::size_t... I>
+template <std::size_t Num, std::size_t... Is>
 Trait::Trait(
     const std::string_view prefix,
-    std::array<std::string_view, N>&& collection,
-    const std::index_sequence<I...>& /*sequence*/) :
-    isOptional{(checkIfOptional(collection.at(I), prefix) || ...)},
+    std::array<std::string_view, Num>&& collection,
+    const std::index_sequence<Is...>& /*sequence*/) :
+    isOptional{(checkIfOptional(collection.at(Is), prefix) || ...)},
     isRequired{false},
     isRepeatable{false},
     isUsed{false},
     prefixChars{prefix}
 {
-    (names.emplace_back(std::move(collection).at(I)), ...);
+    (names.emplace_back(std::move(collection).at(Is)), ...);
     std::sort(
         names.begin(),
         names.end(),
@@ -400,36 +400,37 @@ Trait::Trait(
         { return (lhs.size() == rhs.size()) ? (lhs < rhs) : (lhs.size() < rhs.size()); });
 }
 
-template <typename T>
-bool Trait::operator==(const T& rhs) const
+template <typename RHS>
+bool Trait::operator==(const RHS& rhs) const
 {
-    if constexpr (!isContainer<T>)
+    if constexpr (!isContainer<RHS>)
     {
-        return rhs == get<T>();
+        return rhs == get<RHS>();
     }
     else
     {
-        const auto& lhs = get<T>();
+        const auto& lhs = get<RHS>();
         return std::equal(
             std::cbegin(lhs),
             std::cend(lhs),
             std::cbegin(rhs),
             std::cend(rhs),
-            [](const auto& lhs, const auto& rhs) { return rhs == std::any_cast<const typename T::value_type&>(lhs); });
+            [](const auto& lhs, const auto& rhs)
+            { return rhs == std::any_cast<const typename RHS::value_type&>(lhs); });
     }
 }
 
-template <typename T>
-bool Trait::operator!=(const T& rhs) const
+template <typename RHS>
+bool Trait::operator!=(const RHS& rhs) const
 {
     return !(rhs == *this);
 }
 
-template <typename T>
-Trait& Trait::defaultValue(T&& value)
+template <typename Value>
+Trait& Trait::defaultValue(Value&& value)
 {
     representedDefVal = represent(value);
-    defaultVal = std::forward<T>(value);
+    defaultVal = std::forward<Value>(value);
     return *this;
 }
 
@@ -497,30 +498,30 @@ Iterator Trait::consume(const Iterator start, Iterator end, const std::string_vi
     throw std::runtime_error{"Too few arguments for '" + usedName + "'."};
 }
 
-template <typename T>
-std::string Trait::represent(const T& val)
+template <typename Value>
+std::string Trait::represent(const Value& value)
 {
-    if constexpr (std::is_same_v<T, bool>)
+    if constexpr (std::is_same_v<Value, bool>)
     {
-        return val ? "true" : "false";
+        return value ? "true" : "false";
     }
-    else if constexpr (std::is_convertible_v<T, std::string_view>)
+    else if constexpr (std::is_convertible_v<Value, std::string_view>)
     {
-        return '"' + val + '"';
+        return '"' + value + '"';
     }
-    else if constexpr (isContainer<T>)
+    else if constexpr (isContainer<Value>)
     {
         std::ostringstream out{};
         out << '{';
-        const auto size = val.size();
+        const auto size = value.size();
         if (size > 1)
         {
-            out << represent(*std::cbegin(val));
+            out << represent(*std::cbegin(value));
             std::for_each(
-                std::next(std::cbegin(val)),
+                std::next(std::cbegin(value)),
                 std::next(
-                    std::cbegin(val),
-                    static_cast<typename T::iterator::difference_type>(
+                    std::cbegin(value),
+                    static_cast<typename Value::iterator::difference_type>(
                         std::min<std::size_t>(size, maxRepresentSize) - 1)),
                 [&out](const auto& v) { out << ' ' << represent(v); });
             if (size <= maxRepresentSize)
@@ -534,15 +535,15 @@ std::string Trait::represent(const T& val)
         }
         if (size > 0)
         {
-            out << represent(*std::prev(std::cend(val)));
+            out << represent(*std::prev(std::cend(value)));
         }
         out << '}';
         return std::move(out).str();
     }
-    else if constexpr (isStreamable<T>)
+    else if constexpr (isStreamable<Value>)
     {
         std::ostringstream out{};
-        out << val;
+        out << value;
         return std::move(out).str();
     }
     else
@@ -551,11 +552,11 @@ std::string Trait::represent(const T& val)
     }
 }
 
-template <typename Func, typename Tuple, typename Extra, std::size_t... I>
+template <typename Func, typename Tuple, typename Extra, std::size_t... Is>
 constexpr decltype(auto) Trait::applyScopedOneImpl(
-    Func&& func, Tuple&& tup, Extra&& ext, const std::index_sequence<I...>& /*seq*/)
+    Func&& func, Tuple&& tup, Extra&& ext, const std::index_sequence<Is...>& /*seq*/)
 {
-    return std::invoke(std::forward<Func>(func), std::get<I>(std::forward<Tuple>(tup))..., std::forward<Extra>(ext));
+    return std::invoke(std::forward<Func>(func), std::get<Is>(std::forward<Tuple>(tup))..., std::forward<Extra>(ext));
 }
 
 template <typename Func, typename Tuple, typename Extra>
@@ -568,36 +569,36 @@ constexpr decltype(auto) Trait::applyScopedOne(Func&& func, Tuple&& tup, Extra&&
         std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<Tuple>>>{});
 }
 
-template <typename T>
-T Trait::get() const
+template <typename Value>
+Value Trait::get() const
 {
     if (!values.empty())
     {
-        if constexpr (isContainer<T>)
+        if constexpr (isContainer<Value>)
         {
-            return anyCastContainer<T>(values);
+            return anyCastContainer<Value>(values);
         }
         else
         {
-            return std::any_cast<T>(values.front());
+            return std::any_cast<Value>(values.front());
         }
     }
     if (defaultVal.has_value())
     {
-        return std::any_cast<T>(defaultVal);
+        return std::any_cast<Value>(defaultVal);
     }
-    if constexpr (isContainer<T>)
+    if constexpr (isContainer<Value>)
     {
         if (!optionalAsValue)
         {
-            return anyCastContainer<T>(values);
+            return anyCastContainer<Value>(values);
         }
     }
     throw std::runtime_error{"No value specified for '" + names.back() + "'."};
 }
 
-template <typename T>
-std::optional<T> Trait::present() const
+template <typename Value>
+std::optional<Value> Trait::present() const
 {
     if (defaultVal.has_value())
     {
@@ -607,22 +608,22 @@ std::optional<T> Trait::present() const
     {
         return std::nullopt;
     }
-    if constexpr (isContainer<T>)
+    if constexpr (isContainer<Value>)
     {
-        return anyCastContainer<T>(values);
+        return anyCastContainer<Value>(values);
     }
-    return std::any_cast<T>(values.front());
+    return std::any_cast<Value>(values.front());
 }
 
-template <typename T>
-T Trait::anyCastContainer(const std::vector<std::any>& operand)
+template <typename Container>
+Container Trait::anyCastContainer(const std::vector<std::any>& operand)
 {
-    T result{};
+    Container result{};
     std::transform(
         operand.cbegin(),
         operand.cend(),
         std::back_inserter(result),
-        [](const auto& value) { return std::any_cast<typename T::value_type>(value); });
+        [](const auto& value) { return std::any_cast<typename Container::value_type>(value); });
     return result;
 }
 
@@ -670,11 +671,11 @@ public:
     //! @return reference of the Trait object
     Argument& addDescription(const std::string_view text);
     //! @brief Get the Trait or Argument instance by name.
-    //! @tparam T - type of instance
+    //! @tparam Inst - type of instance
     //! @param name - instance name
     //! @return Trait or Argument instance
-    template <typename T = Trait>
-    T& at(const std::string_view name);
+    template <typename Inst = Trait>
+    Inst& at(const std::string_view name);
     //! @brief Parse all input arguments.
     //! @param arguments - container of all arguments
     void parseArgs(const std::vector<std::string>& arguments);
@@ -683,17 +684,17 @@ public:
     //! @param argv - argument vector
     void parseArgs(const int argc, const char* const argv[]);
     //! @brief Get argument value by name.
-    //! @tparam T - type of argument
+    //! @tparam Arg - type of argument
     //! @param argName - target argument name
     //! @return argument value
-    template <typename T = std::string>
-    T get(const std::string_view argName) const;
+    template <typename Arg = std::string>
+    Arg get(const std::string_view argName) const;
     //! @brief Retrieves the value of the argument, if any.
-    //! @tparam T - type of argument
+    //! @tparam Arg - type of argument
     //! @param argName - target argument name
     //! @return an optional that contains the value of the argument if it exists, otherwise an empty optional
-    template <typename T = std::string>
-    std::optional<T> present(const std::string_view argName) const;
+    template <typename Arg = std::string>
+    std::optional<Arg> present(const std::string_view argName) const;
     //! @brief Check whether the argument is used.
     //! @param argName - target argument name
     //! @return be used or not
@@ -801,10 +802,10 @@ Trait& Argument::addArgument(ArgsType... fewArgs)
     return *argument;
 }
 
-template <typename T>
-T& Argument::at(const std::string_view name)
+template <typename Inst>
+Inst& Argument::at(const std::string_view name)
 {
-    if constexpr (std::is_same_v<T, Trait>)
+    if constexpr (std::is_same_v<Inst, Trait>)
     {
         return (*this)[name];
     }
@@ -815,20 +816,20 @@ T& Argument::at(const std::string_view name)
     throw std::runtime_error{"No such sub-parser: " + std::string{name} + '.'};
 }
 
-template <typename T>
-T Argument::get(const std::string_view argName) const
+template <typename Arg>
+Arg Argument::get(const std::string_view argName) const
 {
     if (!isParsed)
     {
         throw std::runtime_error{"Nothing parsed, no arguments are available."};
     }
-    return (*this)[argName].get<T>();
+    return (*this)[argName].get<Arg>();
 }
 
-template <typename T>
-std::optional<T> Argument::present(const std::string_view argName) const
+template <typename Arg>
+std::optional<Arg> Argument::present(const std::string_view argName) const
 {
-    return (*this)[argName].present<T>();
+    return (*this)[argName].present<Arg>();
 }
 
 template <typename Iterator>

@@ -44,20 +44,21 @@ struct ArgsHead<std::integer_sequence<std::size_t>, Args...>
 //! @brief Head of function arguments.
 //! @tparam Args - type of function arguments
 //! @tparam Rest - type of rest function arguments
-//! @tparam N - number of specific function arguments
-//! @tparam I - number of sequence which converted from specific function arguments
-template <typename Args, typename... Rest, std::size_t N, std::size_t... I>
-struct ArgsHead<std::integer_sequence<std::size_t, N, I...>, Args, Rest...>
+//! @tparam I0 - current index of specific function arguments
+//! @tparam Is - indices of sequence related to specific function arguments
+template <typename Args, typename... Rest, std::size_t I0, std::size_t... Is>
+struct ArgsHead<std::integer_sequence<std::size_t, I0, Is...>, Args, Rest...>
 {
     //! @brief Alias for the tuple concat.
-    using Type =
-        TupleConcatResult<std::tuple<Args>, typename ArgsHead<std::integer_sequence<std::size_t, I...>, Rest...>::Type>;
+    using Type = TupleConcatResult<
+        std::tuple<Args>,
+        typename ArgsHead<std::integer_sequence<std::size_t, Is...>, Rest...>::Type>;
 };
 //! @brief Alias for the function arguments head type.
-//! @tparam N - number of specific function arguments
+//! @tparam Num - number of specific function arguments
 //! @tparam Args - type of function arguments
-template <std::size_t N, typename... Args>
-using ArgsHeadType = typename ArgsHead<std::make_index_sequence<N>, Args...>::Type;
+template <std::size_t Num, typename... Args>
+using ArgsHeadType = typename ArgsHead<std::make_index_sequence<Num>, Args...>::Type;
 
 //! @brief Exclusion of function arguments.
 //! @tparam IdxSeq - type of index sequence
@@ -75,41 +76,41 @@ struct ArgsExcl<std::integer_sequence<std::size_t>, Args...>
 //! @brief Exclusion of function arguments.
 //! @tparam Args - type of function arguments
 //! @tparam Rest - type of rest function arguments
-//! @tparam N - number of specific function arguments
-//! @tparam I - number of sequence which converted from specific function arguments
-template <typename Args, typename... Rest, std::size_t N, std::size_t... I>
-struct ArgsExcl<std::integer_sequence<std::size_t, N, I...>, Args, Rest...>
+//! @tparam I0 - current index of specific function arguments
+//! @tparam Is - indices of sequence related to specific function arguments
+template <typename Args, typename... Rest, std::size_t I0, std::size_t... Is>
+struct ArgsExcl<std::integer_sequence<std::size_t, I0, Is...>, Args, Rest...>
 {
     //! @brief Alias for the rest function arguments.
-    using Type = typename ArgsExcl<std::integer_sequence<std::size_t, I...>, Rest...>::Type;
+    using Type = typename ArgsExcl<std::integer_sequence<std::size_t, Is...>, Rest...>::Type;
 };
 //! @brief Alias for the function arguments exclusion type.
-//! @tparam N - number of specific function arguments
+//! @tparam Num - number of specific function arguments
 //! @tparam Args - type of function arguments
-template <std::size_t N, typename... Args>
-using ArgsExclType = typename ArgsExcl<std::make_index_sequence<N>, Args...>::Type;
+template <std::size_t Num, typename... Args>
+using ArgsExclType = typename ArgsExcl<std::make_index_sequence<Num>, Args...>::Type;
 
 //! @brief Completion of curry.
-//! @tparam Callable - type of original function
+//! @tparam Call - type of original function
 //! @tparam ArgsTuple - type of function arguments tuple
 //! @tparam UncurriedArgsTuple - type of uncurried function arguments tuple
-template <typename Callable, typename ArgsTuple, typename UncurriedArgsTuple>
+template <typename Call, typename ArgsTuple, typename UncurriedArgsTuple>
 class Curried;
 //! @brief Completion of curry.
-//! @tparam Callable - type of original function
+//! @tparam Call - type of original function
 //! @tparam CurriedArgs - type of curried function arguments
 //! @tparam UncurriedArgs - type of uncurried function arguments
-template <typename Callable, typename... CurriedArgs, typename... UncurriedArgs>
-class Curried<Callable, std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>
+template <typename Call, typename... CurriedArgs, typename... UncurriedArgs>
+class Curried<Call, std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>
 {
 public:
     //! @brief Construct a new Curried object.
-    //! @tparam CallableType - type of original function
+    //! @tparam CallType - type of original function
     //! @param call - wrapped function
     //! @param args - curried function arguments tuple
-    template <typename CallableType>
-    Curried(CallableType&& call, std::tuple<CurriedArgs...>&& args) :
-        callable{std::forward<CallableType>(call)}, curriedArgs{std::move(args)}
+    template <typename CallType>
+    Curried(CallType&& call, std::tuple<CurriedArgs...>&& args) :
+        callable{std::forward<CallType>(call)}, curriedArgs{std::move(args)}
     {
     }
 
@@ -132,38 +133,38 @@ public:
 
 private:
     //! @brief Wrapped function.
-    Callable callable{};
+    Call callable{};
     //! @brief Curried function arguments tuple.
     mutable std::tuple<CurriedArgs...> curriedArgs{};
 };
 
-template <typename Callable, typename... CurriedArgs, typename... UncurriedArgs>
-decltype(auto) Curried<Callable, std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>::operator()(
+template <typename Call, typename... CurriedArgs, typename... UncurriedArgs>
+decltype(auto) Curried<Call, std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>::operator()(
     UncurriedArgs... args) const
 {
     auto uncurriedArgs = std::tuple<UncurriedArgs...>(std::forward<UncurriedArgs>(args)...);
     return std::apply(callable, std::tuple_cat(curriedArgs, std::move(uncurriedArgs)));
 }
 
-template <typename Callable, typename... CurriedArgs, typename... UncurriedArgs>
+template <typename Call, typename... CurriedArgs, typename... UncurriedArgs>
 template <typename... Args>
-inline auto Curried<Callable, std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>::curry(
+inline auto Curried<Call, std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>::curry(
     std::tuple<Args...>&& args) const&
 {
     using OverlayCurried = Curried<
-        Callable,
+        Call,
         TupleConcatResult<std::tuple<CurriedArgs...>, std::tuple<Args...>>,
         ArgsExclType<sizeof...(Args), UncurriedArgs...>>;
     return OverlayCurried(callable, std::tuple_cat(curriedArgs, std::move(args)));
 }
 
-template <typename Callable, typename... CurriedArgs, typename... UncurriedArgs>
+template <typename Call, typename... CurriedArgs, typename... UncurriedArgs>
 template <typename... Args>
-inline auto Curried<Callable, std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>::curry(
+inline auto Curried<Call, std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>::curry(
     std::tuple<Args...>&& args) &&
 {
     using OverlayCurried = Curried<
-        Callable,
+        Call,
         TupleConcatResult<std::tuple<CurriedArgs...>, std::tuple<Args...>>,
         ArgsExclType<sizeof...(Args), UncurriedArgs...>>;
     return OverlayCurried(std::move(callable), std::tuple_cat(std::move(curriedArgs), std::move(args)));
@@ -189,8 +190,8 @@ struct Curry<std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>
     template <typename Ret, typename... Args>
     static auto curryInternal(const std::function<Ret(CurriedArgs..., UncurriedArgs...)>& call, Args&&... args)
     {
-        using Callable = std::function<Ret(CurriedArgs..., UncurriedArgs...)>;
-        using CurriedType = Curried<Callable, std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>;
+        using Call = std::function<Ret(CurriedArgs..., UncurriedArgs...)>;
+        using CurriedType = Curried<Call, std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>;
         return CurriedType(call, std::tuple<CurriedArgs...>(std::forward<Args>(args)...));
     }
     //! @brief To curry for internal.
@@ -202,8 +203,8 @@ struct Curry<std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>
     template <typename Ret, typename... Args>
     static auto curryInternal(std::function<Ret(CurriedArgs..., UncurriedArgs...)>&& call, Args&&... args)
     {
-        using Callable = std::function<Ret(CurriedArgs..., UncurriedArgs...)>;
-        using CurriedType = Curried<Callable, std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>;
+        using Call = std::function<Ret(CurriedArgs..., UncurriedArgs...)>;
+        using CurriedType = Curried<Call, std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>;
         return CurriedType(std::move(call), std::tuple<CurriedArgs...>(std::forward<Args>(args)...));
     }
 };

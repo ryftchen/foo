@@ -111,14 +111,15 @@ public:
         return std::make_pair(number1, number2);
     }
     //! @brief Splice all integers for printing.
-    //! @tparam T - type of container
+    //! @tparam Elem - type of element in container
     //! @param container - integer container
     //! @param fmtBuffer - buffer for printing
     //! @param bufferSize - size of the buffer
     //! @return buffer after splicing
-    template <typename T>
-    requires std::is_integral_v<T>
-    static char* spliceAllIntegers(const std::set<T>& container, char* const fmtBuffer, const std::uint32_t bufferSize)
+    template <typename Elem>
+    requires std::is_integral_v<Elem>
+    static char* spliceAllIntegers(
+        const std::set<Elem>& container, char* const fmtBuffer, const std::uint32_t bufferSize)
     {
         if (container.empty() || !fmtBuffer || (bufferSize == 0))
         {
@@ -290,15 +291,15 @@ public:
     //! @return upper bound
     [[nodiscard]] std::uint32_t getUpperBound() const noexcept { return upperBound; }
     //! @brief Splice all integers for printing.
-    //! @tparam T - type of container
+    //! @tparam Elem - type of element in container
     //! @param container - integer container
     //! @param fmtBuffer - buffer for printing
     //! @param bufferSize - size of the buffer
     //! @return buffer after splicing
-    template <typename T>
-    requires std::is_integral_v<T>
+    template <typename Elem>
+    requires std::is_integral_v<Elem>
     static char* spliceAllIntegers(
-        const std::vector<T>& container, char* const fmtBuffer, const std::uint32_t bufferSize)
+        const std::vector<Elem>& container, char* const fmtBuffer, const std::uint32_t bufferSize)
     {
         if (container.empty() || !fmtBuffer || (bufferSize == 0))
         {

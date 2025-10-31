@@ -26,8 +26,8 @@ namespace reg_algo
 extern const char* version() noexcept;
 
 //! @brief Represent the maximum value of an enum.
-//! @tparam T - type of specific enum
-template <typename T>
+//! @tparam Enum - type of specific enum
+template <typename Enum>
 struct Bottom;
 
 //! @brief Enumerate specific match methods.
@@ -183,14 +183,14 @@ extern void clear();
 } // namespace manage
 
 //! @brief Set choice.
-//! @tparam T - type of target method
+//! @tparam Meth - type of target method
 //! @param choice - target choice
-template <typename T>
+template <typename Meth>
 void setChoice(const std::string& choice);
 //! @brief Run candidates.
-//! @tparam T - type of target method
+//! @tparam Meth - type of target method
 //! @param candidates - container for the candidate target choices
-template <typename T>
+template <typename Meth>
 void runCandidates(const std::vector<std::string>& candidates);
 
 //! @brief Register match.
@@ -443,9 +443,9 @@ struct utility::reflection::TypeInfo<application::reg_algo::SortMethod>
 namespace application::reg_algo
 {
 //! @brief Alias for the type information.
-//! @tparam T - type of target object
-template <typename T>
-using TypeInfo = utility::reflection::TypeInfo<T>;
+//! @tparam UDT - type of user defined data
+template <typename UDT>
+using TypeInfo = utility::reflection::TypeInfo<UDT>;
 //! @brief Alias for the category.
 using Category = ApplyAlgorithm::Category;
 //! @brief Convert category enumeration to string.
@@ -480,19 +480,19 @@ constexpr auto& categoryOpts()
         TypeInfo<ApplyAlgorithm>::fields.find(REFLECTION_STR(toString(Cat))).value, manage::choiceApplier());
 }
 //! @brief The literal hash value of the abbreviation for the candidate method.
-//! @tparam T - type of candidate method
+//! @tparam Meth - type of candidate method
 //! @param method - candidate method
 //! @return literal hash value
-template <typename T>
-consteval std::size_t abbrLitHash(const T method)
+template <typename Meth>
+consteval std::size_t abbrLitHash(const Meth method)
 {
-    static_assert(Bottom<T>::value == TypeInfo<T>::fields.size);
+    static_assert(Bottom<Meth>::value == TypeInfo<Meth>::fields.size);
     constexpr auto refl = REFLECTION_STR("choice");
     std::size_t value = 0;
-    TypeInfo<T>::fields.findIf(
+    TypeInfo<Meth>::fields.findIf(
         [refl, method, &value](const auto field)
         {
-            if (field.name == TypeInfo<T>::fields.nameOfValue(method))
+            if (field.name == TypeInfo<Meth>::fields.nameOfValue(method))
             {
                 static_assert(field.attrs.contains(refl) && (field.attrs.size == 1));
                 const auto attr = field.attrs.find(refl);

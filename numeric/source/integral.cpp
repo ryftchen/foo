@@ -193,9 +193,9 @@ double MonteCarlo::sampleFromNormalDistribution(const double lower, const double
             x = mag * std::sin(2.0 * std::numbers::pi * u2) + mu;
         }
         while ((x < lower) || (x > upper));
-        const double probabilityDensity = (1.0 / std::sqrt(2.0 * std::numbers::pi * sigma * sigma))
+        const double probDens = (1.0 / std::sqrt(2.0 * std::numbers::pi * sigma * sigma))
             * std::pow(std::numbers::e, (-(x - mu) * (x - mu)) / (2.0 * sigma * sigma));
-        sum += expr(x) / probabilityDensity;
+        sum += expr(x) / probDens;
     }
     sum /= n;
     return sum;

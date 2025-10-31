@@ -108,9 +108,9 @@ private:
     //! @param configData - configuration data
     static void verifyConfigData(const utility::json::JSON& configData);
     //! @brief Check the object in the helper list.
-    //! @tparam T - type of helper
+    //! @tparam Helper - type of helper
     //! @param helper - object of helper
-    template <typename T>
+    template <typename Helper>
     static void checkObjectInHelperList(const utility::json::JSON& helper);
 };
 

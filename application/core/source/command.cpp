@@ -753,13 +753,13 @@ void Command::dispatch()
     }
 }
 
-template <typename T>
+template <typename Cat>
 std::vector<std::string> Command::extractChoices()
 {
     constexpr auto refl = REFLECTION_STR("choice");
     std::vector<std::string> choices{};
-    choices.reserve(utility::reflection::TypeInfo<T>::fields.size);
-    utility::reflection::TypeInfo<T>::fields.forEach(
+    choices.reserve(utility::reflection::TypeInfo<Cat>::fields.size);
+    utility::reflection::TypeInfo<Cat>::fields.forEach(
         [refl, &choices](const auto field)
         {
             static_assert(field.attrs.contains(refl) && (field.attrs.size == 1));
@@ -1004,8 +1004,8 @@ auto Command::processConsoleInputs(const std::function<void()>& handling)
     return retCode;
 }
 
-template <typename T>
-void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& client)
+template <typename Sock>
+void Command::registerOnConsole(console::Console& session, std::shared_ptr<Sock>& client)
 {
     static constexpr auto gracefulReset = []<ExtHelper Helper>() constexpr
     {
@@ -1055,7 +1055,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<T>& c
 
                     using view::View;
                     gracefulReset.template operator()<View>();
-                    client = std::make_shared<T>();
+                    client = std::make_shared<Sock>();
                     launchClient(client);
                     LOG_INF_F("Reconnected to the {} servers.", View::name);
                 });

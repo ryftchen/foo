@@ -64,7 +64,7 @@ extern bool removeFirst(const DLL head);
 extern bool removeLast(const DLL head);
 
 //! @brief Print the doubly linked list.
-//! @tparam Value - type of value
+//! @tparam Value - type of node value
 template <typename Value>
 class Printer
 {
@@ -78,17 +78,17 @@ private:
     const DLL* const dll{nullptr};
 
 protected:
-    template <typename V>
-    friend std::ostream& operator<<(std::ostream&, const Printer<V>&);
+    template <typename NV>
+    friend std::ostream& operator<<(std::ostream&, const Printer<NV>&);
 };
 
 //! @brief The operator (<<) overloading of the Printer class.
-//! @tparam V - type of value
+//! @tparam NV - type of node value
 //! @param os - output stream object
 //! @param printer - specific Printer object
 //! @return reference of the output stream object
-template <typename V>
-std::ostream& operator<<(std::ostream& os, const Printer<V>& printer)
+template <typename NV>
+std::ostream& operator<<(std::ostream& os, const Printer<NV>& printer)
 {
     if (printer.dll && *(printer.dll))
     {
@@ -97,7 +97,7 @@ std::ostream& operator<<(std::ostream& os, const Printer<V>& printer)
         os << "HEAD -> ";
         for (int i = 0; i < size; ++i)
         {
-            os << *static_cast<const V*>(get(dll, i));
+            os << *static_cast<const NV*>(get(dll, i));
             if (i < (size - 1))
             {
                 os << " <-> ";
@@ -124,7 +124,7 @@ extern void* top(const Stack head);
 extern void* pop(const Stack head);
 
 //! @brief Print the stack.
-//! @tparam Value - type of value
+//! @tparam Value - type of node value
 template <typename Value>
 class Printer
 {
@@ -138,17 +138,17 @@ private:
     const Stack* const stk{nullptr};
 
 protected:
-    template <typename V>
-    friend std::ostream& operator<<(std::ostream&, const Printer<V>&);
+    template <typename NV>
+    friend std::ostream& operator<<(std::ostream&, const Printer<NV>&);
 };
 
 //! @brief The operator (<<) overloading of the Printer class.
-//! @tparam V - type of value
+//! @tparam NV - type of node value
 //! @param os - output stream object
 //! @param printer - specific Printer object
 //! @return reference of the output stream object
-template <typename V>
-std::ostream& operator<<(std::ostream& os, const Printer<V>& printer)
+template <typename NV>
+std::ostream& operator<<(std::ostream& os, const Printer<NV>& printer)
 {
     if (printer.stk && *(printer.stk))
     {
@@ -157,7 +157,7 @@ std::ostream& operator<<(std::ostream& os, const Printer<V>& printer)
         os << "TOP [ ";
         for (int i = 0; i < size; ++i)
         {
-            os << *static_cast<const V*>(dll::get(stk, i));
+            os << *static_cast<const NV*>(dll::get(stk, i));
             if (i < (size - 1))
             {
                 os << " | ";
@@ -184,7 +184,7 @@ extern void* front(const Queue head);
 extern void* pop(const Queue head);
 
 //! @brief Print the queue.
-//! @tparam Value - type of value
+//! @tparam Value - type of node value
 template <typename Value>
 class Printer
 {
@@ -198,17 +198,17 @@ private:
     const Queue* const que{nullptr};
 
 protected:
-    template <typename V>
-    friend std::ostream& operator<<(std::ostream&, const Printer<V>&);
+    template <typename NV>
+    friend std::ostream& operator<<(std::ostream&, const Printer<NV>&);
 };
 
 //! @brief The operator (<<) overloading of the Printer class.
-//! @tparam V - type of value
+//! @tparam NV - type of node value
 //! @param os - output stream object
 //! @param printer - specific Printer object
 //! @return reference of the output stream object
-template <typename V>
-std::ostream& operator<<(std::ostream& os, const Printer<V>& printer)
+template <typename NV>
+std::ostream& operator<<(std::ostream& os, const Printer<NV>& printer)
 {
     if (printer.que && *(printer.que))
     {
@@ -217,7 +217,7 @@ std::ostream& operator<<(std::ostream& os, const Printer<V>& printer)
         os << "FRONT [ ";
         for (int i = 0; i < size; ++i)
         {
-            os << *static_cast<const V*>(dll::get(que, i));
+            os << *static_cast<const NV*>(dll::get(que, i));
             if (i < (size - 1))
             {
                 os << " | ";

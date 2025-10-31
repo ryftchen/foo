@@ -44,13 +44,13 @@ void clear()
 } // namespace manage
 
 //! @brief Find the position of bit flags to set a particular method.
-//! @tparam T - type of target method
+//! @tparam Meth - type of target method
 //! @param stringify - method name
 //! @return position of bit flags
-template <typename T>
+template <typename Meth>
 static consteval std::size_t mappedPos(const std::string_view stringify)
 {
-    return static_cast<std::size_t>(TypeInfo<T>::fields.template valueOfName<T>(stringify));
+    return static_cast<std::size_t>(TypeInfo<Meth>::fields.template valueOfName<Meth>(stringify));
 }
 
 namespace match

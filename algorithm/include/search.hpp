@@ -8,6 +8,7 @@
 
 #include <cmath>
 #include <cstdint>
+#include <numeric>
 #include <vector>
 
 //! @brief The algorithm module.
@@ -25,8 +26,8 @@ inline static const char* description() noexcept
 extern const char* version() noexcept;
 
 //! @brief Search methods.
-//! @tparam T - type of search methods
-template <typename T>
+//! @tparam Elem - type of element
+template <typename Elem>
 class Search
 {
 public:
@@ -35,19 +36,19 @@ public:
     //! @param length - length of array
     //! @param key - search key
     //! @return index of the first occurrence of key
-    static std::int64_t binary(const T* const array, const std::uint32_t length, const T key);
+    static std::int64_t binary(const Elem* const array, const std::uint32_t length, const Elem key);
     //! @brief Interpolation.
     //! @param array - ordered array to be searched
     //! @param length - length of array
     //! @param key - search key
     //! @return index of the first occurrence of key
-    static std::int64_t interpolation(const T* const array, const std::uint32_t length, const T key);
+    static std::int64_t interpolation(const Elem* const array, const std::uint32_t length, const Elem key);
     //! @brief Fibonacci.
     //! @param array - ordered array to be searched
     //! @param length - length of array
     //! @param key - search key
     //! @return index of the first occurrence of key
-    static std::int64_t fibonacci(const T* const array, const std::uint32_t length, const T key);
+    static std::int64_t fibonacci(const Elem* const array, const std::uint32_t length, const Elem key);
 
 private:
     //! @brief Generate Fibonacci number.
@@ -56,8 +57,8 @@ private:
     static std::vector<std::uint32_t> generateFibonacciNumber(const std::uint32_t limit);
 };
 
-template <typename T>
-std::int64_t Search<T>::binary(const T* const array, const std::uint32_t length, const T key)
+template <typename Elem>
+std::int64_t Search<Elem>::binary(const Elem* const array, const std::uint32_t length, const Elem key)
 {
     if (!array || (length == 0))
     {
@@ -74,7 +75,7 @@ std::int64_t Search<T>::binary(const T* const array, const std::uint32_t length,
 
     while (lower <= upper)
     {
-        const std::uint32_t mid = (lower + upper) / 2;
+        const std::uint32_t mid = std::midpoint(lower, upper);
         if (key == array[mid])
         {
             index = mid;
@@ -92,8 +93,8 @@ std::int64_t Search<T>::binary(const T* const array, const std::uint32_t length,
     return index;
 }
 
-template <typename T>
-std::int64_t Search<T>::interpolation(const T* const array, const std::uint32_t length, const T key)
+template <typename Elem>
+std::int64_t Search<Elem>::interpolation(const Elem* const array, const std::uint32_t length, const Elem key)
 {
     if (!array || (length == 0))
     {
@@ -128,8 +129,8 @@ std::int64_t Search<T>::interpolation(const T* const array, const std::uint32_t 
     return index;
 }
 
-template <typename T>
-std::int64_t Search<T>::fibonacci(const T* const array, const std::uint32_t length, const T key)
+template <typename Elem>
+std::int64_t Search<Elem>::fibonacci(const Elem* const array, const std::uint32_t length, const Elem key)
 {
     if (!array || (length == 0))
     {
@@ -150,7 +151,7 @@ std::int64_t Search<T>::fibonacci(const T* const array, const std::uint32_t leng
     }
 
     std::uint32_t n = fib.size() - 1;
-    std::vector<T> complement(array, array + (fib[n] - 1));
+    std::vector<Elem> complement(array, array + (fib[n] - 1));
     for (std::uint32_t i = upper; i < (fib[n] - 1); ++i)
     {
         complement[i] = array[upper];
@@ -184,8 +185,8 @@ std::int64_t Search<T>::fibonacci(const T* const array, const std::uint32_t leng
     return index;
 }
 
-template <typename T>
-std::vector<std::uint32_t> Search<T>::generateFibonacciNumber(const std::uint32_t limit)
+template <typename Elem>
+std::vector<std::uint32_t> Search<Elem>::generateFibonacciNumber(const std::uint32_t limit)
 {
     if (limit == 0)
     {
