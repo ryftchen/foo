@@ -83,7 +83,7 @@ void setChoice<CacheInstance>(const std::string& choice)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
+            throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
 //! @brief Run cache-related candidates.
@@ -121,7 +121,7 @@ void setChoice<FilterInstance>(const std::string& choice)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
+            throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
 //! @brief Run filter-related candidates.
@@ -159,7 +159,7 @@ void setChoice<GraphInstance>(const std::string& choice)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
+            throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
 //! @brief Run graph-related candidates.
@@ -200,7 +200,7 @@ void setChoice<HeapInstance>(const std::string& choice)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
+            throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
 //! @brief Run heap-related candidates.
@@ -241,7 +241,7 @@ void setChoice<LinearInstance>(const std::string& choice)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
+            throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
 //! @brief Run linear-related candidates.
@@ -282,7 +282,7 @@ void setChoice<TreeInstance>(const std::string& choice)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
+            throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
 //! @brief Run tree-related candidates.

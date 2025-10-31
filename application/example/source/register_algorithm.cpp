@@ -89,7 +89,7 @@ void setChoice<MatchMethod>(const std::string& choice)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
+            throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
 //! @brief Run match-related candidates.
@@ -127,7 +127,7 @@ void setChoice<NotationMethod>(const std::string& choice)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
+            throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
 //! @brief Run notation-related candidates.
@@ -177,7 +177,7 @@ void setChoice<OptimalMethod>(const std::string& choice)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
+            throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
 //! @brief Run optimal-related candidates.
@@ -218,7 +218,7 @@ void setChoice<SearchMethod>(const std::string& choice)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
+            throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
 //! @brief Run search-related candidates.
@@ -280,7 +280,7 @@ void setChoice<SortMethod>(const std::string& choice)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
+            throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
 //! @brief Run sort-related candidates.
