@@ -592,7 +592,7 @@ std::size_t View::buildCustomTLVPacket<View::OptProfile>(const Args& /*args*/, c
 {
     tlv::TLVValue val{};
     std::strncpy(
-        val.configDetail, configure::retrieveDataRepo().toUnescapedString().c_str(), sizeof(val.configDetail) - 1);
+        val.configDetail, configure::retrieveDataRepo().asUnescapedString().c_str(), sizeof(val.configDetail) - 1);
     val.configDetail[sizeof(val.configDetail) - 1] = '\0';
     std::size_t len = 0;
     if (!tlv::encodeTLV(buf, len, val))

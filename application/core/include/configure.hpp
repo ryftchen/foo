@@ -133,63 +133,63 @@ inline const utility::json::JSON& operator/(const utility::json::JSON& json, con
 //! @return "activateHelper" configuration
 inline bool activateHelper()
 {
-    return (retrieveDataRepo() / field::activateHelper).toBoolean();
+    return (retrieveDataRepo() / field::activateHelper).asBoolean();
 }
 //! @brief Query the "filePath" configuration in the properties of "logger" object of "helpList".
 //! @return "filePath" configuration in the properties of "logger" object of "helpList"
 inline std::string filePath4Logger()
 {
-    return (retrieveDataRepo() / field::helperList / field::logger / field::properties / field::filePath).toString();
+    return (retrieveDataRepo() / field::helperList / field::logger / field::properties / field::filePath).asString();
 }
 //! @brief Query the "priorityLevel" configuration in the properties of "logger" object of "helpList".
 //! @return "priorityLevel" configuration in the properties of "logger" object of "helpList"
 inline int priorityLevel4Logger()
 {
     return (retrieveDataRepo() / field::helperList / field::logger / field::properties / field::priorityLevel)
-        .toIntegral();
+        .asIntegral();
 }
 //! @brief Query the "targetType" configuration in the properties of "logger" object of "helpList".
 //! @return "targetType" configuration in the properties of "logger" object of "helpList"
 inline int targetType4Logger()
 {
     return (retrieveDataRepo() / field::helperList / field::logger / field::properties / field::targetType)
-        .toIntegral();
+        .asIntegral();
 }
 //! @brief Query the "writeMode" configuration in the properties of "logger" object of "helpList".
 //! @return "writeMode" configuration in the properties of "logger" object of "helpList"
 inline int writeMode4Logger()
 {
-    return (retrieveDataRepo() / field::helperList / field::logger / field::properties / field::writeMode).toIntegral();
+    return (retrieveDataRepo() / field::helperList / field::logger / field::properties / field::writeMode).asIntegral();
 }
 //! @brief Query the "tcpHost" configuration in the properties of "viewer" object of "helpList".
 //! @return "tcpHost" configuration in the properties of "viewer" object of "helpList"
 inline std::string tcpHost4Viewer()
 {
-    return (retrieveDataRepo() / field::helperList / field::viewer / field::properties / field::tcpHost).toString();
+    return (retrieveDataRepo() / field::helperList / field::viewer / field::properties / field::tcpHost).asString();
 }
 //! @brief Query the "tcpPort" configuration in the properties of "viewer" object of "helpList".
 //! @return "tcpPort" configuration in the properties of "viewer" object of "helpList"
 inline int tcpPort4Viewer()
 {
-    return (retrieveDataRepo() / field::helperList / field::viewer / field::properties / field::tcpPort).toIntegral();
+    return (retrieveDataRepo() / field::helperList / field::viewer / field::properties / field::tcpPort).asIntegral();
 }
 //! @brief Query the "udpHost" configuration in the properties of "viewer" object of "helpList".
 //! @return "udpHost" configuration in the properties of "viewer" object of "helpList"
 inline std::string udpHost4Viewer()
 {
-    return (retrieveDataRepo() / field::helperList / field::viewer / field::properties / field::udpHost).toString();
+    return (retrieveDataRepo() / field::helperList / field::viewer / field::properties / field::udpHost).asString();
 }
 //! @brief Query the "udpPort" configuration in the properties of "viewer" object of "helpList".
 //! @return "udpPort" configuration in the properties of "viewer" object of "helpList"
 inline int udpPort4Viewer()
 {
-    return (retrieveDataRepo() / field::helperList / field::viewer / field::properties / field::udpPort).toIntegral();
+    return (retrieveDataRepo() / field::helperList / field::viewer / field::properties / field::udpPort).asIntegral();
 }
 //! @brief Query the "helperTimeout" configuration.
 //! @return "helperTimeout" configuration
 inline int helperTimeout()
 {
-    return (retrieveDataRepo() / field::helperTimeout).toIntegral();
+    return (retrieveDataRepo() / field::helperTimeout).asIntegral();
 }
 } // namespace detail
 
