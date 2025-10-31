@@ -86,7 +86,7 @@ void Configure::checkObjectInHelperList<log::Log>(const utility::json::JSON& hel
     {
         throw std::runtime_error{
             "Incomplete 3rd level configuration in \"" + std::string{field::logger} + "\" field in \""
-            + std::string{field::helperList} + "\" field (" + helper.toUnescapedString() + ")."};
+            + std::string{field::helperList} + "\" field (" + helper.asUnescapedString() + ")."};
     }
 
     bool isVerified = helper.isObjectType();
@@ -96,7 +96,7 @@ void Configure::checkObjectInHelperList<log::Log>(const utility::json::JSON& hel
         && (loggerProperties.size() == loggerRequired.length());
     for (const auto& item : loggerRequired.arrayRange())
     {
-        isVerified &= item.isStringType() && loggerProperties.hasKey(item.toString());
+        isVerified &= item.isStringType() && loggerProperties.hasKey(item.asString());
     }
     for (const auto& [key, item] : loggerProperties.objectRange())
     {
@@ -113,18 +113,18 @@ void Configure::checkObjectInHelperList<log::Log>(const utility::json::JSON& hel
                                  OutputLevel::debug,
                                  OutputLevel::info,
                                  OutputLevel::warning,
-                                 OutputLevel::error>::has(item.toIntegral());
+                                 OutputLevel::error>::has(item.asIntegral());
                 break;
             case operator""_bkdrHash(field::targetType):
                 using OutputType = log::Log::OutputType;
                 isVerified &= item.isIntegralType()
                     && EnumCheck<OutputType, OutputType::file, OutputType::terminal, OutputType::all>::has(
-                                  item.toIntegral());
+                                  item.asIntegral());
                 break;
             case operator""_bkdrHash(field::writeMode):
                 using OutputMode = log::Log::OutputMode;
                 isVerified &= item.isIntegralType()
-                    && EnumCheck<OutputMode, OutputMode::append, OutputMode::overwrite>::has(item.toIntegral());
+                    && EnumCheck<OutputMode, OutputMode::append, OutputMode::overwrite>::has(item.asIntegral());
                 break;
             default:
                 isVerified &= false;
@@ -136,7 +136,7 @@ void Configure::checkObjectInHelperList<log::Log>(const utility::json::JSON& hel
     {
         throw std::runtime_error{
             "Illegal 3rd level configuration in \"" + std::string{field::logger} + "\" field in \""
-            + std::string{field::helperList} + "\" field (" + helper.toUnescapedString() + ")."};
+            + std::string{field::helperList} + "\" field (" + helper.asUnescapedString() + ")."};
     }
 }
 
@@ -149,7 +149,7 @@ void Configure::checkObjectInHelperList<view::View>(const utility::json::JSON& h
     {
         throw std::runtime_error{
             "Incomplete 3rd level configuration in \"" + std::string{field::viewer} + "\" field in \""
-            + std::string{field::helperList} + "\" field (" + helper.toUnescapedString() + ")."};
+            + std::string{field::helperList} + "\" field (" + helper.asUnescapedString() + ")."};
     }
 
     bool isVerified = helper.isObjectType();
@@ -159,7 +159,7 @@ void Configure::checkObjectInHelperList<view::View>(const utility::json::JSON& h
         && (viewerProperties.size() == viewerRequired.length());
     for (const auto& item : viewerRequired.arrayRange())
     {
-        isVerified &= item.isStringType() && viewerProperties.hasKey(item.toString());
+        isVerified &= item.isStringType() && viewerProperties.hasKey(item.asString());
     }
     for (const auto& [key, item] : viewerProperties.objectRange())
     {
@@ -171,14 +171,14 @@ void Configure::checkObjectInHelperList<view::View>(const utility::json::JSON& h
                 break;
             case operator""_bkdrHash(field::tcpPort):
                 isVerified &= item.isIntegralType()
-                    && ((item.toIntegral() >= view::minPortNumber) && (item.toIntegral() <= view::maxPortNumber));
+                    && ((item.asIntegral() >= view::minPortNumber) && (item.asIntegral() <= view::maxPortNumber));
                 break;
             case operator""_bkdrHash(field::udpHost):
                 isVerified &= item.isStringType();
                 break;
             case operator""_bkdrHash(field::udpPort):
                 isVerified &= item.isIntegralType()
-                    && ((item.toIntegral() >= view::minPortNumber) && (item.toIntegral() <= view::maxPortNumber));
+                    && ((item.asIntegral() >= view::minPortNumber) && (item.asIntegral() <= view::maxPortNumber));
                 break;
             default:
                 isVerified &= false;
@@ -190,7 +190,7 @@ void Configure::checkObjectInHelperList<view::View>(const utility::json::JSON& h
     {
         throw std::runtime_error{
             "Illegal 3rd level configuration in \"" + std::string{field::viewer} + "\" field in \""
-            + std::string{field::helperList} + "\" field (" + helper.toUnescapedString() + ")."};
+            + std::string{field::helperList} + "\" field (" + helper.asUnescapedString() + ")."};
     }
 }
 
@@ -199,14 +199,14 @@ void Configure::verifyConfigData(const utility::json::JSON& configData)
     if (!configData.hasKey(field::activateHelper) || !configData.hasKey(field::helperList)
         || !configData.hasKey(field::helperTimeout))
     {
-        throw std::runtime_error{"Incomplete 1st level configuration (" + configData.toUnescapedString() + ")."};
+        throw std::runtime_error{"Incomplete 1st level configuration (" + configData.asUnescapedString() + ")."};
     }
 
     if (!configData.at(field::activateHelper).isBooleanType() || !configData.at(field::helperList).isObjectType()
         || !configData.at(field::helperTimeout).isIntegralType()
-        || configData.at(field::helperTimeout).toIntegral() < 0)
+        || configData.at(field::helperTimeout).asIntegral() < 0)
     {
-        throw std::runtime_error{"Illegal 1st level configuration (" + configData.toUnescapedString() + ")."};
+        throw std::runtime_error{"Illegal 1st level configuration (" + configData.asUnescapedString() + ")."};
     }
 
     const auto& helperListObject = configData.at(field::helperList);
@@ -214,7 +214,7 @@ void Configure::verifyConfigData(const utility::json::JSON& configData)
     {
         throw std::runtime_error{
             "Incomplete 2nd level configuration in \"" + std::string{field::helperList} + "\" field ("
-            + helperListObject.toUnescapedString() + ")."};
+            + helperListObject.asUnescapedString() + ")."};
     }
     for (const auto& [key, item] : helperListObject.objectRange())
     {
@@ -230,7 +230,7 @@ void Configure::verifyConfigData(const utility::json::JSON& configData)
             default:
                 throw std::runtime_error{
                     "Illegal 2nd level configuration in \"" + std::string{field::helperList} + "\" field ("
-                    + helperListObject.toUnescapedString() + ")."};
+                    + helperListObject.asUnescapedString() + ")."};
         }
     }
 }

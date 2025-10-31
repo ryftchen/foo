@@ -105,7 +105,7 @@ static JSON parseObject(const std::string_view fmt, std::size_t& offset)
         }
         consumeWhitespace(fmt, ++offset);
         const auto val = parseNext(fmt, offset);
-        object[key.toString()] = val;
+        object[key.asString()] = val;
 
         consumeWhitespace(fmt, offset);
         if (fmt.at(offset) == ',')
@@ -353,7 +353,7 @@ static JSON parseBoolean(const std::string_view fmt, std::size_t& offset)
             "For JSON boolean, expected \"" + std::string{trueLit} + "\" or \"" + std::string{falseLit} + "\", found \""
             + std::string{fmt.substr(offset, falseLit.length())} + "\"."};
     }
-    offset += (boolean.toBoolean() ? trueLit.length() : falseLit.length());
+    offset += (boolean.asBoolean() ? trueLit.length() : falseLit.length());
     return boolean;
 }
 
@@ -437,7 +437,7 @@ JSON::JSON(const std::initializer_list<JSON>& list)
     setType<Object>();
     for (const auto* iterator = list.begin(); iterator != list.end(); std::advance(iterator, 2))
     {
-        operator[](iterator->toString()) = *std::next(iterator);
+        operator[](iterator->asString()) = *std::next(iterator);
     }
 }
 
@@ -563,7 +563,7 @@ bool JSON::isBooleanType() const
     return holdsData<Boolean>();
 }
 
-JSON::String JSON::toString() const
+JSON::String JSON::asString() const
 {
     return std::visit(
         ValidDataVisitor{
@@ -578,7 +578,7 @@ JSON::String JSON::toString() const
         data.value);
 }
 
-JSON::String JSON::toUnescapedString() const
+JSON::String JSON::asUnescapedString() const
 {
     return std::visit(
         ValidDataVisitor{
@@ -593,7 +593,7 @@ JSON::String JSON::toUnescapedString() const
         data.value);
 }
 
-JSON::Floating JSON::toFloating() const
+JSON::Floating JSON::asFloating() const
 {
     return std::visit(
         ValidDataVisitor{
@@ -619,7 +619,7 @@ JSON::Floating JSON::toFloating() const
         data.value);
 }
 
-JSON::Integral JSON::toIntegral() const
+JSON::Integral JSON::asIntegral() const
 {
     return std::visit(
         ValidDataVisitor{
@@ -641,7 +641,7 @@ JSON::Integral JSON::toIntegral() const
         data.value);
 }
 
-JSON::Boolean JSON::toBoolean() const
+JSON::Boolean JSON::asBoolean() const
 {
     return std::visit(
         ValidDataVisitor{

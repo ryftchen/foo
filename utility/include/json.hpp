@@ -289,19 +289,19 @@ public:
     [[nodiscard]] bool isBooleanType() const;
     //! @brief Convert to string value.
     //! @return string value
-    [[nodiscard]] String toString() const;
+    [[nodiscard]] String asString() const;
     //! @brief Convert to unescaped string value.
     //! @return unescaped string value
-    [[nodiscard]] String toUnescapedString() const;
+    [[nodiscard]] String asUnescapedString() const;
     //! @brief Convert to floating value.
     //! @return floating value
-    [[nodiscard]] Floating toFloating() const;
+    [[nodiscard]] Floating asFloating() const;
     //! @brief Convert to integral value.
     //! @return integral value
-    [[nodiscard]] Integral toIntegral() const;
+    [[nodiscard]] Integral asIntegral() const;
     //! @brief Convert to boolean value.
     //! @return boolean value
-    [[nodiscard]] Boolean toBoolean() const;
+    [[nodiscard]] Boolean asBoolean() const;
     //! @brief Get the wrapper of the object range.
     //! @return wrapper of the object range
     JSONWrapper<Object> objectRange();
