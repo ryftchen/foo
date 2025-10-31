@@ -780,6 +780,7 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
         {
             try
             {
+                MACRO_DEFER([]() { notifyClientOutputDone(); });
                 if (!client->stopRequested() && !onParsing4Client(bytes, size))
                 {
                     client->requestStop();
@@ -789,7 +790,6 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
             {
                 LOG_WRN << err.what();
             }
-            notifyClientOutputDone();
         });
     client->toConnect(view::info::viewerTCPHost(), view::info::viewerTCPPort());
 }
@@ -804,6 +804,7 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
         {
             try
             {
+                MACRO_DEFER([]() { notifyClientOutputDone(); });
                 if (!client->stopRequested() && !onParsing4Client(bytes, size))
                 {
                     client->requestStop();
@@ -813,7 +814,6 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
             {
                 LOG_WRN << err.what();
             }
-            notifyClientOutputDone();
         });
     client->toReceive();
     client->toConnect(view::info::viewerUDPHost(), view::info::viewerUDPPort());
