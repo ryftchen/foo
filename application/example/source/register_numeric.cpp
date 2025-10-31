@@ -86,7 +86,7 @@ void setChoice<ArithmeticMethod>(const std::string& choice)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
+            throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
 //! @brief Run arithmetic-related candidates.
@@ -124,7 +124,7 @@ void setChoice<DivisorMethod>(const std::string& choice)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
+            throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
 //! @brief Run divisor-related candidates.
@@ -171,7 +171,7 @@ void setChoice<IntegralMethod>(const std::string& choice)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
+            throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
 //! @brief Run integral-related candidates.
@@ -209,7 +209,7 @@ void setChoice<PrimeMethod>(const std::string& choice)
             break;
         default:
             bits.reset();
-            throw std::logic_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
+            throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
 //! @brief Run prime-related candidates.

@@ -198,7 +198,7 @@ void applyingMatch(const std::vector<std::string>& candidates)
                 addTask(choice, MatchMethod::sunday);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
+                throw std::runtime_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
@@ -282,7 +282,7 @@ void applyingNotation(const std::vector<std::string>& candidates)
                 addTask(choice, NotationMethod::postfix);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
+                throw std::runtime_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
@@ -416,7 +416,7 @@ void applyingOptimal(const std::vector<std::string>& candidates)
                 addTask(choice, OptimalMethod::genetic);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
+                throw std::runtime_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
@@ -532,7 +532,7 @@ void applyingSearch(const std::vector<std::string>& candidates)
                 addTask(choice, SearchMethod::fibonacci);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
+                throw std::runtime_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
@@ -672,7 +672,7 @@ void applyingSort(const std::vector<std::string>& candidates)
                 addTask(choice, SortMethod::radix);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
+                throw std::runtime_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 

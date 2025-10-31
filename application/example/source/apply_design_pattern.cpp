@@ -193,7 +193,7 @@ void applyingBehavioral(const std::vector<std::string>& candidates)
                 addTask(choice, BehavioralInstance::visitor);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
+                throw std::runtime_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
@@ -288,7 +288,7 @@ void applyingCreational(const std::vector<std::string>& candidates)
                 addTask(choice, CreationalInstance::singleton);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
+                throw std::runtime_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
@@ -395,7 +395,7 @@ void applyingStructural(const std::vector<std::string>& candidates)
                 addTask(choice, StructuralInstance::proxy);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
+                throw std::runtime_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 

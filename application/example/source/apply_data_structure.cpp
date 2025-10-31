@@ -145,7 +145,7 @@ void applyingCache(const std::vector<std::string>& candidates)
                 addTask(choice, CacheInstance::leastRecentlyUsed);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
+                throw std::runtime_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
@@ -222,7 +222,7 @@ void applyingFilter(const std::vector<std::string>& candidates)
                 addTask(choice, FilterInstance::quotient);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
+                throw std::runtime_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
@@ -299,7 +299,7 @@ void applyingGraph(const std::vector<std::string>& candidates)
                 addTask(choice, GraphInstance::directed);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
+                throw std::runtime_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
@@ -382,7 +382,7 @@ void applyingHeap(const std::vector<std::string>& candidates)
                 addTask(choice, HeapInstance::skew);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
+                throw std::runtime_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
@@ -465,7 +465,7 @@ void applyingLinear(const std::vector<std::string>& candidates)
                 addTask(choice, LinearInstance::queue);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
+                throw std::runtime_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
@@ -548,7 +548,7 @@ void applyingTree(const std::vector<std::string>& candidates)
                 addTask(choice, TreeInstance::splay);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
+                throw std::runtime_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 

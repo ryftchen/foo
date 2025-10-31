@@ -171,7 +171,7 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
                 addTask(choice, ArithmeticMethod::division);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
+                throw std::runtime_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
@@ -267,7 +267,7 @@ void applyingDivisor(const std::vector<std::string>& candidates)
                 addTask(choice, DivisorMethod::stein);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
+                throw std::runtime_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
@@ -380,7 +380,7 @@ void applyingIntegral(const std::vector<std::string>& candidates)
                 addTask(choice, IntegralMethod::monteCarlo);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
+                throw std::runtime_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
@@ -468,7 +468,7 @@ void applyingPrime(const std::vector<std::string>& candidates)
                 addTask(choice, PrimeMethod::euler);
                 break;
             default:
-                throw std::logic_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
+                throw std::runtime_error{"Unknown " + std::string{toString(category)} + " choice: " + choice + '.'};
         }
     }
 
