@@ -16,7 +16,7 @@
         {                                                                                                         \
             constexpr std::basic_string_view refl = str;                                                          \
             return utility::reflection::Reflect::String<                                                          \
-                utility::reflection::Reflect::StrType<typename decltype(refl)::value_type, refl.size()>{refl}>{}; \
+                utility::reflection::Reflect::ReflStr<typename decltype(refl)::value_type, refl.size()>{refl}>{}; \
         }())
 
 //! @brief The utility module.
@@ -41,14 +41,14 @@ public:
     //! @tparam Char - type of character in string
     //! @tparam Size - string size
     template <typename Char, std::size_t Size>
-    class StrType
+    class ReflStr
     {
     public:
         //! @brief Alias for the value type.
         using ValueType = Char;
-        //! @brief Construct a new StrType object.
+        //! @brief Construct a new ReflStr object.
         //! @param str - target string
-        consteval explicit StrType(const std::basic_string_view<ValueType> str)
+        consteval explicit ReflStr(const std::basic_string_view<ValueType> str)
         {
             for (std::size_t i = 0; i < size; ++i)
             {
@@ -64,7 +64,7 @@ public:
 
     //! @brief Custom string.
     //! @tparam Str - custom string with wrapper
-    template <StrType Str>
+    template <ReflStr Str>
     class String
     {
     public:

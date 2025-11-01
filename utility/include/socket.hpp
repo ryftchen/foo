@@ -83,9 +83,9 @@ private:
 
 protected:
     //! @brief Construct a new Socket object.
-    //! @param socketType - socket type
-    //! @param socketId - socket id
-    explicit Socket(const Type socketType = Type::tcp, const int socketId = -1);
+    //! @param sockType - socket type
+    //! @param sockId - socket id
+    explicit Socket(const Type sockType = Type::tcp, const int sockId = -1);
     //! @brief Destroy the Socket object.
     ~Socket();
 
@@ -130,8 +130,8 @@ class TCPSocket : public Socket, public std::enable_shared_from_this<TCPSocket>
 {
 public:
     //! @brief Construct a new TCPSocket object.
-    //! @param socketId - socket id
-    explicit TCPSocket(const int socketId = -1) : Socket(Type::tcp, socketId) {}
+    //! @param sockId - socket id
+    explicit TCPSocket(const int sockId = -1) : Socket(Type::tcp, sockId) {}
 
     //! @brief Send bytes from the buffer to socket FD.
     //! @param bytes - bytes buffer
@@ -224,8 +224,8 @@ class UDPSocket : public Socket, public std::enable_shared_from_this<UDPSocket>
 {
 public:
     //! @brief Construct a new UDPSocket object.
-    //! @param socketId - socket id
-    explicit UDPSocket(const int socketId = -1) : Socket(Type::udp, socketId) {}
+    //! @param sockId - socket id
+    explicit UDPSocket(const int sockId = -1) : Socket(Type::udp, sockId) {}
 
     //! @brief Send bytes from the buffer on socket FD to peer.
     //! @param bytes - bytes buffer
