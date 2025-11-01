@@ -52,15 +52,14 @@ constexpr const char* const udpPort = MACRO_STRINGIFY(udpPort);
 constexpr const char* const helperTimeout = MACRO_STRINGIFY(helperTimeout);
 } // namespace field
 
+//! @brief Maximum access limit.
+constexpr std::uint8_t maxAccessLimit = 10;
 //! @brief Default configuration filename.
 constexpr std::string_view defaultConfigFile = "configure/foo.json";
 //! @brief Get the full path to the configuration file.
 //! @param filename - configuration file path
 //! @return full path to the configuration file
 std::string getFullConfigPath(const std::string_view filename = defaultConfigFile);
-//! @brief Retrieve data repository.
-//! @return current configuration data repository
-const utility::json::JSON& retrieveDataRepo();
 
 //! @brief Configuration.
 class Configure final
@@ -83,9 +82,6 @@ public:
     //! @param filename - configure file path
     //! @return reference of the Configure object
     static Configure& getInstance(const std::string_view filename = defaultConfigFile);
-    //! @brief Interface used to retrieve.
-    //! @return data repository
-    [[nodiscard]] const utility::json::JSON& retrieve() const;
 
 private:
     //! @brief Construct a new Configure object.
@@ -100,6 +96,7 @@ private:
     //! @brief Configuration data repository.
     const utility::json::JSON dataRepo;
 
+    friend class Retrieve;
     //! @brief Parse the configuration file.
     //! @param configFile - configuration file
     //! @return configuration data
@@ -114,6 +111,42 @@ private:
     static void checkObjectInHelperList(const utility::json::JSON& helper);
 };
 
+//! @brief Guard for retrieve configuration.
+class Retrieve
+{
+public:
+    //! @brief Construct a new Retrieve object.
+    //! @param sem - semaphore for configuration access control
+    explicit Retrieve(std::counting_semaphore<maxAccessLimit>& sem);
+    //! @brief Destroy the Retrieve object.
+    ~Retrieve();
+    //! @brief Construct a new Retrieve object.
+    Retrieve(const Retrieve&) = delete;
+    //! @brief Construct a new Retrieve object.
+    Retrieve(Retrieve&&) = delete;
+    //! @brief The operator (=) overloading of Retrieve class.
+    //! @return reference of the Retrieve object
+    Retrieve& operator=(const Retrieve&) = delete;
+    //! @brief The operator (=) overloading of Retrieve class.
+    //! @return reference of the Retrieve object
+    Retrieve& operator=(Retrieve&&) = delete;
+
+    //! @brief The operator (/) overloading of Retrieve class.
+    //! @param field - field name
+    //! @return const reference of the JSON object
+    const utility::json::JSON& operator/(const std::string& field) const;
+    //! @brief The operator (()) overloading of Retrieve class.
+    //! @return const reference of the JSON object
+    explicit operator const utility::json::JSON&() const noexcept;
+
+private:
+    //! @brief Instance to be retrieved.
+    const Configure& inst{Configure::getInstance()};
+    //! @brief Semaphore that controls the maximum access limit.
+    std::counting_semaphore<maxAccessLimit>& sem;
+};
+
+extern Retrieve retrieveDataRepo();
 extern utility::json::JSON getDefaultConfiguration();
 extern bool loadConfiguration(const std::string_view filename = defaultConfigFile);
 
@@ -131,63 +164,63 @@ inline const utility::json::JSON& operator/(const utility::json::JSON& json, con
 
 //! @brief Query the "activateHelper" configuration.
 //! @return "activateHelper" configuration
-inline bool activateHelper()
+inline bool activateHelper() noexcept
 {
     return (retrieveDataRepo() / field::activateHelper).asBoolean();
 }
 //! @brief Query the "filePath" configuration in the properties of "logger" object of "helpList".
 //! @return "filePath" configuration in the properties of "logger" object of "helpList"
-inline std::string filePath4Logger()
+inline std::string filePath4Logger() noexcept
 {
     return (retrieveDataRepo() / field::helperList / field::logger / field::properties / field::filePath).asString();
 }
 //! @brief Query the "priorityLevel" configuration in the properties of "logger" object of "helpList".
 //! @return "priorityLevel" configuration in the properties of "logger" object of "helpList"
-inline int priorityLevel4Logger()
+inline int priorityLevel4Logger() noexcept
 {
     return (retrieveDataRepo() / field::helperList / field::logger / field::properties / field::priorityLevel)
         .asIntegral();
 }
 //! @brief Query the "targetType" configuration in the properties of "logger" object of "helpList".
 //! @return "targetType" configuration in the properties of "logger" object of "helpList"
-inline int targetType4Logger()
+inline int targetType4Logger() noexcept
 {
     return (retrieveDataRepo() / field::helperList / field::logger / field::properties / field::targetType)
         .asIntegral();
 }
 //! @brief Query the "writeMode" configuration in the properties of "logger" object of "helpList".
 //! @return "writeMode" configuration in the properties of "logger" object of "helpList"
-inline int writeMode4Logger()
+inline int writeMode4Logger() noexcept
 {
     return (retrieveDataRepo() / field::helperList / field::logger / field::properties / field::writeMode).asIntegral();
 }
 //! @brief Query the "tcpHost" configuration in the properties of "viewer" object of "helpList".
 //! @return "tcpHost" configuration in the properties of "viewer" object of "helpList"
-inline std::string tcpHost4Viewer()
+inline std::string tcpHost4Viewer() noexcept
 {
     return (retrieveDataRepo() / field::helperList / field::viewer / field::properties / field::tcpHost).asString();
 }
 //! @brief Query the "tcpPort" configuration in the properties of "viewer" object of "helpList".
 //! @return "tcpPort" configuration in the properties of "viewer" object of "helpList"
-inline int tcpPort4Viewer()
+inline int tcpPort4Viewer() noexcept
 {
     return (retrieveDataRepo() / field::helperList / field::viewer / field::properties / field::tcpPort).asIntegral();
 }
 //! @brief Query the "udpHost" configuration in the properties of "viewer" object of "helpList".
 //! @return "udpHost" configuration in the properties of "viewer" object of "helpList"
-inline std::string udpHost4Viewer()
+inline std::string udpHost4Viewer() noexcept
 {
     return (retrieveDataRepo() / field::helperList / field::viewer / field::properties / field::udpHost).asString();
 }
 //! @brief Query the "udpPort" configuration in the properties of "viewer" object of "helpList".
 //! @return "udpPort" configuration in the properties of "viewer" object of "helpList"
-inline int udpPort4Viewer()
+inline int udpPort4Viewer() noexcept
 {
     return (retrieveDataRepo() / field::helperList / field::viewer / field::properties / field::udpPort).asIntegral();
 }
 //! @brief Query the "helperTimeout" configuration.
 //! @return "helperTimeout" configuration
-inline int helperTimeout()
+inline int helperTimeout() noexcept
 {
     return (retrieveDataRepo() / field::helperTimeout).asIntegral();
 }

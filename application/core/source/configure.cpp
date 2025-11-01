@@ -20,8 +20,6 @@ namespace application::configure
 //! @brief Anonymous namespace.
 inline namespace
 {
-//! @brief Maximum access limit.
-constexpr std::uint8_t maxAccessLimit = 10;
 //! @brief The semaphore that controls the maximum access limit.
 std::counting_semaphore<maxAccessLimit> configSem(maxAccessLimit);
 } // namespace
@@ -36,29 +34,10 @@ std::string getFullConfigPath(const std::string_view filename)
     return std::string{processHome} + '/' + filename.data();
 }
 
-const utility::json::JSON& retrieveDataRepo()
-try
-{
-    configSem.acquire();
-    const auto& dataRepo = Configure::getInstance().retrieve();
-    configSem.release();
-    return dataRepo;
-}
-catch (...)
-{
-    configSem.release();
-    throw;
-}
-
 Configure& Configure::getInstance(const std::string_view filename)
 {
     static Configure configurator(filename);
     return configurator;
-}
-
-const utility::json::JSON& Configure::retrieve() const
-{
-    return dataRepo;
 }
 
 utility::json::JSON Configure::parseConfigFile(const std::string_view configFile)
@@ -233,6 +212,33 @@ void Configure::verifyConfigData(const utility::json::JSON& configData)
                     + helperListObject.asUnescapedString() + ")."};
         }
     }
+}
+
+Retrieve::Retrieve(std::counting_semaphore<maxAccessLimit>& sem) : sem{sem}
+{
+    sem.acquire();
+}
+
+Retrieve::~Retrieve()
+{
+    sem.release();
+}
+
+const utility::json::JSON& Retrieve::operator/(const std::string& field) const
+{
+    return inst.dataRepo.at(field);
+}
+
+Retrieve::operator const utility::json::JSON&() const noexcept
+{
+    return inst.dataRepo;
+}
+
+//! @brief Retrieve data repository.
+//! @return current configuration data repository
+Retrieve retrieveDataRepo()
+{
+    return Retrieve(configSem);
 }
 
 // NOLINTBEGIN(readability-magic-numbers)
