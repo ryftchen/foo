@@ -259,9 +259,9 @@ View::View() : FSM(State::initial)
     }
 }
 
-View& View::getInstance()
+std::shared_ptr<View> View::getInstance()
 {
-    static View viewer{};
+    static const std::shared_ptr<View> viewer(::new View{});
     return viewer;
 }
 
@@ -311,11 +311,11 @@ void View::Access::startup() const
 try
 {
     waitOr(
-        State::active, [this]() { throw std::runtime_error{"The " + inst.name + " did not setup successfully ..."}; });
-    notifyVia([this]() { inst.isOngoing.store(true); });
+        State::active, [this]() { throw std::runtime_error{"The " + inst->name + " did not setup successfully ..."}; });
+    notifyVia([this]() { inst->isOngoing.store(true); });
     waitOr(
         State::established,
-        [this]() { throw std::runtime_error{"The " + inst.name + " did not start successfully ..."}; });
+        [this]() { throw std::runtime_error{"The " + inst->name + " did not start successfully ..."}; });
 }
 catch (const std::exception& err)
 {
@@ -325,9 +325,10 @@ catch (const std::exception& err)
 void View::Access::shutdown() const
 try
 {
-    notifyVia([this]() { inst.isOngoing.store(false); });
+    notifyVia([this]() { inst->isOngoing.store(false); });
     waitOr(
-        State::inactive, [this]() { throw std::runtime_error{"The " + inst.name + " did not stop successfully ..."}; });
+        State::inactive,
+        [this]() { throw std::runtime_error{"The " + inst->name + " did not stop successfully ..."}; });
 }
 catch (const std::exception& err)
 {
@@ -337,13 +338,13 @@ catch (const std::exception& err)
 void View::Access::reload() const
 try
 {
-    notifyVia([this]() { inst.inResetting.store(true); });
+    notifyVia([this]() { inst->inResetting.store(true); });
     countdownIf(
-        [this]() { return inst.inResetting.load(); },
+        [this]() { return inst->inResetting.load(); },
         [this]()
         {
             throw std::runtime_error{
-                "The " + inst.name + " did not reset properly in " + std::to_string(inst.timeoutPeriod) + " ms ..."};
+                "The " + inst->name + " did not reset properly in " + std::to_string(inst->timeoutPeriod) + " ms ..."};
         });
 }
 catch (const std::exception& err)
@@ -372,7 +373,7 @@ bool View::Access::onParsing(char* const buffer, const std::size_t length) const
     }
     if (value.logShmId != tlv::invalidShmId)
     {
-        printSharedMemory(value.logShmId, !inst.isInServingState(State::established));
+        printSharedMemory(value.logShmId, !inst->isInServingState(State::established));
     }
     if (value.statusShmId != tlv::invalidShmId)
     {
@@ -391,29 +392,29 @@ void View::Access::waitOr(const State state, const std::function<void()>& handli
 {
     do
     {
-        if (inst.isInServingState(State::idle) && handling)
+        if (inst->isInServingState(State::idle) && handling)
         {
             handling();
         }
         std::this_thread::yield();
     }
-    while (!inst.isInServingState(state));
+    while (!inst->isInServingState(state));
 }
 
 void View::Access::notifyVia(const std::function<void()>& action) const
 {
-    std::unique_lock<std::mutex> daemonLock(inst.daemonMtx);
+    std::unique_lock<std::mutex> daemonLock(inst->daemonMtx);
     if (action)
     {
         action();
     }
     daemonLock.unlock();
-    inst.daemonCond.notify_one();
+    inst->daemonCond.notify_one();
 }
 
 void View::Access::countdownIf(const std::function<bool()>& condition, const std::function<void()>& handling) const
 {
-    for (const utility::time::Stopwatch timing{}; timing.elapsedTime() <= inst.timeoutPeriod;)
+    for (const utility::time::Stopwatch timing{}; timing.elapsedTime() <= inst->timeoutPeriod;)
     {
         if (!condition || !condition())
         {
@@ -429,23 +430,23 @@ void View::Access::countdownIf(const std::function<bool()>& condition, const std
 
 void View::Sync::waitTaskDone() const
 {
-    std::unique_lock<std::mutex> outputLock(inst.outputMtx);
-    inst.outputCompleted.store(false);
+    std::unique_lock<std::mutex> outputLock(inst->outputMtx);
+    inst->outputCompleted.store(false);
 
-    const auto maxWaitTime = std::chrono::milliseconds{inst.timeoutPeriod};
+    const auto maxWaitTime = std::chrono::milliseconds{inst->timeoutPeriod};
     utility::time::Timer expiryTimer(
-        inst.isInServingState(State::established) ? []() {} : []() { Sync().notifyTaskDone(); });
+        inst->isInServingState(State::established) ? []() {} : []() { Sync().notifyTaskDone(); });
     expiryTimer.start(maxWaitTime);
-    inst.outputCond.wait(outputLock, [this]() { return inst.outputCompleted.load(); });
+    inst->outputCond.wait(outputLock, [this]() { return inst->outputCompleted.load(); });
     expiryTimer.stop();
 }
 
 void View::Sync::notifyTaskDone() const
 {
-    std::unique_lock<std::mutex> outputLock(inst.outputMtx);
-    inst.outputCompleted.store(true);
+    std::unique_lock<std::mutex> outputLock(inst->outputMtx);
+    inst->outputCompleted.store(true);
     outputLock.unlock();
-    inst.outputCond.notify_one();
+    inst->outputCond.notify_one();
 }
 
 //! @brief Build the TLV packet of the response message to get library information.

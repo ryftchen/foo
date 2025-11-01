@@ -46,7 +46,7 @@ public:
     static constexpr std::string name{configure::field::viewer};
     //! @brief Get the View instance.
     //! @return reference of the View object
-    static View& getInstance();
+    static std::shared_ptr<View> getInstance();
     //! @brief Service for running.
     void service();
 
@@ -82,23 +82,23 @@ public:
         bool onParsing(char* const buffer, const std::size_t length) const;
         //! @brief Get the supported options.
         //! @return supported options
-        [[nodiscard]] auto getSupportedOptions() const noexcept { return inst.supportedOptions; }
+        [[nodiscard]] auto getSupportedOptions() const noexcept { return inst->supportedOptions; }
         //! @brief Get the TCP server host address.
         //! @return TCP server host address
-        [[nodiscard]] std::string getTCPHost() const noexcept { return inst.tcpHost; }
+        [[nodiscard]] std::string getTCPHost() const noexcept { return inst->tcpHost; }
         //! @brief Get the TCP server port number.
         //! @return TCP server port number
-        [[nodiscard]] std::uint16_t getTCPPort() const noexcept { return inst.tcpPort; }
+        [[nodiscard]] std::uint16_t getTCPPort() const noexcept { return inst->tcpPort; }
         //! @brief Get the UDP server host address.
         //! @return UDP server host address
-        [[nodiscard]] std::string getUDPHost() const noexcept { return inst.udpHost; }
+        [[nodiscard]] std::string getUDPHost() const noexcept { return inst->udpHost; }
         //! @brief Get the UDP server port number.
         //! @return UDP server port number
-        [[nodiscard]] std::uint16_t getUDPPort() const noexcept { return inst.udpPort; }
+        [[nodiscard]] std::uint16_t getUDPPort() const noexcept { return inst->udpPort; }
 
     private:
         //! @brief Instance to be accessed.
-        View& inst{getInstance()};
+        const std::shared_ptr<View> inst{getInstance()};
 
         //! @brief Wait until the viewer reaches the target state.
         //! @param state - target state
@@ -123,7 +123,7 @@ public:
 
     private:
         //! @brief Instance to be synchronized.
-        View& inst{getInstance()};
+        const std::shared_ptr<View> inst{getInstance()};
     };
 
 private:

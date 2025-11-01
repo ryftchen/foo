@@ -31,7 +31,7 @@ inline namespace
 template <typename T>
 concept ExtHelper = !std::is_constructible_v<T> && !std::is_copy_constructible_v<T> && !std::is_copy_assignable_v<T>
     && !std::is_move_constructible_v<T> && !std::is_move_assignable_v<T> && requires (const T& /*helper*/) {
-           { T::getInstance() } -> std::same_as<T&>;
+           { T::getInstance() } -> std::same_as<std::shared_ptr<T>>;
        };
 
 //! @brief Enumerate specific events to control external helpers.
@@ -81,7 +81,7 @@ requires (std::derived_from<Helpers, utility::fsm::FSM<Helpers>> && ...)
 static void helperDaemon()
 {
     utility::thread::Thread extendedJob(sizeof...(Helpers));
-    (extendedJob.enqueue(Helpers::name, &Helpers::service, &Helpers::getInstance()), ...);
+    (extendedJob.enqueue(Helpers::name, &Helpers::service, Helpers::getInstance()), ...);
 }
 
 //! @brief Coroutine for managing the lifecycle of helper components.

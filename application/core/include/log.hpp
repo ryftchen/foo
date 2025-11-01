@@ -93,7 +93,7 @@ public:
     static constexpr std::string name{configure::field::logger};
     //! @brief Get the Log instance.
     //! @return reference of the Log object
-    static Log& getInstance();
+    static std::shared_ptr<Log> getInstance();
     //! @brief Service for running.
     void service();
 
@@ -128,7 +128,7 @@ public:
 
     private:
         //! @brief Instance to be accessed.
-        Log& inst{getInstance()};
+        const std::shared_ptr<Log> inst{getInstance()};
 
         //! @brief Wait until the logger reaches the target state.
         //! @param state - target state
@@ -348,7 +348,7 @@ void printfStyle(
 {
     if (configure::detail::activateHelper()) [[likely]]
     {
-        Log::getInstance().flush(
+        Log::getInstance()->flush(
             severity,
             Log::createLabelTemplate(srcFile, srcLine),
             utility::common::printfString(format.c_str(), std::forward<Args>(args)...));
@@ -378,7 +378,7 @@ void formatStyle(
 {
     if (configure::detail::activateHelper()) [[likely]]
     {
-        Log::getInstance().flush(
+        Log::getInstance()->flush(
             severity,
             Log::createLabelTemplate(srcFile, srcLine),
             utility::common::formatString(format, std::forward<Args>(args)...));
