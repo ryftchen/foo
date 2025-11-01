@@ -288,12 +288,12 @@ utility::json::JSON getDefaultConfiguration()
 //! @param filePath - full path to the configuration file
 static void forcedConfigurationUpdateByDefault(const std::string_view filePath)
 {
-    utility::io::FileWriter fileWriter(filePath);
-    fileWriter.open(true);
-    fileWriter.lock();
-    fileWriter.stream() << configure::getDefaultConfiguration();
-    fileWriter.unlock();
-    fileWriter.close();
+    utility::io::FileWriter copyTypist(filePath);
+    copyTypist.open(true);
+    copyTypist.lock();
+    copyTypist.stream() << configure::getDefaultConfiguration();
+    copyTypist.unlock();
+    copyTypist.close();
 }
 
 //! @brief Initialize the configuration.
@@ -319,7 +319,7 @@ static bool handleConfigurationException(const std::string_view filePath)
     std::cout << prompt << escapeMoveUp << prompt.length() << 'C' << std::flush;
 
     bool keepThrowing = true;
-    constexpr std::uint16_t timeoutPeriod = 5000;
+    constexpr std::uint16_t timeout = 5000;
     utility::io::waitForUserInput(
         utility::common::wrapClosure(
             [&](const std::string& input)
@@ -339,7 +339,7 @@ static bool handleConfigurationException(const std::string_view filePath)
                 }
                 return true;
             }),
-        timeoutPeriod);
+        timeout);
     return keepThrowing;
 }
 

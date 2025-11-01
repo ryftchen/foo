@@ -26,7 +26,7 @@ extern const char* version() noexcept;
 //! @tparam Func - type of callable function
 //! @tparam Args - type of function arguments
 template <typename Func, typename... Args>
-using InvokeResultType = std::invoke_result_t<Func, Args...>;
+using InvokeResult = std::invoke_result_t<Func, Args...>;
 //! @brief Invoke callable.
 //! @tparam Func - type of callable function
 //! @tparam Args - type of function arguments
@@ -34,7 +34,7 @@ using InvokeResultType = std::invoke_result_t<Func, Args...>;
 //! @param args - function arguments
 //! @return result from calls
 template <typename Func, typename... Args>
-constexpr InvokeResultType<Func, Args...> invokeCallable(Func&& func, Args&&... args)
+constexpr InvokeResult<Func, Args...> invokeCallable(Func&& func, Args&&... args)
 {
     return std::forward<Func>(func)(std::forward<Args>(args)...);
 }
@@ -48,7 +48,7 @@ constexpr InvokeResultType<Func, Args...> invokeCallable(Func&& func, Args&&... 
 //! @param args - function arguments
 //! @return result from calls
 template <typename Ret, typename T1, typename T2, typename... Args>
-constexpr InvokeResultType<Ret T1::*, T2, Args...> invokeCallable(Ret T1::* func, T2&& obj, Args&&... args)
+constexpr InvokeResult<Ret T1::*, T2, Args...> invokeCallable(Ret T1::* func, T2&& obj, Args&&... args)
 {
     return (std::forward<T2>(obj).*func)(std::forward<Args>(args)...);
 }
@@ -78,11 +78,11 @@ template <typename Func, typename Arg1, typename Arg2>
 struct FlexInvokeHelper<Func, Arg1, Arg2, true, false, false, false>
 {
     //! @brief Alias for the return type.
-    using ReturnType = InvokeResultType<Func>;
+    using Ret = InvokeResult<Func>;
     //! @brief Invoke operation.
     //! @param func - callable function
     //! @return invoke result
-    static constexpr ReturnType invoke(Func&& func, [[maybe_unused]] Arg1&& /*arg1*/, [[maybe_unused]] Arg2&& /*arg2*/)
+    static constexpr Ret invoke(Func&& func, [[maybe_unused]] Arg1&& /*arg1*/, [[maybe_unused]] Arg2&& /*arg2*/)
     {
         return invokeCallable(std::move(func));
     }
@@ -95,12 +95,12 @@ template <typename Func, typename Arg1, typename Arg2>
 struct FlexInvokeHelper<Func, Arg1, Arg2, false, true, false, false>
 {
     //! @brief Alias for the return type.
-    using ReturnType = InvokeResultType<Func, Arg1>;
+    using Ret = InvokeResult<Func, Arg1>;
     //! @brief Invoke operation.
     //! @param func - callable function
     //! @param arg1 - function argument
     //! @return invoke result
-    static constexpr ReturnType invoke(Func&& func, Arg1&& arg1, [[maybe_unused]] Arg2&& /*arg2*/)
+    static constexpr Ret invoke(Func&& func, Arg1&& arg1, [[maybe_unused]] Arg2&& /*arg2*/)
     {
         return invokeCallable(std::move(func), std::move(arg1));
     }
@@ -113,12 +113,12 @@ template <typename Func, typename Arg1, typename Arg2>
 struct FlexInvokeHelper<Func, Arg1, Arg2, false, false, true, false>
 {
     //! @brief Alias for the return type.
-    using ReturnType = InvokeResultType<Func, Arg2>;
+    using Ret = InvokeResult<Func, Arg2>;
     //! @brief Invoke operation.
     //! @param func - callable function
     //! @param arg2 - function arguments
     //! @return invoke result
-    static constexpr ReturnType invoke(Func&& func, [[maybe_unused]] Arg1&& /*arg1*/, Arg2&& arg2)
+    static constexpr Ret invoke(Func&& func, [[maybe_unused]] Arg1&& /*arg1*/, Arg2&& arg2)
     {
         return invokeCallable(std::move(func), std::move(arg2));
     }
@@ -131,13 +131,13 @@ template <typename Func, typename Arg1, typename Arg2>
 struct FlexInvokeHelper<Func, Arg1, Arg2, false, false, false, true>
 {
     //! @brief Alias for the return type.
-    using ReturnType = InvokeResultType<Func, Arg1, Arg2>;
+    using Ret = InvokeResult<Func, Arg1, Arg2>;
     //! @brief Invoke operation.
     //! @param func - callable function
     //! @param arg1 - function arguments
     //! @param arg2 - function arguments
     //! @return invoke result
-    static constexpr ReturnType invoke(Func&& func, Arg1&& arg1, Arg2&& arg2)
+    static constexpr Ret invoke(Func&& func, Arg1&& arg1, Arg2&& arg2)
     {
         return invokeCallable(std::move(func), std::move(arg1), std::move(arg2));
     }
@@ -148,7 +148,7 @@ struct FlexInvokeHelper<Func, Arg1, Arg2, false, false, false, true>
 //! @tparam Arg1 - type of function arguments
 //! @tparam Arg2 - type of function arguments
 template <typename Func, typename Arg1, typename Arg2>
-using AdaptInvokeResultType = typename FlexInvokeHelper<Func, Arg1, Arg2>::ReturnType;
+using AdaptInvokeResult = typename FlexInvokeHelper<Func, Arg1, Arg2>::Ret;
 //! @brief Adaptive invoke.
 //! @tparam Func - type of callable function
 //! @tparam Arg1 - type of function arguments
@@ -158,7 +158,7 @@ using AdaptInvokeResultType = typename FlexInvokeHelper<Func, Arg1, Arg2>::Retur
 //! @param arg2 - function arguments
 //! @return result from calls
 template <typename Func, typename Arg1, typename Arg2>
-constexpr AdaptInvokeResultType<Func, Arg1, Arg2> adaptiveInvoke(Func&& func, Arg1&& arg1, Arg2&& arg2)
+constexpr AdaptInvokeResult<Func, Arg1, Arg2> adaptiveInvoke(Func&& func, Arg1&& arg1, Arg2&& arg2)
 {
     return FlexInvokeHelper<Func, Arg1, Arg2>::invoke(
         std::forward<Func>(func), std::forward<Arg1>(arg1), std::forward<Arg2>(arg2));
@@ -296,12 +296,12 @@ private:
     //! @tparam Event - type of triggered event
     //! @tparam Bs - type of behaviors
     template <typename Event, typename... Bs>
-    struct ByEventType;
+    struct ByEvent;
     //! @brief Classification by event type. Include both event and behaviors.
     //! @tparam Event - type of triggered event
     //! @tparam Bs - type of behaviors
     template <typename Event, typename... Bs>
-    struct ByEventType<Event, List<Bs...>>
+    struct ByEvent<Event, List<Bs...>>
     {
         //! @brief Alias for the predicate.
         //! @tparam Beh - type of behavior
@@ -313,7 +313,7 @@ private:
     //! @brief Classification by event type. Include only event.
     //! @tparam Event - type of triggered event
     template <typename Event>
-    struct ByEventType<Event, List<>>
+    struct ByEvent<Event, List<>>
     {
         //! @brief Alias for the list.
         using Type = List<>;
@@ -479,7 +479,7 @@ template <typename Event>
 inline void FSM<Derived, State>::processEvent(const Event& event)
 {
     const std::lock_guard<std::recursive_mutex> lock(mtx);
-    using Rows = typename ByEventType<Event, typename Derived::TransitionTable>::Type;
+    using Rows = typename ByEvent<Event, typename Derived::TransitionTable>::Type;
     static_assert(std::is_base_of_v<FSM, Derived>);
     auto& self = static_cast<Derived&>(*this);
     state = EventHandler<Event, Rows>::execute(self, event, state);

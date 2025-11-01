@@ -120,13 +120,13 @@ std::vector<std::string> readFileLines(
         reader.lock();
     }
 
-    auto& input = reader.stream();
-    input.seekg(0, std::ios::beg);
+    auto& stream = reader.stream();
+    stream.seekg(0, std::ios::beg);
     std::vector<std::string> contents{};
     if (std::string line{}; !reverse)
     {
         contents.reserve((limit >= 0) ? limit : 1024);
-        while (std::getline(input, line))
+        while (std::getline(stream, line))
         {
             if ((limit >= 0) && (static_cast<int>(contents.size()) == limit))
             {
@@ -139,7 +139,7 @@ std::vector<std::string> readFileLines(
     else
     {
         std::deque<std::string> buffer{};
-        while (std::getline(input, line))
+        while (std::getline(stream, line))
         {
             buffer.emplace_back(std::move(line));
             if ((limit >= 0) && (static_cast<int>(buffer.size()) > limit))
