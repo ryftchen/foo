@@ -127,9 +127,9 @@ Log::Log() : FSM(State::initial)
     }
 }
 
-Log& Log::getInstance()
+std::shared_ptr<Log> Log::getInstance()
 {
-    static Log logger{};
+    static const std::shared_ptr<Log> logger(::new Log{});
     return logger;
 }
 
@@ -180,11 +180,11 @@ void Log::Access::startup() const
 try
 {
     waitOr(
-        State::active, [this]() { throw std::runtime_error{"The " + inst.name + " did not setup successfully ..."}; });
-    notifyVia([this]() { inst.isOngoing.store(true); });
+        State::active, [this]() { throw std::runtime_error{"The " + inst->name + " did not setup successfully ..."}; });
+    notifyVia([this]() { inst->isOngoing.store(true); });
     waitOr(
         State::established,
-        [this]() { throw std::runtime_error{"The " + inst.name + " did not start successfully ..."}; });
+        [this]() { throw std::runtime_error{"The " + inst->name + " did not start successfully ..."}; });
 }
 catch (const std::exception& err)
 {
@@ -194,9 +194,10 @@ catch (const std::exception& err)
 void Log::Access::shutdown() const
 try
 {
-    notifyVia([this]() { inst.isOngoing.store(false); });
+    notifyVia([this]() { inst->isOngoing.store(false); });
     waitOr(
-        State::inactive, [this]() { throw std::runtime_error{"The " + inst.name + " did not stop successfully ..."}; });
+        State::inactive,
+        [this]() { throw std::runtime_error{"The " + inst->name + " did not stop successfully ..."}; });
 }
 catch (const std::exception& err)
 {
@@ -206,13 +207,13 @@ catch (const std::exception& err)
 void Log::Access::reload() const
 try
 {
-    notifyVia([this]() { inst.inResetting.store(true); });
+    notifyVia([this]() { inst->inResetting.store(true); });
     countdownIf(
-        [this]() { return inst.inResetting.load(); },
+        [this]() { return inst->inResetting.load(); },
         [this]()
         {
             throw std::runtime_error{
-                "The " + inst.name + " did not reset properly in " + std::to_string(inst.timeoutPeriod) + " ms ..."};
+                "The " + inst->name + " did not reset properly in " + std::to_string(inst->timeoutPeriod) + " ms ..."};
         });
 }
 catch (const std::exception& err)
@@ -222,10 +223,10 @@ catch (const std::exception& err)
 
 void Log::Access::onPreviewing(const std::function<void(const std::string&)>& peeking) const
 {
-    const utility::common::LockGuard guard(inst.fileLock, LockMode::read);
+    const utility::common::LockGuard guard(inst->fileLock, LockMode::read);
     if (peeking)
     {
-        peeking(inst.filePath);
+        peeking(inst->filePath);
     }
 }
 
@@ -233,29 +234,29 @@ void Log::Access::waitOr(const State state, const std::function<void()>& handlin
 {
     do
     {
-        if (inst.isInServingState(State::idle) && handling)
+        if (inst->isInServingState(State::idle) && handling)
         {
             handling();
         }
         std::this_thread::yield();
     }
-    while (!inst.isInServingState(state));
+    while (!inst->isInServingState(state));
 }
 
 void Log::Access::notifyVia(const std::function<void()>& action) const
 {
-    std::unique_lock<std::mutex> daemonLock(inst.daemonMtx);
+    std::unique_lock<std::mutex> daemonLock(inst->daemonMtx);
     if (action)
     {
         action();
     }
     daemonLock.unlock();
-    inst.daemonCond.notify_one();
+    inst->daemonCond.notify_one();
 }
 
 void Log::Access::countdownIf(const std::function<bool()>& condition, const std::function<void()>& handling) const
 {
-    for (const utility::time::Stopwatch timing{}; timing.elapsedTime() <= inst.timeoutPeriod;)
+    for (const utility::time::Stopwatch timing{}; timing.elapsedTime() <= inst->timeoutPeriod;)
     {
         if (!condition || !condition())
         {
