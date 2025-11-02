@@ -806,7 +806,7 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
                 LOG_WRN << err.what();
             }
         });
-    client->toConnect(view::info::viewerTCPHost(), view::info::viewerTCPPort());
+    client->toConnect(view::info::currentTCPHost(), view::info::currentTCPPort());
 }
 
 //! @brief Launch the UDP client for console mode.
@@ -831,7 +831,7 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
             }
         });
     client->toReceive();
-    client->toConnect(view::info::viewerUDPHost(), view::info::viewerUDPPort());
+    client->toConnect(view::info::currentUDPHost(), view::info::currentUDPPort());
 }
 
 void Command::executeInConsole() const
@@ -883,7 +883,7 @@ void Command::showHelpMessage() const
 
 void Command::dumpConfiguration()
 {
-    std::cout << configure::getDefaultConfiguration() << std::endl;
+    std::cout << configure::generateDefaultConfig() << std::endl;
 }
 
 void Command::displayVersionInfo() const
@@ -1076,7 +1076,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<Sock>
                 });
         });
 
-    auto supportedOptions = view::info::viewerSupportedOptions();
+    auto supportedOptions = view::info::currentSupportedOptions();
     decltype(supportedOptions) validOptions{};
     for (auto iterator = supportedOptions.cbegin(); iterator != supportedOptions.cend();)
     {

@@ -375,31 +375,31 @@ namespace info
 {
 //! @brief Get the current supported viewer options.
 //! @return current supported viewer options
-inline auto viewerSupportedOptions()
+inline auto currentSupportedOptions()
 {
     return View::Access().getSupportedOptions();
 }
 //! @brief Get the current TCP host address being used for viewing.
 //! @return current TCP host address being used for viewing
-inline std::string viewerTCPHost()
+inline std::string currentTCPHost()
 {
     return View::Access().getTCPHost();
 }
 //! @brief Get the current TCP port number being used for viewing.
 //! @return current TCP port number being used for viewing
-inline std::uint16_t viewerTCPPort()
+inline std::uint16_t currentTCPPort()
 {
     return View::Access().getTCPPort();
 }
 //! @brief Get the current UDP host address being used for viewing.
 //! @return current UDP host address being used for viewing
-inline std::string viewerUDPHost()
+inline std::string currentUDPHost()
 {
     return View::Access().getUDPHost();
 }
 //! @brief Get the current UDP port number being used for viewing.
 //! @return current UDP port number being used for viewing
-inline std::uint16_t viewerUDPPort()
+inline std::uint16_t currentUDPPort()
 {
     return View::Access().getUDPPort();
 }
