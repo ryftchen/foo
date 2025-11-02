@@ -134,6 +134,21 @@ static constexpr std::string_view toString(const Category cat)
     return stringify.at(static_cast<std::uint8_t>(cat));
 }
 
+template <typename Key, typename Subject>
+void Notifier<Key, Subject>::attach(const Key key, std::shared_ptr<RoutineBase> handler)
+{
+    handlers[key] = std::move(handler);
+}
+
+template <typename Key, typename Subject>
+void Notifier<Key, Subject>::notify(const Key key) const
+{
+    if (handlers.contains(key))
+    {
+        handlers.at(key)->execute();
+    }
+}
+
 // clang-format off
 //! @brief Mapping table for enum and attribute about command categories. X macro.
 #define COMMAND_CATEGORY_X_MACRO_MAPPING                                \

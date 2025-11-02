@@ -112,21 +112,6 @@ private:
     std::map<Key, std::shared_ptr<RoutineBase>> handlers{};
 };
 
-template <typename Key, typename Subject>
-void Notifier<Key, Subject>::attach(const Key key, std::shared_ptr<RoutineBase> handler)
-{
-    handlers[key] = std::move(handler);
-}
-
-template <typename Key, typename Subject>
-void Notifier<Key, Subject>::notify(const Key key) const
-{
-    if (handlers.contains(key))
-    {
-        handlers.at(key)->execute();
-    }
-}
-
 //! @brief Execute the command line.
 class Command final
 {
