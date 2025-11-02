@@ -102,21 +102,30 @@ public:
     //! @brief Attach a handler with a specific key to the notifier.
     //! @param key - specific key
     //! @param handler - handler to be attached
-    void attach(const Key key, std::shared_ptr<RoutineBase> handler) { handlers[key] = std::move(handler); }
+    void attach(const Key key, std::shared_ptr<RoutineBase> handler);
     //! @brief Notify the handler associated with the given key.
     //! @param key - specific key
-    void notify(const Key key) const
-    {
-        if (handlers.contains(key))
-        {
-            handlers.at(key)->execute();
-        }
-    }
+    void notify(const Key key) const;
 
 private:
     //! @brief Map of handlers identified by a key.
     std::map<Key, std::shared_ptr<RoutineBase>> handlers{};
 };
+
+template <typename Key, typename Subject>
+void Notifier<Key, Subject>::attach(const Key key, std::shared_ptr<RoutineBase> handler)
+{
+    handlers[key] = std::move(handler);
+}
+
+template <typename Key, typename Subject>
+void Notifier<Key, Subject>::notify(const Key key) const
+{
+    if (handlers.contains(key))
+    {
+        handlers.at(key)->execute();
+    }
+}
 
 //! @brief Execute the command line.
 class Command final

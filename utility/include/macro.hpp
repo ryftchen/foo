@@ -98,7 +98,7 @@ public:
 
 private:
     //! @brief The deferred callable.
-    Call deferred{};
+    const Call deferred{};
 };
 
 template <typename Call>

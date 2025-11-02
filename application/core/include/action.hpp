@@ -276,7 +276,7 @@ public:
     Dispatcher& operator=(Dispatcher&&) noexcept = default;
 
     //! @brief Register the handler.
-    void registerHandler() {}
+    void registerHandler();
 };
 //! @brief Message receiver.
 //! @tparam Is - type of indications
@@ -327,7 +327,7 @@ public:
     Receiver& operator=(Receiver&&) noexcept = default;
 
     //! @brief Action on message.
-    void onMessage() {}
+    void onMessage();
 };
 //! @brief Forwarding basis for all message types.
 struct ForwardBase : public MessageTypes::AsParameterPackFor<Dispatcher>,
@@ -350,21 +350,28 @@ public:
     using Base::registerHandler, Base::onMessage;
     //! @brief Register the handler.
     //! @param handling - handling for message
-    void registerHandler(Handler<Msg> handling) override { handler = std::move(handling); }
+    void registerHandler(Handler<Msg> handling) override;
     //! @brief Action on message.
     //! @param message - message body
-    void onMessage(const Msg& message) override
-    {
-        if (handler)
-        {
-            handler(message);
-        }
-    }
+    void onMessage(const Msg& message) override;
 
 private:
     //! @brief Message handler.
     Handler<Msg> handler{};
 };
+template <typename Msg, typename... Is>
+void Forward<SettingIndication<Msg>, Is...>::registerHandler(Handler<Msg> handling)
+{
+    handler = std::move(handling);
+}
+template <typename Msg, typename... Is>
+void Forward<SettingIndication<Msg>, Is...>::onMessage(const Msg& message)
+{
+    if (handler)
+    {
+        handler(message);
+    }
+}
 //! @brief Forward message of the running indication.
 //! @tparam Msg - type of message
 //! @tparam Is - type of indications
@@ -377,21 +384,28 @@ public:
     using Base::registerHandler, Base::onMessage;
     //! @brief Register the handler.
     //! @param handling - handling for message
-    void registerHandler(Handler<Msg> handling) override { handler = std::move(handling); }
+    void registerHandler(Handler<Msg> handling) override;
     //! @brief Action on message.
     //! @param message - message body
-    void onMessage(const Msg& message) override
-    {
-        if (handler)
-        {
-            handler(message);
-        }
-    }
+    void onMessage(const Msg& message) override;
 
 private:
     //! @brief Message handler.
     Handler<Msg> handler{};
 };
+template <typename Msg, typename... Is>
+void Forward<RunningIndication<Msg>, Is...>::registerHandler(Handler<Msg> handling)
+{
+    handler = std::move(handling);
+}
+template <typename Msg, typename... Is>
+void Forward<RunningIndication<Msg>, Is...>::onMessage(const Msg& message)
+{
+    if (handler)
+    {
+        handler(message);
+    }
+}
 //! @brief Forwarding action interface.
 //! @tparam Intf - type of interface
 template <typename Intf>
