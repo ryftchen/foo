@@ -119,7 +119,7 @@ public:
     //! @param sem - semaphore for configuration access control
     explicit Retrieve(std::counting_semaphore<maxAccessLimit>& sem);
     //! @brief Destroy the Retrieve object.
-    ~Retrieve();
+    virtual ~Retrieve();
     //! @brief Construct a new Retrieve object.
     Retrieve(const Retrieve&) = delete;
     //! @brief Construct a new Retrieve object.

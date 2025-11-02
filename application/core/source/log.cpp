@@ -576,6 +576,18 @@ bool Log::awaitNotification2Retry()
     return inResetting.load();
 }
 
+template <Log::OutputLevel Lv>
+Holder<Lv>::~Holder()
+{
+    printfStyle(Lv, location.file_name(), location.line(), buffer.str());
+}
+
+template <Log::OutputLevel Lv>
+std::ostringstream& Holder<Lv>::stream() noexcept
+{
+    return buffer;
+}
+
 template class Holder<Log::OutputLevel::debug>;
 template class Holder<Log::OutputLevel::info>;
 template class Holder<Log::OutputLevel::warning>;

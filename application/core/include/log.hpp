@@ -401,7 +401,7 @@ public:
     //! @param srcLoc - current source location
     explicit Holder(const std::source_location& srcLoc = std::source_location::current()) : location{srcLoc} {}
     //! @brief Destroy the Holder object.
-    virtual ~Holder() { printfStyle(Lv, location.file_name(), location.line(), buffer.str()); }
+    virtual ~Holder();
     //! @brief Construct a new Holder object.
     Holder(const Holder&) = default;
     //! @brief Construct a new Holder object.
@@ -415,7 +415,7 @@ public:
 
     //! @brief Get the buffer stream for flushing.
     //! @return reference of the buffer stream object, which is on string based
-    std::ostringstream& stream() noexcept { return buffer; }
+    std::ostringstream& stream() noexcept;
 
 private:
     //! @brief Output stream for flushing.
