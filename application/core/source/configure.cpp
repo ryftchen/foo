@@ -242,9 +242,9 @@ Retrieve retrieveDataRepo()
 }
 
 // NOLINTBEGIN(readability-magic-numbers)
-//! @brief Get the default configuration.
+//! @brief Generate the default configuration.
 //! @return default configuration
-utility::json::JSON getDefaultConfiguration()
+utility::json::JSON generateDefaultConfig()
 {
     using log::Log;
     auto loggerProperties = utility::json::object();
@@ -286,32 +286,32 @@ utility::json::JSON getDefaultConfiguration()
 
 //! @brief Forced configuration update by default.
 //! @param filePath - full path to the configuration file
-static void forcedConfigurationUpdateByDefault(const std::string_view filePath)
+static void forcedConfigUpdateByDefault(const std::string_view filePath)
 {
     utility::io::FileWriter configWriter(filePath);
     configWriter.open(true);
     configWriter.lock();
-    configWriter.stream() << configure::getDefaultConfiguration();
+    configWriter.stream() << configure::generateDefaultConfig();
     configWriter.unlock();
     configWriter.close();
 }
 
 //! @brief Initialize the configuration.
 //! @param filePath - full path to the configuration file
-static void initializeConfiguration(const std::string_view filePath)
+static void initializeConfig(const std::string_view filePath)
 {
     const auto configFolderPath = std::filesystem::absolute(filePath).parent_path();
     std::filesystem::create_directories(configFolderPath);
     std::filesystem::permissions(
         configFolderPath, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
 
-    forcedConfigurationUpdateByDefault(filePath);
+    forcedConfigUpdateByDefault(filePath);
 }
 
 //! @brief Show prompt and wait for input on configuration exception.
 //! @param filePath - full path to the configuration file
 //! @return whether to continue throwing exception
-static bool handleConfigurationException(const std::string_view filePath)
+static bool handleConfigException(const std::string_view filePath)
 {
     constexpr std::string_view prompt = "Type y to force an update to the default configuration, n to exit: ";
     constexpr std::string_view escapeClear = "\x1b[1A\x1b[2K\r";
@@ -328,7 +328,7 @@ static bool handleConfigurationException(const std::string_view filePath)
                 {
                     using utility::common::operator""_bkdrHash;
                     case "y"_bkdrHash:
-                        forcedConfigurationUpdateByDefault(filePath);
+                        forcedConfigUpdateByDefault(filePath);
                         [[fallthrough]];
                     case "n"_bkdrHash:
                         keepThrowing = false;
@@ -343,17 +343,17 @@ static bool handleConfigurationException(const std::string_view filePath)
     return keepThrowing;
 }
 
-//! @brief Load the configuration.
+//! @brief Load the setting.
 //! @param filename - configure file path
 //! @return successful or failed to load
-bool loadConfiguration(const std::string_view filename)
+bool loadSetting(const std::string_view filename)
 {
     const auto filePath = getFullConfigPath(filename);
     try
     {
         if (!std::filesystem::is_regular_file(filePath))
         {
-            initializeConfiguration(filePath);
+            initializeConfig(filePath);
         }
         Configure::getInstance(filename);
         return true;
@@ -361,7 +361,7 @@ bool loadConfiguration(const std::string_view filename)
     catch (...)
     {
         std::cerr << "Configuration load exception ..." << std::endl;
-        if (handleConfigurationException(filePath))
+        if (handleConfigException(filePath))
         {
             std::cout << '\n' << std::endl;
             throw;
