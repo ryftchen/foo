@@ -133,7 +133,7 @@ public:
     void unlock();
     //! @brief Get the input stream.
     //! @return reference to the input stream
-    std::istream& stream();
+    std::istream& stream() noexcept;
 
 private:
     //! @brief Name of the file being read.
@@ -185,7 +185,7 @@ public:
     void unlock();
     //! @brief Get the output stream.
     //! @return reference to the output stream
-    std::ostream& stream();
+    std::ostream& stream() noexcept;
 
 private:
     //! @brief Name of the file being written.
