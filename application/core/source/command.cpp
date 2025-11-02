@@ -1121,7 +1121,6 @@ void Command::interactionLatency()
 
 void Command::validateDependenciesVersion() const
 {
-    const auto& choiceRegistry = taskDispatcher.extraChoiceRegistry;
     const bool isNativeVersionMatched = utility::common::areStringsEqual(
         mainCLI.version().data(),
         utility::argument::version(),
@@ -1137,6 +1136,15 @@ void Command::validateDependenciesVersion() const
         utility::socket::version(),
         utility::thread::version(),
         utility::time::version());
+    if (!isNativeVersionMatched)
+    {
+        throw std::runtime_error{std::format(
+            "Dependencies version number mismatch. Expected main version: {} ({}).",
+            mainCLI.title(),
+            mainCLI.version())};
+    }
+
+    const auto& choiceRegistry = taskDispatcher.extraChoiceRegistry;
     const bool isExtraVersionMatched = (versionLinks.count({subCLIAppAlgo.title(), subCLIAppAlgo.version()})
                                         == choiceRegistry.at(subCLIAppAlgo.title()).size())
         && (versionLinks.count({subCLIAppDp.title(), subCLIAppDp.version()})
@@ -1145,13 +1153,10 @@ void Command::validateDependenciesVersion() const
             == choiceRegistry.at(subCLIAppDs.title()).size())
         && (versionLinks.count({subCLIAppNum.title(), subCLIAppNum.version()})
             == choiceRegistry.at(subCLIAppNum.title()).size());
-    if (!isNativeVersionMatched || !isExtraVersionMatched)
+    if (!isExtraVersionMatched)
     {
         throw std::runtime_error{std::format(
-            "Dependencies version number mismatch. Expected main version: {} ({})"
-            ", sub-version: {} ({}), {} ({}), {} ({}), {} ({}).",
-            mainCLI.title(),
-            mainCLI.version(),
+            "Dependencies version number mismatch. Expected sub-version: {} ({}), {} ({}), {} ({}), {} ({}).",
             subCLIAppAlgo.title(),
             subCLIAppAlgo.version(),
             subCLIAppDp.title(),
