@@ -1037,6 +1037,7 @@ void View::stopViewing()
 
 void View::doToggle()
 {
+    utility::benchmark::escape(this);
 }
 
 void View::doRollback()

@@ -16,6 +16,7 @@
 #include "application/pch/precompiled_header.hpp"
 #endif // _PRECOMPILED_HEADER
 
+#include "utility/include/benchmark.hpp"
 #include "utility/include/time.hpp"
 
 namespace application::log
@@ -482,6 +483,7 @@ void Log::stopLogging()
 
 void Log::doToggle()
 {
+    utility::benchmark::escape(this);
 }
 
 void Log::doRollback()
@@ -508,6 +510,7 @@ void Log::doRollback()
         closeLogFile();
         tryCreateLogFolder();
         backUpLogFileIfNeeded();
+
         std::ofstream tempOfs{};
         tempOfs.open(filePath, std::ios_base::out | std::ios_base::trunc);
         tempOfs.close();
