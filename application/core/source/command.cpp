@@ -700,7 +700,7 @@ void Command::precheck()
     {
         const auto& subCLI = mainCLI.at<utility::argument::Argument>(subCLIName);
         const bool notAssigned = !subCLI;
-        taskDispatcher.extraHelpOnly = notAssigned || subCLI.isUsed(helpArgInExtra);
+        taskDispatcher.extraHelping = notAssigned || subCLI.isUsed(helpArgInExtra);
         if (notAssigned)
         {
             return;
@@ -713,7 +713,7 @@ void Command::precheck()
             for (const auto& choice : subCLI.get<std::vector<std::string>>(categoryName))
             {
                 std::visit(
-                    action::EvtVisitor{
+                    action::EventVisitor{
                         [this, &choice](auto&& event)
                         { applyingForwarder.onMessage(action::SetChoice<std::decay_t<decltype(event)>>{choice}); }},
                     categoryTrait.event);
@@ -741,7 +741,7 @@ void Command::dispatch()
 
     if (!taskDispatcher.ExtraManager::empty())
     {
-        if (taskDispatcher.extraHelpOnly)
+        if (taskDispatcher.extraHelping)
         {
             if (auto filtered = std::views::keys(taskDispatcher.extraChoiceRegistry)
                     | std::views::filter([this](const auto& subCLIName)
@@ -760,7 +760,7 @@ void Command::dispatch()
                  | std::views::values | std::views::join)
         {
             std::visit(
-                action::EvtVisitor{
+                action::EventVisitor{
                     [this, &candidates = categoryTrait.choices](auto&& event)
                     { applyingForwarder.onMessage(action::RunCandidates<std::decay_t<decltype(event)>>{candidates}); }},
                 categoryTrait.event);
@@ -883,7 +883,7 @@ void Command::showHelpMessage() const
 
 void Command::dumpConfiguration()
 {
-    std::cout << configure::generateDefaultConfig() << std::endl;
+    std::cout << configure::dumpDefaultConfig() << std::endl;
 }
 
 void Command::displayVersionInfo() const

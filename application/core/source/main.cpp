@@ -34,7 +34,7 @@ volatile std::sig_atomic_t childInterrupted = 0;
 static int run(const int argc, const char* const argv[])
 try
 {
-    if (!configure::loadSetting())
+    if (!configure::loadSettings())
     {
         return EXIT_FAILURE;
     }

@@ -265,7 +265,7 @@ private:
             //! @brief The candidates for the choice.
             const std::vector<std::string> choices;
             //! @brief The internal event for applying.
-            const action::EventType event;
+            const action::Event event;
         };
         //! @brief Alias for the map of sub-cli's category name and Attr.
         using CategoryMap = std::map<std::string, Attr>;
@@ -292,13 +292,13 @@ private:
         //! @brief Existence status and reset control of the sub-cli to which the extra choices belong.
         std::map<std::string, Intf> extraChecklist;
         //! @brief Flag for help only.
-        bool extraHelpOnly{false};
+        bool extraHelping{false};
 
         //! @brief Check whether any extra choices do not exist.
         //! @return any extra choices do not exist or exist
         [[nodiscard]] bool empty() const override
         {
-            return !extraHelpOnly
+            return !extraHelping
                 && std::none_of(
                     extraChecklist.cbegin(),
                     extraChecklist.cend(),
@@ -307,7 +307,7 @@ private:
         //! @brief Reset bit flags that manage extra choices.
         void reset() override
         {
-            extraHelpOnly = false;
+            extraHelping = false;
             std::for_each(
                 extraChecklist.cbegin(), extraChecklist.cend(), [](const auto& pair) { pair.second.clear(); });
         }

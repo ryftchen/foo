@@ -242,9 +242,9 @@ Retrieve retrieveDataRepo()
 }
 
 // NOLINTBEGIN(readability-magic-numbers)
-//! @brief Generate the default configuration.
+//! @brief Dump the default configuration.
 //! @return default configuration
-utility::json::JSON generateDefaultConfig()
+utility::json::JSON dumpDefaultConfig()
 {
     using log::Log;
     auto loggerProperties = utility::json::object();
@@ -291,7 +291,7 @@ static void forcedConfigUpdateByDefault(const std::string_view filePath)
     utility::io::FileWriter configWriter(filePath);
     configWriter.open(true);
     configWriter.lock();
-    configWriter.stream() << configure::generateDefaultConfig();
+    configWriter.stream() << configure::dumpDefaultConfig();
     configWriter.unlock();
     configWriter.close();
 }
@@ -343,10 +343,10 @@ static bool handleConfigException(const std::string_view filePath)
     return keepThrowing;
 }
 
-//! @brief Load the setting.
+//! @brief Load the settings.
 //! @param filename - configure file path
 //! @return successful or failed to load
-bool loadSetting(const std::string_view filename)
+bool loadSettings(const std::string_view filename)
 {
     const auto filePath = getFullConfigPath(filename);
     try
