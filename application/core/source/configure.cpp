@@ -288,12 +288,12 @@ utility::json::JSON getDefaultConfiguration()
 //! @param filePath - full path to the configuration file
 static void forcedConfigurationUpdateByDefault(const std::string_view filePath)
 {
-    utility::io::FileWriter copyTypist(filePath);
-    copyTypist.open(true);
-    copyTypist.lock();
-    copyTypist.stream() << configure::getDefaultConfiguration();
-    copyTypist.unlock();
-    copyTypist.close();
+    utility::io::FileWriter configWriter(filePath);
+    configWriter.open(true);
+    configWriter.lock();
+    configWriter.stream() << configure::getDefaultConfiguration();
+    configWriter.unlock();
+    configWriter.close();
 }
 
 //! @brief Initialize the configuration.
