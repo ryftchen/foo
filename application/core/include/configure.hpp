@@ -147,8 +147,8 @@ private:
 };
 
 extern Retrieve retrieveDataRepo();
-extern utility::json::JSON generateDefaultConfig();
-extern bool loadSetting(const std::string_view filename = defaultConfigFile);
+extern utility::json::JSON dumpDefaultConfig();
+extern bool loadSettings(const std::string_view filename = defaultConfigFile);
 
 //! @brief Configuration details.
 namespace detail
