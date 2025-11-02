@@ -392,7 +392,7 @@ void FileReader::unlock()
     lockActive = false;
 }
 
-std::istream& FileReader::stream()
+std::istream& FileReader::stream() noexcept
 {
     return input;
 }
@@ -466,7 +466,7 @@ void FileWriter::unlock()
     lockActive = false;
 }
 
-std::ostream& FileWriter::stream()
+std::ostream& FileWriter::stream() noexcept
 {
     return output;
 }
