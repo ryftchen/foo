@@ -154,7 +154,7 @@ namespace iterator
 ConcreteAggregate::ConcreteAggregate(const std::uint32_t size) : count{size}
 {
     list = std::make_unique<int[]>(size);
-    std::fill(list.get(), list.get() + size, 1);
+    std::fill_n(list.get(), size, 1);
 }
 
 std::shared_ptr<Iterator> ConcreteAggregate::createIterator()

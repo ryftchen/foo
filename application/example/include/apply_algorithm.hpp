@@ -56,6 +56,8 @@ public:
         singlePattern{std::make_unique<unsigned char[]>(pattern.length() + 1)},
         patternLength{static_cast<std::uint32_t>(pattern.length())}
     {
+        marchingText[0] = '\0';
+        singlePattern[0] = '\0';
         createMatchingText(marchingText.get(), maxDigit);
         std::memcpy(singlePattern.get(), pattern.data(), pattern.length() * sizeof(unsigned char));
     }
@@ -322,6 +324,7 @@ public:
     InputBuilder(const std::uint32_t length, const Elem left, const Elem right) :
         orderedArray{std::make_unique<Elem[]>(length + 1)}, length{length}
     {
+        orderedArray[0] = '\0';
         setOrderedArray<Elem>(orderedArray.get(), length, left, right);
     }
     //! @brief Destroy the InputBuilder object.
@@ -330,6 +333,7 @@ public:
     //! @param rhs - right-hand side
     InputBuilder(const InputBuilder& rhs) : orderedArray{std::make_unique<Elem[]>(rhs.length + 1)}, length{rhs.length}
     {
+        orderedArray[0] = '\0';
         clone(rhs);
     }
     //! @brief Construct a new InputBuilder object.
@@ -519,6 +523,7 @@ public:
     InputBuilder(const std::uint32_t length, const Elem left, const Elem right) :
         randomArray{std::make_unique<Elem[]>(length + 1)}, length{length}
     {
+        randomArray[0] = '\0';
         setRandomArray<Elem>(randomArray.get(), length, left, right);
     }
     //! @brief Destroy the InputBuilder object.
@@ -527,6 +532,7 @@ public:
     //! @param rhs - right-hand side
     InputBuilder(const InputBuilder& rhs) : randomArray{std::make_unique<Elem[]>(rhs.length + 1)}, length{rhs.length}
     {
+        randomArray[0] = '\0';
         clone(rhs);
     }
     //! @brief Construct a new InputBuilder object.
