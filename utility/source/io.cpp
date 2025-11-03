@@ -8,6 +8,7 @@
 
 #include <sys/epoll.h>
 #include <sys/file.h>
+#include <cstring>
 #include <deque>
 #include <filesystem>
 #include <iostream>
@@ -237,6 +238,7 @@ FDStreamBuffer::int_type FDStreamBuffer::underflow()
     if (!readBuffer)
     {
         readBuffer = std::make_unique<char[]>(bufferSize);
+        std::memset(readBuffer.get(), 0, bufferSize * sizeof(char));
     }
 
     const ::ssize_t readSize = ::read(fd, readBuffer.get(), bufferSize);
@@ -262,6 +264,7 @@ FDStreamBuffer::int_type FDStreamBuffer::overflow(const int_type c)
     if (!writeBuffer)
     {
         writeBuffer = std::make_unique<char[]>(bufferSize);
+        std::memset(writeBuffer.get(), 0, bufferSize * sizeof(char));
     }
 
     if (sync() == -1)

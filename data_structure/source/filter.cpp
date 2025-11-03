@@ -89,6 +89,7 @@ Bloom::Bloom(const std::uint32_t capacity, const double falsePositiveProb, const
     hashPos{std::make_unique<std::uint32_t[]>(hashFuncNum)}
 {
     std::memset(filter.get(), 0, filterSize * sizeof(std::uint8_t));
+    std::memset(hashPos.get(), 0, hashFuncNum * sizeof(std::uint32_t));
 }
 
 bool Bloom::insert(const void* const key, const int length)
@@ -129,6 +130,7 @@ void Bloom::clear()
 {
     entries = 0;
     std::memset(filter.get(), 0, filterSize * sizeof(std::uint8_t));
+    std::memset(hashPos.get(), 0, hashFuncNum * sizeof(std::uint32_t));
 }
 
 void Bloom::bloomHash(const void* const key, const int length)
