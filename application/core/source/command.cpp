@@ -103,23 +103,23 @@ static action::Awaitable helperLifecycle()
             waitPoint.count_down();
         });
     std::barrier syncPoint(sizeof...(Hs) + 1);
-    static const auto publish = [&syncPoint](const ExtEvent event)
+    constexpr auto publish = [](std::barrier<>& phase, const ExtEvent event) constexpr
     {
         std::vector<std::jthread> senders{};
         senders.reserve(sizeof...(Hs));
-        (senders.emplace_back(std::jthread{[&syncPoint, event]()
+        (senders.emplace_back(std::jthread{[&phase, event]()
                                            {
                                                triggerHelper<Hs>(event);
-                                               syncPoint.arrive_and_wait();
+                                               phase.arrive_and_wait();
                                            }}),
          ...);
-        syncPoint.arrive_and_wait();
+        phase.arrive_and_wait();
     };
 
     co_await std::suspend_always{};
-    publish(ExtEvent::startup);
+    publish(syncPoint, ExtEvent::startup);
     co_await std::suspend_always{};
-    publish(ExtEvent::shutdown);
+    publish(syncPoint, ExtEvent::shutdown);
 
     waitPoint.wait();
 }

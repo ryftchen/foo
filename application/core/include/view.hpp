@@ -352,8 +352,8 @@ private:
         Row< State::initial     , Standby       , State::idle        , &View::doToggle                    >,
         Row< State::active      , Standby       , State::idle        , &View::doToggle                    >,
         Row< State::established , Standby       , State::idle        , &View::doToggle                    >,
-        Row< State::inactive    , Standby       , State::idle        , &View::doToggle                    >,
         Row< State::established , Relaunch      , State::initial     , &View::doRollback                  >,
+        Row< State::inactive    , Relaunch      , State::initial     , &View::doRollback                  >,
         Row< State::idle        , Relaunch      , State::initial     , &View::doRollback                  >
         // +--------------------+---------------+--------------------+--------------------------+---------+
     >;

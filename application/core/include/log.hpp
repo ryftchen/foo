@@ -313,8 +313,8 @@ private:
         Row< State::initial     , Standby   , State::idle        , &Log::doToggle                             >,
         Row< State::active      , Standby   , State::idle        , &Log::doToggle                             >,
         Row< State::established , Standby   , State::idle        , &Log::doToggle                             >,
-        Row< State::inactive    , Standby   , State::idle        , &Log::doToggle                             >,
         Row< State::established , Relaunch  , State::initial     , &Log::doRollback                           >,
+        Row< State::inactive    , Relaunch  , State::initial     , &Log::doRollback                           >,
         Row< State::idle        , Relaunch  , State::initial     , &Log::doRollback                           >
         // +--------------------+-----------+--------------------+--------------------+-----------------------+
     >;
