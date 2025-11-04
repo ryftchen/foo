@@ -463,6 +463,22 @@ void Argument::parseArgs(const std::vector<std::string>& arguments)
 
 void Argument::parseArgs(const int argc, const char* const argv[])
 {
+    if (argc < 0)
+    {
+        throw std::runtime_error{"The argc must be non-negative."};
+    }
+    if (!argv)
+    {
+        throw std::runtime_error{"The argv is null."};
+    }
+    for (int i = 0; i < argc; ++i)
+    {
+        if (!argv[i])
+        {
+            throw std::runtime_error{"The argv contains a null pointer at index " + std::to_string(i)};
+        }
+    }
+
     parseArgs(std::vector<std::string>{argv, argv + argc});
 }
 
