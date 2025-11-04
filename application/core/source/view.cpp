@@ -1055,8 +1055,8 @@ void View::doRollback()
         catch (...) // NOLINT(bugprone-empty-catch)
         {
         }
-        tcpServer.reset();
     }
+    tcpServer.reset();
     if (udpServer)
     {
         try
@@ -1067,8 +1067,8 @@ void View::doRollback()
         catch (...) // NOLINT(bugprone-empty-catch)
         {
         }
-        udpServer.reset();
     }
+    udpServer.reset();
 
     inResetting.store(false);
     outputCompleted.store(true);

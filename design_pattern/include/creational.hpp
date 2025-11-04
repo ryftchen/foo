@@ -464,8 +464,8 @@ public:
     Singleton& operator=(Singleton&&) = delete;
 
     //! @brief Get the instance of the singleton.
-    //! @return the instance of the singleton
-    static std::shared_ptr<Singleton>& get();
+    //! @return instance of the singleton
+    static std::shared_ptr<Singleton> get();
     //! @brief Restart the instance of the singleton.
     static void restart();
     //! @brief Tell external.

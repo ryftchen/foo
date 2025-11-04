@@ -126,10 +126,6 @@ void ConcreteBuilderY::buildPartC()
 
 void Director::set(std::unique_ptr<Builder> b)
 {
-    if (builder)
-    {
-        builder.reset();
-    }
     builder = std::move(b);
 }
 
@@ -245,21 +241,18 @@ namespace singleton
 {
 std::shared_ptr<Singleton> Singleton::instance = {};
 
-std::shared_ptr<Singleton>& Singleton::get()
+std::shared_ptr<Singleton> Singleton::get()
 {
     if (!instance)
     {
-        instance = std::shared_ptr<Singleton>();
+        instance = std::shared_ptr<Singleton>(::new Singleton{});
     }
     return instance;
 }
 
 void Singleton::restart()
 {
-    if (instance)
-    {
-        instance.reset();
-    }
+    instance.reset();
 }
 
 void Singleton::tell()
