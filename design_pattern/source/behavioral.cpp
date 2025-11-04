@@ -384,10 +384,6 @@ void ConcreteStateB::handle()
 
 void Context::setState(std::unique_ptr<State> s)
 {
-    if (state)
-    {
-        state.reset();
-    }
     state = std::move(s);
 }
 
