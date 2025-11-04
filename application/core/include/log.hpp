@@ -22,7 +22,7 @@
 #include "utility/include/io.hpp"
 
 //! @brief Log with debug level.
-#define LOG_DBG application::log::Holder<application::log::Log::OutputLevel::debug>().stream()
+#define LOG_DBG application::log::Holder<application::log::Log::OutputLevel::debug>()
 //! @brief Log with debug level (printf style).
 #define LOG_DBG_P(fmt, ...)        \
     application::log::printfStyle( \
@@ -32,7 +32,7 @@
     application::log::formatStyle( \
         application::log::Log::OutputLevel::debug, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with info level.
-#define LOG_INF application::log::Holder<application::log::Log::OutputLevel::info>().stream()
+#define LOG_INF application::log::Holder<application::log::Log::OutputLevel::info>()
 //! @brief Log with info level (printf style).
 #define LOG_INF_P(fmt, ...)        \
     application::log::printfStyle( \
@@ -42,7 +42,7 @@
     application::log::formatStyle( \
         application::log::Log::OutputLevel::info, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with warning level.
-#define LOG_WRN application::log::Holder<application::log::Log::OutputLevel::warning>().stream()
+#define LOG_WRN application::log::Holder<application::log::Log::OutputLevel::warning>()
 //! @brief Log with warning level (printf style).
 #define LOG_WRN_P(fmt, ...)        \
     application::log::printfStyle( \
@@ -52,7 +52,7 @@
     application::log::formatStyle( \
         application::log::Log::OutputLevel::warning, __FILE__, __LINE__, fmt __VA_OPT__(, ) __VA_ARGS__)
 //! @brief Log with error level.
-#define LOG_ERR application::log::Holder<application::log::Log::OutputLevel::error>().stream()
+#define LOG_ERR application::log::Holder<application::log::Log::OutputLevel::error>()
 //! @brief Log with error level (printf style).
 #define LOG_ERR_P(fmt, ...)        \
     application::log::printfStyle( \
@@ -394,14 +394,14 @@ void formatStyle(
 //! @brief Log holder for flushing.
 //! @tparam Lv - output level
 template <Log::OutputLevel Lv>
-class Holder
+class Holder final
 {
 public:
     //! @brief Construct a new Holder object.
     //! @param srcLoc - current source location
     explicit Holder(const std::source_location& srcLoc = std::source_location::current()) : location{srcLoc} {}
     //! @brief Destroy the Holder object.
-    virtual ~Holder();
+    ~Holder();
     //! @brief Construct a new Holder object.
     Holder(const Holder&) = default;
     //! @brief Construct a new Holder object.
@@ -413,16 +413,28 @@ public:
     //! @return reference of the Holder object
     Holder& operator=(Holder&&) noexcept = default;
 
-    //! @brief Get the buffer stream for flushing.
-    //! @return reference of the buffer stream object, which is on string based
-    std::ostringstream& stream() noexcept;
+    //! @brief The operator (=) overloading of Holder class.
+    //! @tparam Input - type of input content
+    //! @param input - input content
+    //! @return reference of the Holder object
+    template <typename Input>
+    Holder& operator<<(Input&& input);
 
 private:
-    //! @brief Output stream for flushing.
-    std::ostringstream buffer;
     //! @brief Source location.
     const std::source_location location;
+    //! @brief Output stream for flushing.
+    std::ostringstream buffer;
 };
+
+template <Log::OutputLevel Lv>
+template <typename Input>
+Holder<Lv>& Holder<Lv>::operator<<(Input&& input)
+{
+    buffer << std::forward<Input>(input);
+    return *this;
+}
+
 extern template class Holder<Log::OutputLevel::debug>;
 extern template class Holder<Log::OutputLevel::info>;
 extern template class Holder<Log::OutputLevel::warning>;
