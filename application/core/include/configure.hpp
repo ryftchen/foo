@@ -112,14 +112,14 @@ private:
 };
 
 //! @brief Guard for retrieve configuration.
-class Retrieve
+class Retrieve final
 {
 public:
     //! @brief Construct a new Retrieve object.
     //! @param sem - semaphore for configuration access control
     explicit Retrieve(std::counting_semaphore<maxAccessLimit>& sem);
     //! @brief Destroy the Retrieve object.
-    virtual ~Retrieve();
+    ~Retrieve();
     //! @brief Construct a new Retrieve object.
     Retrieve(const Retrieve&) = delete;
     //! @brief Construct a new Retrieve object.
