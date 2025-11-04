@@ -141,6 +141,8 @@ retry:
     try
     {
         logStyle();
+        processEvent(Relaunch{});
+
         assert(currentState() == State::initial);
         processEvent(OpenFile{});
 
@@ -152,7 +154,6 @@ retry:
         notificationLoop();
         if (inResetting.load())
         {
-            processEvent(Relaunch{});
             goto retry;
         }
         processEvent(CloseFile{});
@@ -170,7 +171,6 @@ retry:
         processEvent(Standby{});
         if (awaitNotification2Retry())
         {
-            processEvent(Relaunch{});
             goto retry;
         }
     }

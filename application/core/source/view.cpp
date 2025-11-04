@@ -272,6 +272,8 @@ void View::service()
 retry:
     try
     {
+        processEvent(Relaunch{});
+
         assert(currentState() == State::initial);
         processEvent(CreateServer{});
 
@@ -283,7 +285,6 @@ retry:
         notificationLoop();
         if (inResetting.load())
         {
-            processEvent(Relaunch{});
             goto retry;
         }
         processEvent(DestroyServer{});
@@ -301,7 +302,6 @@ retry:
         processEvent(Standby{});
         if (awaitNotification2Retry())
         {
-            processEvent(Relaunch{});
             goto retry;
         }
     }
