@@ -201,6 +201,7 @@ Command& Command::getInstance()
 bool Command::execute(const int argc, const char* const argv[])
 try
 {
+    isFaulty.store(false);
     auto establishCtrl = helperLifecycle<log::Log, view::View>();
     if (!establishCtrl.done())
     {
@@ -649,6 +650,7 @@ void Command::frontEndHandler(const int argc, const char* const argv[])
 try
 {
     std::unique_lock<std::mutex> parserLock(parserMtx);
+    isParsed.store(false);
     mainCLI.parseArgs(argc, argv);
     precheck();
 
