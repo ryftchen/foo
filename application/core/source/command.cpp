@@ -208,10 +208,10 @@ try
 {
     isFaulty.store(false);
     isParsed.store(false);
-    auto establishCtrl = helperLifecycle<log::Log, view::View>();
-    if (!establishCtrl.done())
+    auto extCtrl = helperLifecycle<log::Log, view::View>();
+    if (!extCtrl.done())
     {
-        establishCtrl.resume();
+        extCtrl.resume();
     }
 
     if (argc == 1)
@@ -222,13 +222,13 @@ try
     {
         constexpr std::uint8_t endNum = 2;
         utility::thread::Thread scheduledJob(endNum);
-        scheduledJob.enqueue(std::string{title} + "-front", &Command::frontEndHandler, this, argc, argv);
-        scheduledJob.enqueue(std::string{title} + "-back", &Command::backEndHandler, this);
+        scheduledJob.enqueue(title + "-front", &Command::frontEndHandler, this, argc, argv);
+        scheduledJob.enqueue(title + "-back", &Command::backEndHandler, this);
     }
 
-    if (!establishCtrl.done())
+    if (!extCtrl.done())
     {
-        establishCtrl.resume();
+        extCtrl.resume();
     }
     return !isFaulty.load();
 }
@@ -703,14 +703,14 @@ void Command::precheck()
         bits.set(index);
     }
 
-    for (constexpr auto helpArgInExtra = toString(Category::help);
+    for (constexpr auto helpArgName = toString(Category::help);
          [[maybe_unused]] const auto& [subCLIName, categoryMap] : taskDispatcher.extraChoiceRegistry
              | std::views::filter([this](const auto& subCLIPair)
                                   { return mainCLI.isSubCommandUsed(subCLIPair.first) && (checkExcessArgs(), true); }))
     {
         const auto& subCLI = mainCLI.at<utility::argument::Argument>(subCLIName);
         const bool notAssigned = !subCLI;
-        taskDispatcher.extraHelping = notAssigned || subCLI.isUsed(helpArgInExtra);
+        taskDispatcher.extraHelping = notAssigned || subCLI.isUsed(helpArgName);
         if (notAssigned)
         {
             return;
@@ -1136,7 +1136,7 @@ void Command::interactionLatency()
 
 void Command::validateDependenciesVersion() const
 {
-    const bool isNativeVersionMatched = utility::common::areStringsEqual(
+    const bool isNativeVerMatched = utility::common::areStringsEqual(
         mainCLI.version().data(),
         utility::argument::version(),
         utility::benchmark::version(),
@@ -1151,7 +1151,7 @@ void Command::validateDependenciesVersion() const
         utility::socket::version(),
         utility::thread::version(),
         utility::time::version());
-    if (!isNativeVersionMatched)
+    if (!isNativeVerMatched)
     {
         throw std::runtime_error{std::format(
             "Dependencies version number mismatch. Expected main version: {} ({}).",
@@ -1160,15 +1160,15 @@ void Command::validateDependenciesVersion() const
     }
 
     const auto& choiceRegistry = taskDispatcher.extraChoiceRegistry;
-    const bool isExtraVersionMatched = (versionLinks.count({subCLIAppAlgo.title(), subCLIAppAlgo.version()})
-                                        == choiceRegistry.at(subCLIAppAlgo.title()).size())
+    const bool isExtraVerMatched = (versionLinks.count({subCLIAppAlgo.title(), subCLIAppAlgo.version()})
+                                    == choiceRegistry.at(subCLIAppAlgo.title()).size())
         && (versionLinks.count({subCLIAppDp.title(), subCLIAppDp.version()})
             == choiceRegistry.at(subCLIAppDp.title()).size())
         && (versionLinks.count({subCLIAppDs.title(), subCLIAppDs.version()})
             == choiceRegistry.at(subCLIAppDs.title()).size())
         && (versionLinks.count({subCLIAppNum.title(), subCLIAppNum.version()})
             == choiceRegistry.at(subCLIAppNum.title()).size());
-    if (!isExtraVersionMatched)
+    if (!isExtraVerMatched)
     {
         throw std::runtime_error{std::format(
             "Dependencies version number mismatch. Expected sub-version: {} ({}), {} ({}), {} ({}), {} ({}).",

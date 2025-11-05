@@ -19,7 +19,7 @@ namespace application // NOLINT(modernize-concat-nested-namespaces)
 namespace command
 {
 //! @brief Instance title.
-inline constexpr const char* const title = "commander";
+inline constexpr std::string title = "commander";
 
 //! @brief Represent the maximum value of an enum.
 //! @tparam Enum - type of specific enum
