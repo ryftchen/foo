@@ -39,6 +39,8 @@ Console::~Console()
     ::rl_clear_history();
     ::rl_set_prompt(nullptr);
     ::rl_restore_prompt();
+
+    currentSession = nullptr;
 }
 
 void Console::registerOption(const std::string_view name, const std::string_view description, Callback callback)
