@@ -34,18 +34,12 @@ volatile std::sig_atomic_t childInterrupted = 0;
 static int run(const int argc, const char* const argv[])
 try
 {
-    if (!configure::loadSettings())
-    {
-        return EXIT_FAILURE;
-    }
-
     auto running = std::async(
         std::launch::async,
         [=]()
         {
-            using command::Command;
-            ::pthread_setname_np(::pthread_self(), Command::title.c_str());
-            return Command::getInstance().execute(argc, argv);
+            ::pthread_setname_np(::pthread_self(), command::title);
+            return configure::loadSettings() && command::executeCLI(argc, argv);
         });
     return running.get() ? EXIT_SUCCESS : EXIT_FAILURE;
 }

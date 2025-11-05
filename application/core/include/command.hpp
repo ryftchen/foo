@@ -18,6 +18,9 @@ namespace application // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Command-line-related functions in the application module.
 namespace command
 {
+//! @brief Instance title.
+inline constexpr const char* const title = "commander";
+
 //! @brief Represent the maximum value of an enum.
 //! @tparam Enum - type of specific enum
 template <typename Enum>
@@ -129,16 +132,7 @@ public:
     //! @return reference of the Command object
     Command& operator=(Command&&) = delete;
 
-    //! @brief Instance title.
-    static constexpr std::string title{"commander"};
-    //! @brief Get the Command instance.
-    //! @return reference of the Command object
-    static Command& getInstance();
-    //! @brief Interface used to execute.
-    //! @param argc - argument count
-    //! @param argv - argument vector
-    //! @return successful or failed to execute
-    bool execute(const int argc, const char* const argv[]);
+    friend Command& getInstance();
 
 private:
     //! @brief Construct a new Command object.
@@ -169,6 +163,12 @@ private:
     //! @brief Flag to indicate whether the command is faulty.
     std::atomic_bool isFaulty{false};
 
+    friend bool executeCLI(const int argc, const char* const argv[]);
+    //! @brief Interface used to execute.
+    //! @param argc - argument count
+    //! @param argv - argument vector
+    //! @return successful or failed to execute
+    bool execute(const int argc, const char* const argv[]);
     //! @brief Initialize the parse argument helpers for native.
     void initializeNativeCLI();
     //! @brief Initialize the parse argument helpers for extra.
@@ -394,5 +394,7 @@ private:
     //! @brief Validate dependencies version.
     void validateDependenciesVersion() const;
 };
+
+extern bool executeCLI(const int argc, const char* const argv[]);
 } // namespace command
 } // namespace application

@@ -34,7 +34,10 @@ std::string getFullConfigPath(const std::string_view filename)
     return std::string{processHome} + '/' + filename.data();
 }
 
-Configure& Configure::getInstance(const std::string_view filename)
+//! @brief Get the Configure instance.
+//! @param filename - configure file path
+//! @return reference of the Configure object
+Configure& getInstance(const std::string_view filename = defaultConfigFile)
 {
     static Configure configurator(filename);
     return configurator;
@@ -226,15 +229,15 @@ Retrieve::~Retrieve()
 
 const utility::json::JSON& Retrieve::operator/(const std::string& field) const
 {
-    return inst.dataRepo.at(field);
+    return getInstance().dataRepo.at(field);
 }
 
-Retrieve::operator const utility::json::JSON&() const noexcept
+Retrieve::operator const utility::json::JSON&() const
 {
-    return inst.dataRepo;
+    return getInstance().dataRepo;
 }
 
-//! @brief Retrieve data repository.
+//! @brief Safely retrieve the configuration data repository.
 //! @return current configuration data repository
 Retrieve retrieveDataRepo()
 {
@@ -355,7 +358,7 @@ bool loadSettings(const std::string_view filename)
         {
             initializeConfig(filePath);
         }
-        Configure::getInstance(filename);
+        getInstance(filename);
         return true;
     }
     catch (...)

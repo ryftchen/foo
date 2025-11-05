@@ -26,6 +26,9 @@ namespace application::command
 //! @brief Anonymous namespace.
 inline namespace
 {
+//! @brief The semaphore that controls the maximum access limit.
+std::counting_semaphore<1> cliSem(1);
+
 //! @brief Constraint for external helpers.
 //! @tparam T - type of helper
 template <typename T>
@@ -149,6 +152,14 @@ void Notifier<Key, Subject>::notify(const Key key) const
     }
 }
 
+//! @brief Get the Command instance.
+//! @return reference of the Command object
+Command& getInstance()
+{
+    static Command commander{};
+    return commander;
+}
+
 // clang-format off
 //! @brief Mapping table for enum and attribute about command categories. X macro.
 #define COMMAND_CATEGORY_X_MACRO_MAPPING                                \
@@ -192,16 +203,11 @@ Command::~Command()
     clearSelected();
 }
 
-Command& Command::getInstance()
-{
-    static Command commander{};
-    return commander;
-}
-
 bool Command::execute(const int argc, const char* const argv[])
 try
 {
     isFaulty.store(false);
+    isParsed.store(false);
     auto establishCtrl = helperLifecycle<log::Log, view::View>();
     if (!establishCtrl.done())
     {
@@ -216,8 +222,8 @@ try
     {
         constexpr std::uint8_t endNum = 2;
         utility::thread::Thread scheduledJob(endNum);
-        scheduledJob.enqueue(title + "-front", &Command::frontEndHandler, this, argc, argv);
-        scheduledJob.enqueue(title + "-back", &Command::backEndHandler, this);
+        scheduledJob.enqueue(std::string{title} + "-front", &Command::frontEndHandler, this, argc, argv);
+        scheduledJob.enqueue(std::string{title} + "-back", &Command::backEndHandler, this);
     }
 
     if (!establishCtrl.done())
@@ -650,7 +656,6 @@ void Command::frontEndHandler(const int argc, const char* const argv[])
 try
 {
     std::unique_lock<std::mutex> parserLock(parserMtx);
-    isParsed.store(false);
     mainCLI.clearUsed();
     mainCLI.parseArgs(argc, argv);
     precheck();
@@ -1176,5 +1181,23 @@ void Command::validateDependenciesVersion() const
             subCLIAppNum.title(),
             subCLIAppNum.version())};
     }
+}
+
+//! @brief Safely execute the command line interfaces using the given arguments.
+//! @param argc - argument count
+//! @param argv - argument vector
+//! @return successful or failed to execute
+bool executeCLI(const int argc, const char* const argv[])
+try
+{
+    cliSem.acquire();
+    const bool status = getInstance().execute(argc, argv);
+    cliSem.release();
+    return status;
+}
+catch (...)
+{
+    cliSem.release();
+    throw;
 }
 } // namespace application::command
