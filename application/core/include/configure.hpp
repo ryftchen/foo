@@ -78,10 +78,7 @@ public:
     //! @return reference of the Configure object
     Configure& operator=(Configure&&) = delete;
 
-    //! @brief Get the Configure instance.
-    //! @param filename - configure file path
-    //! @return reference of the Configure object
-    static Configure& getInstance(const std::string_view filename = defaultConfigFile);
+    friend Configure& getInstance(const std::string_view filename);
 
 private:
     //! @brief Construct a new Configure object.
@@ -137,11 +134,9 @@ public:
     const utility::json::JSON& operator/(const std::string& field) const;
     //! @brief The operator (()) overloading of Retrieve class.
     //! @return const reference of the JSON object
-    explicit operator const utility::json::JSON&() const noexcept;
+    explicit operator const utility::json::JSON&() const;
 
 private:
-    //! @brief Instance to be retrieved.
-    const Configure& inst{Configure::getInstance()};
     //! @brief Semaphore that controls the maximum access limit.
     std::counting_semaphore<maxAccessLimit>& sem;
 };
