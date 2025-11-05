@@ -66,14 +66,14 @@ public:
     void setGreeting(const std::string_view greeting);
     //! @brief Execute the target console option.
     //! @param option - option to be executed
-    //! @return value of RetCode
+    //! @return status of return code
     [[nodiscard]] RetCode optionExecutor(const std::string& option) const;
     //! @brief Execute all console options in the target file.
     //! @param filename - file path to be executed
-    //! @return value of RetCode
+    //! @return status of return code
     [[nodiscard]] RetCode fileExecutor(const std::string& filename) const;
     //! @brief Read console option line.
-    //! @return value of RetCode
+    //! @return status of return code
     RetCode readLine();
 
 private:
