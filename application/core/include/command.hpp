@@ -190,8 +190,10 @@ private:
     //! @brief Check whether any type tasks exist.
     //! @return any type tasks exist or do not exist
     bool anySelected() const;
-    //! @brief Dispatch specific tasks.
-    void dispatch();
+    //! @brief Clear all type tasks.
+    void clearSelected();
+    //! @brief Dispatch all specific tasks.
+    void dispatchAll();
     //! @brief Execute the command line of console mode.
     void executeInConsole() const;
     //! @brief Show help message.
