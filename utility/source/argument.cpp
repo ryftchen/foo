@@ -497,6 +497,35 @@ bool Argument::isSubCommandUsed(const Argument& subParser) const
     return isSubCommandUsed(subParser.titleName);
 }
 
+void Argument::clearUsed()
+{
+    isParsed = false;
+    constexpr auto resetting = [](Trait& tra) constexpr
+    {
+        tra.isUsed = false;
+        tra.usedName.clear();
+        tra.values.clear();
+    };
+
+    for (auto& argument : optionalArgs)
+    {
+        resetting(argument);
+    }
+    for (auto& argument : positionalArgs)
+    {
+        resetting(argument);
+    }
+
+    for ([[maybe_unused]] auto& [name, isUsed] : subParserUsed)
+    {
+        isUsed = false;
+    }
+    for (auto& subParser : subParsers)
+    {
+        subParser.get().clearUsed();
+    }
+}
+
 std::string Argument::title() const
 {
     return titleName;

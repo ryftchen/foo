@@ -707,6 +707,8 @@ public:
     //! @param subParser - target sub-parser
     //! @return be used or not
     bool isSubCommandUsed(const Argument& subParser) const;
+    //! @brief Clear all used flags.
+    void clearUsed();
     //! @brief Get the title name.
     //! @return title name
     std::string title() const;

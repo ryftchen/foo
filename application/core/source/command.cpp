@@ -189,7 +189,7 @@ Command::Command()
 
 Command::~Command()
 {
-    taskDispatcher.reset();
+    clearSelected();
 }
 
 Command& Command::getInstance()
@@ -651,6 +651,7 @@ try
 {
     std::unique_lock<std::mutex> parserLock(parserMtx);
     isParsed.store(false);
+    mainCLI.clearUsed();
     mainCLI.parseArgs(argc, argv);
     precheck();
 
@@ -676,11 +677,13 @@ try
 
     if (anySelected())
     {
-        dispatch();
+        dispatchAll();
+        clearSelected();
     }
 }
 catch (const std::exception& err)
 {
+    clearSelected();
     isFaulty.store(true);
     LOG_WRN << err.what();
 }
@@ -729,7 +732,12 @@ bool Command::anySelected() const
     return !taskDispatcher.empty();
 }
 
-void Command::dispatch()
+void Command::clearSelected()
+{
+    taskDispatcher.reset();
+}
+
+void Command::dispatchAll()
 {
     if (!taskDispatcher.NativeManager::empty())
     {
@@ -911,8 +919,8 @@ void Command::checkExcessArgs()
 {
     if (anySelected())
     {
-        taskDispatcher.reset();
-        throw std::runtime_error{"Excessive arguments."};
+        clearSelected();
+        throw std::runtime_error{"Excessive arguments were found."};
     }
 }
 
