@@ -38,7 +38,7 @@ try
         std::launch::async,
         [=]()
         {
-            ::pthread_setname_np(::pthread_self(), command::title);
+            ::pthread_setname_np(::pthread_self(), command::title.c_str());
             return configure::loadSettings() && command::executeCLI(argc, argv);
         });
     return running.get() ? EXIT_SUCCESS : EXIT_FAILURE;
