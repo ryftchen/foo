@@ -24,7 +24,7 @@ namespace application // NOLINT(modernize-concat-nested-namespaces)
 namespace action
 {
 //! @brief Awaitable coroutine.
-class Awaitable
+class Awaitable final
 {
 public:
     // NOLINTBEGIN(readability-identifier-naming)
@@ -49,9 +49,9 @@ public:
 
     //! @brief Construct a new Awaitable object.
     //! @param handle - coroutine handle
-    explicit Awaitable(const std::coroutine_handle<promise_type>& handle) : handle{handle} {}
+    explicit Awaitable(const std::coroutine_handle<promise_type>& handle);
     //! @brief Destroy the Awaitable object.
-    virtual ~Awaitable();
+    ~Awaitable();
     //! @brief Construct a new Awaitable object.
     Awaitable(const Awaitable&) = delete;
     //! @brief Construct a new Awaitable object.
@@ -72,6 +72,8 @@ public:
 private:
     //! @brief Coroutine handle.
     std::coroutine_handle<promise_type> handle;
+    //! @brief Flag to ensure only one instance is active.
+    static std::atomic_bool active;
 };
 
 //! @brief Alias for the type information.
