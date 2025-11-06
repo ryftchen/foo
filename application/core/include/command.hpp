@@ -194,6 +194,8 @@ private:
     void clearSelected();
     //! @brief Dispatch all specific tasks.
     void dispatchAll();
+    //! @brief Check for excessive arguments.
+    void checkExcessArgs();
     //! @brief Execute the command line of console mode.
     void executeInConsole() const;
     //! @brief Show help message.
@@ -202,8 +204,6 @@ private:
     static void dumpConfiguration();
     //! @brief Display version information.
     void displayVersionInfo() const;
-    //! @brief Check for excessive arguments.
-    void checkExcessArgs();
 
     //! @brief Map the alias name.
     //! @param cat - native category
