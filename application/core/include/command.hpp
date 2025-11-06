@@ -48,71 +48,71 @@ struct Bottom<Category>
 
 //! @brief Gather and notify handlers.
 //! @tparam Key - type of key
-//! @tparam Subject - type of subject
-template <typename Key, typename Subject>
+//! @tparam Inst - type of instance
+template <typename Key, typename Inst>
 class Notifier
 {
 public:
-    //! @brief The base routine when notified.
-    class RoutineBase
+    //! @brief The base procedure when notified.
+    class ProcBase
     {
     public:
-        //! @brief Construct a new RoutineBase object.
-        RoutineBase() = default;
-        //! @brief Destroy the RoutineBase object.
-        virtual ~RoutineBase() = default;
-        //! @brief Construct a new RoutineBase object.
-        RoutineBase(const RoutineBase&) = default;
-        //! @brief Construct a new RoutineBase object.
-        RoutineBase(RoutineBase&&) noexcept = default;
-        //! @brief The operator (=) overloading of RoutineBase class.
-        //! @return reference of the RoutineBase object
-        RoutineBase& operator=(const RoutineBase&) = default;
-        //! @brief The operator (=) overloading of RoutineBase class.
-        //! @return reference of the RoutineBase object
-        RoutineBase& operator=(RoutineBase&&) noexcept = default;
+        //! @brief Construct a new ProcBase object.
+        ProcBase() = default;
+        //! @brief Destroy the ProcBase object.
+        virtual ~ProcBase() = default;
+        //! @brief Construct a new ProcBase object.
+        ProcBase(const ProcBase&) = default;
+        //! @brief Construct a new ProcBase object.
+        ProcBase(ProcBase&&) noexcept = default;
+        //! @brief The operator (=) overloading of ProcBase class.
+        //! @return reference of the ProcBase object
+        ProcBase& operator=(const ProcBase&) = default;
+        //! @brief The operator (=) overloading of ProcBase class.
+        //! @return reference of the ProcBase object
+        ProcBase& operator=(ProcBase&&) noexcept = default;
 
         //! @brief Perform the specific operation.
         virtual void execute() const = 0;
     };
-    //! @brief The routine when notified.
+    //! @brief The procedure when notified.
     //! @tparam CRTP - type of derived class for CRTP
     template <typename CRTP>
-    class Routine : public RoutineBase
+    class Proc : public ProcBase
     {
     public:
         //! @brief Perform the specific operation.
         void execute() const override { static_cast<const CRTP&>(*this).execute(); }
     };
-    //! @brief The handler used to trigger a routine when notified.
+    //! @brief The handler used to trigger a procedure when notified.
     //! @tparam key - specific key
     template <Key key>
-    class Handler : public Routine<Handler<key>>
+    class Handler : public Proc<Handler<key>>
     {
     public:
         //! @brief Construct a new Handler object.
-        //! @param subject - involved subject
-        explicit Handler(const Subject& subject) : subject{subject} {}
+        //! @param inst - involved instance
+        explicit Handler(const Inst& inst) : inst{inst} {}
 
         //! @brief Perform the specific operation.
         void execute() const override;
 
     private:
-        //! @brief The involved subject.
-        const Subject& subject{};
+        //! @brief The involved instance.
+        const Inst& inst{};
     };
 
     //! @brief Attach a handler with a specific key to the notifier.
     //! @param key - specific key
     //! @param handler - handler to be attached
-    void attach(const Key key, std::shared_ptr<RoutineBase> handler);
+    void attach(const Key key, std::shared_ptr<ProcBase> handler);
     //! @brief Notify the handler associated with the given key.
     //! @param key - specific key
     void notify(const Key key) const;
 
 private:
     //! @brief Map of handlers identified by a key.
-    std::map<Key, std::shared_ptr<RoutineBase>> handlers{};
+    std::map<Key, std::shared_ptr<ProcBase>> handlers{};
 };
 
 //! @brief Execute the command line.
@@ -204,6 +204,8 @@ private:
     static void dumpConfiguration();
     //! @brief Display version information.
     void displayVersionInfo() const;
+    //! @brief Validate the version of all dependencies.
+    void validateDependencies() const;
 
     //! @brief Map the alias name.
     //! @param cat - native category
@@ -391,8 +393,6 @@ private:
     static std::string buildDisconnectReq();
     //! @brief Console latency in the millisecond range.
     static void interactionLatency();
-    //! @brief Validate dependencies version.
-    void validateDependenciesVersion() const;
 };
 
 extern bool executeCLI(const int argc, const char* const argv[]);
