@@ -12,7 +12,7 @@
 #include <forward_list>
 #include <iostream>
 #include <source_location>
-#include <sstream>
+#include <syncstream>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // _PRECOMPILED_HEADER
@@ -358,7 +358,8 @@ void printfStyle(
     const auto rows = Log::reformatContents(
         std::string{sourceDirectory.substr(1, sourceDirectory.length() - 2)} + ": ",
         utility::common::printfString(format.c_str(), std::forward<Args>(args)...));
-    std::for_each(rows.cbegin(), rows.cend(), [](const auto& output) { std::clog << output << std::endl; });
+    std::for_each(
+        rows.cbegin(), rows.cend(), [](const auto& output) { std::osyncstream(std::clog) << output << std::endl; });
 }
 
 //! @brief Log output for modern (format style).
@@ -388,7 +389,8 @@ void formatStyle(
     const auto rows = Log::reformatContents(
         std::string{sourceDirectory.substr(1, sourceDirectory.length() - 2)} + ": ",
         utility::common::formatString(format, std::forward<Args>(args)...));
-    std::for_each(rows.cbegin(), rows.cend(), [](const auto& output) { std::clog << output << std::endl; });
+    std::for_each(
+        rows.cbegin(), rows.cend(), [](const auto& output) { std::osyncstream(std::clog) << output << std::endl; });
 }
 
 //! @brief Log holder for flushing.

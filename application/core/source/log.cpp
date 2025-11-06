@@ -301,7 +301,7 @@ void Log::flush(const OutputLevel severity, const std::string_view labelTpl, con
                 [this](auto& output)
                 {
                     unprocessedCache.emplace_front(output);
-                    std::cerr << changeToLogStyle(output) << std::endl;
+                    std::osyncstream(std::cerr) << changeToLogStyle(output) << std::endl;
                 });
             cacheSwitch.unlock();
         }
@@ -463,7 +463,8 @@ void Log::startLogging()
     cacheSwitch.lock();
     while (!unprocessedCache.empty())
     {
-        std::cout << historyCacheBaseColor.data() + unprocessedCache.front() + escOff.data() << std::endl;
+        std::osyncstream(std::cout) << historyCacheBaseColor.data() + unprocessedCache.front() + escOff.data()
+                                    << std::endl;
         unprocessedCache.pop_front();
     }
     cacheSwitch.unlock();
@@ -549,11 +550,11 @@ void Log::notificationLoop()
                     logWriter.stream() << logQueue.front() << std::endl;
                     break;
                 case OutputType::terminal:
-                    std::cout << changeToLogStyle(logQueue.front()) << std::endl;
+                    std::osyncstream(std::cout) << changeToLogStyle(logQueue.front()) << std::endl;
                     break;
                 case OutputType::all:
                     logWriter.stream() << logQueue.front() << std::endl;
-                    std::cout << changeToLogStyle(logQueue.front()) << std::endl;
+                    std::osyncstream(std::cout) << changeToLogStyle(logQueue.front()) << std::endl;
                     break;
                 default:
                     break;
