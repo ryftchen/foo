@@ -160,7 +160,7 @@ Command& getInstance()
 }
 
 template <typename Key, typename Subject>
-void Notifier<Key, Subject>::attach(const Key key, std::shared_ptr<RoutineBase> handler)
+void Notifier<Key, Subject>::attach(const Key key, std::shared_ptr<ProcBase> handler)
 {
     handlers[key] = std::move(handler);
 }
@@ -920,7 +920,7 @@ void Command::dumpConfiguration()
 
 void Command::displayVersionInfo() const
 {
-    validateDependenciesVersion();
+    validateDependencies();
 
     const auto basicInfo = std::format(
         "\033[7m\033[49m{}"
@@ -942,7 +942,7 @@ template <>
 template <>
 void Command::LocalNotifier::Handler<Category::console>::execute() const
 {
-    subject.executeInConsole();
+    inst.executeInConsole();
 }
 
 //! @brief Perform the specific operation for Category::dump.
@@ -950,7 +950,7 @@ template <>
 template <>
 void Command::LocalNotifier::Handler<Category::dump>::execute() const
 {
-    subject.dumpConfiguration();
+    inst.dumpConfiguration();
 }
 
 //! @brief Perform the specific operation for Category::help.
@@ -958,7 +958,7 @@ template <>
 template <>
 void Command::LocalNotifier::Handler<Category::help>::execute() const
 {
-    subject.showHelpMessage();
+    inst.showHelpMessage();
 }
 
 //! @brief Perform the specific operation for Category::version.
@@ -966,7 +966,56 @@ template <>
 template <>
 void Command::LocalNotifier::Handler<Category::version>::execute() const
 {
-    subject.displayVersionInfo();
+    inst.displayVersionInfo();
+}
+
+void Command::validateDependencies() const
+{
+    const bool isNativeVerMatched = utility::common::areStringsEqual(
+        mainCLI.version().data(),
+        utility::argument::version(),
+        utility::benchmark::version(),
+        utility::common::version(),
+        utility::currying::version(),
+        utility::fsm::version(),
+        utility::io::version(),
+        utility::json::version(),
+        utility::macro::version(),
+        utility::memory::version(),
+        utility::reflection::version(),
+        utility::socket::version(),
+        utility::thread::version(),
+        utility::time::version());
+    if (!isNativeVerMatched)
+    {
+        throw std::runtime_error{std::format(
+            "Dependencies version number mismatch. Expected main version: {} ({}).",
+            mainCLI.title(),
+            mainCLI.version())};
+    }
+
+    const auto& choiceRegistry = taskDispatcher.extraChoiceRegistry;
+    const bool isExtraVerMatched = (versionLinks.count({subCLIAppAlgo.title(), subCLIAppAlgo.version()})
+                                    == choiceRegistry.at(subCLIAppAlgo.title()).size())
+        && (versionLinks.count({subCLIAppDp.title(), subCLIAppDp.version()})
+            == choiceRegistry.at(subCLIAppDp.title()).size())
+        && (versionLinks.count({subCLIAppDs.title(), subCLIAppDs.version()})
+            == choiceRegistry.at(subCLIAppDs.title()).size())
+        && (versionLinks.count({subCLIAppNum.title(), subCLIAppNum.version()})
+            == choiceRegistry.at(subCLIAppNum.title()).size());
+    if (!isExtraVerMatched)
+    {
+        throw std::runtime_error{std::format(
+            "Dependencies version number mismatch. Expected sub-version: {} ({}), {} ({}), {} ({}), {} ({}).",
+            subCLIAppAlgo.title(),
+            subCLIAppAlgo.version(),
+            subCLIAppDp.title(),
+            subCLIAppDp.version(),
+            subCLIAppDs.title(),
+            subCLIAppDs.version(),
+            subCLIAppNum.title(),
+            subCLIAppNum.version())};
+    }
 }
 
 void Command::enterConsoleMode()
@@ -1141,55 +1190,6 @@ void Command::interactionLatency()
 {
     constexpr auto latency = std::chrono::milliseconds{10};
     std::this_thread::sleep_for(latency);
-}
-
-void Command::validateDependenciesVersion() const
-{
-    const bool isNativeVerMatched = utility::common::areStringsEqual(
-        mainCLI.version().data(),
-        utility::argument::version(),
-        utility::benchmark::version(),
-        utility::common::version(),
-        utility::currying::version(),
-        utility::fsm::version(),
-        utility::io::version(),
-        utility::json::version(),
-        utility::macro::version(),
-        utility::memory::version(),
-        utility::reflection::version(),
-        utility::socket::version(),
-        utility::thread::version(),
-        utility::time::version());
-    if (!isNativeVerMatched)
-    {
-        throw std::runtime_error{std::format(
-            "Dependencies version number mismatch. Expected main version: {} ({}).",
-            mainCLI.title(),
-            mainCLI.version())};
-    }
-
-    const auto& choiceRegistry = taskDispatcher.extraChoiceRegistry;
-    const bool isExtraVerMatched = (versionLinks.count({subCLIAppAlgo.title(), subCLIAppAlgo.version()})
-                                    == choiceRegistry.at(subCLIAppAlgo.title()).size())
-        && (versionLinks.count({subCLIAppDp.title(), subCLIAppDp.version()})
-            == choiceRegistry.at(subCLIAppDp.title()).size())
-        && (versionLinks.count({subCLIAppDs.title(), subCLIAppDs.version()})
-            == choiceRegistry.at(subCLIAppDs.title()).size())
-        && (versionLinks.count({subCLIAppNum.title(), subCLIAppNum.version()})
-            == choiceRegistry.at(subCLIAppNum.title()).size());
-    if (!isExtraVerMatched)
-    {
-        throw std::runtime_error{std::format(
-            "Dependencies version number mismatch. Expected sub-version: {} ({}), {} ({}), {} ({}), {} ({}).",
-            subCLIAppAlgo.title(),
-            subCLIAppAlgo.version(),
-            subCLIAppDp.title(),
-            subCLIAppDp.version(),
-            subCLIAppDs.title(),
-            subCLIAppDs.version(),
-            subCLIAppNum.title(),
-            subCLIAppNum.version())};
-    }
 }
 
 //! @brief Safely execute the command line interfaces using the given arguments.
