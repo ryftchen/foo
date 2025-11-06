@@ -10,7 +10,6 @@
 #ifndef _PRECOMPILED_HEADER
 #include <iomanip>
 #include <ranges>
-#include <syncstream>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // _PRECOMPILED_HEADER
