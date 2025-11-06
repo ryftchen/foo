@@ -28,7 +28,11 @@ inline namespace
 {
 //! @brief The semaphore that controls the maximum access limit.
 std::counting_semaphore<1> cliSem(1);
+} // namespace
 
+//! @brief Manage external helpers.
+namespace help
+{
 //! @brief Constraint for external helpers.
 //! @tparam T - type of helper
 template <typename T>
@@ -47,14 +51,13 @@ enum class ExtEvent : std::uint8_t
     //! @brief Reload.
     reload
 };
-} // namespace
 
 //! @brief Trigger the external helper with event.
 //! @tparam Helper - type of helper
 //! @param event - target event
 template <ExtHelper Helper>
 requires std::derived_from<Helper, utility::fsm::FSM<Helper>>
-static void triggerHelper(const ExtEvent event)
+static void triggerEvent(const ExtEvent event)
 {
     if (!configure::detail::activateHelper())
     {
@@ -77,11 +80,11 @@ static void triggerHelper(const ExtEvent event)
     }
 }
 
-//! @brief Helper daemon function.
+//! @brief Helper daemon service.
 //! @tparam Helpers - type of arguments of helper
 template <ExtHelper... Helpers>
 requires (std::derived_from<Helpers, utility::fsm::FSM<Helpers>> && ...)
-static void helperDaemon()
+static void daemonService()
 {
     utility::thread::Thread extendedJob(sizeof...(Helpers));
     (extendedJob.enqueue(Helpers::name, &Helpers::service, Helpers::getInstance()), ...);
@@ -89,9 +92,9 @@ static void helperDaemon()
 
 //! @brief Coroutine for managing the lifecycle of helper components.
 //! @tparam Hs - type of helpers
-//! @return object that represents the execution of the coroutine
+//! @return awaitable instance
 template <typename... Hs>
-static action::Awaitable helperLifecycle()
+static action::Awaitable launchLifecycle()
 {
     if (!configure::detail::activateHelper())
     {
@@ -102,7 +105,7 @@ static action::Awaitable helperLifecycle()
     const std::jthread daemon(
         [&waitPoint]()
         {
-            helperDaemon<Hs...>();
+            daemonService<Hs...>();
             waitPoint.count_down();
         });
     std::barrier syncPoint(sizeof...(Hs) + 1);
@@ -112,7 +115,7 @@ static action::Awaitable helperLifecycle()
         senders.reserve(sizeof...(Hs));
         (senders.emplace_back(std::jthread{[&phase, event]()
                                            {
-                                               triggerHelper<Hs>(event);
+                                               triggerEvent<Hs>(event);
                                                phase.arrive_and_wait();
                                            }}),
          ...);
@@ -126,6 +129,17 @@ static action::Awaitable helperLifecycle()
 
     waitPoint.wait();
 }
+
+//! @brief Enter the next phase of the coroutine of helpers.
+//! @param awaitable - awaitable instance
+static void enterNextPhase(action::Awaitable& awaitable)
+{
+    if (!awaitable.done())
+    {
+        awaitable.resume();
+    }
+}
+} // namespace help
 
 //! @brief Convert category enumeration to string.
 //! @param cat - native category
@@ -208,11 +222,8 @@ try
 {
     isFaulty.store(false);
     isParsed.store(false);
-    auto extCtrl = helperLifecycle<log::Log, view::View>();
-    if (!extCtrl.done())
-    {
-        extCtrl.resume();
-    }
+    auto helpCtrl = help::launchLifecycle<log::Log, view::View>();
+    help::enterNextPhase(helpCtrl);
 
     if (argc == 1)
     {
@@ -226,10 +237,7 @@ try
         scheduledJob.enqueue(title + "-back", &Command::backEndHandler, this);
     }
 
-    if (!extCtrl.done())
-    {
-        extCtrl.resume();
-    }
+    help::enterNextPhase(helpCtrl);
     return !isFaulty.load();
 }
 catch (const std::exception& err)
@@ -1037,10 +1045,11 @@ auto Command::processConsoleInputs(const std::function<void()>& handling)
 template <typename Sock>
 void Command::registerOnConsole(console::Console& session, std::shared_ptr<Sock>& client)
 {
-    static constexpr auto gracefulReset = []<ExtHelper Helper>() constexpr
+    static constexpr auto gracefulReset = []<help::ExtHelper Helper>() constexpr
     {
-        triggerHelper<Helper>(ExtEvent::reload);
-        triggerHelper<Helper>(ExtEvent::startup);
+        using namespace help; // NOLINT(google-build-using-namespace)
+        triggerEvent<Helper>(ExtEvent::reload);
+        triggerEvent<Helper>(ExtEvent::startup);
     };
     const auto asyncReqSender = [&client](const auto& inputs)
     {

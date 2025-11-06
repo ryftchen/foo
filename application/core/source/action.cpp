@@ -8,8 +8,20 @@
 
 namespace application::action
 {
+std::atomic_bool Awaitable::active = false;
+
+Awaitable::Awaitable(const std::coroutine_handle<promise_type>& handle) : handle{handle}
+{
+    if (active.load())
+    {
+        throw std::runtime_error{"There can only be one awaitable instance active at any given time."};
+    }
+    active.store(true);
+}
+
 Awaitable::~Awaitable()
 {
+    active.store(false);
     if (handle)
     {
         handle.destroy();
