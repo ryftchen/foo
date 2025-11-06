@@ -151,6 +151,14 @@ static constexpr std::string_view toString(const Category cat)
     return stringify.at(static_cast<std::uint8_t>(cat));
 }
 
+//! @brief Get the Command instance.
+//! @return reference of the Command object
+Command& getInstance()
+{
+    static Command commander{};
+    return commander;
+}
+
 template <typename Key, typename Subject>
 void Notifier<Key, Subject>::attach(const Key key, std::shared_ptr<RoutineBase> handler)
 {
@@ -164,14 +172,6 @@ void Notifier<Key, Subject>::notify(const Key key) const
     {
         handlers.at(key)->execute();
     }
-}
-
-//! @brief Get the Command instance.
-//! @return reference of the Command object
-Command& getInstance()
-{
-    static Command commander{};
-    return commander;
 }
 
 // clang-format off
@@ -225,16 +225,16 @@ try
     auto helpCtrl = help::launchLifecycle<log::Log, view::View>();
     help::enterNextPhase(helpCtrl);
 
-    if (argc == 1)
-    {
-        enterConsoleMode();
-    }
-    else
+    if (argc > 1)
     {
         constexpr std::uint8_t endNum = 2;
         utility::thread::Thread scheduledJob(endNum);
         scheduledJob.enqueue(title + "-front", &Command::frontEndHandler, this, argc, argv);
         scheduledJob.enqueue(title + "-back", &Command::backEndHandler, this);
+    }
+    else
+    {
+        enterConsoleMode();
     }
 
     help::enterNextPhase(helpCtrl);
@@ -766,12 +766,12 @@ void Command::dispatchAll()
     {
         if (taskDispatcher.extraHelping)
         {
-            if (auto filtered = std::views::keys(taskDispatcher.extraChoiceRegistry)
+            if (auto whichUsed = std::views::keys(taskDispatcher.extraChoiceRegistry)
                     | std::views::filter([this](const auto& subCLIName)
                                          { return mainCLI.isSubCommandUsed(subCLIName); });
-                std::ranges::distance(filtered) != 0)
+                std::ranges::distance(whichUsed) != 0)
             {
-                std::cout << mainCLI.at<utility::argument::Argument>(*std::ranges::begin(filtered)).help().str()
+                std::cout << mainCLI.at<utility::argument::Argument>(*std::ranges::begin(whichUsed)).help().str()
                           << std::flush;
             }
             return;
@@ -788,6 +788,15 @@ void Command::dispatchAll()
                     { applyingForwarder.onMessage(action::RunCandidates<std::decay_t<decltype(event)>>{candidates}); }},
                 categoryTrait.event);
         }
+    }
+}
+
+void Command::checkExcessArgs()
+{
+    if (anySelected())
+    {
+        clearSelected();
+        throw std::runtime_error{"Excessive arguments were found."};
     }
 }
 
@@ -926,15 +935,6 @@ void Command::displayVersionInfo() const
     const auto additionalInfo = std::format(
         "{}\nBuilt with {} for {} on {}.\n", note::copyright(), note::compiler(), note::processor(), note::date());
     std::cout << basicInfo << additionalInfo << std::flush;
-}
-
-void Command::checkExcessArgs()
-{
-    if (anySelected())
-    {
-        clearSelected();
-        throw std::runtime_error{"Excessive arguments were found."};
-    }
 }
 
 //! @brief Perform the specific operation for Category::console.
