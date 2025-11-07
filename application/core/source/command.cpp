@@ -109,7 +109,7 @@ static action::Awaitable launchLifecycle()
             waitPoint.count_down();
         });
     std::barrier syncPoint(sizeof...(Hs) + 1);
-    constexpr auto publish = [](std::barrier<>& phase, const ExtEvent event) constexpr
+    static constexpr auto publish = [](std::barrier<>& phase, const ExtEvent event) constexpr
     {
         std::vector<std::jthread> senders{};
         senders.reserve(sizeof...(Hs));
