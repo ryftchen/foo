@@ -21,17 +21,18 @@ namespace test // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Numeric-testing-related functions in the test module.
 namespace tst_num
 {
-using namespace application::app_num; // NOLINT(google-build-using-namespace)
-
 //! @brief Test base of arithmetic.
 class ArithmeticTestBase : public ::testing::Test
 {
 protected:
+    //! @brief Alias for the input builder.
+    using InputBuilder = application::app_num::arithmetic::InputBuilder;
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
         TST_NUM_PRINT_TASK_TITLE(title, "BEGIN");
-        fixture = std::make_unique<arithmetic::InputBuilder>(arithmetic::input::operandA, arithmetic::input::operandB);
+        namespace input = application::app_num::arithmetic::input;
+        fixture = std::make_unique<InputBuilder>(input::operandA, input::operandB);
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
@@ -45,7 +46,7 @@ protected:
     //! @brief System under test.
     [[no_unique_address]] const numeric::arithmetic::Arithmetic sut{};
     //! @brief Fixture data.
-    inline static std::unique_ptr<arithmetic::InputBuilder> fixture{};
+    inline static std::unique_ptr<InputBuilder> fixture{};
     //! @brief Expected result 1.
     static constexpr std::int32_t expRes1{0};
     //! @brief Expected result 2.
@@ -84,11 +85,14 @@ TEST_F(ArithmeticTestBase, DivisionMethod)
 class DivisorTestBase : public ::testing::Test
 {
 protected:
+    //! @brief Alias for the input builder.
+    using InputBuilder = application::app_num::divisor::InputBuilder;
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
         TST_NUM_PRINT_TASK_TITLE(title, "BEGIN");
-        fixture = std::make_unique<divisor::InputBuilder>(divisor::input::numberA, divisor::input::numberB);
+        namespace input = application::app_num::divisor::input;
+        fixture = std::make_unique<InputBuilder>(input::numberA, input::numberB);
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
@@ -102,7 +106,7 @@ protected:
     //! @brief System under test.
     [[no_unique_address]] const numeric::divisor::Divisor sut{};
     //! @brief Fixture data.
-    inline static std::unique_ptr<divisor::InputBuilder> fixture{};
+    inline static std::unique_ptr<InputBuilder> fixture{};
     //! @brief Expected result.
     const std::set<std::int32_t> expRes{1, 2, 3, 5, 6, 7, 10, 14, 15, 21, 30, 35, 42, 70, 105, 210};
 };
@@ -123,12 +127,14 @@ TEST_F(DivisorTestBase, SteinMethod)
 class IntegralTestBase : public ::testing::Test
 {
 protected:
+    //! @brief Alias for the input builder.
+    using InputBuilder = application::app_num::integral::InputBuilder;
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
         TST_NUM_PRINT_TASK_TITLE(title, "BEGIN");
-        using CylindricalBessel = integral::input::CylindricalBessel;
-        fixture = std::make_unique<integral::InputBuilder>(
+        using application::app_num::integral::input::CylindricalBessel;
+        fixture = std::make_unique<InputBuilder>(
             CylindricalBessel{}, CylindricalBessel::range1, CylindricalBessel::range2, CylindricalBessel::exprDescr);
     }
     //! @brief Tear down the test case.
@@ -149,7 +155,7 @@ protected:
         return std::make_unique<SUT>(fixture->getExpression());
     }
     //! @brief Fixture data.
-    inline static std::unique_ptr<integral::InputBuilder> fixture{};
+    inline static std::unique_ptr<InputBuilder> fixture{};
     //! @brief Expected result.
     static constexpr double expRes{1.05838};
     //! @brief Allowable absolute error.
@@ -207,11 +213,14 @@ TEST_F(IntegralTestBase, MonteCarloMethod)
 class PrimeTestBase : public ::testing::Test
 {
 protected:
+    //! @brief Alias for the input builder.
+    using InputBuilder = application::app_num::prime::InputBuilder;
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
         TST_NUM_PRINT_TASK_TITLE(title, "BEGIN");
-        fixture = std::make_unique<prime::InputBuilder>(prime::input::upperBound);
+        namespace input = application::app_num::prime::input;
+        fixture = std::make_unique<InputBuilder>(input::upperBound);
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
@@ -225,7 +234,7 @@ protected:
     //! @brief System under test.
     [[no_unique_address]] const numeric::prime::Prime sut{};
     //! @brief Fixture data.
-    inline static std::unique_ptr<prime::InputBuilder> fixture{};
+    inline static std::unique_ptr<InputBuilder> fixture{};
     //! @brief Expected result.
     //! @return expected result
     static constexpr auto expRes()
