@@ -224,7 +224,7 @@ catch (const std::exception& err)
 
 void Log::Access::onPreviewing(const std::function<void(const std::string&)>& peeking) const
 {
-    const utility::common::LockGuard guard(inst->fileLock, LockMode::read);
+    const LockGuard guard(inst->fileLock, LockMode::read);
     if (peeking)
     {
         peeking(inst->filePath);
@@ -399,6 +399,7 @@ std::string Log::getFullLogPath(const std::string_view filename)
 
 void Log::tryCreateLogFolder() const
 {
+    const LockGuard guard(fileLock, LockMode::write);
     if (const auto logFolderPath = std::filesystem::absolute(filePath).parent_path();
         !std::filesystem::exists(logFolderPath))
     {
@@ -410,6 +411,7 @@ void Log::tryCreateLogFolder() const
 
 void Log::backUpLogFileIfNeeded() const
 {
+    const LockGuard guard(fileLock, LockMode::write);
     if (constexpr std::uint32_t maxFileSize = 512 * 1024;
         !std::filesystem::is_regular_file(filePath) || (std::filesystem::file_size(filePath) < maxFileSize))
     {
@@ -431,11 +433,20 @@ void Log::backUpLogFileIfNeeded() const
     std::filesystem::rename(filePath, filePath + '.' + std::to_string(index + 1));
 }
 
+void Log::tryClearLogFile() const
+{
+    const LockGuard guard(fileLock, LockMode::write);
+    std::ofstream tempOfs{};
+    tempOfs.open(filePath, std::ios_base::out | std::ios_base::trunc);
+    tempOfs.close();
+}
+
 void Log::openLogFile()
 {
-    const utility::common::LockGuard guard(fileLock, LockMode::write);
     tryCreateLogFolder();
     backUpLogFileIfNeeded();
+
+    const LockGuard guard(fileLock, LockMode::write);
     switch (writeMode)
     {
         case OutputMode::append:
@@ -451,7 +462,7 @@ void Log::openLogFile()
 
 void Log::closeLogFile()
 {
-    const utility::common::LockGuard guard(fileLock, LockMode::write);
+    const LockGuard guard(fileLock, LockMode::write);
     logWriter.unlock();
     logWriter.close();
 }
@@ -498,23 +509,12 @@ void Log::doRollback()
     }
     if (logWriter.isOpened())
     {
-        try
-        {
-            logWriter.lock();
-        }
-        catch (...)
-        {
-            inResetting.store(false);
-            return;
-        }
-
+        const bool needClear = logWriter.isLocked();
         closeLogFile();
-        tryCreateLogFolder();
-        backUpLogFileIfNeeded();
-
-        std::ofstream tempOfs{};
-        tempOfs.open(filePath, std::ios_base::out | std::ios_base::trunc);
-        tempOfs.close();
+        if (needClear)
+        {
+            tryClearLogFile();
+        }
     }
 
     inResetting.store(false);
@@ -541,7 +541,7 @@ void Log::notificationLoop()
             break;
         }
 
-        const utility::common::LockGuard guard(fileLock, LockMode::write);
+        const LockGuard guard(fileLock, LockMode::write);
         while (!logQueue.empty())
         {
             switch (targetType)

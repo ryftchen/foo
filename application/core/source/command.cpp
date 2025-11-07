@@ -247,6 +247,7 @@ catch (const std::exception& err)
     return !isFaulty.load();
 }
 
+// NOLINTNEXTLINE(readability-function-size)
 void Command::setupMainCLI()
 {
     using ArgsNumPattern = utility::argument::ArgsNumPattern;
@@ -318,7 +319,7 @@ void Command::setupSubCLI<reg_algo::ApplyAlgorithm>()
     subCLIAppAlgo
         .addArgument(shortPrefix + std::string{alias<MatchMethod>()}, longPrefix + std::string{name<MatchMethod>()})
         .argsNum(0, candidates.size())
-        .defaultValue<std::vector<std::string>>(std::move(candidates))
+        .defaultValue<decltype(candidates)>(std::move(candidates))
         .remaining()
         .metaVariable(metaVar)
         .help(descr<MatchMethod>());
@@ -333,7 +334,7 @@ void Command::setupSubCLI<reg_algo::ApplyAlgorithm>()
         .addArgument(
             shortPrefix + std::string{alias<NotationMethod>()}, longPrefix + std::string{name<NotationMethod>()})
         .argsNum(0, candidates.size())
-        .defaultValue<std::vector<std::string>>(std::move(candidates))
+        .defaultValue<decltype(candidates)>(std::move(candidates))
         .remaining()
         .metaVariable(metaVar)
         .help(descr<NotationMethod>());
@@ -347,7 +348,7 @@ void Command::setupSubCLI<reg_algo::ApplyAlgorithm>()
     subCLIAppAlgo
         .addArgument(shortPrefix + std::string{alias<OptimalMethod>()}, longPrefix + std::string{name<OptimalMethod>()})
         .argsNum(0, candidates.size())
-        .defaultValue<std::vector<std::string>>(std::move(candidates))
+        .defaultValue<decltype(candidates)>(std::move(candidates))
         .remaining()
         .metaVariable(metaVar)
         .help(descr<OptimalMethod>());
@@ -361,7 +362,7 @@ void Command::setupSubCLI<reg_algo::ApplyAlgorithm>()
     subCLIAppAlgo
         .addArgument(shortPrefix + std::string{alias<SearchMethod>()}, longPrefix + std::string{name<SearchMethod>()})
         .argsNum(0, candidates.size())
-        .defaultValue<std::vector<std::string>>(std::move(candidates))
+        .defaultValue<decltype(candidates)>(std::move(candidates))
         .remaining()
         .metaVariable(metaVar)
         .help(descr<SearchMethod>());
@@ -375,7 +376,7 @@ void Command::setupSubCLI<reg_algo::ApplyAlgorithm>()
     subCLIAppAlgo
         .addArgument(shortPrefix + std::string{alias<SortMethod>()}, longPrefix + std::string{name<SortMethod>()})
         .argsNum(0, candidates.size())
-        .defaultValue<std::vector<std::string>>(std::move(candidates))
+        .defaultValue<decltype(candidates)>(std::move(candidates))
         .remaining()
         .metaVariable(metaVar)
         .help(descr<SortMethod>());
@@ -413,7 +414,7 @@ void Command::setupSubCLI<reg_dp::ApplyDesignPattern>()
             shortPrefix + std::string{alias<BehavioralInstance>()},
             longPrefix + std::string{name<BehavioralInstance>()})
         .argsNum(0, candidates.size())
-        .defaultValue<std::vector<std::string>>(std::move(candidates))
+        .defaultValue<decltype(candidates)>(std::move(candidates))
         .remaining()
         .metaVariable(metaVar)
         .help(descr<BehavioralInstance>());
@@ -429,7 +430,7 @@ void Command::setupSubCLI<reg_dp::ApplyDesignPattern>()
             shortPrefix + std::string{alias<CreationalInstance>()},
             longPrefix + std::string{name<CreationalInstance>()})
         .argsNum(0, candidates.size())
-        .defaultValue<std::vector<std::string>>(std::move(candidates))
+        .defaultValue<decltype(candidates)>(std::move(candidates))
         .remaining()
         .metaVariable(metaVar)
         .help(descr<CreationalInstance>());
@@ -445,7 +446,7 @@ void Command::setupSubCLI<reg_dp::ApplyDesignPattern>()
             shortPrefix + std::string{alias<StructuralInstance>()},
             longPrefix + std::string{name<StructuralInstance>()})
         .argsNum(0, candidates.size())
-        .defaultValue<std::vector<std::string>>(std::move(candidates))
+        .defaultValue<decltype(candidates)>(std::move(candidates))
         .remaining()
         .metaVariable(metaVar)
         .help(descr<StructuralInstance>());
@@ -481,7 +482,7 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
     subCLIAppDs
         .addArgument(shortPrefix + std::string{alias<CacheInstance>()}, longPrefix + std::string{name<CacheInstance>()})
         .argsNum(0, candidates.size())
-        .defaultValue<std::vector<std::string>>(std::move(candidates))
+        .defaultValue<decltype(candidates)>(std::move(candidates))
         .remaining()
         .metaVariable(metaVar)
         .help(descr<CacheInstance>());
@@ -496,7 +497,7 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
         .addArgument(
             shortPrefix + std::string{alias<FilterInstance>()}, longPrefix + std::string{name<FilterInstance>()})
         .argsNum(0, candidates.size())
-        .defaultValue<std::vector<std::string>>(std::move(candidates))
+        .defaultValue<decltype(candidates)>(std::move(candidates))
         .remaining()
         .metaVariable(metaVar)
         .help(descr<FilterInstance>());
@@ -510,7 +511,7 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
     subCLIAppDs
         .addArgument(shortPrefix + std::string{alias<GraphInstance>()}, longPrefix + std::string{name<GraphInstance>()})
         .argsNum(0, candidates.size())
-        .defaultValue<std::vector<std::string>>(std::move(candidates))
+        .defaultValue<decltype(candidates)>(std::move(candidates))
         .remaining()
         .metaVariable(metaVar)
         .help(descr<GraphInstance>());
@@ -524,7 +525,7 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
     subCLIAppDs
         .addArgument(shortPrefix + std::string{alias<HeapInstance>()}, longPrefix + std::string{name<HeapInstance>()})
         .argsNum(0, candidates.size())
-        .defaultValue<std::vector<std::string>>(std::move(candidates))
+        .defaultValue<decltype(candidates)>(std::move(candidates))
         .remaining()
         .metaVariable(metaVar)
         .help(descr<HeapInstance>());
@@ -539,7 +540,7 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
         .addArgument(
             shortPrefix + std::string{alias<LinearInstance>()}, longPrefix + std::string{name<LinearInstance>()})
         .argsNum(0, candidates.size())
-        .defaultValue<std::vector<std::string>>(std::move(candidates))
+        .defaultValue<decltype(candidates)>(std::move(candidates))
         .remaining()
         .metaVariable(metaVar)
         .help(descr<LinearInstance>());
@@ -553,7 +554,7 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
     subCLIAppDs
         .addArgument(shortPrefix + std::string{alias<TreeInstance>()}, longPrefix + std::string{name<TreeInstance>()})
         .argsNum(0, candidates.size())
-        .defaultValue<std::vector<std::string>>(std::move(candidates))
+        .defaultValue<decltype(candidates)>(std::move(candidates))
         .remaining()
         .metaVariable(metaVar)
         .help(descr<TreeInstance>());
@@ -590,7 +591,7 @@ void Command::setupSubCLI<reg_num::ApplyNumeric>()
         .addArgument(
             shortPrefix + std::string{alias<ArithmeticMethod>()}, longPrefix + std::string{name<ArithmeticMethod>()})
         .argsNum(0, candidates.size())
-        .defaultValue<std::vector<std::string>>(std::move(candidates))
+        .defaultValue<decltype(candidates)>(std::move(candidates))
         .remaining()
         .metaVariable(metaVar)
         .help(descr<ArithmeticMethod>());
@@ -604,7 +605,7 @@ void Command::setupSubCLI<reg_num::ApplyNumeric>()
     subCLIAppNum
         .addArgument(shortPrefix + std::string{alias<DivisorMethod>()}, longPrefix + std::string{name<DivisorMethod>()})
         .argsNum(0, candidates.size())
-        .defaultValue<std::vector<std::string>>(std::move(candidates))
+        .defaultValue<decltype(candidates)>(std::move(candidates))
         .remaining()
         .metaVariable(metaVar)
         .help(descr<DivisorMethod>());
@@ -619,7 +620,7 @@ void Command::setupSubCLI<reg_num::ApplyNumeric>()
         .addArgument(
             shortPrefix + std::string{alias<IntegralMethod>()}, longPrefix + std::string{name<IntegralMethod>()})
         .argsNum(0, candidates.size())
-        .defaultValue<std::vector<std::string>>(std::move(candidates))
+        .defaultValue<decltype(candidates)>(std::move(candidates))
         .remaining()
         .metaVariable(metaVar)
         .help(descr<IntegralMethod>());
@@ -633,7 +634,7 @@ void Command::setupSubCLI<reg_num::ApplyNumeric>()
     subCLIAppNum
         .addArgument(shortPrefix + std::string{alias<PrimeMethod>()}, longPrefix + std::string{name<PrimeMethod>()})
         .argsNum(0, candidates.size())
-        .defaultValue<std::vector<std::string>>(std::move(candidates))
+        .defaultValue<decltype(candidates)>(std::move(candidates))
         .remaining()
         .metaVariable(metaVar)
         .help(descr<PrimeMethod>());
