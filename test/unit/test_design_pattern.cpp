@@ -33,7 +33,7 @@ protected:
     static void TearDownTestSuite() { TST_DP_PRINT_TASK_TITLE(title, "END"); }
 
     //! @brief Test title.
-    static const std::string_view title;
+    inline static const std::string_view title{design_pattern::behavioral::description()};
     //! @brief System under test.
     [[no_unique_address]] const behavioral::Showcase sut{};
     // clang-format off
@@ -121,7 +121,6 @@ protected:
     };
     // clang-format on
 };
-const std::string_view BehavioralTestBase::title = design_pattern::behavioral::description();
 
 //! @brief Test for the chain of responsibility instance in the pattern of behavioral.
 TEST_F(BehavioralTestBase, ChainOfResponsibilityInstance)
@@ -221,7 +220,7 @@ protected:
     static void TearDownTestSuite() { TST_DP_PRINT_TASK_TITLE(title, "END"); }
 
     //! @brief Test title.
-    static const std::string_view title;
+    inline static const std::string_view title{design_pattern::creational::description()};
     //! @brief System under test.
     [[no_unique_address]] const creational::Showcase sut{};
     // clang-format off
@@ -258,7 +257,6 @@ protected:
     };
     // clang-format on
 };
-const std::string_view CreationalTestBase::title = design_pattern::creational::description();
 
 //! @brief Test for the abstract factory instance in the pattern of creational.
 TEST_F(CreationalTestBase, AbstractFactoryInstance)
@@ -310,7 +308,7 @@ protected:
     static void TearDownTestSuite() { TST_DP_PRINT_TASK_TITLE(title, "END"); }
 
     //! @brief Test title.
-    static const std::string_view title;
+    inline static const std::string_view title{design_pattern::structural::description()};
     //! @brief System under test.
     [[no_unique_address]] const structural::Showcase sut{};
     // clang-format off
@@ -360,7 +358,6 @@ protected:
     };
     // clang-format on
 };
-const std::string_view StructuralTestBase::title = design_pattern::structural::description();
 
 //! @brief Test for the adapter instance in the pattern of structural.
 TEST_F(StructuralTestBase, AdapterInstance)

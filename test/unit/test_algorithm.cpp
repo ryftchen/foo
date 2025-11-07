@@ -41,16 +41,14 @@ protected:
     }
 
     //! @brief Test title.
-    static const std::string_view title;
+    inline static const std::string_view title{algorithm::match::description()};
     //! @brief System under test.
     [[no_unique_address]] const algorithm::match::Match sut{};
     //! @brief Fixture data.
-    static std::unique_ptr<match::InputBuilder> fixture;
+    inline static std::unique_ptr<match::InputBuilder> fixture{};
     //! @brief Expected result.
     static constexpr std::int64_t expRes{49702};
 };
-const std::string_view MatchTestBase::title = algorithm::match::description();
-std::unique_ptr<match::InputBuilder> MatchTestBase::fixture = {};
 
 //! @brief Test for the Rabin-Karp method in the solution of match.
 TEST_F(MatchTestBase, RKMethod)
@@ -130,18 +128,16 @@ protected:
     }
 
     //! @brief Test title.
-    static const std::string_view title;
+    inline static const std::string_view title{algorithm::notation::description()};
     //! @brief System under test.
     [[no_unique_address]] const algorithm::notation::Notation sut{};
     //! @brief Fixture data.
-    static std::unique_ptr<notation::InputBuilder> fixture;
+    inline static std::unique_ptr<notation::InputBuilder> fixture{};
     //! @brief Expected result 1.
     static constexpr std::string_view expRes1{"+a-*b^-^cde+f*ghi"};
     //! @brief Expected result 2.
     static constexpr std::string_view expRes2{"abcd^e-fgh*+^*+i-"};
 };
-const std::string_view NotationTestBase::title = algorithm::notation::description();
-std::unique_ptr<notation::InputBuilder> NotationTestBase::fixture = {};
 
 //! @brief Test for the prefix method in the solution of notation.
 TEST_F(NotationTestBase, PrefixMethod)
@@ -175,7 +171,7 @@ protected:
     }
 
     //! @brief Test title.
-    static const std::string_view title;
+    inline static const std::string_view title{algorithm::optimal::description()};
     //! @brief System under test.
     //! @tparam SUT - type of system under test
     //! @return system under test
@@ -185,7 +181,7 @@ protected:
         return std::make_unique<SUT>(fixture->getFunction());
     }
     //! @brief Fixture data.
-    static std::unique_ptr<optimal::InputBuilder> fixture;
+    inline static std::unique_ptr<optimal::InputBuilder> fixture{};
     //! @brief Expected result.
     static constexpr double expRes{-0.21723};
     //! @brief Allowable absolute error.
@@ -193,8 +189,6 @@ protected:
     //! @brief Default precision.
     static constexpr double defPrec{algorithm::optimal::epsilon};
 };
-const std::string_view OptimalTestBase::title = algorithm::optimal::description();
-std::unique_ptr<optimal::InputBuilder> OptimalTestBase::fixture = {};
 
 //! @brief Test for the gradient descent method in the solution of optimal.
 TEST_F(OptimalTestBase, GradientDescentMethod)
@@ -294,17 +288,14 @@ protected:
     }
 
     //! @brief Test title.
-    static const std::string_view title;
+    inline static const std::string_view title{algorithm::search::description()};
     //! @brief System under test.
     [[no_unique_address]] const algorithm::search::Search<float> sut{};
     //! @brief Fixture data.
-    static std::unique_ptr<search::InputBuilder<float>> fixture;
+    inline static std::unique_ptr<search::InputBuilder<float>> fixture{};
     //! @brief Expected result.
-    static std::set<std::int64_t> expRes;
+    inline static std::set<std::int64_t> expRes{};
 };
-const std::string_view SearchTestBase::title = algorithm::search::description();
-std::unique_ptr<search::InputBuilder<float>> SearchTestBase::fixture = {};
-std::set<std::int64_t> SearchTestBase::expRes = {};
 
 //! @brief Test for the binary method in the solution of search.
 TEST_F(SearchTestBase, BinaryMethod)
@@ -357,17 +348,14 @@ protected:
     }
 
     //! @brief Test title.
-    static const std::string_view title;
+    inline static const std::string_view title{algorithm::sort::description()};
     //! @brief System under test.
     [[no_unique_address]] algorithm::sort::Sort<std::int32_t> sut{};
     //! @brief Fixture data.
-    static std::unique_ptr<sort::InputBuilder<std::int32_t>> fixture;
+    inline static std::unique_ptr<sort::InputBuilder<std::int32_t>> fixture{};
     //! @brief Expected result.
-    static std::vector<std::int32_t> expRes;
+    inline static std::vector<std::int32_t> expRes{};
 };
-const std::string_view SortTestBase::title = algorithm::sort::description();
-std::unique_ptr<sort::InputBuilder<std::int32_t>> SortTestBase::fixture = {};
-std::vector<std::int32_t> SortTestBase::expRes = {};
 
 //! @brief Test for the bubble method in the solution of sort.
 TEST_F(SortTestBase, BubbleMethod)
