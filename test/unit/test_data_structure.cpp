@@ -21,12 +21,12 @@ namespace test // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Data-structure-testing-related functions in the test module.
 namespace tst_ds
 {
-using namespace application::app_ds; // NOLINT(google-build-using-namespace)
-
 //! @brief Test base of cache.
 class CacheTestBase : public ::testing::Test
 {
 protected:
+    //! @brief Alias for the showcase.
+    using Showcase = application::app_ds::cache::Showcase;
     //! @brief Set up the test case.
     static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "BEGIN"); }
     //! @brief Tear down the test case.
@@ -35,7 +35,7 @@ protected:
     //! @brief Test title.
     inline static const std::string_view title{data_structure::cache::description()};
     //! @brief System under test.
-    [[no_unique_address]] const cache::Showcase sut{};
+    [[no_unique_address]] const Showcase sut{};
     // clang-format off
     //! @brief Expected result 1.
     static constexpr std::string_view expRes1
@@ -134,6 +134,8 @@ TEST_F(CacheTestBase, LRUInstance)
 class FilterTestBase : public ::testing::Test
 {
 protected:
+    //! @brief Alias for the showcase.
+    using Showcase = application::app_ds::filter::Showcase;
     //! @brief Set up the test case.
     static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "BEGIN"); }
     //! @brief Tear down the test case.
@@ -142,7 +144,7 @@ protected:
     //! @brief Test title.
     inline static const std::string_view title{data_structure::filter::description()};
     //! @brief System under test.
-    [[no_unique_address]] const filter::Showcase sut{};
+    [[no_unique_address]] const Showcase sut{};
     // clang-format off
     //! @brief Expected result 1.
     static constexpr std::string_view expRes1
@@ -184,6 +186,8 @@ TEST_F(FilterTestBase, QuotientInstance)
 class GraphTestBase : public ::testing::Test
 {
 protected:
+    //! @brief Alias for the showcase.
+    using Showcase = application::app_ds::graph::Showcase;
     //! @brief Set up the test case.
     static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "BEGIN"); }
     //! @brief Tear down the test case.
@@ -192,7 +196,7 @@ protected:
     //! @brief Test title.
     inline static const std::string_view title{data_structure::graph::description()};
     //! @brief System under test.
-    [[no_unique_address]] const graph::Showcase sut{};
+    [[no_unique_address]] const Showcase sut{};
     // clang-format off
     //! @brief Expected result 1.
     static constexpr std::string_view expRes1
@@ -273,6 +277,8 @@ TEST_F(GraphTestBase, DirectedInstance)
 class HeapTestBase : public ::testing::Test
 {
 protected:
+    //! @brief Alias for the showcase.
+    using Showcase = application::app_ds::heap::Showcase;
     //! @brief Set up the test case.
     static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "BEGIN"); }
     //! @brief Tear down the test case.
@@ -281,7 +287,7 @@ protected:
     //! @brief Test title.
     inline static const std::string_view title{data_structure::heap::description()};
     //! @brief System under test.
-    [[no_unique_address]] const heap::Showcase sut{};
+    [[no_unique_address]] const Showcase sut{};
     // clang-format off
     //! @brief Expected result 1.
     static constexpr std::string_view expRes1
@@ -412,6 +418,8 @@ TEST_F(HeapTestBase, SkewInstance)
 class LinearTestBase : public ::testing::Test
 {
 protected:
+    //! @brief Alias for the showcase.
+    using Showcase = application::app_ds::linear::Showcase;
     //! @brief Set up the test case.
     static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "BEGIN"); }
     //! @brief Tear down the test case.
@@ -420,7 +428,7 @@ protected:
     //! @brief Test title.
     inline static const std::string_view title{data_structure::linear::description()};
     //! @brief System under test.
-    [[no_unique_address]] const linear::Showcase sut{};
+    [[no_unique_address]] const Showcase sut{};
     // clang-format off
     //! @brief Expected result 1.
     static constexpr std::string_view expRes1
@@ -503,6 +511,8 @@ TEST_F(LinearTestBase, QueueInstance)
 class TreeTestBase : public ::testing::Test
 {
 protected:
+    //! @brief Alias for the showcase.
+    using Showcase = application::app_ds::tree::Showcase;
     //! @brief Set up the test case.
     static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "BEGIN"); }
     //! @brief Tear down the test case.
@@ -511,7 +521,7 @@ protected:
     //! @brief Test title.
     inline static const std::string_view title{data_structure::tree::description()};
     //! @brief System under test.
-    [[no_unique_address]] const tree::Showcase sut{};
+    [[no_unique_address]] const Showcase sut{};
     // clang-format off
     //! @brief Expected result 1.
     static constexpr std::string_view expRes1

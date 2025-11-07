@@ -21,17 +21,18 @@ namespace test // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Algorithm-testing-related functions in the test module.
 namespace tst_algo
 {
-using namespace application::app_algo; // NOLINT(google-build-using-namespace)
-
 //! @brief Test base of match.
 class MatchTestBase : public ::testing::Test
 {
 protected:
+    //! @brief Alias for the input builder.
+    using InputBuilder = application::app_algo::match::InputBuilder;
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
         TST_ALGO_PRINT_TASK_TITLE(title, "BEGIN");
-        fixture = std::make_unique<match::InputBuilder>(match::input::patternString);
+        namespace input = application::app_algo::match::input;
+        fixture = std::make_unique<InputBuilder>(input::patternString);
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
@@ -45,7 +46,7 @@ protected:
     //! @brief System under test.
     [[no_unique_address]] const algorithm::match::Match sut{};
     //! @brief Fixture data.
-    inline static std::unique_ptr<match::InputBuilder> fixture{};
+    inline static std::unique_ptr<InputBuilder> fixture{};
     //! @brief Expected result.
     static constexpr std::int64_t expRes{49702};
 };
@@ -114,11 +115,14 @@ TEST_F(MatchTestBase, SundayMethod)
 class NotationTestBase : public ::testing::Test
 {
 protected:
+    //! @brief Alias for the input builder.
+    using InputBuilder = application::app_algo::notation::InputBuilder;
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
         TST_ALGO_PRINT_TASK_TITLE(title, "BEGIN");
-        fixture = std::make_unique<notation::InputBuilder>(notation::input::infixString);
+        namespace input = application::app_algo::notation::input;
+        fixture = std::make_unique<InputBuilder>(input::infixString);
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
@@ -132,7 +136,7 @@ protected:
     //! @brief System under test.
     [[no_unique_address]] const algorithm::notation::Notation sut{};
     //! @brief Fixture data.
-    inline static std::unique_ptr<notation::InputBuilder> fixture{};
+    inline static std::unique_ptr<InputBuilder> fixture{};
     //! @brief Expected result 1.
     static constexpr std::string_view expRes1{"+a-*b^-^cde+f*ghi"};
     //! @brief Expected result 2.
@@ -155,12 +159,14 @@ TEST_F(NotationTestBase, PostfixMethod)
 class OptimalTestBase : public ::testing::Test
 {
 protected:
+    //! @brief Alias for the input builder.
+    using InputBuilder = application::app_algo::optimal::InputBuilder;
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
         TST_ALGO_PRINT_TASK_TITLE(title, "BEGIN");
-        using SphericalBessel = optimal::input::SphericalBessel;
-        fixture = std::make_unique<optimal::InputBuilder>(
+        using application::app_algo::optimal::input::SphericalBessel;
+        fixture = std::make_unique<InputBuilder>(
             SphericalBessel{}, SphericalBessel::range1, SphericalBessel::range2, SphericalBessel::funcDescr);
     }
     //! @brief Tear down the test case.
@@ -181,7 +187,7 @@ protected:
         return std::make_unique<SUT>(fixture->getFunction());
     }
     //! @brief Fixture data.
-    inline static std::unique_ptr<optimal::InputBuilder> fixture{};
+    inline static std::unique_ptr<InputBuilder> fixture{};
     //! @brief Expected result.
     static constexpr double expRes{-0.21723};
     //! @brief Allowable absolute error.
@@ -271,12 +277,14 @@ private:
     }
 
 protected:
+    //! @brief Alias for the input builder.
+    using InputBuilder = application::app_algo::search::InputBuilder<float>;
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
         TST_ALGO_PRINT_TASK_TITLE(title, "BEGIN");
-        fixture = std::make_unique<search::InputBuilder<float>>(
-            search::input::arrayLength, search::input::arrayRangeMin, search::input::arrayRangeMax);
+        namespace input = application::app_algo::search::input;
+        fixture = std::make_unique<InputBuilder>(input::arrayLength, input::arrayRangeMin, input::arrayRangeMax);
         updateExpRes();
     }
     //! @brief Tear down the test case.
@@ -292,7 +300,7 @@ protected:
     //! @brief System under test.
     [[no_unique_address]] const algorithm::search::Search<float> sut{};
     //! @brief Fixture data.
-    inline static std::unique_ptr<search::InputBuilder<float>> fixture{};
+    inline static std::unique_ptr<InputBuilder> fixture{};
     //! @brief Expected result.
     inline static std::set<std::int64_t> expRes{};
 };
@@ -331,12 +339,14 @@ private:
     }
 
 protected:
+    //! @brief Alias for the input builder.
+    using InputBuilder = application::app_algo::sort::InputBuilder<std::int32_t>;
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
         TST_ALGO_PRINT_TASK_TITLE(title, "BEGIN");
-        fixture = std::make_unique<sort::InputBuilder<std::int32_t>>(
-            sort::input::arrayLength, sort::input::arrayRangeMin, sort::input::arrayRangeMax);
+        namespace input = application::app_algo::sort::input;
+        fixture = std::make_unique<InputBuilder>(input::arrayLength, input::arrayRangeMin, input::arrayRangeMax);
         updateExpRes();
     }
     //! @brief Tear down the test case.
@@ -352,7 +362,7 @@ protected:
     //! @brief System under test.
     [[no_unique_address]] algorithm::sort::Sort<std::int32_t> sut{};
     //! @brief Fixture data.
-    inline static std::unique_ptr<sort::InputBuilder<std::int32_t>> fixture{};
+    inline static std::unique_ptr<InputBuilder> fixture{};
     //! @brief Expected result.
     inline static std::vector<std::int32_t> expRes{};
 };
