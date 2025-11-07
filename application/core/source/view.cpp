@@ -1010,21 +1010,35 @@ void View::createViewServer()
 
 void View::destroyViewServer()
 {
-    tcpServer->toClose();
-    tcpServer->toJoin();
+    if (tcpServer)
+    {
+        tcpServer->toClose();
+        tcpServer->toJoin();
+    }
     tcpServer.reset();
-    udpServer->toClose();
-    udpServer->toJoin();
+
+    if (udpServer)
+    {
+        udpServer->toClose();
+        udpServer->toJoin();
+    }
     udpServer.reset();
 }
 
 void View::startViewing()
 {
-    tcpServer->toBind(tcpPort);
-    tcpServer->toListen();
-    tcpServer->toAccept();
-    udpServer->toBind(udpPort);
-    udpServer->toReceiveFrom();
+    if (tcpServer)
+    {
+        tcpServer->toBind(tcpPort);
+        tcpServer->toListen();
+        tcpServer->toAccept();
+    }
+
+    if (udpServer)
+    {
+        udpServer->toBind(udpPort);
+        udpServer->toReceiveFrom();
+    }
 }
 
 void View::stopViewing()
@@ -1045,30 +1059,7 @@ void View::doRollback()
     const std::scoped_lock locks(daemonMtx, outputMtx);
     isOngoing.store(false);
 
-    if (tcpServer)
-    {
-        try
-        {
-            tcpServer->toClose();
-            tcpServer->toJoin();
-        }
-        catch (...) // NOLINT(bugprone-empty-catch)
-        {
-        }
-    }
-    tcpServer.reset();
-    if (udpServer)
-    {
-        try
-        {
-            udpServer->toClose();
-            udpServer->toJoin();
-        }
-        catch (...) // NOLINT(bugprone-empty-catch)
-        {
-        }
-    }
-    udpServer.reset();
+    destroyViewServer();
 
     inResetting.store(false);
     outputCompleted.store(true);
