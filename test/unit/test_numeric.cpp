@@ -41,11 +41,11 @@ protected:
     }
 
     //! @brief Test title.
-    static const std::string_view title;
+    inline static const std::string_view title{numeric::arithmetic::description()};
     //! @brief System under test.
     [[no_unique_address]] const numeric::arithmetic::Arithmetic sut{};
     //! @brief Fixture data.
-    static std::unique_ptr<arithmetic::InputBuilder> fixture;
+    inline static std::unique_ptr<arithmetic::InputBuilder> fixture{};
     //! @brief Expected result 1.
     static constexpr std::int32_t expRes1{0};
     //! @brief Expected result 2.
@@ -55,8 +55,6 @@ protected:
     //! @brief Expected result 4.
     static constexpr std::int32_t expRes4{-1};
 };
-const std::string_view ArithmeticTestBase::title = numeric::arithmetic::description();
-std::unique_ptr<arithmetic::InputBuilder> ArithmeticTestBase::fixture = {};
 
 //! @brief Test for the addition method in the calculation of arithmetic.
 TEST_F(ArithmeticTestBase, AdditionMethod)
@@ -100,16 +98,14 @@ protected:
     }
 
     //! @brief Test title.
-    static const std::string_view title;
+    inline static const std::string_view title{numeric::divisor::description()};
     //! @brief System under test.
     [[no_unique_address]] const numeric::divisor::Divisor sut{};
     //! @brief Fixture data.
-    static std::unique_ptr<divisor::InputBuilder> fixture;
+    inline static std::unique_ptr<divisor::InputBuilder> fixture{};
     //! @brief Expected result.
     const std::set<std::int32_t> expRes{1, 2, 3, 5, 6, 7, 10, 14, 15, 21, 30, 35, 42, 70, 105, 210};
 };
-const std::string_view DivisorTestBase::title = numeric::divisor::description();
-std::unique_ptr<divisor::InputBuilder> DivisorTestBase::fixture = {};
 
 //! @brief Test for the Euclidean method in the calculation of divisor.
 TEST_F(DivisorTestBase, EuclideanMethod)
@@ -143,7 +139,7 @@ protected:
     }
 
     //! @brief Test title.
-    static const std::string_view title;
+    inline static const std::string_view title{numeric::integral::description()};
     //! @brief System under test.
     //! @tparam SUT - type of system under test
     //! @return system under test
@@ -153,7 +149,7 @@ protected:
         return std::make_unique<SUT>(fixture->getExpression());
     }
     //! @brief Fixture data.
-    static std::unique_ptr<integral::InputBuilder> fixture;
+    inline static std::unique_ptr<integral::InputBuilder> fixture{};
     //! @brief Expected result.
     static constexpr double expRes{1.05838};
     //! @brief Allowable absolute error.
@@ -161,8 +157,6 @@ protected:
     //! @brief Default precision.
     static constexpr double defPrec{numeric::integral::epsilon};
 };
-const std::string_view IntegralTestBase::title = numeric::integral::description();
-std::unique_ptr<integral::InputBuilder> IntegralTestBase::fixture = {};
 
 //! @brief Test for the trapezoidal method in the calculation of integral.
 TEST_F(IntegralTestBase, TrapezoidalMethod)
@@ -227,11 +221,11 @@ protected:
     }
 
     //! @brief Test title.
-    static const std::string_view title;
+    inline static const std::string_view title{numeric::prime::description()};
     //! @brief System under test.
     [[no_unique_address]] const numeric::prime::Prime sut{};
     //! @brief Fixture data.
-    static std::unique_ptr<prime::InputBuilder> fixture;
+    inline static std::unique_ptr<prime::InputBuilder> fixture{};
     //! @brief Expected result.
     //! @return expected result
     static constexpr auto expRes()
@@ -249,8 +243,6 @@ protected:
         // NOLINTEND(readability-magic-numbers)
     }
 };
-const std::string_view PrimeTestBase::title = numeric::prime::description();
-std::unique_ptr<prime::InputBuilder> PrimeTestBase::fixture = {};
 
 //! @brief Test for the Eratosthenes method in the calculation of prime.
 TEST_F(PrimeTestBase, EratosthenesMethod)

@@ -33,7 +33,7 @@ protected:
     static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "END"); }
 
     //! @brief Test title.
-    static const std::string_view title;
+    inline static const std::string_view title{data_structure::cache::description()};
     //! @brief System under test.
     [[no_unique_address]] const cache::Showcase sut{};
     // clang-format off
@@ -105,7 +105,6 @@ protected:
     };
     // clang-format on
 };
-const std::string_view CacheTestBase::title = data_structure::cache::description();
 
 //! @brief Test for the first in first out instance in the structure of cache.
 TEST_F(CacheTestBase, FIFOInstance)
@@ -141,7 +140,7 @@ protected:
     static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "END"); }
 
     //! @brief Test title.
-    static const std::string_view title;
+    inline static const std::string_view title{data_structure::filter::description()};
     //! @brief System under test.
     [[no_unique_address]] const filter::Showcase sut{};
     // clang-format off
@@ -164,7 +163,6 @@ protected:
     };
     // clang-format on
 };
-const std::string_view FilterTestBase::title = data_structure::filter::description();
 
 //! @brief Test for the Bloom instance in the structure of filter.
 TEST_F(FilterTestBase, BloomInstance)
@@ -192,7 +190,7 @@ protected:
     static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "END"); }
 
     //! @brief Test title.
-    static const std::string_view title;
+    inline static const std::string_view title{data_structure::graph::description()};
     //! @brief System under test.
     [[no_unique_address]] const graph::Showcase sut{};
     // clang-format off
@@ -254,7 +252,6 @@ protected:
     };
     // clang-format on
 };
-const std::string_view GraphTestBase::title = data_structure::graph::description();
 
 //! @brief Test for the undirected instance in the structure of graph.
 TEST_F(GraphTestBase, UndirectedInstance)
@@ -282,7 +279,7 @@ protected:
     static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "END"); }
 
     //! @brief Test title.
-    static const std::string_view title;
+    inline static const std::string_view title{data_structure::heap::description()};
     //! @brief System under test.
     [[no_unique_address]] const heap::Showcase sut{};
     // clang-format off
@@ -386,7 +383,6 @@ protected:
     };
     // clang-format on
 };
-const std::string_view HeapTestBase::title = data_structure::heap::description();
 
 //! @brief Test for the binary instance in the structure of heap.
 TEST_F(HeapTestBase, BinaryInstance)
@@ -422,7 +418,7 @@ protected:
     static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "END"); }
 
     //! @brief Test title.
-    static const std::string_view title;
+    inline static const std::string_view title{data_structure::linear::description()};
     //! @brief System under test.
     [[no_unique_address]] const linear::Showcase sut{};
     // clang-format off
@@ -478,7 +474,6 @@ protected:
     };
     // clang-format on
 };
-const std::string_view LinearTestBase::title = data_structure::linear::description();
 
 //! @brief Test for the doubly linked list instance in the structure of linear.
 TEST_F(LinearTestBase, DLLInstance)
@@ -514,7 +509,7 @@ protected:
     static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "END"); }
 
     //! @brief Test title.
-    static const std::string_view title;
+    inline static const std::string_view title{data_structure::tree::description()};
     //! @brief System under test.
     [[no_unique_address]] const tree::Showcase sut{};
     // clang-format off
@@ -633,7 +628,6 @@ protected:
     };
     // clang-format on
 };
-const std::string_view TreeTestBase::title = data_structure::tree::description();
 
 //! @brief Test for the binary search instance in the structure of tree.
 TEST_F(TreeTestBase, BSInstance)
