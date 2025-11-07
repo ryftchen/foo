@@ -216,12 +216,14 @@ private:
     //! @brief Writer of the log content.
     utility::io::FileWriter logWriter{filePath};
     //! @brief Operation lock for the log file.
-    utility::common::ReadWriteLock fileLock;
+    mutable utility::common::ReadWriteLock fileLock;
     //! @brief The cache logs that could not be processed properly.
     std::forward_list<std::string> unprocessedCache;
     //! @brief Spin lock for controlling cache.
     mutable utility::common::SpinLock cacheSwitch;
 
+    //! @brief Alias for the lock guard.
+    using LockGuard = utility::common::LockGuard;
     //! @brief Alias for the lock mode.
     using LockMode = utility::common::ReadWriteLock::LockMode;
     //! @brief Flush log to queue.
@@ -256,6 +258,8 @@ private:
     void tryCreateLogFolder() const;
     //! @brief Back up the log file if needed.
     void backUpLogFileIfNeeded() const;
+    //! @brief Try to clear the log file.
+    void tryClearLogFile() const;
     //! @brief FSM event. Open file.
     struct OpenFile
     {
