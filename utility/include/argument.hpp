@@ -31,8 +31,8 @@ inline static const char* description() noexcept
 extern const char* version() noexcept;
 
 //! @brief Confirm container traits. Value is false.
-//! @tparam Type - type to be confirmed
-template <typename Type, typename = void>
+//! @tparam Var - type of variety to be confirmed
+template <typename Var, typename = void>
 struct HasContainerTraits : public std::false_type
 {
 };
@@ -47,39 +47,39 @@ struct HasContainerTraits<std::string_view> : public std::false_type
 {
 };
 //! @brief Confirm container traits. Value is true.
-//! @tparam Type - type to be confirmed
-template <typename Type>
+//! @tparam Var - type of variety to be confirmed
+template <typename Var>
 struct HasContainerTraits<
-    Type,
+    Var,
     std::void_t<
-        typename Type::value_type,
-        decltype(std::declval<Type>().begin()),
-        decltype(std::declval<Type>().end()),
-        decltype(std::declval<Type>().size())>> : public std::true_type
+        typename Var::value_type,
+        decltype(std::declval<Var>().begin()),
+        decltype(std::declval<Var>().end()),
+        decltype(std::declval<Var>().size())>> : public std::true_type
 {
 };
 //! @brief Confirm whether it is a container.
-//! @tparam Type - type to be confirmed
-template <typename Type>
-static constexpr bool isContainer = HasContainerTraits<Type>::value;
+//! @tparam Var - type of variety to be confirmed
+template <typename Var>
+static constexpr bool isContainer = HasContainerTraits<Var>::value;
 
 //! @brief Confirm streamable traits. Value is false.
-//! @tparam Type - type to be confirmed
-template <typename Type, typename = void>
+//! @tparam Var - type of variety to be confirmed
+template <typename Var, typename = void>
 struct HasStreamableTraits : public std::false_type
 {
 };
 //! @brief Confirm streamable traits. Value is true.
-//! @tparam Type - type to be confirmed
-template <typename Type>
-struct HasStreamableTraits<Type, std::void_t<decltype(std::declval<std::ostream&>() << std::declval<Type>())>>
+//! @tparam Var - type of variety to be confirmed
+template <typename Var>
+struct HasStreamableTraits<Var, std::void_t<decltype(std::declval<std::ostream&>() << std::declval<Var>())>>
     : public std::true_type
 {
 };
 //! @brief Confirm whether it is streamable.
-//! @tparam Type - type to be confirmed
-template <typename Type>
-static constexpr bool isStreamable = HasStreamableTraits<Type>::value;
+//! @tparam Var - type of variety to be confirmed
+template <typename Var>
+static constexpr bool isStreamable = HasStreamableTraits<Var>::value;
 
 //! @brief Enumerate specific argument patterns.
 enum class ArgsNumPattern : std::uint8_t
@@ -661,11 +661,11 @@ public:
     Trait& operator[](const std::string_view argName) const;
 
     //! @brief Add a single argument.
-    //! @tparam ArgsType - type of arguments
+    //! @tparam Args - type of arguments
     //! @param fewArgs - argument name
     //! @return reference of the Trait object
-    template <typename... ArgsType>
-    Trait& addArgument(ArgsType... fewArgs);
+    template <typename... Args>
+    Trait& addArgument(Args... fewArgs);
     //! @brief Add a descrText.
     //! @param text - descrText text
     //! @return reference of the Trait object
@@ -791,11 +791,11 @@ protected:
     friend std::ostream& operator<<(std::ostream& os, const Argument& arg);
 };
 
-template <typename... ArgsType>
-Trait& Argument::addArgument(ArgsType... fewArgs)
+template <typename... Args>
+Trait& Argument::addArgument(Args... fewArgs)
 {
     const auto argument = optionalArgs.emplace(
-        optionalArgs.cend(), prefixChars, std::array<std::string_view, sizeof...(ArgsType)>{fewArgs...});
+        optionalArgs.cend(), prefixChars, std::array<std::string_view, sizeof...(Args)>{fewArgs...});
     if (!argument->isOptional)
     {
         positionalArgs.splice(positionalArgs.cend(), optionalArgs, argument);

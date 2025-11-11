@@ -76,11 +76,11 @@ class Defer
 {
 public:
     //! @brief Construct a new Defer object.
-    //! @tparam CallType - type of deferred callable
+    //! @tparam Func - type of deferred callable
     //! @param deferred - deferred callable
-    template <typename CallType>
-    explicit Defer(CallType&& deferred) noexcept(noexcept(Call(std::forward<CallType>(deferred)))) :
-        deferred{std::forward<CallType>(deferred)}
+    template <typename Func>
+    explicit Defer(Func&& deferred) noexcept(noexcept(Call(std::forward<Func>(deferred)))) :
+        deferred{std::forward<Func>(deferred)}
     {
     }
     //! @brief Destroy the Defer object.

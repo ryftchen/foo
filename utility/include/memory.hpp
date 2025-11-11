@@ -37,9 +37,9 @@ public:
     //! @brief Construct a new Memory object.
     Memory(const Memory&) = delete;
     //! @brief Construct a new Memory object.
-    //! @tparam ResType - type of resource to allocate
-    template <typename ResType>
-    Memory(const Memory<ResType>&) = delete;
+    //! @tparam Other - type of resource to allocate
+    template <typename Other>
+    Memory(const Memory<Other>&) = delete;
     //! @brief Construct a new Memory object.
     //! @param memory - object for move constructor
     Memory(Memory&& memory) noexcept;
