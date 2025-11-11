@@ -34,11 +34,12 @@ std::counting_semaphore<1> cliSem(1);
 namespace help
 {
 //! @brief Constraint for external helpers.
-//! @tparam T - type of helper
-template <typename T>
-concept ExtHelper = !std::is_constructible_v<T> && !std::is_copy_constructible_v<T> && !std::is_copy_assignable_v<T>
-    && !std::is_move_constructible_v<T> && !std::is_move_assignable_v<T> && requires (const T& /*helper*/) {
-           { T::getInstance() } -> std::same_as<std::shared_ptr<T>>;
+//! @tparam Type - type of helper
+template <typename Type>
+concept ExtHelper =
+    !std::is_constructible_v<Type> && !std::is_copy_constructible_v<Type> && !std::is_copy_assignable_v<Type>
+    && !std::is_move_constructible_v<Type> && !std::is_move_assignable_v<Type> && requires (const Type& /*helper*/) {
+           { Type::getInstance() } -> std::same_as<std::shared_ptr<Type>>;
        };
 
 //! @brief Enumerate specific events to control external helpers.

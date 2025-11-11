@@ -91,13 +91,13 @@ template <std::size_t Num, typename... Args>
 using ArgsExclType = typename ArgsExcl<std::make_index_sequence<Num>, Args...>::Type;
 
 //! @brief Completion of curry.
-//! @tparam Call - type of original function
+//! @tparam Call - type of currying function
 //! @tparam ArgsTuple - type of function arguments tuple
 //! @tparam UncurriedArgsTuple - type of uncurried function arguments tuple
 template <typename Call, typename ArgsTuple, typename UncurriedArgsTuple>
 class Curried;
 //! @brief Completion of curry.
-//! @tparam Call - type of original function
+//! @tparam Call - type of currying function
 //! @tparam CurriedArgs - type of curried function arguments
 //! @tparam UncurriedArgs - type of uncurried function arguments
 template <typename Call, typename... CurriedArgs, typename... UncurriedArgs>
@@ -105,12 +105,12 @@ class Curried<Call, std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>
 {
 public:
     //! @brief Construct a new Curried object.
-    //! @tparam CallType - type of original function
-    //! @param call - wrapped function
-    //! @param args - curried function arguments tuple
-    template <typename CallType>
-    Curried(CallType&& call, std::tuple<CurriedArgs...>&& args) :
-        callable{std::forward<CallType>(call)}, curriedArgs{std::move(args)}
+    //! @tparam Func - type of wrapped function
+    //! @param callable - wrapped function
+    //! @param curriedArgs - curried function arguments tuple
+    template <typename Func>
+    Curried(Func&& callable, std::tuple<CurriedArgs...>&& curriedArgs) :
+        callable{std::forward<Func>(callable)}, curriedArgs{std::move(curriedArgs)}
     {
     }
 
@@ -245,7 +245,7 @@ inline auto curry(const std::function<Ret(FullArgs...)>& call, Args&&... args)
 //! @tparam Ret - type of return value
 //! @tparam FullArgs - type of full function arguments
 //! @tparam Args - type of function arguments
-//! @param func - original function
+//! @param func - currying function
 //! @param args - function arguments
 //! @return curried result
 template <typename Ret, typename... FullArgs, typename... Args>
@@ -259,7 +259,7 @@ inline auto curry(Ret (*func)(FullArgs...), Args&&... args)
 //! @tparam Ret - type of return value
 //! @tparam Obj - type of object to which the member belongs
 //! @tparam FullArgs - type of full function arguments
-//! @param func - original function
+//! @param func - currying function
 //! @return curried result
 template <typename Ret, typename Obj, typename... FullArgs>
 inline auto curry(Ret (Obj::*func)(FullArgs...))
@@ -273,7 +273,7 @@ inline auto curry(Ret (Obj::*func)(FullArgs...))
 //! @tparam Obj - type of object to which the member belongs
 //! @tparam FullArgs - type of full function arguments
 //! @tparam Args - type of function arguments
-//! @param func - original function
+//! @param func - currying function
 //! @param caller - object to which the member belongs
 //! @param args - function arguments
 //! @return curried result
