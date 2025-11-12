@@ -60,17 +60,6 @@ public:
     //! @brief Delete an element.
     //! @param res - pointer of the allocated resource
     inline void deleteEntry(Res* const res);
-    //! @brief Get the maximum number of elements.
-    //! @return size of capacity
-    inline std::size_t capacity() const;
-    //! @brief Get the pointer of the allocated resource.
-    //! @param res - reference of the allocated resource
-    //! @return pointer of the allocated resource
-    inline Res* address(Res& res) const;
-    //! @brief Get the const pointer of the allocated resource.
-    //! @param res - const reference of the allocated resource
-    //! @return const pointer of the allocated resource
-    inline const Res* address(const Res& res) const;
 
 private:
     //! @brief Union for the slot that stores element information.
@@ -183,25 +172,6 @@ inline void Memory<Res, BlockSize>::deleteEntry(Res* const res)
         destroy(res);
         deallocate(res);
     }
-}
-
-template <typename Res, std::size_t BlockSize>
-inline std::size_t Memory<Res, BlockSize>::capacity() const
-{
-    constexpr std::size_t max = std::numeric_limits<std::size_t>::max() / BlockSize;
-    return (BlockSize - sizeof(Slot*)) / sizeof(Slot) * max;
-}
-
-template <typename Res, std::size_t BlockSize>
-inline Res* Memory<Res, BlockSize>::address(Res& res) const
-{
-    return std::addressof(res);
-}
-
-template <typename Res, std::size_t BlockSize>
-inline const Res* Memory<Res, BlockSize>::address(const Res& res) const
-{
-    return std::addressof(res);
 }
 
 template <typename Res, std::size_t BlockSize>
