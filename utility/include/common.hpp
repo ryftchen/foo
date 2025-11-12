@@ -185,32 +185,46 @@ public:
 
     //! @brief Get the pointer of the instance.
     //! @return pointer of the instance
-    Inst* get();
+    inline Inst* get();
+    //! @brief Get the const pointer of the instance.
+    //! @return const pointer of the instance
+    inline const Inst* get() const;
 
 private:
     //! @brief Storage for the instance.
-    std::aligned_storage_t<sizeof(Inst), alignof(Inst)> storage{};
+    alignas(Inst) std::array<std::byte, sizeof(Inst)> storage{};
+
+    static_assert(
+        (sizeof(storage) >= sizeof(Inst)) // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+        && (alignof(decltype(*reinterpret_cast<Inst*>(storage.data()))) == alignof(Inst)));
 };
 
+// NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
 template <typename Inst>
 template <typename... Args>
 NoDestructor<Inst>::NoDestructor(Args&&... args)
 {
-    static_assert((sizeof(storage) >= sizeof(Inst)) && (alignof(decltype(storage)) >= alignof(Inst)));
-    ::new (&storage) Inst(std::forward<Args>(args)...);
+    std::construct_at(reinterpret_cast<Inst*>(storage.data()), std::forward<Args>(args)...);
 }
 
 template <typename Inst>
-Inst* NoDestructor<Inst>::get()
+inline Inst* NoDestructor<Inst>::get()
 {
-    return reinterpret_cast<Inst*>(&storage); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+    return reinterpret_cast<Inst*>(storage.data());
 }
+
+template <typename Inst>
+inline const Inst* NoDestructor<Inst>::get() const
+{
+    return reinterpret_cast<const Inst*>(storage.data());
+}
+// NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
 
 //! @brief Closure wrapper.
 //! @tparam Func - type of callable function
 //! @tparam Op - type of call operator
-//! @tparam toWrap - flag to indicate that further wrapping is required
-template <typename Func, typename Op = decltype(&Func::operator()), bool toWrap = (sizeof(Func) > (sizeof(void*) * 2U))>
+//! @tparam Wrap - flag to indicate that further wrapping is required
+template <typename Func, typename Op = decltype(&Func::operator()), bool Wrap = (sizeof(Func) > (sizeof(void*) * 2U))>
 struct WrapClosure
 {
     //! @brief Wrap operation.
