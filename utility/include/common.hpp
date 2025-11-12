@@ -159,6 +159,53 @@ struct EnumCheck<Enum, Value, Next...> : private EnumCheck<Enum, Next...>
     }
 };
 
+//! @brief The instance manager that never calls the destructor. Use for the function-level static variables.
+//! @tparam Inst - type of instance
+template <typename Inst>
+class NoDestructor final
+{
+public:
+    //! @brief Construct a new NoDestructor object.
+    //! @tparam Args - type of constructor arguments
+    //! @param args - constructor arguments
+    template <typename... Args>
+    explicit NoDestructor(Args&&... args);
+    //! @brief Destroy the NoDestructor object.
+    ~NoDestructor() = default;
+    //! @brief Construct a new NoDestructor object.
+    NoDestructor(const NoDestructor&) = delete;
+    //! @brief Construct a new NoDestructor object.
+    NoDestructor(NoDestructor&&) = delete;
+    //! @brief The operator (=) overloading of NoDestructor class.
+    //! @return reference of the NoDestructor object
+    NoDestructor& operator=(const NoDestructor&) = delete;
+    //! @brief The operator (=) overloading of NoDestructor class.
+    //! @return reference of the NoDestructor object
+    NoDestructor& operator=(NoDestructor&&) = delete;
+
+    //! @brief Get the pointer of the instance.
+    //! @return pointer of the instance
+    Inst* get();
+
+private:
+    //! @brief Storage for the instance.
+    std::aligned_storage_t<sizeof(Inst), alignof(Inst)> storage{};
+};
+
+template <typename Inst>
+template <typename... Args>
+NoDestructor<Inst>::NoDestructor(Args&&... args)
+{
+    static_assert((sizeof(storage) >= sizeof(Inst)) && (alignof(decltype(storage)) >= alignof(Inst)));
+    ::new (&storage) Inst(std::forward<Args>(args)...);
+}
+
+template <typename Inst>
+Inst* NoDestructor<Inst>::get()
+{
+    return reinterpret_cast<Inst*>(&storage); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+}
+
 //! @brief Closure wrapper.
 //! @tparam Func - type of callable function
 //! @tparam Op - type of call operator

@@ -23,8 +23,8 @@ namespace manage
 //! @return reference of the ApplyDesignPattern object
 ApplyDesignPattern& choiceApplier()
 {
-    static ApplyDesignPattern applier{};
-    return applier;
+    static utility::common::NoDestructor<ApplyDesignPattern> applier{};
+    return *applier.get();
 }
 
 //! @brief Check whether any design pattern choices exist.

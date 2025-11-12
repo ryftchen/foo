@@ -23,8 +23,8 @@ namespace manage
 //! @return reference of the ApplyNumeric object
 ApplyNumeric& choiceApplier()
 {
-    static ApplyNumeric applier{};
-    return applier;
+    static utility::common::NoDestructor<ApplyNumeric> applier{};
+    return *applier.get();
 }
 
 //! @brief Check whether any numeric choices exist.

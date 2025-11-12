@@ -23,8 +23,8 @@ namespace manage
 //! @return reference of the ApplyAlgorithm object
 ApplyAlgorithm& choiceApplier()
 {
-    static ApplyAlgorithm applier{};
-    return applier;
+    static utility::common::NoDestructor<ApplyAlgorithm> applier{};
+    return *applier.get();
 }
 
 //! @brief Check whether any algorithm choices exist.
