@@ -23,8 +23,8 @@ namespace manage
 //! @return reference of the ApplyDataStructure object
 ApplyDataStructure& choiceApplier()
 {
-    static ApplyDataStructure applier{};
-    return applier;
+    static utility::common::NoDestructor<ApplyDataStructure> applier{};
+    return *applier.get();
 }
 
 //! @brief Check whether any data structure choices exist.
