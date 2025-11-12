@@ -159,67 +159,6 @@ struct EnumCheck<Enum, Value, Next...> : private EnumCheck<Enum, Next...>
     }
 };
 
-//! @brief The instance manager that never calls the destructor. Use for the function-level static variables.
-//! @tparam Inst - type of instance
-template <typename Inst>
-class NoDestructor final
-{
-public:
-    //! @brief Construct a new NoDestructor object.
-    //! @tparam Args - type of constructor arguments
-    //! @param args - constructor arguments
-    template <typename... Args>
-    explicit NoDestructor(Args&&... args);
-    //! @brief Destroy the NoDestructor object.
-    ~NoDestructor() = default;
-    //! @brief Construct a new NoDestructor object.
-    NoDestructor(const NoDestructor&) = delete;
-    //! @brief Construct a new NoDestructor object.
-    NoDestructor(NoDestructor&&) = delete;
-    //! @brief The operator (=) overloading of NoDestructor class.
-    //! @return reference of the NoDestructor object
-    NoDestructor& operator=(const NoDestructor&) = delete;
-    //! @brief The operator (=) overloading of NoDestructor class.
-    //! @return reference of the NoDestructor object
-    NoDestructor& operator=(NoDestructor&&) = delete;
-
-    //! @brief Get the pointer of the instance.
-    //! @return pointer of the instance
-    inline Inst* get() noexcept;
-    //! @brief Get the const pointer of the instance.
-    //! @return const pointer of the instance
-    inline const Inst* get() const noexcept;
-
-private:
-    //! @brief Storage for the instance.
-    alignas(Inst) std::array<std::byte, sizeof(Inst)> storage{};
-
-    static_assert(
-        (sizeof(storage) >= sizeof(Inst)) // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-        && (alignof(decltype(*reinterpret_cast<Inst*>(storage.data()))) == alignof(Inst)));
-};
-
-// NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
-template <typename Inst>
-template <typename... Args>
-NoDestructor<Inst>::NoDestructor(Args&&... args)
-{
-    std::construct_at(reinterpret_cast<Inst*>(storage.data()), std::forward<Args>(args)...);
-}
-
-template <typename Inst>
-inline Inst* NoDestructor<Inst>::get() noexcept
-{
-    return reinterpret_cast<Inst*>(storage.data());
-}
-
-template <typename Inst>
-inline const Inst* NoDestructor<Inst>::get() const noexcept
-{
-    return reinterpret_cast<const Inst*>(storage.data());
-}
-// NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
-
 //! @brief Closure wrapper.
 //! @tparam Func - type of callable function
 //! @tparam Op - type of call operator
@@ -284,6 +223,67 @@ constexpr auto wrapClosure(Clos&& closure)
 {
     return WrapClosure<std::decay_t<Clos>>::wrap(std::forward<Clos>(closure));
 }
+
+//! @brief The instance manager that never calls the destructor. Use for the function-level static variables.
+//! @tparam Inst - type of instance
+template <typename Inst>
+class NoDestructor final
+{
+public:
+    //! @brief Construct a new NoDestructor object.
+    //! @tparam Args - type of constructor arguments
+    //! @param args - constructor arguments
+    template <typename... Args>
+    explicit NoDestructor(Args&&... args);
+    //! @brief Destroy the NoDestructor object.
+    ~NoDestructor() = default;
+    //! @brief Construct a new NoDestructor object.
+    NoDestructor(const NoDestructor&) = delete;
+    //! @brief Construct a new NoDestructor object.
+    NoDestructor(NoDestructor&&) noexcept = default;
+    //! @brief The operator (=) overloading of NoDestructor class.
+    //! @return reference of the NoDestructor object
+    NoDestructor& operator=(const NoDestructor&) = delete;
+    //! @brief The operator (=) overloading of NoDestructor class.
+    //! @return reference of the NoDestructor object
+    NoDestructor& operator=(NoDestructor&&) noexcept = default;
+
+    //! @brief Get the pointer of the instance.
+    //! @return pointer of the instance
+    inline Inst* get() noexcept;
+    //! @brief Get the const pointer of the instance.
+    //! @return const pointer of the instance
+    inline const Inst* get() const noexcept;
+
+private:
+    //! @brief Storage for the instance.
+    alignas(Inst) std::array<std::byte, sizeof(Inst)> storage{};
+
+    static_assert(
+        (sizeof(storage) >= sizeof(Inst)) // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+        && (alignof(decltype(*reinterpret_cast<Inst*>(storage.data()))) == alignof(Inst)));
+};
+
+// NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
+template <typename Inst>
+template <typename... Args>
+NoDestructor<Inst>::NoDestructor(Args&&... args)
+{
+    std::construct_at(reinterpret_cast<Inst*>(storage.data()), std::forward<Args>(args)...);
+}
+
+template <typename Inst>
+inline Inst* NoDestructor<Inst>::get() noexcept
+{
+    return reinterpret_cast<Inst*>(storage.data());
+}
+
+template <typename Inst>
+inline const Inst* NoDestructor<Inst>::get() const noexcept
+{
+    return reinterpret_cast<const Inst*>(storage.data());
+}
+// NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
 
 //! @brief Simple spin lock.
 class SpinLock

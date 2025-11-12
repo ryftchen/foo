@@ -36,10 +36,10 @@ std::string getFullConfigPath(const std::string_view filename)
 
 //! @brief Get the Configure instance.
 //! @param filename - configure file path
-//! @return reference of the Configure object
-Configure& getInstance(const std::string_view filename = defaultConfigFile)
+//! @return const reference of the Configure object
+const Configure& getInstance(const std::string_view filename = defaultConfigFile)
 {
-    static Configure configurator(filename);
+    static const Configure configurator(filename);
     return configurator;
 }
 

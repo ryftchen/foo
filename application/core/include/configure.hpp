@@ -78,7 +78,7 @@ public:
     //! @return reference of the Configure object
     Configure& operator=(Configure&&) = delete;
 
-    friend Configure& getInstance(const std::string_view filename);
+    friend const Configure& getInstance(const std::string_view filename);
 
 private:
     //! @brief Construct a new Configure object.
