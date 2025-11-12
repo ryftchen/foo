@@ -87,7 +87,6 @@ struct TLVValue
 //! @param pl - target payload that has been included in the value of TLV
 //! @return summary offset of length-value
 template <typename Data>
-requires std::is_arithmetic_v<Data>
 static int serialize(data::Packet& pkt, const TLVValue& val, const Data TLVValue::* const pl)
 {
     if (!pl)
@@ -128,7 +127,6 @@ static int serialize(data::Packet& pkt, const TLVValue& val, const char (TLVValu
 //! @param pl - target payload that has been included in the value of TLV
 //! @return summary offset of length-value
 template <typename Data>
-requires std::is_arithmetic_v<Data>
 static int deserialize(data::Packet& pkt, TLVValue& val, Data TLVValue::* const pl)
 {
     if (!pl)
@@ -618,7 +616,7 @@ std::size_t View::buildResponse(const std::string& reqPlaintext, char* const res
             [&respBuffer](const OptProfile& opt) { return buildCustomTLVPacket<OptProfile>(opt.args, respBuffer); },
             [](const auto& opt)
             {
-                if (const auto* origPtr = &opt; dynamic_cast<const OptBase*>(origPtr))
+                if (dynamic_cast<const OptBase*>(std::addressof(opt)))
                 {
                     throw std::runtime_error{
                         "The option is unprocessed due to unregistered or potential registration failures (typeid: "

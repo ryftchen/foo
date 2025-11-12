@@ -34,6 +34,7 @@ public:
     //! @param data - original data
     //! @return whether it is continuously writable
     template <typename Data>
+    requires std::is_trivially_copyable_v<Data>
     bool write(const Data data);
     //! @brief Write data to the packet buffer.
     //! @param dst - data after conversion
@@ -45,6 +46,7 @@ public:
     //! @param data - original data
     //! @return whether it is continuously readable
     template <typename Data>
+    requires std::is_trivially_copyable_v<Data>
     bool read(Data* const data);
     //! @brief Read data to the packet buffer.
     //! @param dst - data after conversion
@@ -64,6 +66,7 @@ private:
 };
 
 template <typename Data>
+requires std::is_trivially_copyable_v<Data>
 bool Packet::write(const Data data)
 {
     Data temp{};
@@ -83,6 +86,7 @@ bool Packet::write(const Data data)
 }
 
 template <typename Data>
+requires std::is_trivially_copyable_v<Data>
 bool Packet::read(Data* const data)
 {
     if (!data)
