@@ -210,7 +210,7 @@ inline void Memory<Res, BlockSize>::construct(Alloc* const alloc, Args&&... args
 {
     if (alloc)
     {
-        ::new (alloc) Alloc(std::forward<Args>(args)...);
+        std::construct_at(alloc, std::forward<Args>(args)...);
     }
 }
 
@@ -220,7 +220,7 @@ inline void Memory<Res, BlockSize>::destroy(const Alloc* const alloc)
 {
     if (alloc)
     {
-        alloc->~Alloc();
+        std::destroy_at(alloc);
     }
 }
 
