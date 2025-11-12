@@ -185,10 +185,10 @@ public:
 
     //! @brief Get the pointer of the instance.
     //! @return pointer of the instance
-    inline Inst* get();
+    inline Inst* get() noexcept;
     //! @brief Get the const pointer of the instance.
     //! @return const pointer of the instance
-    inline const Inst* get() const;
+    inline const Inst* get() const noexcept;
 
 private:
     //! @brief Storage for the instance.
@@ -208,13 +208,13 @@ NoDestructor<Inst>::NoDestructor(Args&&... args)
 }
 
 template <typename Inst>
-inline Inst* NoDestructor<Inst>::get()
+inline Inst* NoDestructor<Inst>::get() noexcept
 {
     return reinterpret_cast<Inst*>(storage.data());
 }
 
 template <typename Inst>
-inline const Inst* NoDestructor<Inst>::get() const
+inline const Inst* NoDestructor<Inst>::get() const noexcept
 {
     return reinterpret_cast<const Inst*>(storage.data());
 }
