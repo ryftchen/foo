@@ -56,10 +56,10 @@ public:
     //! @param args - arguments for constructing the resource
     //! @return pointer of the allocated resource
     template <typename... Args>
-    inline Res* newEntry(Args&&... args);
+    Res* newEntry(Args&&... args);
     //! @brief Delete an element.
     //! @param res - pointer of the allocated resource
-    inline void deleteEntry(Res* const res);
+    void deleteEntry(Res* const res);
 
 private:
     //! @brief Union for the slot that stores element information.
@@ -88,28 +88,28 @@ private:
     //! @param alloc - pointer of the allocated resource
     //! @param args - arguments for constructing the resource
     template <typename Alloc, typename... Args>
-    inline void construct(Alloc* const alloc, Args&&... args);
+    void construct(Alloc* const alloc, Args&&... args);
     //! @brief Destroy the resource.
     //! @tparam Alloc - type of allocated resource
     //! @param alloc - pointer of the allocated resource
     template <typename Alloc>
-    inline void destroy(const Alloc* const alloc);
+    void destroy(const Alloc* const alloc);
     //! @brief Allocate resource.
     //! @param size - resource size
     //! @param hint - address hint to suggest where allocation could occur
     //! @return pointer of the allocated resource
-    inline Res* allocate(const std::size_t size = 1, const Res* hint = nullptr);
+    Res* allocate(const std::size_t size = 1, const Res* hint = nullptr);
     //! @brief Deallocate resource.
     //! @param res - pointer of the allocated resource
     //! @param size - resource size
-    inline void deallocate(Res* const res, const std::size_t size = 1);
+    void deallocate(Res* const res, const std::size_t size = 1);
     //! @brief Create the block.
-    inline void createBlock();
+    void createBlock();
     //! @brief Calculate the padding size for the pointer of data in the element.
     //! @param data - pointer of data in the element
     //! @param align - align size
     //! @return padding size
-    inline std::size_t pointerPadding(const std::byte* const data, const std::size_t align) const;
+    std::size_t pointerPadding(const std::byte* const data, const std::size_t align) const;
 
     static_assert(BlockSize >= (2 * sizeof(Slot)));
 };
@@ -155,7 +155,7 @@ Memory<Res, BlockSize>& Memory<Res, BlockSize>::operator=(Memory&& memory) noexc
 
 template <typename Res, std::size_t BlockSize>
 template <typename... Args>
-inline Res* Memory<Res, BlockSize>::newEntry(Args&&... args)
+Res* Memory<Res, BlockSize>::newEntry(Args&&... args)
 {
     const std::lock_guard<std::recursive_mutex> lock(mtx);
     auto* const res = allocate();
@@ -164,7 +164,7 @@ inline Res* Memory<Res, BlockSize>::newEntry(Args&&... args)
 }
 
 template <typename Res, std::size_t BlockSize>
-inline void Memory<Res, BlockSize>::deleteEntry(Res* const res)
+void Memory<Res, BlockSize>::deleteEntry(Res* const res)
 {
     const std::lock_guard<std::recursive_mutex> lock(mtx);
     if (res)
@@ -176,7 +176,7 @@ inline void Memory<Res, BlockSize>::deleteEntry(Res* const res)
 
 template <typename Res, std::size_t BlockSize>
 template <typename Alloc, typename... Args>
-inline void Memory<Res, BlockSize>::construct(Alloc* const alloc, Args&&... args)
+void Memory<Res, BlockSize>::construct(Alloc* const alloc, Args&&... args)
 {
     if (alloc)
     {
@@ -186,7 +186,7 @@ inline void Memory<Res, BlockSize>::construct(Alloc* const alloc, Args&&... args
 
 template <typename Res, std::size_t BlockSize>
 template <typename Alloc>
-inline void Memory<Res, BlockSize>::destroy(const Alloc* const alloc)
+void Memory<Res, BlockSize>::destroy(const Alloc* const alloc)
 {
     if (alloc)
     {
@@ -195,7 +195,7 @@ inline void Memory<Res, BlockSize>::destroy(const Alloc* const alloc)
 }
 
 template <typename Res, std::size_t BlockSize>
-inline Res* Memory<Res, BlockSize>::allocate(const std::size_t /*size*/, const Res* /*hint*/)
+Res* Memory<Res, BlockSize>::allocate(const std::size_t /*size*/, const Res* /*hint*/)
 {
     if (freeSlots)
     {
@@ -212,7 +212,7 @@ inline Res* Memory<Res, BlockSize>::allocate(const std::size_t /*size*/, const R
 }
 
 template <typename Res, std::size_t BlockSize>
-inline void Memory<Res, BlockSize>::deallocate(Res* const res, const std::size_t /*size*/)
+void Memory<Res, BlockSize>::deallocate(Res* const res, const std::size_t /*size*/)
 {
     if (res)
     {
@@ -222,7 +222,7 @@ inline void Memory<Res, BlockSize>::deallocate(Res* const res, const std::size_t
 }
 
 template <typename Res, std::size_t BlockSize>
-inline void Memory<Res, BlockSize>::createBlock()
+void Memory<Res, BlockSize>::createBlock()
 {
     auto* const newBlock = reinterpret_cast<std::byte*>(operator new(BlockSize));
     reinterpret_cast<Slot*>(newBlock)->next = currentBlock;
@@ -235,7 +235,7 @@ inline void Memory<Res, BlockSize>::createBlock()
 }
 
 template <typename Res, std::size_t BlockSize>
-inline std::size_t Memory<Res, BlockSize>::pointerPadding(const std::byte* const data, const std::size_t align) const
+std::size_t Memory<Res, BlockSize>::pointerPadding(const std::byte* const data, const std::size_t align) const
 {
     if (align != 0)
     {
