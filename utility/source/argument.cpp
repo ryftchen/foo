@@ -81,61 +81,61 @@ std::ostream& operator<<(std::ostream& os, const ArgsNumRange& range)
     return os;
 }
 
-Trait& Trait::help(const std::string_view message)
+ArgTrait& ArgTrait::help(const std::string_view message)
 {
     helpMsg = message;
     return *this;
 }
 
-Trait& Trait::metaVariable(const std::string_view variable)
+ArgTrait& ArgTrait::metaVariable(const std::string_view variable)
 {
     metaVar = variable;
     return *this;
 }
 
-Trait& Trait::defaultValue(const std::string_view value)
+ArgTrait& ArgTrait::defaultValue(const std::string_view value)
 {
     return defaultValue(std::string{value});
 }
 
-Trait& Trait::implicitValue(std::any value)
+ArgTrait& ArgTrait::implicitValue(std::any value)
 {
     implicitVal = std::move(value);
     argsNumRange = ArgsNumRange{0, 0};
     return *this;
 }
 
-Trait& Trait::required()
+ArgTrait& ArgTrait::required()
 {
     isRequired = true;
     return *this;
 }
 
-Trait& Trait::appending()
+ArgTrait& ArgTrait::appending()
 {
     isRepeatable = true;
     return *this;
 }
 
-Trait& Trait::remaining()
+ArgTrait& ArgTrait::remaining()
 {
     optionalAsValue = true;
     return argsNum(ArgsNumPattern::any);
 }
 
-Trait& Trait::argsNum(const std::size_t num)
+ArgTrait& ArgTrait::argsNum(const std::size_t num)
 {
     argsNumRange = ArgsNumRange{num, num};
     return *this;
 }
 
-Trait& Trait::argsNum(const std::size_t numMin, const std::size_t numMax)
+ArgTrait& ArgTrait::argsNum(const std::size_t numMin, const std::size_t numMax)
 {
     argsNumRange = ArgsNumRange{numMin, numMax};
     return *this;
 }
 
-Trait& Trait::argsNum(const ArgsNumPattern pattern)
+ArgTrait& ArgTrait::argsNum(const ArgsNumPattern pattern)
 {
     switch (pattern)
     {
@@ -154,7 +154,7 @@ Trait& Trait::argsNum(const ArgsNumPattern pattern)
     return *this;
 }
 
-void Trait::validate() const
+void ArgTrait::validate() const
 {
     if (isOptional)
     {
@@ -173,7 +173,7 @@ void Trait::validate() const
     }
 }
 
-std::string Trait::getInlineUsage() const
+std::string ArgTrait::getInlineUsage() const
 {
     std::string longestName(names.at(0));
     for (const auto& str : names)
@@ -205,7 +205,7 @@ std::string Trait::getInlineUsage() const
     return std::move(out).str();
 }
 
-std::size_t Trait::getArgumentsLength() const
+std::size_t ArgTrait::getArgumentsLength() const
 {
     const std::size_t namesSize = std::accumulate(
         names.cbegin(), names.cend(), 0, [](const auto sum, const auto& str) { return sum + str.length(); });
@@ -222,7 +222,7 @@ std::size_t Trait::getArgumentsLength() const
     return size;
 }
 
-void Trait::throwInvalidArgsNumRange() const
+void ArgTrait::throwInvalidArgsNumRange() const
 {
     const auto numMin = argsNumRange.min;
     const auto numMax = argsNumRange.max;
@@ -243,17 +243,17 @@ void Trait::throwInvalidArgsNumRange() const
     throw std::runtime_error{out.str()};
 }
 
-int Trait::lookAhead(const std::string_view name)
+int ArgTrait::lookAhead(const std::string_view name)
 {
     return name.empty() ? eof : static_cast<int>(static_cast<unsigned char>(name.front()));
 }
 
-bool Trait::checkIfOptional(const std::string_view name, const std::string_view prefix)
+bool ArgTrait::checkIfOptional(const std::string_view name, const std::string_view prefix)
 {
     return !checkIfPositional(name, prefix);
 }
 
-bool Trait::checkIfPositional(const std::string_view name, const std::string_view prefix)
+bool ArgTrait::checkIfPositional(const std::string_view name, const std::string_view prefix)
 {
     const int first = lookAhead(name);
     if (first == eof)
@@ -294,11 +294,11 @@ static std::string join(StrIter first, StrIter last, const std::string_view sepa
     return std::move(out).str();
 }
 
-//! @brief The operator (<<) overloading of the Trait class.
+//! @brief The operator (<<) overloading of the ArgTrait class.
 //! @param os - output stream object
-//! @param tra - specific Trait object
+//! @param tra - specific ArgTrait object
 //! @return reference of the output stream object
-std::ostream& operator<<(std::ostream& os, const Trait& tra)
+std::ostream& operator<<(std::ostream& os, const ArgTrait& tra)
 {
     std::ostringstream out{};
     if (tra.checkIfPositional(tra.names.at(0), tra.prefixChars))
@@ -417,7 +417,7 @@ Argument::operator bool() const
     return isParsed && (isArgUsed || isSubParserUsed);
 }
 
-Trait& Argument::operator[](const std::string_view argName) const
+ArgTrait& Argument::operator[](const std::string_view argName) const
 {
     auto iterator = argumentMap.find(argName);
     if (iterator != argumentMap.cend())
@@ -500,7 +500,7 @@ bool Argument::isSubCommandUsed(const Argument& subParser) const
 void Argument::clearUsed()
 {
     isParsed = false;
-    constexpr auto resetting = [](Trait& tra) constexpr
+    constexpr auto resetting = [](ArgTrait& tra) constexpr
     {
         tra.isUsed = false;
         tra.usedName.clear();
@@ -631,7 +631,7 @@ void Argument::parseArgsInternal(const std::vector<std::string>& rawArguments)
     for (auto iterator = std::next(arguments.cbegin()); iterator != ending;)
     {
         const auto& currentArg = *iterator;
-        if (Trait::checkIfPositional(currentArg, prefixChars))
+        if (ArgTrait::checkIfPositional(currentArg, prefixChars))
         {
             if (positionalArgIter != positionalArgs.cend())
             {

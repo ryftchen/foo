@@ -100,16 +100,16 @@ public:
     //! @param maximum - maximum of range
     ArgsNumRange(const std::size_t minimum, const std::size_t maximum);
 
-    //! @brief The operator (==) overloading of Trait class.
+    //! @brief The operator (==) overloading of ArgTrait class.
     //! @param rhs - right-hand side
     //! @return be equal or not
     bool operator==(const ArgsNumRange& rhs) const;
-    //! @brief The operator (!=) overloading of Trait class.
+    //! @brief The operator (!=) overloading of ArgTrait class.
     //! @param rhs - right-hand side
     //! @return be unequal or not
     bool operator!=(const ArgsNumRange& rhs) const;
 
-    friend class Trait;
+    friend class ArgTrait;
     //! @brief Check whether the number of arguments is within the range.
     //! @param value - number of arguments
     //! @return within or not
@@ -134,37 +134,37 @@ protected:
 class Argument;
 
 //! @brief Argument trait.
-class Trait
+class ArgTrait
 {
 public:
-    //! @brief Construct a new Trait object.
+    //! @brief Construct a new ArgTrait object.
     //! @tparam Num - number of arguments
     //! @tparam Is - indices of sequence related to arguments
     //! @param prefix - prefix characters
     //! @param collection - collection of arguments to be registered
     //! @param sequence - sequence related to arguments
     template <std::size_t Num, std::size_t... Is>
-    explicit Trait(
+    explicit ArgTrait(
         const std::string_view prefix,
         std::array<std::string_view, Num>&& collection,
         const std::index_sequence<Is...>& sequence);
-    //! @brief Construct a new Trait object.
+    //! @brief Construct a new ArgTrait object.
     //! @tparam Num - number of arguments
     //! @param prefix - prefix characters
     //! @param collection - collection of arguments to be registered
     template <std::size_t Num>
-    explicit Trait(const std::string_view prefix, std::array<std::string_view, Num>&& collection) :
-        Trait(prefix, std::move(collection), std::make_index_sequence<Num>{})
+    explicit ArgTrait(const std::string_view prefix, std::array<std::string_view, Num>&& collection) :
+        ArgTrait(prefix, std::move(collection), std::make_index_sequence<Num>{})
     {
     }
 
-    //! @brief The operator (==) overloading of Trait class.
+    //! @brief The operator (==) overloading of ArgTrait class.
     //! @tparam RHS - type of right-hand side
     //! @param rhs - right-hand side
     //! @return be equal or not
     template <typename RHS>
     bool operator==(const RHS& rhs) const;
-    //! @brief The operator (!=) overloading of Trait class.
+    //! @brief The operator (!=) overloading of ArgTrait class.
     //! @tparam RHS - type of right-hand side
     //! @param rhs - right-hand side
     //! @return be unequal or not
@@ -173,57 +173,57 @@ public:
 
     //! @brief Set help message.
     //! @param message - help message
-    //! @return reference of the Trait object
-    Trait& help(const std::string_view message);
+    //! @return reference of the ArgTrait object
+    ArgTrait& help(const std::string_view message);
     //! @brief Set meta variable.
     //! @param variable - meta variable
-    //! @return reference of the Trait object
-    Trait& metaVariable(const std::string_view variable);
+    //! @return reference of the ArgTrait object
+    ArgTrait& metaVariable(const std::string_view variable);
     //! @brief Set default value.
     //! @tparam Value - type of default value
     //! @param value - default value
-    //! @return reference of the Trait object
+    //! @return reference of the ArgTrait object
     template <typename Value>
-    Trait& defaultValue(Value&& value);
+    ArgTrait& defaultValue(Value&& value);
     //! @brief Set default value.
     //! @param value - default value
-    //! @return reference of the Trait object
-    Trait& defaultValue(const std::string_view value);
+    //! @return reference of the ArgTrait object
+    ArgTrait& defaultValue(const std::string_view value);
     //! @brief Set implicit value.
     //! @param value - implicit value
-    //! @return reference of the Trait object
-    Trait& implicitValue(std::any value);
+    //! @return reference of the ArgTrait object
+    ArgTrait& implicitValue(std::any value);
     //! @brief Set the argument property to be required.
-    //! @return reference of the Trait object
-    Trait& required();
+    //! @return reference of the ArgTrait object
+    ArgTrait& required();
     //! @brief Set the argument property to be appending.
-    //! @return reference of the Trait object
-    Trait& appending();
+    //! @return reference of the ArgTrait object
+    ArgTrait& appending();
     //! @brief Set the argument property to be remaining.
-    //! @return reference of the Trait object
-    Trait& remaining();
+    //! @return reference of the ArgTrait object
+    ArgTrait& remaining();
     //! @brief The action of specific arguments.
     //! @tparam Func - type of callable function
     //! @tparam Args - type of bound arguments
     //! @param callable - callable function
     //! @param boundArgs - bound arguments
-    //! @return reference of the Trait object
+    //! @return reference of the ArgTrait object
     template <typename Func, typename... Args>
     auto action(Func&& callable, Args&&... boundArgs)
-        -> std::enable_if_t<std::is_invocable_v<Func, Args..., const std::string&>, Trait&>;
+        -> std::enable_if_t<std::is_invocable_v<Func, Args..., const std::string&>, ArgTrait&>;
     //! @brief Set number of arguments.
     //! @param num - number of arguments
-    //! @return reference of the Trait object
-    Trait& argsNum(const std::size_t num);
+    //! @return reference of the ArgTrait object
+    ArgTrait& argsNum(const std::size_t num);
     //! @brief Set minimum number and maximum number of arguments.
     //! @param numMin - minimum number
     //! @param numMax - maximum number
-    //! @return reference of the Trait object
-    Trait& argsNum(const std::size_t numMin, const std::size_t numMax);
+    //! @return reference of the ArgTrait object
+    ArgTrait& argsNum(const std::size_t numMin, const std::size_t numMax);
     //! @brief Set number of arguments with pattern.
     //! @param pattern - argument pattern
-    //! @return reference of the Trait object
-    Trait& argsNum(const ArgsNumPattern pattern);
+    //! @return reference of the ArgTrait object
+    ArgTrait& argsNum(const ArgsNumPattern pattern);
     //! @brief Consume arguments.
     //! @tparam Iterator - type of argument iterator
     //! @param start - start argument iterator
@@ -355,8 +355,8 @@ private:
         const Iterator first{};
         //! @brief The last argument iterator.
         const Iterator last{};
-        //! @brief The Trait instance.
-        Trait& self;
+        //! @brief The ArgTrait instance.
+        ArgTrait& self;
 
         //! @brief The operator (()) overloading of ApplyAction struct.
         //! @param func - function which has valued return
@@ -377,12 +377,12 @@ private:
     };
 
 protected:
-    friend std::ostream& operator<<(std::ostream& os, const Trait& tra);
+    friend std::ostream& operator<<(std::ostream& os, const ArgTrait& tra);
     friend std::ostream& operator<<(std::ostream& os, const Argument& arg);
 };
 
 template <std::size_t Num, std::size_t... Is>
-Trait::Trait(
+ArgTrait::ArgTrait(
     const std::string_view prefix,
     std::array<std::string_view, Num>&& collection,
     const std::index_sequence<Is...>& /*sequence*/) :
@@ -401,7 +401,7 @@ Trait::Trait(
 }
 
 template <typename RHS>
-bool Trait::operator==(const RHS& rhs) const
+bool ArgTrait::operator==(const RHS& rhs) const
 {
     if constexpr (!isContainer<RHS>)
     {
@@ -421,13 +421,13 @@ bool Trait::operator==(const RHS& rhs) const
 }
 
 template <typename RHS>
-bool Trait::operator!=(const RHS& rhs) const
+bool ArgTrait::operator!=(const RHS& rhs) const
 {
     return !(rhs == *this);
 }
 
 template <typename Value>
-Trait& Trait::defaultValue(Value&& value)
+ArgTrait& ArgTrait::defaultValue(Value&& value)
 {
     representedDefVal = represent(value);
     defaultVal = std::forward<Value>(value);
@@ -435,8 +435,8 @@ Trait& Trait::defaultValue(Value&& value)
 }
 
 template <typename Func, typename... Args>
-auto Trait::action(Func&& callable, Args&&... boundArgs)
-    -> std::enable_if_t<std::is_invocable_v<Func, Args..., const std::string&>, Trait&>
+auto ArgTrait::action(Func&& callable, Args&&... boundArgs)
+    -> std::enable_if_t<std::is_invocable_v<Func, Args..., const std::string&>, ArgTrait&>
 {
     using ActionType = std::conditional_t<
         std::is_void_v<std::invoke_result_t<Func, Args..., const std::string&>>,
@@ -456,7 +456,7 @@ auto Trait::action(Func&& callable, Args&&... boundArgs)
 }
 
 template <typename Iterator>
-Iterator Trait::consume(const Iterator start, Iterator end, const std::string_view argName)
+Iterator ArgTrait::consume(const Iterator start, Iterator end, const std::string_view argName)
 {
     if (!isRepeatable && isUsed)
     {
@@ -499,7 +499,7 @@ Iterator Trait::consume(const Iterator start, Iterator end, const std::string_vi
 }
 
 template <typename Value>
-std::string Trait::represent(const Value& value)
+std::string ArgTrait::represent(const Value& value)
 {
     if constexpr (std::is_same_v<Value, bool>)
     {
@@ -553,14 +553,14 @@ std::string Trait::represent(const Value& value)
 }
 
 template <typename Func, typename Tuple, typename Extra, std::size_t... Is>
-constexpr decltype(auto) Trait::applyScopedOneImpl(
+constexpr decltype(auto) ArgTrait::applyScopedOneImpl(
     Func&& func, Tuple&& tup, Extra&& ext, const std::index_sequence<Is...>& /*seq*/)
 {
     return std::invoke(std::forward<Func>(func), std::get<Is>(std::forward<Tuple>(tup))..., std::forward<Extra>(ext));
 }
 
 template <typename Func, typename Tuple, typename Extra>
-constexpr decltype(auto) Trait::applyScopedOne(Func&& func, Tuple&& tup, Extra&& ext)
+constexpr decltype(auto) ArgTrait::applyScopedOne(Func&& func, Tuple&& tup, Extra&& ext)
 {
     return applyScopedOneImpl(
         std::forward<Func>(func),
@@ -570,7 +570,7 @@ constexpr decltype(auto) Trait::applyScopedOne(Func&& func, Tuple&& tup, Extra&&
 }
 
 template <typename Value>
-Value Trait::get() const
+Value ArgTrait::get() const
 {
     if (!values.empty())
     {
@@ -598,7 +598,7 @@ Value Trait::get() const
 }
 
 template <typename Value>
-std::optional<Value> Trait::present() const
+std::optional<Value> ArgTrait::present() const
 {
     if (defaultVal.has_value())
     {
@@ -616,7 +616,7 @@ std::optional<Value> Trait::present() const
 }
 
 template <typename Container>
-Container Trait::anyCastContainer(const std::vector<std::any>& operand)
+Container ArgTrait::anyCastContainer(const std::vector<std::any>& operand)
 {
     Container result{};
     std::transform(
@@ -655,26 +655,26 @@ public:
 
     //! @brief The operator (bool) overloading of Argument class.
     explicit operator bool() const;
-    //! @brief The operator ([]) overloading of Trait class.
+    //! @brief The operator ([]) overloading of ArgTrait class.
     //! @param argName - target argument name
-    //! @return reference of the Trait object
-    Trait& operator[](const std::string_view argName) const;
+    //! @return reference of the ArgTrait object
+    ArgTrait& operator[](const std::string_view argName) const;
 
     //! @brief Add a single argument.
     //! @tparam Args - type of arguments
     //! @param fewArgs - argument name
-    //! @return reference of the Trait object
+    //! @return reference of the ArgTrait object
     template <typename... Args>
-    Trait& addArgument(Args... fewArgs);
+    ArgTrait& addArgument(Args... fewArgs);
     //! @brief Add a descrText.
     //! @param text - descrText text
-    //! @return reference of the Trait object
+    //! @return reference of the Argument object
     Argument& addDescription(const std::string_view text);
-    //! @brief Get the Trait or Argument instance by name.
+    //! @brief Get the ArgTrait or Argument instance by name.
     //! @tparam Inst - type of instance
     //! @param name - instance name
-    //! @return Trait or Argument instance
-    template <typename Inst = Trait>
+    //! @return ArgTrait or Argument instance
+    template <typename Inst = ArgTrait>
     Inst& at(const std::string_view name);
     //! @brief Parse all input arguments.
     //! @param arguments - container of all arguments
@@ -731,8 +731,8 @@ private:
     //! @brief Version number.
     std::string versionNumber;
 
-    //! @brief Alias for the iterator in all Trait instances.
-    using TraitIter = std::list<Trait>::iterator;
+    //! @brief Alias for the iterator in all ArgTrait instances.
+    using TraitIter = std::list<ArgTrait>::iterator;
     //! @brief Alias for the iterator in all Argument instances.
     using ArgumentIter = std::list<std::reference_wrapper<Argument>>::iterator;
     //! @brief Description text.
@@ -744,9 +744,9 @@ private:
     //! @brief Flag to indicate whether to be parsed.
     bool isParsed{false};
     //! @brief List of optional arguments.
-    std::list<Trait> optionalArgs;
+    std::list<ArgTrait> optionalArgs;
     //! @brief List of positional arguments.
-    std::list<Trait> positionalArgs;
+    std::list<ArgTrait> positionalArgs;
     //! @brief Mapping table of argument.
     std::unordered_map<std::string_view, TraitIter> argumentMap;
     //! @brief Current parser path.
@@ -792,7 +792,7 @@ protected:
 };
 
 template <typename... Args>
-Trait& Argument::addArgument(Args... fewArgs)
+ArgTrait& Argument::addArgument(Args... fewArgs)
 {
     const auto argument = optionalArgs.emplace(
         optionalArgs.cend(), prefixChars, std::array<std::string_view, sizeof...(Args)>{fewArgs...});
@@ -807,7 +807,7 @@ Trait& Argument::addArgument(Args... fewArgs)
 template <typename Inst>
 Inst& Argument::at(const std::string_view name)
 {
-    if constexpr (std::is_same_v<Inst, Trait>)
+    if constexpr (std::is_same_v<Inst, ArgTrait>)
     {
         return (*this)[name];
     }
