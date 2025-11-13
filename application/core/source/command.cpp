@@ -248,7 +248,6 @@ catch (const std::exception& err)
     return !isFaulty.load();
 }
 
-// NOLINTNEXTLINE(readability-function-size)
 void Command::setupMainCLI()
 {
     using ArgsNumPattern = utility::argument::ArgsNumPattern;
@@ -726,7 +725,7 @@ void Command::precheck()
             return;
         }
 
-        for ([[maybe_unused]] const auto& [categoryName, categoryTrait] : categoryMap
+        for ([[maybe_unused]] const auto& [categoryName, categoryAttr] : categoryMap
                  | std::views::filter([this, &subCLI](const auto& categoryPair)
                                       { return subCLI.isUsed(categoryPair.first) && (checkExcessArgs(), true); }))
         {
@@ -736,7 +735,7 @@ void Command::precheck()
                     utility::common::VisitorOverload{
                         [this, &choice](auto&& event)
                         { applyingForwarder.onMessage(action::SetChoice<std::decay_t<decltype(event)>>{choice}); }},
-                    categoryTrait.event);
+                    categoryAttr.event);
             }
         }
     }
@@ -779,16 +778,16 @@ void Command::dispatchAll()
             return;
         }
 
-        for ([[maybe_unused]] const auto& [categoryName, categoryTrait] : taskDispatcher.extraChoiceRegistry
+        for ([[maybe_unused]] const auto& [categoryName, categoryAttr] : taskDispatcher.extraChoiceRegistry
                  | std::views::filter([this](const auto& subCLIPair)
                                       { return taskDispatcher.extraChecklist.at(subCLIPair.first).present(); })
                  | std::views::values | std::views::join)
         {
             std::visit(
                 utility::common::VisitorOverload{
-                    [this, &candidates = categoryTrait.choices](auto&& event)
+                    [this, &candidates = categoryAttr.choices](auto&& event)
                     { applyingForwarder.onMessage(action::RunCandidates<std::decay_t<decltype(event)>>{candidates}); }},
-                categoryTrait.event);
+                categoryAttr.event);
         }
     }
 }
@@ -924,7 +923,7 @@ void Command::displayVersionInfo() const
 {
     validateDependencies();
 
-    const auto basicInfo = std::format(
+    auto briefReview = std::format(
         "\033[7m\033[49m{}"
 #ifndef NDEBUG
         "            DEBUG VERSION {} "
@@ -934,9 +933,14 @@ void Command::displayVersionInfo() const
         "\033[0m\n",
         note::banner(),
         mainCLI.version());
-    const auto additionalInfo = std::format(
-        "{}\nBuilt with {} for {} on {}.\n", note::copyright(), note::compiler(), note::processor(), note::date());
-    std::cout << basicInfo << additionalInfo << std::flush;
+    std::format_to(
+        std::back_inserter(briefReview),
+        "{}\nBuilt with {} for {} on {}.",
+        note::copyright(),
+        note::compiler(),
+        note::processor(),
+        note::date());
+    std::cout << briefReview << std::endl;
 }
 
 //! @brief Perform the specific operation for Category::console.
