@@ -234,10 +234,10 @@ public:
     //! @tparam Event - type of triggered event
     //! @param event - event to be processed
     template <typename Event>
-    inline void processEvent(const Event& event);
+    void processEvent(const Event& event);
     //! @brief Get current state.
     //! @return State current state
-    inline State currentState() const;
+    State currentState() const;
 
 private:
     //! @brief The base row of the transition table.
@@ -373,7 +373,7 @@ protected:
     //! @param event - event to be processed
     //! @return current state
     template <typename Event>
-    inline State noTransition(const Event& event);
+    State noTransition(const Event& event);
 
     //! @brief Default row of the transition table.
     //! @tparam Source - source state
@@ -476,7 +476,7 @@ protected:
 
 template <typename Derived, typename State>
 template <typename Event>
-inline void FSM<Derived, State>::processEvent(const Event& event)
+void FSM<Derived, State>::processEvent(const Event& event)
 {
     const std::lock_guard<std::recursive_mutex> lock(mtx);
     using Rows = typename ByEvent<Event, typename Derived::TransitionTable>::Type;
@@ -486,7 +486,7 @@ inline void FSM<Derived, State>::processEvent(const Event& event)
 }
 
 template <typename Derived, typename State>
-inline State FSM<Derived, State>::currentState() const
+State FSM<Derived, State>::currentState() const
 {
     const std::lock_guard<std::recursive_mutex> lock(mtx);
     return state;
@@ -494,7 +494,7 @@ inline State FSM<Derived, State>::currentState() const
 
 template <typename Derived, typename State>
 template <typename Event>
-inline State FSM<Derived, State>::noTransition(const Event& /*event*/)
+State FSM<Derived, State>::noTransition(const Event& /*event*/)
 {
     const std::lock_guard<std::recursive_mutex> lock(mtx);
     return state;

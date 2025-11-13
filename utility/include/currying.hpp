@@ -123,13 +123,13 @@ public:
     //! @param args - function arguments tuple
     //! @return curried result
     template <typename... Args>
-    inline auto curry(std::tuple<Args...>&& args) const&;
+    auto curry(std::tuple<Args...>&& args) const&;
     //! @brief To curry.
     //! @tparam Args - type of function arguments
     //! @param args - function arguments tuple
     //! @return curried result
     template <typename... Args>
-    inline auto curry(std::tuple<Args...>&& args) &&;
+    auto curry(std::tuple<Args...>&& args) &&;
 
 private:
     //! @brief Wrapped function.
@@ -148,8 +148,7 @@ decltype(auto) Curried<Call, std::tuple<CurriedArgs...>, std::tuple<UncurriedArg
 
 template <typename Call, typename... CurriedArgs, typename... UncurriedArgs>
 template <typename... Args>
-inline auto Curried<Call, std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>::curry(
-    std::tuple<Args...>&& args) const&
+auto Curried<Call, std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>::curry(std::tuple<Args...>&& args) const&
 {
     using OverlayCurried = Curried<
         Call,
@@ -160,8 +159,7 @@ inline auto Curried<Call, std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs..
 
 template <typename Call, typename... CurriedArgs, typename... UncurriedArgs>
 template <typename... Args>
-inline auto Curried<Call, std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>::curry(
-    std::tuple<Args...>&& args) &&
+auto Curried<Call, std::tuple<CurriedArgs...>, std::tuple<UncurriedArgs...>>::curry(std::tuple<Args...>&& args) &&
 {
     using OverlayCurried = Curried<
         Call,
