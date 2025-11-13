@@ -159,6 +159,14 @@ struct EnumCheck<Enum, Value, Next...> : private EnumCheck<Enum, Next...>
     }
 };
 
+//! @brief Helper type for the visitor.
+//! @tparam Ts - type of visitors
+template <typename... Ts>
+struct VisitorOverload : public Ts...
+{
+    using Ts::operator()...;
+};
+
 //! @brief Closure wrapper.
 //! @tparam Func - type of callable function
 //! @tparam Op - type of call operator

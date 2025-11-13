@@ -269,7 +269,7 @@ private:
             //! @brief The candidates for the choice.
             const std::vector<std::string> choices;
             //! @brief The internal event for applying.
-            const action::Event event;
+            const action::EventType event;
         };
         //! @brief Alias for the map of sub-cli's category name and Attr.
         using CategoryMap = std::map<std::string, Attr>;

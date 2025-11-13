@@ -323,85 +323,83 @@ public:
     //! @return minified formatted string
     [[nodiscard]] std::string dumpMinified() const;
 
-    //! @brief Valid data type object's helper type for the visitor.
-    //! @tparam Ts - type of visitors
-    template <typename... Ts>
-    struct ValidDataVisitor : public Ts...
-    {
-        using Ts::operator()...;
-    };
-    //! @brief Explicit deduction guide for ValidDataVisitor.
-    //! @tparam Ts - type of visitors
-    template <typename... Ts>
-    ValidDataVisitor(Ts...) -> ValidDataVisitor<Ts...>;
-    //! @brief Alias for the pointer of Object. Non-fundamental type.
-    using ObjectPtr = std::shared_ptr<Object>;
-    //! @brief Alias for the pointer of Array. Non-fundamental type.
-    using ArrayPtr = std::shared_ptr<Array>;
-    //! @brief Alias for the pointer of String. Non-fundamental type.
-    using StringPtr = std::shared_ptr<String>;
-    //! @brief Alias for the value in the data.
-    using ValueType = std::variant<std::monostate, Null, ObjectPtr, ArrayPtr, StringPtr, Floating, Integral, Boolean>;
     //! @brief The data that stores JSON information.
-    struct ValidData
+    struct Data
     {
-        //! @brief Construct a new ValidData object.
-        ValidData() : value{nullptr} {}
-        //! @brief Construct a new ValidData object.
+        //! @brief Construct a new  Data object.
+        Data() : value{nullptr} {}
+        //! @brief Construct a new  Data object.
         //! @param s - string value
-        explicit ValidData(const String& s) : value{std::make_shared<String>(s)} {}
-        //! @brief Construct a new ValidData object.
+        explicit Data(const String& s) : value{std::make_shared<String>(s)} {}
+        //! @brief Construct a new  Data object.
         //! @param f - floating value
-        explicit ValidData(const Floating f) : value{f} {}
-        //! @brief Construct a new ValidData object.
+        explicit Data(const Floating f) : value{f} {}
+        //! @brief Construct a new  Data object.
         //! @param i - integral value
-        explicit ValidData(const Integral i) : value{i} {}
-        //! @brief Construct a new ValidData object.
+        explicit Data(const Integral i) : value{i} {}
+        //! @brief Construct a new  Data object.
         //! @param b - boolean value
-        explicit ValidData(const Boolean b) : value{b} {}
+        explicit Data(const Boolean b) : value{b} {}
 
+        //! @brief Alias for the pointer of Object. Non-fundamental type.
+        using ObjectPtr = std::shared_ptr<Object>;
+        //! @brief Alias for the pointer of Array. Non-fundamental type.
+        using ArrayPtr = std::shared_ptr<Array>;
+        //! @brief Alias for the pointer of String. Non-fundamental type.
+        using StringPtr = std::shared_ptr<String>;
+        //! @brief Alias for the data's value type.
+        using ValueType =
+            std::variant<std::monostate, Null, ObjectPtr, ArrayPtr, StringPtr, Floating, Integral, Boolean>;
         //! @brief Value of the data.
         ValueType value;
     } /** @brief JSON valid data. */ data;
 
 private:
-    //! @brief Set the data type.
-    //! @tparam Data - type of data
-    template <typename Data>
-    void setType();
+    //! @brief Ensure the target type has been set.
+    //! @tparam Type - type of data
+    template <typename Type>
+    void ensureType();
     //! @brief Check whether it holds data.
-    //! @tparam Data - type of data
+    //! @tparam Type - type of data
     //! @return holds or not
-    template <typename Data>
+    template <typename Type>
     [[nodiscard]] bool holdsData() const;
     //! @brief Get the data.
-    //! @tparam Data - type of data
+    //! @tparam Type - type of data
     //! @return data value
-    template <typename Data>
+    template <typename Type>
     [[nodiscard]] auto getData() const;
+
+    //! @brief Data's value object's helper type for the visitor.
+    //! @tparam Ts - type of visitors
+    template <typename... Ts>
+    struct ValueVisitor : public Ts...
+    {
+        using Ts::operator()...;
+    };
 
 protected:
     friend std::ostream& operator<<(std::ostream& os, const JSON& json);
 };
 
-template <typename Data>
+template <typename Type>
 auto JSON::getData() const
 {
-    if constexpr (std::is_same_v<Data, Object>)
+    if constexpr (std::is_same_v<Type, Object>)
     {
-        return std::get<ObjectPtr>(data.value);
+        return std::get<Data::ObjectPtr>(data.value);
     }
-    else if constexpr (std::is_same_v<Data, Array>)
+    else if constexpr (std::is_same_v<Type, Array>)
     {
-        return std::get<ArrayPtr>(data.value);
+        return std::get<Data::ArrayPtr>(data.value);
     }
-    else if constexpr (std::is_same_v<Data, String>)
+    else if constexpr (std::is_same_v<Type, String>)
     {
-        return std::get<StringPtr>(data.value);
+        return std::get<Data::StringPtr>(data.value);
     }
     else
     {
-        return std::get<Data>(data.value);
+        return std::get<Type>(data.value);
     }
 }
 
@@ -409,7 +407,7 @@ auto JSON::getData() const
 template <typename Value>
 std::enable_if_t<std::is_convertible_v<Value, std::string>, JSON&> JSON::operator=(const Value s)
 {
-    setType<String>();
+    ensureType<String>();
     *getData<String>() = String{s};
     return *this;
 }
@@ -417,7 +415,7 @@ std::enable_if_t<std::is_convertible_v<Value, std::string>, JSON&> JSON::operato
 template <typename Value>
 std::enable_if_t<std::is_floating_point_v<Value>, JSON&> JSON::operator=(const Value f)
 {
-    setType<Floating>();
+    ensureType<Floating>();
     data.value = static_cast<Floating>(f);
     return *this;
 }
@@ -425,7 +423,7 @@ std::enable_if_t<std::is_floating_point_v<Value>, JSON&> JSON::operator=(const V
 template <typename Value>
 std::enable_if_t<std::is_integral_v<Value> && !std::is_same_v<Value, bool>, JSON&> JSON::operator=(const Value i)
 {
-    setType<Integral>();
+    ensureType<Integral>();
     data.value = static_cast<Integral>(i);
     return *this;
 }
@@ -433,7 +431,7 @@ std::enable_if_t<std::is_integral_v<Value> && !std::is_same_v<Value, bool>, JSON
 template <typename Value>
 std::enable_if_t<std::is_same_v<Value, bool>, JSON&> JSON::operator=(const Value b)
 {
-    setType<Boolean>();
+    ensureType<Boolean>();
     data.value = static_cast<Boolean>(b);
     return *this;
 }
@@ -442,7 +440,7 @@ std::enable_if_t<std::is_same_v<Value, bool>, JSON&> JSON::operator=(const Value
 template <typename Item>
 void JSON::append(const Item item)
 {
-    setType<Array>();
+    ensureType<Array>();
     getData<Array>()->emplace_back(item);
 }
 
@@ -453,62 +451,62 @@ void JSON::append(const I0 item0, const Is... items)
     append(items...);
 }
 
-template <typename Data>
-void JSON::setType()
+template <typename Type>
+void JSON::ensureType()
 {
-    if (holdsData<Data>())
+    if (holdsData<Type>())
     {
         return;
     }
 
-    if constexpr (std::is_same_v<Data, Null>)
+    if constexpr (std::is_same_v<Type, Null>)
     {
-        data = ValidData{};
+        data = Data{};
     }
-    else if constexpr (std::is_same_v<Data, Object>)
+    else if constexpr (std::is_same_v<Type, Object>)
     {
         data.value = std::make_shared<Object>();
     }
-    else if constexpr (std::is_same_v<Data, Array>)
+    else if constexpr (std::is_same_v<Type, Array>)
     {
         data.value = std::make_shared<Array>();
     }
-    else if constexpr (std::is_same_v<Data, String>)
+    else if constexpr (std::is_same_v<Type, String>)
     {
         data.value = std::make_shared<String>();
     }
-    else if constexpr (std::is_same_v<Data, Floating>)
+    else if constexpr (std::is_same_v<Type, Floating>)
     {
         data.value = static_cast<Floating>(0.0);
     }
-    else if constexpr (std::is_same_v<Data, Integral>)
+    else if constexpr (std::is_same_v<Type, Integral>)
     {
         data.value = static_cast<Integral>(0);
     }
-    else if constexpr (std::is_same_v<Data, Boolean>)
+    else if constexpr (std::is_same_v<Type, Boolean>)
     {
         data.value = static_cast<Boolean>(false);
     }
 }
 
-template <typename Data>
+template <typename Type>
 bool JSON::holdsData() const
 {
-    if constexpr (std::is_same_v<Data, Object>)
+    if constexpr (std::is_same_v<Type, Object>)
     {
-        return std::holds_alternative<ObjectPtr>(data.value);
+        return std::holds_alternative<Data::ObjectPtr>(data.value);
     }
-    else if constexpr (std::is_same_v<Data, Array>)
+    else if constexpr (std::is_same_v<Type, Array>)
     {
-        return std::holds_alternative<ArrayPtr>(data.value);
+        return std::holds_alternative<Data::ArrayPtr>(data.value);
     }
-    else if constexpr (std::is_same_v<Data, String>)
+    else if constexpr (std::is_same_v<Type, String>)
     {
-        return std::holds_alternative<StringPtr>(data.value);
+        return std::holds_alternative<Data::StringPtr>(data.value);
     }
     else
     {
-        return std::holds_alternative<Data>(data.value);
+        return std::holds_alternative<Type>(data.value);
     }
 }
 

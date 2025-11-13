@@ -407,25 +407,25 @@ JSON::JSON(const Type type)
     switch (type)
     {
         case Type::null:
-            setType<Null>();
+            ensureType<Null>();
             break;
         case Type::object:
-            setType<Object>();
+            ensureType<Object>();
             break;
         case Type::array:
-            setType<Array>();
+            ensureType<Array>();
             break;
         case Type::string:
-            setType<String>();
+            ensureType<String>();
             break;
         case Type::floating:
-            setType<Floating>();
+            ensureType<Floating>();
             break;
         case Type::integral:
-            setType<Integral>();
+            ensureType<Integral>();
             break;
         case Type::boolean:
-            setType<Boolean>();
+            ensureType<Boolean>();
             break;
         default:
             break;
@@ -434,7 +434,7 @@ JSON::JSON(const Type type)
 
 JSON::JSON(const std::initializer_list<JSON>& list)
 {
-    setType<Object>();
+    ensureType<Object>();
     for (const auto* iterator = list.begin(); iterator != list.end(); std::advance(iterator, 2))
     {
         operator[](iterator->asString()) = *std::next(iterator);
@@ -443,7 +443,7 @@ JSON::JSON(const std::initializer_list<JSON>& list)
 
 JSON::JSON(JSON&& json) noexcept : data{std::move(json.data)}
 {
-    json.data = ValidData{};
+    json.data = Data{};
 }
 
 JSON& JSON::operator=(JSON&& json) noexcept
@@ -473,13 +473,13 @@ JSON JSON::load(const std::string_view fmt)
 
 JSON& JSON::operator[](const std::string& key)
 {
-    setType<Object>();
+    ensureType<Object>();
     return getData<Object>()->operator[](key);
 }
 
 JSON& JSON::operator[](std::size_t index)
 {
-    setType<Array>();
+    ensureType<Array>();
     const auto& arrayVal = getData<Array>();
     if (index >= arrayVal->size())
     {
@@ -516,9 +516,9 @@ int JSON::length() const
 int JSON::size() const
 {
     return std::visit(
-        ValidDataVisitor{
-            [](const ObjectPtr& val) { return static_cast<int>(val->size()); },
-            [](const ArrayPtr& val) { return static_cast<int>(val->size()); },
+        ValueVisitor{
+            [](const Data::ObjectPtr& val) { return static_cast<int>(val->size()); },
+            [](const Data::ArrayPtr& val) { return static_cast<int>(val->size()); },
             [](const auto& /*val*/) { return -1; }},
         data.value);
 }
@@ -566,10 +566,10 @@ bool JSON::isBooleanType() const
 JSON::String JSON::asString() const
 {
     return std::visit(
-        ValidDataVisitor{
-            [](const StringPtr& val) -> String { return jsonEscape(*val); },
-            [this](const ObjectPtr& /*val*/) -> String { return dumpMinified(); },
-            [this](const ArrayPtr& /*val*/) -> String { return dumpMinified(); },
+        ValueVisitor{
+            [](const Data::StringPtr& val) -> String { return jsonEscape(*val); },
+            [this](const Data::ObjectPtr& /*val*/) -> String { return dumpMinified(); },
+            [this](const Data::ArrayPtr& /*val*/) -> String { return dumpMinified(); },
             [](const Floating& val) -> String { return std::to_string(val); },
             [](const Integral& val) -> String { return std::to_string(val); },
             [](const Boolean& val) -> String { return val ? "true" : "false"; },
@@ -581,10 +581,10 @@ JSON::String JSON::asString() const
 JSON::String JSON::asUnescapedString() const
 {
     return std::visit(
-        ValidDataVisitor{
-            [](const StringPtr& val) -> String { return *val; },
-            [this](const ObjectPtr& /*val*/) -> String { return dumpMinified(); },
-            [this](const ArrayPtr& /*val*/) -> String { return dumpMinified(); },
+        ValueVisitor{
+            [](const Data::StringPtr& val) -> String { return *val; },
+            [this](const Data::ObjectPtr& /*val*/) -> String { return dumpMinified(); },
+            [this](const Data::ArrayPtr& /*val*/) -> String { return dumpMinified(); },
             [](const Floating& val) -> String { return std::to_string(val); },
             [](const Integral& val) -> String { return std::to_string(val); },
             [](const Boolean& val) -> String { return val ? "true" : "false"; },
@@ -596,11 +596,11 @@ JSON::String JSON::asUnescapedString() const
 JSON::Floating JSON::asFloating() const
 {
     return std::visit(
-        ValidDataVisitor{
+        ValueVisitor{
             [](const Floating& val) -> Floating { return val; },
             [](const Integral& val) -> Floating { return val; },
             [](const Boolean& val) -> Floating { return val; },
-            [](const StringPtr& val) -> Floating
+            [](const Data::StringPtr& val) -> Floating
             {
                 double parsed = 0.0;
                 try
@@ -622,11 +622,11 @@ JSON::Floating JSON::asFloating() const
 JSON::Integral JSON::asIntegral() const
 {
     return std::visit(
-        ValidDataVisitor{
+        ValueVisitor{
             [](const Integral& val) -> Integral { return val; },
             [](const Boolean& val) -> Integral { return val; },
             [](const Floating& val) -> Integral { return val; },
-            [](const StringPtr& val) -> Integral
+            [](const Data::StringPtr& val) -> Integral
             {
                 long long parsed = 0;
                 if (const auto result = std::from_chars(val->c_str(), val->c_str() + val->size(), parsed);
@@ -644,11 +644,11 @@ JSON::Integral JSON::asIntegral() const
 JSON::Boolean JSON::asBoolean() const
 {
     return std::visit(
-        ValidDataVisitor{
+        ValueVisitor{
             [](const Boolean& val) -> Boolean { return val; },
             [](const Floating& val) -> Boolean { return val; },
             [](const Integral& val) -> Boolean { return val; },
-            [](const StringPtr& val) -> Boolean
+            [](const Data::StringPtr& val) -> Boolean
             {
                 if (val->find("true") != std::string::npos)
                 {
@@ -694,9 +694,9 @@ JSON::JSONConstWrapper<JSON::Array> JSON::arrayRange() const
 std::string JSON::dump(const std::uint32_t depth, const std::string_view tab) const
 {
     return std::visit(
-        ValidDataVisitor{
+        ValueVisitor{
             [](const Null& /*val*/) -> std::string { return "null"; },
-            [depth, &tab](const ObjectPtr& val) -> std::string
+            [depth, &tab](const Data::ObjectPtr& val) -> std::string
             {
                 std::string pad{};
                 for (std::uint32_t i = 0; i < depth; ++i)
@@ -716,7 +716,7 @@ std::string JSON::dump(const std::uint32_t depth, const std::string_view tab) co
                 s += ('\n' + pad.erase(0, tab.length()) + '}');
                 return s;
             },
-            [depth, &tab](const ArrayPtr& val) -> std::string
+            [depth, &tab](const Data::ArrayPtr& val) -> std::string
             {
                 std::string s("[");
                 for (bool skip = true; const auto& p : *val)
@@ -731,7 +731,7 @@ std::string JSON::dump(const std::uint32_t depth, const std::string_view tab) co
                 s += ']';
                 return s;
             },
-            [](const StringPtr& val) -> std::string { return '\"' + jsonEscape(*val) + '\"'; },
+            [](const Data::StringPtr& val) -> std::string { return '\"' + jsonEscape(*val) + '\"'; },
             [](const Floating& val) -> std::string { return std::to_string(val); },
             [](const Integral& val) -> std::string { return std::to_string(val); },
             [](const Boolean& val) -> std::string { return val ? "true" : "false"; },
@@ -742,9 +742,9 @@ std::string JSON::dump(const std::uint32_t depth, const std::string_view tab) co
 std::string JSON::dumpMinified() const
 {
     return std::visit(
-        ValidDataVisitor{
+        ValueVisitor{
             [](const Null& /*val*/) -> std::string { return "null"; },
-            [](const ObjectPtr& val) -> std::string
+            [](const Data::ObjectPtr& val) -> std::string
             {
                 std::string s("{");
                 for (bool skip = true; const auto& p : *val)
@@ -759,7 +759,7 @@ std::string JSON::dumpMinified() const
                 s += '}';
                 return s;
             },
-            [](const ArrayPtr& val) -> std::string
+            [](const Data::ArrayPtr& val) -> std::string
             {
                 std::string s("[");
                 for (bool skip = true; const auto& p : *val)
@@ -774,7 +774,7 @@ std::string JSON::dumpMinified() const
                 s += ']';
                 return s;
             },
-            [](const StringPtr& val) -> std::string { return '\"' + jsonEscape(*val) + '\"'; },
+            [](const Data::StringPtr& val) -> std::string { return '\"' + jsonEscape(*val) + '\"'; },
             [](const Floating& val) -> std::string { return std::to_string(val); },
             [](const Integral& val) -> std::string { return std::to_string(val); },
             [](const Boolean& val) -> std::string { return val ? "true" : "false"; },

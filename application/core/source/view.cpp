@@ -608,7 +608,7 @@ std::size_t View::buildCustomTLVPacket<View::OptProfile>(const Args& /*args*/, c
 std::size_t View::buildResponse(const std::string& reqPlaintext, char* const respBuffer)
 {
     return std::visit(
-        OptionVisitor{
+        utility::common::VisitorOverload{
             [&respBuffer](const OptDepend& opt) { return buildCustomTLVPacket<OptDepend>(opt.args, respBuffer); },
             [&respBuffer](const OptExecute& opt) { return buildCustomTLVPacket<OptExecute>(opt.args, respBuffer); },
             [&respBuffer](const OptJournal& opt) { return buildCustomTLVPacket<OptJournal>(opt.args, respBuffer); },

@@ -420,19 +420,8 @@ struct MessageForwarder : public MessageTypes::WithInterface<ForwardBase>::AsPar
 {
 };
 
-//! @brief Applying event type object's helper type for the visitor.
-//! @tparam Ts - type of visitors
-template <typename... Ts>
-struct EventVisitor : public Ts...
-{
-    using Ts::operator()...;
-};
-//! @brief Explicit deduction guide for EventVisitor.
-//! @tparam Ts - type of visitors
-template <typename... Ts>
-EventVisitor(Ts...) -> EventVisitor<Ts...>;
-//! @brief Alias for the applied action event.
-using Event = std::variant<
+//! @brief Alias for the applied action event type.
+using EventType = std::variant<
     reg_algo::MatchMethod,
     reg_algo::NotationMethod,
     reg_algo::OptimalMethod,
