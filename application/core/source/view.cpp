@@ -616,7 +616,7 @@ std::size_t View::buildResponse(const std::string& reqPlaintext, char* const res
             [&respBuffer](const OptProfile& opt) { return buildCustomTLVPacket<OptProfile>(opt.args, respBuffer); },
             [](const auto& opt)
             {
-                if (dynamic_cast<const OptBase*>(std::addressof(opt)))
+                if (const auto* origPtr = std::addressof(opt); dynamic_cast<const OptBase*>(origPtr))
                 {
                     throw std::runtime_error{
                         "The option is unprocessed due to unregistered or potential registration failures (typeid: "
