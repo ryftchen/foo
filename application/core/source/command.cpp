@@ -733,7 +733,7 @@ void Command::precheck()
             for (const auto& choice : subCLI.get<std::vector<std::string>>(categoryName))
             {
                 std::visit(
-                    action::EventVisitor{
+                    utility::common::VisitorOverload{
                         [this, &choice](auto&& event)
                         { applyingForwarder.onMessage(action::SetChoice<std::decay_t<decltype(event)>>{choice}); }},
                     categoryTrait.event);
@@ -785,7 +785,7 @@ void Command::dispatchAll()
                  | std::views::values | std::views::join)
         {
             std::visit(
-                action::EventVisitor{
+                utility::common::VisitorOverload{
                     [this, &candidates = categoryTrait.choices](auto&& event)
                     { applyingForwarder.onMessage(action::RunCandidates<std::decay_t<decltype(event)>>{candidates}); }},
                 categoryTrait.event);

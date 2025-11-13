@@ -189,17 +189,6 @@ private:
         //! @brief The option description.
         static constexpr const char* const description{"display current configuration"};
     };
-    //! @brief Option type object's helper type for the visitor.
-    //! @tparam Ts - type of visitors
-    template <typename... Ts>
-    struct OptionVisitor : public Ts...
-    {
-        using Ts::operator()...;
-    };
-    //! @brief Explicit deduction guide for OptionVisitor.
-    //! @tparam Ts - type of visitors
-    template <typename... Ts>
-    OptionVisitor(Ts...) -> OptionVisitor<Ts...>;
     //! @brief Alias for the option type.
     using OptionType = std::variant<OptBase, OptDepend, OptExecute, OptJournal, OptMonitor, OptProfile>;
     //! @brief Alias for the map of option name and OptionAttr.
