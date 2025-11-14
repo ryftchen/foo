@@ -146,17 +146,18 @@ catch (const std::exception& err)
 void applyingMatch(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::match;
-    const auto& bits = categoryOpts<category>();
-    if (bits.none())
+    const auto& spec = categoryOpts<category>();
+    if (spec.none())
     {
         return;
     }
+    MACRO_ASSERT(spec.size() == candidates.size());
 
     const std::string_view title = algorithm::match::description();
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(bits.count());
+    auto* const allocatedJob = pooling.newEntry(spec.count());
     using match::InputBuilder, match::input::patternString;
     static_assert(InputBuilder::maxDigit > patternString.length());
     const auto inputData = std::make_shared<InputBuilder>(patternString);
@@ -176,7 +177,7 @@ void applyingMatch(const std::vector<std::string>& candidates)
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     for (const auto index :
-         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
+         std::views::iota(0U, spec.size()) | std::views::filter([&spec](const auto i) { return spec.test(i); }))
     {
         const auto& choice = candidates.at(index);
         switch (utility::common::bkdrHash(choice.c_str()))
@@ -249,17 +250,18 @@ catch (const std::exception& err)
 void applyingNotation(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::notation;
-    const auto& bits = categoryOpts<category>();
-    if (bits.none())
+    const auto& spec = categoryOpts<category>();
+    if (spec.none())
     {
         return;
     }
+    MACRO_ASSERT(spec.size() == candidates.size());
 
     const std::string_view title = algorithm::notation::description();
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(bits.count());
+    auto* const allocatedJob = pooling.newEntry(spec.count());
     using notation::InputBuilder, notation::input::infixString;
     const auto inputData = std::make_shared<InputBuilder>(infixString);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
@@ -269,7 +271,7 @@ void applyingNotation(const std::vector<std::string>& candidates)
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     for (const auto index :
-         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
+         std::views::iota(0U, spec.size()) | std::views::filter([&spec](const auto i) { return spec.test(i); }))
     {
         const auto& choice = candidates.at(index);
         switch (utility::common::bkdrHash(choice.c_str()))
@@ -361,17 +363,18 @@ catch (const std::exception& err)
 void applyingOptimal(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::optimal;
-    const auto& bits = categoryOpts<category>();
-    if (bits.none())
+    const auto& spec = categoryOpts<category>();
+    if (spec.none())
     {
         return;
     }
+    MACRO_ASSERT(spec.size() == candidates.size());
 
     const std::string_view title = algorithm::optimal::description();
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(bits.count());
+    auto* const allocatedJob = pooling.newEntry(spec.count());
     using optimal::InputBuilder, optimal::input::SphericalBessel, optimal::Function;
     static_assert(algorithm::optimal::epsilon >= std::numeric_limits<double>::epsilon());
     const auto inputData = std::make_shared<InputBuilder>(
@@ -391,7 +394,7 @@ void applyingOptimal(const std::vector<std::string>& candidates)
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     for (const auto index :
-         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
+         std::views::iota(0U, spec.size()) | std::views::filter([&spec](const auto i) { return spec.test(i); }))
     {
         const auto& choice = candidates.at(index);
         switch (utility::common::bkdrHash(choice.c_str()))
@@ -487,17 +490,18 @@ catch (const std::exception& err)
 void applyingSearch(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::search;
-    const auto& bits = categoryOpts<category>();
-    if (bits.none())
+    const auto& spec = categoryOpts<category>();
+    if (spec.none())
     {
         return;
     }
+    MACRO_ASSERT(spec.size() == candidates.size());
 
     const std::string_view title = algorithm::search::description();
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(bits.count());
+    auto* const allocatedJob = pooling.newEntry(spec.count());
     using search::InputBuilder, search::input::arrayLength, search::input::arrayRangeMin, search::input::arrayRangeMax;
     static_assert((arrayRangeMin < arrayRangeMax) && (arrayLength > 0));
     const auto inputData = std::make_shared<InputBuilder<float>>(arrayLength, arrayRangeMin, arrayRangeMax);
@@ -516,7 +520,7 @@ void applyingSearch(const std::vector<std::string>& candidates)
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     for (const auto index :
-         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
+         std::views::iota(0U, spec.size()) | std::views::filter([&spec](const auto i) { return spec.test(i); }))
     {
         const auto& choice = candidates.at(index);
         switch (utility::common::bkdrHash(choice.c_str()))
@@ -612,17 +616,18 @@ catch (const std::exception& err)
 void applyingSort(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::sort;
-    const auto& bits = categoryOpts<category>();
-    if (bits.none())
+    const auto& spec = categoryOpts<category>();
+    if (spec.none())
     {
         return;
     }
+    MACRO_ASSERT(spec.size() == candidates.size());
 
     const std::string_view title = algorithm::sort::description();
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(bits.count());
+    auto* const allocatedJob = pooling.newEntry(spec.count());
     using sort::InputBuilder, sort::input::arrayLength, sort::input::arrayRangeMin, sort::input::arrayRangeMax;
     static_assert((arrayRangeMin < arrayRangeMax) && (arrayLength > 0));
     const auto inputData = std::make_shared<InputBuilder<std::int32_t>>(arrayLength, arrayRangeMin, arrayRangeMax);
@@ -635,7 +640,7 @@ void applyingSort(const std::vector<std::string>& candidates)
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     for (const auto index :
-         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
+         std::views::iota(0U, spec.size()) | std::views::filter([&spec](const auto i) { return spec.test(i); }))
     {
         const auto& choice = candidates.at(index);
         switch (utility::common::bkdrHash(choice.c_str()))

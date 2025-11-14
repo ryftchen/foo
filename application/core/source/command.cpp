@@ -704,12 +704,12 @@ catch (const std::exception& err)
 
 void Command::precheck()
 {
-    for (auto& bits = taskDispatcher.nativeCategories;
-         const auto index : std::views::iota(0U, bits.size())
+    for (auto& spec = taskDispatcher.nativeCategories;
+         const auto index : std::views::iota(0U, spec.size())
              | std::views::filter([this](const auto i) { return mainCLI.isUsed(toString(static_cast<Category>(i))); }))
     {
         checkExcessArgs();
-        bits.set(index);
+        spec.set(index);
     }
 
     for (constexpr auto helpArgName = toString(Category::help);
@@ -755,9 +755,9 @@ void Command::dispatchAll()
 {
     if (!taskDispatcher.NativeManager::empty())
     {
-        for (const auto& bits = taskDispatcher.nativeCategories;
+        for (const auto& spec = taskDispatcher.nativeCategories;
              const auto index :
-             std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
+             std::views::iota(0U, spec.size()) | std::views::filter([&spec](const auto i) { return spec.test(i); }))
         {
             builtInNotifier.notify(static_cast<Category>(index));
         }

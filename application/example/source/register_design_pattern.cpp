@@ -68,45 +68,45 @@ template <>
 void setChoice<BehavioralInstance>(const std::string& choice)
 {
     constexpr auto category = Category::behavioral;
-    auto& bits = categoryOpts<category>();
+    auto& spec = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(BehavioralInstance::chainOfResponsibility):
-            bits.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(chainOfResponsibility)));
+            spec.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(chainOfResponsibility)));
             break;
         case abbrLitHash(BehavioralInstance::command):
-            bits.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(command)));
+            spec.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(command)));
             break;
         case abbrLitHash(BehavioralInstance::interpreter):
-            bits.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(interpreter)));
+            spec.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(interpreter)));
             break;
         case abbrLitHash(BehavioralInstance::iterator):
-            bits.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(iterator)));
+            spec.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(iterator)));
             break;
         case abbrLitHash(BehavioralInstance::mediator):
-            bits.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(mediator)));
+            spec.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(mediator)));
             break;
         case abbrLitHash(BehavioralInstance::memento):
-            bits.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(memento)));
+            spec.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(memento)));
             break;
         case abbrLitHash(BehavioralInstance::observer):
-            bits.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(observer)));
+            spec.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(observer)));
             break;
         case abbrLitHash(BehavioralInstance::state):
-            bits.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(state)));
+            spec.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(state)));
             break;
         case abbrLitHash(BehavioralInstance::strategy):
-            bits.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(strategy)));
+            spec.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(strategy)));
             break;
         case abbrLitHash(BehavioralInstance::templateMethod):
-            bits.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(templateMethod)));
+            spec.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(templateMethod)));
             break;
         case abbrLitHash(BehavioralInstance::visitor):
-            bits.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(visitor)));
+            spec.set(mappedPos<BehavioralInstance>(MACRO_STRINGIFY(visitor)));
             break;
         default:
-            bits.reset();
+            spec.reset();
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
@@ -133,27 +133,27 @@ template <>
 void setChoice<CreationalInstance>(const std::string& choice)
 {
     constexpr auto category = Category::creational;
-    auto& bits = categoryOpts<category>();
+    auto& spec = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(CreationalInstance::abstractFactory):
-            bits.set(mappedPos<CreationalInstance>(MACRO_STRINGIFY(abstractFactory)));
+            spec.set(mappedPos<CreationalInstance>(MACRO_STRINGIFY(abstractFactory)));
             break;
         case abbrLitHash(CreationalInstance::builder):
-            bits.set(mappedPos<CreationalInstance>(MACRO_STRINGIFY(builder)));
+            spec.set(mappedPos<CreationalInstance>(MACRO_STRINGIFY(builder)));
             break;
         case abbrLitHash(CreationalInstance::factoryMethod):
-            bits.set(mappedPos<CreationalInstance>(MACRO_STRINGIFY(factoryMethod)));
+            spec.set(mappedPos<CreationalInstance>(MACRO_STRINGIFY(factoryMethod)));
             break;
         case abbrLitHash(CreationalInstance::prototype):
-            bits.set(mappedPos<CreationalInstance>(MACRO_STRINGIFY(prototype)));
+            spec.set(mappedPos<CreationalInstance>(MACRO_STRINGIFY(prototype)));
             break;
         case abbrLitHash(CreationalInstance::singleton):
-            bits.set(mappedPos<CreationalInstance>(MACRO_STRINGIFY(singleton)));
+            spec.set(mappedPos<CreationalInstance>(MACRO_STRINGIFY(singleton)));
             break;
         default:
-            bits.reset();
+            spec.reset();
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
@@ -180,33 +180,33 @@ template <>
 void setChoice<StructuralInstance>(const std::string& choice)
 {
     constexpr auto category = Category::structural;
-    auto& bits = categoryOpts<category>();
+    auto& spec = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(StructuralInstance::adapter):
-            bits.set(mappedPos<StructuralInstance>(MACRO_STRINGIFY(adapter)));
+            spec.set(mappedPos<StructuralInstance>(MACRO_STRINGIFY(adapter)));
             break;
         case abbrLitHash(StructuralInstance::bridge):
-            bits.set(mappedPos<StructuralInstance>(MACRO_STRINGIFY(bridge)));
+            spec.set(mappedPos<StructuralInstance>(MACRO_STRINGIFY(bridge)));
             break;
         case abbrLitHash(StructuralInstance::composite):
-            bits.set(mappedPos<StructuralInstance>(MACRO_STRINGIFY(composite)));
+            spec.set(mappedPos<StructuralInstance>(MACRO_STRINGIFY(composite)));
             break;
         case abbrLitHash(StructuralInstance::decorator):
-            bits.set(mappedPos<StructuralInstance>(MACRO_STRINGIFY(decorator)));
+            spec.set(mappedPos<StructuralInstance>(MACRO_STRINGIFY(decorator)));
             break;
         case abbrLitHash(StructuralInstance::facade):
-            bits.set(mappedPos<StructuralInstance>(MACRO_STRINGIFY(facade)));
+            spec.set(mappedPos<StructuralInstance>(MACRO_STRINGIFY(facade)));
             break;
         case abbrLitHash(StructuralInstance::flyweight):
-            bits.set(mappedPos<StructuralInstance>(MACRO_STRINGIFY(flyweight)));
+            spec.set(mappedPos<StructuralInstance>(MACRO_STRINGIFY(flyweight)));
             break;
         case abbrLitHash(StructuralInstance::proxy):
-            bits.set(mappedPos<StructuralInstance>(MACRO_STRINGIFY(proxy)));
+            spec.set(mappedPos<StructuralInstance>(MACRO_STRINGIFY(proxy)));
             break;
         default:
-            bits.reset();
+            spec.reset();
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
