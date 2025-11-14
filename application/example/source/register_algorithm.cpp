@@ -68,27 +68,27 @@ template <>
 void setChoice<MatchMethod>(const std::string& choice)
 {
     constexpr auto category = Category::match;
-    auto& bits = categoryOpts<category>();
+    auto& spec = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(MatchMethod::rabinKarp):
-            bits.set(mappedPos<MatchMethod>(MACRO_STRINGIFY(rabinKarp)));
+            spec.set(mappedPos<MatchMethod>(MACRO_STRINGIFY(rabinKarp)));
             break;
         case abbrLitHash(MatchMethod::knuthMorrisPratt):
-            bits.set(mappedPos<MatchMethod>(MACRO_STRINGIFY(knuthMorrisPratt)));
+            spec.set(mappedPos<MatchMethod>(MACRO_STRINGIFY(knuthMorrisPratt)));
             break;
         case abbrLitHash(MatchMethod::boyerMoore):
-            bits.set(mappedPos<MatchMethod>(MACRO_STRINGIFY(boyerMoore)));
+            spec.set(mappedPos<MatchMethod>(MACRO_STRINGIFY(boyerMoore)));
             break;
         case abbrLitHash(MatchMethod::horspool):
-            bits.set(mappedPos<MatchMethod>(MACRO_STRINGIFY(horspool)));
+            spec.set(mappedPos<MatchMethod>(MACRO_STRINGIFY(horspool)));
             break;
         case abbrLitHash(MatchMethod::sunday):
-            bits.set(mappedPos<MatchMethod>(MACRO_STRINGIFY(sunday)));
+            spec.set(mappedPos<MatchMethod>(MACRO_STRINGIFY(sunday)));
             break;
         default:
-            bits.reset();
+            spec.reset();
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
@@ -115,18 +115,18 @@ template <>
 void setChoice<NotationMethod>(const std::string& choice)
 {
     constexpr auto category = Category::notation;
-    auto& bits = categoryOpts<category>();
+    auto& spec = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(NotationMethod::prefix):
-            bits.set(mappedPos<NotationMethod>(MACRO_STRINGIFY(prefix)));
+            spec.set(mappedPos<NotationMethod>(MACRO_STRINGIFY(prefix)));
             break;
         case abbrLitHash(NotationMethod::postfix):
-            bits.set(mappedPos<NotationMethod>(MACRO_STRINGIFY(postfix)));
+            spec.set(mappedPos<NotationMethod>(MACRO_STRINGIFY(postfix)));
             break;
         default:
-            bits.reset();
+            spec.reset();
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
@@ -153,30 +153,30 @@ template <>
 void setChoice<OptimalMethod>(const std::string& choice)
 {
     constexpr auto category = Category::optimal;
-    auto& bits = categoryOpts<category>();
+    auto& spec = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(OptimalMethod::gradient):
-            bits.set(mappedPos<OptimalMethod>(MACRO_STRINGIFY(gradient)));
+            spec.set(mappedPos<OptimalMethod>(MACRO_STRINGIFY(gradient)));
             break;
         case abbrLitHash(OptimalMethod::tabu):
-            bits.set(mappedPos<OptimalMethod>(MACRO_STRINGIFY(tabu)));
+            spec.set(mappedPos<OptimalMethod>(MACRO_STRINGIFY(tabu)));
             break;
         case abbrLitHash(OptimalMethod::annealing):
-            bits.set(mappedPos<OptimalMethod>(MACRO_STRINGIFY(annealing)));
+            spec.set(mappedPos<OptimalMethod>(MACRO_STRINGIFY(annealing)));
             break;
         case abbrLitHash(OptimalMethod::particle):
-            bits.set(mappedPos<OptimalMethod>(MACRO_STRINGIFY(particle)));
+            spec.set(mappedPos<OptimalMethod>(MACRO_STRINGIFY(particle)));
             break;
         case abbrLitHash(OptimalMethod::ant):
-            bits.set(mappedPos<OptimalMethod>(MACRO_STRINGIFY(ant)));
+            spec.set(mappedPos<OptimalMethod>(MACRO_STRINGIFY(ant)));
             break;
         case abbrLitHash(OptimalMethod::genetic):
-            bits.set(mappedPos<OptimalMethod>(MACRO_STRINGIFY(genetic)));
+            spec.set(mappedPos<OptimalMethod>(MACRO_STRINGIFY(genetic)));
             break;
         default:
-            bits.reset();
+            spec.reset();
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
@@ -203,21 +203,21 @@ template <>
 void setChoice<SearchMethod>(const std::string& choice)
 {
     constexpr auto category = Category::search;
-    auto& bits = categoryOpts<category>();
+    auto& spec = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(SearchMethod::binary):
-            bits.set(mappedPos<SearchMethod>(MACRO_STRINGIFY(binary)));
+            spec.set(mappedPos<SearchMethod>(MACRO_STRINGIFY(binary)));
             break;
         case abbrLitHash(SearchMethod::interpolation):
-            bits.set(mappedPos<SearchMethod>(MACRO_STRINGIFY(interpolation)));
+            spec.set(mappedPos<SearchMethod>(MACRO_STRINGIFY(interpolation)));
             break;
         case abbrLitHash(SearchMethod::fibonacci):
-            bits.set(mappedPos<SearchMethod>(MACRO_STRINGIFY(fibonacci)));
+            spec.set(mappedPos<SearchMethod>(MACRO_STRINGIFY(fibonacci)));
             break;
         default:
-            bits.reset();
+            spec.reset();
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
@@ -244,42 +244,42 @@ template <>
 void setChoice<SortMethod>(const std::string& choice)
 {
     constexpr auto category = Category::sort;
-    auto& bits = categoryOpts<category>();
+    auto& spec = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(SortMethod::bubble):
-            bits.set(mappedPos<SortMethod>(MACRO_STRINGIFY(bubble)));
+            spec.set(mappedPos<SortMethod>(MACRO_STRINGIFY(bubble)));
             break;
         case abbrLitHash(SortMethod::selection):
-            bits.set(mappedPos<SortMethod>(MACRO_STRINGIFY(selection)));
+            spec.set(mappedPos<SortMethod>(MACRO_STRINGIFY(selection)));
             break;
         case abbrLitHash(SortMethod::insertion):
-            bits.set(mappedPos<SortMethod>(MACRO_STRINGIFY(insertion)));
+            spec.set(mappedPos<SortMethod>(MACRO_STRINGIFY(insertion)));
             break;
         case abbrLitHash(SortMethod::shell):
-            bits.set(mappedPos<SortMethod>(MACRO_STRINGIFY(shell)));
+            spec.set(mappedPos<SortMethod>(MACRO_STRINGIFY(shell)));
             break;
         case abbrLitHash(SortMethod::merge):
-            bits.set(mappedPos<SortMethod>(MACRO_STRINGIFY(merge)));
+            spec.set(mappedPos<SortMethod>(MACRO_STRINGIFY(merge)));
             break;
         case abbrLitHash(SortMethod::quick):
-            bits.set(mappedPos<SortMethod>(MACRO_STRINGIFY(quick)));
+            spec.set(mappedPos<SortMethod>(MACRO_STRINGIFY(quick)));
             break;
         case abbrLitHash(SortMethod::heap):
-            bits.set(mappedPos<SortMethod>(MACRO_STRINGIFY(heap)));
+            spec.set(mappedPos<SortMethod>(MACRO_STRINGIFY(heap)));
             break;
         case abbrLitHash(SortMethod::counting):
-            bits.set(mappedPos<SortMethod>(MACRO_STRINGIFY(counting)));
+            spec.set(mappedPos<SortMethod>(MACRO_STRINGIFY(counting)));
             break;
         case abbrLitHash(SortMethod::bucket):
-            bits.set(mappedPos<SortMethod>(MACRO_STRINGIFY(bucket)));
+            spec.set(mappedPos<SortMethod>(MACRO_STRINGIFY(bucket)));
             break;
         case abbrLitHash(SortMethod::radix):
-            bits.set(mappedPos<SortMethod>(MACRO_STRINGIFY(radix)));
+            spec.set(mappedPos<SortMethod>(MACRO_STRINGIFY(radix)));
             break;
         default:
-            bits.reset();
+            spec.reset();
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }

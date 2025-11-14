@@ -111,17 +111,18 @@ catch (const std::exception& err)
 void applyingCache(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::cache;
-    const auto& bits = categoryOpts<category>();
-    if (bits.none())
+    const auto& spec = categoryOpts<category>();
+    if (spec.none())
     {
         return;
     }
+    MACRO_ASSERT(spec.size() == candidates.size());
 
     const std::string_view title = data_structure::cache::description();
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(bits.count());
+    auto* const allocatedJob = pooling.newEntry(spec.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const CacheInstance instance)
     { allocatedJob->enqueue(taskNamer(subTask), cache::structure, instance); };
@@ -129,7 +130,7 @@ void applyingCache(const std::vector<std::string>& candidates)
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
     for (const auto index :
-         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
+         std::views::iota(0U, spec.size()) | std::views::filter([&spec](const auto i) { return spec.test(i); }))
     {
         const auto& choice = candidates.at(index);
         switch (utility::common::bkdrHash(choice.c_str()))
@@ -191,17 +192,18 @@ catch (const std::exception& err)
 void applyingFilter(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::filter;
-    const auto& bits = categoryOpts<category>();
-    if (bits.none())
+    const auto& spec = categoryOpts<category>();
+    if (spec.none())
     {
         return;
     }
+    MACRO_ASSERT(spec.size() == candidates.size());
 
     const std::string_view title = data_structure::filter::description();
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(bits.count());
+    auto* const allocatedJob = pooling.newEntry(spec.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const FilterInstance instance)
     { allocatedJob->enqueue(taskNamer(subTask), filter::structure, instance); };
@@ -209,7 +211,7 @@ void applyingFilter(const std::vector<std::string>& candidates)
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
     for (const auto index :
-         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
+         std::views::iota(0U, spec.size()) | std::views::filter([&spec](const auto i) { return spec.test(i); }))
     {
         const auto& choice = candidates.at(index);
         switch (utility::common::bkdrHash(choice.c_str()))
@@ -268,17 +270,18 @@ catch (const std::exception& err)
 void applyingGraph(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::graph;
-    const auto& bits = categoryOpts<category>();
-    if (bits.none())
+    const auto& spec = categoryOpts<category>();
+    if (spec.none())
     {
         return;
     }
+    MACRO_ASSERT(spec.size() == candidates.size());
 
     const std::string_view title = data_structure::graph::description();
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(bits.count());
+    auto* const allocatedJob = pooling.newEntry(spec.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const GraphInstance instance)
     { allocatedJob->enqueue(taskNamer(subTask), graph::structure, instance); };
@@ -286,7 +289,7 @@ void applyingGraph(const std::vector<std::string>& candidates)
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
     for (const auto index :
-         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
+         std::views::iota(0U, spec.size()) | std::views::filter([&spec](const auto i) { return spec.test(i); }))
     {
         const auto& choice = candidates.at(index);
         switch (utility::common::bkdrHash(choice.c_str()))
@@ -348,17 +351,18 @@ catch (const std::exception& err)
 void applyingHeap(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::heap;
-    const auto& bits = categoryOpts<category>();
-    if (bits.none())
+    const auto& spec = categoryOpts<category>();
+    if (spec.none())
     {
         return;
     }
+    MACRO_ASSERT(spec.size() == candidates.size());
 
     const std::string_view title = data_structure::heap::description();
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(bits.count());
+    auto* const allocatedJob = pooling.newEntry(spec.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const HeapInstance instance)
     { allocatedJob->enqueue(taskNamer(subTask), heap::structure, instance); };
@@ -366,7 +370,7 @@ void applyingHeap(const std::vector<std::string>& candidates)
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
     for (const auto index :
-         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
+         std::views::iota(0U, spec.size()) | std::views::filter([&spec](const auto i) { return spec.test(i); }))
     {
         const auto& choice = candidates.at(index);
         switch (utility::common::bkdrHash(choice.c_str()))
@@ -431,17 +435,18 @@ catch (const std::exception& err)
 void applyingLinear(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::linear;
-    const auto& bits = categoryOpts<category>();
-    if (bits.none())
+    const auto& spec = categoryOpts<category>();
+    if (spec.none())
     {
         return;
     }
+    MACRO_ASSERT(spec.size() == candidates.size());
 
     const std::string_view title = data_structure::linear::description();
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(bits.count());
+    auto* const allocatedJob = pooling.newEntry(spec.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const LinearInstance instance)
     { allocatedJob->enqueue(taskNamer(subTask), linear::structure, instance); };
@@ -449,7 +454,7 @@ void applyingLinear(const std::vector<std::string>& candidates)
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
     for (const auto index :
-         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
+         std::views::iota(0U, spec.size()) | std::views::filter([&spec](const auto i) { return spec.test(i); }))
     {
         const auto& choice = candidates.at(index);
         switch (utility::common::bkdrHash(choice.c_str()))
@@ -514,17 +519,18 @@ catch (const std::exception& err)
 void applyingTree(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::tree;
-    const auto& bits = categoryOpts<category>();
-    if (bits.none())
+    const auto& spec = categoryOpts<category>();
+    if (spec.none())
     {
         return;
     }
+    MACRO_ASSERT(spec.size() == candidates.size());
 
     const std::string_view title = data_structure::tree::description();
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = configure::task::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(bits.count());
+    auto* const allocatedJob = pooling.newEntry(spec.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const TreeInstance instance)
     { allocatedJob->enqueue(taskNamer(subTask), tree::structure, instance); };
@@ -532,7 +538,7 @@ void applyingTree(const std::vector<std::string>& candidates)
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
     for (const auto index :
-         std::views::iota(0U, bits.size()) | std::views::filter([&bits](const auto i) { return bits.test(i); }))
+         std::views::iota(0U, spec.size()) | std::views::filter([&spec](const auto i) { return spec.test(i); }))
     {
         const auto& choice = candidates.at(index);
         switch (utility::common::bkdrHash(choice.c_str()))
