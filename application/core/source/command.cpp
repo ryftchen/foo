@@ -930,17 +930,17 @@ void Command::displayVersionInfo() const
 #else
         "          RELEASE VERSION {} "
 #endif // NDEBUG
-        "\033[0m\n",
+        "\033[0m",
         build::banner(),
         mainCLI.version());
     std::format_to(
         std::back_inserter(briefReview),
-        "Built {} with {} for {} on {}.\n{}",
+        "\nBuilt {} with {} for {} on {}.",
         build::revision(),
         build::compiler(),
         build::processor(),
-        build::date(),
-        build::copyright());
+        build::date());
+    std::format_to(std::back_inserter(briefReview), "\n{}", build::copyright());
     std::cout << briefReview << std::endl;
 }
 
