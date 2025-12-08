@@ -69,7 +69,7 @@ target_link_libraries(
 
 if(NOT COMMIT_REVISION STREQUAL "" AND NOT TARGET_PROCESSOR STREQUAL "")
     set_source_files_properties(
-        ${CMAKE_SOURCE_DIR}/application/core/source/note.cpp
+        ${CMAKE_SOURCE_DIR}/application/core/source/build.cpp
         PROPERTIES
         COMPILE_DEFINITIONS "_COMMIT_REVISION=\"${COMMIT_REVISION}\";_TARGET_PROCESSOR=\"${TARGET_PROCESSOR}\"")
 endif()
