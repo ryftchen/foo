@@ -1192,7 +1192,7 @@ function package_for_doxygen()
     if eval "${check_format}" >/dev/null; then
         shell_command "! ${check_format}"
     fi
-    shell_command "(cat ./${FOLDER[doc]}/Doxyfile; echo 'PROJECT_NUMBER=\"@ $(git rev-parse --short @)\"') | doxygen -"
+    shell_command "(cat ./${FOLDER[doc]}/Doxyfile; echo 'PROJECT_NUMBER=\"$(git rev-parse --short @)\"') | doxygen -"
     shell_command "tar -jcvf ./${FOLDER[doc]}/artifact/${tar_file} -C ./${FOLDER[doc]} ${doxygen_folder} >/dev/null"
 }
 
