@@ -269,7 +269,7 @@ private:
 
     static_assert(
         (sizeof(storage) >= sizeof(Inst)) // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-        && (alignof(decltype(*reinterpret_cast<Inst*>(storage.data()))) == alignof(Inst)));
+        && (alignof(decltype(*reinterpret_cast<Inst*>(storage.data()))) >= alignof(Inst)));
 };
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
