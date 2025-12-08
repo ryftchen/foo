@@ -67,6 +67,12 @@ target_link_libraries(
     PUBLIC crypto lz4 readline gsl mpfr
     PRIVATE foo::foo_util foo::foo_algo foo::foo_dp foo::foo_ds foo::foo_num)
 
+if(NOT COMMIT_REVISION STREQUAL "" AND NOT TARGET_PROCESSOR STREQUAL "")
+    set_source_files_properties(
+        ${CMAKE_SOURCE_DIR}/application/core/source/note.cpp
+        PROPERTIES
+        COMPILE_DEFINITIONS "_COMMIT_REVISION=\"${COMMIT_REVISION}\";_TARGET_PROCESSOR=\"${TARGET_PROCESSOR}\"")
+endif()
 if(PRECOMPILED_HEADER)
     target_precompile_headers(${BIN_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/application/pch/precompiled_header.hpp)
 endif()
