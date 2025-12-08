@@ -380,10 +380,10 @@ private:
     //! @return console return code
     static auto processConsoleInputs(const std::function<void()>& handling);
     //! @brief Parse the message inside the client in console mode.
-    //! @param buffer - message buffer
-    //! @param length - message length
+    //! @param bytes - message buffer
+    //! @param size - message length
     //! @return need to continue parsing or not
-    static bool onParsing4Client(char* const buffer, const std::size_t length);
+    static bool onParsing4Client(char* const bytes, const std::size_t size);
     //! @brief Await outside the client in console mode.
     static void waitClientOutputDone();
     //! @brief Awaken inside the client in console mode.

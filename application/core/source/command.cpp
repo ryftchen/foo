@@ -1172,9 +1172,9 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<Sock>
     }
 }
 
-bool Command::onParsing4Client(char* const buffer, const std::size_t length)
+bool Command::onParsing4Client(char* const bytes, const std::size_t size)
 {
-    return (length == 0) || view::View::Access().onParsing(buffer, length);
+    return (size == 0) || view::View::Access().onParsing(bytes, size);
 }
 
 void Command::waitClientOutputDone()
