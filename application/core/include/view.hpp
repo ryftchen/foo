@@ -75,11 +75,11 @@ public:
         //! @brief Request to reset the viewer. Interface controller for external use.
         void reload() const;
 
-        //! @brief Parse the TLV packet.
-        //! @param buffer - TLV packet buffer
-        //! @param length - buffer length
+        //! @brief Parse the TLV packet of message.
+        //! @param bytes - message buffer
+        //! @param size - message length
         //! @return need to continue parsing or not
-        bool onParsing(char* const buffer, const std::size_t length) const;
+        bool onParsing(char* const bytes, const std::size_t size) const;
         //! @brief Get the supported options.
         //! @return supported options
         [[nodiscard]] auto getSupportedOptions() const noexcept { return inst->supportedOptions; }
@@ -213,11 +213,13 @@ private:
         alignas(64) std::atomic_bool signal;
     };
 
+    //! @brief Alias for the buffer.
+    using Buffer = std::array<char, 1024>;
     //! @brief Build the response message.
     //! @param reqPlaintext - plaintext of the request
     //! @param respBuffer - buffer to store the response
     //! @return length of the response message
-    static std::size_t buildResponse(const std::string& reqPlaintext, char* const respBuffer);
+    static std::size_t buildResponse(const std::string& reqPlaintext, Buffer& respBuffer);
     //! @brief Extract the option from the request.
     //! @param reqPlaintext - plaintext of the request
     //! @return option type
@@ -227,21 +229,21 @@ private:
     //! @return strings after split
     static std::vector<std::string> splitString(const std::string& str);
     //! @brief Build the TLV packet of the response message to acknowledge only.
-    //! @param buf - TLV packet buffer
+    //! @param buffer - TLV packet buffer
     //! @return buffer length
-    static std::size_t buildAckTLVPacket(char* const buf);
+    static std::size_t buildAckTLVPacket(Buffer& buffer);
     //! @brief Build the TLV packet of the response message to stop connection.
-    //! @param buf - TLV packet buffer
+    //! @param buffer - TLV packet buffer
     //! @return buffer length
-    static std::size_t buildFinTLVPacket(char* const buf);
+    static std::size_t buildFinTLVPacket(Buffer& buffer);
     //! @brief Build the TLV packet of the response message in a customized way.
     //! @tparam Opt - type of option attribute
     //! @param args - container of arguments
-    //! @param buf - TLV packet buffer
+    //! @param buffer - TLV packet buffer
     //! @return buffer length
     template <typename Opt>
     requires std::derived_from<Opt, OptBase>
-    static std::size_t buildCustomTLVPacket(const Args& args, char* const buf);
+    static std::size_t buildCustomTLVPacket(const Args& args, Buffer& buffer);
     //! @brief Fill the shared memory.
     //! @param contents - contents to be filled
     //! @return shm id
@@ -255,8 +257,8 @@ private:
     //! @param withoutPaging - whether output without paging
     static void printSharedMemory(const int shmId, const bool withoutPaging = true);
     //! @brief Segmented output.
-    //! @param buffer - output buffer
-    static void segmentedOutput(const std::string& buffer);
+    //! @param cache - output cache
+    static void segmentedOutput(const std::string& cache);
     //! @brief Log contents preview.
     //! @return log contents
     static std::string logContentsPreview();

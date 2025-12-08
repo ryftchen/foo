@@ -34,7 +34,7 @@
 #include "utility/include/benchmark.hpp"
 #include "utility/include/time.hpp"
 
-namespace application::view
+namespace application::view // NOLINT(modernize-concat-nested-namespaces)
 {
 //! @brief Type-length-value scheme.
 namespace tlv
@@ -80,6 +80,83 @@ struct TLVValue
     char configInfo[defInfoSize * 2]{'\0'};
 };
 
+//! @brief Enumerate the error codes for TLV error handling.
+enum class ErrCode : std::uint8_t
+{
+    //! @brief No error.
+    noError = 0,
+    //! @brief Null buffer.
+    nullBuffer,
+    //! @brief Insufficient length.
+    insufficientLength,
+    //! @brief Bad header.
+    badHeader,
+    //! @brief Unknown type.
+    unknownType,
+    //! @brief Fail serialize.
+    failSerialize,
+    //! @brief Fail deserialize.
+    failDeserialize,
+};
+
+//! @brief Error category for TLV error handling.
+class ErrCategory : public std::error_category
+{
+public:
+    //! @brief Get the name of the error category.
+    //! @return name of the error category
+    [[nodiscard]] const char* name() const noexcept override { return "TLV error category"; }
+    //! @brief Get the message of the error code value.
+    //! @param value - error code value
+    //! @return message of the error code value
+    [[nodiscard]] std::string message(const int value) const override
+    {
+        switch (static_cast<ErrCode>(value))
+        {
+            case ErrCode::noError:
+                return "no TLV error";
+            case ErrCode::nullBuffer:
+                return "null TLV buffer";
+            case ErrCode::insufficientLength:
+                return "insufficient TLV-length";
+            case ErrCode::badHeader:
+                return "invalid TLV header";
+            case ErrCode::unknownType:
+                return "unknown TLV-type";
+            case ErrCode::failSerialize:
+                return "TLV-value serialization failure";
+            case ErrCode::failDeserialize:
+                return "TLV-value deserialization failure";
+            default:
+                break;
+        }
+        return "unknown TLV error";
+    }
+};
+
+//! @brief Make error code from the custom error code for TLV error handling.
+//! @param errCode - custom error code
+//! @return error code
+[[maybe_unused]] static std::error_code make_error_code(const ErrCode errCode) // NOLINT(readability-identifier-naming)
+{
+    static const ErrCategory errCategory{};
+    return std::error_code{static_cast<int>(errCode), errCategory};
+}
+} // namespace tlv
+} // namespace application::view
+
+namespace std
+{
+template <>
+struct is_error_code_enum<application::view::tlv::ErrCode> : true_type
+{
+};
+} // namespace std
+
+namespace application::view
+{
+namespace tlv
+{
 //! @brief TLV value serialization.
 //! @tparam Data - type of target payload
 //! @param pkt - encoding packet that was filled type
@@ -164,89 +241,134 @@ static int deserialize(data::Packet& pkt, TLVValue& val, char (TLVValue::* const
 //! @param buf - TLV packet buffer
 //! @param len - buffer length
 //! @param val - value of TLV to encode
-//! @return success or failure
-static bool encodeTLV(char* const buf, std::size_t& len, const TLVValue& val)
+//! @return error code
+static std::error_code encodeTLV(char* const buf, std::size_t& len, const TLVValue& val)
 {
     if (!buf)
     {
-        return false;
+        return ErrCode::nullBuffer;
     }
 
     data::Packet enc(buf, len);
     int sum = 0;
-    enc.write<int>(TLVType::header);
-    enc.write<int>(sum);
+    if (!enc.write<int>(TLVType::header) || !enc.write<int>(sum))
+    {
+        return ErrCode::insufficientLength;
+    }
 
+    const auto serializer = [&enc, &val, &sum](const auto pl) -> std::error_code
+    {
+        if (const int res = serialize(enc, val, pl); res > 0)
+        {
+            sum += sizeof(int) + res;
+            return ErrCode::noError;
+        }
+        return ErrCode::failSerialize;
+    };
     enc.write<int>(TLVType::stop);
-    sum += sizeof(int) + serialize(enc, val, &TLVValue::stopTag);
+    if (const auto ec = serializer(&TLVValue::stopTag); ec)
+    {
+        return ec;
+    }
     enc.write<int>(TLVType::depend);
-    sum += sizeof(int) + serialize(enc, val, &TLVValue::libInfo);
+    if (const auto ec = serializer(&TLVValue::libInfo); ec)
+    {
+        return ec;
+    }
     enc.write<int>(TLVType::execute);
-    sum += sizeof(int) + serialize(enc, val, &TLVValue::bashShmId);
+    if (const auto ec = serializer(&TLVValue::bashShmId); ec)
+    {
+        return ec;
+    }
     enc.write<int>(TLVType::journal);
-    sum += sizeof(int) + serialize(enc, val, &TLVValue::logShmId);
+    if (const auto ec = serializer(&TLVValue::logShmId); ec)
+    {
+        return ec;
+    }
     enc.write<int>(TLVType::monitor);
-    sum += sizeof(int) + serialize(enc, val, &TLVValue::statusShmId);
+    if (const auto ec = serializer(&TLVValue::statusShmId); ec)
+    {
+        return ec;
+    }
     enc.write<int>(TLVType::profile);
-    sum += sizeof(int) + serialize(enc, val, &TLVValue::configInfo);
+    if (const auto ec = serializer(&TLVValue::configInfo); ec)
+    {
+        return ec;
+    }
 
     int temp = ::htonl(sum);
     std::memcpy(buf + sizeof(int), &temp, sizeof(temp));
     len = sizeof(int) + sizeof(int) + sum;
-    return true;
+    return ErrCode::noError;
 }
 
 //! @brief Decode the TLV packet.
 //! @param buf - TLV packet buffer
 //! @param len - buffer length
 //! @param val - value of TLV to decode
-//! @return success or failure
-static bool decodeTLV(char* const buf, const std::size_t len, TLVValue& val)
+//! @return error code
+static std::error_code decodeTLV(char* const buf, const std::size_t len, TLVValue& val)
 {
     if (!buf || (len == 0))
     {
-        return false;
+        return ErrCode::nullBuffer;
     }
 
     data::Packet dec(buf, len);
     int type = 0;
-    dec.read<int>(&type);
+    int sum = 0;
+    if (!dec.read<int>(&type) || !dec.read<int>(&sum))
+    {
+        return ErrCode::insufficientLength;
+    }
     if (type != TLVType::header)
     {
-        return false;
+        return ErrCode::badHeader;
     }
 
-    int sum = 0;
-    dec.read<int>(&sum);
+    const auto deserializer = [&dec, &val, &sum](const auto pl) -> std::error_code
+    {
+        if (const int res = deserialize(dec, val, pl); res > 0)
+        {
+            sum -= sizeof(int) + res;
+            return ErrCode::noError;
+        }
+        return ErrCode::failDeserialize;
+    };
     while (sum > 0)
     {
         dec.read<int>(&type);
+        std::error_code ec = ErrCode::noError;
         switch (type)
         {
             case TLVType::stop:
-                sum -= sizeof(int) + deserialize(dec, val, &TLVValue::stopTag);
+                ec = deserializer(&TLVValue::stopTag);
                 break;
             case TLVType::depend:
-                sum -= sizeof(int) + deserialize(dec, val, &TLVValue::libInfo);
+                ec = deserializer(&TLVValue::libInfo);
                 break;
             case TLVType::execute:
-                sum -= sizeof(int) + deserialize(dec, val, &TLVValue::bashShmId);
+                ec = deserializer(&TLVValue::bashShmId);
                 break;
             case TLVType::journal:
-                sum -= sizeof(int) + deserialize(dec, val, &TLVValue::logShmId);
+                ec = deserializer(&TLVValue::logShmId);
                 break;
             case TLVType::monitor:
-                sum -= sizeof(int) + deserialize(dec, val, &TLVValue::statusShmId);
+                ec = deserializer(&TLVValue::statusShmId);
                 break;
             case TLVType::profile:
-                sum -= sizeof(int) + deserialize(dec, val, &TLVValue::configInfo);
+                ec = deserializer(&TLVValue::configInfo);
                 break;
             default:
-                sum -= sizeof(int);
+                ec = ErrCode::unknownType;
                 break;
         }
+        if (ec)
+        {
+            return ec;
+        }
     }
-    return true;
+    return ErrCode::noError;
 }
 } // namespace tlv
 
@@ -351,14 +473,14 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-bool View::Access::onParsing(char* const buffer, const std::size_t length) const
+bool View::Access::onParsing(char* const bytes, const std::size_t size) const
 {
-    data::decryptMessage(buffer, length);
-
+    data::decryptMessage(bytes, size);
     tlv::TLVValue value{};
-    if (!tlv::decodeTLV(buffer, length, value))
+    if (const auto ec = tlv::decodeTLV(bytes, size, value); ec)
     {
-        throw std::runtime_error{"Invalid message content (" + data::toHexString(buffer, length) + ")."};
+        throw std::runtime_error{
+            "Invalid message content \"" + data::toHexString(bytes, size) + "\" (" + ec.message() + ")."};
     }
 
     if (const std::size_t actLibLen = ::strnlen(value.libInfo, sizeof(value.libInfo));
@@ -449,10 +571,10 @@ void View::Sync::notifyTaskDone() const
 }
 
 //! @brief Build the TLV packet of the response message to get library information.
-//! @param buf - TLV packet buffer
+//! @param buffer - TLV packet buffer
 //! @return buffer length
 template <>
-std::size_t View::buildCustomTLVPacket<View::OptDepend>(const Args& /*args*/, char* const buf)
+std::size_t View::buildCustomTLVPacket<View::OptDepend>(const Args& /*args*/, Buffer& buffer)
 {
     tlv::TLVValue val{};
     std::string extLibraries{};
@@ -506,10 +628,12 @@ std::size_t View::buildCustomTLVPacket<View::OptDepend>(const Args& /*args*/, ch
 #endif // defined(OPENSSL_VERSION_STR)
     std::strncpy(val.libInfo, extLibraries.c_str(), sizeof(val.libInfo) - 1);
     val.libInfo[sizeof(val.libInfo) - 1] = '\0';
-    std::size_t len = 0;
-    if (!tlv::encodeTLV(buf, len, val))
+    char* const buf = buffer.data();
+    std::size_t len = buffer.size();
+    if (const auto ec = tlv::encodeTLV(buf, len, val); ec)
     {
-        throw std::runtime_error{"Failed to build packet for the " + std::string{OptDepend::name} + " option."};
+        throw std::runtime_error{
+            "Failed to build packet for the " + std::string{OptDepend::name} + " option (" + ec.message() + ")."};
     }
     data::encryptMessage(buf, len);
     return len;
@@ -517,10 +641,10 @@ std::size_t View::buildCustomTLVPacket<View::OptDepend>(const Args& /*args*/, ch
 
 //! @brief Build the TLV packet of the response message to get bash outputs.
 //! @param args - container of arguments
-//! @param buf - TLV packet buffer
+//! @param buffer - TLV packet buffer
 //! @return buffer length
 template <>
-std::size_t View::buildCustomTLVPacket<View::OptExecute>(const Args& args, char* const buf)
+std::size_t View::buildCustomTLVPacket<View::OptExecute>(const Args& args, Buffer& buffer)
 {
     const auto cmd = std::accumulate(
         args.cbegin(),
@@ -533,27 +657,31 @@ std::size_t View::buildCustomTLVPacket<View::OptExecute>(const Args& args, char*
         throw std::runtime_error{"Please enter the \"execute\" and append with 'CMD' (include quotes)."};
     }
 
-    std::size_t len = 0;
-    if (const int shmId = fillSharedMemory(utility::io::executeCommand("/bin/bash -c " + cmd));
-        !tlv::encodeTLV(buf, len, tlv::TLVValue{.bashShmId = shmId}))
+    char* const buf = buffer.data();
+    std::size_t len = buffer.size();
+    const int shmId = fillSharedMemory(utility::io::executeCommand("/bin/bash -c " + cmd));
+    if (const auto ec = tlv::encodeTLV(buf, len, tlv::TLVValue{.bashShmId = shmId}); ec)
     {
-        throw std::runtime_error{"Failed to build packet for the " + std::string{OptExecute::name} + " option."};
+        throw std::runtime_error{
+            "Failed to build packet for the " + std::string{OptExecute::name} + " option (" + ec.message() + ")."};
     }
     data::encryptMessage(buf, len);
     return len;
 }
 
 //! @brief Build the TLV packet of the response message to get log contents.
-//! @param buf - TLV packet buffer
+//! @param buffer - TLV packet buffer
 //! @return buffer length
 template <>
-std::size_t View::buildCustomTLVPacket<View::OptJournal>(const Args& /*args*/, char* const buf)
+std::size_t View::buildCustomTLVPacket<View::OptJournal>(const Args& /*args*/, Buffer& buffer)
 {
-    std::size_t len = 0;
-    if (const int shmId = fillSharedMemory(logContentsPreview());
-        !tlv::encodeTLV(buf, len, tlv::TLVValue{.logShmId = shmId}))
+    char* const buf = buffer.data();
+    std::size_t len = buffer.size();
+    const int shmId = fillSharedMemory(logContentsPreview());
+    if (const auto ec = tlv::encodeTLV(buf, len, tlv::TLVValue{.logShmId = shmId}); ec)
     {
-        throw std::runtime_error{"Failed to build packet for the " + std::string{OptJournal::name} + " option."};
+        throw std::runtime_error{
+            "Failed to build packet for the " + std::string{OptJournal::name} + " option (" + ec.message() + ")."};
     }
     data::encryptMessage(buf, len);
     return len;
@@ -561,10 +689,10 @@ std::size_t View::buildCustomTLVPacket<View::OptJournal>(const Args& /*args*/, c
 
 //! @brief Build the TLV packet of the response message to get status reports.
 //! @param args - container of arguments
-//! @param buf - TLV packet buffer
+//! @param buffer - TLV packet buffer
 //! @return buffer length
 template <>
-std::size_t View::buildCustomTLVPacket<View::OptMonitor>(const Args& args, char* const buf)
+std::size_t View::buildCustomTLVPacket<View::OptMonitor>(const Args& args, Buffer& buffer)
 {
     if (!args.empty())
     {
@@ -574,21 +702,23 @@ std::size_t View::buildCustomTLVPacket<View::OptMonitor>(const Args& args, char*
         }
     }
 
-    std::size_t len = 0;
-    if (const int shmId = fillSharedMemory(statusReportsPreview(args.empty() ? 0 : std::stoul(args.front())));
-        !tlv::encodeTLV(buf, len, tlv::TLVValue{.statusShmId = shmId}))
+    char* const buf = buffer.data();
+    std::size_t len = buffer.size();
+    const int shmId = fillSharedMemory(statusReportsPreview(args.empty() ? 0 : std::stoul(args.front())));
+    if (const auto ec = tlv::encodeTLV(buf, len, tlv::TLVValue{.statusShmId = shmId}); ec)
     {
-        throw std::runtime_error{"Failed to build packet for the " + std::string{OptMonitor::name} + " option."};
+        throw std::runtime_error{
+            "Failed to build packet for the " + std::string{OptMonitor::name} + " option (" + ec.message() + ")."};
     }
     data::encryptMessage(buf, len);
     return len;
 }
 
 //! @brief Build the TLV packet of the response message to get current configuration.
-//! @param buf - TLV packet buffer
+//! @param buffer - TLV packet buffer
 //! @return buffer length
 template <>
-std::size_t View::buildCustomTLVPacket<View::OptProfile>(const Args& /*args*/, char* const buf)
+std::size_t View::buildCustomTLVPacket<View::OptProfile>(const Args& /*args*/, Buffer& buffer)
 {
     tlv::TLVValue val{};
     std::strncpy(
@@ -596,16 +726,18 @@ std::size_t View::buildCustomTLVPacket<View::OptProfile>(const Args& /*args*/, c
         (static_cast<const utility::json::JSON&>(configure::retrieveDataRepo())).asUnescapedString().c_str(),
         sizeof(val.configInfo) - 1);
     val.configInfo[sizeof(val.configInfo) - 1] = '\0';
-    std::size_t len = 0;
-    if (!tlv::encodeTLV(buf, len, val))
+    char* const buf = buffer.data();
+    std::size_t len = buffer.size();
+    if (const auto ec = tlv::encodeTLV(buf, len, val); ec)
     {
-        throw std::runtime_error{"Failed to build packet for the " + std::string{OptProfile::name} + " option."};
+        throw std::runtime_error{
+            "Failed to build packet for the " + std::string{OptProfile::name} + " option (" + ec.message() + ")."};
     }
     data::encryptMessage(buf, len);
     return len;
 }
 
-std::size_t View::buildResponse(const std::string& reqPlaintext, char* const respBuffer)
+std::size_t View::buildResponse(const std::string& reqPlaintext, Buffer& respBuffer)
 {
     return std::visit(
         utility::common::VisitorOverload{
@@ -664,18 +796,20 @@ std::vector<std::string> View::splitString(const std::string& str)
     return split;
 }
 
-std::size_t View::buildAckTLVPacket(char* const buf)
+std::size_t View::buildAckTLVPacket(Buffer& buffer)
 {
-    std::size_t len = 0;
-    tlv::encodeTLV(buf, len, tlv::TLVValue{});
+    char* const buf = buffer.data();
+    std::size_t len = buffer.size();
+    std::ignore = tlv::encodeTLV(buf, len, tlv::TLVValue{});
     data::encryptMessage(buf, len);
     return len;
 }
 
-std::size_t View::buildFinTLVPacket(char* const buf)
+std::size_t View::buildFinTLVPacket(Buffer& buffer)
 {
-    std::size_t len = 0;
-    tlv::encodeTLV(buf, len, tlv::TLVValue{.stopTag = true});
+    char* const buf = buffer.data();
+    std::size_t len = buffer.size();
+    std::ignore = tlv::encodeTLV(buf, len, tlv::TLVValue{.stopTag = true});
     data::encryptMessage(buf, len);
     return len;
 }
@@ -780,13 +914,13 @@ void View::printSharedMemory(const int shmId, const bool withoutPaging)
     std::cout << "\033[0m" << std::flush;
 }
 
-void View::segmentedOutput(const std::string& buffer)
+void View::segmentedOutput(const std::string& cache)
 {
     constexpr std::uint8_t terminalRows = 24;
     constexpr std::string_view prompt = "--- Type <CR> for more, c to continue, n to show next page, q to quit ---: ";
     constexpr std::string_view escapeClear = "\x1b[1A\x1b[2K\r";
     constexpr std::string_view escapeMoveUp = "\n\x1b[1A\x1b[";
-    std::istringstream transfer(buffer);
+    std::istringstream transfer(cache);
     const std::size_t lineNum =
         std::count(std::istreambuf_iterator<char>(transfer), std::istreambuf_iterator<char>{}, '\n');
     transfer.seekg(std::ios::beg);
@@ -945,19 +1079,19 @@ void View::renewServer<utility::socket::TCPServer>()
                         return;
                     }
 
-                    std::array<char, 1024> respBuffer{};
+                    Buffer respBuffer{};
                     try
                     {
                         const auto reqPlaintext = utility::common::base64Decode(message);
                         newSocket->toSend(
                             respBuffer.data(),
-                            (reqPlaintext != exitSymbol) ? buildResponse(reqPlaintext, respBuffer.data())
-                                                         : buildFinTLVPacket(respBuffer.data()));
+                            (reqPlaintext != exitSymbol) ? buildResponse(reqPlaintext, respBuffer)
+                                                         : buildFinTLVPacket(respBuffer));
                     }
                     catch (const std::exception& err)
                     {
                         LOG_WRN << err.what();
-                        newSocket->toSend(respBuffer.data(), buildAckTLVPacket(respBuffer.data()));
+                        newSocket->toSend(respBuffer.data(), buildAckTLVPacket(respBuffer));
                     }
                 });
         });
@@ -976,21 +1110,21 @@ void View::renewServer<utility::socket::UDPServer>()
                 return;
             }
 
-            std::array<char, 1024> respBuffer{};
+            Buffer respBuffer{};
             try
             {
                 const auto reqPlaintext = utility::common::base64Decode(message);
                 udpServer->toSendTo(
                     respBuffer.data(),
-                    (reqPlaintext != exitSymbol) ? buildResponse(reqPlaintext, respBuffer.data())
-                                                 : buildFinTLVPacket(respBuffer.data()),
+                    (reqPlaintext != exitSymbol) ? buildResponse(reqPlaintext, respBuffer)
+                                                 : buildFinTLVPacket(respBuffer),
                     ip,
                     port);
             }
             catch (const std::exception& err)
             {
                 LOG_WRN << err.what();
-                udpServer->toSendTo(respBuffer.data(), buildAckTLVPacket(respBuffer.data()), ip, port);
+                udpServer->toSendTo(respBuffer.data(), buildAckTLVPacket(respBuffer), ip, port);
             }
         });
 }
