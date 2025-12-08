@@ -1,5 +1,8 @@
 include_guard()
 
+if(NOT COMMIT_REVISION STREQUAL "")
+    add_compile_options(-D_COMMIT_REVISION="${COMMIT_REVISION}")
+endif()
 if(NOT TARGET_PROCESSOR STREQUAL "")
     add_compile_options(-D_TARGET_PROCESSOR="${TARGET_PROCESSOR}")
 endif()

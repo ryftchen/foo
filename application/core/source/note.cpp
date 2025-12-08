@@ -10,6 +10,18 @@
 
 namespace application::note
 {
+//! @brief Commit revision.
+//! @return revision
+std::string revision()
+{
+#ifdef _COMMIT_REVISION
+    return _COMMIT_REVISION;
+#else
+#pragma message("Unknown revision at compile time.")
+    return "unknown revision";
+#endif // _COMMIT_REVISION
+}
+
 //! @brief Compiler name.
 //! @return compiler
 std::string compiler()

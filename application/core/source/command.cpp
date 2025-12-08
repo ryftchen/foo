@@ -935,11 +935,12 @@ void Command::displayVersionInfo() const
         mainCLI.version());
     std::format_to(
         std::back_inserter(briefReview),
-        "{}\nBuilt with {} for {} on {}.",
-        note::copyright(),
+        "Built {} with {} for {} on {}.\n{}",
+        note::revision(),
         note::compiler(),
         note::processor(),
-        note::date());
+        note::date(),
+        note::copyright());
     std::cout << briefReview << std::endl;
 }
 
