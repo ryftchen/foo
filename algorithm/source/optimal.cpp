@@ -171,7 +171,7 @@ std::optional<std::tuple<double, double>> Annealing::operator()(const double lef
     {
         x = xBest;
         y = yBest;
-        for (std::uint32_t i = 0; i < markovChainLength; ++i)
+        for (std::uint32_t i = 0; i < markovChainLen; ++i)
         {
             double xNbr = cauchyLikeDistribution(x, left, right, temperature, pr(engine));
             if ((xNbr < left) || (xNbr > right))
@@ -406,7 +406,7 @@ bool Genetic::updateSpecies(const double left, const double right, const double 
         return false;
     }
 
-    chromosomeLength = estimatedLen;
+    chromosomeLen = estimatedLen;
     property.lower = left;
     property.upper = right;
     property.prec = eps;
@@ -421,7 +421,7 @@ double Genetic::geneticDecode(const Chromosome& chr) const
         chr.cend(),
         [&currDecoded, index = 0](const auto bit) mutable
         { currDecoded |= static_cast<std::uint32_t>(bit) << index++; });
-    const auto maxDecoded = static_cast<double>((1ULL << chromosomeLength) - 1ULL);
+    const auto maxDecoded = static_cast<double>((1ULL << chromosomeLen) - 1ULL);
     return property.lower + ((property.upper - property.lower) * static_cast<double>(currDecoded) / maxDecoded);
 }
 
@@ -435,10 +435,10 @@ Genetic::Population Genetic::populationInit()
         [this]()
         {
             Chromosome chr{};
-            chr.reserve(chromosomeLength);
+            chr.reserve(chromosomeLen);
             std::generate_n(
                 std::back_inserter(chr),
-                chromosomeLength,
+                chromosomeLen,
                 [this, bit = std::uniform_int_distribution<std::uint8_t>(0, 1)]() mutable { return bit(engine); });
             return chr;
         });
@@ -449,7 +449,7 @@ void Genetic::geneticCross(Chromosome& chr1, Chromosome& chr2)
 {
     std::uint32_t pmxBegin = 0;
     std::uint32_t pmxEnd = 0;
-    std::uniform_int_distribution<std::uint32_t> randomPos(0, chromosomeLength - 1);
+    std::uniform_int_distribution<std::uint32_t> randomPos(0, chromosomeLen - 1);
     do
     {
         pmxBegin = randomPos(engine);
@@ -459,7 +459,7 @@ void Genetic::geneticCross(Chromosome& chr1, Chromosome& chr2)
             std::swap(pmxBegin, pmxEnd);
         }
     }
-    while ((pmxBegin == pmxEnd) || ((pmxEnd - pmxBegin) == (chromosomeLength - 1)));
+    while ((pmxBegin == pmxEnd) || ((pmxEnd - pmxBegin) == (chromosomeLen - 1)));
 
     auto chrTemp = chr1;
     std::copy_n(chr2.cbegin() + pmxBegin, pmxEnd - pmxBegin, chr1.begin() + pmxBegin);
