@@ -182,18 +182,18 @@ public:
     //! @param initialT - predefined initial temperature
     //! @param minimalT - predefined minimal temperature
     //! @param coolingRate - predefined cooling rate
-    //! @param markovChainLength - predefined length of Markov chain
+    //! @param markovChainLen - predefined length of Markov chain
     explicit Annealing(
         Function func,
         const double initialT = 100.0,
         const double minimalT = 0.01,
         const double coolingRate = 0.99,
-        const std::uint32_t markovChainLength = 100) :
+        const std::uint32_t markovChainLen = 100) :
         func{std::move(func)},
         initialT{initialT},
         minimalT{minimalT},
         coolingRate{coolingRate},
-        markovChainLength{markovChainLength}
+        markovChainLen{markovChainLen}
     {
     }
 
@@ -215,7 +215,7 @@ private:
     //! @brief Cooling rate.
     const double coolingRate{0.99};
     //! @brief Length of Markov chain.
-    const std::uint32_t markovChainLength{100};
+    const std::uint32_t markovChainLen{100};
 
     //! @brief Temperature-dependent Cauchy-like distribution.
     //! @param prev - current model
@@ -487,7 +487,7 @@ private:
     //! @brief Minimum length of chromosome.
     static constexpr std::uint32_t minChrLen{2};
     //! @brief Length of chromosome.
-    std::uint32_t chromosomeLength{0};
+    std::uint32_t chromosomeLen{0};
     //! @brief Properties of species.
     struct Property
     {

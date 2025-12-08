@@ -52,9 +52,9 @@ public:
     //! @param pattern - single pattern
     explicit InputBuilder(const std::string_view pattern) :
         marchingText{std::make_unique<unsigned char[]>(maxDigit + 1)},
-        textLength{maxDigit},
+        textLen{maxDigit},
         singlePattern{std::make_unique<unsigned char[]>(pattern.length() + 1)},
-        patternLength{static_cast<std::uint32_t>(pattern.length())}
+        patternLen{static_cast<std::uint32_t>(pattern.length())}
     {
         marchingText[0] = '\0';
         singlePattern[0] = '\0';
@@ -81,23 +81,23 @@ public:
     [[nodiscard]] const std::unique_ptr<unsigned char[]>& getMatchingText() const noexcept { return marchingText; }
     //! @brief Get the length of the matching text.
     //! @return length of the matching text
-    [[nodiscard]] std::uint32_t getTextLength() const noexcept { return textLength; }
+    [[nodiscard]] std::uint32_t getTextLength() const noexcept { return textLen; }
     //! @brief Get the single pattern.
     //! @return single pattern
     [[nodiscard]] const std::unique_ptr<unsigned char[]>& getSinglePattern() const noexcept { return singlePattern; }
     //! @brief Get the length of the single pattern.
     //! @return length of the single pattern
-    [[nodiscard]] std::uint32_t getPatternLength() const noexcept { return patternLength; }
+    [[nodiscard]] std::uint32_t getPatternLength() const noexcept { return patternLen; }
 
 private:
     //! @brief Matching text.
     const std::unique_ptr<unsigned char[]> marchingText;
     //! @brief Length of the matching text.
-    const std::uint32_t textLength{0};
+    const std::uint32_t textLen{0};
     //! @brief Single pattern.
     const std::unique_ptr<unsigned char[]> singlePattern;
     //! @brief Length of the single pattern.
-    const std::uint32_t patternLength{0};
+    const std::uint32_t patternLen{0};
 
     //! @brief Base number for converting the digit to precision.
     static constexpr int mpfrBase{10};
