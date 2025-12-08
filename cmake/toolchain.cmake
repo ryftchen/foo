@@ -1,5 +1,14 @@
 include_guard()
 
+execute_process(
+    COMMAND git rev-parse --short @
+    OUTPUT_VARIABLE GIT_REV_PARSE_SHORT_OUTPUT
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+if(NOT GIT_REV_PARSE_SHORT_OUTPUT STREQUAL "")
+    set(COMMIT_REVISION ${GIT_REV_PARSE_SHORT_OUTPUT} CACHE STRING "commit revision" FORCE)
+else()
+    set(COMMIT_REVISION "" CACHE STRING "commit revision" FORCE)
+endif()
 if(NOT DEFINED TARGET_PROCESSOR)
     execute_process(
         COMMAND ${CMAKE_CXX_COMPILER} -dumpmachine
