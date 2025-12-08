@@ -5,7 +5,7 @@
 //! @copyright Copyright (c) 2022-2025 ryftchen. All rights reserved.
 
 #include "console.hpp"
-#include "note.hpp"
+#include "build.hpp"
 
 #ifndef _PRECOMPILED_HEADER
 #include <algorithm>
@@ -200,7 +200,7 @@ void Console::setDefaultOptions()
         [](const Args& /*inputs*/)
         {
             std::cout << "\033[2J\033[1;1H" << std::flush;
-            std::cout << note::banner() << std::endl;
+            std::cout << build::banner() << std::endl;
             return RetCode::success;
         });
     orderList.emplace_back("clean");

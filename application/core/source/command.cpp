@@ -931,16 +931,16 @@ void Command::displayVersionInfo() const
         "          RELEASE VERSION {} "
 #endif // NDEBUG
         "\033[0m\n",
-        note::banner(),
+        build::banner(),
         mainCLI.version());
     std::format_to(
         std::back_inserter(briefReview),
         "Built {} with {} for {} on {}.\n{}",
-        note::revision(),
-        note::compiler(),
-        note::processor(),
-        note::date(),
-        note::copyright());
+        build::revision(),
+        build::compiler(),
+        build::processor(),
+        build::date(),
+        build::copyright());
     std::cout << briefReview << std::endl;
 }
 
@@ -1050,7 +1050,7 @@ try
     launchClient(tcpClient);
     registerOnConsole(*session, tcpClient);
 
-    std::cout << note::banner() << std::endl;
+    std::cout << build::banner() << std::endl;
     using RetCode = console::Console::RetCode;
     auto retCode = RetCode::success;
     do

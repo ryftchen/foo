@@ -1,6 +1,6 @@
-//! @file note.hpp
+//! @file build.hpp
 //! @author ryftchen
-//! @brief The declarations (note) in the application module.
+//! @brief The declarations (build) in the application module.
 //! @version 0.1.0
 //! @copyright Copyright (c) 2022-2025 ryftchen. All rights reserved.
 
@@ -15,8 +15,8 @@
 //! @brief The application module.
 namespace application // NOLINT(modernize-concat-nested-namespaces)
 {
-//! @brief Notes-related functions in the application module.
-namespace note
+//! @brief Building-related functions in the application module.
+namespace build
 {
 //! @brief Version number.
 //! @return version
@@ -49,5 +49,5 @@ extern std::string revision();
 extern std::string compiler();
 extern std::string processor();
 extern std::string date();
-} // namespace note
+} // namespace build
 } // namespace application

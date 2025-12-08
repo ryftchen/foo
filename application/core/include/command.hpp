@@ -7,8 +7,8 @@
 #pragma once
 
 #include "action.hpp"
+#include "build.hpp"
 #include "console.hpp"
-#include "note.hpp"
 
 #include "utility/include/argument.hpp"
 
@@ -145,7 +145,7 @@ private:
     //! @brief Flag to indicate whether parsing of arguments is completed.
     std::atomic_bool isParsed{false};
     //! @brief Parse argument helper for commander.
-    utility::argument::Argument mainCLI{"foo", note::version()};
+    utility::argument::Argument mainCLI{"foo", build::version()};
     //! @brief Parse argument helper to apply algorithm.
     utility::argument::Argument subCLIAppAlgo{action::name<reg_algo::ApplyAlgorithm>(), reg_algo::version()};
     //! @brief Parse argument helper to apply design pattern.

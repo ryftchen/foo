@@ -1,14 +1,14 @@
-//! @file note.cpp
+//! @file build.cpp
 //! @author ryftchen
-//! @brief The definitions (note) in the application module.
+//! @brief The definitions (build) in the application module.
 //! @version 0.1.0
 //! @copyright Copyright (c) 2022-2025 ryftchen. All rights reserved.
 
-#include "note.hpp"
+#include "build.hpp"
 
 #include "utility/include/macro.hpp"
 
-namespace application::note
+namespace application::build
 {
 //! @brief Commit revision.
 //! @return revision
@@ -61,4 +61,4 @@ std::string date()
     return "unknown date";
 #endif // defined(__DATE__) && defined(__TIME__)
 }
-} // namespace application::note
+} // namespace application::build
