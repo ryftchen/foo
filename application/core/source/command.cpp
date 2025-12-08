@@ -923,21 +923,24 @@ void Command::displayVersionInfo() const
 {
     validateDependencies();
 
-    const auto briefReview = std::format(
+    auto briefReview = std::format(
         "\033[7m\033[49m{}"
 #ifndef NDEBUG
         "            DEBUG VERSION {} "
 #else
         "          RELEASE VERSION {} "
 #endif // NDEBUG
-        "\033[0m\nBuilt {} with {} for {} on {}.\n{}",
+        "\033[0m",
         build::banner(),
-        mainCLI.version(),
+        mainCLI.version());
+    std::format_to(
+        std::back_inserter(briefReview),
+        "\nBuilt {} with {} for {} on {}.",
         build::revision(),
         build::compiler(),
         build::processor(),
-        build::date(),
-        build::copyright());
+        build::date());
+    std::format_to(std::back_inserter(briefReview), "\n{}", build::copyright());
     std::cout << briefReview << std::endl;
 }
 
