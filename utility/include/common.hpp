@@ -132,30 +132,23 @@ requires std::is_enum_v<Enum>
 struct EnumCheck<Enum>
 {
     //! @brief Check whether it contains the value as an enumeration.
-    //! @tparam Int - type of integral
     //! @return has or not
-    template <typename Int>
-    static constexpr bool has(const Int /*val*/)
-    {
-        return false;
-    }
+    static constexpr bool has(const std::integral auto /*val*/) { return false; }
 };
 //! @brief Check whether the target value is part of the enumeration.
 //! @tparam Enum - type of enumeration
-//! @tparam Value - current value
+//! @tparam Curr - current enumeration value
 //! @tparam Next - next enumeration value
-template <typename Enum, Enum Value, Enum... Next>
+template <typename Enum, Enum Curr, Enum... Next>
 requires std::is_enum_v<Enum>
-struct EnumCheck<Enum, Value, Next...> : private EnumCheck<Enum, Next...>
+struct EnumCheck<Enum, Curr, Next...> : private EnumCheck<Enum, Next...>
 {
     //! @brief Check whether it contains the value as an enumeration.
-    //! @tparam Int - type of integral
     //! @param val - target value
     //! @return has or not
-    template <typename Int>
-    static constexpr bool has(const Int val)
+    static constexpr bool has(const std::integral auto val)
     {
-        return (static_cast<Int>(Value) == val) || EnumCheck<Enum, Next...>::has(val);
+        return (static_cast<std::underlying_type_t<Enum>>(Curr) == val) || EnumCheck<Enum, Next...>::has(val);
     }
 };
 

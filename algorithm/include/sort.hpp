@@ -71,7 +71,8 @@ public:
     //! @param array - array to be sorted
     //! @param length - length of array
     //! @return array after sort
-    static std::vector<Elem> counting(const Elem* const array, const std::uint32_t length);
+    static std::vector<Elem> counting(const Elem* const array, const std::uint32_t length)
+    requires std::is_integral_v<Elem>;
     //! @brief Bucket.
     //! @param array - array to be sorted
     //! @param length - length of array
@@ -81,7 +82,8 @@ public:
     //! @param array - array to be sorted
     //! @param length - length of array
     //! @return array after sort
-    static std::vector<Elem> radix(const Elem* const array, const std::uint32_t length);
+    static std::vector<Elem> radix(const Elem* const array, const std::uint32_t length)
+    requires std::is_integral_v<Elem>;
 
 private:
     //! @brief Recursion for the merge method.
@@ -349,11 +351,8 @@ void Sort<Elem>::buildMaxHeap(Elem* const sorting, const std::uint32_t begin, co
 
 template <typename Elem>
 std::vector<Elem> Sort<Elem>::counting(const Elem* const array, const std::uint32_t length)
+requires std::is_integral_v<Elem>
 {
-    if constexpr (!std::is_integral_v<Elem>)
-    {
-        return {};
-    }
     if (!array || (length == 0))
     {
         return {};
@@ -425,11 +424,8 @@ std::vector<Elem> Sort<Elem>::bucket(const Elem* const array, const std::uint32_
 
 template <typename Elem>
 std::vector<Elem> Sort<Elem>::radix(const Elem* const array, const std::uint32_t length)
+requires std::is_integral_v<Elem>
 {
-    if constexpr (!std::is_integral_v<Elem>)
-    {
-        return {};
-    }
     if (!array || (length == 0))
     {
         return {};

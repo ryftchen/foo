@@ -325,7 +325,7 @@ public:
         orderedArray{std::make_unique<Elem[]>(length + 1)}, length{length}
     {
         orderedArray[0] = '\0';
-        setOrderedArray<Elem>(orderedArray.get(), length, left, right);
+        setOrderedArray(orderedArray.get(), length, left, right);
     }
     //! @brief Destroy the InputBuilder object.
     virtual ~InputBuilder() = default;
@@ -426,14 +426,12 @@ private:
         }
     }
     //! @brief Set the ordered array.
-    //! @tparam Num - specific type of integral
     //! @param array - ordered array
     //! @param length - length of the ordered array
     //! @param left - left boundary of the ordered array
     //! @param right - left right of the ordered array
-    template <typename Num>
-    requires std::is_integral_v<Num>
     static void setOrderedArray(Elem array[], const std::uint32_t length, const Elem left, const Elem right)
+    requires std::is_integral_v<Elem>
     {
         if (!array || (length == 0) || (left > right))
         {
@@ -455,14 +453,12 @@ private:
 #endif // _RUNTIME_PRINTING
     }
     //! @brief Set the ordered array.
-    //! @tparam Num - specific type of floating point
     //! @param array - ordered array
     //! @param length - length of the ordered array
     //! @param left - left boundary of the ordered array
     //! @param right - left right of the ordered array
-    template <typename Num>
-    requires std::is_floating_point_v<Num>
     static void setOrderedArray(Elem array[], const std::uint32_t length, const Elem left, const Elem right)
+    requires std::is_floating_point_v<Elem>
     {
         if (!array || (length == 0) || (left > right))
         {
@@ -524,7 +520,7 @@ public:
         randomArray{std::make_unique<Elem[]>(length + 1)}, length{length}
     {
         randomArray[0] = '\0';
-        setRandomArray<Elem>(randomArray.get(), length, left, right);
+        setRandomArray(randomArray.get(), length, left, right);
     }
     //! @brief Destroy the InputBuilder object.
     virtual ~InputBuilder() = default;
@@ -622,14 +618,12 @@ private:
         }
     }
     //! @brief Set the random array.
-    //! @tparam Num - specific type of integral
     //! @param array - random array
     //! @param length - length of the random array
     //! @param left - left boundary of the random array
     //! @param right - left right of the random array
-    template <typename Num>
-    requires std::is_integral_v<Num>
     static void setRandomArray(Elem array[], const std::uint32_t length, const Elem left, const Elem right)
+    requires std::is_integral_v<Elem>
     {
         if (!array || (length == 0) || (left > right))
         {
@@ -650,14 +644,12 @@ private:
 #endif // _RUNTIME_PRINTING
     }
     //! @brief Set the random array.
-    //! @tparam Num - specific type of floating point
     //! @param array - random array
     //! @param length - length of the random array
     //! @param left - left boundary of the random array
     //! @param right - left right of the random array
-    template <typename Num>
-    requires std::is_floating_point_v<Num>
     static void setRandomArray(Elem array[], const std::uint32_t length, const Elem left, const Elem right)
+    requires std::is_floating_point_v<Elem>
     {
         if (!array || (length == 0) || (left > right))
         {
