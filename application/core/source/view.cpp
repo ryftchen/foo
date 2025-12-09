@@ -80,83 +80,6 @@ struct TLVValue
     char configInfo[defInfoSize * 2]{'\0'};
 };
 
-//! @brief Enumerate the error codes for TLV error handling.
-enum class ErrCode : std::uint8_t
-{
-    //! @brief No error.
-    noError = 0,
-    //! @brief Null buffer.
-    nullBuffer,
-    //! @brief Insufficient length.
-    insufficientLength,
-    //! @brief Bad header.
-    badHeader,
-    //! @brief Unknown type.
-    unknownType,
-    //! @brief Fail serialize.
-    failSerialize,
-    //! @brief Fail deserialize.
-    failDeserialize,
-};
-
-//! @brief Error category for TLV error handling.
-class ErrCategory : public std::error_category
-{
-public:
-    //! @brief Get the name of the error category.
-    //! @return name of the error category
-    [[nodiscard]] const char* name() const noexcept override { return "TLV error category"; }
-    //! @brief Get the message of the error code value.
-    //! @param value - error code value
-    //! @return message of the error code value
-    [[nodiscard]] std::string message(const int value) const override
-    {
-        switch (static_cast<ErrCode>(value))
-        {
-            case ErrCode::noError:
-                return "no TLV error";
-            case ErrCode::nullBuffer:
-                return "null TLV buffer";
-            case ErrCode::insufficientLength:
-                return "insufficient TLV-length";
-            case ErrCode::badHeader:
-                return "invalid TLV header";
-            case ErrCode::unknownType:
-                return "unknown TLV-type";
-            case ErrCode::failSerialize:
-                return "TLV-value serialization failure";
-            case ErrCode::failDeserialize:
-                return "TLV-value deserialization failure";
-            default:
-                break;
-        }
-        return "unknown TLV error";
-    }
-};
-
-//! @brief Make error code from the custom error code for TLV error handling.
-//! @param errCode - custom error code
-//! @return error code
-[[maybe_unused]] static std::error_code make_error_code(const ErrCode errCode) // NOLINT(readability-identifier-naming)
-{
-    static const ErrCategory errCategory{};
-    return std::error_code{static_cast<int>(errCode), errCategory};
-}
-} // namespace tlv
-} // namespace application::view
-
-namespace std
-{
-template <>
-struct is_error_code_enum<application::view::tlv::ErrCode> : true_type
-{
-};
-} // namespace std
-
-namespace application::view
-{
-namespace tlv
-{
 //! @brief TLV value serialization.
 //! @tparam Data - type of target payload
 //! @param pkt - encoding packet that was filled type
@@ -237,6 +160,80 @@ static int deserialize(data::Packet& pkt, TLVValue& val, char (TLVValue::* const
     return sizeof(int) + length;
 }
 
+//! @brief Enumerate the error codes for TLV error handling.
+enum class ErrCode : std::uint8_t
+{
+    //! @brief No error.
+    noError = 0,
+    //! @brief Null buffer.
+    nullBuffer,
+    //! @brief Insufficient length.
+    insufficientLength,
+    //! @brief Bad header.
+    badHeader,
+    //! @brief Unknown type.
+    unknownType,
+    //! @brief Fail serialize.
+    failSerialize,
+    //! @brief Fail deserialize.
+    failDeserialize,
+};
+
+//! @brief Error category for TLV error handling.
+class ErrCategory : public std::error_category
+{
+public:
+    //! @brief Get the name of the error category.
+    //! @return name of the error category
+    [[nodiscard]] const char* name() const noexcept override { return "TLV error category"; }
+    //! @brief Get the message of the error code value.
+    //! @param value - error code value
+    //! @return message of the error code value
+    [[nodiscard]] std::string message(const int value) const override
+    {
+        switch (static_cast<ErrCode>(value))
+        {
+            case ErrCode::noError:
+                return "no TLV error";
+            case ErrCode::nullBuffer:
+                return "null TLV buffer";
+            case ErrCode::insufficientLength:
+                return "insufficient TLV-length";
+            case ErrCode::badHeader:
+                return "invalid TLV header";
+            case ErrCode::unknownType:
+                return "unknown TLV-type";
+            case ErrCode::failSerialize:
+                return "TLV-value serialization failure";
+            case ErrCode::failDeserialize:
+                return "TLV-value deserialization failure";
+            default:
+                break;
+        }
+        return "unknown TLV error";
+    }
+};
+
+//! @brief Make error code from the custom error code for TLV error handling.
+//! @param errCode - custom error code
+//! @return error code
+[[maybe_unused]] static std::error_code make_error_code(const ErrCode errCode) // NOLINT(readability-identifier-naming)
+{
+    static const ErrCategory errCategory{};
+    return std::error_code{static_cast<int>(errCode), errCategory};
+}
+} // namespace tlv
+} // namespace application::view
+
+template <>
+struct std::is_error_code_enum<application::view::tlv::ErrCode> : public std::true_type
+{
+};
+
+namespace application::view
+{
+namespace tlv
+{
 //! @brief Encode the TLV packet.
 //! @param buf - TLV packet buffer
 //! @param len - buffer length
