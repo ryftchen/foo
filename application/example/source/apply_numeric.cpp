@@ -191,7 +191,7 @@ static void display(const DivisorMethod method, const std::set<std::int32_t>& re
     std::printf(
         "\n==> %-9s Method <==\n%s\nrun time: %8.5f ms\n",
         customTitle(method).c_str(),
-        InputBuilder::template spliceAllIntegers<std::int32_t>(result, fmtBuffer.data(), bufferSize + 1),
+        InputBuilder::spliceAllIntegers(result, fmtBuffer.data(), bufferSize + 1),
         interval);
 }
 
@@ -402,7 +402,7 @@ static void display(const PrimeMethod method, const std::vector<std::uint32_t>& 
     std::printf(
         "\n==> %-9s Method <==\n%s\nrun time: %8.5f ms\n",
         customTitle(method).c_str(),
-        InputBuilder::template spliceAllIntegers<std::uint32_t>(result, fmtBuffer.data(), bufferSize + 1),
+        InputBuilder::spliceAllIntegers(result, fmtBuffer.data(), bufferSize + 1),
         interval);
 }
 

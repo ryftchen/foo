@@ -116,8 +116,7 @@ public:
     //! @param fmtBuffer - buffer for printing
     //! @param bufferSize - size of the buffer
     //! @return buffer after splicing
-    template <typename Elem>
-    requires std::is_integral_v<Elem>
+    template <std::integral Elem>
     static char* spliceAllIntegers(
         const std::set<Elem>& container, char* const fmtBuffer, const std::uint32_t bufferSize)
     {
@@ -296,8 +295,7 @@ public:
     //! @param fmtBuffer - buffer for printing
     //! @param bufferSize - size of the buffer
     //! @return buffer after splicing
-    template <typename Elem>
-    requires std::is_integral_v<Elem>
+    template <std::integral Elem>
     static char* spliceAllIntegers(
         const std::vector<Elem>& container, char* const fmtBuffer, const std::uint32_t bufferSize)
     {
