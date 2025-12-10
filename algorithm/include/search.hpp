@@ -65,14 +65,14 @@ std::int64_t Search<Elem>::binary(const Elem* const array, const std::uint32_t l
         return -1;
     }
 
-    std::int64_t index = -1;
     std::uint32_t lower = 0;
     std::uint32_t upper = length - 1;
     if ((key < array[lower]) || (key > array[upper]))
     {
-        return index;
+        return -1;
     }
 
+    std::int64_t index = -1;
     while (lower <= upper)
     {
         const std::uint32_t mid = std::midpoint(lower, upper);
@@ -101,17 +101,23 @@ std::int64_t Search<Elem>::interpolation(const Elem* const array, const std::uin
         return -1;
     }
 
-    std::int64_t index = -1;
     std::uint32_t lower = 0;
     std::uint32_t upper = length - 1;
     if ((key < array[lower]) || (key > array[upper]))
     {
-        return index;
+        return -1;
     }
 
+    std::int64_t index = -1;
     while (lower <= upper)
     {
-        const std::uint32_t mid = lower + ((upper - lower) * ((key - array[lower]) / (array[upper] - array[lower])));
+        if (array[upper] == array[lower])
+        {
+            index = (key == array[lower]) ? lower : -1;
+            break;
+        }
+
+        const std::uint32_t mid = lower + ((upper - lower) * (key - array[lower]) / (array[upper] - array[lower]));
         if (key == array[mid])
         {
             index = mid;
@@ -137,17 +143,16 @@ std::int64_t Search<Elem>::fibonacci(const Elem* const array, const std::uint32_
         return -1;
     }
 
-    std::int64_t index = -1;
     std::uint32_t lower = 0;
     std::uint32_t upper = length - 1;
     if ((key < array[lower]) || (key > array[upper]))
     {
-        return index;
+        return -1;
     }
     const auto& fib = generateFibonacciNumber(length);
     if (constexpr std::uint8_t minSize = 3; static_cast<std::int32_t>(fib.size() - 1) < minSize)
     {
-        return index;
+        return -1;
     }
 
     std::uint32_t n = fib.size() - 1;
@@ -157,6 +162,7 @@ std::int64_t Search<Elem>::fibonacci(const Elem* const array, const std::uint32_
         complement[i] = array[upper];
     }
 
+    std::int64_t index = -1;
     while ((lower <= upper) && (n >= 1))
     {
         const std::uint32_t mid = lower + fib[n - 1] - 1;
