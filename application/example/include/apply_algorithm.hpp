@@ -12,6 +12,7 @@
 #include <cstring>
 #include <iostream>
 #include <memory>
+#include <span>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif // _PRECOMPILED_HEADER
@@ -430,7 +431,7 @@ private:
     //! @param length - length of the ordered array
     //! @param left - left boundary of the ordered array
     //! @param right - left right of the ordered array
-    static void setOrderedArray(Elem array[], const std::uint32_t length, const Elem left, const Elem right)
+    static void setOrderedArray(Elem* const array, const std::uint32_t length, const Elem left, const Elem right)
     requires std::is_integral_v<Elem>
     {
         if (!array || (length == 0) || (left > right))
@@ -438,18 +439,19 @@ private:
             return;
         }
 
-        std::ranlux48 engine(std::random_device{}());
-        std::uniform_int_distribution<Elem> dist(left, right);
-        for (std::uint32_t i = 0; i < length; ++i)
-        {
-            array[i] = dist(engine);
-        }
-        std::sort(array, array + length);
+        const std::span<Elem> sequence{array, length};
+        std::for_each(
+            sequence.begin(),
+            sequence.end(),
+            [engine = std::ranlux48(std::random_device{}()),
+             dist = std::uniform_int_distribution<Elem>(left, right)](auto& elem) mutable { elem = dist(engine); });
+        std::sort(sequence.begin(), sequence.end());
 #ifdef _RUNTIME_PRINTING
-        const std::uint32_t bufferSize = length * maxAlignOfPrint;
+        const std::uint32_t bufferSize = sequence.size() * maxAlignOfPrint;
         std::vector<char> fmtBuffer(bufferSize + 1);
-        std::cout << "\nGenerate " << length << " ordered integral numbers from " << left << " to " << right << ":\n"
-                  << spliceAll(array, length, fmtBuffer.data(), bufferSize + 1) << std::endl;
+        std::cout << "\nGenerate " << sequence.size() << " ordered integral numbers from " << left << " to " << right
+                  << ":\n"
+                  << spliceAll(sequence.data(), sequence.size(), fmtBuffer.data(), bufferSize + 1) << std::endl;
 #endif // _RUNTIME_PRINTING
     }
     //! @brief Set the ordered array.
@@ -457,7 +459,7 @@ private:
     //! @param length - length of the ordered array
     //! @param left - left boundary of the ordered array
     //! @param right - left right of the ordered array
-    static void setOrderedArray(Elem array[], const std::uint32_t length, const Elem left, const Elem right)
+    static void setOrderedArray(Elem* const array, const std::uint32_t length, const Elem left, const Elem right)
     requires std::is_floating_point_v<Elem>
     {
         if (!array || (length == 0) || (left > right))
@@ -465,19 +467,19 @@ private:
             return;
         }
 
-        std::ranlux48 engine(std::random_device{}());
-        std::uniform_real_distribution<Elem> dist(left, right);
-        for (std::uint32_t i = 0; i < length; ++i)
-        {
-            array[i] = dist(engine);
-        }
-        std::sort(array, array + length);
+        const std::span<Elem> sequence{array, length};
+        std::for_each(
+            sequence.begin(),
+            sequence.end(),
+            [engine = std::ranlux48(std::random_device{}()),
+             dist = std::uniform_real_distribution<Elem>(left, right)](auto& elem) mutable { elem = dist(engine); });
+        std::sort(sequence.begin(), sequence.end());
 #ifdef _RUNTIME_PRINTING
-        const std::uint32_t bufferSize = length * maxAlignOfPrint;
+        const std::uint32_t bufferSize = sequence.size() * maxAlignOfPrint;
         std::vector<char> fmtBuffer(bufferSize + 1);
-        std::cout << "\nGenerate " << length << " ordered floating point numbers from " << left << " to " << right
-                  << ":\n"
-                  << spliceAll(array, length, fmtBuffer.data(), bufferSize + 1) << std::endl;
+        std::cout << "\nGenerate " << sequence.size() << " ordered floating point numbers from " << left << " to "
+                  << right << ":\n"
+                  << spliceAll(sequence.data(), sequence.size(), fmtBuffer.data(), bufferSize + 1) << std::endl;
 #endif // _RUNTIME_PRINTING
     }
 };
@@ -622,7 +624,7 @@ private:
     //! @param length - length of the random array
     //! @param left - left boundary of the random array
     //! @param right - left right of the random array
-    static void setRandomArray(Elem array[], const std::uint32_t length, const Elem left, const Elem right)
+    static void setRandomArray(Elem* const array, const std::uint32_t length, const Elem left, const Elem right)
     requires std::is_integral_v<Elem>
     {
         if (!array || (length == 0) || (left > right))
@@ -630,17 +632,18 @@ private:
             return;
         }
 
-        std::ranlux48 engine(std::random_device{}());
-        std::uniform_int_distribution<Elem> dist(left, right);
-        for (std::uint32_t i = 0; i < length; ++i)
-        {
-            array[i] = dist(engine);
-        }
+        const std::span<Elem> sequence{array, length};
+        std::for_each(
+            sequence.begin(),
+            sequence.end(),
+            [engine = std::ranlux48(std::random_device{}()),
+             dist = std::uniform_int_distribution<Elem>(left, right)](auto& elem) mutable { elem = dist(engine); });
 #ifdef _RUNTIME_PRINTING
-        const std::uint32_t bufferSize = length * maxAlignOfPrint;
+        const std::uint32_t bufferSize = sequence.size() * maxAlignOfPrint;
         std::vector<char> fmtBuffer(bufferSize + 1);
-        std::cout << "\nGenerate " << length << " random integral numbers from " << left << " to " << right << ":\n"
-                  << spliceAll(array, length, fmtBuffer.data(), bufferSize + 1) << std::endl;
+        std::cout << "\nGenerate " << sequence.size() << " random integral numbers from " << left << " to " << right
+                  << ":\n"
+                  << spliceAll(sequence.data(), sequence.size(), fmtBuffer.data(), bufferSize + 1) << std::endl;
 #endif // _RUNTIME_PRINTING
     }
     //! @brief Set the random array.
@@ -648,7 +651,7 @@ private:
     //! @param length - length of the random array
     //! @param left - left boundary of the random array
     //! @param right - left right of the random array
-    static void setRandomArray(Elem array[], const std::uint32_t length, const Elem left, const Elem right)
+    static void setRandomArray(Elem* const array, const std::uint32_t length, const Elem left, const Elem right)
     requires std::is_floating_point_v<Elem>
     {
         if (!array || (length == 0) || (left > right))
@@ -656,18 +659,18 @@ private:
             return;
         }
 
-        std::ranlux48 engine(std::random_device{}());
-        std::uniform_real_distribution<Elem> dist(left, right);
-        for (std::uint32_t i = 0; i < length; ++i)
-        {
-            array[i] = dist(engine);
-        }
+        const std::span<Elem> sequence{array, length};
+        std::for_each(
+            sequence.begin(),
+            sequence.end(),
+            [engine = std::ranlux48(std::random_device{}()),
+             dist = std::uniform_real_distribution<Elem>(left, right)](auto& elem) mutable { elem = dist(engine); });
 #ifdef _RUNTIME_PRINTING
-        const std::uint32_t bufferSize = length * maxAlignOfPrint;
+        const std::uint32_t bufferSize = sequence.size() * maxAlignOfPrint;
         std::vector<char> fmtBuffer(bufferSize + 1);
-        std::cout << "\nGenerate " << length << " random floating point numbers from " << left << " to " << right
-                  << ":\n"
-                  << spliceAll(array, length, fmtBuffer.data(), bufferSize + 1) << std::endl;
+        std::cout << "\nGenerate " << sequence.size() << " random floating point numbers from " << left << " to "
+                  << right << ":\n"
+                  << spliceAll(sequence.data(), sequence.size(), fmtBuffer.data(), bufferSize + 1) << std::endl;
 #endif // _RUNTIME_PRINTING
     }
 };
