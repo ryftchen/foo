@@ -9,18 +9,23 @@
 
 #include "application/example/include/apply_algorithm.hpp"
 
-//! @brief Title of printing for algorithm task tests.
-#define TST_ALGO_PRINT_TASK_TITLE(title, state)                                                                     \
-    std::osyncstream(std::cout) << "TEST ALGORITHM: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
-                                << std::setw(50) << (title) << (state) << std::resetiosflags(std::ios_base::left)   \
-                                << std::setfill(' ') << std::endl;
-
 //! @brief The test module.
 namespace test // NOLINT(modernize-concat-nested-namespaces)
 {
 //! @brief Algorithm-testing-related functions in the test module.
 namespace tst_algo
 {
+//! @brief Print the progress of the algorithm task tests.
+//! @param title - task title
+//! @param state - task state
+//! @param align - alignment width
+static void printTaskProgress(const std::string_view title, const std::string_view state, const std::uint8_t align = 50)
+{
+    std::osyncstream(std::cout) << "TEST ALGORITHM: " << std::setiosflags(std::ios_base::left) << std::setfill('.')
+                                << std::setw(align) << title << state << std::resetiosflags(std::ios_base::left)
+                                << std::setfill(' ') << std::endl;
+}
+
 //! @brief Test base of match.
 class MatchTestBase : public ::testing::Test
 {
@@ -30,14 +35,14 @@ protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
-        TST_ALGO_PRINT_TASK_TITLE(title, "BEGIN");
+        printTaskProgress(title, "BEGIN");
         namespace input = application::app_algo::match::input;
         fixture = std::make_unique<InputBuilder>(input::patternString);
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
-        TST_ALGO_PRINT_TASK_TITLE(title, "END");
+        printTaskProgress(title, "END");
         fixture.reset();
     }
 
@@ -120,14 +125,14 @@ protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
-        TST_ALGO_PRINT_TASK_TITLE(title, "BEGIN");
+        printTaskProgress(title, "BEGIN");
         namespace input = application::app_algo::notation::input;
         fixture = std::make_unique<InputBuilder>(input::infixString);
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
-        TST_ALGO_PRINT_TASK_TITLE(title, "END");
+        printTaskProgress(title, "END");
         fixture.reset();
     }
 
@@ -164,7 +169,7 @@ protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
-        TST_ALGO_PRINT_TASK_TITLE(title, "BEGIN");
+        printTaskProgress(title, "BEGIN");
         using application::app_algo::optimal::input::SphericalBessel;
         fixture = std::make_unique<InputBuilder>(
             SphericalBessel{}, SphericalBessel::range1, SphericalBessel::range2, SphericalBessel::funcDescr);
@@ -172,7 +177,7 @@ protected:
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
-        TST_ALGO_PRINT_TASK_TITLE(title, "END");
+        printTaskProgress(title, "END");
         fixture.reset();
     }
 
@@ -263,16 +268,13 @@ private:
     //! @brief Update expected result.
     static void updateExpRes()
     {
-        const float* const orderedArray = fixture->getOrderedArray().get();
-        const std::uint32_t length = fixture->getLength();
-        const float searchKey = fixture->getSearchKey();
         expRes.clear();
-        for (std::uint32_t i = 0; i < length; ++i)
+        const std::span<const float> orderedArray{fixture->getOrderedArray().get(), fixture->getLength()};
+        const float searchKey = fixture->getSearchKey();
+        const auto range = std::equal_range(orderedArray.begin(), orderedArray.end(), searchKey);
+        for (auto iterator = range.first; iterator != range.second; ++iterator)
         {
-            if (orderedArray[i] == searchKey)
-            {
-                expRes.emplace(i);
-            }
+            expRes.emplace(std::distance(orderedArray.begin(), iterator));
         }
     }
 
@@ -282,7 +284,7 @@ protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
-        TST_ALGO_PRINT_TASK_TITLE(title, "BEGIN");
+        printTaskProgress(title, "BEGIN");
         namespace input = application::app_algo::search::input;
         fixture = std::make_unique<InputBuilder>(input::arrayLength, input::arrayRangeMin, input::arrayRangeMax);
         updateExpRes();
@@ -290,7 +292,7 @@ protected:
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
-        TST_ALGO_PRINT_TASK_TITLE(title, "END");
+        printTaskProgress(title, "END");
         fixture.reset();
         expRes.clear();
     }
@@ -333,8 +335,8 @@ private:
     //! @brief Update expected result.
     static void updateExpRes()
     {
-        expRes = std::vector<std::int32_t>(
-            fixture->getRandomArray().get(), fixture->getRandomArray().get() + fixture->getLength());
+        expRes = std::vector<std::int32_t>{
+            fixture->getRandomArray().get(), fixture->getRandomArray().get() + fixture->getLength()};
         std::sort(expRes.begin(), expRes.end());
     }
 
@@ -344,7 +346,7 @@ protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
-        TST_ALGO_PRINT_TASK_TITLE(title, "BEGIN");
+        printTaskProgress(title, "BEGIN");
         namespace input = application::app_algo::sort::input;
         fixture = std::make_unique<InputBuilder>(input::arrayLength, input::arrayRangeMin, input::arrayRangeMax);
         updateExpRes();
@@ -352,7 +354,7 @@ protected:
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
-        TST_ALGO_PRINT_TASK_TITLE(title, "END");
+        printTaskProgress(title, "END");
         fixture.reset();
         expRes.clear();
     }
@@ -428,5 +430,3 @@ TEST_F(SortTestBase, RadixMethod)
 }
 } // namespace tst_algo
 } // namespace test
-
-#undef TST_ALGO_PRINT_TASK_TITLE

@@ -9,18 +9,23 @@
 
 #include "application/example/include/apply_design_pattern.hpp"
 
-//! @brief Title of printing for design pattern task tests.
-#define TST_DP_PRINT_TASK_TITLE(title, state)                                                       \
-    std::osyncstream(std::cout) << "TEST DESIGN PATTERN: " << std::setiosflags(std::ios_base::left) \
-                                << std::setfill('.') << std::setw(50) << (title) << (state)         \
-                                << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
-
 //! @brief The test module.
 namespace test // NOLINT(modernize-concat-nested-namespaces)
 {
 //! @brief Design-pattern-testing-related functions in the test module.
 namespace tst_dp
 {
+//! @brief Print the progress of the design pattern task tests.
+//! @param title - task title
+//! @param state - task state
+//! @param align - alignment width
+static void printTaskProgress(const std::string_view title, const std::string_view state, const std::uint8_t align = 50)
+{
+    std::osyncstream(std::cout) << "TEST DESIGN PATTERN: " << std::setiosflags(std::ios_base::left) << std::setfill('.')
+                                << std::setw(align) << title << state << std::resetiosflags(std::ios_base::left)
+                                << std::setfill(' ') << std::endl;
+}
+
 //! @brief Test base of behavioral.
 class BehavioralTestBase : public ::testing::Test
 {
@@ -28,9 +33,9 @@ protected:
     //! @brief Alias for the showcase.
     using Showcase = application::app_dp::behavioral::Showcase;
     //! @brief Set up the test case.
-    static void SetUpTestSuite() { TST_DP_PRINT_TASK_TITLE(title, "BEGIN"); }
+    static void SetUpTestSuite() { printTaskProgress(title, "BEGIN"); }
     //! @brief Tear down the test case.
-    static void TearDownTestSuite() { TST_DP_PRINT_TASK_TITLE(title, "END"); }
+    static void TearDownTestSuite() { printTaskProgress(title, "END"); }
 
     //! @brief Test title.
     inline static const std::string_view title{design_pattern::behavioral::description()};
@@ -217,9 +222,9 @@ protected:
     //! @brief Alias for the showcase.
     using Showcase = application::app_dp::creational::Showcase;
     //! @brief Set up the test case.
-    static void SetUpTestSuite() { TST_DP_PRINT_TASK_TITLE(title, "BEGIN"); }
+    static void SetUpTestSuite() { printTaskProgress(title, "BEGIN"); }
     //! @brief Tear down the test case.
-    static void TearDownTestSuite() { TST_DP_PRINT_TASK_TITLE(title, "END"); }
+    static void TearDownTestSuite() { printTaskProgress(title, "END"); }
 
     //! @brief Test title.
     inline static const std::string_view title{design_pattern::creational::description()};
@@ -307,9 +312,9 @@ protected:
     //! @brief Alias for the showcase.
     using Showcase = application::app_dp::structural::Showcase;
     //! @brief Set up the test case.
-    static void SetUpTestSuite() { TST_DP_PRINT_TASK_TITLE(title, "BEGIN"); }
+    static void SetUpTestSuite() { printTaskProgress(title, "BEGIN"); }
     //! @brief Tear down the test case.
-    static void TearDownTestSuite() { TST_DP_PRINT_TASK_TITLE(title, "END"); }
+    static void TearDownTestSuite() { printTaskProgress(title, "END"); }
 
     //! @brief Test title.
     inline static const std::string_view title{design_pattern::structural::description()};
@@ -420,5 +425,3 @@ TEST_F(StructuralTestBase, ProxyInstance)
 }
 } // namespace tst_dp
 } // namespace test
-
-#undef TST_DP_PRINT_TASK_TITLE

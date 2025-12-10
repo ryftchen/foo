@@ -9,18 +9,23 @@
 
 #include "application/example/include/apply_numeric.hpp"
 
-//! @brief Title of printing for numeric task tests.
-#define TST_NUM_PRINT_TASK_TITLE(title, state)                                                                    \
-    std::osyncstream(std::cout) << "TEST NUMERIC: " << std::setiosflags(std::ios_base::left) << std::setfill('.') \
-                                << std::setw(50) << (title) << (state) << std::resetiosflags(std::ios_base::left) \
-                                << std::setfill(' ') << std::endl;
-
 //! @brief The test module.
 namespace test // NOLINT(modernize-concat-nested-namespaces)
 {
 //! @brief Numeric-testing-related functions in the test module.
 namespace tst_num
 {
+//! @brief Print the progress of the numeric task tests.
+//! @param title - task title
+//! @param state - task state
+//! @param align - alignment width
+static void printTaskProgress(const std::string_view title, const std::string_view state, const std::uint8_t align = 50)
+{
+    std::osyncstream(std::cout) << "TEST NUMERIC: " << std::setiosflags(std::ios_base::left) << std::setfill('.')
+                                << std::setw(align) << title << state << std::resetiosflags(std::ios_base::left)
+                                << std::setfill(' ') << std::endl;
+}
+
 //! @brief Test base of arithmetic.
 class ArithmeticTestBase : public ::testing::Test
 {
@@ -30,14 +35,14 @@ protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
-        TST_NUM_PRINT_TASK_TITLE(title, "BEGIN");
+        printTaskProgress(title, "BEGIN");
         namespace input = application::app_num::arithmetic::input;
         fixture = std::make_unique<InputBuilder>(input::operandA, input::operandB);
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
-        TST_NUM_PRINT_TASK_TITLE(title, "END");
+        printTaskProgress(title, "END");
         fixture.reset();
     }
 
@@ -90,14 +95,14 @@ protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
-        TST_NUM_PRINT_TASK_TITLE(title, "BEGIN");
+        printTaskProgress(title, "BEGIN");
         namespace input = application::app_num::divisor::input;
         fixture = std::make_unique<InputBuilder>(input::numberA, input::numberB);
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
-        TST_NUM_PRINT_TASK_TITLE(title, "END");
+        printTaskProgress(title, "END");
         fixture.reset();
     }
 
@@ -132,7 +137,7 @@ protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
-        TST_NUM_PRINT_TASK_TITLE(title, "BEGIN");
+        printTaskProgress(title, "BEGIN");
         using application::app_num::integral::input::CylindricalBessel;
         fixture = std::make_unique<InputBuilder>(
             CylindricalBessel{}, CylindricalBessel::range1, CylindricalBessel::range2, CylindricalBessel::exprDescr);
@@ -140,7 +145,7 @@ protected:
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
-        TST_NUM_PRINT_TASK_TITLE(title, "END");
+        printTaskProgress(title, "END");
         fixture.reset();
     }
 
@@ -218,14 +223,14 @@ protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
-        TST_NUM_PRINT_TASK_TITLE(title, "BEGIN");
+        printTaskProgress(title, "BEGIN");
         namespace input = application::app_num::prime::input;
         fixture = std::make_unique<InputBuilder>(input::upperBound);
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
-        TST_NUM_PRINT_TASK_TITLE(title, "END");
+        printTaskProgress(title, "END");
         fixture.reset();
     }
 
@@ -266,5 +271,3 @@ TEST_F(PrimeTestBase, EulerMethod)
 }
 } // namespace tst_num
 } // namespace test
-
-#undef TST_NUM_PRINT_TASK_TITLE
