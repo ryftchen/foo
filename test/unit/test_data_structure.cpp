@@ -9,18 +9,23 @@
 
 #include "application/example/include/apply_data_structure.hpp"
 
-//! @brief Title of printing for data structure task tests.
-#define TST_DS_PRINT_TASK_TITLE(title, state)                                                       \
-    std::osyncstream(std::cout) << "TEST DATA STRUCTURE: " << std::setiosflags(std::ios_base::left) \
-                                << std::setfill('.') << std::setw(50) << (title) << (state)         \
-                                << std::resetiosflags(std::ios_base::left) << std::setfill(' ') << std::endl;
-
 //! @brief The test module.
 namespace test // NOLINT(modernize-concat-nested-namespaces)
 {
 //! @brief Data-structure-testing-related functions in the test module.
 namespace tst_ds
 {
+//! @brief Print the progress of the data structure task tests.
+//! @param title - task title
+//! @param state - task state
+//! @param align - alignment width
+static void printTaskProgress(const std::string_view title, const std::string_view state, const std::uint8_t align = 50)
+{
+    std::osyncstream(std::cout) << "TEST DATA STRUCTURE: " << std::setiosflags(std::ios_base::left) << std::setfill('.')
+                                << std::setw(align) << title << state << std::resetiosflags(std::ios_base::left)
+                                << std::setfill(' ') << std::endl;
+}
+
 //! @brief Test base of cache.
 class CacheTestBase : public ::testing::Test
 {
@@ -28,9 +33,9 @@ protected:
     //! @brief Alias for the showcase.
     using Showcase = application::app_ds::cache::Showcase;
     //! @brief Set up the test case.
-    static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "BEGIN"); }
+    static void SetUpTestSuite() { printTaskProgress(title, "BEGIN"); }
     //! @brief Tear down the test case.
-    static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "END"); }
+    static void TearDownTestSuite() { printTaskProgress(title, "END"); }
 
     //! @brief Test title.
     inline static const std::string_view title{data_structure::cache::description()};
@@ -137,9 +142,9 @@ protected:
     //! @brief Alias for the showcase.
     using Showcase = application::app_ds::filter::Showcase;
     //! @brief Set up the test case.
-    static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "BEGIN"); }
+    static void SetUpTestSuite() { printTaskProgress(title, "BEGIN"); }
     //! @brief Tear down the test case.
-    static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "END"); }
+    static void TearDownTestSuite() { printTaskProgress(title, "END"); }
 
     //! @brief Test title.
     inline static const std::string_view title{data_structure::filter::description()};
@@ -189,9 +194,9 @@ protected:
     //! @brief Alias for the showcase.
     using Showcase = application::app_ds::graph::Showcase;
     //! @brief Set up the test case.
-    static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "BEGIN"); }
+    static void SetUpTestSuite() { printTaskProgress(title, "BEGIN"); }
     //! @brief Tear down the test case.
-    static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "END"); }
+    static void TearDownTestSuite() { printTaskProgress(title, "END"); }
 
     //! @brief Test title.
     inline static const std::string_view title{data_structure::graph::description()};
@@ -280,9 +285,9 @@ protected:
     //! @brief Alias for the showcase.
     using Showcase = application::app_ds::heap::Showcase;
     //! @brief Set up the test case.
-    static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "BEGIN"); }
+    static void SetUpTestSuite() { printTaskProgress(title, "BEGIN"); }
     //! @brief Tear down the test case.
-    static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "END"); }
+    static void TearDownTestSuite() { printTaskProgress(title, "END"); }
 
     //! @brief Test title.
     inline static const std::string_view title{data_structure::heap::description()};
@@ -421,9 +426,9 @@ protected:
     //! @brief Alias for the showcase.
     using Showcase = application::app_ds::linear::Showcase;
     //! @brief Set up the test case.
-    static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "BEGIN"); }
+    static void SetUpTestSuite() { printTaskProgress(title, "BEGIN"); }
     //! @brief Tear down the test case.
-    static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "END"); }
+    static void TearDownTestSuite() { printTaskProgress(title, "END"); }
 
     //! @brief Test title.
     inline static const std::string_view title{data_structure::linear::description()};
@@ -514,9 +519,9 @@ protected:
     //! @brief Alias for the showcase.
     using Showcase = application::app_ds::tree::Showcase;
     //! @brief Set up the test case.
-    static void SetUpTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "BEGIN"); }
+    static void SetUpTestSuite() { printTaskProgress(title, "BEGIN"); }
     //! @brief Tear down the test case.
-    static void TearDownTestSuite() { TST_DS_PRINT_TASK_TITLE(title, "END"); }
+    static void TearDownTestSuite() { printTaskProgress(title, "END"); }
 
     //! @brief Test title.
     inline static const std::string_view title{data_structure::tree::description()};
@@ -664,5 +669,3 @@ TEST_F(TreeTestBase, SplayInstance)
 }
 } // namespace tst_ds
 } // namespace test
-
-#undef TST_DS_PRINT_TASK_TITLE
