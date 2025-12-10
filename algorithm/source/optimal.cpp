@@ -39,7 +39,7 @@ std::optional<std::tuple<double, double>> Gradient::operator()(const double left
         {
             x -= dx;
             ++iteration;
-            learningRate = initialLR * 1.0 / (1.0 + decay * iteration);
+            learningRate = initialLR / (1.0 + decay * iteration);
             gradient = calculateFirstDerivative(x, eps);
             dx = learningRate * gradient;
         }
@@ -268,7 +268,7 @@ void Particle::updateParticles(
 
 double Particle::nonlinearDecreasingWeight(const std::uint32_t iteration) const
 {
-    return wBegin - ((wBegin - wEnd) * std::pow(static_cast<double>(iteration + 1) / maxIterations, 2));
+    return wBegin - ((wBegin - wEnd) * std::pow((1.0 + iteration) / maxIterations, 2));
 }
 
 void Particle::updateBests(Swarm& swarm, double& gloBest, double& gloBestFitness)
@@ -315,7 +315,7 @@ std::optional<std::tuple<double, double>> Ant::operator()(const double left, con
             xBest = x;
             yBest = y;
         }
-        stepLen = initialStep * 1.0 / (1.0 + i);
+        stepLen = initialStep / (1.0 + i);
         if (stepLen < eps)
         {
             break;
