@@ -487,9 +487,9 @@ bool Argument::isUsed(const std::string_view argName) const
     return (*this)[argName].isUsed;
 }
 
-bool Argument::isSubCommandUsed(const std::string_view subCommandName) const
+bool Argument::isSubCommandUsed(const std::string_view parserName) const
 {
-    return subParserUsed.at(subCommandName);
+    return subParserUsed.at(parserName);
 }
 
 bool Argument::isSubCommandUsed(const Argument& subParser) const

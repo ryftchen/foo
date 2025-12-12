@@ -351,8 +351,7 @@ std::optional<Value> FIFO<Key, Value>::doFind(const Key& key)
 {
     if (const auto keyedPos = keyedElements.find(key); keyedPos != keyedElements.cend())
     {
-        const auto fifoPos = keyedPos->second;
-        const auto& elem = *fifoPos;
+        const auto& elem = *keyedPos->second;
         return std::make_optional(elem.value);
     }
     return std::nullopt;

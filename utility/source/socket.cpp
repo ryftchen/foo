@@ -233,7 +233,7 @@ void TCPSocket::toRecv(const std::shared_ptr<TCPSocket> socket) // NOLINT(perfor
 
 void TCPSocket::onMessage(const std::string_view message) const
 {
-    const auto& callback = msgCb.load(std::memory_order_acquire);
+    const auto callback = msgCb.load(std::memory_order_acquire);
     if (callback && *callback)
     {
         (*callback)(message);
@@ -242,7 +242,7 @@ void TCPSocket::onMessage(const std::string_view message) const
 
 void TCPSocket::onRawMessage(char* const bytes, const std::size_t size) const
 {
-    const auto& callback = rawMsgCb.load(std::memory_order_acquire);
+    const auto callback = rawMsgCb.load(std::memory_order_acquire);
     if (callback && *callback)
     {
         (*callback)(bytes, size);
@@ -350,7 +350,7 @@ void TCPServer::toAccept(const std::shared_ptr<TCPServer> server) // NOLINT(perf
 void TCPServer::onConnection(
     const std::shared_ptr<TCPSocket> client) const // NOLINT(performance-unnecessary-value-param)
 {
-    const auto& callback = connCb.load(std::memory_order_acquire);
+    const auto callback = connCb.load(std::memory_order_acquire);
     if (callback && *callback)
     {
         (*callback)(client);
@@ -563,7 +563,7 @@ void UDPSocket::toRecvFrom(const std::shared_ptr<UDPSocket> socket) // NOLINT(pe
 
 void UDPSocket::onMessage(const std::string_view message, const std::string& ip, const std::uint16_t port) const
 {
-    const auto& callback = msgCb.load(std::memory_order_acquire);
+    const auto callback = msgCb.load(std::memory_order_acquire);
     if (callback && *callback)
     {
         (*callback)(message, ip, port);
@@ -573,7 +573,7 @@ void UDPSocket::onMessage(const std::string_view message, const std::string& ip,
 void UDPSocket::onRawMessage(
     char* const bytes, const std::size_t size, const std::string& ip, const std::uint16_t port) const
 {
-    const auto& callback = rawMsgCb.load(std::memory_order_acquire);
+    const auto callback = rawMsgCb.load(std::memory_order_acquire);
     if (callback && *callback)
     {
         (*callback)(bytes, size, ip, port);

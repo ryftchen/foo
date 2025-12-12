@@ -368,7 +368,7 @@ private:
     //! @tparam Type - type of data
     //! @return data value
     template <typename Type>
-    [[nodiscard]] auto getData() const;
+    const auto& getData() const;
 
     //! @brief Data's value object's helper type for the visitor.
     //! @tparam Ts - type of visitors
@@ -383,7 +383,7 @@ protected:
 };
 
 template <typename Type>
-auto JSON::getData() const
+const auto& JSON::getData() const
 {
     if constexpr (std::is_same_v<Type, Object>)
     {
