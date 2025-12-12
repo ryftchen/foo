@@ -875,7 +875,7 @@ void Command::executeInConsole() const
         return;
     }
 
-    const auto& pendingInputs = mainCLI.get<std::vector<std::string>>(toString(Category::console));
+    const auto pendingInputs = mainCLI.get<std::vector<std::string>>(toString(Category::console));
     if (pendingInputs.empty())
     {
         return;

@@ -426,7 +426,7 @@ void Log::backUpLogFileIfNeeded() const
         | std::views::transform(
                            [&pattern, match = std::smatch{}](const auto& entry) mutable
                            {
-                               const auto& filename = entry.path().filename().string();
+                               const auto filename = entry.path().filename().string();
                                return std::regex_match(filename, match, pattern) ? std::stoi(match[1].str()) : 0;
                            });
     const int index = std::ranges::max(transformed, std::less<int>{}, [](const auto value) { return value; });

@@ -149,8 +149,8 @@ std::int64_t Search<Elem>::fibonacci(const Elem* const array, const std::uint32_
     {
         return -1;
     }
-    const auto& fib = generateFibonacciNumber(length);
-    if (constexpr std::uint8_t minSize = 3; static_cast<std::int32_t>(fib.size() - 1) < minSize)
+    const auto fib = generateFibonacciNumber(length);
+    if (constexpr std::uint8_t minSize = 3; (fib.size() - 1) < minSize)
     {
         return -1;
     }

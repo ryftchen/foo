@@ -409,14 +409,13 @@ bool ArgTrait::operator==(const RHS& rhs) const
     }
     else
     {
-        const auto& lhs = get<RHS>();
+        const auto lhs = get<RHS>();
         return std::equal(
             std::cbegin(lhs),
             std::cend(lhs),
             std::cbegin(rhs),
             std::cend(rhs),
-            [](const auto& lhs, const auto& rhs)
-            { return rhs == std::any_cast<const typename RHS::value_type&>(lhs); });
+            [](const auto& l, const auto& r) { return r == std::any_cast<const typename RHS::value_type&>(l); });
     }
 }
 
@@ -700,9 +699,9 @@ public:
     //! @return be used or not
     bool isUsed(const std::string_view argName) const;
     //! @brief Check whether the sub-command is used.
-    //! @param subCommandName - target sub-command name
+    //! @param parserName - target sub-parser name
     //! @return be used or not
-    bool isSubCommandUsed(const std::string_view subCommandName) const;
+    bool isSubCommandUsed(const std::string_view parserName) const;
     //! @brief Check whether the sub-command is used.
     //! @param subParser - target sub-parser
     //! @return be used or not
