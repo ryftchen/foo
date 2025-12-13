@@ -27,7 +27,7 @@ std::vector<std::uint32_t> Prime::eratosthenes(const std::uint32_t limit)
     {
         if (isPrime[i])
         {
-            for (std::uint32_t j = (i * i); j <= limit; j += i)
+            for (std::uint32_t j = i * i; j <= limit; j += i)
             {
                 isPrime[j] = false;
             }

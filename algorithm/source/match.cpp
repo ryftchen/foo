@@ -129,7 +129,6 @@ std::int64_t Match::bm(
     std::int64_t shift = -1;
     std::uint32_t badCharRuleTable[maxASCII] = {};
     std::uint32_t goodSuffixIndexTable[maxASCII] = {};
-
     fillBadCharRuleTable(badCharRuleTable, pattern, patternLen);
     fillGoodSuffixRuleTable(goodSuffixIndexTable, pattern, patternLen);
 
@@ -161,9 +160,9 @@ void Match::fillBadCharRuleTable(
         badCharRuleTable[i] = patternLen;
     }
 
-    for (std::uint32_t j = 0; j < patternLen; ++j)
+    for (std::uint32_t i = 0; i < patternLen; ++i)
     {
-        badCharRuleTable[pattern[j]] = patternLen - 1 - j;
+        badCharRuleTable[pattern[i]] = patternLen - 1 - i;
     }
 }
 
@@ -220,7 +219,6 @@ std::int64_t Match::horspool(
 
     std::int64_t shift = -1;
     std::uint32_t badCharShiftTable[maxASCII] = {};
-
     fillHorspoolBadCharShiftTable(badCharShiftTable, pattern, patternLen);
 
     std::uint32_t moveLen = patternLen - 1;
@@ -251,9 +249,9 @@ void Match::fillHorspoolBadCharShiftTable(
         badCharShiftTable[i] = patternLen;
     }
 
-    for (std::uint32_t j = 0; j < (patternLen - 1); ++j)
+    for (std::uint32_t i = 0; i < (patternLen - 1); ++i)
     {
-        badCharShiftTable[pattern[j]] = patternLen - 1 - j;
+        badCharShiftTable[pattern[i]] = patternLen - 1 - i;
     }
 }
 
@@ -270,7 +268,6 @@ std::int64_t Match::sunday(
 
     std::int64_t shift = -1;
     std::uint32_t badCharShiftTable[maxASCII] = {};
-
     fillSundayBadCharShiftTable(badCharShiftTable, pattern, patternLen);
 
     std::uint32_t textIdx = 0;
@@ -300,9 +297,9 @@ void Match::fillSundayBadCharShiftTable(
         badCharShiftTable[i] = patternLen + 1;
     }
 
-    for (std::uint32_t j = 0; j < patternLen; ++j)
+    for (std::uint32_t i = 0; i < patternLen; ++i)
     {
-        badCharShiftTable[pattern[j]] = patternLen - j;
+        badCharShiftTable[pattern[i]] = patternLen - i;
     }
 }
 } // namespace algorithm::match
