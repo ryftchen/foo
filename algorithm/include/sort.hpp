@@ -112,9 +112,9 @@ std::vector<Elem> Sort<Elem>::bubble(const Elem* const array, const std::uint32_
     }
 
     std::vector<Elem> sorting(array, array + length);
-    for (std::uint32_t i = 0; i < length - 1; ++i)
+    for (std::uint32_t i = 0; i < (length - 1); ++i)
     {
-        for (std::uint32_t j = 0; j < length - 1 - i; ++j)
+        for (std::uint32_t j = 0; j < (length - 1 - i); ++j)
         {
             if (sorting[j] > sorting[j + 1])
             {
@@ -134,7 +134,7 @@ std::vector<Elem> Sort<Elem>::selection(const Elem* const array, const std::uint
     }
 
     std::vector<Elem> sorting(array, array + length);
-    for (std::uint32_t i = 0; i < length - 1; ++i)
+    for (std::uint32_t i = 0; i < (length - 1); ++i)
     {
         std::uint32_t min = i;
         for (std::uint32_t j = i + 1; j < length; ++j)
@@ -437,7 +437,7 @@ requires std::is_integral_v<Elem>
     for (Elem exp = 1; (max / exp) > 0; exp *= base)
     {
         std::vector<Elem> temp(length);
-        std::uint32_t count[base] = {0};
+        std::uint32_t count[base] = {};
         for (const auto elem : sorting)
         {
             const std::uint8_t digit = (elem / exp) % base;

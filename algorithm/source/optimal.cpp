@@ -122,7 +122,7 @@ void Tabu::updateNeighborhood(
     const double left,
     const double right) const
 {
-    for (std::uint32_t i = 0; i < neighborSize / 2; ++i)
+    for (std::uint32_t i = 0; i < (neighborSize / 2); ++i)
     {
         const double neighbor1 = std::min(solution + (i * stepLen), right);
         neighborhood.emplace_back(neighbor1);
@@ -197,13 +197,13 @@ std::optional<std::tuple<double, double>> Annealing::operator()(const double lef
 double Annealing::cauchyLikeDistribution(
     const double prev, const double min, const double max, const double temp, const double xi)
 {
-    const double sgn = ((xi - 0.5) > 0) - ((xi - 0.5) < 0);
-    return prev + ((temp * sgn * (1 + 1 / (std::pow(temp, (2 * xi) - 1) - 1))) * (max - min));
+    const double sgn = ((xi - 0.5) > 0.0) - ((xi - 0.5) < 0.0);
+    return prev + ((temp * sgn * (1.0 + 1.0 / (std::pow(temp, (2.0 * xi) - 1.0) - 1.0))) * (max - min));
 }
 
 bool Annealing::metropolisAcceptanceCriterion(const double deltaE, const double temp, const double xi)
 {
-    return (deltaE < 0) || (std::exp(-deltaE / temp) > xi);
+    return (deltaE < 0.0) || (std::exp(-deltaE / temp) > xi);
 }
 
 std::optional<std::tuple<double, double>> Particle::operator()(const double left, const double right, const double eps)
@@ -268,7 +268,7 @@ void Particle::updateParticles(
 
 double Particle::nonlinearDecreasingWeight(const std::uint32_t iteration) const
 {
-    return wBegin - ((wBegin - wEnd) * std::pow((1.0 + iteration) / maxIterations, 2));
+    return wBegin - ((wBegin - wEnd) * std::pow((1.0 + iteration) / maxIterations, 2.0));
 }
 
 void Particle::updateBests(Swarm& swarm, double& gloBest, double& gloBestFitness)
@@ -472,7 +472,7 @@ void Genetic::crossover(Population& pop)
     for (auto chrIter = selector.cbegin(); (chrIter != selector.cend()) && (std::next(chrIter, 1) != selector.cend());
          std::advance(chrIter, 2))
     {
-        if (crossPr > probability(engine))
+        if (probability(engine) < crossPr)
         {
             auto& parent1 = chrIter->get();
             auto& parent2 = std::next(chrIter, 1)->get();
@@ -488,7 +488,7 @@ void Genetic::geneticMutation(Chromosome& chr)
         chr.end(),
         [this](auto& bit)
         {
-            if (mutatePr > probability(engine))
+            if (probability(engine) < mutatePr)
             {
                 bit = !bit;
             }

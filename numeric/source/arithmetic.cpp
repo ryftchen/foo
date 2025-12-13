@@ -29,7 +29,7 @@ std::int32_t Arithmetic::subtraction(const std::int32_t minuend, const std::int3
 std::int32_t Arithmetic::multiplication(const std::int32_t multiplier, const std::int32_t multiplicand)
 {
     std::int32_t product = 0;
-    for (std::int32_t i = ((sizeof(std::int32_t) * 8) - 1); i >= 0; --i)
+    for (std::int32_t i = (sizeof(std::int32_t) * 8) - 1; i >= 0; --i)
     {
         product <<= 1;
         if ((multiplicand & (1 << i)) >> i)
@@ -51,7 +51,7 @@ std::int32_t Arithmetic::division(const std::int32_t dividend, const std::int32_
     const std::int32_t absDivisor = bitAbs(divisor);
     std::int32_t quotient = 0;
     std::int32_t remainder = 0;
-    for (std::int32_t i = ((sizeof(std::int32_t) * 8) - 1); i >= 0; --i)
+    for (std::int32_t i = (sizeof(std::int32_t) * 8) - 1; i >= 0; --i)
     {
         quotient <<= 1;
         remainder <<= 1;

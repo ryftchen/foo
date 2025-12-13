@@ -150,7 +150,7 @@ void TCPSocket::toConnect(const std::string& ip, const std::uint16_t port)
             "Invalid address, status: " + std::string{::gai_strerror(status)} + ", errno: " + safeStrErrno() + '.'};
     }
 
-    for (const ::addrinfo* entry = addrInfo; entry != nullptr; entry = entry->ai_next)
+    for (const auto* entry = addrInfo; entry != nullptr; entry = entry->ai_next)
     {
         if (entry->ai_family == AF_INET)
         {
@@ -372,7 +372,7 @@ void TCPServer::onConnection(
     }
 
     ::sockaddr_in addr{};
-    for (const ::addrinfo* entry = addrInfo; entry != nullptr; entry = entry->ai_next)
+    for (const auto* entry = addrInfo; entry != nullptr; entry = entry->ai_next)
     {
         if (entry->ai_family == AF_INET)
         {
@@ -425,7 +425,7 @@ void UDPSocket::toConnect(const std::string& ip, const std::uint16_t port)
             "Invalid address, status: " + std::string{::gai_strerror(status)} + ", errno: " + safeStrErrno() + '.'};
     }
 
-    for (const ::addrinfo* entry = addrInfo; entry != nullptr; entry = entry->ai_next)
+    for (const auto* entry = addrInfo; entry != nullptr; entry = entry->ai_next)
     {
         if (entry->ai_family == AF_INET)
         {
