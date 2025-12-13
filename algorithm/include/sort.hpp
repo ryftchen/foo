@@ -10,7 +10,7 @@
 #include <cmath>
 #include <cstdint>
 #include <numeric>
-#include <queue>
+#include <vector>
 
 //! @brief The algorithm module.
 namespace algorithm // NOLINT(modernize-concat-nested-namespaces)
@@ -101,18 +101,6 @@ private:
     //! @param begin - index of beginning
     //! @param end - index of ending
     static void buildMaxHeap(Elem* const sorting, const std::uint32_t begin, const std::uint32_t end);
-    //! @brief Least significant digit (LSD) for the radix method.
-    //! @param sorting - array to be sorted
-    //! @param length - length of array
-    //! @param maxDigit - maximum digit
-    //! @param bucketSize - bucket size
-    //! @param indexOffset - bucket index offset
-    static void leastSignificantDigit(
-        Elem* const sorting,
-        const std::uint32_t length,
-        const std::uint32_t maxDigit,
-        const std::uint32_t bucketSize,
-        const std::uint32_t indexOffset);
 };
 
 template <typename Elem>
@@ -359,27 +347,26 @@ requires std::is_integral_v<Elem>
     }
 
     std::vector<Elem> sorting(array, array + length);
-    Elem max = std::numeric_limits<Elem>::min();
-    Elem min = std::numeric_limits<Elem>::max();
-    for (std::uint32_t i = 0; i < length; ++i)
+    const Elem max = *std::max_element(sorting.cbegin(), sorting.cend());
+    const Elem min = *std::min_element(sorting.cbegin(), sorting.cend());
+    if (max == min)
     {
-        max = std::max(sorting[i], max);
-        min = std::min(sorting[i], min);
+        return sorting;
     }
 
-    const Elem countSize = max - min + 1;
-    std::vector<Elem> count(countSize);
-    for (std::uint32_t i = 0; i < length; ++i)
+    const Elem countRange = max - min + 1;
+    std::vector<std::uint32_t> count(countRange, 0);
+    for (const auto elem : sorting)
     {
-        ++count[sorting[i] - min];
+        ++count[elem - min];
     }
-    std::uint32_t index = 0;
-    for (Elem j = 0; j < countSize; ++j)
+
+    std::uint32_t pos = 0;
+    for (Elem i = 0; i < countRange; ++i)
     {
-        while (count[j])
+        while (count[i]--)
         {
-            sorting[index++] = j + min;
-            --count[j];
+            sorting[pos++] = i + min;
         }
     }
     return sorting;
@@ -394,29 +381,28 @@ std::vector<Elem> Sort<Elem>::bucket(const Elem* const array, const std::uint32_
     }
 
     std::vector<Elem> sorting(array, array + length);
-    Elem max = std::numeric_limits<Elem>::min();
-    Elem min = std::numeric_limits<Elem>::max();
-    for (std::uint32_t i = 0; i < length; ++i)
+    const Elem max = *std::max_element(sorting.cbegin(), sorting.cend());
+    const Elem min = *std::min_element(sorting.cbegin(), sorting.cend());
+    if (max == min)
     {
-        max = std::max(sorting[i], max);
-        min = std::min(sorting[i], min);
+        return sorting;
     }
 
-    const std::uint32_t bucketSize = length;
-    const double intervalSpan = static_cast<double>(max - min) / static_cast<double>(bucketSize - 1);
-    std::vector<std::vector<Elem>> bucket(bucketSize, std::vector<Elem>{});
-    for (std::uint32_t i = 0; i < length; ++i)
+    const std::uint32_t bucketNum = length;
+    std::vector<std::vector<Elem>> bucket(bucketNum);
+    for (const double interval = static_cast<double>(max - min) / static_cast<double>(bucketNum - 1);
+         const auto elem : sorting)
     {
-        const std::uint32_t bucketIdx = std::floor((static_cast<double>(sorting[i] - min) / intervalSpan) + 1) - 1;
-        bucket[bucketIdx].emplace_back(sorting[i]);
+        const std::uint32_t bucketIdx = std::floor(((elem - min) / interval) + 1) - 1;
+        bucket[bucketIdx].emplace_back(elem);
     }
 
-    for (std::uint32_t index = 0; auto& each : bucket)
+    for (std::uint32_t pos = 0; auto& each : bucket)
     {
         std::sort(each.begin(), each.end());
         for (const auto elem : each)
         {
-            sorting[index++] = elem;
+            sorting[pos++] = elem;
         }
     }
     return sorting;
@@ -432,89 +418,53 @@ requires std::is_integral_v<Elem>
     }
 
     std::vector<Elem> sorting(array, array + length);
-    Elem max = std::numeric_limits<Elem>::min();
-    Elem min = std::numeric_limits<Elem>::max();
-    for (std::uint32_t i = 0; i < length; ++i)
+    const Elem min = *std::min_element(sorting.cbegin(), sorting.cend());
+    const Elem max = *std::max_element(sorting.cbegin(), sorting.cend());
+    if (max == min)
     {
-        max = std::max(sorting[i], max);
-        min = std::min(sorting[i], min);
+        return sorting;
     }
 
-    Elem absMax = std::max(max, -min);
-    constexpr std::uint32_t base = 10;
-    std::uint32_t maxDigit = 0;
-    while (absMax)
+    if (min < 0)
     {
-        absMax /= base;
-        ++maxDigit;
+        for (auto& elem : sorting)
+        {
+            elem -= min;
+        }
     }
 
-    constexpr std::uint32_t naturalNumberRdx = 10;
-    constexpr std::uint32_t negativeIntegerRdx = 9;
-    const bool hasPositive = (max > 0);
-    const bool hasNegative = (min < 0);
-    const std::uint32_t bucketSize =
-        (hasPositive ^ hasNegative) ? naturalNumberRdx : (naturalNumberRdx + negativeIntegerRdx);
-    const std::uint32_t indexOffset = (!hasNegative) ? 0 : negativeIntegerRdx;
-    leastSignificantDigit(sorting.data(), length, maxDigit, bucketSize, indexOffset);
+    constexpr std::uint8_t base = 10;
+    for (Elem exp = 1; (max / exp) > 0; exp *= base)
+    {
+        std::vector<Elem> temp(length);
+        std::uint32_t count[base] = {0};
+        for (const auto elem : sorting)
+        {
+            const std::uint8_t digit = (elem / exp) % base;
+            ++count[digit];
+        }
+
+        for (std::uint8_t i = 1; i < base; ++i)
+        {
+            count[i] += count[i - 1];
+        }
+
+        for (std::int64_t i = length - 1; i >= 0; --i)
+        {
+            const std::uint8_t digit = (sorting[i] / exp) % base;
+            temp[--count[digit]] = sorting[i];
+        }
+        sorting = std::move(temp);
+    }
+
+    if (min < 0)
+    {
+        for (auto& elem : sorting)
+        {
+            elem += min;
+        }
+    }
     return sorting;
-}
-
-template <typename Elem>
-void Sort<Elem>::leastSignificantDigit(
-    Elem* const sorting,
-    const std::uint32_t length,
-    const std::uint32_t maxDigit,
-    const std::uint32_t bucketSize,
-    const std::uint32_t indexOffset)
-{
-    constexpr std::uint32_t base = 10;
-    std::vector<Elem> countOld(bucketSize, 0);
-    std::vector<Elem> countNew(bucketSize, 0);
-    std::vector<std::queue<Elem>> bucket(bucketSize, std::queue<Elem>{});
-    for (std::uint32_t i = 0; i < length; ++i)
-    {
-        const std::int8_t sign = (sorting[i] > 0) ? 1 : -1;
-        const std::uint32_t bucketIdx = (std::abs(sorting[i]) / 1 % base * sign) + indexOffset;
-        bucket[bucketIdx].push(sorting[i]);
-        ++countNew[bucketIdx];
-    }
-
-    constexpr std::uint32_t decimal = 10;
-    for (std::uint32_t i = 1, pow = decimal; i < maxDigit; ++i, pow *= base)
-    {
-        countOld = countNew;
-        std::fill(countNew.begin(), countNew.end(), 0);
-        for (auto bucketIter = bucket.begin(); bucketIter != bucket.end(); ++bucketIter)
-        {
-            if (bucketIter->empty())
-            {
-                continue;
-            }
-
-            const std::uint32_t countIdx = bucketIter - bucket.cbegin();
-            while (countOld[countIdx])
-            {
-                const Elem elem = bucketIter->front();
-                const std::int8_t sign = (elem > 0) ? 1 : -1;
-                const std::uint32_t bucketIdx = (std::abs(elem) / pow % base * sign) + indexOffset;
-                bucket[bucketIdx].push(elem);
-                ++countNew[bucketIdx];
-
-                bucketIter->pop();
-                --countOld[countIdx];
-            }
-        }
-    }
-
-    for (std::uint32_t index = 0; auto& each : bucket)
-    {
-        while (!each.empty())
-        {
-            sorting[index++] = each.front();
-            each.pop();
-        }
-    }
 }
 } // namespace sort
 } // namespace algorithm
