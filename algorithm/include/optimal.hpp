@@ -485,7 +485,7 @@ private:
     //! @brief The linear scaling coefficient.
     static constexpr double cMult{1.01};
     //! @brief Minimum length of chromosome.
-    static constexpr std::uint32_t minChrLen{2};
+    static constexpr std::uint32_t minChrLen{3};
     //! @brief Length of chromosome.
     std::uint32_t chromosomeLen{0};
     //! @brief Properties of species.
@@ -551,10 +551,14 @@ private:
     //! @brief The genetic selection.
     //! @param pop - whole population
     void select(Population& pop);
+    //! @brief Extract elite.
+    //! @param pop - whole population
+    //! @return elite
+    Chromosome extractElite(Population& pop);
     //! @brief Get the best individual.
     //! @param pop - whole population
     //! @return the best individual's chromosome
-    Chromosome getBestIndividual(const Population& pop);
+    auto getBestIndividual(const Population& pop);
 };
 } // namespace optimal
 } // namespace algorithm
