@@ -67,7 +67,7 @@ The **foo** is a personal roadmap for learning programming, like an exploratory 
   ```
 
   Configuration information is stored in `$HOME/.foo/configure/foo.json`, and the executed log is also written to `$HOME/.foo/log/foo.log`.
-- The parameters are provided for building or static analysis. Build with options such as *-\-lint*, *-\-query*, etc.
+- The parameters are provided for building or static analysis. Build with options like *-\-lint cpp*, etc.
 
 ### How to run
 
@@ -85,7 +85,7 @@ The **foo** is a personal roadmap for learning programming, like an exploratory 
 
   Also, add the *-\-build* option to support building before running. The result of running will also be written to `./report/foo_run.log` and the analysis will be generated in `./report/foo_run.report`.
 
-- The parameters are provided for running or dynamic analysis. Run with options such as *-\-check cov*, *-\-check mem*, etc.
+- The parameters are provided for running or dynamic analysis. Run with options like *-\-check mem*, etc.
 
 ## Documentation
 
