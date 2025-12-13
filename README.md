@@ -89,7 +89,7 @@ The **foo** is a personal roadmap for learning programming, like an exploratory 
 
 ## Documentation
 
-The project documentation can be found on the [GitHub Pages](https://ryftchen.github.io/foo/). When using local documentation via script, `./document` is used as the generation directory.
+The project documentation can be found on the [GitHub Pages](https://ryftchen.github.io/foo/). When using local documentation via script, `./document` is used as the generation directory. Support is also available for deploying the local archive server.
 
 ## License
 
