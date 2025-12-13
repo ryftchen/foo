@@ -449,8 +449,8 @@ public:
         Function func,
         const double crossPr = 0.95,
         const double mutatePr = 0.015,
-        const std::uint32_t popSize = 1000,
-        const std::uint32_t numOfGens = 10) :
+        const std::uint32_t popSize = 200,
+        const std::uint32_t numOfGens = 50) :
         func{std::move(func)}, crossPr{crossPr}, mutatePr{mutatePr}, popSize{popSize}, numOfGens{numOfGens}
     {
     }
@@ -471,9 +471,9 @@ private:
     //! @brief Mutation probability.
     const double mutatePr{0.015};
     //! @brief Population size.
-    const std::uint32_t popSize{1000};
+    const std::uint32_t popSize{200};
     //! @brief Number of generations.
-    const std::uint32_t numOfGens{10};
+    const std::uint32_t numOfGens{50};
     //! @brief Random engine.
     std::mt19937_64 engine{std::random_device{}()};
     //! @brief The probability of a possible event (from 0 to 1).
@@ -540,10 +540,6 @@ private:
     //! @param cumFitness - cumulative fitness
     //! @return selected competitor
     auto rouletteWheelSelection(const Population& pop, const std::vector<double>& cumFitness);
-    //! @brief The stochastic tournament selection.
-    //! @param pop - whole population
-    //! @param cumFitness - cumulative fitness
-    void stochasticTournamentSelection(Population& pop, const std::vector<double>& cumFitness);
     //! @brief The genetic selection.
     //! @param pop - whole population
     void select(Population& pop);

@@ -526,20 +526,6 @@ auto Genetic::rouletteWheelSelection(const Population& pop, const std::vector<do
                                           : std::prev(pop.cend());
 }
 
-void Genetic::stochasticTournamentSelection(Population& pop, const std::vector<double>& cumFitness)
-{
-    Population selected{};
-    selected.reserve(pop.size());
-    while (selected.size() < pop.size())
-    {
-        const auto competitor1 = *rouletteWheelSelection(pop, cumFitness);
-        const auto competitor2 = *rouletteWheelSelection(pop, cumFitness);
-        selected.emplace_back(
-            (calculateFitness(competitor1) > calculateFitness(competitor2)) ? competitor1 : competitor2);
-    }
-    pop = std::move(selected);
-}
-
 void Genetic::select(Population& pop)
 {
     std::vector<double> fitness{};
@@ -568,7 +554,13 @@ void Genetic::select(Population& pop)
     std::for_each(fitness.begin(), fitness.end(), [sum](auto& fit) { fit /= sum; });
     std::partial_sum(fitness.begin(), fitness.end(), fitness.begin());
 
-    stochasticTournamentSelection(pop, fitness);
+    Population selected{};
+    selected.reserve(pop.size());
+    std::generate_n(
+        std::back_inserter(selected),
+        pop.size(),
+        [this, &pop, &fitness]() { return *rouletteWheelSelection(pop, fitness); });
+    pop = std::move(selected);
 }
 
 Genetic::Chromosome Genetic::extractElite(Population& pop)
