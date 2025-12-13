@@ -399,7 +399,7 @@ std::optional<std::tuple<double, double>> Genetic::operator()(const double left,
     }
 
     auto pop = populationInit();
-    for (std::uint32_t i = 0; i < numOfGenerations; ++i)
+    for (std::uint32_t i = 0; i < numOfGens; ++i)
     {
         auto elite = extractElite(pop);
         select(pop);
