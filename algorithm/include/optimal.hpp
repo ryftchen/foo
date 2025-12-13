@@ -447,9 +447,9 @@ public:
     //! @param numOfGens - predefined number of generations
     explicit Genetic(
         Function func,
-        const double crossPr = 0.7,
-        const double mutatePr = 0.001,
-        const std::uint32_t popSize = 500,
+        const double crossPr = 0.95,
+        const double mutatePr = 0.015,
+        const std::uint32_t popSize = 1000,
         const std::uint32_t numOfGens = 10) :
         func{std::move(func)}, crossPr{crossPr}, mutatePr{mutatePr}, popSize{popSize}, numOfGens{numOfGens}
     {
@@ -467,11 +467,11 @@ private:
     //! @brief Target function.
     const Function func;
     //! @brief Crossover probability.
-    const double crossPr{0.7};
+    const double crossPr{0.95};
     //! @brief Mutation probability.
-    const double mutatePr{0.001};
+    const double mutatePr{0.015};
     //! @brief Population size.
-    const std::uint32_t popSize{500};
+    const std::uint32_t popSize{1000};
     //! @brief Number of generations.
     const std::uint32_t numOfGens{10};
     //! @brief Random engine.
