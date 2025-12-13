@@ -444,18 +444,14 @@ public:
     //! @param crossPr - predefined crossover probability
     //! @param mutatePr - predefined mutation probability
     //! @param popSize - predefined population size
-    //! @param numOfGenerations - predefined number of generations
+    //! @param numOfGens - predefined number of generations
     explicit Genetic(
         Function func,
         const double crossPr = 0.7,
         const double mutatePr = 0.001,
         const std::uint32_t popSize = 500,
-        const std::uint32_t numOfGenerations = 10) :
-        func{std::move(func)},
-        crossPr{crossPr},
-        mutatePr{mutatePr},
-        popSize{popSize},
-        numOfGenerations{numOfGenerations}
+        const std::uint32_t numOfGens = 10) :
+        func{std::move(func)}, crossPr{crossPr}, mutatePr{mutatePr}, popSize{popSize}, numOfGens{numOfGens}
     {
     }
 
@@ -477,7 +473,7 @@ private:
     //! @brief Population size.
     const std::uint32_t popSize{500};
     //! @brief Number of generations.
-    const std::uint32_t numOfGenerations{10};
+    const std::uint32_t numOfGens{10};
     //! @brief Random engine.
     std::mt19937_64 engine{std::random_device{}()};
     //! @brief The probability of a possible event (from 0 to 1).
