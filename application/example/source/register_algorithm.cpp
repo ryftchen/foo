@@ -50,7 +50,7 @@ void clear()
 template <typename Meth>
 static consteval std::size_t mappedPos(const std::string_view stringify)
 {
-    return static_cast<std::size_t>(TypeInfo<Meth>::fields.template valueOfName<Meth>(stringify));
+    return static_cast<std::underlying_type_t<Meth>>(TypeInfo<Meth>::fields.template valueOfName<Meth>(stringify));
 }
 
 namespace match
