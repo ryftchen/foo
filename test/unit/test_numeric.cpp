@@ -29,21 +29,30 @@ static void printTaskProgress(const std::string_view title, const std::string_vi
 //! @brief Test base of arithmetic.
 class ArithmeticTestBase : public ::testing::Test
 {
-protected:
+private:
     //! @brief Alias for the input builder.
     using InputBuilder = application::app_num::arithmetic::InputBuilder;
+    //! @brief Prepare scenario.
+    static void prepareScenario()
+    {
+        namespace input = application::app_num::arithmetic::input;
+        fixture = std::make_unique<InputBuilder>(input::operandA, input::operandB);
+    }
+    //! @brief Reset scenario.
+    static void resetScenario() { fixture.reset(); }
+
+protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
         printTaskProgress(title, "BEGIN");
-        namespace input = application::app_num::arithmetic::input;
-        fixture = std::make_unique<InputBuilder>(input::operandA, input::operandB);
+        prepareScenario();
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
         printTaskProgress(title, "END");
-        fixture.reset();
+        resetScenario();
     }
 
     //! @brief Test title.
@@ -89,21 +98,30 @@ TEST_F(ArithmeticTestBase, DivisionMethod)
 //! @brief Test base of divisor.
 class DivisorTestBase : public ::testing::Test
 {
-protected:
+private:
     //! @brief Alias for the input builder.
     using InputBuilder = application::app_num::divisor::InputBuilder;
+    //! @brief Prepare scenario.
+    static void prepareScenario()
+    {
+        namespace input = application::app_num::divisor::input;
+        fixture = std::make_unique<InputBuilder>(input::numberA, input::numberB);
+    }
+    //! @brief Reset scenario.
+    static void resetScenario() { fixture.reset(); }
+
+protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
         printTaskProgress(title, "BEGIN");
-        namespace input = application::app_num::divisor::input;
-        fixture = std::make_unique<InputBuilder>(input::numberA, input::numberB);
+        prepareScenario();
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
         printTaskProgress(title, "END");
-        fixture.reset();
+        resetScenario();
     }
 
     //! @brief Test title.
@@ -131,34 +149,47 @@ TEST_F(DivisorTestBase, SteinMethod)
 //! @brief Test base of integral.
 class IntegralTestBase : public ::testing::Test
 {
-protected:
+private:
     //! @brief Alias for the input builder.
     using InputBuilder = application::app_num::integral::InputBuilder;
+    //! @brief Prepare scenario.
+    static void prepareScenario()
+    {
+        using application::app_num::integral::input::CylindricalBessel;
+        fixture = std::make_unique<InputBuilder>(
+            CylindricalBessel{}, CylindricalBessel::range1, CylindricalBessel::range2, CylindricalBessel::exprDescr);
+        sut.clear();
+        sut["Trapezoidal"] = std::make_unique<numeric::integral::Trapezoidal>(fixture->getExpression());
+        sut["Simpson"] = std::make_unique<numeric::integral::Simpson>(fixture->getExpression());
+        sut["Romberg"] = std::make_unique<numeric::integral::Romberg>(fixture->getExpression());
+        sut["Gauss"] = std::make_unique<numeric::integral::Gauss>(fixture->getExpression());
+        sut["MonteCarlo"] = std::make_unique<numeric::integral::MonteCarlo>(fixture->getExpression());
+    }
+    //! @brief Reset scenario.
+    static void resetScenario()
+    {
+        fixture.reset();
+        sut.clear();
+    }
+
+protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
         printTaskProgress(title, "BEGIN");
-        using application::app_num::integral::input::CylindricalBessel;
-        fixture = std::make_unique<InputBuilder>(
-            CylindricalBessel{}, CylindricalBessel::range1, CylindricalBessel::range2, CylindricalBessel::exprDescr);
+        prepareScenario();
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
         printTaskProgress(title, "END");
-        fixture.reset();
+        resetScenario();
     }
 
     //! @brief Test title.
     inline static const std::string_view title{numeric::integral::description()};
     //! @brief System under test.
-    //! @tparam SUT - type of system under test
-    //! @return system under test
-    template <typename SUT>
-    static std::unique_ptr<numeric::integral::Integral> sut()
-    {
-        return std::make_unique<SUT>(fixture->getExpression());
-    }
+    inline static std::unordered_map<std::string, std::unique_ptr<numeric::integral::Integral>> sut{};
     //! @brief Fixture data.
     inline static std::unique_ptr<InputBuilder> fixture{};
     //! @brief Expected result.
@@ -172,8 +203,8 @@ protected:
 //! @brief Test for the trapezoidal method in the calculation of integral.
 TEST_F(IntegralTestBase, TrapezoidalMethod)
 {
-    const auto result =
-        (*sut<numeric::integral::Trapezoidal>())(fixture->getRanges().first, fixture->getRanges().second, defPrec);
+    const auto& trapezoidal = *sut.at("Trapezoidal");
+    const auto result = trapezoidal(fixture->getRanges().first, fixture->getRanges().second, defPrec);
     EXPECT_GT(result, expRes - absErr);
     EXPECT_LT(result, expRes + absErr);
 }
@@ -181,8 +212,8 @@ TEST_F(IntegralTestBase, TrapezoidalMethod)
 //! @brief Test for the adaptive Simpson's 1/3 method in the calculation of integral.
 TEST_F(IntegralTestBase, AdaptiveSimpsonMethod)
 {
-    const auto result =
-        (*sut<numeric::integral::Simpson>())(fixture->getRanges().first, fixture->getRanges().second, defPrec);
+    const auto& simpson = *sut.at("Simpson");
+    const auto result = simpson(fixture->getRanges().first, fixture->getRanges().second, defPrec);
     EXPECT_GT(result, expRes - absErr);
     EXPECT_LT(result, expRes + absErr);
 }
@@ -190,8 +221,8 @@ TEST_F(IntegralTestBase, AdaptiveSimpsonMethod)
 //! @brief Test for the Romberg method in the calculation of integral.
 TEST_F(IntegralTestBase, RombergMethod)
 {
-    const auto result =
-        (*sut<numeric::integral::Romberg>())(fixture->getRanges().first, fixture->getRanges().second, defPrec);
+    const auto& romberg = *sut.at("Romberg");
+    const auto result = romberg(fixture->getRanges().first, fixture->getRanges().second, defPrec);
     EXPECT_GT(result, expRes - absErr);
     EXPECT_LT(result, expRes + absErr);
 }
@@ -199,8 +230,8 @@ TEST_F(IntegralTestBase, RombergMethod)
 //! @brief Test for the Gauss-Legendre's 5-points method in the calculation of integral.
 TEST_F(IntegralTestBase, GaussLegendreMethod)
 {
-    const auto result =
-        (*sut<numeric::integral::Gauss>())(fixture->getRanges().first, fixture->getRanges().second, defPrec);
+    const auto& gauss = *sut.at("Gauss");
+    const auto result = gauss(fixture->getRanges().first, fixture->getRanges().second, defPrec);
     EXPECT_GT(result, expRes - absErr);
     EXPECT_LT(result, expRes + absErr);
 }
@@ -208,8 +239,8 @@ TEST_F(IntegralTestBase, GaussLegendreMethod)
 //! @brief Test for the Monte-Carlo method in the calculation of integral.
 TEST_F(IntegralTestBase, MonteCarloMethod)
 {
-    const auto result =
-        (*sut<numeric::integral::MonteCarlo>())(fixture->getRanges().first, fixture->getRanges().second, defPrec);
+    const auto& monteCarlo = *sut.at("MonteCarlo");
+    const auto result = monteCarlo(fixture->getRanges().first, fixture->getRanges().second, defPrec);
     EXPECT_GT(result, expRes - absErr);
     EXPECT_LT(result, expRes + absErr);
 }
@@ -217,21 +248,30 @@ TEST_F(IntegralTestBase, MonteCarloMethod)
 //! @brief Test base of prime.
 class PrimeTestBase : public ::testing::Test
 {
-protected:
+private:
     //! @brief Alias for the input builder.
     using InputBuilder = application::app_num::prime::InputBuilder;
+    //! @brief Prepare scenario.
+    static void prepareScenario()
+    {
+        namespace input = application::app_num::prime::input;
+        fixture = std::make_unique<InputBuilder>(input::upperBound);
+    }
+    //! @brief Reset scenario.
+    static void resetScenario() { fixture.reset(); }
+
+protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
         printTaskProgress(title, "BEGIN");
-        namespace input = application::app_num::prime::input;
-        fixture = std::make_unique<InputBuilder>(input::upperBound);
+        prepareScenario();
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
         printTaskProgress(title, "END");
-        fixture.reset();
+        resetScenario();
     }
 
     //! @brief Test title.

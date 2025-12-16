@@ -29,21 +29,30 @@ static void printTaskProgress(const std::string_view title, const std::string_vi
 //! @brief Test base of match.
 class MatchTestBase : public ::testing::Test
 {
-protected:
+private:
     //! @brief Alias for the input builder.
     using InputBuilder = application::app_algo::match::InputBuilder;
+    //! @brief Prepare scenario.
+    static void prepareScenario()
+    {
+        namespace input = application::app_algo::match::input;
+        fixture = std::make_unique<InputBuilder>(input::patternString);
+    }
+    //! @brief Reset scenario.
+    static void resetScenario() { fixture.reset(); }
+
+protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
         printTaskProgress(title, "BEGIN");
-        namespace input = application::app_algo::match::input;
-        fixture = std::make_unique<InputBuilder>(input::patternString);
+        prepareScenario();
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
         printTaskProgress(title, "END");
-        fixture.reset();
+        resetScenario();
     }
 
     //! @brief Test title.
@@ -119,21 +128,30 @@ TEST_F(MatchTestBase, SundayMethod)
 //! @brief Test base of notation.
 class NotationTestBase : public ::testing::Test
 {
-protected:
+private:
     //! @brief Alias for the input builder.
     using InputBuilder = application::app_algo::notation::InputBuilder;
+    //! @brief Prepare scenario.
+    static void prepareScenario()
+    {
+        namespace input = application::app_algo::notation::input;
+        fixture = std::make_unique<InputBuilder>(input::infixString);
+    }
+    //! @brief Reset scenario.
+    static void resetScenario() { fixture.reset(); }
+
+protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
         printTaskProgress(title, "BEGIN");
-        namespace input = application::app_algo::notation::input;
-        fixture = std::make_unique<InputBuilder>(input::infixString);
+        prepareScenario();
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
         printTaskProgress(title, "END");
-        fixture.reset();
+        resetScenario();
     }
 
     //! @brief Test title.
@@ -163,34 +181,48 @@ TEST_F(NotationTestBase, PostfixMethod)
 //! @brief Test base of optimal.
 class OptimalTestBase : public ::testing::Test
 {
-protected:
+private:
     //! @brief Alias for the input builder.
     using InputBuilder = application::app_algo::optimal::InputBuilder;
+    //! @brief Prepare scenario.
+    static void prepareScenario()
+    {
+        using application::app_algo::optimal::input::SphericalBessel;
+        fixture = std::make_unique<InputBuilder>(
+            SphericalBessel{}, SphericalBessel::range1, SphericalBessel::range2, SphericalBessel::funcDescr);
+        sut.clear();
+        sut["Gradient"] = std::make_unique<algorithm::optimal::Gradient>(fixture->getFunction());
+        sut["Tabu"] = std::make_unique<algorithm::optimal::Tabu>(fixture->getFunction());
+        sut["Annealing"] = std::make_unique<algorithm::optimal::Annealing>(fixture->getFunction());
+        sut["Particle"] = std::make_unique<algorithm::optimal::Particle>(fixture->getFunction());
+        sut["Ant"] = std::make_unique<algorithm::optimal::Ant>(fixture->getFunction());
+        sut["Genetic"] = std::make_unique<algorithm::optimal::Genetic>(fixture->getFunction());
+    }
+    //! @brief Reset scenario.
+    static void resetScenario()
+    {
+        fixture.reset();
+        sut.clear();
+    }
+
+protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
         printTaskProgress(title, "BEGIN");
-        using application::app_algo::optimal::input::SphericalBessel;
-        fixture = std::make_unique<InputBuilder>(
-            SphericalBessel{}, SphericalBessel::range1, SphericalBessel::range2, SphericalBessel::funcDescr);
+        prepareScenario();
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
         printTaskProgress(title, "END");
-        fixture.reset();
+        resetScenario();
     }
 
     //! @brief Test title.
     inline static const std::string_view title{algorithm::optimal::description()};
     //! @brief System under test.
-    //! @tparam SUT - type of system under test
-    //! @return system under test
-    template <typename SUT>
-    static std::unique_ptr<algorithm::optimal::Optimal> sut()
-    {
-        return std::make_unique<SUT>(fixture->getFunction());
-    }
+    inline static std::unordered_map<std::string, std::unique_ptr<algorithm::optimal::Optimal>> sut{};
     //! @brief Fixture data.
     inline static std::unique_ptr<InputBuilder> fixture{};
     //! @brief Expected result.
@@ -204,8 +236,8 @@ protected:
 //! @brief Test for the gradient descent method in the solution of optimal.
 TEST_F(OptimalTestBase, GradientDescentMethod)
 {
-    const auto result =
-        (*sut<algorithm::optimal::Gradient>())(fixture->getRanges().first, fixture->getRanges().second, defPrec);
+    auto& gradient = *sut.at("Gradient");
+    const auto result = gradient(fixture->getRanges().first, fixture->getRanges().second, defPrec);
     ASSERT_TRUE(result.has_value());
     EXPECT_GT(std::get<0>(result.value()), expRes - absErr);
     EXPECT_LT(std::get<0>(result.value()), expRes + absErr);
@@ -214,8 +246,8 @@ TEST_F(OptimalTestBase, GradientDescentMethod)
 //! @brief Test for the tabu method in the solution of optimal.
 TEST_F(OptimalTestBase, TabuMethod)
 {
-    const auto result =
-        (*sut<algorithm::optimal::Tabu>())(fixture->getRanges().first, fixture->getRanges().second, defPrec);
+    auto& tabu = *sut.at("Tabu");
+    const auto result = tabu(fixture->getRanges().first, fixture->getRanges().second, defPrec);
     ASSERT_TRUE(result.has_value());
     EXPECT_GT(std::get<0>(result.value()), expRes - absErr);
     EXPECT_LT(std::get<0>(result.value()), expRes + absErr);
@@ -224,8 +256,8 @@ TEST_F(OptimalTestBase, TabuMethod)
 //! @brief Test for the simulated annealing method in the solution of optimal.
 TEST_F(OptimalTestBase, SimulatedAnnealingMethod)
 {
-    const auto result =
-        (*sut<algorithm::optimal::Annealing>())(fixture->getRanges().first, fixture->getRanges().second, defPrec);
+    auto& annealing = *sut.at("Annealing");
+    const auto result = annealing(fixture->getRanges().first, fixture->getRanges().second, defPrec);
     ASSERT_TRUE(result.has_value());
     EXPECT_GT(std::get<0>(result.value()), expRes - absErr);
     EXPECT_LT(std::get<0>(result.value()), expRes + absErr);
@@ -234,8 +266,8 @@ TEST_F(OptimalTestBase, SimulatedAnnealingMethod)
 //! @brief Test for the particle swarm method in the solution of optimal.
 TEST_F(OptimalTestBase, ParticleSwarmMethod)
 {
-    const auto result =
-        (*sut<algorithm::optimal::Particle>())(fixture->getRanges().first, fixture->getRanges().second, defPrec);
+    auto& particle = *sut.at("Particle");
+    const auto result = particle(fixture->getRanges().first, fixture->getRanges().second, defPrec);
     ASSERT_TRUE(result.has_value());
     EXPECT_GT(std::get<0>(result.value()), expRes - absErr);
     EXPECT_LT(std::get<0>(result.value()), expRes + absErr);
@@ -244,8 +276,8 @@ TEST_F(OptimalTestBase, ParticleSwarmMethod)
 //! @brief Test for the ant colony method in the solution of optimal.
 TEST_F(OptimalTestBase, AntColonyMethod)
 {
-    const auto result =
-        (*sut<algorithm::optimal::Ant>())(fixture->getRanges().first, fixture->getRanges().second, defPrec);
+    auto& ant = *sut.at("Ant");
+    const auto result = ant(fixture->getRanges().first, fixture->getRanges().second, defPrec);
     ASSERT_TRUE(result.has_value());
     EXPECT_GT(std::get<0>(result.value()), expRes - absErr);
     EXPECT_LT(std::get<0>(result.value()), expRes + absErr);
@@ -254,8 +286,8 @@ TEST_F(OptimalTestBase, AntColonyMethod)
 //! @brief Test for the genetic method in the solution of optimal.
 TEST_F(OptimalTestBase, GeneticMethod)
 {
-    const auto result =
-        (*sut<algorithm::optimal::Genetic>())(fixture->getRanges().first, fixture->getRanges().second, defPrec);
+    auto& genetic = *sut.at("Genetic");
+    const auto result = genetic(fixture->getRanges().first, fixture->getRanges().second, defPrec);
     ASSERT_TRUE(result.has_value());
     EXPECT_GT(std::get<0>(result.value()), expRes - absErr);
     EXPECT_LT(std::get<0>(result.value()), expRes + absErr);
@@ -265,9 +297,13 @@ TEST_F(OptimalTestBase, GeneticMethod)
 class SearchTestBase : public ::testing::Test
 {
 private:
-    //! @brief Update expected result.
-    static void updateExpRes()
+    //! @brief Alias for the input builder.
+    using InputBuilder = application::app_algo::search::InputBuilder<float>;
+    //! @brief Prepare scenario.
+    static void prepareScenario()
     {
+        namespace input = application::app_algo::search::input;
+        fixture = std::make_unique<InputBuilder>(input::arrayLength, input::arrayRangeMin, input::arrayRangeMax);
         expRes.clear();
         const std::span<const float> orderedArray{fixture->getOrderedArray().get(), fixture->getLength()};
         const float searchKey = fixture->getSearchKey();
@@ -277,24 +313,25 @@ private:
             expRes.emplace(std::distance(orderedArray.begin(), iterator));
         }
     }
+    //! @brief Reset scenario.
+    static void resetScenario()
+    {
+        fixture.reset();
+        expRes.clear();
+    }
 
 protected:
-    //! @brief Alias for the input builder.
-    using InputBuilder = application::app_algo::search::InputBuilder<float>;
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
         printTaskProgress(title, "BEGIN");
-        namespace input = application::app_algo::search::input;
-        fixture = std::make_unique<InputBuilder>(input::arrayLength, input::arrayRangeMin, input::arrayRangeMax);
-        updateExpRes();
+        prepareScenario();
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
         printTaskProgress(title, "END");
-        fixture.reset();
-        expRes.clear();
+        resetScenario();
     }
 
     //! @brief Test title.
@@ -332,31 +369,36 @@ TEST_F(SearchTestBase, FibonacciMethod)
 class SortTestBase : public ::testing::Test
 {
 private:
-    //! @brief Update expected result.
-    static void updateExpRes()
+    //! @brief Alias for the input builder.
+    using InputBuilder = application::app_algo::sort::InputBuilder<std::int32_t>;
+    //! @brief Prepare scenario.
+    static void prepareScenario()
     {
+        namespace input = application::app_algo::sort::input;
+        fixture = std::make_unique<InputBuilder>(input::arrayLength, input::arrayRangeMin, input::arrayRangeMax);
         expRes = std::vector<std::int32_t>{
             fixture->getRandomArray().get(), fixture->getRandomArray().get() + fixture->getLength()};
         std::sort(expRes.begin(), expRes.end());
     }
+    //! @brief Reset scenario.
+    static void resetScenario()
+    {
+        fixture.reset();
+        expRes.clear();
+    }
 
 protected:
-    //! @brief Alias for the input builder.
-    using InputBuilder = application::app_algo::sort::InputBuilder<std::int32_t>;
     //! @brief Set up the test case.
     static void SetUpTestSuite()
     {
         printTaskProgress(title, "BEGIN");
-        namespace input = application::app_algo::sort::input;
-        fixture = std::make_unique<InputBuilder>(input::arrayLength, input::arrayRangeMin, input::arrayRangeMax);
-        updateExpRes();
+        prepareScenario();
     }
     //! @brief Tear down the test case.
     static void TearDownTestSuite()
     {
         printTaskProgress(title, "END");
-        fixture.reset();
-        expRes.clear();
+        resetScenario();
     }
 
     //! @brief Test title.

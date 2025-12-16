@@ -29,9 +29,11 @@ static void printTaskProgress(const std::string_view title, const std::string_vi
 //! @brief Test base of cache.
 class CacheTestBase : public ::testing::Test
 {
-protected:
+private:
     //! @brief Alias for the showcase.
     using Showcase = application::app_ds::cache::Showcase;
+
+protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite() { printTaskProgress(title, "BEGIN"); }
     //! @brief Tear down the test case.
@@ -138,9 +140,11 @@ TEST_F(CacheTestBase, LRUInstance)
 //! @brief Test base of filter.
 class FilterTestBase : public ::testing::Test
 {
-protected:
+private:
     //! @brief Alias for the showcase.
     using Showcase = application::app_ds::filter::Showcase;
+
+protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite() { printTaskProgress(title, "BEGIN"); }
     //! @brief Tear down the test case.
@@ -190,9 +194,11 @@ TEST_F(FilterTestBase, QuotientInstance)
 //! @brief Test base of graph.
 class GraphTestBase : public ::testing::Test
 {
-protected:
+private:
     //! @brief Alias for the showcase.
     using Showcase = application::app_ds::graph::Showcase;
+
+protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite() { printTaskProgress(title, "BEGIN"); }
     //! @brief Tear down the test case.
@@ -281,9 +287,11 @@ TEST_F(GraphTestBase, DirectedInstance)
 //! @brief Test base of heap.
 class HeapTestBase : public ::testing::Test
 {
-protected:
+private:
     //! @brief Alias for the showcase.
     using Showcase = application::app_ds::heap::Showcase;
+
+protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite() { printTaskProgress(title, "BEGIN"); }
     //! @brief Tear down the test case.
@@ -422,9 +430,11 @@ TEST_F(HeapTestBase, SkewInstance)
 //! @brief Test base of linear.
 class LinearTestBase : public ::testing::Test
 {
-protected:
+private:
     //! @brief Alias for the showcase.
     using Showcase = application::app_ds::linear::Showcase;
+
+protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite() { printTaskProgress(title, "BEGIN"); }
     //! @brief Tear down the test case.
@@ -515,9 +525,11 @@ TEST_F(LinearTestBase, QueueInstance)
 //! @brief Test base of tree.
 class TreeTestBase : public ::testing::Test
 {
-protected:
+private:
     //! @brief Alias for the showcase.
     using Showcase = application::app_ds::tree::Showcase;
+
+protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite() { printTaskProgress(title, "BEGIN"); }
     //! @brief Tear down the test case.
