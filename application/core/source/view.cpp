@@ -751,7 +751,7 @@ std::size_t View::buildResponse(const std::string& reqPlaintext, Buffer& respBuf
                         "The option is unprocessed due to unregistered or potential registration failures (typeid: "
                         + std::string{typeid(opt).name()} + ")."};
                 }
-                return static_cast<std::size_t>(0);
+                return 0UL;
             }},
         extractOption(reqPlaintext));
 }
