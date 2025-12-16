@@ -29,9 +29,11 @@ static void printTaskProgress(const std::string_view title, const std::string_vi
 //! @brief Test base of behavioral.
 class BehavioralTestBase : public ::testing::Test
 {
-protected:
+private:
     //! @brief Alias for the showcase.
     using Showcase = application::app_dp::behavioral::Showcase;
+
+protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite() { printTaskProgress(title, "BEGIN"); }
     //! @brief Tear down the test case.
@@ -218,9 +220,11 @@ TEST_F(BehavioralTestBase, VisitorInstance)
 //! @brief Test base of creational.
 class CreationalTestBase : public ::testing::Test
 {
-protected:
+private:
     //! @brief Alias for the showcase.
     using Showcase = application::app_dp::creational::Showcase;
+
+protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite() { printTaskProgress(title, "BEGIN"); }
     //! @brief Tear down the test case.
@@ -308,9 +312,11 @@ TEST_F(CreationalTestBase, SingletonInstance)
 //! @brief Test base of structural.
 class StructuralTestBase : public ::testing::Test
 {
-protected:
+private:
     //! @brief Alias for the showcase.
     using Showcase = application::app_dp::structural::Showcase;
+
+protected:
     //! @brief Set up the test case.
     static void SetUpTestSuite() { printTaskProgress(title, "BEGIN"); }
     //! @brief Tear down the test case.
