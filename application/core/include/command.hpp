@@ -54,11 +54,11 @@ class Notifier
 {
 public:
     //! @brief The base procedure when notified.
-    class ProcBase
+    class Operation
     {
     public:
-        //! @brief Destroy the ProcBase object.
-        virtual ~ProcBase() = default;
+        //! @brief Destroy the Operation object.
+        virtual ~Operation() = default;
 
         //! @brief Perform the specific operation.
         virtual void execute() const = 0;
@@ -66,7 +66,7 @@ public:
     //! @brief The procedure when notified.
     //! @tparam CRTP - type of derived class for CRTP
     template <typename CRTP>
-    class Proc : public ProcBase
+    class OperationImpl : public Operation
     {
     public:
         //! @brief Perform the specific operation.
@@ -75,7 +75,7 @@ public:
     //! @brief The handler used to trigger a procedure when notified.
     //! @tparam key - specific key
     template <Key key>
-    class Handler : public Proc<Handler<key>>
+    class Handler : public OperationImpl<Handler<key>>
     {
     public:
         //! @brief Construct a new Handler object.
@@ -93,14 +93,14 @@ public:
     //! @brief Attach a handler with a specific key to the notifier.
     //! @param key - specific key
     //! @param handler - handler to be attached
-    void attach(const Key key, std::shared_ptr<ProcBase> handler);
+    void attach(const Key key, std::shared_ptr<Operation> handler);
     //! @brief Notify the handler associated with the given key.
     //! @param key - specific key
     void notify(const Key key) const;
 
 private:
     //! @brief Map of handlers identified by a key.
-    std::map<Key, std::shared_ptr<ProcBase>> handlers{};
+    std::map<Key, std::shared_ptr<Operation>> handlers{};
 };
 
 //! @brief Execute the command line.
@@ -366,7 +366,7 @@ private:
     static void notifyClientOutputDone();
     //! @brief Build the exit request message in console mode.
     //! @return exit request message
-    static std::string buildDisconnectReq();
+    static std::string buildDisconnectRequest();
     //! @brief Console latency in the millisecond range.
     static void interactionLatency();
 };

@@ -161,7 +161,7 @@ Command& getInstance()
 }
 
 template <typename Key, typename Subject>
-void Notifier<Key, Subject>::attach(const Key key, std::shared_ptr<ProcBase> handler)
+void Notifier<Key, Subject>::attach(const Key key, std::shared_ptr<Operation> handler)
 {
     handlers[key] = std::move(handler);
 }
@@ -904,7 +904,7 @@ void Command::executeInConsole() const
             interactionLatency();
         }
     }
-    udpClient->toSend(buildDisconnectReq());
+    udpClient->toSend(buildDisconnectRequest());
     udpClient->toJoin();
     interactionLatency();
 }
@@ -1064,7 +1064,7 @@ try
         interactionLatency();
     }
     while (retCode != RetCode::quit);
-    tcpClient->toSend(buildDisconnectReq());
+    tcpClient->toSend(buildDisconnectRequest());
     tcpClient->toJoin();
     interactionLatency();
 
@@ -1140,7 +1140,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<Sock>
             return processConsoleInputs(
                 [&client]()
                 {
-                    client->toSend(buildDisconnectReq());
+                    client->toSend(buildDisconnectRequest());
                     client->toJoin();
                     interactionLatency();
                     client.reset();
@@ -1185,7 +1185,7 @@ void Command::notifyClientOutputDone()
     view::View::Sync().notifyTaskDone();
 }
 
-std::string Command::buildDisconnectReq()
+std::string Command::buildDisconnectRequest()
 {
     return utility::common::base64Encode(view::exitSymbol);
 }
