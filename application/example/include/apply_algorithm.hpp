@@ -200,29 +200,17 @@ const char* const version = algorithm::optimal::version();
 //! @brief Alias for the target function.
 using Function = std::function<double(const double)>;
 //! @brief Wrapper for the target function.
-class FuncIntf
+class AsFunction
 {
 public:
-    //! @brief Construct a new FuncIntf object.
-    FuncIntf() = default;
-    //! @brief Destroy the FuncIntf object.
-    virtual ~FuncIntf() = default;
-    //! @brief Construct a new FuncIntf object.
-    FuncIntf(const FuncIntf&) = default;
-    //! @brief Construct a new FuncIntf object.
-    FuncIntf(FuncIntf&&) noexcept = default;
-    //! @brief The operator (=) overloading of FuncIntf class.
-    //! @return reference of the FuncIntf object
-    FuncIntf& operator=(const FuncIntf&) = default;
-    //! @brief The operator (=) overloading of FuncIntf class.
-    //! @return reference of the FuncIntf object
-    FuncIntf& operator=(FuncIntf&&) noexcept = default;
+    //! @brief Destroy the AsFunction object.
+    virtual ~AsFunction() = default;
 
-    //! @brief The operator (()) overloading of FuncIntf class.
+    //! @brief The operator (()) overloading of AsFunction class.
     //! @param x - independent variable
     //! @return dependent variable
     virtual double operator()(const double x) const = 0;
-    //! @brief The operator (Function) overloading of FuncIntf class.
+    //! @brief The operator (Function) overloading of AsFunction class.
     //! @return Function object
     virtual explicit operator Function() const
     {
@@ -234,7 +222,7 @@ public:
 namespace input
 {
 //! @brief Spherical Bessel.
-class SphericalBessel : public FuncIntf
+class SphericalBessel : public AsFunction
 {
 public:
     //! @brief The operator (()) overloading of SphericalBessel class.
@@ -328,31 +316,6 @@ public:
         orderedArray[0] = '\0';
         setOrderedArray(orderedArray.get(), length, left, right);
     }
-    //! @brief Destroy the InputBuilder object.
-    virtual ~InputBuilder() = default;
-    //! @brief Construct a new InputBuilder object.
-    //! @param rhs - right-hand side
-    InputBuilder(const InputBuilder& rhs) : orderedArray{std::make_unique<Elem[]>(rhs.length + 1)}, length{rhs.length}
-    {
-        orderedArray[0] = '\0';
-        clone(rhs);
-    }
-    //! @brief Construct a new InputBuilder object.
-    InputBuilder(InputBuilder&&) noexcept = default;
-    //! @brief The operator (!=) overloading of InputBuilder class.
-    //! @param rhs - right-hand side
-    //! @return reference of the InputBuilder object
-    InputBuilder<Elem>& operator=(const InputBuilder& rhs)
-    {
-        if (&rhs != this)
-        {
-            clone(rhs);
-        }
-        return *this;
-    }
-    //! @brief The operator (=) overloading of InputBuilder class.
-    //! @return reference of the InputBuilder object
-    InputBuilder& operator=(InputBuilder&&) noexcept = default;
 
     //! @brief Get the ordered array.
     //! @return ordered array
@@ -417,15 +380,6 @@ private:
     //! @brief Length of the ordered array.
     const std::uint32_t length{0};
 
-    //! @brief Deep copy for copy constructor.
-    //! @param rhs - right-hand side
-    void clone(const InputBuilder& rhs) const
-    {
-        if (rhs.orderedArray && orderedArray)
-        {
-            std::memcpy(orderedArray.get(), rhs.orderedArray.get(), length * sizeof(Elem));
-        }
-    }
     //! @brief Set the ordered array.
     //! @param array - ordered array
     //! @param length - length of the ordered array
@@ -524,31 +478,6 @@ public:
         randomArray[0] = '\0';
         setRandomArray(randomArray.get(), length, left, right);
     }
-    //! @brief Destroy the InputBuilder object.
-    virtual ~InputBuilder() = default;
-    //! @brief Construct a new InputBuilder object.
-    //! @param rhs - right-hand side
-    InputBuilder(const InputBuilder& rhs) : randomArray{std::make_unique<Elem[]>(rhs.length + 1)}, length{rhs.length}
-    {
-        randomArray[0] = '\0';
-        clone(rhs);
-    }
-    //! @brief Construct a new InputBuilder object.
-    InputBuilder(InputBuilder&&) noexcept = default;
-    //! @brief The operator (!=) overloading of InputBuilder class.
-    //! @param rhs - right-hand side
-    //! @return reference of the InputBuilder object
-    InputBuilder<Elem>& operator=(const InputBuilder& rhs)
-    {
-        if (&rhs != this)
-        {
-            clone(rhs);
-        }
-        return *this;
-    }
-    //! @brief The operator (=) overloading of InputBuilder class.
-    //! @return reference of the InputBuilder object
-    InputBuilder& operator=(InputBuilder&&) noexcept = default;
 
     //! @brief Get the random array.
     //! @return random array
@@ -610,15 +539,6 @@ private:
     //! @brief Length of the random array.
     const std::uint32_t length{0};
 
-    //! @brief Deep copy for copy constructor.
-    //! @param rhs - right-hand side
-    void clone(const InputBuilder& rhs) const
-    {
-        if (rhs.randomArray && randomArray)
-        {
-            std::memcpy(randomArray.get(), rhs.randomArray.get(), length * sizeof(Elem));
-        }
-    }
     //! @brief Set the random array.
     //! @param array - random array
     //! @param length - length of the random array

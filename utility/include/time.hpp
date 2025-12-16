@@ -37,13 +37,13 @@ public:
     //! @brief Construct a new Timer object.
     Timer(const Timer&) = delete;
     //! @brief Construct a new Timer object.
-    Timer(Timer&&) noexcept = delete;
+    Timer(Timer&&) = delete;
     //! @brief The operator (=) overloading of Timer class.
     //! @return reference of the Timer object
     Timer& operator=(const Timer&) = delete;
     //! @brief The operator (=) overloading of Timer class.
     //! @return reference of the Timer object
-    Timer& operator=(Timer&&) noexcept = delete;
+    Timer& operator=(Timer&&) = delete;
 
     //! @brief Start the timer.
     //! @param interval - time interval

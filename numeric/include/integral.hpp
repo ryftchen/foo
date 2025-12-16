@@ -23,8 +23,6 @@ inline static const char* description() noexcept
 }
 extern const char* version() noexcept;
 
-//! @brief Target expressions.
-using Expression = std::function<double(const double)>;
 //! @brief The precision of calculation.
 inline constexpr double epsilon = 1e-5;
 
@@ -32,20 +30,8 @@ inline constexpr double epsilon = 1e-5;
 class Integral
 {
 public:
-    //! @brief Construct a new Integral object.
-    Integral() = default;
     //! @brief Destroy the Integral object.
     virtual ~Integral() = default;
-    //! @brief Construct a new Integral object.
-    Integral(const Integral&) = default;
-    //! @brief Construct a new Integral object.
-    Integral(Integral&&) noexcept = default;
-    //! @brief The operator (=) overloading of Integral class.
-    //! @return reference of the Integral object
-    Integral& operator=(const Integral&) = default;
-    //! @brief The operator (=) overloading of Integral class.
-    //! @return reference of the Integral object
-    Integral& operator=(Integral&&) noexcept = default;
 
     //! @brief The operator (()) overloading of Integral class.
     //! @param lower - lower endpoint
@@ -55,6 +41,8 @@ public:
     virtual double operator()(const double lower, const double upper, const double eps) const = 0;
 
 protected:
+    //! @brief Alias for the target expression.
+    using Expression = std::function<double(const double)>;
     //! @brief Calculate the value of the definite integral with the trapezoidal rule.
     //! @param expr - target expression
     //! @param left - left endpoint

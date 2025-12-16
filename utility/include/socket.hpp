@@ -31,13 +31,13 @@ public:
     //! @brief Construct a new Socket object.
     Socket(const Socket&) = delete;
     //! @brief Construct a new Socket object.
-    Socket(Socket&&) noexcept = delete;
+    Socket(Socket&&) = delete;
     //! @brief The operator (=) overloading of Socket class.
     //! @return reference of the Socket object
     Socket& operator=(const Socket&) = delete;
     //! @brief The operator (=) overloading of Socket class.
     //! @return reference of the Socket object
-    Socket& operator=(Socket&&) noexcept = delete;
+    Socket& operator=(Socket&&) = delete;
 
     //! @brief Close the socket.
     void toClose();
@@ -106,15 +106,15 @@ protected:
         //! @brief Destroy the Guard object.
         virtual ~Guard() { socket.spinUnlock(); }
         //! @brief Construct a new Guard object.
-        Guard(const Guard&) = delete;
+        Guard(const Guard&) = default;
         //! @brief Construct a new Guard object.
-        Guard(Guard&&) noexcept = delete;
+        Guard(Guard&&) noexcept = default;
         //! @brief The operator (=) overloading of Guard class.
         //! @return reference of the Guard object
         Guard& operator=(const Guard&) = delete;
         //! @brief The operator (=) overloading of Guard class.
         //! @return reference of the Guard object
-        Guard& operator=(Guard&&) noexcept = delete;
+        Guard& operator=(Guard&&) = delete;
 
     private:
         //! @brief Socket to be mutually exclusive.

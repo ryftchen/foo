@@ -57,20 +57,8 @@ public:
     class ProcBase
     {
     public:
-        //! @brief Construct a new ProcBase object.
-        ProcBase() = default;
         //! @brief Destroy the ProcBase object.
         virtual ~ProcBase() = default;
-        //! @brief Construct a new ProcBase object.
-        ProcBase(const ProcBase&) = default;
-        //! @brief Construct a new ProcBase object.
-        ProcBase(ProcBase&&) noexcept = default;
-        //! @brief The operator (=) overloading of ProcBase class.
-        //! @return reference of the ProcBase object
-        ProcBase& operator=(const ProcBase&) = default;
-        //! @brief The operator (=) overloading of ProcBase class.
-        //! @return reference of the ProcBase object
-        ProcBase& operator=(ProcBase&&) noexcept = default;
 
         //! @brief Perform the specific operation.
         virtual void execute() const = 0;
@@ -225,20 +213,8 @@ private:
     class TaskManager
     {
     public:
-        //! @brief Construct a new TaskManager object.
-        TaskManager() = default;
         //! @brief Destroy the TaskManager object.
         virtual ~TaskManager() = default;
-        //! @brief Construct a new TaskManager object.
-        TaskManager(const TaskManager&) = default;
-        //! @brief Construct a new TaskManager object.
-        TaskManager(TaskManager&&) noexcept = default;
-        //! @brief The operator (=) overloading of TaskManager class.
-        //! @return reference of the TaskManager object
-        TaskManager& operator=(const TaskManager&) = default;
-        //! @brief The operator (=) overloading of TaskManager class.
-        //! @return reference of the TaskManager object
-        TaskManager& operator=(TaskManager&&) noexcept = default;
 
         //! @brief Check whether any tasks do not exist.
         //! @return any tasks do not exist or exist

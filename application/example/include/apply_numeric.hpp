@@ -165,29 +165,17 @@ const char* const version = numeric::integral::version();
 //! @brief Alias for the target expression.
 using Expression = std::function<double(const double)>;
 //! @brief Wrapper for the target expression.
-class ExprIntf
+class AsExpression
 {
 public:
-    //! @brief Construct a new ExprIntf object.
-    ExprIntf() = default;
-    //! @brief Destroy the ExprIntf object.
-    virtual ~ExprIntf() = default;
-    //! @brief Construct a new ExprIntf object.
-    ExprIntf(const ExprIntf&) = default;
-    //! @brief Construct a new ExprIntf object.
-    ExprIntf(ExprIntf&&) noexcept = default;
-    //! @brief The operator (=) overloading of ExprIntf class.
-    //! @return reference of the ExprIntf object
-    ExprIntf& operator=(const ExprIntf&) = default;
-    //! @brief The operator (=) overloading of ExprIntf class.
-    //! @return reference of the ExprIntf object
-    ExprIntf& operator=(ExprIntf&&) noexcept = default;
+    //! @brief Destroy the AsExpression object.
+    virtual ~AsExpression() = default;
 
-    //! @brief The operator (()) overloading of ExprIntf class.
+    //! @brief The operator (()) overloading of AsExpression class.
     //! @param x - independent variable
     //! @return dependent variable
     virtual double operator()(const double x) const = 0;
-    //! @brief The operator (Expression) overloading of ExprIntf class.
+    //! @brief The operator (Expression) overloading of AsExpression class.
     //! @return Expression object
     virtual explicit operator Expression() const
     {
@@ -199,7 +187,7 @@ public:
 namespace input
 {
 //! @brief Cylindrical Bessel.
-class CylindricalBessel : public ExprIntf
+class CylindricalBessel : public AsExpression
 {
 public:
     //! @brief The operator (()) overloading of CylindricalBessel class.

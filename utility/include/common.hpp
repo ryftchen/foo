@@ -352,13 +352,13 @@ public:
     //! @brief Construct a new LockGuard object.
     LockGuard(const LockGuard&) = delete;
     //! @brief Construct a new LockGuard object.
-    LockGuard(LockGuard&&) noexcept = delete;
+    LockGuard(LockGuard&&) = delete;
     //! @brief The operator (=) overloading of LockGuard class.
     //! @return reference of the LockGuard object
     LockGuard& operator=(const LockGuard&) = delete;
     //! @brief The operator (=) overloading of LockGuard class.
     //! @return reference of the LockGuard object
-    LockGuard& operator=(LockGuard&&) noexcept = delete;
+    LockGuard& operator=(LockGuard&&) = delete;
 
 private:
     //! @brief Object managed by the guard.
