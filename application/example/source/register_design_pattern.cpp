@@ -50,7 +50,7 @@ void clear()
 template <typename Inst>
 static consteval std::size_t mappedPos(const std::string_view stringify)
 {
-    return static_cast<std::size_t>(TypeInfo<Inst>::fields.template valueOfName<Inst>(stringify));
+    return static_cast<std::underlying_type_t<Inst>>(TypeInfo<Inst>::fields.template valueOfName<Inst>(stringify));
 }
 
 namespace behavioral

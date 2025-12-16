@@ -252,9 +252,11 @@ utility::json::JSON dumpDefaultConfig()
     using log::Log;
     auto loggerProperties = utility::json::object();
     loggerProperties.at(field::filePath) = "log/foo.log";
-    loggerProperties.at(field::priorityLevel) = static_cast<int>(Log::OutputLevel::debug);
-    loggerProperties.at(field::targetType) = static_cast<int>(Log::OutputType::all);
-    loggerProperties.at(field::writeMode) = static_cast<int>(Log::OutputMode::append);
+    loggerProperties.at(field::priorityLevel) =
+        static_cast<std::underlying_type_t<Log::OutputLevel>>(Log::OutputLevel::debug);
+    loggerProperties.at(field::targetType) = static_cast<std::underlying_type_t<Log::OutputType>>(Log::OutputType::all);
+    loggerProperties.at(field::writeMode) =
+        static_cast<std::underlying_type_t<Log::OutputMode>>(Log::OutputMode::append);
     auto loggerRequired = utility::json::array();
     loggerRequired.append(field::filePath, field::priorityLevel, field::targetType, field::writeMode);
 
