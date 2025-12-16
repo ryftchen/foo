@@ -25,8 +25,6 @@ inline static const char* description() noexcept
 }
 extern const char* version() noexcept;
 
-//! @brief Target functions.
-using Function = std::function<double(const double)>;
 //! @brief The precision of calculation.
 inline constexpr double epsilon = 1e-5;
 
@@ -34,20 +32,8 @@ inline constexpr double epsilon = 1e-5;
 class Optimal
 {
 public:
-    //! @brief Construct a new Optimal object.
-    Optimal() = default;
     //! @brief Destroy the Optimal object.
     virtual ~Optimal() = default;
-    //! @brief Construct a new Optimal object.
-    Optimal(const Optimal&) = default;
-    //! @brief Construct a new Optimal object.
-    Optimal(Optimal&&) noexcept = default;
-    //! @brief The operator (=) overloading of Optimal class.
-    //! @return reference of the Optimal object
-    Optimal& operator=(const Optimal&) = default;
-    //! @brief The operator (=) overloading of Optimal class.
-    //! @return reference of the Optimal object
-    Optimal& operator=(Optimal&&) noexcept = default;
 
     //! @brief The operator (()) overloading of Optimal class.
     //! @param left - left endpoint
@@ -56,6 +42,10 @@ public:
     //! @return result of optimal
     virtual std::optional<std::tuple<double, double>> operator()(
         const double left, const double right, const double eps) = 0;
+
+protected:
+    //! @brief Alias for the target function.
+    using Function = std::function<double(const double)>;
 };
 
 //! @brief Gradient descent (GD).
