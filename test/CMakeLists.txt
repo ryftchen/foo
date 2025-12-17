@@ -3,12 +3,12 @@ cmake_minimum_required(VERSION 3.20)
 project(foo_test)
 
 include(CheckCXXCompilerFlag)
-include(CheckIncludeFile)
 check_cxx_compiler_flag(-std=c++20 COMPILER_SUPPORTS_CXX20)
-check_include_file("gtest/gtest.h" HAS_GTEST_GTEST_HEADER)
-check_include_file("gsl/gsl_sf.h" HAS_GSL_GSL_SF_HEADER)
-check_include_file("mpfr.h" HAS_MPFR_HEADER)
+
 find_package(GTest REQUIRED)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GSL REQUIRED gsl)
+pkg_check_modules(MPFR REQUIRED mpfr)
 
 if(DEFINED ENV{FOO_ENV})
     message(STATUS "The test project env: FOO_ENV=$ENV{FOO_ENV}")
@@ -52,10 +52,10 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/../numeric/include)
 
 add_executable(${BIN_NAME} ${TEST_LIST})
-target_link_libraries(
-    ${BIN_NAME}
-    PUBLIC gtest gsl mpfr
-    PRIVATE foo_test::foo_test_algo foo_test::foo_test_dp foo_test::foo_test_ds foo_test::foo_test_num)
+foreach(MODULE_NAME IN LISTS MODULE_TARGETS)
+    target_link_libraries(${BIN_NAME} PRIVATE ${PROJECT_NAME}::${MODULE_NAME})
+endforeach()
+target_link_libraries(${BIN_NAME} PRIVATE GTest::gtest ${GSL_LIBRARIES} ${MPFR_LIBRARIES})
 
 if(PRECOMPILED_HEADER)
     target_precompile_headers(${BIN_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/../application/pch/precompiled_header.hpp)

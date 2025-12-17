@@ -3,14 +3,24 @@ cmake_minimum_required(VERSION 3.20)
 project(foo)
 
 include(CheckCXXCompilerFlag)
-include(CheckIncludeFile)
 check_cxx_compiler_flag(-std=c++20 COMPILER_SUPPORTS_CXX20)
-check_include_file("openssl/evp.h" HAS_OPENSSL_EVP_HEADER)
-check_include_file("lz4.h" HAS_LZ4_HEADER)
-check_include_file("readline/readline.h" HAS_READLINE_READLINE_HEADER)
-check_include_file("readline/history.h" HAS_READLINE_HISTORY_HEADER)
-check_include_file("gsl/gsl_sf.h" HAS_GSL_GSL_SF_HEADER)
-check_include_file("mpfr.h" HAS_MPFR_HEADER)
+include(CheckIncludeFile)
+check_include_file("arpa/inet.h" HAS_ARPA_INET_HEADER)
+check_include_file("netinet/in.h" HAS_NETINET_IN_HEADER)
+check_include_file("dlfcn.h" HAS_DLFCN_HEADER)
+check_include_file("execinfo.h" HAS_EXECINFO_HEADER)
+check_include_file("netdb.h" HAS_NETDB_HEADER)
+include(CheckIncludeFiles)
+check_include_files("sys/epoll.h;sys/file.h;sys/prctl.h;sys/shm.h;sys/stat.h;sys/wait.h" HAS_SYS_HEADERS)
+include(CheckIncludeFileCXX)
+check_include_file_cxx("cxxabi.h" HAS_CXXABI_HEADER)
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(OPENSSL REQUIRED openssl)
+pkg_check_modules(LZ4 REQUIRED liblz4)
+pkg_check_modules(READLINE REQUIRED readline)
+pkg_check_modules(GSL REQUIRED gsl)
+pkg_check_modules(MPFR REQUIRED mpfr)
 
 if(DEFINED ENV{FOO_ENV})
     message(STATUS "The project env: FOO_ENV=$ENV{FOO_ENV}")
@@ -47,9 +57,7 @@ set(LIBRARY_OUTPUT_PATH ${BUILD_DIR}/lib)
 aux_source_directory(${CMAKE_SOURCE_DIR}/application/core/source APPLICATION_LIST)
 aux_source_directory(${CMAKE_SOURCE_DIR}/application/example/source APPLICATION_LIST)
 include_directories(
-    ${CMAKE_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}/application/core/include
-    ${CMAKE_SOURCE_DIR}/application/example/include)
+    ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/application/core/include ${CMAKE_SOURCE_DIR}/application/example/include)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/utility)
 add_subdirectory(${CMAKE_SOURCE_DIR}/algorithm)
@@ -60,18 +68,28 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/numeric)
 add_executable(${BIN_NAME} ${APPLICATION_LIST})
 target_include_directories(
     ${BIN_NAME}
-    PUBLIC ${CMAKE_SOURCE_DIR}/application/core/include ${CMAKE_SOURCE_DIR}/application/example/include
-    PRIVATE ${CMAKE_SOURCE_DIR}/application/core/source ${CMAKE_SOURCE_DIR}/application/example/source)
-target_link_libraries(
+    PRIVATE ${CMAKE_SOURCE_DIR}/application/core/include
+            ${CMAKE_SOURCE_DIR}/application/example/include
+            ${CMAKE_SOURCE_DIR}/application/core/source
+            ${CMAKE_SOURCE_DIR}/application/example/source)
+foreach(MODULE_NAME IN LISTS MODULE_TARGETS)
+    target_link_libraries(${BIN_NAME} PRIVATE ${PROJECT_NAME}::${MODULE_NAME})
+endforeach()
+target_include_directories(
     ${BIN_NAME}
-    PUBLIC crypto lz4 readline gsl mpfr
-    PRIVATE foo::foo_util foo::foo_algo foo::foo_dp foo::foo_ds foo::foo_num)
+    PRIVATE ${OPENSSL_INCLUDE_DIRS}
+            ${LZ4_INCLUDE_DIRS}
+            ${READLINE_INCLUDE_DIRS}
+            ${GSL_INCLUDE_DIRS}
+            ${MPFR_INCLUDE_DIRS})
+target_link_libraries(
+    ${BIN_NAME} PRIVATE ${OPENSSL_LIBRARIES} ${LZ4_LIBRARIES} ${READLINE_LIBRARIES} ${GSL_LIBRARIES} ${MPFR_LIBRARIES})
 
 if((NOT COMMIT_REVISION STREQUAL "") AND (NOT TARGET_PROCESSOR STREQUAL ""))
     set_source_files_properties(
         ${CMAKE_SOURCE_DIR}/application/core/source/build.cpp
-        PROPERTIES
-        COMPILE_DEFINITIONS "_COMMIT_REVISION=\"${COMMIT_REVISION}\";_TARGET_PROCESSOR=\"${TARGET_PROCESSOR}\"")
+        PROPERTIES COMPILE_DEFINITIONS
+                   "_COMMIT_REVISION=\"${COMMIT_REVISION}\";_TARGET_PROCESSOR=\"${TARGET_PROCESSOR}\"")
 endif()
 if(PRECOMPILED_HEADER)
     target_precompile_headers(${BIN_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/application/pch/precompiled_header.hpp)
@@ -79,7 +97,7 @@ endif()
 
 set(CMAKE_INSTALL_PREFIX "/opt/${PROJECT_NAME}")
 install(
-    TARGETS ${BIN_NAME} foo_util foo_algo foo_dp foo_ds foo_num
+    TARGETS ${BIN_NAME} ${MODULE_TARGETS}
     RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}/bin"
     LIBRARY DESTINATION "${CMAKE_INSTALL_PREFIX}/lib")
 install(DIRECTORY DESTINATION ${CMAKE_INSTALL_PREFIX})
