@@ -152,13 +152,21 @@ struct EnumCheck<Enum, Curr, Next...> : private EnumCheck<Enum, Next...>
     }
 };
 
-//! @brief Helper type for the visitor.
-//! @tparam Ts - type of visitors
-template <typename... Ts>
-struct VisitorOverload : public Ts...
+//! @brief Pattern matching for the variant.
+//! @tparam Variant - type of target variant
+//! @tparam Cases - types of cases to match
+//! @param var - target variant
+//! @param cases - cases to match
+//! @return result of matching
+template <typename Variant, typename... Cases>
+constexpr decltype(auto) patternMatch(Variant&& var, Cases&&... cases)
 {
-    using Ts::operator()...;
-};
+    struct Overloaded : public Cases...
+    {
+        using Cases::operator()...;
+    };
+    return std::visit(Overloaded{std::forward<Cases>(cases)...}, std::forward<Variant>(var));
+}
 
 //! @brief Closure wrapper.
 //! @tparam Func - type of callable function

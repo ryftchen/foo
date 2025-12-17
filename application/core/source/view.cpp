@@ -736,24 +736,23 @@ std::size_t View::buildCustomTLVPacket<View::OptProfile>(const Args& /*args*/, B
 
 std::size_t View::buildResponse(const std::string& reqPlaintext, Buffer& respBuffer)
 {
-    return std::visit(
-        utility::common::VisitorOverload{
-            [&respBuffer](const OptDepend& opt) { return buildCustomTLVPacket<OptDepend>(opt.args, respBuffer); },
-            [&respBuffer](const OptExecute& opt) { return buildCustomTLVPacket<OptExecute>(opt.args, respBuffer); },
-            [&respBuffer](const OptJournal& opt) { return buildCustomTLVPacket<OptJournal>(opt.args, respBuffer); },
-            [&respBuffer](const OptMonitor& opt) { return buildCustomTLVPacket<OptMonitor>(opt.args, respBuffer); },
-            [&respBuffer](const OptProfile& opt) { return buildCustomTLVPacket<OptProfile>(opt.args, respBuffer); },
-            [](const auto& opt)
+    return utility::common::patternMatch(
+        extractOption(reqPlaintext),
+        [&respBuffer](const OptDepend& opt) { return buildCustomTLVPacket<OptDepend>(opt.args, respBuffer); },
+        [&respBuffer](const OptExecute& opt) { return buildCustomTLVPacket<OptExecute>(opt.args, respBuffer); },
+        [&respBuffer](const OptJournal& opt) { return buildCustomTLVPacket<OptJournal>(opt.args, respBuffer); },
+        [&respBuffer](const OptMonitor& opt) { return buildCustomTLVPacket<OptMonitor>(opt.args, respBuffer); },
+        [&respBuffer](const OptProfile& opt) { return buildCustomTLVPacket<OptProfile>(opt.args, respBuffer); },
+        [](const auto& opt)
+        {
+            if (const auto* origPtr = std::addressof(opt); dynamic_cast<const OptBase*>(origPtr))
             {
-                if (const auto* origPtr = std::addressof(opt); dynamic_cast<const OptBase*>(origPtr))
-                {
-                    throw std::runtime_error{
-                        "The option is unprocessed due to unregistered or potential registration failures (typeid: "
-                        + std::string{typeid(opt).name()} + ")."};
-                }
-                return 0UL;
-            }},
-        extractOption(reqPlaintext));
+                throw std::runtime_error{
+                    "The option is unprocessed due to unregistered or potential registration failures (typeid: "
+                    + std::string{typeid(opt).name()} + ")."};
+            }
+            return 0UL;
+        });
 }
 
 View::OptionType View::extractOption(const std::string& reqPlaintext)
