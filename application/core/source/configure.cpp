@@ -271,18 +271,18 @@ utility::json::JSON dumpDefaultConfig()
     return utility::json::JSON
     (
     {
-        field::activateHelper, true,
-        field::helperList, {
-            field::logger, {
-                field::properties, std::move(loggerProperties),
-                field::required, std::move(loggerRequired)
-            },
-            field::viewer, {
-                field::properties, std::move(viewerProperties),
-                field::required, std::move(viewerRequired)
-            }
+      field::activateHelper, true,
+      field::helperList, {
+        field::logger, {
+          field::properties, std::move(loggerProperties),
+          field::required, std::move(loggerRequired)
         },
-        field::helperTimeout, 1000
+        field::viewer, {
+          field::properties, std::move(viewerProperties),
+          field::required, std::move(viewerRequired)
+        }
+      },
+      field::helperTimeout, 1000
     }
     );
     // clang-format on
@@ -296,7 +296,7 @@ static void forcedConfigUpdateByDefault(const std::string_view filePath)
     utility::io::FileWriter configWriter(filePath);
     configWriter.open(true);
     configWriter.lock();
-    configWriter.stream() << configure::dumpDefaultConfig();
+    configWriter.stream() << configure::dumpDefaultConfig() << std::endl;
     configWriter.unlock();
     configWriter.close();
 }

@@ -718,17 +718,22 @@ std::string JSON::dump(const std::uint32_t depth, const std::string_view tab) co
             },
             [depth, &tab](const Data::ArrayPtr& val) -> std::string
             {
-                std::string s("[");
+                std::string pad{};
+                for (std::uint32_t i = 0; i < depth; ++i)
+                {
+                    pad += tab;
+                }
+                std::string s("[\n");
                 for (bool skip = true; const auto& p : *val)
                 {
                     if (!skip)
                     {
-                        s += ", ";
+                        s += ",\n";
                     }
-                    s += p.dump(depth + 1, tab);
+                    s += pad + p.dump(depth + 1, tab);
                     skip = false;
                 }
-                s += ']';
+                s += ('\n' + pad.erase(0, tab.length()) + ']');
                 return s;
             },
             [](const Data::StringPtr& val) -> std::string { return '\"' + jsonEscape(*val) + '\"'; },
