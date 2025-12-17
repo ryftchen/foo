@@ -1,6 +1,4 @@
----
-version: "3.8"
-
+version: '3.8'
 services:
   foo_dev:
     image: ryftchen/foo:latest
@@ -19,4 +17,3 @@ services:
     ulimits:
       core: -1
     command: /bin/bash
-...
