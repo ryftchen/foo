@@ -1,6 +1,4 @@
----
 Language: Cpp
-
 AccessModifierOffset: -4
 AlignAfterOpenBracket: AlwaysBreak
 AlignConsecutiveAssignments: false
@@ -43,9 +41,9 @@ BreakBeforeConceptDeclarations: true
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: AfterColon
 BreakStringLiterals: true
-BreakTemplateDeclarations: Yes
+BreakTemplateDeclarations: 'Yes'
 ColumnLimit: 120
-CommentPragmas: '^TODO'
+CommentPragmas: ^TODO
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
@@ -55,15 +53,15 @@ DerivePointerAlignment: false
 DisableFormat: false
 FixNamespaceComments: true
 IncludeCategories:
-  - Regex: '^<[0-9a-zA-Z]+\/'
+  - Regex: ^<[0-9a-zA-Z]+\/
     Priority: 1
-  - Regex: '^<[0-9a-zA-Z]+\.'
+  - Regex: ^<[0-9a-zA-Z]+\.
     Priority: 2
-  - Regex: '^<'
+  - Regex: ^<
     Priority: 3
-  - Regex: '^"'
+  - Regex: ^"
     Priority: 4
-  - Regex: '^"[0-9a-zA-Z]+\/'
+  - Regex: ^"[0-9a-zA-Z]+\/
     Priority: 5
 IndentCaseLabels: true
 IndentRequires: false
@@ -77,7 +75,14 @@ PackConstructorInitializers: NextLine
 PenaltyReturnTypeOnItsOwnLine: 5000
 PointerAlignment: Left
 QualifierAlignment: Custom
-QualifierOrder: [friend, inline, static, constexpr, const, volatile, type]
+QualifierOrder:
+  - friend
+  - inline
+  - static
+  - constexpr
+  - const
+  - volatile
+  - type
 RemoveParentheses: ReturnStatement
 RemoveSemicolon: true
 SortIncludes: true
@@ -90,4 +95,3 @@ SpaceInEmptyParentheses: false
 Standard: Cpp11
 TabWidth: 4
 UseTab: Never
-...
