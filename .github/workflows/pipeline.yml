@@ -1,11 +1,8 @@
----
 name: Pipeline
-
-on:
+'on':
   push:
     branches:
       - master
-
   workflow_dispatch:
     inputs:
       name:
@@ -13,61 +10,49 @@ on:
         default: Retrigger
         required: false
   schedule:
-    - cron: '0 0 * * MON'
-
+    - cron: 0 0 * * MON
 env:
   FOO_ENV: foo_dev
-
 jobs:
   static_analysis:
     name: Static analysis
     runs-on: ubuntu-latest
     container:
       image: ryftchen/foo:latest
-      options: --privileged
+      options: '--privileged'
     timeout-minutes: 30
-
     steps:
       - name: Prepare
         run: |
           git config --global --add safe.directory '*'
-
       - name: Checkout
         uses: actions/checkout@v4.1.0
-
       - name: Precheck
         run: |
           ./script/build.sh --hook --spell
-
       - name: Evaluate code quality
         run: |
           ./script/build.sh --format --lint
-
       - name: Evaluate security
         run: |
           ./script/build.sh --query --assume y
-
       - name: Statisticize
         run: |
           ./script/build.sh --statistics
           git status
-
   dynamic_analysis:
     name: Dynamic analysis
     runs-on: ubuntu-latest
     container:
       image: ryftchen/foo:latest
-      options: --privileged
+      options: '--privileged'
     timeout-minutes: 30
-
     steps:
       - name: Prepare
         run: |
           git config --global --add safe.directory '*'
-
       - name: Checkout
         uses: actions/checkout@v4.1.0
-
       - name: Run base debug version
         run: |
           ./script/build.sh --initialize
@@ -75,58 +60,49 @@ jobs:
           cat ./report/foo_run.report
           ./script/run.py --build dbg --repeat 1
           cat ./report/foo_run.report
-
       - name: Run base release version
         run: |
           ./script/run.py --test --build rls --repeat 1
           cat ./report/foo_run.report
           ./script/run.py --build rls --repeat 1
           cat ./report/foo_run.report
-
       - name: Perform code coverage checks (debug)
         run: |
           ./script/run.py --test --check cov --build dbg --repeat 1
           cat ./report/foo_run.report
           ./script/run.py --check cov --build dbg --repeat 1
           cat ./report/foo_run.report
-
       - name: Perform code coverage checks (release)
         run: |
           ./script/run.py --test --check cov --build rls --repeat 1
           cat ./report/foo_run.report
           ./script/run.py --check cov --build rls --repeat 1
           cat ./report/foo_run.report
-
       - name: Perform memory leak checks (debug)
         run: |
           ./script/run.py --test --check mem --build dbg --repeat 1
           cat ./report/foo_run.report
           ./script/run.py --check mem --build dbg --repeat 1
           cat ./report/foo_run.report
-
       - name: Perform memory leak checks (release)
         run: |
           ./script/run.py --test --check mem --build rls --repeat 1
           cat ./report/foo_run.report
           ./script/run.py --check mem --build rls --repeat 1
           cat ./report/foo_run.report
-
   extended_analysis:
     name: Extended analysis
     runs-on: ubuntu-latest
     container:
       image: ryftchen/foo:latest
-      options: --privileged
+      options: '--privileged'
     timeout-minutes: 30
-
     steps:
       - name: Prepare
         run: |
           git config --global --add safe.directory '*'
-
       - name: Checkout
         uses: actions/checkout@v4.1.0
-
       - name: Development environment
         run: |
           ./script/build.sh --container --assume y
@@ -136,7 +112,6 @@ jobs:
           ./script/build.sh --install
           ./script/build.sh --uninstall
           ./script/build.sh --clean
-
       - name: Enhanced environment
         run: |
           ./script/build.sh --initialize
@@ -154,7 +129,6 @@ jobs:
           ./script/run.py --build rls --repeat 1
           ./script/run.py --analyze
           sed -i 's/FOO_BLD_COMPILER=.*/FOO_BLD_COMPILER=gcc/' ./script/.build_env
-
       - name: Apply toolchain (part 1)
         run: |
           sed -i 's/FOO_BLD_PCH=.*/FOO_BLD_PCH=on/' ./script/.build_env
@@ -167,7 +141,6 @@ jobs:
           ./script/run.py --build rls --repeat 1
           ./script/run.py --analyze
           sed -i 's/FOO_BLD_PCH=.*/FOO_BLD_PCH=off/' ./script/.build_env
-
       - name: Apply toolchain (part 2)
         run: |
           sed -i 's/FOO_BLD_UNITY=.*/FOO_BLD_UNITY=on/' ./script/.build_env
@@ -180,7 +153,6 @@ jobs:
           ./script/run.py --build rls --repeat 1
           ./script/run.py --analyze
           sed -i 's/FOO_BLD_UNITY=.*/FOO_BLD_UNITY=off/' ./script/.build_env
-
       - name: Apply toolchain (part 3)
         run: |
           distccd --daemon --allow 127.0.0.1/32
@@ -196,7 +168,6 @@ jobs:
           sed -i 's/FOO_BLD_DISTCC=.*/FOO_BLD_DISTCC=localhost/' ./script/.build_env
           pkill distccd
           ./script/build.sh --clean
-
       - name: Run sanitizer (debug)
         run: |
           ./script/run.py --test --sanitizer asan --build dbg --repeat 1
@@ -211,7 +182,6 @@ jobs:
           ./script/run.py --analyze
           ./script/run.py --sanitizer ubsan --build dbg --repeat 1
           ./script/run.py --analyze
-
       - name: Run sanitizer (release)
         run: |
           ./script/run.py --test --sanitizer asan --build rls --repeat 1
@@ -226,14 +196,13 @@ jobs:
           ./script/run.py --analyze
           ./script/run.py --sanitizer ubsan --build rls --repeat 1
           ./script/run.py --analyze
-
   deploy_pages:
     name: Deploy pages
     if: (github.event_name == 'push') || (github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     container:
       image: ryftchen/foo:latest
-      options: --privileged
+      options: '--privileged'
     timeout-minutes: 30
     permissions: write-all
     environment:
@@ -242,48 +211,38 @@ jobs:
     concurrency:
       group: pages
       cancel-in-progress: false
-
     steps:
       - name: Prepare
         run: |
           git config --global --add safe.directory '*'
-
       - name: Checkout
         uses: actions/checkout@v4.1.0
-
       - name: Do documentation
         run: |
           ./script/build.sh --doxygen --browser
-
       - name: Upload artifact
         uses: actions/upload-artifact@v4.3.0
         with:
           name: foo_artifact
           path: ./document/artifact/foo_*.tar.bz2
           retention-days: 7
-
       - name: Delete deployment environment
         uses: strumwolf/delete-deployment-environment@v3.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           environment: github-pages
           onlyRemoveDeployments: true
-
       - name: Configure pages
         uses: actions/configure-pages@v5.0.0
-
       - name: Upload pages artifact
         uses: actions/upload-pages-artifact@v3.0.0
         with:
           path: ./document/doxygen
-
       - name: Deploy pages
         id: deployment
         uses: actions/deploy-pages@v4.0.0
-
       - name: Clean workflow runs
         uses: dmvict/clean-workflow-runs@v1.2.2
         with:
           save_period: '00:01:00'
           save_min_runs_number: 0
-...
