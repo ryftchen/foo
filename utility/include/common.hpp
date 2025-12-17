@@ -77,7 +77,8 @@ inline std::string formatString(
 //! @param others - arguments of string
 //! @return be equal or not
 template <typename... Others>
-inline bool areStringsEqual(const char* const str1, const char* const str2, const Others&... others)
+requires (std::is_same_v<Others, const char*> && ...)
+inline bool areStringsEqual(const char* str1, const char* str2, Others... others)
 {
     return (str1 && str2 && (... && others))
         && ((std::strcmp(str1, str2) == 0) && ((std::strcmp(str1, others) == 0) && ...));
@@ -108,7 +109,7 @@ public:
 //! @brief Get the result of splicing strings.
 //! @tparam Strings - target strings to be spliced
 template <const std::string_view&... Strings>
-static constexpr auto concatString = ConcatString<Strings...>::value;
+inline constexpr auto concatString = ConcatString<Strings...>::value;
 
 //! @brief Check whether the target class is stateless.
 //! @tparam Cls - type of target class
@@ -198,7 +199,7 @@ struct WrapClosure<Func, Ret (Obj::*)(Args...), true>
     //! @param closure - target closure
     //! @return wrapped closure
     template <typename Clos>
-    static constexpr auto wrap(Clos&& closure) // NOLINT(cppcoreguidelines-missing-std-forward)
+    static auto wrap(Clos&& closure) // NOLINT(cppcoreguidelines-missing-std-forward)
     {
         return [sharedClosure = std::make_shared<Func>(std::forward<Clos>(closure))](Args&&... args) mutable
         { return (*sharedClosure)(std::forward<Args>(args)...); };
@@ -217,7 +218,7 @@ struct WrapClosure<Func, Ret (Obj::*)(Args...) const, true>
     //! @param closure - target closure
     //! @return wrapped closure
     template <typename Clos>
-    static constexpr auto wrap(Clos&& closure) // NOLINT(cppcoreguidelines-missing-std-forward)
+    static auto wrap(Clos&& closure) // NOLINT(cppcoreguidelines-missing-std-forward)
     {
         return [sharedClosure = std::make_shared<Func>(std::forward<Clos>(closure))](Args&&... args)
         { return (*sharedClosure)(std::forward<Args>(args)...); };
@@ -228,7 +229,7 @@ struct WrapClosure<Func, Ret (Obj::*)(Args...) const, true>
 //! @param closure - target closure
 //! @return wrapped closure
 template <typename Clos>
-constexpr auto wrapClosure(Clos&& closure)
+inline auto wrapClosure(Clos&& closure)
 {
     return WrapClosure<std::decay_t<Clos>>::wrap(std::forward<Clos>(closure));
 }
@@ -272,7 +273,6 @@ private:
         (sizeof(storage) >= sizeof(Inst)) // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
         && (alignof(decltype(*reinterpret_cast<Inst*>(storage.data()))) >= alignof(Inst)));
 };
-
 // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
 template <typename Inst>
 template <typename... Args>
@@ -280,13 +280,11 @@ NoDestructor<Inst>::NoDestructor(Args&&... args)
 {
     std::construct_at(reinterpret_cast<Inst*>(storage.data()), std::forward<Args>(args)...);
 }
-
 template <typename Inst>
 Inst* NoDestructor<Inst>::get() noexcept
 {
     return reinterpret_cast<Inst*>(storage.data());
 }
-
 template <typename Inst>
 const Inst* NoDestructor<Inst>::get() const noexcept
 {
