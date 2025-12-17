@@ -590,7 +590,7 @@ std::size_t View::buildCustomTLVPacket<View::OptDepend>(const Args& /*args*/, Bu
     extLibraries += "GNU MP Library " MACRO_STRINGIFY(__GNU_MP_VERSION) "." MACRO_STRINGIFY(
         __GNU_MP_VERSION_MINOR) "." MACRO_STRINGIFY(__GNU_MP_VERSION_PATCHLEVEL) "\n";
 #else
-#error Could not find the GNU MP Library version.
+#pragma message("Could not find the GNU MP Library version.")
 #endif // defined(__GNU_MP_VERSION) && defined(__GNU_MP_VERSION_MINOR) && defined(__GNU_MP_VERSION_PATCHLEVEL)
 #if defined(MPFR_VERSION_STRING)
     extLibraries += "GNU MPFR Library " MPFR_VERSION_STRING "\n";
@@ -616,7 +616,7 @@ std::size_t View::buildCustomTLVPacket<View::OptDepend>(const Args& /*args*/, Bu
 #if defined(NCURSES_VERSION)
     extLibraries += "Ncurses Library " NCURSES_VERSION "\n";
 #else
-#error Could not find the Ncurses Library version.
+#pragma message("Could not find the Ncurses Library version.")
 #endif // defined(NCURSES_VERSION)
 #if defined(OPENSSL_VERSION_STR)
     extLibraries += "OpenSSL Library " OPENSSL_VERSION_STR "";
