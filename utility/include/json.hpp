@@ -318,7 +318,7 @@ public:
     //! @param depth - target depth
     //! @param tab - tab string
     //! @return formatted string
-    [[nodiscard]] std::string dump(const std::uint32_t depth = 1, const std::string_view tab = "    ") const;
+    [[nodiscard]] std::string dump(const std::uint32_t depth = 1, const std::string_view tab = "  ") const;
     //! @brief Dump as minified formatted string.
     //! @return minified formatted string
     [[nodiscard]] std::string dumpMinified() const;
