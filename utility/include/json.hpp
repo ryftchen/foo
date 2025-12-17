@@ -92,7 +92,7 @@ public:
     //! @tparam Value - type of string value
     //! @param s - string value
     template <typename Value>
-    JSON(const Value s, std::enable_if_t<std::is_convertible_v<Value, std::string>>* /*type*/ = nullptr) :
+    JSON(const Value s, std::enable_if_t<std::is_convertible_v<Value, std::string>>* /*sfinae*/ = nullptr) :
         data{String{s}}
     {
     }
@@ -100,7 +100,7 @@ public:
     //! @tparam Value - type of floating value
     //! @param f - floating value
     template <typename Value>
-    JSON(const Value f, std::enable_if_t<std::is_floating_point_v<Value>>* /*type*/ = nullptr) :
+    JSON(const Value f, std::enable_if_t<std::is_floating_point_v<Value>>* /*sfinae*/ = nullptr) :
         data{static_cast<Floating>(f)}
     {
     }
@@ -110,7 +110,7 @@ public:
     template <typename Value>
     JSON(
         const Value i,
-        std::enable_if_t<std::is_integral_v<Value> && !std::is_same_v<Value, bool>>* /*type*/ = nullptr) :
+        std::enable_if_t<std::is_integral_v<Value> && !std::is_same_v<Value, bool>>* /*sfinae*/ = nullptr) :
         data{static_cast<Integral>(i)}
     {
     }
@@ -118,7 +118,7 @@ public:
     //! @tparam Value - type of boolean value
     //! @param b - boolean value
     template <typename Value>
-    JSON(const Value b, std::enable_if_t<std::is_same_v<Value, bool>>* /*type*/ = nullptr) :
+    JSON(const Value b, std::enable_if_t<std::is_same_v<Value, bool>>* /*sfinae*/ = nullptr) :
         data{static_cast<Boolean>(b)}
     {
     }
