@@ -1,4 +1,3 @@
----
 language: en
 files:
   - '**/*.{cpp,hpp,tpp,sh,py,rs}'
@@ -93,11 +92,10 @@ ignorePaths:
   - '**/.github'
 useGitignore: true
 ignoreRegExpList:
-  - '\/\/ NOLINT.*'
+  - \/\/ NOLINT.*
   - '# shellcheck.*'
   - '# pylint:.*'
   - '#!?\[.*'
 overrides:
   - filename: '**/*.tpp'
     languageId: cpp
-...
