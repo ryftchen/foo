@@ -731,11 +731,10 @@ void Command::precheck()
         {
             for (const auto& choice : subCLI.get<std::vector<std::string>>(categoryName))
             {
-                std::visit(
-                    utility::common::VisitorOverload{
-                        [this, &choice](auto&& event)
-                        { applyingForwarder.onMessage(action::SetChoice<std::decay_t<decltype(event)>>{choice}); }},
-                    categoryAttr.event);
+                utility::common::patternMatch(
+                    categoryAttr.event,
+                    [this, &choice](auto&& event)
+                    { applyingForwarder.onMessage(action::SetChoice<std::decay_t<decltype(event)>>{choice}); });
             }
         }
     }
@@ -783,11 +782,10 @@ void Command::dispatchAll()
                                       { return taskDispatcher.extraChecklist.at(subCLIPair.first).present(); })
                  | std::views::values | std::views::join)
         {
-            std::visit(
-                utility::common::VisitorOverload{
-                    [this, &candidates = categoryAttr.choices](auto&& event)
-                    { applyingForwarder.onMessage(action::RunCandidates<std::decay_t<decltype(event)>>{candidates}); }},
-                categoryAttr.event);
+            utility::common::patternMatch(
+                categoryAttr.event,
+                [this, &candidates = categoryAttr.choices](auto&& event)
+                { applyingForwarder.onMessage(action::RunCandidates<std::decay_t<decltype(event)>>{candidates}); });
         }
     }
 }
