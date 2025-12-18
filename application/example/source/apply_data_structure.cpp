@@ -112,11 +112,10 @@ void applyingCache(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::cache;
     const auto& spec = categoryOpts<category>();
-    if (spec.none())
+    if (MACRO_IMPLIES(spec.any(), spec.size() != candidates.size()))
     {
         return;
     }
-    MACRO_ASSERT(spec.size() == candidates.size());
 
     const std::string_view title = data_structure::cache::description();
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
@@ -193,11 +192,10 @@ void applyingFilter(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::filter;
     const auto& spec = categoryOpts<category>();
-    if (spec.none())
+    if (MACRO_IMPLIES(spec.any(), spec.size() != candidates.size()))
     {
         return;
     }
-    MACRO_ASSERT(spec.size() == candidates.size());
 
     const std::string_view title = data_structure::filter::description();
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
@@ -271,11 +269,10 @@ void applyingGraph(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::graph;
     const auto& spec = categoryOpts<category>();
-    if (spec.none())
+    if (MACRO_IMPLIES(spec.any(), spec.size() != candidates.size()))
     {
         return;
     }
-    MACRO_ASSERT(spec.size() == candidates.size());
 
     const std::string_view title = data_structure::graph::description();
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
@@ -352,11 +349,10 @@ void applyingHeap(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::heap;
     const auto& spec = categoryOpts<category>();
-    if (spec.none())
+    if (MACRO_IMPLIES(spec.any(), spec.size() != candidates.size()))
     {
         return;
     }
-    MACRO_ASSERT(spec.size() == candidates.size());
 
     const std::string_view title = data_structure::heap::description();
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
@@ -436,11 +432,10 @@ void applyingLinear(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::linear;
     const auto& spec = categoryOpts<category>();
-    if (spec.none())
+    if (MACRO_IMPLIES(spec.any(), spec.size() != candidates.size()))
     {
         return;
     }
-    MACRO_ASSERT(spec.size() == candidates.size());
 
     const std::string_view title = data_structure::linear::description();
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
@@ -520,11 +515,10 @@ void applyingTree(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::tree;
     const auto& spec = categoryOpts<category>();
-    if (spec.none())
+    if (MACRO_IMPLIES(spec.any(), spec.size() != candidates.size()))
     {
         return;
     }
-    MACRO_ASSERT(spec.size() == candidates.size());
 
     const std::string_view title = data_structure::tree::description();
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
