@@ -147,11 +147,10 @@ void applyingMatch(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::match;
     const auto& spec = categoryOpts<category>();
-    if (spec.none())
+    if (MACRO_IMPLIES(spec.any(), spec.size() != candidates.size()))
     {
         return;
     }
-    MACRO_ASSERT(spec.size() == candidates.size());
 
     const std::string_view title = algorithm::match::description();
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
@@ -251,11 +250,10 @@ void applyingNotation(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::notation;
     const auto& spec = categoryOpts<category>();
-    if (spec.none())
+    if (MACRO_IMPLIES(spec.any(), spec.size() != candidates.size()))
     {
         return;
     }
-    MACRO_ASSERT(spec.size() == candidates.size());
 
     const std::string_view title = algorithm::notation::description();
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
@@ -364,11 +362,10 @@ void applyingOptimal(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::optimal;
     const auto& spec = categoryOpts<category>();
-    if (spec.none())
+    if (MACRO_IMPLIES(spec.any(), spec.size() != candidates.size()))
     {
         return;
     }
-    MACRO_ASSERT(spec.size() == candidates.size());
 
     const std::string_view title = algorithm::optimal::description();
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
@@ -491,11 +488,10 @@ void applyingSearch(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::search;
     const auto& spec = categoryOpts<category>();
-    if (spec.none())
+    if (MACRO_IMPLIES(spec.any(), spec.size() != candidates.size()))
     {
         return;
     }
-    MACRO_ASSERT(spec.size() == candidates.size());
 
     const std::string_view title = algorithm::search::description();
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
@@ -617,11 +613,10 @@ void applyingSort(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::sort;
     const auto& spec = categoryOpts<category>();
-    if (spec.none())
+    if (MACRO_IMPLIES(spec.any(), spec.size() != candidates.size()))
     {
         return;
     }
-    MACRO_ASSERT(spec.size() == candidates.size());
 
     const std::string_view title = algorithm::sort::description();
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title);

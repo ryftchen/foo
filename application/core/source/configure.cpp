@@ -259,6 +259,7 @@ utility::json::JSON dumpDefaultConfig()
         static_cast<std::underlying_type_t<Log::OutputMode>>(Log::OutputMode::append);
     auto loggerRequired = utility::json::array();
     loggerRequired.append(field::filePath, field::priorityLevel, field::targetType, field::writeMode);
+    MACRO_ASSERT(loggerProperties.size() == loggerRequired.length());
 
     auto viewerProperties = utility::json::object();
     viewerProperties.at(field::tcpHost) = "localhost";
@@ -267,6 +268,7 @@ utility::json::JSON dumpDefaultConfig()
     viewerProperties.at(field::udpPort) = 61502;
     auto viewerRequired = utility::json::array();
     viewerRequired.append(field::tcpHost, field::tcpPort, field::udpHost, field::udpPort);
+    MACRO_ASSERT(viewerProperties.size() == viewerRequired.length());
     // clang-format off
     return utility::json::JSON
     (

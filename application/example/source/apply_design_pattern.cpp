@@ -136,11 +136,10 @@ void applyingBehavioral(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::behavioral;
     const auto& spec = categoryOpts<category>();
-    if (spec.none())
+    if (MACRO_IMPLIES(spec.any(), spec.size() != candidates.size()))
     {
         return;
     }
-    MACRO_ASSERT(spec.size() == candidates.size());
 
     const std::string_view title = design_pattern::behavioral::description();
     APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
@@ -250,11 +249,10 @@ void applyingCreational(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::creational;
     const auto& spec = categoryOpts<category>();
-    if (spec.none())
+    if (MACRO_IMPLIES(spec.any(), spec.size() != candidates.size()))
     {
         return;
     }
-    MACRO_ASSERT(spec.size() == candidates.size());
 
     const std::string_view title = design_pattern::creational::description();
     APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
@@ -352,11 +350,10 @@ void applyingStructural(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::structural;
     const auto& spec = categoryOpts<category>();
-    if (spec.none())
+    if (MACRO_IMPLIES(spec.any(), spec.size() != candidates.size()))
     {
         return;
     }
-    MACRO_ASSERT(spec.size() == candidates.size());
 
     const std::string_view title = design_pattern::structural::description();
     APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(title);

@@ -20,6 +20,9 @@
 //! @brief The concatenation operator.
 #define MACRO_CONCAT_OP(x, y) x##y
 
+//! @brief Logical implication.
+#define MACRO_IMPLIES(p, q) (!(p) || (q))
+
 //! @brief Mark to ignore.
 #define MACRO_IGNORE(...)                       \
     do                                          \
@@ -100,13 +103,11 @@ private:
     //! @brief The deferred callable.
     const Call deferred{};
 };
-
 template <typename Call>
 Defer<Call>::~Defer() noexcept(noexcept(deferred()))
 {
     deferred();
 }
-
 //! @brief Create the deferral from a callable.
 //! @tparam Call - type of deferred callable
 //! @param deferred - deferred callable

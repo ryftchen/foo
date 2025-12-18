@@ -126,11 +126,10 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::arithmetic;
     const auto& spec = categoryOpts<category>();
-    if (spec.none())
+    if (MACRO_IMPLIES(spec.any(), spec.size() != candidates.size()))
     {
         return;
     }
-    MACRO_ASSERT(spec.size() == candidates.size());
 
     const std::string_view title = numeric::arithmetic::description();
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
@@ -229,11 +228,10 @@ void applyingDivisor(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::divisor;
     const auto& spec = categoryOpts<category>();
-    if (spec.none())
+    if (MACRO_IMPLIES(spec.any(), spec.size() != candidates.size()))
     {
         return;
     }
-    MACRO_ASSERT(spec.size() == candidates.size());
 
     const std::string_view title = numeric::divisor::description();
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
@@ -331,11 +329,10 @@ void applyingIntegral(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::integral;
     const auto& spec = categoryOpts<category>();
-    if (spec.none())
+    if (MACRO_IMPLIES(spec.any(), spec.size() != candidates.size()))
     {
         return;
     }
-    MACRO_ASSERT(spec.size() == candidates.size());
 
     const std::string_view title = numeric::integral::description();
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
@@ -439,11 +436,10 @@ void applyingPrime(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::prime;
     const auto& spec = categoryOpts<category>();
-    if (spec.none())
+    if (MACRO_IMPLIES(spec.any(), spec.size() != candidates.size()))
     {
         return;
     }
-    MACRO_ASSERT(spec.size() == candidates.size());
 
     const std::string_view title = numeric::prime::description();
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
