@@ -323,6 +323,7 @@ public:
     //! @return minified formatted string
     [[nodiscard]] std::string dumpMinified() const;
 
+private:
     //! @brief The data that stores JSON information.
     struct Data
     {
@@ -354,7 +355,6 @@ public:
         ValueType value;
     } /** @brief JSON valid data. */ data;
 
-private:
     //! @brief Ensure the target type has been set.
     //! @tparam Type - type of data
     template <typename Type>
