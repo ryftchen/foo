@@ -13,7 +13,7 @@ hyper = {version = "1.0", features = ["http1", "server"]}
 hyper-staticfile = "0.10"
 hyper-util = {version = "0.1", features = ["tokio"]}
 shellexpand = "3.1"
-tokio = {version = "1.13", features = ["macros", "rt-multi-thread", "net", "io-util"]}
+tokio = {version = "1.13", features = ["io-util", "macros", "net", "rt-multi-thread", "signal"]}
 idna_adapter = "=1.2.0"
 litemap = "=0.7.4"
 zerofrom = "=0.1.5"
