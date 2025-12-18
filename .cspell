@@ -72,6 +72,8 @@ words:
   - strs
   - subheap
   - suboperation
+  - supervisorctl
+  - supervisord
   - tmpfs
   - tparam
   - tsan

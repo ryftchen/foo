@@ -747,8 +747,10 @@ function perform_container_option()
     input=$(wait_until_get_input)
     if echo "${input}" | grep -iq '^y'; then
         echo "Yes"
+        echo
     else
         echo "No"
+        echo
         exit "${STATUS}"
     fi
 
@@ -815,25 +817,51 @@ EOF
         shell_command "sed -i 's|<li>unamed item</li>|${item_row_single_line}|g' ./${FOLDER[rep]}/index.html"
     fi
 
+    local server_bin="${FOLDER[proj]}_arc"
+    local server_config="./${FOLDER[scr]}/.build_server"
     local host_addr="127.0.0.1" start_port=61503
-    local server_daemon="./${FOLDER[doc]}/server/target/release/${FOLDER[proj]}_arc --root-dir ./${FOLDER[doc]} \
---root-dir ./${FOLDER[rep]} --host ${host_addr} --port ${start_port}"
-    if ! pgrep -f "${server_daemon}" >/dev/null 2>&1; then
+    if [[ ! -f ${server_config} ]]; then
+        shell_command "cp ./${FOLDER[doc]}/template/server_supervisor.conf ${server_config}"
+        local server_dir
+        server_dir=$(pwd)
+        shell_command "sed -i 's|unamed directory|${server_dir}|g' ${server_config}"
+        local server_cmd
+        server_cmd="$(realpath "./${FOLDER[doc]}/server/target/release/${server_bin}") \
+--root-dir ./${FOLDER[doc]} --root-dir ./${FOLDER[rep]} --host ${host_addr} --port ${start_port}"
+        shell_command "sed -i 's|unamed command|${server_cmd}|g' ${server_config}"
+    fi
+    local supervisor_out
+    supervisor_out=$(grep '^stdout_logfile' "${server_config}" | head -n1 | sed 's/^stdout_logfile *= *//')
+    if ! supervisorctl -c "${server_config}" status "${server_bin}" | grep -q 'RUNNING' 2>/dev/null; then
         echo "Please confirm whether continue starting the archive server. (y or n)"
         local input
         input=$(wait_until_get_input)
         if echo "${input}" | grep -iq '^y'; then
             echo "Yes"
-            shell_command "${server_daemon} & sleep 0.5s"
+            echo
+            shell_command "supervisord -c ${server_config}"
+            shell_command "supervisorctl -c ${server_config} start ${server_bin}"
+
+            if [[ -f ${supervisor_out} ]]; then
+                shell_command "cat ${supervisor_out}"
+            fi
         else
             echo "No"
+            echo
         fi
     else
+        if [[ -f ${supervisor_out} ]]; then
+            shell_command "cat ${supervisor_out}"
+        fi
+
         echo "Please confirm whether continue stopping the archive server. (y or n)"
         local input
         input=$(wait_until_get_input)
         if echo "${input}" | grep -iq '^y'; then
             echo "Yes"
+            echo
+            shell_command "supervisorctl -c ${server_config} stop ${server_bin}"
+            shell_command "supervisorctl -c ${server_config} shutdown"
             local port1=${start_port}
             if netstat -tuln | grep ":${port1} " >/dev/null 2>&1; then
                 shell_command "fuser -k ${port1}/tcp || true"
@@ -842,8 +870,10 @@ EOF
             if netstat -tuln | grep ":${port2} " >/dev/null 2>&1; then
                 shell_command "fuser -k ${port2}/tcp || true"
             fi
+            shell_command "> ${supervisor_out}"
         else
             echo "No"
+            echo
         fi
     fi
     exit "${STATUS}"
@@ -1140,10 +1170,12 @@ to improve accuracy. (y or n)"
     input=$(wait_until_get_input)
     if echo "${input}" | grep -iq '^y'; then
         echo "Yes"
+        echo
         build_script=${rebuild_script}
         shell_command "rm -rf ./${FOLDER[bld]} ./${FOLDER[tst]}/${FOLDER[bld]}"
     else
         echo "No"
+        echo
     fi
 
     local codeql_db_path="./${FOLDER[rep]}/sca/query"
