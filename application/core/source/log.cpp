@@ -288,16 +288,15 @@ void Log::flush(const OutputLevel severity, const std::string_view labelTpl, con
                 formatted);
             daemonLock.owns_lock())
         {
-            std::for_each(rows.begin(), rows.end(), [this](auto& output) { logQueue.push(std::move(output)); });
+            std::ranges::for_each(rows, [this](auto& output) { logQueue.push(std::move(output)); });
             daemonLock.unlock();
             daemonCond.notify_one();
         }
         else
         {
             cacheSwitch.lock();
-            std::for_each(
-                rows.begin(),
-                rows.end(),
+            std::ranges::for_each(
+                rows,
                 [this](auto& output)
                 {
                     unprocessedCache.emplace_front(output);
@@ -373,7 +372,7 @@ std::vector<std::string> Log::reformatContents(const std::string_view label, con
             [](auto& line)
             {
                 line.erase(
-                    std::remove_if(line.begin(), line.end(), [](const auto c) { return (c == '\n') || (c == '\r'); }),
+                    std::ranges::remove_if(line, [](const auto c) { return (c == '\n') || (c == '\r'); }).begin(),
                     line.cend());
                 return line;
             })
@@ -429,7 +428,7 @@ void Log::backUpLogFileIfNeeded() const
                                const auto filename = entry.path().filename().string();
                                return std::regex_match(filename, match, pattern) ? std::stoi(match[1].str()) : 0;
                            });
-    const int index = std::ranges::max(transformed, std::less<int>{}, [](const auto value) { return value; });
+    const int index = std::ranges::max(transformed);
     std::filesystem::rename(filePath, filePath + '.' + std::to_string(index + 1));
 }
 
@@ -625,9 +624,8 @@ std::ostream& operator<<(std::ostream& os, const Log::State state)
 std::string& changeToLogStyle(std::string& line)
 {
     const auto& style = logStyle();
-    if (const auto segIter = std::find_if(
-            style.predefinedLevelPrefixes.cbegin(),
-            style.predefinedLevelPrefixes.cend(),
+    if (const auto segIter = std::ranges::find_if(
+            style.predefinedLevelPrefixes,
             [&line](const auto& predefined) { return std::regex_search(line, std::get<std::regex>(predefined)); });
         segIter != style.predefinedLevelPrefixes.cend())
     {

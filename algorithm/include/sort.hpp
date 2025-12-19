@@ -347,8 +347,8 @@ requires std::is_integral_v<Elem>
     }
 
     std::vector<Elem> sorting(array, array + length);
-    const Elem max = *std::max_element(sorting.cbegin(), sorting.cend());
-    const Elem min = *std::min_element(sorting.cbegin(), sorting.cend());
+    const Elem max = *std::ranges::max_element(sorting);
+    const Elem min = *std::ranges::min_element(sorting);
     if (max == min)
     {
         return sorting;
@@ -381,8 +381,8 @@ std::vector<Elem> Sort<Elem>::bucket(const Elem* const array, const std::uint32_
     }
 
     std::vector<Elem> sorting(array, array + length);
-    const Elem max = *std::max_element(sorting.cbegin(), sorting.cend());
-    const Elem min = *std::min_element(sorting.cbegin(), sorting.cend());
+    const Elem max = *std::ranges::max_element(sorting);
+    const Elem min = *std::ranges::min_element(sorting);
     if (max == min)
     {
         return sorting;
@@ -399,7 +399,7 @@ std::vector<Elem> Sort<Elem>::bucket(const Elem* const array, const std::uint32_
 
     for (std::uint32_t pos = 0; auto& each : bucket)
     {
-        std::sort(each.begin(), each.end());
+        std::ranges::sort(each);
         for (const auto elem : each)
         {
             sorting[pos++] = elem;
@@ -418,8 +418,8 @@ requires std::is_integral_v<Elem>
     }
 
     std::vector<Elem> sorting(array, array + length);
-    const Elem min = *std::min_element(sorting.cbegin(), sorting.cend());
-    const Elem max = *std::max_element(sorting.cbegin(), sorting.cend());
+    const Elem min = *std::ranges::min_element(sorting);
+    const Elem max = *std::ranges::max_element(sorting);
     if (max == min)
     {
         return sorting;

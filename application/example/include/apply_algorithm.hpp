@@ -394,12 +394,11 @@ private:
         }
 
         const std::span<Elem> sequence{array, length};
-        std::for_each(
-            sequence.begin(),
-            sequence.end(),
+        std::ranges::for_each(
+            sequence,
             [engine = std::ranlux48(std::random_device{}()),
              dist = std::uniform_int_distribution<Elem>(left, right)](auto& elem) mutable { elem = dist(engine); });
-        std::sort(sequence.begin(), sequence.end());
+        std::ranges::sort(sequence);
 #ifdef _RUNTIME_PRINTING
         const std::uint32_t bufferSize = sequence.size() * maxAlignOfPrint;
         std::vector<char> fmtBuffer(bufferSize + 1);
@@ -422,12 +421,11 @@ private:
         }
 
         const std::span<Elem> sequence{array, length};
-        std::for_each(
-            sequence.begin(),
-            sequence.end(),
+        std::ranges::for_each(
+            sequence,
             [engine = std::ranlux48(std::random_device{}()),
              dist = std::uniform_real_distribution<Elem>(left, right)](auto& elem) mutable { elem = dist(engine); });
-        std::sort(sequence.begin(), sequence.end());
+        std::ranges::sort(sequence);
 #ifdef _RUNTIME_PRINTING
         const std::uint32_t bufferSize = sequence.size() * maxAlignOfPrint;
         std::vector<char> fmtBuffer(bufferSize + 1);
@@ -553,9 +551,8 @@ private:
         }
 
         const std::span<Elem> sequence{array, length};
-        std::for_each(
-            sequence.begin(),
-            sequence.end(),
+        std::ranges::for_each(
+            sequence,
             [engine = std::ranlux48(std::random_device{}()),
              dist = std::uniform_int_distribution<Elem>(left, right)](auto& elem) mutable { elem = dist(engine); });
 #ifdef _RUNTIME_PRINTING
@@ -580,9 +577,8 @@ private:
         }
 
         const std::span<Elem> sequence{array, length};
-        std::for_each(
-            sequence.begin(),
-            sequence.end(),
+        std::ranges::for_each(
+            sequence,
             [engine = std::ranlux48(std::random_device{}()),
              dist = std::uniform_real_distribution<Elem>(left, right)](auto& elem) mutable { elem = dist(engine); });
 #ifdef _RUNTIME_PRINTING

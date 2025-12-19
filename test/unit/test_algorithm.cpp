@@ -307,8 +307,8 @@ private:
         expRes.clear();
         const std::span<const float> orderedArray{fixture->getOrderedArray().get(), fixture->getLength()};
         const float searchKey = fixture->getSearchKey();
-        const auto range = std::equal_range(orderedArray.begin(), orderedArray.end(), searchKey);
-        for (auto iterator = range.first; iterator != range.second; ++iterator)
+        const auto range = std::ranges::equal_range(orderedArray, searchKey);
+        for (auto iterator = range.begin(); iterator != range.end(); ++iterator)
         {
             expRes.emplace(std::distance(orderedArray.begin(), iterator));
         }
@@ -378,7 +378,7 @@ private:
         fixture = std::make_unique<InputBuilder>(input::arrayLength, input::arrayRangeMin, input::arrayRangeMax);
         expRes = std::vector<std::int32_t>{
             fixture->getRandomArray().get(), fixture->getRandomArray().get() + fixture->getLength()};
-        std::sort(expRes.begin(), expRes.end());
+        std::ranges::sort(expRes);
     }
     //! @brief Reset scenario.
     static void resetScenario()

@@ -329,8 +329,7 @@ void TCPServer::toAccept(const std::shared_ptr<TCPServer> server) // NOLINT(perf
         const int newSock = ::accept(server->sock, reinterpret_cast<::sockaddr*>(&newSockAddr), &newSockAddrLen);
         if (newSock == -1)
         {
-            std::for_each(
-                activeSockets.cbegin(), activeSockets.cend(), [](const auto& socket) { socket->requestStop(); });
+            std::ranges::for_each(activeSockets, [](const auto& socket) { socket->requestStop(); });
             if ((errno == EBADF) || (errno == EINVAL))
             {
                 return;

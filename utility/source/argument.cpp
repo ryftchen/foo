@@ -410,10 +410,8 @@ Argument& Argument::operator=(const Argument& arg)
 
 Argument::operator bool() const
 {
-    const bool isArgUsed =
-        std::any_of(argumentMap.cbegin(), argumentMap.cend(), [](const auto& iter) { return iter.second->isUsed; });
-    const bool isSubParserUsed =
-        std::any_of(subParserUsed.cbegin(), subParserUsed.cend(), [](const auto& iter) { return iter.second; });
+    const bool isArgUsed = std::ranges::any_of(argumentMap, [](const auto& iter) { return iter.second->isUsed; });
+    const bool isSubParserUsed = std::ranges::any_of(subParserUsed, [](const auto& iter) { return iter.second; });
     return isParsed && (isArgUsed || isSubParserUsed);
 }
 

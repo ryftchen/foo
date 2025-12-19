@@ -97,7 +97,7 @@ void Composite::remove(const std::uint32_t index)
 
 void Composite::operation()
 {
-    std::for_each(children.cbegin(), children.cend(), [](const auto& component) { component->operation(); });
+    std::ranges::for_each(children, [](const auto& component) { component->operation(); });
 }
 
 void Leaf::operation()

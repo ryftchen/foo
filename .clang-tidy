@@ -51,7 +51,6 @@ Checks:
   - '-modernize-avoid-c-arrays'
   - '-modernize-macro-to-enum'
   - '-modernize-use-designated-initializers'
-  - '-modernize-use-ranges'
   - '-modernize-use-trailing-return-type'
   - '-modernize-use-using'
   - performance-*
