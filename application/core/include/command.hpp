@@ -64,7 +64,7 @@ public:
         virtual void execute() const = 0;
     };
     //! @brief The procedure when notified.
-    //! @tparam CRTP - type of derived class for CRTP
+    //! @tparam CRTP - type of derived class
     template <typename CRTP>
     class OperationImpl : public Operation
     {
