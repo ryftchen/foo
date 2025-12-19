@@ -27,6 +27,10 @@ extern const char* version() noexcept;
 
 //! @brief The precision of calculation.
 inline constexpr double epsilon = 1e-5;
+//! @brief Alias for the target function.
+using Function = std::function<double(const double)>;
+//! @brief Alias for the result of optimal.
+using Result = std::optional<std::tuple<double, double>>;
 
 //! @brief Optimal methods.
 class Optimal
@@ -40,12 +44,15 @@ public:
     //! @param right - right endpoint
     //! @param eps - precision of calculation
     //! @return result of optimal
-    virtual std::optional<std::tuple<double, double>> operator()(
-        const double left, const double right, const double eps) = 0;
+    virtual Result operator()(const double left, const double right, const double eps) = 0;
 
 protected:
-    //! @brief Alias for the target function.
-    using Function = std::function<double(const double)>;
+    //! @brief Construct a new Optimal object.
+    //! @param func - target function
+    explicit Optimal(Function func) : func{std::move(func)} {}
+
+    //! @brief Target function.
+    const Function func;
 };
 
 //! @brief Gradient descent (GD).
@@ -59,7 +66,7 @@ public:
     //! @param loopTime - predefined loop time
     explicit Gradient(
         Function func, const double initialLR = 0.01, const double decay = 0.1, const std::uint32_t loopTime = 500) :
-        func{std::move(func)}, initialLR{initialLR}, decay{decay}, loopTime{loopTime}
+        Optimal(std::move(func)), initialLR{initialLR}, decay{decay}, loopTime{loopTime}
     {
     }
 
@@ -68,12 +75,9 @@ public:
     //! @param right - right endpoint
     //! @param eps - precision of calculation
     //! @return result of optimal
-    std::optional<std::tuple<double, double>> operator()(
-        const double left, const double right, const double eps) override;
+    Result operator()(const double left, const double right, const double eps) override;
 
 private:
-    //! @brief Target function.
-    const Function func;
     //! @brief Initial learning rate.
     const double initialLR{0.01};
     //! @brief Decay.
@@ -111,7 +115,7 @@ public:
         const double expDecay = 0.95,
         const std::uint32_t neighborSize = 100,
         const std::uint32_t maxIterations = 500) :
-        func{std::move(func)},
+        Optimal(std::move(func)),
         tabuTenure{tabuTenure},
         initialStep{initialStep},
         expDecay{expDecay},
@@ -125,12 +129,9 @@ public:
     //! @param right - right endpoint
     //! @param eps - precision of calculation
     //! @return result of optimal
-    std::optional<std::tuple<double, double>> operator()(
-        const double left, const double right, const double eps) override;
+    Result operator()(const double left, const double right, const double eps) override;
 
 private:
-    //! @brief Target function.
-    const Function func;
     //! @brief Tabu tenure.
     const std::uint32_t tabuTenure{50};
     //! @brief Initial step length.
@@ -179,7 +180,7 @@ public:
         const double minimalT = 0.01,
         const double coolingRate = 0.99,
         const std::uint32_t markovChainLen = 100) :
-        func{std::move(func)},
+        Optimal(std::move(func)),
         initialT{initialT},
         minimalT{minimalT},
         coolingRate{coolingRate},
@@ -192,12 +193,9 @@ public:
     //! @param right - right endpoint
     //! @param eps - precision of calculation
     //! @return result of optimal
-    std::optional<std::tuple<double, double>> operator()(
-        const double left, const double right, const double eps) override;
+    Result operator()(const double left, const double right, const double eps) override;
 
 private:
-    //! @brief Target function.
-    const Function func;
     //! @brief Initial temperature.
     const double initialT{100.0};
     //! @brief Minimal temperature.
@@ -248,7 +246,7 @@ public:
         const double vMin = -0.5,
         const std::uint32_t swarmSize = 100,
         const std::uint32_t maxIterations = 100) :
-        func{std::move(func)},
+        Optimal(std::move(func)),
         c1{c1},
         c2{c2},
         wBegin{wBegin},
@@ -265,12 +263,9 @@ public:
     //! @param right - right endpoint
     //! @param eps - precision of calculation
     //! @return result of optimal
-    std::optional<std::tuple<double, double>> operator()(
-        const double left, const double right, const double eps) override;
+    Result operator()(const double left, const double right, const double eps) override;
 
 private:
-    //! @brief Target function.
-    const Function func;
     //! @brief Cognitive coefficient.
     const double c1{1.5};
     //! @brief Social coefficient.
@@ -356,7 +351,7 @@ public:
         const double initialStep = 1.0,
         const std::uint32_t numOfAnts = 500,
         const std::uint32_t maxIterations = 100) :
-        func{std::move(func)},
+        Optimal(std::move(func)),
         rho{rho},
         p0{p0},
         initialStep{initialStep},
@@ -370,12 +365,9 @@ public:
     //! @param right - right endpoint
     //! @param eps - precision of calculation
     //! @return result of optimal
-    std::optional<std::tuple<double, double>> operator()(
-        const double left, const double right, const double eps) override;
+    Result operator()(const double left, const double right, const double eps) override;
 
 private:
-    //! @brief Target function.
-    const Function func;
     //! @brief Pheromone evaporation rate.
     const double rho{0.9};
     //! @brief Exploration probability.
@@ -441,7 +433,7 @@ public:
         const double mutatePr = 0.015,
         const std::uint32_t popSize = 200,
         const std::uint32_t numOfGens = 50) :
-        func{std::move(func)}, crossPr{crossPr}, mutatePr{mutatePr}, popSize{popSize}, numOfGens{numOfGens}
+        Optimal(std::move(func)), crossPr{crossPr}, mutatePr{mutatePr}, popSize{popSize}, numOfGens{numOfGens}
     {
     }
 
@@ -450,12 +442,9 @@ public:
     //! @param right - right endpoint
     //! @param eps - precision of calculation
     //! @return result of optimal
-    std::optional<std::tuple<double, double>> operator()(
-        const double left, const double right, const double eps) override;
+    Result operator()(const double left, const double right, const double eps) override;
 
 private:
-    //! @brief Target function.
-    const Function func;
     //! @brief Crossover probability.
     const double crossPr{0.95};
     //! @brief Mutation probability.
