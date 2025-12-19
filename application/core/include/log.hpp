@@ -362,8 +362,7 @@ void printfStyle(
     const auto rows = Log::reformatContents(
         std::string{sourceDirectory.substr(1, sourceDirectory.length() - 2)} + ": ",
         utility::common::printfString(format.c_str(), std::forward<Args>(args)...));
-    std::for_each(
-        rows.cbegin(), rows.cend(), [](const auto& output) { std::osyncstream(std::clog) << output << std::endl; });
+    std::ranges::for_each(rows, [](const auto& output) { std::osyncstream(std::clog) << output << std::endl; });
 }
 
 //! @brief Log output for modern (format style).
@@ -393,8 +392,7 @@ void formatStyle(
     const auto rows = Log::reformatContents(
         std::string{sourceDirectory.substr(1, sourceDirectory.length() - 2)} + ": ",
         utility::common::formatString(format, std::forward<Args>(args)...));
-    std::for_each(
-        rows.cbegin(), rows.cend(), [](const auto& output) { std::osyncstream(std::clog) << output << std::endl; });
+    std::ranges::for_each(rows, [](const auto& output) { std::osyncstream(std::clog) << output << std::endl; });
 }
 
 //! @brief Log holder for flushing.

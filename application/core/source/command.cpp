@@ -283,8 +283,7 @@ void Command::setupMainCLI()
         .action(
             [](const std::string& input)
             {
-                if (std::all_of(
-                        input.cbegin(), input.cend(), [l = std::locale{}](const auto c) { return std::isspace(c, l); }))
+                if (std::ranges::all_of(input, [l = std::locale{}](const auto c) { return std::isspace(c, l); }))
                 {
                     throw std::runtime_error{"Invalid " + std::string{toString(Category::console)} + " command."};
                 }
@@ -1161,7 +1160,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<Sock>
         auto node = supportedOptions.extract(iterator++);
         auto& key = node.key();
         key.erase(
-            std::remove_if(key.begin(), key.end(), [l = std::locale{}](const auto c) { return std::isspace(c, l); }),
+            std::ranges::remove_if(key, [l = std::locale{}](const auto c) { return std::isspace(c, l); }).begin(),
             key.cend());
         validOptions.insert(std::move(node));
     }

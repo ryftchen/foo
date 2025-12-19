@@ -393,9 +393,8 @@ ArgTrait::ArgTrait(
     prefixChars{prefix}
 {
     (names.emplace_back(std::move(collection).at(Is)), ...);
-    std::sort(
-        names.begin(),
-        names.end(),
+    std::ranges::sort(
+        names,
         [](const auto& lhs, const auto& rhs)
         { return (lhs.size() == rhs.size()) ? (lhs < rhs) : (lhs.size() < rhs.size()); });
 }
@@ -410,11 +409,9 @@ bool ArgTrait::operator==(const RHS& rhs) const
     else
     {
         const auto lhs = get<RHS>();
-        return std::equal(
-            std::cbegin(lhs),
-            std::cend(lhs),
-            std::cbegin(rhs),
-            std::cend(rhs),
+        return std::ranges::equal(
+            lhs,
+            rhs,
             [](const auto& l, const auto& r) { return r == std::any_cast<const typename RHS::value_type&>(l); });
     }
 }
@@ -618,9 +615,8 @@ template <typename Container>
 Container ArgTrait::anyCastContainer(const std::vector<std::any>& operand)
 {
     Container result{};
-    std::transform(
-        operand.cbegin(),
-        operand.cend(),
+    std::ranges::transform(
+        operand,
         std::back_inserter(result),
         [](const auto& value) { return std::any_cast<typename Container::value_type>(value); });
     return result;

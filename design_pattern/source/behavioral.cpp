@@ -210,9 +210,8 @@ void ConcreteMediator::add(const std::shared_ptr<Colleague>& colleague)
 
 void ConcreteMediator::distribute(const std::shared_ptr<Colleague>& sender, const std::string_view msg)
 {
-    std::for_each(
-        colleagues.cbegin(),
-        colleagues.cend(),
+    std::ranges::for_each(
+        colleagues,
         [&sender, &msg](const auto& colleague)
         {
             if (const auto c = colleague.lock(); c && (c->getId() != sender->getId()))
@@ -325,9 +324,8 @@ void Subject::detach(const int index)
 
 void Subject::notify()
 {
-    std::for_each(
-        observers.cbegin(),
-        observers.cend(),
+    std::ranges::for_each(
+        observers,
         [this](const auto& observer)
         {
             if (const auto obs = observer.lock())

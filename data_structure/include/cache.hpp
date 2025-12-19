@@ -489,7 +489,7 @@ private:
 
 template <typename Key, typename Value>
 LFU<Key, Value>::LFU(const std::size_t capacity, const float maxLoadFactor) :
-    openSlotList{capacity}, openSlotListEnd(openSlotList.begin())
+    openSlotList{capacity}, openSlotListEnd{openSlotList.begin()}
 {
     keyedElements.max_load_factor(maxLoadFactor);
     keyedElements.reserve(capacity);

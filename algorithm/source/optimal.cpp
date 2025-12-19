@@ -139,7 +139,7 @@ std::tuple<double, double> Tabu::neighborhoodSearch(
     double yBestNbr = func(xBestNbr);
     for (const auto neighbor : neighborhood)
     {
-        if (std::find(tabuList.cbegin(), tabuList.cend(), neighbor) == tabuList.cend())
+        if (std::ranges::find(tabuList, neighbor) == tabuList.cend())
         {
             if (const double fitness = func(neighbor); fitness < yBestNbr)
             {
@@ -214,8 +214,8 @@ Result Particle::operator()(const double left, const double right, const double 
     }
 
     auto swarm = swarmInit(left, right);
-    const auto initialBest = std::min_element(
-        swarm.cbegin(), swarm.cend(), [](const auto& min1, const auto& min2) { return min1.fitness < min2.fitness; });
+    const auto initialBest =
+        std::ranges::min_element(swarm, [](const auto& min1, const auto& min2) { return min1.fitness < min2.fitness; });
     double gloBest = initialBest->x;
     double gloBestFitness = initialBest->fitness;
 
@@ -306,10 +306,8 @@ Result Ant::operator()(const double left, const double right, const double eps)
         pathConstruction(colony, stepLen, left, right);
         updatePheromones(colony);
 
-        const auto currBest = std::min_element(
-            colony.cbegin(),
-            colony.cend(),
-            [](const auto& min1, const auto& min2) { return min1.pheromone < min2.pheromone; });
+        const auto currBest = std::ranges::min_element(
+            colony, [](const auto& min1, const auto& min2) { return min1.pheromone < min2.pheromone; });
         if (const double x = currBest->position, y = func(x); y < yBest)
         {
             xBest = x;
@@ -341,19 +339,16 @@ Ant::Colony Ant::colonyInit(const double left, const double right)
 
 void Ant::stateTransition(Colony& colony, const double eps)
 {
-    const double minTau = std::min_element(
-                              colony.cbegin(),
-                              colony.cend(),
-                              [](const auto& min1, const auto& min2) { return min1.pheromone < min2.pheromone; })
-                              ->pheromone;
-    const double maxTau = std::max_element(
-                              colony.cbegin(),
-                              colony.cend(),
-                              [](const auto& max1, const auto& max2) { return max1.pheromone < max2.pheromone; })
-                              ->pheromone;
-    std::for_each(
-        colony.begin(),
-        colony.end(),
+    const double minTau =
+        std::ranges::min_element(
+            colony, [](const auto& min1, const auto& min2) { return min1.pheromone < min2.pheromone; })
+            ->pheromone;
+    const double maxTau =
+        std::ranges::max_element(
+            colony, [](const auto& max1, const auto& max2) { return max1.pheromone < max2.pheromone; })
+            ->pheromone;
+    std::ranges::for_each(
+        colony,
         [minTau, maxTau, eps](auto& state) { state.transPr = (maxTau - state.pheromone) / (maxTau - minTau + eps); });
 }
 
@@ -373,22 +368,16 @@ void Ant::pathConstruction(Colony& colony, const double stepLen, const double le
 
 void Ant::updatePheromones(Colony& colony)
 {
-    std::for_each(
-        colony.begin(),
-        colony.end(),
-        [this](auto& state) { state.pheromone = (1.0 - rho) * state.pheromone + func(state.position); });
+    std::ranges::for_each(
+        colony, [this](auto& state) { state.pheromone = (1.0 - rho) * state.pheromone + func(state.position); });
 }
 
 auto Genetic::getBestIndividual(const Population& pop)
 {
     std::vector<double> fitness{};
     fitness.reserve(pop.size());
-    std::transform(
-        pop.cbegin(),
-        pop.cend(),
-        std::back_inserter(fitness),
-        [this](const auto& ind) { return calculateFitness(ind); });
-    return std::next(pop.cbegin(), std::distance(fitness.cbegin(), std::max_element(fitness.cbegin(), fitness.cend())));
+    std::ranges::transform(pop, std::back_inserter(fitness), [this](const auto& ind) { return calculateFitness(ind); });
+    return std::next(pop.cbegin(), std::ranges::distance(fitness.cbegin(), std::ranges::max_element(fitness)));
 }
 
 Result Genetic::operator()(const double left, const double right, const double eps)
@@ -428,7 +417,7 @@ bool Genetic::updateSpecies(const double left, const double right, const double 
 double Genetic::geneticDecode(const Chromosome& chr) const
 {
     std::uint32_t currDecoded = 0;
-    std::for_each(chr.cbegin(), chr.cend(), [&currDecoded](const auto bit) { currDecoded = (currDecoded << 1) | bit; });
+    std::ranges::for_each(chr, [&currDecoded](const auto bit) { currDecoded = (currDecoded << 1) | bit; });
     const auto maxDecoded = static_cast<double>((1ULL << chromosomeLen) - 1ULL);
     return property.lower + ((property.upper - property.lower) * currDecoded / maxDecoded);
 }
@@ -468,7 +457,7 @@ void Genetic::geneticCross(Chromosome& chr1, Chromosome& chr2)
 void Genetic::crossover(Population& pop)
 {
     std::vector<std::reference_wrapper<Chromosome>> selector(pop.begin(), pop.end());
-    std::shuffle(selector.begin(), selector.end(), engine);
+    std::ranges::shuffle(selector, engine);
     for (auto chrIter = selector.cbegin(); (chrIter != selector.cend()) && (std::next(chrIter, 1) != selector.cend());
          std::advance(chrIter, 2))
     {
@@ -483,9 +472,8 @@ void Genetic::crossover(Population& pop)
 
 void Genetic::geneticMutation(Chromosome& chr)
 {
-    std::for_each(
-        chr.begin(),
-        chr.end(),
+    std::ranges::for_each(
+        chr,
         [this](auto& bit)
         {
             if (probability(engine) < mutatePr)
@@ -497,7 +485,7 @@ void Genetic::geneticMutation(Chromosome& chr)
 
 void Genetic::mutate(Population& pop)
 {
-    std::for_each(pop.begin(), pop.end(), [this](auto& ind) { geneticMutation(ind); });
+    std::ranges::for_each(pop, [this](auto& ind) { geneticMutation(ind); });
 }
 
 double Genetic::calculateFitness(const Chromosome& chr)
@@ -508,7 +496,7 @@ double Genetic::calculateFitness(const Chromosome& chr)
 std::optional<std::pair<double, double>> Genetic::goldbergLinearScaling(
     const std::vector<double>& fitness, const double eps)
 {
-    const double fitMax = *std::max_element(fitness.cbegin(), fitness.cend());
+    const double fitMax = *std::ranges::max_element(fitness);
     const double fitAvg = std::reduce(fitness.cbegin(), fitness.cend(), 0.0) / fitness.size();
     if (std::fabs(fitMax - fitAvg) < eps)
     {
@@ -521,7 +509,7 @@ std::optional<std::pair<double, double>> Genetic::goldbergLinearScaling(
 
 auto Genetic::rouletteWheelSelection(const Population& pop, const std::vector<double>& cumFitness)
 {
-    const auto cumIter = std::lower_bound(cumFitness.cbegin(), cumFitness.cend(), probability(engine));
+    const auto cumIter = std::ranges::lower_bound(cumFitness, probability(engine));
     return (cumIter != cumFitness.cend()) ? std::next(pop.cbegin(), std::distance(cumFitness.cbegin(), cumIter))
                                           : std::prev(pop.cend());
 }
@@ -530,14 +518,10 @@ void Genetic::select(Population& pop)
 {
     std::vector<double> fitness{};
     fitness.reserve(pop.size());
-    std::transform(
-        pop.cbegin(),
-        pop.cend(),
-        std::back_inserter(fitness),
-        [this](const auto& ind) { return calculateFitness(ind); });
-    if (const double min = *std::min_element(fitness.cbegin(), fitness.cend()); min <= 0.0)
+    std::ranges::transform(pop, std::back_inserter(fitness), [this](const auto& ind) { return calculateFitness(ind); });
+    if (const double min = *std::ranges::min_element(fitness); min <= 0.0)
     {
-        std::for_each(fitness.begin(), fitness.end(), [min, eps = property.prec](auto& fit) { fit = fit - min + eps; });
+        std::ranges::for_each(fitness, [min, eps = property.prec](auto& fit) { fit = fit - min + eps; });
     }
 
     const auto coeff =
@@ -551,7 +535,7 @@ void Genetic::select(Population& pop)
             fit = alpha * fit + beta;
             return acc + fit;
         });
-    std::for_each(fitness.begin(), fitness.end(), [sum](auto& fit) { fit /= sum; });
+    std::ranges::for_each(fitness, [sum](auto& fit) { fit /= sum; });
     std::partial_sum(fitness.begin(), fitness.end(), fitness.begin());
 
     Population selected{};

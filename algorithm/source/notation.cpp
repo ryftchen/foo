@@ -22,7 +22,7 @@ const char* version() noexcept
 std::string Notation::prefix(const std::string_view infix)
 {
     std::string preprocess(infix);
-    std::reverse(preprocess.begin(), preprocess.end());
+    std::ranges::reverse(preprocess);
     for (auto& c : preprocess)
     {
         if (c == '(')
@@ -36,7 +36,7 @@ std::string Notation::prefix(const std::string_view infix)
     }
 
     std::string notation(infixToPostfix(preprocess));
-    std::reverse(notation.begin(), notation.end());
+    std::ranges::reverse(notation);
     return notation;
 }
 

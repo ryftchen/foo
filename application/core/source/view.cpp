@@ -982,8 +982,8 @@ std::string View::logContentsPreview()
         {
             constexpr std::uint16_t lineLimit = 24 * 100;
             auto logRows = utility::io::readFileLines(filePath, false, true, lineLimit);
-            std::for_each(logRows.begin(), logRows.end(), [](auto& line) { log::changeToLogStyle(line); });
-            std::copy(logRows.cbegin(), logRows.cend(), std::ostream_iterator<std::string>(transfer, "\n"));
+            std::ranges::for_each(logRows, [](auto& line) { log::changeToLogStyle(line); });
+            std::ranges::copy(logRows, std::ostream_iterator<std::string>(transfer, "\n"));
         });
     return std::move(transfer).str();
 }

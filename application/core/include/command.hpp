@@ -279,17 +279,13 @@ private:
         [[nodiscard]] bool empty() const override
         {
             return !extraHelping
-                && std::none_of(
-                    extraChecklist.cbegin(),
-                    extraChecklist.cend(),
-                    [](const auto& pair) { return pair.second.present(); });
+                && std::ranges::none_of(extraChecklist, [](const auto& pair) { return pair.second.present(); });
         }
         //! @brief Reset bit flags that manage extra choices.
         void reset() override
         {
             extraHelping = false;
-            std::for_each(
-                extraChecklist.cbegin(), extraChecklist.cend(), [](const auto& pair) { pair.second.clear(); });
+            std::ranges::for_each(extraChecklist, [](const auto& pair) { pair.second.clear(); });
         }
     };
     //! @brief Schedule all managed tasks.

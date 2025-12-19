@@ -71,9 +71,8 @@ Thread::~Thread()
     }
 
     cond.notify_all();
-    std::for_each(
-        thdColl.begin(),
-        thdColl.end(),
+    std::ranges::for_each(
+        thdColl,
         [](auto& thd)
         {
             if (thd.joinable())
