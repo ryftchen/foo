@@ -884,12 +884,15 @@ void Command::executeInConsole() const
     launchClient(udpClient);
     registerOnConsole(*session, udpClient);
 
-    for (const auto& input : pendingInputs)
+    for (std::ostringstream out{}; const auto& input : pendingInputs)
     {
         try
         {
             using RetCode = console::Console::RetCode;
-            std::cout << greeting << input << std::endl;
+            out << greeting << input << '\n';
+            std::cout << out.str() << std::flush;
+            out.str("");
+            out.clear();
             if (session->optionExecutor(input) == RetCode::quit)
             {
                 break;
