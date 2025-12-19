@@ -33,7 +33,7 @@ double Integral::trapezoidalRule(
     return sum;
 }
 
-double Trapezoidal::operator()(const double lower, const double upper, const double eps) const
+Result Trapezoidal::operator()(const double lower, const double upper, const double eps) const
 {
     if (!expr)
     {
@@ -55,7 +55,7 @@ double Trapezoidal::operator()(const double lower, const double upper, const dou
     return s2;
 }
 
-double Simpson::operator()(const double lower, const double upper, const double eps) const
+Result Simpson::operator()(const double lower, const double upper, const double eps) const
 {
     return expr ? simpsonIntegral(lower, upper, eps) : 0.0;
 }
@@ -87,7 +87,7 @@ double Simpson::simpsonOneThird(const double left, const double right) const
     return (expr(left) + 4.0 * expr((left + right) / 2.0) + expr(right)) / 6.0 * (right - left);
 }
 
-double Romberg::operator()(const double lower, const double upper, const double eps) const
+Result Romberg::operator()(const double lower, const double upper, const double eps) const
 {
     if (!expr)
     {
@@ -122,7 +122,7 @@ double Romberg::richardsonExtrapolation(const double lowPrec, const double highP
     return (weight * highPrec - lowPrec) / (weight - 1.0);
 }
 
-double Gauss::operator()(const double lower, const double upper, const double eps) const
+Result Gauss::operator()(const double lower, const double upper, const double eps) const
 {
     if (!expr)
     {
@@ -155,7 +155,7 @@ double Gauss::operator()(const double lower, const double upper, const double ep
     return s2;
 }
 
-double MonteCarlo::operator()(const double lower, const double upper, const double eps) const
+Result MonteCarlo::operator()(const double lower, const double upper, const double eps) const
 {
     return expr ? sampleFromUniformDistribution(lower, upper, eps) : 0.0;
 }

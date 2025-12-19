@@ -18,7 +18,7 @@ const char* version() noexcept
     return ver;
 }
 
-std::optional<std::tuple<double, double>> Gradient::operator()(const double left, const double right, const double eps)
+Result Gradient::operator()(const double left, const double right, const double eps)
 {
     if (!func)
     {
@@ -72,7 +72,7 @@ double Gradient::calculateFirstDerivative(const double x, const double eps) cons
     return (func(x + differential) - func(x - differential)) / eps;
 }
 
-std::optional<std::tuple<double, double>> Tabu::operator()(const double left, const double right, const double eps)
+Result Tabu::operator()(const double left, const double right, const double eps)
 {
     if (!func)
     {
@@ -151,7 +151,7 @@ std::tuple<double, double> Tabu::neighborhoodSearch(
     return std::make_tuple(yBestNbr, xBestNbr);
 }
 
-std::optional<std::tuple<double, double>> Annealing::operator()(const double left, const double right, const double eps)
+Result Annealing::operator()(const double left, const double right, const double eps)
 {
     if (!func)
     {
@@ -206,7 +206,7 @@ bool Annealing::metropolisAcceptanceCriterion(const double deltaE, const double 
     return (deltaE < 0.0) || (std::exp(-deltaE / temp) > xi);
 }
 
-std::optional<std::tuple<double, double>> Particle::operator()(const double left, const double right, const double eps)
+Result Particle::operator()(const double left, const double right, const double eps)
 {
     if (!func)
     {
@@ -288,7 +288,7 @@ void Particle::updateBests(Swarm& swarm, double& gloBest, double& gloBestFitness
     }
 }
 
-std::optional<std::tuple<double, double>> Ant::operator()(const double left, const double right, const double eps)
+Result Ant::operator()(const double left, const double right, const double eps)
 {
     if (!func)
     {
@@ -391,7 +391,7 @@ auto Genetic::getBestIndividual(const Population& pop)
     return std::next(pop.cbegin(), std::distance(fitness.cbegin(), std::max_element(fitness.cbegin(), fitness.cend())));
 }
 
-std::optional<std::tuple<double, double>> Genetic::operator()(const double left, const double right, const double eps)
+Result Genetic::operator()(const double left, const double right, const double eps)
 {
     if (!func || !updateSpecies(left, right, eps))
     {

@@ -25,6 +25,10 @@ extern const char* version() noexcept;
 
 //! @brief The precision of calculation.
 inline constexpr double epsilon = 1e-5;
+//! @brief Alias for the target expression.
+using Expression = std::function<double(const double)>;
+//! @brief Alias for the result of integral.
+using Result = double;
 
 //! @brief Integral methods.
 class Integral
@@ -38,11 +42,15 @@ public:
     //! @param upper - upper endpoint
     //! @param eps - precision of calculation
     //! @return result of integral
-    virtual double operator()(const double lower, const double upper, const double eps) const = 0;
+    virtual Result operator()(const double lower, const double upper, const double eps) const = 0;
 
 protected:
-    //! @brief Alias for the target expression.
-    using Expression = std::function<double(const double)>;
+    //! @brief Construct a new Integral object.
+    //! @param expr - target expression
+    explicit Integral(Expression expr) : expr{std::move(expr)} {}
+
+    //! @brief Target expression.
+    const Expression expr;
     //! @brief Calculate the value of the definite integral with the trapezoidal rule.
     //! @param expr - target expression
     //! @param left - left endpoint
@@ -59,18 +67,14 @@ class Trapezoidal : public Integral
 public:
     //! @brief Construct a new Trapezoidal object.
     //! @param expr - target expression
-    explicit Trapezoidal(Expression expr) : expr{std::move(expr)} {}
+    explicit Trapezoidal(Expression expr) : Integral(std::move(expr)) {}
 
     //! @brief The operator (()) overloading of Trapezoidal class.
     //! @param lower - lower endpoint
     //! @param upper - upper endpoint
     //! @param eps - precision of calculation
     //! @return result of integral
-    double operator()(const double lower, const double upper, const double eps) const override;
-
-private:
-    //! @brief Target expression.
-    const Expression expr;
+    Result operator()(const double lower, const double upper, const double eps) const override;
 };
 
 //! @brief The adaptive Simpson's 1/3 method.
@@ -79,18 +83,16 @@ class Simpson : public Integral
 public:
     //! @brief Construct a new Simpson object.
     //! @param expr - target expression
-    explicit Simpson(Expression expr) : expr{std::move(expr)} {}
+    explicit Simpson(Expression expr) : Integral(std::move(expr)) {}
 
     //! @brief The operator (()) overloading of Simpson class.
     //! @param lower - lower endpoint
     //! @param upper - upper endpoint
     //! @param eps - precision of calculation
     //! @return result of integral
-    double operator()(const double lower, const double upper, const double eps) const override;
+    Result operator()(const double lower, const double upper, const double eps) const override;
 
 private:
-    //! @brief Target expression.
-    const Expression expr;
     //! @brief Calculate the value of the definite integral with the Simpson's rule.
     //! @param left - left endpoint
     //! @param right - right endpoint
@@ -117,18 +119,16 @@ class Romberg : public Integral
 public:
     //! @brief Construct a new Romberg object.
     //! @param expr - target expression
-    explicit Romberg(Expression expr) : expr{std::move(expr)} {}
+    explicit Romberg(Expression expr) : Integral(std::move(expr)) {}
 
     //! @brief The operator (()) overloading of Romberg class.
     //! @param lower - lower endpoint
     //! @param upper - upper endpoint
     //! @param eps - precision of calculation
     //! @return result of integral
-    double operator()(const double lower, const double upper, const double eps) const override;
+    Result operator()(const double lower, const double upper, const double eps) const override;
 
 private:
-    //! @brief Target expression.
-    const Expression expr;
     //! @brief The Richardson extrapolation.
     //! @param lowPrec - numerical result obtained with low precision
     //! @param highPrec - numerical result obtained with high precision
@@ -143,18 +143,16 @@ class Gauss : public Integral
 public:
     //! @brief Construct a new Gauss object.
     //! @param expr - target expression
-    explicit Gauss(Expression expr) : expr{std::move(expr)} {}
+    explicit Gauss(Expression expr) : Integral(std::move(expr)) {}
 
     //! @brief The operator (()) overloading of Gauss class.
     //! @param lower - lower endpoint
     //! @param upper - upper endpoint
     //! @param eps - precision of calculation
     //! @return result of integral
-    double operator()(const double lower, const double upper, const double eps) const override;
+    Result operator()(const double lower, const double upper, const double eps) const override;
 
 private:
-    //! @brief Target expression.
-    const Expression expr;
     //! @brief Number of Gauss nodes.
     static constexpr std::uint8_t nodeSize{5};
     //! @brief Number of Gauss coefficients.
@@ -174,18 +172,16 @@ class MonteCarlo : public Integral
 public:
     //! @brief Construct a new MonteCarlo object.
     //! @param expr - target expression
-    explicit MonteCarlo(Expression expr) : expr{std::move(expr)} {}
+    explicit MonteCarlo(Expression expr) : Integral(std::move(expr)) {}
 
     //! @brief The operator (()) overloading of MonteCarlo class.
     //! @param lower - lower endpoint
     //! @param upper - upper endpoint
     //! @param eps - precision of calculation
     //! @return result of integral
-    double operator()(const double lower, const double upper, const double eps) const override;
+    Result operator()(const double lower, const double upper, const double eps) const override;
 
 private:
-    //! @brief Target expression.
-    const Expression expr;
     //! @brief Sample from the uniform distribution.
     //! @param lower - lower endpoint
     //! @param upper - upper endpoint
