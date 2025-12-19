@@ -39,7 +39,7 @@ const char* const version = algorithm::match::version();
 namespace input
 {
 //! @brief Single pattern for match methods.
-constexpr std::string_view patternString = "12345";
+inline constexpr std::string_view patternString = "12345";
 } // namespace input
 
 //! @brief Maximum number per line of printing.
@@ -164,7 +164,7 @@ const char* const version = algorithm::notation::version();
 namespace input
 {
 //! @brief Infix string for notation methods.
-constexpr std::string_view infixString = "a+b*(c^d-e)^(f+g*h)-i";
+inline constexpr std::string_view infixString = "a+b*(c^d-e)^(f+g*h)-i";
 } // namespace input
 
 //! @brief Builder for the input.
@@ -288,11 +288,11 @@ const char* const version = algorithm::search::version();
 namespace input
 {
 //! @brief Minimum of the array for search methods.
-constexpr float arrayRangeMin = -50.0;
+inline constexpr float arrayRangeMin = -50.0;
 //! @brief Maximum of the array for search methods.
-constexpr float arrayRangeMax = 150.0;
+inline constexpr float arrayRangeMax = 150.0;
 //! @brief Length of the array for search methods.
-constexpr std::uint32_t arrayLength = 53;
+inline constexpr std::uint32_t arrayLength = 53;
 } // namespace input
 
 //! @brief Maximum alignment length per element of printing.
@@ -450,11 +450,11 @@ const char* const version = algorithm::sort::version();
 namespace input
 {
 //! @brief Minimum of the array for sort methods.
-constexpr std::int32_t arrayRangeMin = -50;
+inline constexpr std::int32_t arrayRangeMin = -50;
 //! @brief Maximum of the array for sort methods.
-constexpr std::int32_t arrayRangeMax = 150;
+inline constexpr std::int32_t arrayRangeMax = 150;
 //! @brief Length of the array for sort methods.
-constexpr std::uint32_t arrayLength = 53;
+inline constexpr std::uint32_t arrayLength = 53;
 } // namespace input
 
 //! @brief Maximum alignment length per element of printing.

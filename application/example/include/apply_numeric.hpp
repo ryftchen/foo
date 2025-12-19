@@ -35,9 +35,9 @@ const char* const version = numeric::arithmetic::version();
 namespace input
 {
 //! @brief One of operands for arithmetic methods.
-constexpr std::int32_t operandA = 46340;
+inline constexpr std::int32_t operandA = 46340;
 //! @brief One of operands for arithmetic methods.
-constexpr std::int32_t operandB = -46340;
+inline constexpr std::int32_t operandB = -46340;
 } // namespace input
 
 //! @brief Builder for the input.
@@ -80,9 +80,9 @@ const char* const version = numeric::divisor::version();
 namespace input
 {
 //! @brief One of numbers for divisor methods.
-constexpr std::int32_t numberA = 2 * 2 * 3 * 3 * 5 * 5 * 7 * 7;
+inline constexpr std::int32_t numberA = 2 * 2 * 3 * 3 * 5 * 5 * 7 * 7;
 //! @brief One of numbers for divisor methods.
-constexpr std::int32_t numberB = 2 * 3 * 5 * 7 * 11 * 13 * 17;
+inline constexpr std::int32_t numberB = 2 * 3 * 5 * 7 * 11 * 13 * 17;
 } // namespace input
 
 //! @brief Maximum alignment length per element of printing.
@@ -253,7 +253,7 @@ const char* const version = numeric::prime::version();
 namespace input
 {
 //! @brief Upper bound for prime methods.
-constexpr std::uint32_t upperBound = 997;
+inline constexpr std::uint32_t upperBound = 997;
 } // namespace input
 
 //! @brief Maximum alignment length per element of printing.
