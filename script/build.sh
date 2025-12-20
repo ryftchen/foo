@@ -693,7 +693,7 @@ function perform_install_option()
         local man_path="${install_path}/man"
         export_cmd="MANDATORY_MANPATH ${man_path}"
         shell_command "${SUDO_PREFIX}mkdir -p ${man_path}/man1 \
-&& ${SUDO_PREFIX}cp ./${FOLDER[doc]}/man.1 ${man_path}/man1/${FOLDER[proj]}.1"
+&& ${SUDO_PREFIX}cp ./${FOLDER[doc]}/manual/man.1 ${man_path}/man1/${FOLDER[proj]}.1"
         if ! grep -Fxq "${export_cmd}" ~/.manpath 2>/dev/null; then
             shell_command "echo '${export_cmd}' >>~/.manpath"
         fi
@@ -1224,7 +1224,8 @@ function package_for_doxygen()
     if eval "${check_format}" >/dev/null; then
         shell_command "! ${check_format}"
     fi
-    shell_command "(cat ./${FOLDER[doc]}/Doxyfile; echo 'PROJECT_NUMBER=\"$(git rev-parse --short @)\"') | doxygen -"
+    shell_command "(cat ./${FOLDER[doc]}/configure/Doxyfile; echo 'PROJECT_NUMBER=\"$(git rev-parse --short @)\"') \
+| doxygen -"
     shell_command "tar -jcvf ./${FOLDER[doc]}/artifact/${tar_file} -C ./${FOLDER[doc]} ${doxygen_folder} >/dev/null"
 }
 
