@@ -669,8 +669,8 @@ function perform_install_option()
         return
     fi
 
-    if [[ ! -f ./${FOLDER[bld]}/bin/${FOLDER[proj]} ]]; then
-        die "There is no binary file in the ${FOLDER[bld]} folder. Please finish compiling first."
+    if [[ ! -x ./${FOLDER[bld]}/bin/${FOLDER[proj]} ]]; then
+        die "There is no ${FOLDER[proj]} binary file in the ${FOLDER[bld]} folder. Please finish compiling first."
     fi
 
     shell_command "${SUDO_PREFIX}cmake --install ./${FOLDER[bld]}"
@@ -818,41 +818,59 @@ EOF
     fi
 
     local server_bin="${FOLDER[proj]}_arc"
-    local server_config="./${FOLDER[scr]}/.build_server"
-    local host_addr="127.0.0.1" start_port=61503
-    if [[ ! -f ${server_config} ]]; then
-        shell_command "cp ./${FOLDER[doc]}/template/server_supervisor.conf ${server_config}"
-        local server_dir
-        server_dir=$(pwd)
-        shell_command "sed -i 's|unamed directory|${server_dir}|g' ${server_config}"
-        local server_cmd
-        server_cmd="$(realpath "./${FOLDER[doc]}/server/target/release/${server_bin}") \
---root-dir ./${FOLDER[doc]} --root-dir ./${FOLDER[rep]} --host ${host_addr} --port ${start_port}"
-        shell_command "sed -i 's|unamed command|${server_cmd}|g' ${server_config}"
+    local server_path="./${FOLDER[doc]}/server/target/release"
+    if [[ ! -x ${server_path}/${server_bin} ]]; then
+        die "There is no ${server_bin} binary file in the ${server_path} folder. Please finish compiling first."
     fi
+    local service_config="./${FOLDER[scr]}/.build_service"
+    local start_port=61503
+    if [[ ! -f ${service_config} ]]; then
+        local host_addr="127.0.0.1"
+        shell_command "cat <<EOF >${service_config}
+[unix_http_server]
+file=/tmp/${server_bin}_supervisor.sock
+
+[supervisord]
+nodaemon=false
+pidfile=/tmp/${server_bin}_supervisor.pid
+logfile=/tmp/${server_bin}_supervisor.log
+
+[rpcinterface:supervisor]
+supervisor.rpcinterface_factory=supervisor.rpcinterface:make_main_rpcinterface
+
+[supervisorctl]
+serverurl=unix:///tmp/${server_bin}_supervisor.sock
+
+[program:${server_bin}]
+directory=$(pwd)
+command=$(realpath "${server_path}/${server_bin}") \
+--root-dir ./${FOLDER[doc]} --root-dir ./${FOLDER[rep]} --host ${host_addr} --port ${start_port}
+autostart=false
+autorestart=true
+stdout_logfile=/tmp/${server_bin}_supervisor.out
+redirect_stderr=true
+EOF"
+    fi
+
     local supervisor_out
-    supervisor_out=$(grep '^stdout_logfile' "${server_config}" | head -n1 | sed 's/^stdout_logfile *= *//')
-    if ! supervisorctl -c "${server_config}" status "${server_bin}" | grep -q 'RUNNING' 2>/dev/null; then
+    supervisor_out=$(grep '^stdout_logfile' "${service_config}" | head -n1 | sed 's/^stdout_logfile *= *//')
+    if ! supervisorctl -c "${service_config}" status "${server_bin}" | grep -q 'RUNNING' 2>/dev/null; then
         echo "Please confirm whether continue starting the archive server. (y or n)"
         local input
         input=$(wait_until_get_input)
         if echo "${input}" | grep -iq '^y'; then
             echo "Yes"
             echo
-            shell_command "supervisord -c ${server_config}"
-            shell_command "supervisorctl -c ${server_config} start ${server_bin}"
+            shell_command "supervisord -c ${service_config}"
+            shell_command "supervisorctl -c ${service_config} start ${server_bin}"
 
-            if [[ -f ${supervisor_out} ]]; then
-                shell_command "cat ${supervisor_out}"
-            fi
+            shell_command "test -f ${supervisor_out} && cat ${supervisor_out}"
         else
             echo "No"
             echo
         fi
     else
-        if [[ -f ${supervisor_out} ]]; then
-            shell_command "cat ${supervisor_out}"
-        fi
+        shell_command "test -f ${supervisor_out} && cat ${supervisor_out}"
 
         echo "Please confirm whether continue stopping the archive server. (y or n)"
         local input
@@ -860,8 +878,10 @@ EOF
         if echo "${input}" | grep -iq '^y'; then
             echo "Yes"
             echo
-            shell_command "supervisorctl -c ${server_config} stop ${server_bin}"
-            shell_command "supervisorctl -c ${server_config} shutdown"
+            shell_command "supervisorctl -c ${service_config} stop ${server_bin}"
+            shell_command "supervisorctl -c ${service_config} shutdown"
+
+            shell_command "test -f ${supervisor_out} && > ${supervisor_out}"
             local port1=${start_port}
             if netstat -tuln | grep ":${port1} " >/dev/null 2>&1; then
                 shell_command "fuser -k ${port1}/tcp || true"
@@ -870,7 +890,6 @@ EOF
             if netstat -tuln | grep ":${port2} " >/dev/null 2>&1; then
                 shell_command "fuser -k ${port2}/tcp || true"
             fi
-            shell_command "> ${supervisor_out}"
         else
             echo "No"
             echo
@@ -975,18 +994,18 @@ function perform_format_option()
 
     if [[ ${ARGS[format]} == true ]] || [[ ${ARGS[format]} == "rs" ]]; then
         local cargo_toml="Cargo.toml"
-        local crate_path="./${FOLDER[doc]}/server/${cargo_toml}"
+        local crate_file="./${FOLDER[doc]}/server/${cargo_toml}"
         if [[ ${ARGS[quick]} == false ]]; then
-            shell_command "cargo fmt --all --verbose --manifest-path ${crate_path}"
+            shell_command "cargo fmt --all --verbose --manifest-path ${crate_file}"
         else
             local format_changed_rs="${GIT_CHANGE_CMD} | grep -E '\.rs$'"
             if eval "${format_changed_rs}" >/dev/null; then
                 local split_crate="${format_changed_rs} | xargs -I {} dirname {} | while read path; \
 do while [[ ! -f \${path}/${cargo_toml} ]] && [[ \${path} != \"/\" ]]; do path=\$(dirname \"\${path}\"); done; \
-[[ -f \${path}/${cargo_toml} ]] && [[ \$(realpath \${path}/${cargo_toml}) == \$(realpath ${crate_path}) ]] \
+[[ -f \${path}/${cargo_toml} ]] && [[ \$(realpath \${path}/${cargo_toml}) == \$(realpath ${crate_file}) ]] \
 && echo \"\${path}\"; done | sort -u"
                 if eval "${split_crate}" >/dev/null; then
-                    shell_command "cd \$(dirname ${crate_path}) && cargo fmt --verbose"
+                    shell_command "cd \$(dirname ${crate_file}) && cargo fmt --verbose"
                 fi
             fi
         fi
@@ -1118,18 +1137,18 @@ FOO_BLD_UNITY is turned on."
             build_type=" --release"
         fi
         local cargo_toml="Cargo.toml"
-        local crate_path="./${FOLDER[doc]}/server/${cargo_toml}"
+        local crate_file="./${FOLDER[doc]}/server/${cargo_toml}"
         if [[ ${ARGS[quick]} == false ]]; then
-            shell_command "cargo clippy --manifest-path ${crate_path}""${build_type}"
+            shell_command "cargo clippy --manifest-path ${crate_file}""${build_type}"
         else
             local lint_changed_rs="${GIT_CHANGE_CMD} | grep -E '\.rs$'"
             if eval "${lint_changed_rs}" >/dev/null; then
                 local split_crate="${lint_changed_rs} | xargs -I {} dirname {} | while read path; \
 do while [[ ! -f \${path}/${cargo_toml} ]] && [[ \${path} != \"/\" ]]; do path=\$(dirname \"\${path}\"); done; \
-[[ -f \${path}/${cargo_toml} ]] && [[ \$(realpath \${path}/${cargo_toml}) == \$(realpath ${crate_path}) ]] \
+[[ -f \${path}/${cargo_toml} ]] && [[ \$(realpath \${path}/${cargo_toml}) == \$(realpath ${crate_file}) ]] \
 && echo \"\${path}\"; done | sort -u"
                 if eval "${split_crate}" >/dev/null; then
-                    shell_command "cd \$(dirname ${crate_path}) && cargo clippy""${build_type}"
+                    shell_command "cd \$(dirname ${crate_file}) && cargo clippy""${build_type}"
                 fi
             fi
         fi
@@ -1153,7 +1172,7 @@ function perform_query_option()
     fi
     local rebuild_script="./${FOLDER[scr]}/.build_afresh"
     if [[ ! -f ${rebuild_script} ]]; then
-        shell_command "cat <<EOF >./${rebuild_script}
+        shell_command "cat <<EOF >${rebuild_script}
 #!/usr/bin/env bash
 
 set -e

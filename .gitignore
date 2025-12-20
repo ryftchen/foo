@@ -12,7 +12,7 @@ document/*.html
 report/
 .build_afresh
 .build_env
-.build_server
+.build_service
 .run_console_batch
 .run_dict
 core.*
