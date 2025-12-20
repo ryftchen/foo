@@ -8,7 +8,7 @@
   \/_/     \/_____/   \/_____/
 ```
 
-[![pipeline](https://img.shields.io/github/actions/workflow/status/ryftchen/foo/pipeline.yml?branch=master&logo=github&logoColor=white&label=pipeline)](https://github.com/ryftchen/foo/actions/workflows/pipeline.yml) [![document](https://img.shields.io/website?url=https%3A%2F%2Fryftchen.github.io%2Ffoo%2F&up_message=available&down_message=unavailable&logo=github&logoColor=white&label=document)](https://ryftchen.github.io/foo/)
+[![pipeline](https://img.shields.io/github/actions/workflow/status/ryftchen/foo/pipeline.yaml?branch=master&logo=github&logoColor=white&label=pipeline)](https://github.com/ryftchen/foo/actions/workflows/pipeline.yaml) [![document](https://img.shields.io/website?url=https%3A%2F%2Fryftchen.github.io%2Ffoo%2F&up_message=available&down_message=unavailable&logo=github&logoColor=white&label=document)](https://ryftchen.github.io/foo/)
 
 The **foo** is a personal roadmap for learning programming, like an exploratory demo. Its main purpose is to use the C++ language to implement or improve some common basic functions. It also contains detailed comments for easy summary and archive. The goal is to develop good programming habits while improving programming skills with best practices.
 
@@ -40,11 +40,11 @@ The **foo** is a personal roadmap for learning programming, like an exploratory 
 2. Prepare the environment:
 
     ```bash
-    docker-compose -f foo/docker/docker-compose.yml up -d
+    docker-compose -f foo/docker/docker-compose.yaml up -d
     docker exec -it -w /workspaces/foo foo_dev /bin/bash
     ```
 
-    For environment dependencies and container construction, see the [Compose file](https://github.com/ryftchen/foo/blob/master/docker/docker-compose.yml).
+    For environment dependencies and container construction, see the [Compose file](https://github.com/ryftchen/foo/blob/master/docker/docker-compose.yaml).
 
 ### How to build
 
