@@ -10,7 +10,7 @@
 *.toml text eol=lf
 *.tpp text eol=lf
 *.txt text eol=lf
-*.yml text eol=lf
+*.yaml text eol=lf
 *.1 text eol=lf
 .clang-format text eol=lf
 .clang-tidy text eol=lf
