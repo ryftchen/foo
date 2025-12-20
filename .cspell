@@ -17,6 +17,7 @@ words:
   - adaptee
   - Adelson
   - asan
+  - autorestart
   - BKDR
   - CBLAS
   - chrono
@@ -50,6 +51,7 @@ words:
   - manpath
   - memcheck
   - mpfr
+  - nodaemon
   - noopener
   - optflag
   - optmulti
@@ -61,11 +63,13 @@ words:
   - pylintrc
   - qlpacks
   - rcfile
+  - rpcinterface
   - rustc
   - Ritchie
   - RNDN
   - ryftchen
   - sarif
+  - serverurl
   - shellexpand
   - staticfile
   - stdbuf
