@@ -898,7 +898,7 @@ function perform_hook_option()
         die "No pre-commit program. Please install it."
     fi
 
-    shell_command "pre-commit install --config ./.pre-commit"
+    shell_command "pre-commit install --config ./.pre-commit --hook-type commit-msg"
     shell_command "pre-commit run --all-files --config ./.pre-commit"
 }
 
