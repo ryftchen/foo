@@ -16,7 +16,7 @@ The **foo** is a personal roadmap for learning programming, like an exploratory 
 
 ## Status
 
-[![repository](https://github-readme-stats-rho-beige.vercel.app/api/pin/?username=ryftchen&repo=foo&show_owner=true&theme=transparent)](https://github.com/ryftchen/foo)
+[![repository](https://github-readme-stats.vercel.app/api/pin/?username=ryftchen&repo=foo&show_owner=true&theme=transparent)](https://github.com/ryftchen/foo)
 
 [![last commit](https://img.shields.io/github/last-commit/ryftchen/foo/master?logo=git&logoColor=white&label=last%20commit)](https://github.com/ryftchen/foo/commits/master) [![license](https://img.shields.io/github/license/ryftchen/foo?logo=git&logoColor=white&label=license)](https://github.com/ryftchen/foo/blob/master/LICENSE)
 
