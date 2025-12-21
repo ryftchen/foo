@@ -97,7 +97,7 @@ function prepare_environment()
     fi
 
     local script_path
-    script_path=$(cd "$(dirname "${0}")" &>/dev/null && pwd)
+    script_path=$(cd "$(dirname "${0}")" >/dev/null 2>&1 && pwd)
     if [[ ${script_path} != *"${FOLDER[proj]}/${FOLDER[scr]}" ]]; then
         die "Illegal path to current script."
     fi
@@ -886,7 +886,7 @@ EOF"
             shell_command "supervisorctl -c ${service_config} stop ${server_bin}"
             shell_command "supervisorctl -c ${service_config} shutdown"
 
-            shell_command "test -f ${supervisor_out} && > ${supervisor_out}"
+            shell_command "test -f ${supervisor_out} && >${supervisor_out}"
             local port1=${start_port}
             if netstat -tuln | grep ":${port1} " >/dev/null 2>&1; then
                 shell_command "fuser -k ${port1}/tcp || true"
