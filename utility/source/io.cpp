@@ -8,6 +8,7 @@
 
 #include <sys/epoll.h>
 #include <sys/file.h>
+#include <unistd.h>
 #include <cstring>
 #include <deque>
 #include <filesystem>
@@ -91,7 +92,7 @@ void waitForUserInput(const std::function<bool(const std::string&)>& operation, 
             break;
         }
 
-        if (event.events & ::EPOLLIN)
+        if ((event.events & ::EPOLLIN) != 0)
         {
             std::string input{};
             std::getline(std::cin, input);
@@ -182,8 +183,8 @@ void FDStreamBuffer::set(const int newFD)
     }
     setg(nullptr, nullptr, nullptr);
     setp(nullptr, nullptr);
-    readBuffer.reset();
-    writeBuffer.reset();
+    readBuffer.fill(0);
+    writeBuffer.fill(0);
     fd = newFD;
 }
 
@@ -198,14 +199,14 @@ void FDStreamBuffer::reset()
     ::close(fd);
     setg(nullptr, nullptr, nullptr);
     setp(nullptr, nullptr);
-    readBuffer.reset();
-    writeBuffer.reset();
+    readBuffer.fill(0);
+    writeBuffer.fill(0);
     fd = -1;
 }
 
 int FDStreamBuffer::flush()
 {
-    if ((fd < 0) || !writeBuffer)
+    if (fd < 0)
     {
         return 0;
     }
@@ -220,7 +221,7 @@ int FDStreamBuffer::flush()
         }
         ptr += writtenSize;
     }
-    setp(writeBuffer.get(), writeBuffer.get() + bufferSize);
+    setp(writeBuffer.data(), writeBuffer.data() + writeBuffer.size());
     return 0;
 }
 
@@ -235,18 +236,12 @@ FDStreamBuffer::int_type FDStreamBuffer::underflow()
         return traits_type::eof();
     }
 
-    if (!readBuffer)
-    {
-        readBuffer = std::make_unique<char[]>(bufferSize);
-        std::memset(readBuffer.get(), 0, bufferSize * sizeof(char));
-    }
-
-    const ::ssize_t readSize = ::read(fd, readBuffer.get(), bufferSize);
+    const ::ssize_t readSize = ::read(fd, readBuffer.data(), readBuffer.size());
     if (readSize <= 0)
     {
         return traits_type::eof();
     }
-    setg(readBuffer.get(), readBuffer.get(), readBuffer.get() + readSize);
+    setg(readBuffer.data(), readBuffer.data(), readBuffer.data() + readSize);
     return traits_type::to_int_type(*gptr());
 }
 
@@ -259,12 +254,6 @@ FDStreamBuffer::int_type FDStreamBuffer::overflow(const int_type c)
     if (fd < 0)
     {
         return traits_type::eof();
-    }
-
-    if (!writeBuffer)
-    {
-        writeBuffer = std::make_unique<char[]>(bufferSize);
-        std::memset(writeBuffer.get(), 0, bufferSize * sizeof(char));
     }
 
     if (sync() == -1)
@@ -287,7 +276,7 @@ int FDStreamBuffer::sync()
 std::streampos FDStreamBuffer::seekoff(
     const std::streamoff off, const std::ios_base::seekdir way, const std::ios_base::openmode mode)
 {
-    if ((fd < 0) || ((mode & std::ios_base::out) && (sync() == -1)))
+    if ((fd < 0) || (((mode & std::ios_base::out) != 0) && (sync() == -1)))
     {
         return -1;
     }
@@ -299,8 +288,8 @@ std::streampos FDStreamBuffer::seekoff(
             newOffset = off;
             break;
         case std::ios_base::cur:
-            newOffset =
-                (((mode & std::ios_base::in) && gptr()) ? (off - (egptr() - gptr())) : off) + ::lseek(fd, 0, SEEK_CUR);
+            newOffset = ((((mode & std::ios_base::in) != 0) && gptr()) ? (off - (egptr() - gptr())) : off)
+                + ::lseek(fd, 0, SEEK_CUR);
             break;
         case std::ios_base::end:
             newOffset = off + ::lseek(fd, 0, SEEK_END);
@@ -377,7 +366,7 @@ void FileReader::lock()
         return;
     }
 
-    if (::flock(fd, LOCK_SH | LOCK_NB))
+    if (::flock(fd, LOCK_SH | LOCK_NB) != 0)
     {
         throw std::runtime_error{"Failed to lock file descriptor " + std::to_string(fd) + " for reading."};
     }
@@ -451,7 +440,7 @@ void FileWriter::lock()
         return;
     }
 
-    if (::flock(fd, LOCK_EX | LOCK_NB))
+    if (::flock(fd, LOCK_EX | LOCK_NB) != 0)
     {
         throw std::runtime_error{"Failed to lock file descriptor " + std::to_string(fd) + " for writing."};
     }

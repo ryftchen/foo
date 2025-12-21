@@ -308,11 +308,11 @@ void Traverse::dfs(const void* const vert, const Operation& op) const
         return;
     }
 
-    bool visited[maxVertexNum] = {};
+    std::array<bool, maxVertexNum> visited{};
     dfsRecursive(start, visited, op);
 }
 
-void Traverse::dfsRecursive(const int index, bool visited[], const Operation& op) const
+void Traverse::dfsRecursive(const int index, std::array<bool, maxVertexNum>& visited, const Operation& op) const
 {
     if (index < 0)
     {
@@ -322,7 +322,7 @@ void Traverse::dfsRecursive(const int index, bool visited[], const Operation& op
     visited[index] = true;
     op(graph->adjMultiList[index].data);
 
-    int neighbors[maxVertexNum] = {};
+    std::array<int, maxVertexNum> neighbors{};
     int counter = 0;
     const EdgeNode* curr = graph->adjMultiList[index].firstEdge;
     while (curr)
@@ -358,18 +358,18 @@ void Traverse::bfs(const void* const vert, const Operation& op) const
         return;
     }
 
-    bool visited[maxVertexNum] = {};
+    std::array<bool, maxVertexNum> visited{};
     visited[start] = true;
     op(graph->adjMultiList[start].data);
 
-    int queue[maxVertexNum] = {};
+    std::array<int, maxVertexNum> queue{};
     int front = 0;
     int rear = 0;
     queue[rear++] = start;
     while (front < rear)
     {
         const int q = queue[front++];
-        int neighbors[maxVertexNum] = {};
+        std::array<int, maxVertexNum> neighbors{};
         int counter = 0;
         const EdgeNode* curr = graph->adjMultiList[q].firstEdge;
         while (curr)
@@ -395,7 +395,7 @@ void Traverse::bfs(const void* const vert, const Operation& op) const
     }
 }
 
-void Traverse::sortNeighbors(int neighbors[], const int size) const
+void Traverse::sortNeighbors(std::array<int, maxVertexNum>& neighbors, const int size) const
 {
     for (int i = 1; i < size; ++i)
     {
@@ -703,11 +703,11 @@ void Traverse::dfs(const void* const vert, const Operation& op) const
         return;
     }
 
-    bool visited[maxVertexNum] = {};
+    std::array<bool, maxVertexNum> visited{};
     dfsRecursive(start, visited, op);
 }
 
-void Traverse::dfsRecursive(const int index, bool visited[], const Operation& op) const
+void Traverse::dfsRecursive(const int index, std::array<bool, maxVertexNum>& visited, const Operation& op) const
 {
     if (index < 0)
     {
@@ -717,7 +717,7 @@ void Traverse::dfsRecursive(const int index, bool visited[], const Operation& op
     visited[index] = true;
     op(graph->xList[index].data);
 
-    int neighbors[maxVertexNum];
+    std::array<int, maxVertexNum> neighbors{};
     int counter = 0;
     const ArcNode* curr = graph->xList[index].firstOut;
     while (curr)
@@ -749,18 +749,18 @@ void Traverse::bfs(const void* const vert, const Operation& op) const
         return;
     }
 
-    bool visited[maxVertexNum] = {};
+    std::array<bool, maxVertexNum> visited{};
     visited[start] = true;
     op(graph->xList[start].data);
 
-    int queue[maxVertexNum] = {};
+    std::array<int, maxVertexNum> queue{};
     int front = 0;
     int rear = 0;
     queue[rear++] = start;
     while (front < rear)
     {
         const int q = queue[front++];
-        int neighbors[maxVertexNum];
+        std::array<int, maxVertexNum> neighbors{};
         int counter = 0;
         const ArcNode* curr = graph->xList[q].firstOut;
         while (curr)
@@ -782,7 +782,7 @@ void Traverse::bfs(const void* const vert, const Operation& op) const
     }
 }
 
-void Traverse::sortNeighbors(int neighbors[], const int size) const
+void Traverse::sortNeighbors(std::array<int, maxVertexNum>& neighbors, const int size) const
 {
     for (int i = 1; i < size; ++i)
     {

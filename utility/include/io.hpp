@@ -8,7 +8,6 @@
 
 #include <functional>
 #include <istream>
-#include <memory>
 
 //! @brief The utility module.
 namespace utility // NOLINT(modernize-concat-nested-namespaces)
@@ -58,12 +57,12 @@ public:
 private:
     //! @brief File descriptor associated with the stream buffer.
     int fd{-1};
-    //! @brief Buffer for reading data.
-    std::unique_ptr<char[]> readBuffer;
-    //! @brief Buffer for writing data.
-    std::unique_ptr<char[]> writeBuffer;
     //! @brief Size of the buffer.
     static constexpr std::size_t bufferSize{4096};
+    //! @brief Buffer for reading data.
+    std::array<char, bufferSize> readBuffer{};
+    //! @brief Buffer for writing data.
+    std::array<char, bufferSize> writeBuffer{};
 
     //! @brief Flush the output buffer with the file descriptor.
     //! @return 0 if successful, otherwise -1

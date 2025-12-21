@@ -69,7 +69,7 @@ static std::string jsonEscape(const std::string_view fmt)
 //! @param offset - data offset
 static void consumeWhitespace(const std::string_view fmt, std::size_t& offset)
 {
-    while ((offset < fmt.length()) && std::isspace(fmt.at(offset)))
+    while ((offset < fmt.length()) && (std::isspace(fmt.at(offset)) != 0))
     {
         ++offset;
     }
@@ -261,7 +261,7 @@ static std::string extractExponent(const std::string_view fmt, std::size_t& offs
         {
             expStr += c;
         }
-        else if (!std::isspace(c) && (c != ',') && (c != ']') && (c != '}'))
+        else if ((std::isspace(c) == 0) && (c != ',') && (c != ']') && (c != '}'))
         {
             throw std::runtime_error{
                 "For JSON number, expected a number for exponent, found '" + std::string{c} + "'."};
@@ -308,7 +308,7 @@ static JSON parseNumber(const std::string_view fmt, std::size_t& offset)
         expStr = extractExponent(fmt, offset);
         exp = std::stol(expStr);
     }
-    else if (!std::isspace(c) && (c != ',') && (c != ']') && (c != '}'))
+    else if ((std::isspace(c) == 0) && (c != ',') && (c != ']') && (c != '}'))
     {
         throw std::runtime_error{"For JSON number, unexpected character '" + std::string{c} + "'."};
     }
@@ -321,7 +321,7 @@ static JSON parseNumber(const std::string_view fmt, std::size_t& offset)
     }
     else if (!expStr.empty())
     {
-        number = std::stol(val) * std::pow(base, exp);
+        number = static_cast<double>(std::stol(val)) * std::pow(base, exp);
     }
     else
     {
@@ -598,7 +598,7 @@ JSON::Floating JSON::asFloating() const
     return std::visit(
         ValueVisitor{
             [](const Floating& val) -> Floating { return val; },
-            [](const Integral& val) -> Floating { return val; },
+            [](const Integral& val) -> Floating { return static_cast<Floating>(val); },
             [](const Boolean& val) -> Floating { return val; },
             [](const Data::StringPtr& val) -> Floating
             {
@@ -625,7 +625,7 @@ JSON::Integral JSON::asIntegral() const
         ValueVisitor{
             [](const Integral& val) -> Integral { return val; },
             [](const Boolean& val) -> Integral { return val; },
-            [](const Floating& val) -> Integral { return val; },
+            [](const Floating& val) -> Integral { return static_cast<Integral>(val); },
             [](const Data::StringPtr& val) -> Integral
             {
                 long long parsed = 0;
@@ -646,7 +646,7 @@ JSON::Boolean JSON::asBoolean() const
     return std::visit(
         ValueVisitor{
             [](const Boolean& val) -> Boolean { return val; },
-            [](const Floating& val) -> Boolean { return val; },
+            [](const Floating& val) -> Boolean { return val != 0.0; },
             [](const Integral& val) -> Boolean { return val; },
             [](const Data::StringPtr& val) -> Boolean
             {

@@ -162,7 +162,7 @@ Result MonteCarlo::operator()(const double lower, const double upper, const doub
 
 double MonteCarlo::sampleFromUniformDistribution(const double lower, const double upper, const double eps) const
 {
-    const std::uint32_t n = 1.0 / eps;
+    const auto n = static_cast<std::uint32_t>(1.0 / eps);
     std::mt19937_64 engine(std::random_device{}());
     std::uniform_real_distribution<double> dist(lower, upper);
     double sum = 0.0;
@@ -176,7 +176,7 @@ double MonteCarlo::sampleFromUniformDistribution(const double lower, const doubl
 
 double MonteCarlo::sampleFromNormalDistribution(const double lower, const double upper, const double eps) const
 {
-    const std::uint32_t n = 1.0 / eps;
+    const auto n = static_cast<std::uint32_t>(1.0 / eps);
     const double mu = (lower + upper) / 2.0;
     const double sigma = (upper - lower) / 6.0;
     std::mt19937_64 engine(std::random_device{}());

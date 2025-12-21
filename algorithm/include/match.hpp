@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <array>
 #include <cstdint>
 
 //! @brief The algorithm module.
@@ -91,25 +92,33 @@ private:
     //! @param pattern - single pattern
     //! @param patternLen - length of single pattern
     static void fillBadCharRuleTable(
-        std::uint32_t badCharRuleTable[], const unsigned char* const pattern, const std::uint32_t patternLen);
+        std::array<std::uint32_t, maxASCII>& badCharRuleTable,
+        const unsigned char* const pattern,
+        const std::uint32_t patternLen);
     //! @brief Fill good suffix rule table.
     //! @param goodSuffixRuleTable - good suffix rule table
     //! @param pattern - single pattern
     //! @param patternLen - length of single pattern
     static void fillGoodSuffixRuleTable(
-        std::uint32_t goodSuffixRuleTable[], const unsigned char* const pattern, const std::uint32_t patternLen);
+        std::array<std::uint32_t, maxASCII>& goodSuffixRuleTable,
+        const unsigned char* const pattern,
+        const std::uint32_t patternLen);
     //! @brief Fill the bad character shift table of the Horspool method.
     //! @param badCharShiftTable - bad character shift table
     //! @param pattern - single pattern
     //! @param patternLen - length of single pattern
     static void fillHorspoolBadCharShiftTable(
-        std::uint32_t badCharShiftTable[], const unsigned char* const pattern, const std::uint32_t patternLen);
+        std::array<std::uint32_t, maxASCII>& badCharShiftTable,
+        const unsigned char* const pattern,
+        const std::uint32_t patternLen);
     //! @brief Fill the bad character shift table of the Sunday method.
     //! @param badCharShiftTable - bad character shift table
     //! @param pattern - single pattern
     //! @param patternLen - length of single pattern
     static void fillSundayBadCharShiftTable(
-        std::uint32_t badCharShiftTable[], const unsigned char* const pattern, const std::uint32_t patternLen);
+        std::array<std::uint32_t, maxASCII>& badCharShiftTable,
+        const unsigned char* const pattern,
+        const std::uint32_t patternLen);
 };
 } // namespace match
 } // namespace algorithm

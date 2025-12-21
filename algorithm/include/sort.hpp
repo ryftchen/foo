@@ -7,6 +7,7 @@
 #pragma once
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstdint>
 #include <numeric>
@@ -437,7 +438,7 @@ requires std::is_integral_v<Elem>
     for (Elem exp = 1; (max / exp) > 0; exp *= base)
     {
         std::vector<Elem> temp(length);
-        std::uint32_t count[base] = {};
+        std::array<std::uint32_t, base> count{};
         for (const auto elem : sorting)
         {
             const std::uint8_t digit = (elem / exp) % base;

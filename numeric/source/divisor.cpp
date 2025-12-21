@@ -22,7 +22,7 @@ std::set<std::int32_t> Divisor::euclidean(const std::int32_t a, const std::int32
 {
     std::int32_t x = std::abs(a);
     std::int32_t y = std::abs(b);
-    while (y)
+    while (y != 0)
     {
         const std::int32_t temp = x % y;
         x = y;

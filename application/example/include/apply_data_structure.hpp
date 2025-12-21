@@ -119,28 +119,28 @@ public:
         process << "insert " << keyValueD << '\n';
         fifoCache.insert('D', "qux");
         process << "find range {A, B, C, D}: " << fifoCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
-        process.seekp(process.str().length() - separator.length());
+        process.seekp(static_cast<std::streamoff>(process.str().length() - separator.length()));
 
         process << "\nerase range {B, C}: " << fifoCache.eraseRange(std::vector<Key>{'B', 'C'}) << '\n';
         auto resolvedRange =
             KeyOptValueRange{{'A', std::nullopt}, {'B', std::nullopt}, {'C', std::nullopt}, {'D', std::nullopt}};
         process << "resolve range " << resolvedRange;
-        process.seekp(process.str().length() - separator.length());
+        process.seekp(static_cast<std::streamoff>(process.str().length() - separator.length()));
         process << ": ";
         fifoCache.resolveRange(resolvedRange);
         process << resolvedRange;
-        process.seekp(process.str().length() - separator.length());
+        process.seekp(static_cast<std::streamoff>(process.str().length() - separator.length()));
 
         auto insertedRange = KeyValueRange{keyValueA, keyValueB, keyValueC, keyValueD};
         process << "\ninsert range " << insertedRange;
-        process.seekp(process.str().length() - separator.length());
+        process.seekp(static_cast<std::streamoff>(process.str().length() - separator.length()));
         fifoCache.insertRange(std::move(insertedRange));
 
         process << "\nwhether it is empty: " << fifoCache.empty() << '\n';
         process << "size: " << fifoCache.size() << '\n';
         process << "capacity: " << fifoCache.capacity() << '\n';
         process << "current status: " << fifoCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
-        process.seekp(process.str().length() - separator.length());
+        process.seekp(static_cast<std::streamoff>(process.str().length() - separator.length()));
         return std::ostringstream{process.str().substr(0, process.tellp()) + '\n'};
     }
 
@@ -171,28 +171,28 @@ public:
         process << "insert " << keyValueD << '\n';
         lfuCache.insert('D', "qux");
         process << "find range {A, B, C, D}: " << lfuCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
-        process.seekp(process.str().length() - separator.length());
+        process.seekp(static_cast<std::streamoff>(process.str().length() - separator.length()));
 
         process << "\nerase range {B, C}: " << lfuCache.eraseRange(std::vector<Key>{'B', 'C'}) << '\n';
         auto resolvedRange =
             KeyOptValueRange{{'A', std::nullopt}, {'B', std::nullopt}, {'C', std::nullopt}, {'D', std::nullopt}};
         process << "resolve range " << resolvedRange;
-        process.seekp(process.str().length() - separator.length());
+        process.seekp(static_cast<std::streamoff>(process.str().length() - separator.length()));
         process << ": ";
         lfuCache.resolveRange(resolvedRange);
         process << resolvedRange;
-        process.seekp(process.str().length() - separator.length());
+        process.seekp(static_cast<std::streamoff>(process.str().length() - separator.length()));
 
         auto insertedRange = KeyValueRange{keyValueA, keyValueB, keyValueC, keyValueD};
         process << "\ninsert range " << insertedRange;
-        process.seekp(process.str().length() - separator.length());
+        process.seekp(static_cast<std::streamoff>(process.str().length() - separator.length()));
         lfuCache.insertRange(std::move(insertedRange));
 
         process << "\nwhether it is empty: " << lfuCache.empty() << '\n';
         process << "size: " << lfuCache.size() << '\n';
         process << "capacity: " << lfuCache.capacity() << '\n';
         process << "current status: " << lfuCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
-        process.seekp(process.str().length() - separator.length());
+        process.seekp(static_cast<std::streamoff>(process.str().length() - separator.length()));
         return std::ostringstream{process.str().substr(0, process.tellp()) + '\n'};
     }
 
@@ -223,28 +223,28 @@ public:
         process << "insert " << keyValueD << '\n';
         lruCache.insert('D', "qux");
         process << "find range {A, B, C, D}: " << lruCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
-        process.seekp(process.str().length() - separator.length());
+        process.seekp(static_cast<std::streamoff>(process.str().length() - separator.length()));
 
         process << "\nerase range {B, C}: " << lruCache.eraseRange(std::vector<Key>{'B', 'C'}) << '\n';
         auto resolvedRange =
             KeyOptValueRange{{'A', std::nullopt}, {'B', std::nullopt}, {'C', std::nullopt}, {'D', std::nullopt}};
         process << "resolve range " << resolvedRange;
-        process.seekp(process.str().length() - separator.length());
+        process.seekp(static_cast<std::streamoff>(process.str().length() - separator.length()));
         process << ": ";
         lruCache.resolveRange(resolvedRange);
         process << resolvedRange;
-        process.seekp(process.str().length() - separator.length());
+        process.seekp(static_cast<std::streamoff>(process.str().length() - separator.length()));
 
         auto insertedRange = KeyValueRange{keyValueA, keyValueB, keyValueC, keyValueD};
         process << "\ninsert range " << insertedRange;
-        process.seekp(process.str().length() - separator.length());
+        process.seekp(static_cast<std::streamoff>(process.str().length() - separator.length()));
         lruCache.insertRange(std::move(insertedRange));
 
         process << "\nwhether it is empty: " << lruCache.empty() << '\n';
         process << "size: " << lruCache.size() << '\n';
         process << "capacity: " << lruCache.capacity() << '\n';
         process << "current status: " << lruCache.findRange(std::vector<Key>{'A', 'B', 'C', 'D'});
-        process.seekp(process.str().length() - separator.length());
+        process.seekp(static_cast<std::streamoff>(process.str().length() - separator.length()));
         return std::ostringstream{process.str().substr(0, process.tellp()) + '\n'};
     }
 };
@@ -406,7 +406,7 @@ static int compareData(const void* const a, const void* const b)
 {
     const auto l = *static_cast<const Data*>(a);
     const auto r = *static_cast<const Data*>(b);
-    return (l > r) - (l < r);
+    return static_cast<int>(l > r) - static_cast<int>(l < r);
 }
 
 //! @brief Showcase for graph instances.
@@ -535,6 +535,8 @@ namespace heap
 //! @brief The version used to apply.
 const char* const version = data_structure::heap::version();
 
+//! @brief Separator for each Key.
+static constexpr std::string_view separator = ", ";
 //! @brief Alias for the key.
 using Key = std::int16_t;
 //! @brief Compare function for the key.
@@ -545,7 +547,7 @@ static int compareKey(const void* const a, const void* const b)
 {
     const auto l = *static_cast<const Key*>(a);
     const auto r = *static_cast<const Key*>(b);
-    return (l > r) - (l < r);
+    return static_cast<int>(l > r) - static_cast<int>(l < r);
 }
 
 //! @brief Showcase for heap instances.
@@ -569,10 +571,10 @@ public:
         process << "insert ";
         for (const auto& key : keys)
         {
-            process << key << ", ";
+            process << key << separator;
             binary::insert(heap, &key);
         }
-        process.seekp(process.str().length() - 2);
+        process.seekp(static_cast<std::streamoff>(process.str().length() - separator.length()));
         process << "\ntraversal: ";
         traverse.order(opInTraversal);
 
@@ -609,20 +611,20 @@ public:
         process << "A insert ";
         for (const auto& key : keys1)
         {
-            process << key << ", ";
+            process << key << separator;
             leftist::insert(heapA, &key);
         }
-        process.seekp(process.str().length() - 2);
+        process.seekp(static_cast<std::streamoff>(process.str().length() - separator.length()));
         process << "\nA all details:\n" << Printer(heapA->root);
 
         leftist::LeftistHeap* const heapB = leftist::create(compareKey);
         process << "B insert ";
         for (const auto& key : keys2)
         {
-            process << key << ", ";
+            process << key << separator;
             leftist::insert(heapB, &key);
         }
-        process.seekp(process.str().length() - 2);
+        process.seekp(static_cast<std::streamoff>(process.str().length() - separator.length()));
         process << "\nB all details:\n" << Printer(heapB->root);
 
         process << "A merge B\n";
@@ -662,20 +664,20 @@ public:
         process << "A insert ";
         for (const auto& key : keys1)
         {
-            process << key << ", ";
+            process << key << separator;
             skew::insert(heapA, &key);
         }
-        process.seekp(process.str().length() - 2);
+        process.seekp(static_cast<std::streamoff>(process.str().length() - separator.length()));
         process << "\nA all details:\n" << Printer(heapA->root);
 
         skew::SkewHeap* const heapB = skew::create(compareKey);
         process << "B insert ";
         for (const auto& key : keys2)
         {
-            process << key << ", ";
+            process << key << separator;
             skew::insert(heapB, &key);
         }
-        process.seekp(process.str().length() - 2);
+        process.seekp(static_cast<std::streamoff>(process.str().length() - separator.length()));
         process << "\nB all details:\n" << Printer(heapB->root);
 
         process << "A merge B\n";
@@ -821,6 +823,8 @@ namespace tree
 //! @brief The version used to apply.
 const char* const version = data_structure::tree::version();
 
+//! @brief Separator for each Key.
+static constexpr std::string_view separator = ", ";
 //! @brief Alias for the key.
 using Key = std::int16_t;
 //! @brief Compare function for the key.
@@ -831,7 +835,7 @@ static int compareKey(const void* const a, const void* const b)
 {
     const auto l = *static_cast<const Key*>(a);
     const auto r = *static_cast<const Key*>(b);
-    return (l > r) - (l < r);
+    return static_cast<int>(l > r) - static_cast<int>(l < r);
 }
 
 //! @brief Showcase for tree instances.
@@ -856,10 +860,10 @@ public:
         process << "insert ";
         for (const auto& key : keys)
         {
-            process << key << ", ";
+            process << key << separator;
             bs::insert(tree, &key);
         }
-        process.seekp(process.str().length() - 2);
+        process.seekp(static_cast<std::streamoff>(process.str().length() - separator.length()));
 
         process << "\npre-order traversal: ";
         traverse.preOrder(opInTraversal);
@@ -907,10 +911,10 @@ public:
         process << "insert ";
         for (const auto& key : keys)
         {
-            process << key << ", ";
+            process << key << separator;
             avl::insert(tree, &key);
         }
-        process.seekp(process.str().length() - 2);
+        process.seekp(static_cast<std::streamoff>(process.str().length() - separator.length()));
 
         process << "\npre-order traversal: ";
         traverse.preOrder(opInTraversal);
@@ -954,10 +958,10 @@ public:
         process << "insert ";
         for (const auto& key : keys)
         {
-            process << key << ", ";
+            process << key << separator;
             splay::insert(tree, &key);
         }
-        process.seekp(process.str().length() - 2);
+        process.seekp(static_cast<std::streamoff>(process.str().length() - separator.length()));
 
         process << "\npre-order traversal: ";
         traverse.preOrder(opInTraversal);

@@ -32,7 +32,7 @@ std::int32_t Arithmetic::multiplication(const std::int32_t multiplier, const std
     for (std::int32_t i = (sizeof(std::int32_t) * 8) - 1; i >= 0; --i)
     {
         product <<= 1;
-        if ((multiplicand & (1 << i)) >> i)
+        if (((multiplicand & (1 << i)) >> i) != 0)
         {
             product = bitAdd(product, multiplier);
         }
@@ -73,7 +73,7 @@ std::int32_t Arithmetic::bitAdd(const std::int32_t a, const std::int32_t b)
 {
     const std::int32_t sum = a ^ b;
     const std::int32_t carry = (a & b) << 1;
-    return (sum & carry) ? bitAdd(sum, carry) : (sum ^ carry);
+    return ((sum & carry) != 0) ? bitAdd(sum, carry) : (sum ^ carry);
 }
 
 std::int32_t Arithmetic::bitSub(const std::int32_t a, const std::int32_t b)

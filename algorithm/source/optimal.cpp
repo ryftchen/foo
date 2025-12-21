@@ -197,7 +197,7 @@ Result Annealing::operator()(const double left, const double right, const double
 double Annealing::cauchyLikeDistribution(
     const double prev, const double min, const double max, const double temp, const double xi)
 {
-    const double sgn = ((xi - 0.5) > 0.0) - ((xi - 0.5) < 0.0);
+    const double sgn = static_cast<int>((xi - 0.5) > 0.0) - static_cast<int>((xi - 0.5) < 0.0);
     return prev + ((temp * sgn * (1.0 + 1.0 / (std::pow(temp, (2.0 * xi) - 1.0) - 1.0))) * (max - min));
 }
 
@@ -497,7 +497,7 @@ std::optional<std::pair<double, double>> Genetic::goldbergLinearScaling(
     const std::vector<double>& fitness, const double eps)
 {
     const double fitMax = *std::ranges::max_element(fitness);
-    const double fitAvg = std::reduce(fitness.cbegin(), fitness.cend(), 0.0) / fitness.size();
+    const double fitAvg = std::reduce(fitness.cbegin(), fitness.cend(), 0.0) / static_cast<double>(fitness.size());
     if (std::fabs(fitMax - fitAvg) < eps)
     {
         return std::nullopt;
@@ -524,8 +524,8 @@ void Genetic::select(Population& pop)
         std::ranges::for_each(fitness, [min, eps = property.prec](auto& fit) { fit = fit - min + eps; });
     }
 
-    const auto coeff =
-        goldbergLinearScaling(fitness, property.prec).value_or(std::pair<double, double>(0.0, 1.0 / pop.size()));
+    const auto coeff = goldbergLinearScaling(fitness, property.prec)
+                           .value_or(std::pair<double, double>(0.0, 1.0 / static_cast<double>(pop.size())));
     const double sum = std::accumulate(
         fitness.begin(),
         fitness.end(),

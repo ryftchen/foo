@@ -153,7 +153,7 @@ void Console::setDefaultOptions()
             out << std::setiosflags(std::ios_base::left);
             for (const auto& [option, help] : pairs)
             {
-                out << "- " << std::setw(align) << option << "    " << help << '\n';
+                out << "- " << std::setw(static_cast<int>(align)) << option << "    " << help << '\n';
             }
             out << std::resetiosflags(std::ios_base::left);
             std::cout << out.str() << std::flush;
@@ -182,7 +182,8 @@ void Console::setDefaultOptions()
                 for (std::uint32_t index = 0;
                      const auto& history : std::span{historyList, static_cast<std::size_t>(::history_length)})
                 {
-                    out << std::setw(align) << (index++) + ::history_base << "  " << history->line << '\n';
+                    out << std::setw(static_cast<int>(align)) << ((index++) + ::history_base) << "  " << history->line
+                        << '\n';
                 }
                 out << std::resetiosflags(std::ios_base::right);
                 std::cout << out.str() << std::flush;
