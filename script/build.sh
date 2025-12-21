@@ -669,6 +669,9 @@ function perform_install_option()
         return
     fi
 
+    if ! command -v cmake >/dev/null 2>&1; then
+        die "No cmake program. Please install it."
+    fi
     if [[ ! -x ./${FOLDER[bld]}/bin/${FOLDER[proj]} ]]; then
         die "There is no ${FOLDER[proj]} binary file in the ${FOLDER[bld]} folder. Please finish compiling first."
     fi
@@ -682,10 +685,10 @@ function perform_install_option()
             shell_command "echo '${export_cmd}' >>~/${BASH_RC}"
         fi
 
-        local completion_file="bash_completion"
-        export_cmd="[ \"\${BASH_COMPLETION_VERSINFO}\" != \"\" ] && [ -s ${install_path}/${completion_file} ] \
-&& \. ${install_path}/${completion_file}"
-        shell_command "${SUDO_PREFIX}cp ./${FOLDER[scr]}/${completion_file}.sh ${install_path}/${completion_file}"
+        local completion_bash="bash_completion"
+        export_cmd="[ \"\${BASH_COMPLETION_VERSINFO}\" != \"\" ] && [ -s ${install_path}/${completion_bash} ] \
+&& \. ${install_path}/${completion_bash}"
+        shell_command "${SUDO_PREFIX}cp ./${FOLDER[scr]}/${completion_bash}.sh ${install_path}/${completion_bash}"
         if ! grep -Fxq "${export_cmd}" ~/"${BASH_RC}" 2>/dev/null; then
             shell_command "echo '${export_cmd}' >>~/${BASH_RC}"
         fi
@@ -709,20 +712,20 @@ function perform_uninstall_option()
         return
     fi
 
-    local manifest_file="install_manifest.txt"
-    if [[ ! -f ./${FOLDER[bld]}/${manifest_file} ]]; then
-        die "There is no ${manifest_file} file in the ${FOLDER[bld]} folder. Please generate it."
+    local manifest_txt="install_manifest.txt"
+    if [[ ! -f ./${FOLDER[bld]}/${manifest_txt} ]]; then
+        die "There is no ${manifest_txt} file in the ${FOLDER[bld]} folder. Please generate it."
     fi
 
-    local completion_file="bash_completion"
+    local completion_bash="bash_completion"
     shell_command "rm -rf ~/.${FOLDER[proj]}"
-    shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs ${SUDO_PREFIX}rm -rf \
-&& ${SUDO_PREFIX}rm -rf /opt/${FOLDER[proj]}/${completion_file} /opt/${FOLDER[proj]}/man"
-    shell_command "cat ./${FOLDER[bld]}/${manifest_file} | xargs -L1 dirname \
+    shell_command "cat ./${FOLDER[bld]}/${manifest_txt} | xargs ${SUDO_PREFIX}rm -rf \
+&& ${SUDO_PREFIX}rm -rf /opt/${FOLDER[proj]}/${completion_bash} /opt/${FOLDER[proj]}/man"
+    shell_command "cat ./${FOLDER[bld]}/${manifest_txt} | xargs -L1 dirname \
 | xargs ${SUDO_PREFIX}rmdir -p 2>/dev/null || true"
     if [[ -f ~/${BASH_RC} ]]; then
         shell_command "sed -i '/export PATH=\/opt\/${FOLDER[proj]}\/bin:\$PATH/d' ~/${BASH_RC}"
-        shell_command "sed -i '/\\\. \/opt\/${FOLDER[proj]}\/${completion_file}/d' ~/${BASH_RC}"
+        shell_command "sed -i '/\\\. \/opt\/${FOLDER[proj]}\/${completion_bash}/d' ~/${BASH_RC}"
     fi
     if [[ -f ~/.manpath ]]; then
         shell_command "sed -i '/MANDATORY_MANPATH \/opt\/${FOLDER[proj]}\/man/d' ~/.manpath"
@@ -775,10 +778,11 @@ function perform_archive_option()
     fi
 
     shell_command "cargo build --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
-    local html_file="index.html" css_file="main.css"
-    if [[ ! -f ./${FOLDER[doc]}/${html_file} ]] || [[ ! -f ./${FOLDER[doc]}/${css_file} ]]; then
-        shell_command "cp ./${FOLDER[doc]}/template/archive_${html_file} ./${FOLDER[doc]}/${html_file} \
-&& cp ./${FOLDER[doc]}/template/archive_${css_file} ./${FOLDER[doc]}/${css_file}"
+
+    local index_html="index.html" main_css="main.css"
+    if [[ ! -f ./${FOLDER[doc]}/${index_html} ]] || [[ ! -f ./${FOLDER[doc]}/${main_css} ]]; then
+        shell_command "cp ./${FOLDER[doc]}/template/archive_${index_html} ./${FOLDER[doc]}/${index_html} \
+&& cp ./${FOLDER[doc]}/template/archive_${main_css} ./${FOLDER[doc]}/${main_css}"
         shell_command "sed -i 's/unamed list/document list/g' ./${FOLDER[doc]}/index.html"
         local item_rows
         item_rows=$(
@@ -791,12 +795,12 @@ EOF
         item_row_single_line=$(echo "${item_rows}" | tr -d '\n')
         shell_command "sed -i 's|<li>unamed item</li>|${item_row_single_line}|g' ./${FOLDER[doc]}/index.html"
     fi
-    if [[ ! -f ./${FOLDER[rep]}/${html_file} ]] || [[ ! -f ./${FOLDER[rep]}/${css_file} ]]; then
+    if [[ ! -f ./${FOLDER[rep]}/${index_html} ]] || [[ ! -f ./${FOLDER[rep]}/${main_css} ]]; then
         if [[ ! -d ./${FOLDER[rep]} ]]; then
             shell_command "mkdir ./${FOLDER[rep]}"
         fi
-        shell_command "cp ./${FOLDER[doc]}/template/archive_${html_file} ./${FOLDER[rep]}/${html_file} \
-&& cp ./${FOLDER[doc]}/template/archive_${css_file} ./${FOLDER[rep]}/${css_file}"
+        shell_command "cp ./${FOLDER[doc]}/template/archive_${index_html} ./${FOLDER[rep]}/${index_html} \
+&& cp ./${FOLDER[doc]}/template/archive_${main_css} ./${FOLDER[rep]}/${main_css}"
         shell_command "sed -i 's/unamed list/report list/g' ./${FOLDER[rep]}/index.html"
         local item_rows
         item_rows=$(
@@ -1234,7 +1238,6 @@ function package_for_doxygen()
     local commit_id=$1
 
     local doxygen_folder="doxygen"
-    local tar_file="${FOLDER[proj]}_${doxygen_folder}_${commit_id}.tar.bz2"
     shell_command "rm -rf ./${FOLDER[doc]}/artifact/${FOLDER[proj]}_${doxygen_folder}_*.tar.bz2 \
 ./${FOLDER[doc]}/${doxygen_folder} && mkdir ./${FOLDER[doc]}/${doxygen_folder}"
 
@@ -1246,7 +1249,8 @@ function package_for_doxygen()
     fi
     shell_command "(cat ./${FOLDER[doc]}/configure/Doxyfile; echo 'PROJECT_NUMBER=\"$(git rev-parse --short @)\"') \
 | doxygen -"
-    shell_command "tar -jcvf ./${FOLDER[doc]}/artifact/${tar_file} -C ./${FOLDER[doc]} ${doxygen_folder} >/dev/null"
+    local doxygen_tar="${FOLDER[proj]}_${doxygen_folder}_${commit_id}.tar.bz2"
+    shell_command "tar -jcvf ./${FOLDER[doc]}/artifact/${doxygen_tar} -C ./${FOLDER[doc]} ${doxygen_folder} >/dev/null"
 }
 
 function perform_doxygen_option()
@@ -1292,7 +1296,6 @@ FOO_BLD_UNITY is turned on."
         die "There is no ${COMPILE_DB} file in the ${FOLDER[bld]} folder. Please generate it."
     fi
     local browser_folder="browser"
-    local tar_file="${FOLDER[proj]}_${browser_folder}_${commit_id}.tar.bz2"
     shell_command "rm -rf ./${FOLDER[doc]}/artifact/${FOLDER[proj]}_${browser_folder}_*.tar.bz2 \
 ./${FOLDER[doc]}/${browser_folder} && mkdir ./${FOLDER[doc]}/${browser_folder}"
 
@@ -1313,7 +1316,8 @@ href=\"https://web.archive.org/web/20220309195008if_/https://code.woboq.org/favi
 \"./${FOLDER[doc]}/${browser_folder}/${FOLDER[proj]}\" \"./${FOLDER[doc]}/${browser_folder}/include\" -name \"*.html\" \
 -exec sed -i 's|https://code.woboq.org/woboq-16.png\
 |https://web.archive.org/web/20220224111804if_/https://code.woboq.org/woboq-16.png|g' {} +"
-    shell_command "tar -jcvf ./${FOLDER[doc]}/artifact/${tar_file} -C ./${FOLDER[doc]} ${browser_folder} >/dev/null"
+    local browser_tar="${FOLDER[proj]}_${browser_folder}_${commit_id}.tar.bz2"
+    shell_command "tar -jcvf ./${FOLDER[doc]}/artifact/${browser_tar} -C ./${FOLDER[doc]} ${browser_folder} >/dev/null"
 }
 
 function perform_browser_option()
