@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   foo_dev:
     image: ryftchen/foo:latest
