@@ -7,6 +7,7 @@ pub struct Args {
     pub root_dirs: Vec<String>,
     pub host: IpAddr,
     pub port: u16,
+    pub no_cache: bool,
 }
 
 pub struct Parser {
@@ -20,6 +21,7 @@ impl Parser {
         options.optmulti("r", "root-dir", "set root directory", "DIR");
         options.optopt("H", "host", "set host IP address", "IP");
         options.optopt("p", "port", "set starting port", "NUM");
+        options.optflag("n", "no-cache", "disable HTTP cache");
         Parser { options }
     }
 
@@ -32,7 +34,7 @@ impl Parser {
 
     pub fn usage(&self) {
         println!(
-            "usage: {} [-h] {{-r {{DIR}}}} [{{-r {{DIR}}}} ...] [-H {{IP}}] [-p {{NUM}}]",
+            "usage: {} [-h] {{-r {{DIR}}}} [{{-r {{DIR}}}} ...] [-H {{IP}}] [-p {{NUM}}] [-n]",
             exec_name!()
         );
         println!();
@@ -45,6 +47,7 @@ impl Parser {
         println!("  -H {{IP}}, --host {{IP}}  set host address");
         println!("  -p {{NUM}}, --port {{NUM}}");
         println!("                        set starting port");
+        println!("  -n, --no-cache        disable HTTP cache");
     }
 }
 
@@ -84,5 +87,11 @@ pub fn parse_args() -> Args {
     if port as usize + root_dirs.len() - 1 > 65535 {
         fatal!("Not enough available port numbers.");
     }
-    Args { root_dirs, port, host }
+    let no_cache = matches.opt_present("n");
+    Args {
+        root_dirs,
+        port,
+        host,
+        no_cache,
+    }
 }

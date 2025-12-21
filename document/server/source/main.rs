@@ -15,7 +15,7 @@ async fn run(args: arg::Args, mut sig_rx: broadcast::Receiver<()>) {
         let addr = SocketAddr::new(args.host, args.port + offset as u16);
 
         srv_group.push(async move {
-            srv::run_service(addr, root_dir, None).await;
+            srv::run_service(addr, root_dir, None, args.no_cache).await;
         });
         hint += format!("=> http://{}/ for directory {}\n", addr, abs_path!(root_dir)).as_str();
     }
