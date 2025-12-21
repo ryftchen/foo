@@ -84,7 +84,7 @@ static Node* getNode(const DLL head, const int index)
 //! @return success or failure
 bool create(DLL* const dll)
 {
-    return dll && ((*dll = createNode(nullptr)) != nullptr);
+    return (dll != nullptr) && ((*dll = createNode(nullptr)) != nullptr);
 }
 
 //! @brief Destroy the doubly linked list.

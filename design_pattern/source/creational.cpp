@@ -6,6 +6,8 @@
 
 #include "creational.hpp"
 
+#include <algorithm>
+
 namespace design_pattern::creational
 {
 //! @brief Function version number.
@@ -188,7 +190,7 @@ std::ostringstream& output() noexcept
 
 namespace prototype
 {
-std::unique_ptr<Prototype> Client::types[2] = {};
+std::array<std::unique_ptr<Prototype>, 2> Client::types = {};
 const int Client::nTypes = 2;
 
 std::unique_ptr<Prototype> ConcretePrototypeA::clone()
@@ -219,13 +221,12 @@ void Client::init()
 
 void Client::remove()
 {
-    types[0].reset();
-    types[1].reset();
+    std::ranges::for_each(types, [](auto& type) { type.reset(); });
 }
 
 std::unique_ptr<Prototype> Client::make(const int index)
 {
-    return (index < nTypes) ? types[index]->clone() : nullptr;
+    return ((index >= 0) && (index < nTypes) && types[index]) ? types[index]->clone() : nullptr;
 }
 
 //! @brief Output stream for the prototype pattern. Need to be cleared manually.

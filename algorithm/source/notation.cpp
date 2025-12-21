@@ -110,6 +110,6 @@ Notation::Priority Notation::getPriority(const char c)
 
 bool Notation::isOperator(const char c)
 {
-    return !std::isalpha(c) && !std::isdigit(c);
+    return (std::isalpha(c) == 0) && (std::isdigit(c) == 0);
 }
 } // namespace algorithm::notation

@@ -127,8 +127,8 @@ std::int64_t Match::bm(
     }
 
     std::int64_t shift = -1;
-    std::uint32_t badCharRuleTable[maxASCII] = {};
-    std::uint32_t goodSuffixIndexTable[maxASCII] = {};
+    std::array<std::uint32_t, maxASCII> badCharRuleTable{};
+    std::array<std::uint32_t, maxASCII> goodSuffixIndexTable{};
     fillBadCharRuleTable(badCharRuleTable, pattern, patternLen);
     fillGoodSuffixRuleTable(goodSuffixIndexTable, pattern, patternLen);
 
@@ -153,12 +153,11 @@ std::int64_t Match::bm(
 }
 
 void Match::fillBadCharRuleTable(
-    std::uint32_t badCharRuleTable[], const unsigned char* const pattern, const std::uint32_t patternLen)
+    std::array<std::uint32_t, maxASCII>& badCharRuleTable,
+    const unsigned char* const pattern,
+    const std::uint32_t patternLen)
 {
-    for (std::uint16_t i = 0; i < maxASCII; ++i)
-    {
-        badCharRuleTable[i] = patternLen;
-    }
+    badCharRuleTable.fill(patternLen);
 
     for (std::uint32_t i = 0; i < patternLen; ++i)
     {
@@ -167,7 +166,9 @@ void Match::fillBadCharRuleTable(
 }
 
 void Match::fillGoodSuffixRuleTable(
-    std::uint32_t goodSuffixRuleTable[], const unsigned char* const pattern, const std::uint32_t patternLen)
+    std::array<std::uint32_t, maxASCII>& goodSuffixRuleTable,
+    const unsigned char* const pattern,
+    const std::uint32_t patternLen)
 {
     std::uint32_t lastPrefixIdx = 1;
     for (std::int64_t pos = (patternLen - 1); pos >= 0; --pos)
@@ -218,7 +219,7 @@ std::int64_t Match::horspool(
     }
 
     std::int64_t shift = -1;
-    std::uint32_t badCharShiftTable[maxASCII] = {};
+    std::array<std::uint32_t, maxASCII> badCharShiftTable{};
     fillHorspoolBadCharShiftTable(badCharShiftTable, pattern, patternLen);
 
     std::uint32_t moveLen = patternLen - 1;
@@ -242,12 +243,11 @@ std::int64_t Match::horspool(
 }
 
 void Match::fillHorspoolBadCharShiftTable(
-    std::uint32_t badCharShiftTable[], const unsigned char* const pattern, const std::uint32_t patternLen)
+    std::array<std::uint32_t, maxASCII>& badCharShiftTable,
+    const unsigned char* const pattern,
+    const std::uint32_t patternLen)
 {
-    for (std::uint16_t i = 0; i < maxASCII; ++i)
-    {
-        badCharShiftTable[i] = patternLen;
-    }
+    badCharShiftTable.fill(patternLen);
 
     for (std::uint32_t i = 0; i < (patternLen - 1); ++i)
     {
@@ -267,7 +267,7 @@ std::int64_t Match::sunday(
     }
 
     std::int64_t shift = -1;
-    std::uint32_t badCharShiftTable[maxASCII] = {};
+    std::array<std::uint32_t, maxASCII> badCharShiftTable{};
     fillSundayBadCharShiftTable(badCharShiftTable, pattern, patternLen);
 
     std::uint32_t textIdx = 0;
@@ -290,12 +290,11 @@ std::int64_t Match::sunday(
 }
 
 void Match::fillSundayBadCharShiftTable(
-    std::uint32_t badCharShiftTable[], const unsigned char* const pattern, const std::uint32_t patternLen)
+    std::array<std::uint32_t, maxASCII>& badCharShiftTable,
+    const unsigned char* const pattern,
+    const std::uint32_t patternLen)
 {
-    for (std::uint16_t i = 0; i < maxASCII; ++i)
-    {
-        badCharShiftTable[i] = patternLen + 1;
-    }
+    badCharShiftTable.fill(patternLen + 1);
 
     for (std::uint32_t i = 0; i < patternLen; ++i)
     {

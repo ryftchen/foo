@@ -44,7 +44,7 @@ template <typename Meth>
 static std::string customTitle(const Meth method)
 {
     std::string title(TypeInfo<Meth>::fields.nameOfValue(method));
-    title.at(0) = std::toupper(title.at(0));
+    title.at(0) = static_cast<char>(std::toupper(title.at(0)));
     return title;
 }
 

@@ -172,7 +172,7 @@ std::uint32_t Bloom::calculateParamK(const std::uint32_t m, const std::uint32_t 
         return 0;
     }
 
-    const std::uint32_t k = std::round(std::numbers::ln2 * m / n);
+    const auto k = static_cast<std::uint32_t>(std::round(std::numbers::ln2 * m / n));
     return k;
 }
 
@@ -193,17 +193,17 @@ Quotient::Quotient(const std::uint8_t qBits, const std::uint8_t rBits, const std
 
 bool Quotient::insert(const void* const key, const int length)
 {
-    return (key && (length > 0)) && insert(quotientHash(key, length));
+    return (key != nullptr) && (length > 0) && insert(quotientHash(key, length));
 }
 
 bool Quotient::mayContain(const void* const key, const int length)
 {
-    return (key && (length > 0)) && mayContain(quotientHash(key, length));
+    return (key != nullptr) && (length > 0) && mayContain(quotientHash(key, length));
 }
 
 bool Quotient::remove(const void* const key, const int length)
 {
-    return (key && (length > 0)) && remove(quotientHash(key, length));
+    return (key != nullptr) && (length > 0) && remove(quotientHash(key, length));
 }
 
 void Quotient::clear()
@@ -345,7 +345,7 @@ bool Quotient::mayContain(const std::uint64_t hash)
 bool Quotient::remove(const std::uint64_t hash)
 {
     const std::uint64_t highBits = hash >> (qBits + rBits);
-    if (highBits)
+    if (highBits != 0)
     {
         return false;
     }
@@ -548,7 +548,7 @@ void Quotient::setElement(Quotient& qf, const std::uint64_t index, std::uint64_t
 {
     const std::size_t bitPos = qf.elemBits * index;
     const std::size_t slotPos = bitPos % 64;
-    const int spillBits = (slotPos + qf.elemBits) - 64;
+    const auto spillBits = static_cast<int>(slotPos + qf.elemBits - 64);
     std::size_t tabPos = bitPos / 64;
 
     elem &= qf.elemMask;
@@ -566,7 +566,7 @@ std::uint64_t Quotient::getElement(const Quotient& qf, const std::uint64_t index
 {
     const std::size_t bitPos = qf.elemBits * index;
     const std::size_t slotPos = bitPos % 64;
-    const int spillBits = (slotPos + qf.elemBits) - 64;
+    const auto spillBits = static_cast<int>(slotPos + qf.elemBits - 64);
     std::size_t tabPos = bitPos / 64;
     std::uint64_t elem = (qf.filter[tabPos] >> slotPos) & qf.elemMask;
 
@@ -668,7 +668,7 @@ std::uint64_t Quotient::filterSizeInBytes(const std::uint8_t q, const std::uint8
 
     const std::uint64_t bits = static_cast<std::uint64_t>(1 << q) * (r + 3);
     const std::uint64_t bytes = bits / 8;
-    return (bits % 8) ? (bytes + 1) : bytes;
+    return ((bits % 8) != 0) ? (bytes + 1) : bytes;
 }
 // NOLINTEND(readability-magic-numbers)
 } // namespace data_structure::filter

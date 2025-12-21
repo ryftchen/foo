@@ -107,11 +107,11 @@ private:
     //! @param index - index of the starting vertex
     //! @param visited - track visited vertices
     //! @param op - operation on each vertex
-    void dfsRecursive(const int index, bool visited[], const Operation& op) const;
+    void dfsRecursive(const int index, std::array<bool, maxVertexNum>& visited, const Operation& op) const;
     //! @brief Sort the neighbors of a vertex based on their data in ascending order.
     //! @param neighbors - neighbor indices
     //! @param size - number of neighbors
-    void sortNeighbors(int neighbors[], const int size) const;
+    void sortNeighbors(std::array<int, maxVertexNum>& neighbors, const int size) const;
 };
 } // namespace undirected
 
@@ -202,11 +202,11 @@ private:
     //! @param index - index of the starting vertex
     //! @param visited - track visited vertices
     //! @param op - operation on each vertex
-    void dfsRecursive(const int index, bool visited[], const Operation& op) const;
+    void dfsRecursive(const int index, std::array<bool, maxVertexNum>& visited, const Operation& op) const;
     //! @brief Sort the neighbors of a vertex based on their data in ascending order.
     //! @param neighbors - neighbor indices
     //! @param size - number of neighbors
-    void sortNeighbors(int neighbors[], const int size) const;
+    void sortNeighbors(std::array<int, maxVertexNum>& neighbors, const int size) const;
 };
 } // namespace directed
 } // namespace graph

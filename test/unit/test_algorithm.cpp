@@ -233,6 +233,7 @@ protected:
     static constexpr double defPrec{algorithm::optimal::epsilon};
 };
 
+// NOLINTBEGIN(bugprone-unchecked-optional-access)
 //! @brief Test for the gradient descent method in the solution of optimal.
 TEST_F(OptimalTestBase, GradientDescentMethod)
 {
@@ -292,6 +293,7 @@ TEST_F(OptimalTestBase, GeneticMethod)
     EXPECT_GT(std::get<0>(result.value()), expRes - absErr);
     EXPECT_LT(std::get<0>(result.value()), expRes + absErr);
 }
+// NOLINTEND(bugprone-unchecked-optional-access)
 
 //! @brief Test base of search.
 class SearchTestBase : public ::testing::Test

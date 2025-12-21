@@ -2,8 +2,6 @@ Checks:
   - '-*'
   - bugprone-*
   - '-bugprone-easily-swappable-parameters'
-  - '-bugprone-narrowing-conversions'
-  - '-bugprone-unchecked-optional-access'
   - cert-*
   - '-cert-err33-c'
   - clang-analyzer-*
@@ -60,7 +58,6 @@ Checks:
   - '-readability-avoid-const-params-in-decls'
   - '-readability-avoid-nested-conditional-operator'
   - '-readability-identifier-length'
-  - '-readability-implicit-bool-conversion'
   - '-readability-static-accessed-through-instance'
 CheckOptions:
   readability-function-cognitive-complexity.Threshold: 20
@@ -86,6 +83,8 @@ CheckOptions:
   readability-identifier-naming.TypeTemplateParameterCase: CamelCase
   readability-identifier-naming.UnionCase: CamelCase
   readability-identifier-naming.VariableCase: camelBack
+  readability-implicit-bool-conversion.AllowPointerConditions: true
+  readability-implicit-bool-conversion.UseUpperCaseLiteralSuffix: true
   readability-magic-numbers.IgnoreAllFloatingPointValues: true
   readability-magic-numbers.IgnoreBitFieldsWidths: true
   readability-magic-numbers.IgnorePowersOf2IntegerValues: true

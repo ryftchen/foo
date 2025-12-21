@@ -97,7 +97,7 @@ static int serialize(data::Packet& pkt, const TLVValue& val, const Data TLVValue
     constexpr int length = sizeof(Data);
     pkt.write<int>(length);
     pkt.write<Data>(val.*pl);
-    return sizeof(int) + length;
+    return static_cast<int>(sizeof(int) + length);
 }
 
 //! @brief TLV value serialization.
@@ -117,7 +117,7 @@ static int serialize(data::Packet& pkt, const TLVValue& val, const char (TLVValu
     const int length = ::strnlen(val.*pl, Size);
     pkt.write<int>(length);
     pkt.write(val.*pl, length);
-    return sizeof(int) + length;
+    return static_cast<int>(sizeof(int) + length);
 }
 
 //! @brief TLV value deserialization.
@@ -137,7 +137,7 @@ static int deserialize(data::Packet& pkt, TLVValue& val, Data TLVValue::* const 
     int length = 0;
     pkt.read<int>(&length);
     pkt.read<Data>(&(val.*pl));
-    return sizeof(int) + length;
+    return static_cast<int>(sizeof(int) + length);
 }
 
 //! @brief TLV value deserialization.
@@ -157,7 +157,7 @@ static int deserialize(data::Packet& pkt, TLVValue& val, char (TLVValue::* const
     int length = 0;
     pkt.read<int>(&length);
     pkt.read(val.*pl, std::min<std::size_t>(length, Size));
-    return sizeof(int) + length;
+    return static_cast<int>(sizeof(int) + length);
 }
 
 //! @brief Enumerate the error codes for TLV error handling.
@@ -293,7 +293,7 @@ static std::error_code encodeTLV(char* const buf, std::size_t& len, const TLVVal
         return ec;
     }
 
-    int temp = ::htonl(sum);
+    auto temp = static_cast<int>(::htonl(sum));
     std::memcpy(buf + sizeof(int), &temp, sizeof(temp));
     len = sizeof(int) + sizeof(int) + sum;
     return ErrCode::noError;
@@ -693,7 +693,7 @@ std::size_t View::buildCustomTLVPacket<View::OptMonitor>(const Args& args, Buffe
 {
     if (!args.empty())
     {
-        if (const auto& input = args.front(); (input.length() != 1) || !std::isdigit(input.front()))
+        if (const auto& input = args.front(); (input.length() != 1) || (std::isdigit(input.front()) == 0))
         {
             throw std::runtime_error{"Please enter the \"monitor\" and append with or without NUM (0 to 9)."};
         }

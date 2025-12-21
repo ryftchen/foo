@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <array>
 #include <memory>
 #include <sstream>
 
@@ -350,7 +351,7 @@ public:
 
 private:
     //! @brief Collection of prototypes.
-    static std::unique_ptr<Prototype> types[2];
+    static std::array<std::unique_ptr<Prototype>, 2> types;
     //! @brief Number of types.
     static const int nTypes;
 };

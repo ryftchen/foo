@@ -442,7 +442,7 @@ protected:
         //! @return pass or not
         static constexpr bool checkGuard(const Derived& self, const Event& event)
         {
-            return !guard || RowBase<Source, Event, Target>::checkGuard(guard, self, event);
+            return (guard == nullptr) || RowBase<Source, Event, Target>::checkGuard(guard, self, event);
         }
     };
 

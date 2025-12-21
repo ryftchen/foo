@@ -79,7 +79,7 @@ void encryptMessage(char* const buffer, const std::size_t length)
                 reinterpret_cast<unsigned char*>(buffer),
                 &outLen,
                 reinterpret_cast<unsigned char*>(buffer),
-                length)
+                static_cast<int>(length))
             == 0)
         {
             break;
@@ -122,7 +122,7 @@ void decryptMessage(char* const buffer, const std::size_t length)
                 reinterpret_cast<unsigned char*>(buffer),
                 &outLen,
                 reinterpret_cast<unsigned char*>(buffer),
-                length)
+                static_cast<int>(length))
             == 0)
         {
             break;
@@ -148,9 +148,10 @@ void compressData(std::vector<char>& cache)
         return;
     }
 
-    const int compressedCap = ::LZ4_compressBound(cache.size());
+    const int compressedCap = ::LZ4_compressBound(static_cast<int>(cache.size()));
     std::vector<char> compressed(compressedCap);
-    const int compressedSize = ::LZ4_compress_default(cache.data(), compressed.data(), cache.size(), compressedCap);
+    const int compressedSize =
+        ::LZ4_compress_default(cache.data(), compressed.data(), static_cast<int>(cache.size()), compressedCap);
     if (compressedSize < 0)
     {
         throw std::runtime_error{"Failed to compress data, return " + std::to_string(compressedSize) + '.'};
@@ -172,7 +173,7 @@ void decompressData(std::vector<char>& cache)
     constexpr int decompressedCap = 65536 * 10 * 10;
     std::vector<char> decompressed(decompressedCap);
     const int decompressedSize =
-        ::LZ4_decompress_safe(cache.data(), decompressed.data(), cache.size(), decompressedCap);
+        ::LZ4_decompress_safe(cache.data(), decompressed.data(), static_cast<int>(cache.size()), decompressedCap);
     if (decompressedSize < 0)
     {
         throw std::runtime_error{"Failed to decompress data, return " + std::to_string(decompressedSize) + '.'};

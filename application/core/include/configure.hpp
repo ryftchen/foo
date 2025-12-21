@@ -159,63 +159,63 @@ inline const utility::json::JSON& operator/(const utility::json::JSON& json, con
 
 //! @brief Query the "activateHelper" configuration.
 //! @return "activateHelper" configuration
-inline bool activateHelper() noexcept
+inline auto activateHelper() noexcept
 {
     return (retrieveDataRepo() / field::activateHelper).asBoolean();
 }
 //! @brief Query the "filePath" configuration in the properties of "logger" object of "helpList".
 //! @return "filePath" configuration in the properties of "logger" object of "helpList"
-inline std::string filePath4Logger() noexcept
+inline auto filePath4Logger() noexcept
 {
     return (retrieveDataRepo() / field::helperList / field::logger / field::properties / field::filePath).asString();
 }
 //! @brief Query the "priorityLevel" configuration in the properties of "logger" object of "helpList".
 //! @return "priorityLevel" configuration in the properties of "logger" object of "helpList"
-inline int priorityLevel4Logger() noexcept
+inline auto priorityLevel4Logger() noexcept
 {
     return (retrieveDataRepo() / field::helperList / field::logger / field::properties / field::priorityLevel)
         .asIntegral();
 }
 //! @brief Query the "targetType" configuration in the properties of "logger" object of "helpList".
 //! @return "targetType" configuration in the properties of "logger" object of "helpList"
-inline int targetType4Logger() noexcept
+inline auto targetType4Logger() noexcept
 {
     return (retrieveDataRepo() / field::helperList / field::logger / field::properties / field::targetType)
         .asIntegral();
 }
 //! @brief Query the "writeMode" configuration in the properties of "logger" object of "helpList".
 //! @return "writeMode" configuration in the properties of "logger" object of "helpList"
-inline int writeMode4Logger() noexcept
+inline auto writeMode4Logger() noexcept
 {
     return (retrieveDataRepo() / field::helperList / field::logger / field::properties / field::writeMode).asIntegral();
 }
 //! @brief Query the "tcpHost" configuration in the properties of "viewer" object of "helpList".
 //! @return "tcpHost" configuration in the properties of "viewer" object of "helpList"
-inline std::string tcpHost4Viewer() noexcept
+inline auto tcpHost4Viewer() noexcept
 {
     return (retrieveDataRepo() / field::helperList / field::viewer / field::properties / field::tcpHost).asString();
 }
 //! @brief Query the "tcpPort" configuration in the properties of "viewer" object of "helpList".
 //! @return "tcpPort" configuration in the properties of "viewer" object of "helpList"
-inline int tcpPort4Viewer() noexcept
+inline auto tcpPort4Viewer() noexcept
 {
     return (retrieveDataRepo() / field::helperList / field::viewer / field::properties / field::tcpPort).asIntegral();
 }
 //! @brief Query the "udpHost" configuration in the properties of "viewer" object of "helpList".
 //! @return "udpHost" configuration in the properties of "viewer" object of "helpList"
-inline std::string udpHost4Viewer() noexcept
+inline auto udpHost4Viewer() noexcept
 {
     return (retrieveDataRepo() / field::helperList / field::viewer / field::properties / field::udpHost).asString();
 }
 //! @brief Query the "udpPort" configuration in the properties of "viewer" object of "helpList".
 //! @return "udpPort" configuration in the properties of "viewer" object of "helpList"
-inline int udpPort4Viewer() noexcept
+inline auto udpPort4Viewer() noexcept
 {
     return (retrieveDataRepo() / field::helperList / field::viewer / field::properties / field::udpPort).asIntegral();
 }
 //! @brief Query the "helperTimeout" configuration.
 //! @return "helperTimeout" configuration
-inline int helperTimeout() noexcept
+inline auto helperTimeout() noexcept
 {
     return (retrieveDataRepo() / field::helperTimeout).asIntegral();
 }

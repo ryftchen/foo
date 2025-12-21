@@ -43,7 +43,7 @@ template <typename Inst>
 static std::string customTitle(const Inst instance)
 {
     std::string title(TypeInfo<Inst>::fields.nameOfValue(instance));
-    title.at(0) = std::toupper(title.at(0));
+    title.at(0) = static_cast<char>(std::toupper(title.at(0)));
     return title;
 }
 

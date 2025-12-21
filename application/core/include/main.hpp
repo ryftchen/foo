@@ -48,14 +48,11 @@ static void signalHandler(const int sig)
     {
         originalTrace << symbols[i] << '\n';
         ::Dl_info info{};
-        if (::dladdr(callStack[i], &info) && info.dli_sname)
+        if ((::dladdr(callStack[i], &info) != 0) && info.dli_sname)
         {
-            char* demangle = nullptr;
             int status = -1;
-            if (info.dli_sname[0] == '_')
-            {
-                demangle = ::abi::__cxa_demangle(info.dli_sname, nullptr, nullptr, &status);
-            }
+            char* const demangle =
+                (info.dli_sname[0] == '_') ? ::abi::__cxa_demangle(info.dli_sname, nullptr, nullptr, &status) : nullptr;
             std::snprintf(
                 buffer.data(),
                 buffer.size(),
@@ -105,8 +102,8 @@ static void signalHandler(const int sig)
 {
     std::signal(SIGABRT, signalHandler);
     std::signal(SIGSEGV, signalHandler);
-    ::setenv("TERM", "linux", true);
-    ::setenv("TERMINFO", "/etc/terminfo", true);
+    ::setenv("TERM", "linux", 1);
+    ::setenv("TERMINFO", "/etc/terminfo", 1);
 
     const char* const homeEnv = std::getenv("HOME");
     const std::string_view defaultHome = homeEnv ? homeEnv : "/root";
@@ -124,7 +121,7 @@ static void signalHandler(const int sig)
         std::filesystem::permissions(
             processPath, std::filesystem::perms::owner_all, std::filesystem::perm_options::add);
     }
-    ::setenv("FOO_HOME", processPath.string().c_str(), true);
+    ::setenv("FOO_HOME", processPath.string().c_str(), 1);
 }
 // NOLINTEND(concurrency-mt-unsafe)
 

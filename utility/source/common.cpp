@@ -39,7 +39,7 @@ std::size_t bkdrHash(const char* str) noexcept
     }
 
     std::size_t hash = 0;
-    while (*str)
+    while (*str != '\0')
     {
         hash = hash * bkdrHashSeed + (*str++);
     }
@@ -59,9 +59,9 @@ std::string base64Encode(const std::string_view data)
 
     for (const auto c : data)
     {
-        const auto numVal = static_cast<unsigned int>(static_cast<unsigned char>(c));
+        const auto value = static_cast<unsigned int>(static_cast<unsigned char>(c));
         offset = 16 - counter % 3 * 8;
-        bitStream += numVal << offset;
+        bitStream += value << offset;
         switch (offset)
         {
             case 16:
@@ -113,10 +113,10 @@ std::string base64Decode(const std::string_view data)
     for (const auto c : data)
     {
         const auto uc = static_cast<unsigned char>(c);
-        if (const auto numVal = base64Alphabet.find(uc); numVal != std::string::npos)
+        if (const auto value = base64Alphabet.find(static_cast<char>(uc)); value != std::string::npos)
         {
             offset = 18 - counter % 4 * 6;
-            bitStream += numVal << offset;
+            bitStream += value << offset;
             switch (offset)
             {
                 case 12:

@@ -36,7 +36,7 @@ constexpr std::size_t bkdrHashMask = 0x7FFFFFFF;
 //! @return hash value
 constexpr std::size_t bkdrHashRecursive(const char* const str, const std::size_t hash = 0) noexcept
 {
-    return str ? (*str ? bkdrHashRecursive(str + 1, (hash * bkdrHashSeed + *str) & bkdrHashMask) : hash) : 0;
+    return str ? ((*str != '\0') ? bkdrHashRecursive(str + 1, (hash * bkdrHashSeed + *str) & bkdrHashMask) : hash) : 0;
 }
 //! @brief The operator ("") overloading with BKDR hash function.
 //! @param str - input data
