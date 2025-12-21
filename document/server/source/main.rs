@@ -29,18 +29,21 @@ async fn run(args: arg::Args, mut sig_rx: broadcast::Receiver<()>) {
     let _ret = futures_util::future::join_all(srv_group).await;
 }
 
+fn listen_signal(sig_tx: broadcast::Sender<()>) {
+    tokio::spawn(async move {
+        let mut stream = signal(SignalKind::user_defined1()).unwrap();
+        while stream.recv().await.is_some() {
+            let _ = sig_tx.send(());
+        }
+    });
+}
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let args = arg::parse_args();
     let (sig_tx, sig_rx) = broadcast::channel(16);
-    let sig_tx = sig_tx.clone();
 
-    tokio::spawn(async move {
-        let mut stream = signal(SignalKind::user_defined1()).unwrap();
-        while stream.recv().await.is_some() {
-            let _ret = sig_tx.send(());
-        }
-    });
+    listen_signal(sig_tx.clone());
     run(args, sig_rx).await;
     Ok(())
 }
