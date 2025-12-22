@@ -285,6 +285,14 @@ public:
 class Facade
 {
 public:
+    //! @brief Construct a new Facade object.
+    Facade() :
+        subsystemA{std::make_unique<SubsystemA>()},
+        subsystemB{std::make_unique<SubsystemB>()},
+        subsystemC{std::make_unique<SubsystemC>()}
+    {
+    }
+
     //! @brief The operation 1.
     void operation1();
     //! @brief The operation 2.
@@ -292,11 +300,11 @@ public:
 
 private:
     //! @brief Subsystem A.
-    const std::shared_ptr<SubsystemA> subsystemA;
+    const std::unique_ptr<SubsystemA> subsystemA;
     //! @brief Subsystem B.
-    const std::shared_ptr<SubsystemB> subsystemB;
+    const std::unique_ptr<SubsystemB> subsystemB;
     //! @brief Subsystem C.
-    const std::shared_ptr<SubsystemC> subsystemC;
+    const std::unique_ptr<SubsystemC> subsystemC;
 };
 
 extern std::ostringstream& output() noexcept;

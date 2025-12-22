@@ -34,11 +34,6 @@ void Handler::handleRequest()
     }
 }
 
-bool ConcreteHandler1::canHandle()
-{
-    return false;
-}
-
 void ConcreteHandler1::handleRequest()
 {
     if (canHandle())
@@ -52,9 +47,9 @@ void ConcreteHandler1::handleRequest()
     }
 }
 
-bool ConcreteHandler2::canHandle()
+bool ConcreteHandler1::canHandle() const // NOLINT(readability-convert-member-functions-to-static)
 {
-    return true;
+    return false;
 }
 
 void ConcreteHandler2::handleRequest()
@@ -68,6 +63,11 @@ void ConcreteHandler2::handleRequest()
         output() << "cannot be handled by handler 2\n";
         Handler::handleRequest();
     }
+}
+
+bool ConcreteHandler2::canHandle() const // NOLINT(readability-convert-member-functions-to-static)
+{
+    return true;
 }
 
 //! @brief Output stream for the chain of responsibility pattern. Need to be cleared manually.
@@ -88,19 +88,19 @@ void Receiver::action() const // NOLINT(readability-convert-member-functions-to-
 
 void ConcreteCommand::execute()
 {
-    receiver.lock()->action();
+    receiver->action();
 }
 
-void Invoker::set(const std::shared_ptr<Command>& c)
+void Invoker::set(std::shared_ptr<Command> c)
 {
-    command = c;
+    command = std::move(c);
 }
 
 void Invoker::confirm()
 {
-    if (const auto c = command.lock())
+    if (command)
     {
-        c->execute();
+        command->execute();
     }
 }
 

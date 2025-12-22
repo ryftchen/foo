@@ -50,22 +50,26 @@ private:
 class ConcreteHandler1 : public Handler
 {
 public:
-    //! @brief Check whether it can handle the request.
-    //! @return can handle or not
-    static bool canHandle();
     //! @brief Handle the request.
     void handleRequest() override;
+
+private:
+    //! @brief Check whether it can handle the request.
+    //! @return can handle or not
+    [[nodiscard]] bool canHandle() const;
 };
 
 //! @brief The concrete handler.
 class ConcreteHandler2 : public Handler
 {
 public:
-    //! @brief Check whether it can handle the request.
-    //! @return can handle or not
-    static bool canHandle();
     //! @brief Handle the request.
     void handleRequest() override;
+
+private:
+    //! @brief Check whether it can handle the request.
+    //! @return can handle or not
+    [[nodiscard]] bool canHandle() const;
 };
 
 extern std::ostringstream& output() noexcept;
@@ -103,14 +107,14 @@ class ConcreteCommand : public Command
 public:
     //! @brief Construct a new ConcreteCommand object.
     //! @param receiver - receiver associated with the command
-    explicit ConcreteCommand(const std::shared_ptr<Receiver>& receiver) : receiver{receiver} {}
+    explicit ConcreteCommand(std::shared_ptr<Receiver> receiver) : receiver{std::move(receiver)} {}
 
     //! @brief Execute the command.
     void execute() override;
 
 private:
     //! @brief The receiver.
-    const std::weak_ptr<Receiver> receiver;
+    const std::shared_ptr<Receiver> receiver;
 };
 
 //! @brief Invoke the corresponding operation.
@@ -119,13 +123,13 @@ class Invoker
 public:
     //! @brief Set the command.
     //! @param c - command
-    void set(const std::shared_ptr<Command>& c);
+    void set(std::shared_ptr<Command> c);
     //! @brief Ask the command to carry out the request.
     void confirm();
 
 private:
     //! @brief The command.
-    std::weak_ptr<Command> command;
+    std::shared_ptr<Command> command;
 };
 
 extern std::ostringstream& output() noexcept;
