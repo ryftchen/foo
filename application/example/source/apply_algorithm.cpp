@@ -76,14 +76,14 @@ namespace match
 //! @param pattern - single pattern
 //! @param interval - time interval
 static void display(
-    const MatchMethod method, const std::int64_t result, const unsigned char* const pattern, const double interval)
+    const MatchMethod method, const std::int64_t result, const std::string& pattern, const double interval)
 {
     if (result != -1)
     {
         std::printf(
             "\n==> %-16s Method <==\npattern \"%s\" found starting (1st) at index %ld, run time: %8.5f ms\n",
             customTitle(method).c_str(),
-            pattern,
+            pattern.c_str(),
             result,
             interval);
     }
@@ -92,7 +92,7 @@ static void display(
         std::printf(
             "\n==> %-16s Method <==\npattern \"%s\" could not be found, run time: %8.5f ms\n",
             customTitle(method).c_str(),
-            pattern,
+            pattern.c_str(),
             interval);
     }
 }
@@ -134,7 +134,8 @@ try
         default:
             return;
     }
-    display(method, result, pattern, timing.elapsedTime());
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    display(method, result, std::string(reinterpret_cast<const char*>(pattern), patternLen), timing.elapsedTime());
 }
 catch (const std::exception& err)
 {
