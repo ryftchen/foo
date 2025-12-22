@@ -57,8 +57,8 @@ public:
         singlePattern{std::make_unique<unsigned char[]>(pattern.length())},
         patternLen{static_cast<std::uint32_t>(pattern.length())}
     {
-        marchingText[0] = '\0';
-        singlePattern[0] = '\0';
+        std::memset(marchingText.get(), 0, textLen * sizeof(unsigned char));
+        std::memset(singlePattern.get(), 0, patternLen * sizeof(unsigned char));
         createMatchingText(marchingText.get(), maxDigit);
         std::memcpy(singlePattern.get(), pattern.data(), pattern.length() * sizeof(unsigned char));
     }
@@ -302,6 +302,7 @@ constexpr std::uint8_t maxColumnOfPrint = 5;
 //! @brief Builder for the input.
 //! @tparam Elem - type of builder for the target
 template <typename Elem>
+requires std::is_integral_v<Elem> || std::is_floating_point_v<Elem>
 class InputBuilder
 {
 public:
@@ -312,7 +313,7 @@ public:
     InputBuilder(const std::uint32_t length, const Elem left, const Elem right) :
         orderedArray{std::make_unique<Elem[]>(length)}, length{length}
     {
-        orderedArray[0] = '\0';
+        std::fill_n(orderedArray.get(), length, static_cast<Elem>(0));
         setOrderedArray(orderedArray.get(), length, left, right);
     }
 
@@ -466,6 +467,7 @@ constexpr std::uint8_t maxColumnOfPrint = 10;
 //! @brief Builder for the input.
 //! @tparam Elem - type of builder for the target
 template <typename Elem>
+requires std::is_integral_v<Elem> || std::is_floating_point_v<Elem>
 class InputBuilder
 {
 public:
@@ -476,7 +478,7 @@ public:
     InputBuilder(const std::uint32_t length, const Elem left, const Elem right) :
         randomArray{std::make_unique<Elem[]>(length)}, length{length}
     {
-        randomArray[0] = '\0';
+        std::fill_n(randomArray.get(), length, static_cast<Elem>(0));
         setRandomArray(randomArray.get(), length, left, right);
     }
 
