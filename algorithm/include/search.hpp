@@ -150,24 +150,35 @@ std::int64_t Search<Elem>::fibonacci(const Elem* const array, const std::uint32_
         return -1;
     }
     const auto fib = generateFibonacciNumber(length);
-    if (constexpr std::uint8_t minSize = 3; (fib.size() - 1) < minSize)
+    if (constexpr std::uint8_t minSize = 3; fib.size() < minSize)
     {
         return -1;
     }
 
     std::uint32_t n = fib.size() - 1;
-    std::vector<Elem> complement(array, array + (fib[n] - 1));
-    for (std::uint32_t i = upper; i < (fib[n] - 1); ++i)
+    const std::uint32_t paddedSize = fib[n] - 1;
+    std::vector<Elem> complement(paddedSize);
+    std::copy(array, array + length, complement.begin());
+    for (std::uint32_t i = length; i < paddedSize; ++i)
     {
         complement[i] = array[upper];
     }
 
     std::int64_t index = -1;
-    while ((lower <= upper) && (n >= 1))
+    while ((lower <= upper) && (n >= 2))
     {
-        const std::uint32_t mid = lower + fib[n - 1] - 1;
+        std::uint32_t mid = lower + fib[n - 1] - 1;
+        if (mid >= paddedSize)
+        {
+            mid = paddedSize - 1;
+        }
+
         if (complement[mid] > key)
         {
+            if (mid == 0)
+            {
+                break;
+            }
             upper = mid - 1;
             --n;
         }
@@ -178,13 +189,7 @@ std::int64_t Search<Elem>::fibonacci(const Elem* const array, const std::uint32_
         }
         else
         {
-            if (mid <= upper)
-            {
-                index = mid;
-                break;
-            }
-
-            index = upper;
+            index = (mid <= upper) ? mid : upper;
             break;
         }
     }

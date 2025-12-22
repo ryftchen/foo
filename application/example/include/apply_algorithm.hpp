@@ -52,9 +52,9 @@ public:
     //! @brief Construct a new InputBuilder object.
     //! @param pattern - single pattern
     explicit InputBuilder(const std::string_view pattern) :
-        marchingText{std::make_unique<unsigned char[]>(maxDigit + 1)},
+        marchingText{std::make_unique<unsigned char[]>(maxDigit)},
         textLen{maxDigit},
-        singlePattern{std::make_unique<unsigned char[]>(pattern.length() + 1)},
+        singlePattern{std::make_unique<unsigned char[]>(pattern.length())},
         patternLen{static_cast<std::uint32_t>(pattern.length())}
     {
         marchingText[0] = '\0';
@@ -113,11 +113,10 @@ private:
         }
 
         ::mpfr_t operand{};
-        ::mpfr_init2(operand, calculatePrecision(textLen));
+        ::mpfr_init2(operand, calculatePrecision(textLen + 1));
         ::mpfr_const_pi(operand, ::MPFR_RNDN);
         ::mpfr_exp_t decimalLocation = 0;
-        char* const piText = ::mpfr_get_str(nullptr, &decimalLocation, mpfrBase, 0, operand, ::MPFR_RNDN);
-
+        char* const piText = ::mpfr_get_str(nullptr, &decimalLocation, mpfrBase, textLen + 1, operand, ::MPFR_RNDN);
         if (std::strlen(piText) != 0)
         {
             piText[textLen] = '\0';
@@ -311,7 +310,7 @@ public:
     //! @param left - left boundary of the array
     //! @param right - right boundary of the array
     InputBuilder(const std::uint32_t length, const Elem left, const Elem right) :
-        orderedArray{std::make_unique<Elem[]>(length + 1)}, length{length}
+        orderedArray{std::make_unique<Elem[]>(length)}, length{length}
     {
         orderedArray[0] = '\0';
         setOrderedArray(orderedArray.get(), length, left, right);
@@ -471,7 +470,7 @@ public:
     //! @param left - left boundary of the array
     //! @param right - right boundary of the array
     InputBuilder(const std::uint32_t length, const Elem left, const Elem right) :
-        randomArray{std::make_unique<Elem[]>(length + 1)}, length{length}
+        randomArray{std::make_unique<Elem[]>(length)}, length{length}
     {
         randomArray[0] = '\0';
         setRandomArray(randomArray.get(), length, left, right);
