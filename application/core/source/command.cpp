@@ -925,19 +925,16 @@ void Command::displayVersionInfo() const
 {
     validateDependencies();
 
-    auto briefReview = std::format(
+    const auto briefReview = std::format(
         "\033[7m\033[49m{}"
 #ifndef NDEBUG
         "            DEBUG VERSION {} "
 #else
         "          RELEASE VERSION {} "
 #endif // NDEBUG
-        "\033[0m\n",
+        "\033[0m\nBuilt {} with {} for {} on {}.\n{}\n",
         build::banner(),
-        mainCLI.version());
-    std::format_to(
-        std::back_inserter(briefReview),
-        "Built {} with {} for {} on {}.\n{}\n",
+        mainCLI.version(),
         build::revision(),
         build::compiler(),
         build::processor(),
