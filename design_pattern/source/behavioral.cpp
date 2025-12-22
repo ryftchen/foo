@@ -81,7 +81,7 @@ std::ostringstream& output() noexcept
 
 namespace command
 {
-void Receiver::action()
+void Receiver::action() const // NOLINT(readability-convert-member-functions-to-static)
 {
     output() << "receiver: execute action\n";
 }

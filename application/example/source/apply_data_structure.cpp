@@ -88,13 +88,13 @@ try
     {
         static_assert(utility::common::isStatelessClass<Showcase>());
         case CacheInstance::firstInFirstOut:
-            result = Showcase().fifo();
+            result = Showcase::fifo();
             break;
         case CacheInstance::leastFrequentlyUsed:
-            result = Showcase().lfu();
+            result = Showcase::lfu();
             break;
         case CacheInstance::leastRecentlyUsed:
-            result = Showcase().lru();
+            result = Showcase::lru();
             break;
         default:
             return;
@@ -171,10 +171,10 @@ try
     {
         static_assert(utility::common::isStatelessClass<Showcase>());
         case FilterInstance::bloom:
-            result = Showcase().bloom();
+            result = Showcase::bloom();
             break;
         case FilterInstance::quotient:
-            result = Showcase().quotient();
+            result = Showcase::quotient();
             break;
         default:
             return;
@@ -248,10 +248,10 @@ try
     {
         static_assert(utility::common::isStatelessClass<Showcase>());
         case GraphInstance::undirected:
-            result = Showcase().undirected();
+            result = Showcase::undirected();
             break;
         case GraphInstance::directed:
-            result = Showcase().directed();
+            result = Showcase::directed();
             break;
         default:
             return;
@@ -325,13 +325,13 @@ try
     {
         static_assert(utility::common::isStatelessClass<Showcase>());
         case HeapInstance::binary:
-            result = Showcase().binary();
+            result = Showcase::binary();
             break;
         case HeapInstance::leftist:
-            result = Showcase().leftist();
+            result = Showcase::leftist();
             break;
         case HeapInstance::skew:
-            result = Showcase().skew();
+            result = Showcase::skew();
             break;
         default:
             return;
@@ -408,13 +408,13 @@ try
     {
         static_assert(utility::common::isStatelessClass<Showcase>());
         case LinearInstance::doublyLinkedList:
-            result = Showcase().dll();
+            result = Showcase::dll();
             break;
         case LinearInstance::stack:
-            result = Showcase().stack();
+            result = Showcase::stack();
             break;
         case LinearInstance::queue:
-            result = Showcase().queue();
+            result = Showcase::queue();
             break;
         default:
             return;
@@ -491,13 +491,13 @@ try
     {
         static_assert(utility::common::isStatelessClass<Showcase>());
         case TreeInstance::binarySearch:
-            result = Showcase().bs();
+            result = Showcase::bs();
             break;
         case TreeInstance::adelsonVelskyLandis:
-            result = Showcase().avl();
+            result = Showcase::avl();
             break;
         case TreeInstance::splay:
-            result = Showcase().splay();
+            result = Showcase::splay();
             break;
         default:
             return;

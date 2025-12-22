@@ -23,7 +23,7 @@ namespace application::console
 inline namespace
 {
 //! @brief Current console instance.
-thread_local constinit Console* currentSession = nullptr;
+thread_local constinit Console* currentSession = nullptr; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 } // namespace
 
 Console::Console(const std::string_view greeting) : terminal{std::make_unique<Terminal>(greeting)}

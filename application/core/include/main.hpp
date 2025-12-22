@@ -21,7 +21,7 @@
 namespace application
 {
 //! @brief Status of the signal.
-static volatile std::sig_atomic_t signalStatus = 0;
+static volatile std::sig_atomic_t signalStatus = 0; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
 //! @brief Get the executable name.
 //! @return executable name

@@ -386,7 +386,7 @@ public:
     //! @brief Restart the instance of the singleton.
     static void restart();
     //! @brief Tell external.
-    static void tell();
+    void tell() const;
 
 private:
     //! @brief Construct a new Singleton object.

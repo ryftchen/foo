@@ -44,7 +44,7 @@ class Adaptee
 {
 public:
     //! @brief The specific request.
-    static void specificRequest();
+    void specificRequest() const;
 };
 
 //! @brief Delegate the call to an adaptee when getting a method call.
@@ -262,7 +262,7 @@ class SubsystemA
 {
 public:
     //! @brief The sub-operation.
-    static void suboperation();
+    void suboperation() const;
 };
 
 //! @brief Implement complex subsystem functionality.
@@ -270,7 +270,7 @@ class SubsystemB
 {
 public:
     //! @brief The sub-operation.
-    static void suboperation();
+    void suboperation() const;
 };
 
 //! @brief Implement complex subsystem functionality.
@@ -278,7 +278,7 @@ class SubsystemC
 {
 public:
     //! @brief The sub-operation.
-    static void suboperation();
+    void suboperation() const;
 };
 
 //! @brief Delegate client requests to appropriate subsystem and unified interface.

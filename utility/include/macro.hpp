@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <utility>
@@ -66,9 +67,9 @@ constexpr void ignoreAll(Args&&... /*args*/) noexcept
 //! @param line - line number
 //! @param function - function name
 [[noreturn]] inline void assertFail(
-    const char* const assertion, const char* const file, const unsigned int line, const char* const function) noexcept
+    const char* const assertion, const char* const file, const std::uint32_t line, const char* const function) noexcept
 {
-    std::fprintf(::stderr, "%s:%d: %s: Assertion `%s` failed.\n", file, line, function, assertion);
+    std::fprintf(::stderr, "%s:%u: %s: Assertion `%s` failed.\n", file, line, function, assertion);
     std::abort();
 }
 

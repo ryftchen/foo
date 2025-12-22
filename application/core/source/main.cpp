@@ -21,10 +21,12 @@ namespace application
 //! @brief Anonymous namespace.
 inline namespace
 {
+// NOLINTBEGIN(cppcoreguidelines-avoid-non-const-global-variables)
 //! @brief Interrupt flag for the SIGALRM signal.
 volatile std::sig_atomic_t alarmInterrupted = 0;
 //! @brief Interrupt flag for the SIGCHLD signal.
 volatile std::sig_atomic_t childInterrupted = 0;
+// NOLINTEND(cppcoreguidelines-avoid-non-const-global-variables)
 } // namespace
 
 //! @brief The run function.

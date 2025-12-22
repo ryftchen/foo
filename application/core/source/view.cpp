@@ -428,12 +428,11 @@ retry:
 void View::Access::startup() const
 try
 {
-    waitOr(
-        State::active, [this]() { throw std::runtime_error{"The " + inst->name + " did not setup successfully ..."}; });
+    waitOr(State::active, []() { throw std::runtime_error{"The " + View::name + " did not setup successfully ..."}; });
     notifyVia([this]() { inst->isOngoing.store(true); });
     waitOr(
         State::established,
-        [this]() { throw std::runtime_error{"The " + inst->name + " did not start successfully ..."}; });
+        []() { throw std::runtime_error{"The " + View::name + " did not start successfully ..."}; });
 }
 catch (const std::exception& err)
 {
@@ -444,9 +443,7 @@ void View::Access::shutdown() const
 try
 {
     notifyVia([this]() { inst->isOngoing.store(false); });
-    waitOr(
-        State::inactive,
-        [this]() { throw std::runtime_error{"The " + inst->name + " did not stop successfully ..."}; });
+    waitOr(State::inactive, []() { throw std::runtime_error{"The " + View::name + " did not stop successfully ..."}; });
 }
 catch (const std::exception& err)
 {
@@ -462,7 +459,7 @@ try
         [this]()
         {
             throw std::runtime_error{
-                "The " + inst->name + " did not reset properly in " + std::to_string(inst->timeoutPeriod) + " ms ..."};
+                "The " + View::name + " did not reset properly in " + std::to_string(inst->timeoutPeriod) + " ms ..."};
         });
 }
 catch (const std::exception& err)
@@ -1037,7 +1034,7 @@ std::string View::statusReportsPreview(const std::uint16_t frame)
                 execStmt.data() + usedLen,
                 execStmt.size() - usedLen,
                 " && echo 'Stack:' "
-                "&& (timeout --preserve-status --signal=2 1 stdbuf -o0 eu-stack -1v -n %d -p %d 2>&1 | grep '#' "
+                "&& (timeout --preserve-status --signal=2 1 stdbuf -o0 eu-stack -1v -n %u -p %d 2>&1 | grep '#' "
                 "|| exit 0); fi\"",
                 frame,
                 tid);

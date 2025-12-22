@@ -301,7 +301,7 @@ static std::string join(StrIter first, StrIter last, const std::string_view sepa
 std::ostream& operator<<(std::ostream& os, const ArgTrait& tra)
 {
     std::ostringstream out{};
-    if (tra.checkIfPositional(tra.names.at(0), tra.prefixChars))
+    if (ArgTrait::checkIfPositional(tra.names.at(0), tra.prefixChars))
     {
         out << (tra.metaVar.empty() ? join(tra.names.cbegin(), tra.names.cend(), " ") : tra.metaVar);
     }

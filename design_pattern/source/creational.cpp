@@ -256,7 +256,7 @@ void Singleton::restart()
     instance.reset();
 }
 
-void Singleton::tell()
+void Singleton::tell() const // NOLINT(readability-convert-member-functions-to-static)
 {
     output() << "this is singleton\n";
 }

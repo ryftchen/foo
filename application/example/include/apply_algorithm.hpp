@@ -346,9 +346,13 @@ public:
         }
 
         std::array<char, 16> spliceFmt{};
-        if constexpr (std::is_integral_v<Elem>)
+        if constexpr (std::is_integral_v<Elem> && std::is_signed_v<Elem>)
         {
             std::snprintf(spliceFmt.data(), spliceFmt.size(), "%%%dd%%c", align + 1);
+        }
+        else if constexpr (std::is_integral_v<Elem> && std::is_unsigned_v<Elem>)
+        {
+            std::snprintf(spliceFmt.data(), spliceFmt.size(), "%%%du%%c", align + 1);
         }
         else if constexpr (std::is_floating_point_v<Elem>)
         {
@@ -503,9 +507,13 @@ public:
         }
 
         std::array<char, 16> spliceFmt{};
-        if constexpr (std::is_integral_v<Elem>)
+        if constexpr (std::is_integral_v<Elem> && std::is_signed_v<Elem>)
         {
             std::snprintf(spliceFmt.data(), spliceFmt.size(), "%%%dd%%c", align + 1);
+        }
+        else if constexpr (std::is_integral_v<Elem> && std::is_unsigned_v<Elem>)
+        {
+            std::snprintf(spliceFmt.data(), spliceFmt.size(), "%%%du%%c", align + 1);
         }
         else if constexpr (std::is_floating_point_v<Elem>)
         {

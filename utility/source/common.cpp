@@ -59,7 +59,7 @@ std::string base64Encode(const std::string_view data)
 
     for (const auto c : data)
     {
-        const auto value = static_cast<unsigned int>(static_cast<unsigned char>(c));
+        const std::uint32_t value = static_cast<unsigned char>(c);
         offset = 16 - counter % 3 * 8;
         bitStream += value << offset;
         switch (offset)
