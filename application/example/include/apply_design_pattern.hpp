@@ -44,11 +44,10 @@ public:
     static std::ostringstream command()
     {
         using namespace design_pattern::behavioral::command;
-        const std::shared_ptr<ConcreteCommand> commands =
-            std::make_shared<ConcreteCommand>(std::make_shared<Receiver>());
+        const std::shared_ptr<ConcreteCommand> cmd = std::make_shared<ConcreteCommand>(std::make_shared<Receiver>());
 
         Invoker invoker{};
-        invoker.set(commands);
+        invoker.set(cmd);
         invoker.confirm();
         return transferOutputs(output());
     }
