@@ -20,7 +20,7 @@ const char* version() noexcept
 
 namespace adapter
 {
-void Adaptee::specificRequest()
+void Adaptee::specificRequest() const // NOLINT(readability-convert-member-functions-to-static)
 {
     output() << "specific request\n";
 }
@@ -150,20 +150,22 @@ std::ostringstream& output() noexcept
 
 namespace facade
 {
-void SubsystemA::suboperation()
+// NOLINTBEGIN(readability-convert-member-functions-to-static)
+void SubsystemA::suboperation() const
 {
     output() << "subsystem A method\n";
 }
 
-void SubsystemB::suboperation()
+void SubsystemB::suboperation() const
 {
     output() << "subsystem B method\n";
 }
 
-void SubsystemC::suboperation()
+void SubsystemC::suboperation() const
 {
     output() << "subsystem C method\n";
 }
+// NOLINTEND(readability-convert-member-functions-to-static)
 
 void Facade::operation1()
 {

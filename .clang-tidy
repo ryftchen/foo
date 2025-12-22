@@ -11,10 +11,8 @@ Checks:
   - '-cppcoreguidelines-avoid-const-or-ref-data-members'
   - '-cppcoreguidelines-avoid-do-while'
   - '-cppcoreguidelines-avoid-magic-numbers'
-  - '-cppcoreguidelines-avoid-non-const-global-variables'
   - '-cppcoreguidelines-c-copy-assignment-signature'
   - '-cppcoreguidelines-macro-usage'
-  - '-cppcoreguidelines-narrowing-conversions'
   - '-cppcoreguidelines-non-private-member-variables-in-classes'
   - '-cppcoreguidelines-pro-bounds-array-to-pointer-decay'
   - '-cppcoreguidelines-pro-bounds-constant-array-index'
@@ -47,7 +45,6 @@ Checks:
   - modernize-*
   - '-modernize-avoid-bind'
   - '-modernize-avoid-c-arrays'
-  - '-modernize-macro-to-enum'
   - '-modernize-use-designated-initializers'
   - '-modernize-use-trailing-return-type'
   - '-modernize-use-using'
@@ -58,7 +55,6 @@ Checks:
   - '-readability-avoid-const-params-in-decls'
   - '-readability-avoid-nested-conditional-operator'
   - '-readability-identifier-length'
-  - '-readability-static-accessed-through-instance'
 CheckOptions:
   readability-function-cognitive-complexity.Threshold: 20
   readability-function-cognitive-complexity.IgnoreMacros: true

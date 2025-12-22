@@ -21,7 +21,8 @@ namespace application::configure
 inline namespace
 {
 //! @brief The semaphore that controls the maximum access limit.
-std::counting_semaphore<maxAccessLimit> configSem(maxAccessLimit);
+std::counting_semaphore<maxAccessLimit> configSem( // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+    maxAccessLimit);
 } // namespace
 
 std::string getFullConfigPath(const std::string_view filename)

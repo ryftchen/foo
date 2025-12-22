@@ -180,12 +180,10 @@ retry:
 void Log::Access::startup() const
 try
 {
-    waitOr(
-        State::active, [this]() { throw std::runtime_error{"The " + inst->name + " did not setup successfully ..."}; });
+    waitOr(State::active, []() { throw std::runtime_error{"The " + Log::name + " did not setup successfully ..."}; });
     notifyVia([this]() { inst->isOngoing.store(true); });
     waitOr(
-        State::established,
-        [this]() { throw std::runtime_error{"The " + inst->name + " did not start successfully ..."}; });
+        State::established, []() { throw std::runtime_error{"The " + Log::name + " did not start successfully ..."}; });
 }
 catch (const std::exception& err)
 {
@@ -196,9 +194,7 @@ void Log::Access::shutdown() const
 try
 {
     notifyVia([this]() { inst->isOngoing.store(false); });
-    waitOr(
-        State::inactive,
-        [this]() { throw std::runtime_error{"The " + inst->name + " did not stop successfully ..."}; });
+    waitOr(State::inactive, []() { throw std::runtime_error{"The " + Log::name + " did not stop successfully ..."}; });
 }
 catch (const std::exception& err)
 {
@@ -214,7 +210,7 @@ try
         [this]()
         {
             throw std::runtime_error{
-                "The " + inst->name + " did not reset properly in " + std::to_string(inst->timeoutPeriod) + " ms ..."};
+                "The " + Log::name + " did not reset properly in " + std::to_string(inst->timeoutPeriod) + " ms ..."};
         });
 }
 catch (const std::exception& err)

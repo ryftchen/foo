@@ -117,19 +117,19 @@ try
     {
         using algorithm::match::Match;
         case MatchMethod::rabinKarp:
-            result = Match().rk(text, pattern, textLen, patternLen);
+            result = Match::rk(text, pattern, textLen, patternLen);
             break;
         case MatchMethod::knuthMorrisPratt:
-            result = Match().kmp(text, pattern, textLen, patternLen);
+            result = Match::kmp(text, pattern, textLen, patternLen);
             break;
         case MatchMethod::boyerMoore:
-            result = Match().bm(text, pattern, textLen, patternLen);
+            result = Match::bm(text, pattern, textLen, patternLen);
             break;
         case MatchMethod::horspool:
-            result = Match().horspool(text, pattern, textLen, patternLen);
+            result = Match::horspool(text, pattern, textLen, patternLen);
             break;
         case MatchMethod::sunday:
-            result = Match().sunday(text, pattern, textLen, patternLen);
+            result = Match::sunday(text, pattern, textLen, patternLen);
             break;
         default:
             return;
@@ -227,11 +227,11 @@ try
     {
         using algorithm::notation::Notation;
         case NotationMethod::prefix:
-            result = Notation().prefix(infix);
+            result = Notation::prefix(infix);
             descr = "polish notation";
             break;
         case NotationMethod::postfix:
-            result = Notation().postfix(infix);
+            result = Notation::postfix(infix);
             descr = "reverse polish notation";
             break;
         default:
@@ -464,13 +464,13 @@ try
     {
         using algorithm::search::Search;
         case SearchMethod::binary:
-            result = Search<float>().binary(array, length, key);
+            result = Search<float>::binary(array, length, key);
             break;
         case SearchMethod::interpolation:
-            result = Search<float>().interpolation(array, length, key);
+            result = Search<float>::interpolation(array, length, key);
             break;
         case SearchMethod::fibonacci:
-            result = Search<float>().fibonacci(array, length, key);
+            result = Search<float>::fibonacci(array, length, key);
             break;
         default:
             return;
@@ -568,34 +568,34 @@ try
     {
         using algorithm::sort::Sort;
         case SortMethod::bubble:
-            result = Sort<std::int32_t>().bubble(array, length);
+            result = Sort<std::int32_t>::bubble(array, length);
             break;
         case SortMethod::selection:
-            result = Sort<std::int32_t>().selection(array, length);
+            result = Sort<std::int32_t>::selection(array, length);
             break;
         case SortMethod::insertion:
-            result = Sort<std::int32_t>().insertion(array, length);
+            result = Sort<std::int32_t>::insertion(array, length);
             break;
         case SortMethod::shell:
-            result = Sort<std::int32_t>().shell(array, length);
+            result = Sort<std::int32_t>::shell(array, length);
             break;
         case SortMethod::merge:
-            result = Sort<std::int32_t>().merge(array, length);
+            result = Sort<std::int32_t>::merge(array, length);
             break;
         case SortMethod::quick:
-            result = Sort<std::int32_t>().quick(array, length);
+            result = Sort<std::int32_t>::quick(array, length);
             break;
         case SortMethod::heap:
-            result = Sort<std::int32_t>().heap(array, length);
+            result = Sort<std::int32_t>::heap(array, length);
             break;
         case SortMethod::counting:
-            result = Sort<std::int32_t>().counting(array, length);
+            result = Sort<std::int32_t>::counting(array, length);
             break;
         case SortMethod::bucket:
-            result = Sort<std::int32_t>().bucket(array, length);
+            result = Sort<std::int32_t>::bucket(array, length);
             break;
         case SortMethod::radix:
-            result = Sort<std::int32_t>().radix(array, length);
+            result = Sort<std::int32_t>::radix(array, length);
             break;
         default:
             return;

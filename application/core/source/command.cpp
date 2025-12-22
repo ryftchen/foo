@@ -27,7 +27,7 @@ namespace application::command
 inline namespace
 {
 //! @brief The semaphore that controls the maximum access limit.
-std::counting_semaphore<1> cliSem(1);
+std::counting_semaphore<1> cliSem(1); // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 } // namespace
 
 //! @brief Manage external helpers.
@@ -91,6 +91,7 @@ static void daemonService()
     (extendedJob.enqueue(Helpers::name, &Helpers::service, Helpers::getInstance()), ...);
 }
 
+// NOLINTBEGIN(readability-static-accessed-through-instance)
 //! @brief Coroutine for managing the lifecycle of helper components.
 //! @tparam Hs - type of helpers
 //! @return awaitable instance
@@ -130,6 +131,7 @@ static action::Awaitable launchLifecycle()
 
     waitPoint.wait();
 }
+// NOLINTEND(readability-static-accessed-through-instance)
 
 //! @brief Enter the next phase of the coroutine of helpers.
 //! @param awaitable - awaitable instance
@@ -957,7 +959,7 @@ template <>
 template <>
 void Command::LocalNotifier::Handler<Category::dump>::execute() const
 {
-    inst.dumpConfiguration();
+    Command::dumpConfiguration();
 }
 
 //! @brief Perform the specific operation for Category::help.

@@ -88,37 +88,37 @@ try
     {
         static_assert(utility::common::isStatelessClass<Showcase>());
         case BehavioralInstance::chainOfResponsibility:
-            result = Showcase().chainOfResponsibility();
+            result = Showcase::chainOfResponsibility();
             break;
         case BehavioralInstance::command:
-            result = Showcase().command();
+            result = Showcase::command();
             break;
         case BehavioralInstance::interpreter:
-            result = Showcase().interpreter();
+            result = Showcase::interpreter();
             break;
         case BehavioralInstance::iterator:
-            result = Showcase().iterator();
+            result = Showcase::iterator();
             break;
         case BehavioralInstance::mediator:
-            result = Showcase().mediator();
+            result = Showcase::mediator();
             break;
         case BehavioralInstance::memento:
-            result = Showcase().memento();
+            result = Showcase::memento();
             break;
         case BehavioralInstance::observer:
-            result = Showcase().observer();
+            result = Showcase::observer();
             break;
         case BehavioralInstance::state:
-            result = Showcase().state();
+            result = Showcase::state();
             break;
         case BehavioralInstance::strategy:
-            result = Showcase().strategy();
+            result = Showcase::strategy();
             break;
         case BehavioralInstance::templateMethod:
-            result = Showcase().templateMethod();
+            result = Showcase::templateMethod();
             break;
         case BehavioralInstance::visitor:
-            result = Showcase().visitor();
+            result = Showcase::visitor();
             break;
         default:
             return;
@@ -219,19 +219,19 @@ try
     {
         static_assert(utility::common::isStatelessClass<Showcase>());
         case CreationalInstance::abstractFactory:
-            result = Showcase().abstractFactory();
+            result = Showcase::abstractFactory();
             break;
         case CreationalInstance::builder:
-            result = Showcase().builder();
+            result = Showcase::builder();
             break;
         case CreationalInstance::factoryMethod:
-            result = Showcase().factoryMethod();
+            result = Showcase::factoryMethod();
             break;
         case CreationalInstance::prototype:
-            result = Showcase().prototype();
+            result = Showcase::prototype();
             break;
         case CreationalInstance::singleton:
-            result = Showcase().singleton();
+            result = Showcase::singleton();
             break;
         default:
             return;
@@ -314,25 +314,25 @@ try
     {
         static_assert(utility::common::isStatelessClass<Showcase>());
         case StructuralInstance::adapter:
-            result = Showcase().adapter();
+            result = Showcase::adapter();
             break;
         case StructuralInstance::bridge:
-            result = Showcase().bridge();
+            result = Showcase::bridge();
             break;
         case StructuralInstance::composite:
-            result = Showcase().composite();
+            result = Showcase::composite();
             break;
         case StructuralInstance::decorator:
-            result = Showcase().decorator();
+            result = Showcase::decorator();
             break;
         case StructuralInstance::facade:
-            result = Showcase().facade();
+            result = Showcase::facade();
             break;
         case StructuralInstance::flyweight:
-            result = Showcase().flyweight();
+            result = Showcase::flyweight();
             break;
         case StructuralInstance::proxy:
-            result = Showcase().proxy();
+            result = Showcase::proxy();
             break;
         default:
             return;

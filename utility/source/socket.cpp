@@ -296,7 +296,7 @@ void TCPServer::toAccept(const bool detach)
             {
                 if (auto sharedSelf = weakSelf.lock())
                 {
-                    sharedSelf->toAccept(sharedSelf);
+                    toAccept(sharedSelf);
                 }
             });
     }
@@ -307,7 +307,7 @@ void TCPServer::toAccept(const bool detach)
             {
                 if (auto sharedSelf = weakSelf.lock())
                 {
-                    sharedSelf->toAccept(sharedSelf);
+                    toAccept(sharedSelf);
                 }
             })
             .detach();

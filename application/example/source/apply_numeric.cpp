@@ -95,19 +95,19 @@ try
     {
         using numeric::arithmetic::Arithmetic;
         case ArithmeticMethod::addition:
-            result = Arithmetic().addition(a, b);
+            result = Arithmetic::addition(a, b);
             op = '+';
             break;
         case ArithmeticMethod::subtraction:
-            result = Arithmetic().subtraction(a, b);
+            result = Arithmetic::subtraction(a, b);
             op = '-';
             break;
         case ArithmeticMethod::multiplication:
-            result = Arithmetic().multiplication(a, b);
+            result = Arithmetic::multiplication(a, b);
             op = '*';
             break;
         case ArithmeticMethod::division:
-            result = Arithmetic().division(a, b);
+            result = Arithmetic::division(a, b);
             op = '/';
             break;
         default:
@@ -207,10 +207,10 @@ try
     {
         using numeric::divisor::Divisor;
         case DivisorMethod::euclidean:
-            result = Divisor().euclidean(a, b);
+            result = Divisor::euclidean(a, b);
             break;
         case DivisorMethod::stein:
-            result = Divisor().stein(a, b);
+            result = Divisor::stein(a, b);
             break;
         default:
             return;
@@ -415,10 +415,10 @@ try
     {
         using numeric::prime::Prime;
         case PrimeMethod::eratosthenes:
-            result = Prime().eratosthenes(limit);
+            result = Prime::eratosthenes(limit);
             break;
         case PrimeMethod::euler:
-            result = Prime().euler(limit);
+            result = Prime::euler(limit);
             break;
         default:
             return;

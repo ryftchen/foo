@@ -79,7 +79,7 @@ class Receiver
 {
 public:
     //! @brief Perform the operations associated with carrying out the request.
-    static void action();
+    void action() const;
 };
 
 //! @brief Implement the execution in command.
