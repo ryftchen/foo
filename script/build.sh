@@ -222,7 +222,7 @@ function perform_help_option()
     echo "  -i, --install         install binary with libraries and exit"
     echo "  -u, --uninstall       uninstall binary with libraries and exit"
     echo "  -c, --container       construct docker container and exit"
-    echo "  -a, --archive         start or stop archive server and exit"
+    echo "  -a, --archive         start or stop archive service and exit"
     echo "  -t, --test            only build unit test and exit"
     echo "  -r, --release         set as release version globally"
     echo "  -H, --hook            run hook before commit for precheck"
@@ -365,11 +365,12 @@ function parse_parameters()
 
 function set_compile_condition()
 {
-    if [[ -f ./${FOLDER[scr]}/.build_env ]] && ! {
+    local compile_env="./${FOLDER[scr]}/.build_env"
+    if [[ -f ${compile_env} ]] && ! {
         [[ -v FOO_BLD_FORCE ]] && [[ ${FOO_BLD_FORCE} == "on" ]]
     }; then
         # shellcheck source=/dev/null
-        source "./${FOLDER[scr]}/.build_env"
+        source "${compile_env}"
         if [[ -v FOO_BLD_COMPILER ]]; then
             if [[ ! ${FOO_BLD_COMPILER} =~ ^(gcc|clang)$ ]]; then
                 die "The FOO_BLD_COMPILER must be gcc or clang."
@@ -773,8 +774,9 @@ function perform_archive_option()
         return
     fi
 
-    if ! command -v rustc >/dev/null 2>&1 || ! command -v cargo >/dev/null 2>&1; then
-        die "No rustc or cargo program. Please install it."
+    if ! command -v cargo >/dev/null 2>&1 || ! command -v rustc >/dev/null 2>&1 \
+        || ! command -v supervisord >/dev/null 2>&1; then
+        die "No cargo, rustc or supervisord program. Please install it."
     fi
 
     shell_command "cargo build --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
@@ -783,17 +785,17 @@ function perform_archive_option()
     if [[ ! -f ./${FOLDER[doc]}/${index_html} ]] || [[ ! -f ./${FOLDER[doc]}/${main_css} ]]; then
         shell_command "cp ./${FOLDER[doc]}/template/archive_${index_html} ./${FOLDER[doc]}/${index_html} \
 && cp ./${FOLDER[doc]}/template/archive_${main_css} ./${FOLDER[doc]}/${main_css}"
-        shell_command "sed -i 's/unamed list/document list/g' ./${FOLDER[doc]}/index.html"
+        shell_command "sed -i 's/unamed list/${FOLDER[doc]} list/g' ./${FOLDER[doc]}/${index_html}"
         local item_rows
         item_rows=$(
             cat <<EOF
-<li><a href="./doxygen/index.html" target="_blank" rel="noopener">doxygen document</a></li>
-<li><a href="./browser/index.html" target="_blank" rel="noopener">codebrowser document</a></li>
+<li><a href="./doxygen/${index_html}" target="_blank" rel="noopener">doxygen ${FOLDER[doc]}</a></li>
+<li><a href="./browser/${index_html}" target="_blank" rel="noopener">codebrowser ${FOLDER[doc]}</a></li>
 EOF
         )
         local item_row_single_line
         item_row_single_line=$(echo "${item_rows}" | tr -d '\n')
-        shell_command "sed -i 's|<li>unamed item</li>|${item_row_single_line}|g' ./${FOLDER[doc]}/index.html"
+        shell_command "sed -i 's|<li>unamed item</li>|${item_row_single_line}|g' ./${FOLDER[doc]}/${index_html}"
     fi
     if [[ ! -f ./${FOLDER[rep]}/${index_html} ]] || [[ ! -f ./${FOLDER[rep]}/${main_css} ]]; then
         if [[ ! -d ./${FOLDER[rep]} ]]; then
@@ -801,25 +803,25 @@ EOF
         fi
         shell_command "cp ./${FOLDER[doc]}/template/archive_${index_html} ./${FOLDER[rep]}/${index_html} \
 && cp ./${FOLDER[doc]}/template/archive_${main_css} ./${FOLDER[rep]}/${main_css}"
-        shell_command "sed -i 's/unamed list/report list/g' ./${FOLDER[rep]}/index.html"
+        shell_command "sed -i 's/unamed list/${FOLDER[rep]} list/g' ./${FOLDER[rep]}/${index_html}"
         local item_rows
         item_rows=$(
             cat <<EOF
 <li>dca</li>
 <ul>
-<li><a href="./dca/chk_cov/index.html" target="_blank" rel="noopener">llvm-cov report</a></li>
-<li><a href="./dca/chk_mem/index.html" target="_blank" rel="noopener">valgrind report</a></li>
+<li><a href="./dca/chk_cov/${index_html}" target="_blank" rel="noopener">llvm-cov ${FOLDER[rep]}</a></li>
+<li><a href="./dca/chk_mem/${index_html}" target="_blank" rel="noopener">valgrind ${FOLDER[rep]}</a></li>
 </ul>
 <li>sca</li>
 <ul>
-<li><a href="./sca/lint/index.html" target="_blank" rel="noopener">clang-tidy report</a></li>
-<li><a href="./sca/query/index.html" target="_blank" rel="noopener">codeql report</a></li>
+<li><a href="./sca/lint/${index_html}" target="_blank" rel="noopener">clang-tidy ${FOLDER[rep]}</a></li>
+<li><a href="./sca/query/${index_html}" target="_blank" rel="noopener">codeql ${FOLDER[rep]}</a></li>
 </ul>
 EOF
         )
         local item_row_single_line
         item_row_single_line=$(echo "${item_rows}" | tr -d '\n')
-        shell_command "sed -i 's|<li>unamed item</li>|${item_row_single_line}|g' ./${FOLDER[rep]}/index.html"
+        shell_command "sed -i 's|<li>unamed item</li>|${item_row_single_line}|g' ./${FOLDER[rep]}/${index_html}"
     fi
 
     local server_bin="${FOLDER[proj]}_arc"
@@ -956,12 +958,12 @@ function perform_format_option()
     if [[ ${ARGS[format]} == false ]]; then
         return
     fi
-    if ! command -v clang-format-19 >/dev/null 2>&1 || ! command -v shfmt >/dev/null 2>&1 \
-        || ! command -v black >/dev/null 2>&1 || ! command -v rustfmt >/dev/null 2>&1; then
-        die "No clang-format, shfmt, black or rustfmt program. Please install it."
-    fi
 
     if [[ ${ARGS[format]} == true ]] || [[ ${ARGS[format]} == "cpp" ]]; then
+        if ! command -v clang-format-19 >/dev/null 2>&1; then
+            die "No clang-format-19 program. Please install it."
+        fi
+
         if [[ ${ARGS[quick]} == false ]]; then
             shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
 ./${FOLDER[num]} ./${FOLDER[tst]} -name '*.cpp' -o -name '*.hpp' -o -name '*.tpp' | grep -v '/${FOLDER[bld]}/' \
@@ -976,6 +978,10 @@ function perform_format_option()
     fi
 
     if [[ ${ARGS[format]} == true ]] || [[ ${ARGS[format]} == "sh" ]]; then
+        if ! command -v shfmt >/dev/null 2>&1; then
+            die "No shfmt program. Please install it."
+        fi
+
         if [[ ${ARGS[quick]} == false ]]; then
             shell_command "shfmt -l -w ./${FOLDER[scr]}/*.sh"
         else
@@ -987,6 +993,10 @@ function perform_format_option()
     fi
 
     if [[ ${ARGS[format]} == true ]] || [[ ${ARGS[format]} == "py" ]]; then
+        if ! command -v black >/dev/null 2>&1; then
+            die "No black program. Please install it."
+        fi
+
         if [[ ${ARGS[quick]} == false ]]; then
             shell_command "black --config ./.toml ./${FOLDER[scr]}/*.py"
         else
@@ -998,6 +1008,10 @@ function perform_format_option()
     fi
 
     if [[ ${ARGS[format]} == true ]] || [[ ${ARGS[format]} == "rs" ]]; then
+        if ! command -v cargo >/dev/null 2>&1 || ! command -v rustfmt >/dev/null 2>&1; then
+            die "No cargo or rustfmt program. Please install it."
+        fi
+
         local cargo_toml="Cargo.toml"
         local crate_file="./${FOLDER[doc]}/server/${cargo_toml}"
         if [[ ${ARGS[quick]} == false ]]; then
@@ -1022,15 +1036,13 @@ function perform_lint_option()
     if [[ ${ARGS[lint]} == false ]]; then
         return
     fi
-    if ! command -v clang-tidy-19 >/dev/null 2>&1 || ! command -v run-clang-tidy-19 >/dev/null 2>&1 \
-        || ! command -v compdb >/dev/null 2>&1 || ! pip3 show clang-tidy-converter >/dev/null 2>&1 \
-        || ! command -v shellcheck >/dev/null 2>&1 || ! command -v pylint >/dev/null 2>&1 \
-        || ! command -v clippy-driver >/dev/null 2>&1; then
-        die "No clang-tidy (including run-clang-tidy-19, compdb, clang-tidy-converter), shellcheck, pylint or clippy \
-program. Please install it."
-    fi
 
     if [[ ${ARGS[lint]} == true ]] || [[ ${ARGS[lint]} == "cpp" ]]; then
+        if ! command -v clang-tidy-19 >/dev/null 2>&1 || ! command -v run-clang-tidy-19 >/dev/null 2>&1 \
+            || ! command -v compdb >/dev/null 2>&1 || ! pip3 show clang-tidy-converter >/dev/null 2>&1; then
+            die "No clang-tidy-19, run-clang-tidy-19, compdb or clang-tidy-converter program. Please install it."
+        fi
+
         update_all_compile_databases
         if [[ ${DEV_OPT[pch]} == true ]] || [[ ${DEV_OPT[unity]} == true ]]; then
             die "Due to the unconventional ${COMPILE_DB} file, the --lint option cannot run if the FOO_BLD_PCH or \
@@ -1115,6 +1127,10 @@ FOO_BLD_UNITY is turned on."
     fi
 
     if [[ ${ARGS[lint]} == true ]] || [[ ${ARGS[lint]} == "sh" ]]; then
+        if ! command -v shellcheck >/dev/null 2>&1; then
+            die "No shellcheck program. Please install it."
+        fi
+
         if [[ ${ARGS[quick]} == false ]]; then
             shell_command "shellcheck -a ./${FOLDER[scr]}/*.sh"
         else
@@ -1126,6 +1142,10 @@ FOO_BLD_UNITY is turned on."
     fi
 
     if [[ ${ARGS[lint]} == true ]] || [[ ${ARGS[lint]} == "py" ]]; then
+        if ! command -v pylint >/dev/null 2>&1; then
+            die "No pylint program. Please install it."
+        fi
+
         if [[ ${ARGS[quick]} == false ]]; then
             shell_command "pylint --rcfile=./.pylintrc ./${FOLDER[scr]}/*.py"
         else
@@ -1137,6 +1157,10 @@ FOO_BLD_UNITY is turned on."
     fi
 
     if [[ ${ARGS[lint]} == true ]] || [[ ${ARGS[lint]} == "rs" ]]; then
+        if ! command -v cargo >/dev/null 2>&1 || ! command -v clippy-driver >/dev/null 2>&1; then
+            die "No cargo or clippy program. Please install it."
+        fi
+
         local build_type=""
         if [[ ${ARGS[release]} == true ]]; then
             build_type=" --release"
@@ -1166,7 +1190,7 @@ function perform_query_option()
         return
     fi
     if ! command -v codeql >/dev/null 2>&1 || ! command -v sarif >/dev/null 2>&1; then
-        die "No codeql (including sarif) program. Please install it."
+        die "No codeql or sarif program. Please install it."
     fi
 
     local build_script
@@ -1259,7 +1283,7 @@ function perform_doxygen_option()
         return
     fi
     if ! command -v doxygen >/dev/null 2>&1 || ! command -v dot >/dev/null 2>&1; then
-        die "No doxygen (including dot) program. Please install it."
+        die "No doxygen or dot program. Please install it."
     fi
 
     local commit_id
