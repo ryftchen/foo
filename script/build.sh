@@ -745,7 +745,7 @@ function perform_container_option()
         die "No docker program. Please install it."
     fi
 
-    echo "Please confirm whether continue constructing the docker container. (y or n)"
+    echo "Please confirm whether to continue constructing the container (pull remote image if available). (y or n)"
     local input
     input=$(wait_until_get_input)
     if echo "${input}" | grep -iq '^y'; then
@@ -860,7 +860,7 @@ EOF"
     local supervisor_out
     supervisor_out=$(grep '^stdout_logfile' "${service_config}" | head -n1 | sed 's/^stdout_logfile *= *//')
     if ! supervisorctl -c "${service_config}" status "${server_bin}" | grep -q 'RUNNING' 2>/dev/null; then
-        echo "Please confirm whether continue starting the archive server. (y or n)"
+        echo "Please confirm whether to continue starting the archive service. (y or n)"
         local input
         input=$(wait_until_get_input)
         if echo "${input}" | grep -iq '^y'; then
@@ -877,7 +877,7 @@ EOF"
     else
         shell_command "test -f ${supervisor_out} && cat ${supervisor_out}"
 
-        echo "Please confirm whether continue stopping the archive server. (y or n)"
+        echo "Please confirm whether to continue stopping the archive service. (y or n)"
         local input
         input=$(wait_until_get_input)
         if echo "${input}" | grep -iq '^y'; then
