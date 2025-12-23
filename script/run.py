@@ -379,10 +379,10 @@ class Task:
 
     def _perform_tasks(self):
         while not self._task_queue.empty():
-            command, enter = self._task_queue.get()
-            self._run_single_task(command, enter)
+            command, stdin = self._task_queue.get()
+            self._run_single_task(command, stdin)
 
-    def _run_single_task(self, command: str, enter: str = ""):
+    def _run_single_task(self, command: str, stdin: str = ""):
         full_cmd = (
             f"{self._app_bin_path}/{command}"
             if not self._marked_options["tst"]
@@ -394,8 +394,8 @@ class Task:
         if self._marked_options["chk"]["cov"]:
             full_cmd = f"LLVM_PROFILE_FILE=\
 \"{self._report_path}/dca/chk_cov/foo_chk_cov_{str(self._complete_steps + 1)}.profraw\" {full_cmd}"
-        if enter:
-            command += " > " + enter.replace("\nquit", "")
+        if stdin:
+            command += " > " + stdin.replace("\nquit", "")
         align_len = max(
             len(command) + self._stat_at_least_len,
             self._stat_default_len,
@@ -405,7 +405,7 @@ class Task:
             self._esc_color["blue"], f"CASE: {f'{command}':<{align_len - self._stat_at_least_len}} # START "
         )
 
-        stdout, stderr, return_code = execute_command(full_cmd, enter)
+        stdout, stderr, return_code = execute_command(full_cmd, stdin)
         if not stdout or stderr or return_code:
             print(f"\n[STDOUT]\n{stdout}\n[STDERR]\n{stderr}\n[RETURN CODE]\n{return_code}")
             self._hint_with_highlight(
@@ -816,9 +816,7 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
         return "\n".join(rows)
 
 
-def execute_command(
-    command: str, input: str = "", timeout: int = 300  # pylint: disable=redefined-builtin
-) -> tuple[str, str, int]:
+def execute_command(command: str, stdin: str = "", timeout: int = 300) -> tuple[str, str, int]:
     try:
         process = subprocess.run(
             command,
@@ -828,7 +826,7 @@ def execute_command(
             capture_output=True,
             check=True,
             encoding="utf-8",
-            input=input,
+            input=stdin,
             timeout=timeout,
         )
         return process.stdout.strip(), process.stderr.strip(), process.returncode
