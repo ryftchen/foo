@@ -456,7 +456,9 @@ class Task:
             self._marked_options["chk"]["cov"] = True
             execute_command(f"rm -rf {self._report_path}/dca/chk_cov && mkdir -p {self._report_path}/dca/chk_cov")
         else:
-            exit_with_error("No llvm-profdata or llvm-cov program. Please check it.")
+            exit_with_error(
+                f"No llvm-profdata-{self._llvm_ver} or llvm-cov-{self._llvm_ver} program. Please install it."
+            )
 
     def _check_coverage_handling(self):
         folder_path = f"{self._report_path}/dca/chk_cov"
@@ -500,7 +502,7 @@ class Task:
             self._marked_options["chk"]["mem"] = True
             execute_command(f"rm -rf {self._report_path}/dca/chk_mem && mkdir -p {self._report_path}/dca/chk_mem")
         else:
-            exit_with_error("No valgrind (including valgrind-ci) program. Please check it.")
+            exit_with_error("No valgrind or valgrind-ci program. Please install it.")
 
     def _check_memory_handling(self):
         execute_command(f"rm -rf {self._report_path}/dca/chk_mem/*.xml")
