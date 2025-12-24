@@ -1,6 +1,6 @@
 # foo
 
-[![pipeline](https://img.shields.io/github/actions/workflow/status/ryftchen/foo/pipeline.yaml?branch=master&logo=github&logoColor=white&label=pipeline)](https://github.com/ryftchen/foo/actions/workflows/pipeline.yaml) [![document](https://img.shields.io/website?url=https%3A%2F%2Fryftchen.github.io%2Ffoo%2F&up_message=available&down_message=unavailable&logo=github&logoColor=white&label=document)](https://ryftchen.github.io/foo/)
+[![pipeline](https://img.shields.io/github/actions/workflow/status/ryftchen/foo/pipeline.yaml?branch=master&event=push&logo=github&logoColor=white&label=pipeline)](https://github.com/ryftchen/foo/actions/workflows/pipeline.yaml?query=branch%3Amaster+event%3Apush) [![document](https://img.shields.io/website?url=https%3A%2F%2Fryftchen.github.io%2Ffoo%2F&up_message=available&down_message=unavailable&logo=github&logoColor=white&label=document)](https://ryftchen.github.io/foo/)
 
 The **[foo](https://github.com/ryftchen/foo)** is a personal roadmap for learning programming, like an exploratory demo. Its main purpose is to use the C++ language to implement or improve some common basic functions. It also contains detailed comments for easy summary and archive. The goal is to develop good programming habits while improving programming skills with best practices.
 
