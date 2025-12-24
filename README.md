@@ -1,22 +1,12 @@
 # foo
 
-```text
- ______   ______     ______
-/\  ___\ /\  __ \   /\  __ \
-\ \  __\ \ \ \/\ \  \ \ \/\ \
- \ \_\    \ \_____\  \ \_____\
-  \/_/     \/_____/   \/_____/
-```
-
 [![pipeline](https://img.shields.io/github/actions/workflow/status/ryftchen/foo/pipeline.yaml?branch=master&logo=github&logoColor=white&label=pipeline)](https://github.com/ryftchen/foo/actions/workflows/pipeline.yaml) [![document](https://img.shields.io/website?url=https%3A%2F%2Fryftchen.github.io%2Ffoo%2F&up_message=available&down_message=unavailable&logo=github&logoColor=white&label=document)](https://ryftchen.github.io/foo/)
 
-The **foo** is a personal roadmap for learning programming, like an exploratory demo. Its main purpose is to use the C++ language to implement or improve some common basic functions. It also contains detailed comments for easy summary and archive. The goal is to develop good programming habits while improving programming skills with best practices.
+The **[foo](https://github.com/ryftchen/foo)** is a personal roadmap for learning programming, like an exploratory demo. Its main purpose is to use the C++ language to implement or improve some common basic functions. It also contains detailed comments for easy summary and archive. The goal is to develop good programming habits while improving programming skills with best practices.
 
 ---
 
 ## Status
-
-[![repository](https://github-readme-stats.vercel.app/api/pin/?username=ryftchen&repo=foo&show_owner=true&theme=transparent)](https://github.com/ryftchen/foo)
 
 [![last commit](https://img.shields.io/github/last-commit/ryftchen/foo/master?logo=git&logoColor=white&label=last%20commit)](https://github.com/ryftchen/foo/commits/master) [![license](https://img.shields.io/github/license/ryftchen/foo?logo=git&logoColor=white&label=license)](https://github.com/ryftchen/foo/blob/master/LICENSE)
 
