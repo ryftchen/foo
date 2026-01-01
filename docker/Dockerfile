@@ -8,7 +8,7 @@ sudo tzdata ca-certificates bash coreutils findutils procps grep sed mawk \
 build-essential binutils gcc-14 g++-14 binutils-gold clang-19 clang++-19 lld-19 ninja-build make cmake pkg-config \
 libstdc++-14-dev libgtest-dev libssl-dev liblz4-dev libreadline-dev libgsl-dev libmpfrc++-dev llvm-19-dev libclang-19-dev libclang-rt-19-dev \
 clang-format-19 clang-tidy-19 shfmt shellcheck black pylint rustc cargo rustfmt rust-clippy gdb ccache distcc valgrind \
-cloc pre-commit doxygen doxygen-awesome-css graphviz git python3 python3-pip docker.io docker-compose-v2 npm \
+cloc pre-commit doxygen doxygen-awesome-css graphviz git python3 python3-pip python3-dev docker.io docker-compose-v2 npm \
 elfutils supervisor psmisc net-tools curl tar zip rsync bash-completion man-db \
 && apt-get clean \
 && rm -rf /var/lib/apt/lists/* \
