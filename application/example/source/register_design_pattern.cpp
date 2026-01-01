@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The definitions (register_design_pattern) in the application module.
 //! @version 0.1.0
-//! @copyright Copyright (c) 2022-2025 ryftchen. All rights reserved.
+//! @copyright Copyright (c) 2022-2026 ryftchen. All rights reserved.
 
 #include "register_design_pattern.hpp"
 #include "apply_design_pattern.hpp"
