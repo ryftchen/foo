@@ -2,7 +2,7 @@
 //! @author ryftchen
 //! @brief The definitions (register_data_structure) in the application module.
 //! @version 0.1.0
-//! @copyright Copyright (c) 2022-2025 ryftchen. All rights reserved.
+//! @copyright Copyright (c) 2022-2026 ryftchen. All rights reserved.
 
 #include "register_data_structure.hpp"
 #include "apply_data_structure.hpp"
