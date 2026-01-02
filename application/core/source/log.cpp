@@ -72,7 +72,7 @@ constexpr std::string_view traceLevelPrefixRegex = R"(\[TRC\])";
 //! @brief Regular expression of date time in log.
 constexpr std::string_view dateTimeRegex = R"(\[(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.(\d{9})Z\])";
 //! @brief Regular expression of code file in log.
-constexpr std::string_view codeFileRegex = R"(\[[^ ]+\.(cpp|hpp|tpp)#\d+\])";
+constexpr std::string_view codeFileRegex = R"(\[[^ ]+\.(cpp|hpp)#\d+\])";
 
 //! @brief Debug level prefix with color. Include ANSI escape codes.
 constexpr auto debugLevelPrefixWithColor =

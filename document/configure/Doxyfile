@@ -41,7 +41,7 @@ OPTIMIZE_OUTPUT_JAVA   = NO
 OPTIMIZE_FOR_FORTRAN   = NO
 OPTIMIZE_OUTPUT_VHDL   = NO
 OPTIMIZE_OUTPUT_SLICE  = NO
-EXTENSION_MAPPING      = tpp=C++
+EXTENSION_MAPPING      =
 MARKDOWN_SUPPORT       = YES
 TOC_INCLUDE_HEADINGS   = 5
 MARKDOWN_ID_STYLE      = DOXYGEN
@@ -123,7 +123,6 @@ FILE_PATTERNS          = *.c \
                          *.hxx \
                          *.hpp \
                          *.h++ \
-                         *.tpp \
                          README.md
 RECURSIVE              = YES
 EXCLUDE                = ./application/pch \

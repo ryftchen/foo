@@ -1,6 +1,6 @@
 language: en
 files:
-  - '**/*.{cpp,hpp,tpp,sh,py,rs}'
+  - '**/*.{cpp,hpp,sh,py,rs}'
 dictionaries:
   - bash
   - cpp
@@ -102,6 +102,3 @@ ignoreRegExpList:
   - '# shellcheck.*'
   - '# pylint:.*'
   - '#!?\[.*'
-overrides:
-  - filename: '**/*.tpp'
-    languageId: cpp

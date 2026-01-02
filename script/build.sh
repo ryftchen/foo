@@ -973,10 +973,10 @@ function perform_format_option()
 
         if [[ ${ARGS[quick]} == false ]]; then
             shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
-./${FOLDER[num]} ./${FOLDER[tst]} -name '*.cpp' -o -name '*.hpp' -o -name '*.tpp' | grep -v '/${FOLDER[bld]}/' \
+./${FOLDER[num]} ./${FOLDER[tst]} -name '*.cpp' -o -name '*.hpp' | grep -v '/${FOLDER[bld]}/' \
 | xargs clang-format-19 --Werror -i --style file:./.clang-format --verbose"
         else
-            local format_changed_cpp="${GIT_CHANGE_CMD} | grep -E '\.(cpp|hpp|tpp)$'"
+            local format_changed_cpp="${GIT_CHANGE_CMD} | grep -E '\.(cpp|hpp)$'"
             if eval "${format_changed_cpp}" >/dev/null; then
                 shell_command "${format_changed_cpp} \
 | xargs clang-format-19 --Werror -i --style file:./.clang-format --verbose"
@@ -1055,26 +1055,6 @@ function perform_lint_option()
             die "Due to the unconventional ${COMPILE_DB} file, the --lint option cannot run if the FOO_BLD_PCH or \
 FOO_BLD_UNITY is turned on."
         fi
-
-        local app_comp_db="${FOLDER[bld]}/${COMPILE_DB}"
-        if [[ ! -f ./${app_comp_db} ]]; then
-            die "There is no ${COMPILE_DB} file in the ${FOLDER[bld]} folder. Please generate it."
-        fi
-        shell_command "compdb -p ./${FOLDER[bld]} list >./${COMPILE_DB} && mv ./${app_comp_db} ./${app_comp_db}.bak \
-&& mv ./${COMPILE_DB} ./${FOLDER[bld]}"
-        local exist_file_extention=false
-        while true; do
-            local line
-            line=$(grep -n '.tpp' "./${app_comp_db}" | head -n 1 | cut -d : -f 1)
-            if ! [[ ${line} =~ ^[0-9]+$ ]]; then
-                break
-            fi
-            exist_file_extention=true
-            if ! sed -i $((line - 2)),$((line + 3))d ./"${app_comp_db}" >/dev/null 2>&1; then
-                die "Failed to remove redundant implementation file objects from the ${app_comp_db} file."
-            fi
-        done
-
         local clang_tidy_output_path="./${FOLDER[rep]}/sca/lint"
         local clang_tidy_log="${clang_tidy_output_path}/clang-tidy.log"
         if [[ ! -d ${clang_tidy_output_path} ]]; then
@@ -1082,6 +1062,13 @@ FOO_BLD_UNITY is turned on."
         elif [[ -f ${clang_tidy_log} ]]; then
             shell_command "rm -rf ${clang_tidy_log}"
         fi
+
+        local app_comp_db="${FOLDER[bld]}/${COMPILE_DB}"
+        if [[ ! -f ./${app_comp_db} ]]; then
+            die "There is no ${COMPILE_DB} file in the ${FOLDER[bld]} folder. Please generate it."
+        fi
+        shell_command "compdb -p ./${FOLDER[bld]} list >./${COMPILE_DB} && mv ./${app_comp_db} ./${app_comp_db}.bak \
+&& mv ./${COMPILE_DB} ./${FOLDER[bld]}"
         if [[ ${ARGS[quick]} == false ]]; then
             shell_command "set -o pipefail && find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} \
 ./${FOLDER[ds]} ./${FOLDER[dp]} ./${FOLDER[num]} -name '*.cpp' -o -name '*.hpp' \
@@ -1092,20 +1079,6 @@ FOO_BLD_UNITY is turned on."
             if eval "${lint_changed_cpp_for_app}" >/dev/null; then
                 shell_command "set -o pipefail && ${lint_changed_cpp_for_app} \
 | xargs run-clang-tidy-19 -config-file ./.clang-tidy -p ./${FOLDER[bld]} -quiet | tee -a ${clang_tidy_log}"
-            fi
-        fi
-        if [[ ${exist_file_extention} == true ]]; then
-            if [[ ${ARGS[quick]} == false ]]; then
-                shell_command "set -o pipefail && find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} \
-./${FOLDER[ds]} ./${FOLDER[dp]} ./${FOLDER[num]} -name '*.tpp' \
-| xargs clang-tidy-19 --config-file ./.clang-tidy -p ./${FOLDER[bld]} --quiet | tee -a ${clang_tidy_log}"
-            else
-                local lint_changed_cpp_for_app_ext="${GIT_CHANGE_CMD} \
-| grep -E '^(${FOLDER[app]}|${FOLDER[util]}|${FOLDER[algo]}|${FOLDER[ds]}|${FOLDER[dp]}|${FOLDER[num]})/.*\.tpp$'"
-                if eval "${lint_changed_cpp_for_app_ext}" >/dev/null; then
-                    shell_command "set -o pipefail && ${lint_changed_cpp_for_app_ext} \
-| xargs clang-tidy-19 --config-file ./.clang-tidy -p ./${FOLDER[bld]} --quiet | tee -a ${clang_tidy_log}"
-                fi
             fi
         fi
         shell_command "rm -rf ./${app_comp_db} && mv ./${app_comp_db}.bak ./${app_comp_db}"
@@ -1129,6 +1102,7 @@ FOO_BLD_UNITY is turned on."
             fi
         fi
         shell_command "rm -rf ./${tst_comp_db} && mv ./${tst_comp_db}.bak ./${tst_comp_db}"
+
         shell_command "(test -f ${clang_tidy_log} && cat ${clang_tidy_log}) | sed 's/\x1b\[[0-9;]*m//g' \
 | python3 -m clang_tidy_converter -r ./ html >${clang_tidy_output_path}/index.html"
     fi
@@ -1274,7 +1248,7 @@ function package_for_doxygen()
 
     local check_format="grep -nE '\/\/! @((brief (([a-z].+)|(.+[^.])))|((param|tparam) (.+[.]))|(return (.+[.])))$' \
 -R './${FOLDER[app]}' './${FOLDER[util]}' './${FOLDER[algo]}' './${FOLDER[ds]}' './${FOLDER[dp]}' './${FOLDER[num]}' \
-'./${FOLDER[tst]}' --include '*.cpp' --include '*.hpp' --include '*.tpp'"
+'./${FOLDER[tst]}' --include '*.cpp' --include '*.hpp'"
     if eval "${check_format}" >/dev/null; then
         shell_command "! ${check_format}"
     fi
