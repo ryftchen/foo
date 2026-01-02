@@ -924,12 +924,14 @@ function perform_hook_option()
         die "No pre-commit program. Please install it."
     fi
 
-    if [[ ! -d ~/.cache/pre-commit ]]; then
+    local install_hooks="pre-commit install --install-hooks -c ./.pre-commit -t commit-msg"
+    if [[ -d ~/.cache/pre-commit ]]; then
+        shell_command "${install_hooks}"
+    else
         local constraint="ruamel.yaml<0.19.0"
         shell_command "temp_constraint=\$(mktemp) && (echo '${constraint}' >\${temp_constraint} \
-&& PIP_CONSTRAINT=\${temp_constraint} pre-commit install-hooks -c ./.pre-commit); rm -rf \${temp_constraint}"
+&& PIP_CONSTRAINT=\${temp_constraint} ${install_hooks}); rm -rf \${temp_constraint}"
     fi
-    shell_command "pre-commit install -c ./.pre-commit -t commit-msg"
     shell_command "pre-commit run -c ./.pre-commit --all-files"
 }
 
