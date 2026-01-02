@@ -44,6 +44,8 @@ static void signalHandler(const int sig)
     std::array<char, 1024> buffer{};
     std::ostringstream originalTrace{};
     std::ostringstream detailedTrace{};
+    originalTrace << "\033[7m\033[49m<" << ((numOfFrame < maxFrame) ? "" : "TRUNCATED ") << "BACKTRACE>\033[0m\n";
+    detailedTrace << "\033[7m\033[49m<VERBOSE>\033[0m\n";
     for (int i = 1; i < numOfFrame; ++i)
     {
         originalTrace << symbols[i] << '\n';
@@ -79,13 +81,9 @@ static void signalHandler(const int sig)
     }
     std::free(static_cast<void*>(symbols));
 
-    if (numOfFrame == maxFrame)
-    {
-        detailedTrace << "\n<TRUNCATED>\n";
-    }
     std::fprintf(
         ::stderr,
-        "%s: Crash occurred.\n\n<SIGNAL>\n%d\n\n<BACKTRACE>\n%s\n<VERBOSE>\n%s\n",
+        "%s: Crash occurred.\n\n\033[7m\033[49m<SIGNAL>\033[0m\n%d\n\n%s\n%s",
         executableName().c_str(),
         sig,
         originalTrace.str().c_str(),
