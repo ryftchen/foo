@@ -830,9 +830,8 @@ EOF
         die "There is no ${server_bin} binary file in the ${server_path} folder. Please finish compiling first."
     fi
     local service_config="./${FOLDER[scr]}/.build_service"
-    local start_port=61503
     if [[ ! -f ${service_config} ]]; then
-        local host_addr="127.0.0.1"
+        local host_addr="127.0.0.1" start_port=61503
         shell_command "cat <<EOF >${service_config}
 [unix_http_server]
 file=/tmp/${server_bin}_supervisor.sock
@@ -889,14 +888,6 @@ EOF"
             shell_command "supervisorctl -c ${service_config} shutdown"
 
             shell_command "test -f ${supervisor_out} && >${supervisor_out}"
-            local port1=${start_port}
-            if netstat -tuln | grep ":${port1} " >/dev/null 2>&1; then
-                shell_command "fuser -k ${port1}/tcp || true"
-            fi
-            local port2=$((port1 + 1))
-            if netstat -tuln | grep ":${port2} " >/dev/null 2>&1; then
-                shell_command "fuser -k ${port2}/tcp || true"
-            fi
         else
             echo "No"
             echo

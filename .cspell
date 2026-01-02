@@ -36,7 +36,6 @@ words:
   - EPOLLIN
   - EXTSUM
   - filedir
-  - fuser
   - gdbinit
   - gitmessage
   - gtest
