@@ -1034,7 +1034,7 @@ std::string View::statusReportsPreview(const std::uint16_t frame)
                 execStmt.data() + usedLen,
                 execStmt.size() - usedLen,
                 " && echo 'Stack:' "
-                "&& (timeout --preserve-status --signal=2 1 stdbuf -o0 eu-stack -1v -n %u -p %d 2>&1 | grep '#' "
+                "&& (timeout --preserve-status -s SIGINT 1 stdbuf -o0 eu-stack -1v -n %u -p %d 2>&1 | grep '#' "
                 "|| exit 0); fi\"",
                 frame,
                 tid);
