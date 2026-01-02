@@ -407,7 +407,10 @@ class Task:
 
         stdout, stderr, return_code = execute_command(full_cmd, stdin)
         if not stdout or stderr or return_code:
-            print(f"\n[STDOUT]\n{stdout}\n[STDERR]\n{stderr}\n[RETURN CODE]\n{return_code}")
+            print(
+                f"\033[7m\033[49m[STDOUT]\033[0m\n{stdout}\n\033[7m\033[49m[STDERR]\033[0m\n{stderr}\n\
+\033[7m\033[49m[RETURN CODE]\033[0m\n{return_code}"
+            )
             self._hint_with_highlight(
                 self._esc_color["red"], f"{f'STAT: FAILURE NO.{str(self._complete_steps + 1)}':<{align_len}}"
             )
@@ -468,31 +471,31 @@ class Task:
         )
         if not self._marked_options["tst"]:
             execute_command(
-                f"llvm-cov-{self._llvm_ver} show -instr-profile={folder_path}/foo_chk_cov.profdata \
--show-branches=percent -show-expansions -show-regions -show-line-counts-or-regions -format=html \
--output-dir={folder_path} -Xdemangler=c++filt -object={self._app_bin_path}/{self._app_bin_cmd} \
-{' '.join([f'-object={self._lib_path}/{lib}' for lib in self._lib_list])} 2>&1"
+                f"llvm-cov-{self._llvm_ver} show -instr-profile {folder_path}/foo_chk_cov.profdata \
+-show-branches=percent -show-expansions -show-regions -show-line-counts-or-regions -format html \
+-output-dir {folder_path} -Xdemangler c++filt -object {self._app_bin_path}/{self._app_bin_cmd} \
+{' '.join([f'-object {self._lib_path}/{lib}' for lib in self._lib_list])}"
             )
         else:
             execute_command(
-                f"llvm-cov-{self._llvm_ver} show -instr-profile={folder_path}/foo_chk_cov.profdata \
--show-branches=percent -show-expansions -show-regions -show-line-counts-or-regions -format=html \
--output-dir={folder_path} -Xdemangler=c++filt -object={self._tst_bin_path}/{self._tst_bin_cmd} 2>&1"
+                f"llvm-cov-{self._llvm_ver} show -instr-profile {folder_path}/foo_chk_cov.profdata \
+-show-branches percent -show-expansions -show-regions -show-line-counts-or-regions -format html \
+-output-dir {folder_path} -Xdemangler c++filt -object {self._tst_bin_path}/{self._tst_bin_cmd}"
             )
         stdout, _, _ = (
             execute_command(
-                f"llvm-cov-{self._llvm_ver} report -instr-profile={folder_path}/foo_chk_cov.profdata \
--object={self._app_bin_path}/{self._app_bin_cmd} \
-{' '.join([f'-object={self._lib_path}/{lib}' for lib in self._lib_list])} 2>&1"
+                f"llvm-cov-{self._llvm_ver} report -instr-profile {folder_path}/foo_chk_cov.profdata \
+-object {self._app_bin_path}/{self._app_bin_cmd} \
+{' '.join([f'-object {self._lib_path}/{lib}' for lib in self._lib_list])}"
             )
             if not self._marked_options["tst"]
             else execute_command(
-                f"llvm-cov-{self._llvm_ver} report -instr-profile={folder_path}/foo_chk_cov.profdata \
--object={self._tst_bin_path}/{self._tst_bin_cmd} 2>&1"
+                f"llvm-cov-{self._llvm_ver} report -instr-profile {folder_path}/foo_chk_cov.profdata \
+-object {self._tst_bin_path}/{self._tst_bin_cmd}"
             )
         )
         execute_command(f"rm -rf {folder_path}/{{*.profraw,*.profdata}}")
-        print(f"\n[CHECK COVERAGE]\n{stdout}")
+        print(f"\033[7m\033[49m[CHECK COVERAGE]\033[0m\n{stdout}")
         if "error" in stdout:
             print("Please further check the compilation parameters related to instrumentation.")
 
@@ -531,7 +534,7 @@ class Task:
             or not os.path.isfile(f"{pkg_loc}/valgrind.css")
             or not os.path.isfile(f"{pkg_loc}/valgrind.js")
         ):
-            print("\n[CHECK MEMORY]\nMissing source files prevent indexing.")
+            print("\033[7m\033[49m[CHECK MEMORY]\033[0m\nMissing source files prevent indexing.")
         execute_command(f"cp -rf {pkg_loc}/{{index.html,valgrind.css,valgrind.js}} {self._report_path}/dca/chk_mem/")
 
         with open(f"{self._report_path}/dca/chk_mem/index.html", "rt", encoding="utf-8") as index_content:
@@ -587,18 +590,18 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
 
         if "errors" in stdout:
             stdout = stdout.expandtabs()
-            print(f"\n[CHECK MEMORY]\n{stdout}")
+            print(f"\033[7m\033[49m[CHECK MEMORY]\033[0m\n{stdout}")
             case_path = f"{self._report_path}/dca/chk_mem/memory/case_{str(self._complete_steps + 1)}"
             if inst_num == 1:
-                execute_command(f"valgrind-ci {xml_filename}.xml --source-dir=./ --output-dir={case_path}")
+                execute_command(f"valgrind-ci {xml_filename}.xml --source-dir ./ --output-dir {case_path}")
                 pathlib.Path(f"{case_path}/case_name").write_text(command, "utf-8")
             elif inst_num == 2:
                 execute_command(
-                    f"valgrind-ci {xml_filename}_inst_1.xml --source-dir=./ --output-dir={case_path}_inst_1"
+                    f"valgrind-ci {xml_filename}_inst_1.xml --source-dir ./ --output-dir {case_path}_inst_1"
                 )
                 pathlib.Path(f"{case_path}_inst_1/case_name").write_text(command, "utf-8")
                 execute_command(
-                    f"valgrind-ci {xml_filename}_inst_2.xml --source-dir=./ --output-dir={case_path}_inst_2"
+                    f"valgrind-ci {xml_filename}_inst_2.xml --source-dir ./ --output-dir {case_path}_inst_2"
                 )
                 pathlib.Path(f"{case_path}_inst_2/case_name").write_text(command, "utf-8")
             self._passed_steps -= 1
@@ -607,7 +610,7 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
             )
         elif inst_num not in (1, 2) or stderr:
             self._passed_steps -= 1
-            print("\n[CHECK MEMORY]\nUnsupported valgrind output xml file content.")
+            print("\033[7m\033[49m[CHECK MEMORY]\033[0m\nUnsupported valgrind output xml file content.")
             self._hint_with_highlight(
                 self._esc_color["red"], f"{f'STAT: FAILURE NO.{str(self._complete_steps + 1)}':<{align_len}}"
             )

@@ -779,7 +779,7 @@ function perform_archive_option()
         die "No cargo, rustc or supervisord program. Please install it."
     fi
 
-    shell_command "cargo build --release --manifest-path ./${FOLDER[doc]}/server/Cargo.toml"
+    shell_command "cargo build --manifest-path ./${FOLDER[doc]}/server/Cargo.toml -r"
 
     local index_html="index.html" main_css="main.css"
     if [[ ! -f ./${FOLDER[doc]}/${index_html} ]] || [[ ! -f ./${FOLDER[doc]}/${main_css} ]]; then
@@ -924,8 +924,13 @@ function perform_hook_option()
         die "No pre-commit program. Please install it."
     fi
 
-    shell_command "pre-commit install --config ./.pre-commit --hook-type commit-msg"
-    shell_command "pre-commit run --all-files --config ./.pre-commit"
+    if [[ ! -d ~/.cache/pre-commit ]]; then
+        local constraint="ruamel.yaml<0.19.0"
+        shell_command "temp_constraint=\$(mktemp) && (echo '${constraint}' >\${temp_constraint} \
+&& PIP_CONSTRAINT=\${temp_constraint} pre-commit install-hooks -c ./.pre-commit); rm -rf \${temp_constraint}"
+    fi
+    shell_command "pre-commit install -c ./.pre-commit -t commit-msg"
+    shell_command "pre-commit run -c ./.pre-commit --all-files"
 }
 
 function perform_spell_option()
@@ -937,7 +942,7 @@ function perform_spell_option()
         die "No cspell program. Please install it."
     fi
 
-    shell_command "cspell lint --config ./.cspell --show-context --no-cache"
+    shell_command "cspell lint -c ./.cspell --show-context --no-cache"
 }
 
 function perform_statistics_option()
@@ -950,7 +955,7 @@ function perform_statistics_option()
     fi
 
     shell_command "printf \"C,C++,C/C++ Header\nBourne Shell\nPython\nRust\n\" \
-| xargs -I {} -n 1 -P 1 cloc --config ./.cloc --include-lang='{}'"
+| xargs -I {} -n 1 -P 1 cloc --config ./.cloc --include-lang '{}'"
 }
 
 function perform_format_option()
@@ -967,12 +972,12 @@ function perform_format_option()
         if [[ ${ARGS[quick]} == false ]]; then
             shell_command "find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} ./${FOLDER[ds]} ./${FOLDER[dp]} \
 ./${FOLDER[num]} ./${FOLDER[tst]} -name '*.cpp' -o -name '*.hpp' -o -name '*.tpp' | grep -v '/${FOLDER[bld]}/' \
-| xargs clang-format-19 --Werror -i --style=file:./.clang-format --verbose"
+| xargs clang-format-19 --Werror -i --style file:./.clang-format --verbose"
         else
             local format_changed_cpp="${GIT_CHANGE_CMD} | grep -E '\.(cpp|hpp|tpp)$'"
             if eval "${format_changed_cpp}" >/dev/null; then
                 shell_command "${format_changed_cpp} \
-| xargs clang-format-19 --Werror -i --style=file:./.clang-format --verbose"
+| xargs clang-format-19 --Werror -i --style file:./.clang-format --verbose"
             fi
         fi
     fi
@@ -1015,7 +1020,7 @@ function perform_format_option()
         local cargo_toml="Cargo.toml"
         local crate_file="./${FOLDER[doc]}/server/${cargo_toml}"
         if [[ ${ARGS[quick]} == false ]]; then
-            shell_command "cargo fmt --all --verbose --manifest-path ${crate_file}"
+            shell_command "cargo fmt --manifest-path ${crate_file} --all -v"
         else
             local format_changed_rs="${GIT_CHANGE_CMD} | grep -E '\.rs$'"
             if eval "${format_changed_rs}" >/dev/null; then
@@ -1024,7 +1029,7 @@ do while [[ ! -f \${path}/${cargo_toml} ]] && [[ \${path} != \"/\" ]]; do path=\
 [[ -f \${path}/${cargo_toml} ]] && [[ \$(realpath \${path}/${cargo_toml}) == \$(realpath ${crate_file}) ]] \
 && echo \"\${path}\"; done | sort -u"
                 if eval "${split_crate}" >/dev/null; then
-                    shell_command "cd \$(dirname ${crate_file}) && cargo fmt --verbose"
+                    shell_command "cd \$(dirname ${crate_file}) && cargo fmt -v"
                 fi
             fi
         fi
@@ -1078,26 +1083,26 @@ FOO_BLD_UNITY is turned on."
         if [[ ${ARGS[quick]} == false ]]; then
             shell_command "set -o pipefail && find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} \
 ./${FOLDER[ds]} ./${FOLDER[dp]} ./${FOLDER[num]} -name '*.cpp' -o -name '*.hpp' \
-| xargs run-clang-tidy-19 -config-file=./.clang-tidy -p ./${FOLDER[bld]} -quiet | tee -a ${clang_tidy_log}"
+| xargs run-clang-tidy-19 -config-file ./.clang-tidy -p ./${FOLDER[bld]} -quiet | tee -a ${clang_tidy_log}"
         else
             local lint_changed_cpp_for_app="${GIT_CHANGE_CMD} \
 | grep -E '^(${FOLDER[app]}|${FOLDER[util]}|${FOLDER[algo]}|${FOLDER[ds]}|${FOLDER[dp]}|${FOLDER[num]})/.*\.(cpp|hpp)$'"
             if eval "${lint_changed_cpp_for_app}" >/dev/null; then
                 shell_command "set -o pipefail && ${lint_changed_cpp_for_app} \
-| xargs run-clang-tidy-19 -config-file=./.clang-tidy -p ./${FOLDER[bld]} -quiet | tee -a ${clang_tidy_log}"
+| xargs run-clang-tidy-19 -config-file ./.clang-tidy -p ./${FOLDER[bld]} -quiet | tee -a ${clang_tidy_log}"
             fi
         fi
         if [[ ${exist_file_extention} == true ]]; then
             if [[ ${ARGS[quick]} == false ]]; then
                 shell_command "set -o pipefail && find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} \
 ./${FOLDER[ds]} ./${FOLDER[dp]} ./${FOLDER[num]} -name '*.tpp' \
-| xargs clang-tidy-19 --config-file=./.clang-tidy -p ./${FOLDER[bld]} --quiet | tee -a ${clang_tidy_log}"
+| xargs clang-tidy-19 --config-file ./.clang-tidy -p ./${FOLDER[bld]} --quiet | tee -a ${clang_tidy_log}"
             else
                 local lint_changed_cpp_for_app_ext="${GIT_CHANGE_CMD} \
 | grep -E '^(${FOLDER[app]}|${FOLDER[util]}|${FOLDER[algo]}|${FOLDER[ds]}|${FOLDER[dp]}|${FOLDER[num]})/.*\.tpp$'"
                 if eval "${lint_changed_cpp_for_app_ext}" >/dev/null; then
                     shell_command "set -o pipefail && ${lint_changed_cpp_for_app_ext} \
-| xargs clang-tidy-19 --config-file=./.clang-tidy -p ./${FOLDER[bld]} --quiet | tee -a ${clang_tidy_log}"
+| xargs clang-tidy-19 --config-file ./.clang-tidy -p ./${FOLDER[bld]} --quiet | tee -a ${clang_tidy_log}"
                 fi
             fi
         fi
@@ -1111,19 +1116,19 @@ FOO_BLD_UNITY is turned on."
 && mv ./${tst_comp_db} ./${tst_comp_db}.bak && mv ./${COMPILE_DB} ./${FOLDER[tst]}/${FOLDER[bld]}"
         if [[ ${ARGS[quick]} == false ]]; then
             shell_command "set -o pipefail && find ./${FOLDER[tst]} -name '*.cpp' \
-| xargs run-clang-tidy-19 -config-file=./.clang-tidy -p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet \
+| xargs run-clang-tidy-19 -config-file ./.clang-tidy -p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet \
 | tee -a ${clang_tidy_log}"
         else
             local lint_changed_cpp_for_tst="${GIT_CHANGE_CMD} | grep -E '^${FOLDER[tst]}/.*\.cpp$'"
             if eval "${lint_changed_cpp_for_tst}" >/dev/null; then
                 shell_command "set -o pipefail && ${lint_changed_cpp_for_tst} \
-| xargs run-clang-tidy-19 -config-file=./.clang-tidy -p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet \
+| xargs run-clang-tidy-19 -config-file ./.clang-tidy -p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet \
 | tee -a ${clang_tidy_log}"
             fi
         fi
         shell_command "rm -rf ./${tst_comp_db} && mv ./${tst_comp_db}.bak ./${tst_comp_db}"
         shell_command "(test -f ${clang_tidy_log} && cat ${clang_tidy_log}) | sed 's/\x1b\[[0-9;]*m//g' \
-| python3 -m clang_tidy_converter --project_root ./ html >${clang_tidy_output_path}/index.html"
+| python3 -m clang_tidy_converter -r ./ html >${clang_tidy_output_path}/index.html"
     fi
 
     if [[ ${ARGS[lint]} == true ]] || [[ ${ARGS[lint]} == "sh" ]]; then
@@ -1147,11 +1152,11 @@ FOO_BLD_UNITY is turned on."
         fi
 
         if [[ ${ARGS[quick]} == false ]]; then
-            shell_command "pylint --rcfile=./.pylintrc ./${FOLDER[scr]}/*.py"
+            shell_command "pylint --rcfile ./.pylintrc ./${FOLDER[scr]}/*.py"
         else
             local lint_changed_py="${GIT_CHANGE_CMD} | grep -E '\.py$'"
             if eval "${lint_changed_py}" >/dev/null; then
-                shell_command "${lint_changed_py} | xargs pylint --rcfile=./.pylintrc"
+                shell_command "${lint_changed_py} | xargs pylint --rcfile ./.pylintrc"
             fi
         fi
     fi
@@ -1163,7 +1168,7 @@ FOO_BLD_UNITY is turned on."
 
         local build_type=""
         if [[ ${ARGS[release]} == true ]]; then
-            build_type=" --release"
+            build_type=" -r"
         fi
         local cargo_toml="Cargo.toml"
         local crate_file="./${FOLDER[doc]}/server/${cargo_toml}"
@@ -1228,10 +1233,10 @@ to improve accuracy. (y or n)"
 
     local codeql_db_path="./${FOLDER[rep]}/sca/query"
     shell_command "rm -rf ${codeql_db_path} && mkdir -p ${codeql_db_path}"
-    shell_command "codeql database create ${codeql_db_path} --codescanning-config=./.codeql --language=cpp \
---source-root=./ --command='${build_script}${other_option}' --command='${build_script} --test${other_option}'"
+    shell_command "codeql database create ${codeql_db_path} --codescanning-config ./.codeql -l cpp -s ./ \
+-c '${build_script}${other_option}' -c '${build_script} --test${other_option}'"
     local codeql_sarif="${codeql_db_path}/codeql.sarif"
-    shell_command "codeql database analyze ${codeql_db_path} --format=sarif-latest --output=${codeql_sarif}"
+    shell_command "codeql database analyze ${codeql_db_path} --format sarif-latest -o ${codeql_sarif}"
     if echo "${input}" | grep -iq '^y'; then
         build_script=./${FOLDER[scr]}/$(basename "$0")
         shell_command "${build_script}${other_option} >/dev/null && ${build_script} --test${other_option} >/dev/null"
@@ -1251,7 +1256,7 @@ to improve accuracy. (y or n)"
         else
             shell_command "! ${sarif_sum}"
         fi
-        shell_command "sarif html ${codeql_sarif} --output ${codeql_db_path}/index.html"
+        shell_command "sarif html ${codeql_sarif} -o ${codeql_db_path}/index.html"
     else
         die "Could not find sarif file in codeql database."
     fi
@@ -1271,7 +1276,7 @@ function package_for_doxygen()
     if eval "${check_format}" >/dev/null; then
         shell_command "! ${check_format}"
     fi
-    shell_command "(cat ./${FOLDER[doc]}/configure/Doxyfile; echo 'PROJECT_NUMBER=\"$(git rev-parse --short @)\"') \
+    shell_command "(cat ./${FOLDER[doc]}/configure/Doxyfile; echo 'PROJECT_NUMBER=\"$(git rev-parse --short HEAD)\"') \
 | doxygen -"
     local doxygen_tar="${FOLDER[proj]}_${doxygen_folder}_${commit_id}.tar.bz2"
     shell_command "tar -jcvf ./${FOLDER[doc]}/artifact/${doxygen_tar} -C ./${FOLDER[doc]} ${doxygen_folder} >/dev/null"
@@ -1287,14 +1292,14 @@ function perform_doxygen_option()
     fi
 
     local commit_id
-    commit_id=$(git rev-parse --short @)
+    commit_id=$(git rev-parse --short HEAD)
     if [[ -z ${commit_id} ]]; then
         commit_id="local"
     fi
     if [[ -d ./${FOLDER[doc]}/artifact ]]; then
         local last_tar="${FOLDER[proj]}_doxygen_${commit_id}.tar.bz2"
         if [[ -f ./${FOLDER[doc]}/artifact/${last_tar} ]]; then
-            local time_interval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[doc]}/artifact/${last_tar}")))
+            local time_interval=$(($(date +%s) - $(stat -L -c %Y "./${FOLDER[doc]}/artifact/${last_tar}")))
             if [[ ${time_interval} -lt 60 ]]; then
                 die "The latest doxygen artifact ${last_tar} has been generated since ${time_interval} s ago."
             fi
@@ -1355,14 +1360,14 @@ function perform_browser_option()
     fi
 
     local commit_id
-    commit_id=$(git rev-parse --short @)
+    commit_id=$(git rev-parse --short HEAD)
     if [[ -z ${commit_id} ]]; then
         commit_id="local"
     fi
     if [[ -d ./${FOLDER[doc]}/artifact ]]; then
         local last_tar="${FOLDER[proj]}_browser_${commit_id}.tar.bz2"
         if [[ -f ./${FOLDER[doc]}/artifact/${last_tar} ]]; then
-            local time_interval=$(($(date +%s) - $(stat -L --format %Y "./${FOLDER[doc]}/artifact/${last_tar}")))
+            local time_interval=$(($(date +%s) - $(stat -L -c %Y "./${FOLDER[doc]}/artifact/${last_tar}")))
             if [[ ${time_interval} -lt 60 ]]; then
                 die "The latest browser artifact ${last_tar} has been generated since ${time_interval} s ago."
             fi
