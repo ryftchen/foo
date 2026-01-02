@@ -989,7 +989,7 @@ std::string View::statusReportsPreview(const std::uint16_t frame)
 {
     if ((frame > 0)
         && (::system( // NOLINT(cert-env33-c, concurrency-mt-unsafe)
-                "which eu-stack >/dev/null 2>&1 "
+                "command -v eu-stack >/dev/null 2>&1 "
                 "&& grep -qx '0' /proc/sys/kernel/yama/ptrace_scope >/dev/null 2>&1")
             != EXIT_SUCCESS))
     {
