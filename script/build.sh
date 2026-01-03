@@ -11,8 +11,8 @@ declare -rA ESC_COLOR=([exec]="\033[0;33;40m\033[1m\033[49m" [succ]="\033[0;32;4
     [fail]="\033[0;31;40m\033[1m\033[49m" [time]="\033[0;39;40m\033[1m\033[2m\033[49m")
 declare -r ESC_OFF="\033[0m"
 declare -A ARGS=([help]=false [assume]=false [quick]=false [dry]=false [initialize]=false [clean]=false [install]=false
-    [uninstall]=false [container]=false [archive]=false [test]=false [release]=false [hook]=false [spell]=false
-    [statistics]=false [format]=false [lint]=false [query]=false [doxygen]=false [browser]=false)
+    [uninstall]=false [container]=false [archive]=false [test]=false [release]=false [precheck]=false [statistics]=false
+    [format]=false [lint]=false [query]=false [doxygen]=false [browser]=false)
 declare -A DEV_OPT=([compiler]="gcc" [parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]="localhost"
     [tmpfs]=false)
 declare MULTI_CHOICE_ORDER=()
@@ -146,9 +146,9 @@ function count_enabled_multiple_choice_parameters()
 {
     local number=0
     for key in "${!ARGS[@]}"; do
-        if [[ ${key} == "release" ]] || [[ ${key} == "hook" ]] || [[ ${key} == "spell" ]] \
-            || [[ ${key} == "statistics" ]] || [[ ${key} == "format" ]] || [[ ${key} == "lint" ]] \
-            || [[ ${key} == "query" ]] || [[ ${key} == "doxygen" ]] || [[ ${key} == "browser" ]]; then
+        if [[ ${key} == "release" ]] || [[ ${key} == "precheck" ]] || [[ ${key} == "statistics" ]] \
+            || [[ ${key} == "format" ]] || [[ ${key} == "lint" ]] || [[ ${key} == "query" ]] \
+            || [[ ${key} == "doxygen" ]] || [[ ${key} == "browser" ]]; then
             if [[ ${ARGS[${key}]} != false ]]; then
                 number+=1
             fi
@@ -208,7 +208,7 @@ function perform_help_option()
     fi
 
     echo "usage: $(basename "${0}") [-h] [-A {y,n}] [-Q] [-D] [-I] [-C] [-i] [-u] [-q] [-c] [-a] [-t [-r]] \
-[[{-H,-c,-f [cpp,sh,py,rs],-l [cpp,sh,py,rs],-S,-b,-d} ...] [-r]]"
+[[{-p,-s,-f [cpp,sh,py,rs],-l [cpp,sh,py,rs],-d,-b} ...] [-r]]"
     echo
     echo "build script"
     echo
@@ -226,9 +226,8 @@ function perform_help_option()
     echo "  -a, --archive         start or stop archive service and exit"
     echo "  -t, --test            only build unit test and exit"
     echo "  -r, --release         set as release version globally"
-    echo "  -H, --hook            run hook before commit for precheck"
-    echo "  -s, --spell           spell check against dictionaries"
-    echo "  -S, --statistics      lines of code classification statistics"
+    echo "  -p, --precheck        run hooks before commit for precheck"
+    echo "  -s, --statistics      lines of code classification statistics"
     echo "  -f [cpp,sh,py,rs], --format [cpp,sh,py,rs]"
     echo "                        format all code files or by type"
     echo "  -l [cpp,sh,py,rs], --lint [cpp,sh,py,rs]"
@@ -314,17 +313,12 @@ function parse_parameters()
             fi
             ARGS[release]=true
             ;;
-        -H | --hook)
+        -p | --precheck)
             validate_multiple_choice_exclusivity "${1}"
-            update_multiple_choice_order "hook"
-            ARGS[hook]=true
+            update_multiple_choice_order "precheck"
+            ARGS[precheck]=true
             ;;
-        -s | --spell)
-            validate_multiple_choice_exclusivity "${1}"
-            update_multiple_choice_order "spell"
-            ARGS[spell]=true
-            ;;
-        -S | --statistics)
+        -s | --statistics)
             validate_multiple_choice_exclusivity "${1}"
             update_multiple_choice_order "statistics"
             ARGS[statistics]=true
@@ -907,9 +901,9 @@ function try_perform_single_choice_options()
     perform_archive_option
 }
 
-function perform_hook_option()
+function perform_precheck_option()
 {
-    if [[ ${ARGS[hook]} == false ]]; then
+    if [[ ${ARGS[precheck]} == false ]]; then
         return
     fi
     if ! command -v pre-commit >/dev/null 2>&1; then
@@ -918,18 +912,6 @@ function perform_hook_option()
 
     shell_command "pre-commit install --install-hooks -c ./.pre-commit -t commit-msg"
     shell_command "pre-commit run -c ./.pre-commit --all-files"
-}
-
-function perform_spell_option()
-{
-    if [[ ${ARGS[spell]} == false ]]; then
-        return
-    fi
-    if ! command -v cspell >/dev/null 2>&1; then
-        die "No cspell program. Please install it."
-    fi
-
-    shell_command "cspell lint -c ./.cspell --show-context --no-cache"
 }
 
 function perform_statistics_option()
@@ -1343,10 +1325,8 @@ function perform_browser_option()
 function try_perform_multiple_choice_options()
 {
     for choice in "${MULTI_CHOICE_ORDER[@]}"; do
-        if [[ ${choice} == "hook" ]]; then
-            perform_hook_option
-        elif [[ ${choice} == "spell" ]]; then
-            perform_spell_option
+        if [[ ${choice} == "precheck" ]]; then
+            perform_precheck_option
         elif [[ ${choice} == "statistics" ]]; then
             perform_statistics_option
         elif [[ ${choice} == "format" ]]; then

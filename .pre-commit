@@ -22,6 +22,7 @@ repos:
         files: \.toml$
       - id: check-vcs-permalinks
       - id: check-yaml
+        types: []
         files: |
           (?x)(
             .*\.ya?ml$
@@ -51,6 +52,18 @@ repos:
           - '--autofix'
           - '--no-sort-keys'
       - id: trailing-whitespace
+  - repo: https://github.com/streetsidesoftware/cspell-cli
+    rev: v7.3.3
+    hooks:
+      - id: cspell
+        types: []
+        files: \.(cpp|hpp|sh|py|rs)$
+        args:
+          - '-c'
+          - .cspell
+          - '--show-context'
+          - '--show-suggestions'
+          - '--no-cache'
   - repo: https://github.com/cheshirekow/cmake-format-precommit
     rev: v0.6.13
     hooks:

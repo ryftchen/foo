@@ -29,7 +29,7 @@ jobs:
         uses: actions/checkout@v4.1.0
       - name: Precheck
         run: |
-          ./script/build.sh --hook --spell
+          ./script/build.sh --precheck
       - name: Evaluate code quality
         run: |
           ./script/build.sh --format --lint
