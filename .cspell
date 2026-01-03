@@ -20,7 +20,6 @@ words:
   - autorestart
   - BKDR
   - CBLAS
-  - chrono
   - CLICOLOR
   - codebrowser
   - codescanning
@@ -80,7 +79,6 @@ words:
   - tmpfs
   - tparam
   - tsan
-  - tuln
   - ubsan
   - uncurried
   - valgrind

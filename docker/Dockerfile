@@ -4,18 +4,16 @@ SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update \
 && DEBIAN_FRONTEND=noninteractive apt-get install --assume-yes --no-install-recommends \
-sudo tzdata ca-certificates bash coreutils findutils procps grep sed mawk \
+sudo tzdata ca-certificates git bash python3 python3-pip coreutils findutils procps grep sed mawk tar curl \
 build-essential binutils gcc-14 g++-14 binutils-gold clang-19 clang++-19 lld-19 ninja-build make cmake pkg-config \
 libstdc++-14-dev libgtest-dev libssl-dev liblz4-dev libreadline-dev libgsl-dev libmpfrc++-dev llvm-19-dev libclang-19-dev libclang-rt-19-dev \
-clang-format-19 clang-tidy-19 shfmt shellcheck black pylint rustc cargo rustfmt rust-clippy gdb ccache distcc valgrind \
-cloc pre-commit doxygen doxygen-awesome-css graphviz git python3 python3-pip docker.io docker-compose-v2 npm \
-elfutils supervisor bash-completion man-db curl tar zip rsync \
+clang-format-19 clang-tidy-19 shfmt shellcheck black pylint rustc cargo rustfmt rust-clippy gdb ccache distcc valgrind elfutils \
+cloc pre-commit doxygen doxygen-awesome-css graphviz supervisor docker.io docker-compose-v2 bash-completion man-db \
+zip rsync \
 && apt-get clean \
 && rm -rf /var/lib/apt/lists/* \
-&& pip3 install --no-cache-dir --break-system-packages compdb==0.2.0 ValgrindCI==0.3.0 sarif-tools==2.0.0 \
+&& pip3 install --no-cache-dir --break-system-packages compdb==0.2.0 ValgrindCI==0.3.0 sarif-tools==2.0.0 nodeenv==1.8.0 \
 git+https://github.com/yuriisk/clang-tidy-converter.git@f07de2eca78637c47893ddb0dfdf150163572ab5 \
-&& npm install --no-save --global --no-package-lock cspell@7.3.9 \
-&& npm cache clean --force \
 && curl -L https://github.com/github/codeql-action/releases/download/codeql-bundle-v2.22.4/codeql-bundle-linux64.tar.gz | tar -xz -C /usr/local/share \
 && rm -rf /usr/local/share/codeql/{actions,csharp,csv,go,html,java,javascript,properties,python,ruby,rust,swift,xml,yaml} \
 /usr/local/share/codeql/qlpacks/codeql/{actions-*,csharp-*,go-*,java-*,javascript-*,python-*,ruby-*,rust-*,swift-*} \
