@@ -915,14 +915,7 @@ function perform_hook_option()
         die "No pre-commit program. Please install it."
     fi
 
-    local install_hooks="pre-commit install --install-hooks -c ./.pre-commit -t commit-msg"
-    if [[ -d ~/.cache/pre-commit ]]; then
-        shell_command "${install_hooks}"
-    else
-        local constraint="ruamel.yaml<0.19.0"
-        shell_command "temp_constraint=\$(mktemp) && (echo '${constraint}' >\${temp_constraint} \
-&& PIP_CONSTRAINT=\${temp_constraint} ${install_hooks}); rm -rf \${temp_constraint}"
-    fi
+    shell_command "pre-commit install --install-hooks -c ./.pre-commit -t commit-msg"
     shell_command "pre-commit run -c ./.pre-commit --all-files"
 }
 
@@ -1237,11 +1230,11 @@ function package_for_doxygen()
     shell_command "rm -rf ./${FOLDER[doc]}/artifact/${FOLDER[proj]}_${doxygen_folder}_*.tar.bz2 \
 ./${FOLDER[doc]}/${doxygen_folder} && mkdir ./${FOLDER[doc]}/${doxygen_folder}"
 
-    local check_format="grep -nE '\/\/! @((brief (([a-z].+)|(.+[^.])))|((param|tparam) (.+[.]))|(return (.+[.])))$' \
+    local check_comment="grep -nE '\/\/! @((brief (([a-z].+)|(.+[^.])))|((param|tparam) (.+[.]))|(return (.+[.])))$' \
 -R './${FOLDER[app]}' './${FOLDER[util]}' './${FOLDER[algo]}' './${FOLDER[ds]}' './${FOLDER[dp]}' './${FOLDER[num]}' \
 './${FOLDER[tst]}' --include '*.cpp' --include '*.hpp'"
-    if eval "${check_format}" >/dev/null; then
-        shell_command "! ${check_format}"
+    if eval "${check_comment}" >/dev/null; then
+        shell_command "! ${check_comment}"
     fi
     shell_command "(cat ./${FOLDER[doc]}/configure/Doxyfile; echo 'PROJECT_NUMBER=\"$(git rev-parse --short HEAD)\"') \
 | doxygen -"
