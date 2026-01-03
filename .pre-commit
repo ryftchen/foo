@@ -30,6 +30,7 @@ repos:
             |(^|/)\.clang-tidy$
             |(^|/)\.codeql$
             |(^|/)\.cspell$
+            |(^|/)\.markdownlint$
             |(^|/)\.pre-commit$
           )
       - id: debug-statements
@@ -69,6 +70,13 @@ repos:
     hooks:
       - id: cmake-format
       - id: cmake-lint
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.45.0
+    hooks:
+      - id: markdownlint
+        args:
+          - '-c'
+          - .markdownlint
   - repo: https://github.com/jorisroovers/gitlint
     rev: v0.19.1
     hooks:
