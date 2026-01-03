@@ -14,8 +14,9 @@ function _foo()
         return
         ;;
     app-algo)
-        mapfile -t COMPREPLY < <(compgen -W "-h --help -m --match -n --notation -o --optimal -s --search -S --sort" \
-            -- "${curr}")
+        mapfile -t COMPREPLY < <(
+            compgen -W "-h --help -m --match -n --notation -o --optimal -s --search -S --sort" -- "${curr}"
+        )
         return
         ;;
     app-dp)
@@ -23,13 +24,15 @@ function _foo()
         return
         ;;
     app-ds)
-        mapfile -t COMPREPLY < <(compgen -W "-h --help -c --cache -f --filter -g --graph -H --heap -l --linear \
--t --tree" -- "${curr}")
+        mapfile -t COMPREPLY < <(
+            compgen -W "-h --help -c --cache -f --filter -g --graph -H --heap -l --linear -t --tree" -- "${curr}"
+        )
         return
         ;;
     app-num)
-        mapfile -t COMPREPLY < <(compgen -W "-h --help -a --arithmetic -d --divisor -i --integral -p --prime" \
-            -- "${curr}")
+        mapfile -t COMPREPLY < <(
+            compgen -W "-h --help -a --arithmetic -d --divisor -i --integral -p --prime" -- "${curr}"
+        )
         return
         ;;
     -*)
@@ -40,8 +43,9 @@ function _foo()
         ;;
     esac
 
-    mapfile -t COMPREPLY < <(compgen -W "-h --help -v --version -d --dump -c --console app-algo app-dp app-ds app-num" \
-        -- "${curr}")
+    mapfile -t COMPREPLY < <(
+        compgen -W "-h --help -v --version -d --dump -c --console app-algo app-dp app-ds app-num" -- "${curr}"
+    )
 }
 
 complete -F _foo foo
