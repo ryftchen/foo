@@ -5,6 +5,7 @@ declare -rA FOLDER=([proj]="foo" [app]="application" [util]="utility" [algo]="al
     [rep]="report" [cac]=".cache")
 declare -r COMPILE_DB="compile_commands.json"
 declare -r BASH_RC=".bashrc"
+declare -r GIT_COMMIT_CMD="git rev-parse --short=7 HEAD"
 declare -r GIT_CHANGE_CMD="git status --porcelain -z | cut -z -c4- | tr '\0' '\n'"
 declare -rA ESC_COLOR=([exec]="\033[0;33;40m\033[1m\033[49m" [succ]="\033[0;32;40m\033[1m\033[49m"
     [fail]="\033[0;31;40m\033[1m\033[49m" [time]="\033[0;39;40m\033[1m\033[2m\033[49m")
@@ -722,8 +723,8 @@ function perform_uninstall_option()
     shell_command "rm -rf ~/.${FOLDER[proj]}"
     shell_command "cat ./${FOLDER[bld]}/${manifest_txt} | xargs ${SUDO_PREFIX}rm -rf \
 && ${SUDO_PREFIX}rm -rf /opt/${FOLDER[proj]}/${completion_bash} /opt/${FOLDER[proj]}/man"
-    shell_command "cat ./${FOLDER[bld]}/${manifest_txt} | xargs -L1 dirname \
-| xargs ${SUDO_PREFIX}rmdir -p 2>/dev/null || true"
+    shell_command \
+        "cat ./${FOLDER[bld]}/${manifest_txt} | xargs -L1 dirname | xargs ${SUDO_PREFIX}rmdir -p 2>/dev/null || true"
     if [[ -f ~/${BASH_RC} ]]; then
         shell_command "sed -i '/export PATH=\/opt\/${FOLDER[proj]}\/bin:\$PATH/d' ~/${BASH_RC}"
         shell_command "sed -i '/\\\. \/opt\/${FOLDER[proj]}\/${completion_bash}/d' ~/${BASH_RC}"
@@ -849,8 +850,8 @@ serverurl=unix:///tmp/${server_bin}_supervisor.sock
 
 [program:${server_bin}]
 directory=$(pwd)
-command=$(realpath "${server_path}/${server_bin}") \
---root-dir ./${FOLDER[doc]} --root-dir ./${FOLDER[rep]} --host ${host_addr} --port ${start_port}
+command=$(realpath "${server_path}/${server_bin}") --root-dir ./${FOLDER[doc]} --root-dir ./${FOLDER[rep]} \
+--host ${host_addr} --port ${start_port}
 autostart=false
 autorestart=true
 stdout_logfile=/tmp/${server_bin}_supervisor.out
@@ -962,8 +963,8 @@ function perform_format_option()
         else
             local format_changed_cpp="${GIT_CHANGE_CMD} | grep -E '\.(cpp|hpp)$'"
             if eval "${format_changed_cpp}" >/dev/null; then
-                shell_command "${format_changed_cpp} \
-| xargs clang-format-19 --Werror -i --style file:./.clang-format --verbose"
+                shell_command \
+                    "${format_changed_cpp} | xargs clang-format-19 --Werror -i --style file:./.clang-format --verbose"
             fi
         fi
     fi
@@ -1236,8 +1237,8 @@ function package_for_doxygen()
     if eval "${check_comment}" >/dev/null; then
         shell_command "! ${check_comment}"
     fi
-    shell_command "(cat ./${FOLDER[doc]}/configure/Doxyfile; echo 'PROJECT_NUMBER=\"$(git rev-parse --short HEAD)\"') \
-| doxygen -"
+    shell_command \
+        "(cat ./${FOLDER[doc]}/configure/Doxyfile; echo 'PROJECT_NUMBER=\"$(${GIT_COMMIT_CMD})\"') | doxygen -"
     local doxygen_tar="${FOLDER[proj]}_${doxygen_folder}_${commit_id}.tar.bz2"
     shell_command "tar -jcvf ./${FOLDER[doc]}/artifact/${doxygen_tar} -C ./${FOLDER[doc]} ${doxygen_folder} >/dev/null"
 }
@@ -1252,7 +1253,7 @@ function perform_doxygen_option()
     fi
 
     local commit_id
-    commit_id=$(git rev-parse --short HEAD)
+    commit_id=$(${GIT_COMMIT_CMD})
     if [[ -z ${commit_id} ]]; then
         commit_id="local"
     fi
@@ -1320,7 +1321,7 @@ function perform_browser_option()
     fi
 
     local commit_id
-    commit_id=$(git rev-parse --short HEAD)
+    commit_id=$(${GIT_COMMIT_CMD})
     if [[ -z ${commit_id} ]]; then
         commit_id="local"
     fi
