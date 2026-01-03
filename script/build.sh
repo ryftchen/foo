@@ -115,14 +115,14 @@ function validate_single_choice_exclusivity()
 {
     if [[ $(count_enabled_single_choice_parameters) -gt 0 ]] \
         || [[ $(count_enabled_multiple_choice_parameters) -gt 0 ]]; then
-        die "Mutually exclusive option: $1 is not allowed."
+        die "Mutually exclusive option: ${1} is not allowed."
     fi
 }
 
 function validate_multiple_choice_exclusivity()
 {
     if [[ $(count_enabled_single_choice_parameters) -gt 0 ]]; then
-        die "Mutually exclusive option: $1 is not allowed."
+        die "Mutually exclusive option: ${1} is not allowed."
     fi
 }
 
@@ -160,7 +160,7 @@ function count_enabled_multiple_choice_parameters()
 
 function update_multiple_choice_order()
 {
-    local option="$1" has_added=false
+    local option="${1}" has_added=false
     for choice in "${MULTI_CHOICE_ORDER[@]}"; do
         if [[ ${choice} == "${option}" ]]; then
             has_added=true
@@ -175,16 +175,16 @@ function update_multiple_choice_order()
 
 function handle_type_related_parameter()
 {
-    local option=$1
+    local option=${1}
     shift
 
     if [[ ${ARGS[${option}]} != false ]]; then
-        die "Set the required parameter repeatedly for the ${option} option: $1."
+        die "Set the required parameter repeatedly for the ${option} option: ${1}."
     fi
     if [[ $# -gt 1 ]]; then
-        case $2 in
+        case ${2} in
         cpp | sh | py | rs)
-            ARGS[${option}]=$2
+            ARGS[${option}]=${2}
             return 1
             ;;
         -*)
@@ -192,7 +192,7 @@ function handle_type_related_parameter()
             return 0
             ;;
         *)
-            die "Invalid argument for the $1 option: $2. Only 'cpp', 'sh', 'py' or 'rs' are allowed."
+            die "Invalid argument for the ${1} option: ${2}. Only 'cpp', 'sh', 'py' or 'rs' are allowed."
             ;;
         esac
     else
@@ -242,25 +242,25 @@ function perform_help_option()
 function parse_parameters()
 {
     while [[ $# -gt 0 ]]; do
-        case $1 in
+        case ${1} in
         -h | --help)
             ARGS[help]=true
             perform_help_option
             ;;
         -A | --assume)
             if [[ ${ARGS[assume]} != false ]]; then
-                die "Set the required parameter repeatedly for the $1 option: $2."
+                die "Set the required parameter repeatedly for the ${1} option: ${2}."
             fi
             if [[ $# -lt 2 ]]; then
-                die "The $1 command line option requires an argument."
+                die "The ${1} command line option requires an argument."
             fi
-            case $2 in
+            case ${2} in
             y | n)
-                ARGS[assume]=$2
+                ARGS[assume]=${2}
                 shift
                 ;;
             *)
-                die "Invalid argument for the $1 option: $2. Only 'y' or 'n' are allowed."
+                die "Invalid argument for the ${1} option: ${2}. Only 'y' or 'n' are allowed."
                 ;;
             esac
             ;;
@@ -271,27 +271,27 @@ function parse_parameters()
             ARGS[dry]=true
             ;;
         -I | --initialize)
-            validate_single_choice_exclusivity "$1"
+            validate_single_choice_exclusivity "${1}"
             ARGS[initialize]=true
             ;;
         -C | --clean)
-            validate_single_choice_exclusivity "$1"
+            validate_single_choice_exclusivity "${1}"
             ARGS[clean]=true
             ;;
         -i | --install)
-            validate_single_choice_exclusivity "$1"
+            validate_single_choice_exclusivity "${1}"
             ARGS[install]=true
             ;;
         -u | --uninstall)
-            validate_single_choice_exclusivity "$1"
+            validate_single_choice_exclusivity "${1}"
             ARGS[uninstall]=true
             ;;
         -c | --container)
-            validate_single_choice_exclusivity "$1"
+            validate_single_choice_exclusivity "${1}"
             ARGS[container]=true
             ;;
         -a | --archive)
-            validate_single_choice_exclusivity "$1"
+            validate_single_choice_exclusivity "${1}"
             ARGS[archive]=true
             ;;
         -t | --test)
@@ -300,7 +300,7 @@ function parse_parameters()
             } || {
                 [[ ${ARGS[release]} == false ]] && [[ $(count_enabled_multiple_choice_parameters) -gt 0 ]]
             } || [[ $(count_enabled_single_choice_parameters) -gt 0 ]]; then
-                die "Mutually exclusive option: $1 is not allowed."
+                die "Mutually exclusive option: ${1} is not allowed."
             fi
             ARGS[test]=true
             ;;
@@ -310,54 +310,54 @@ function parse_parameters()
             } || {
                 [[ ${ARGS[test]} == false ]] && [[ $(count_enabled_single_choice_parameters) -gt 0 ]]
             }; then
-                die "Mutually exclusive option: $1 is not allowed."
+                die "Mutually exclusive option: ${1} is not allowed."
             fi
             ARGS[release]=true
             ;;
         -H | --hook)
-            validate_multiple_choice_exclusivity "$1"
+            validate_multiple_choice_exclusivity "${1}"
             update_multiple_choice_order "hook"
             ARGS[hook]=true
             ;;
         -s | --spell)
-            validate_multiple_choice_exclusivity "$1"
+            validate_multiple_choice_exclusivity "${1}"
             update_multiple_choice_order "spell"
             ARGS[spell]=true
             ;;
         -S | --statistics)
-            validate_multiple_choice_exclusivity "$1"
+            validate_multiple_choice_exclusivity "${1}"
             update_multiple_choice_order "statistics"
             ARGS[statistics]=true
             ;;
         -f | --format)
-            validate_multiple_choice_exclusivity "$1"
+            validate_multiple_choice_exclusivity "${1}"
             update_multiple_choice_order "format"
             handle_type_related_parameter "format" "$@"
             shift $?
             ;;
         -l | --lint)
-            validate_multiple_choice_exclusivity "$1"
+            validate_multiple_choice_exclusivity "${1}"
             update_multiple_choice_order "lint"
             handle_type_related_parameter "lint" "$@"
             shift $?
             ;;
         -q | --query)
-            validate_multiple_choice_exclusivity "$1"
+            validate_multiple_choice_exclusivity "${1}"
             update_multiple_choice_order "query"
             ARGS[query]=true
             ;;
         -d | --doxygen)
-            validate_multiple_choice_exclusivity "$1"
+            validate_multiple_choice_exclusivity "${1}"
             update_multiple_choice_order "doxygen"
             ARGS[doxygen]=true
             ;;
         -b | --browser)
-            validate_multiple_choice_exclusivity "$1"
+            validate_multiple_choice_exclusivity "${1}"
             update_multiple_choice_order "browser"
             ARGS[browser]=true
             ;;
         *)
-            die "Unknown command line option: $1. Try using the --help option for information."
+            die "Unknown command line option: ${1}. Try using the --help option for information."
             ;;
         esac
         shift
@@ -487,8 +487,8 @@ FOO_BLD_PCH or FOO_BLD_UNITY is turned on."
             escaped_local_client=$(printf "%s\n" "${local_client}" | sed -e 's/[]\/$*.^[]/\\&/g')
             if ! pgrep -a distccd \
                 | grep -e "-a ${escaped_local_client}\|--allow ${escaped_local_client}" >/dev/null 2>&1; then
-                die "No local distcc server has been detected, please start it manually, \
-e.g. with \"distccd --daemon --allow ${local_client}\"."
+                die "No local distcc server has been detected, please start it manually, e.g. with \
+\"distccd --daemon --allow ${local_client}\"."
             fi
         fi
         CMAKE_CACHE_ENTRY="${CMAKE_CACHE_ENTRY} -D TOOLCHAIN_DISTCC=ON"
@@ -529,7 +529,7 @@ e.g. with \"distccd --daemon --allow ${local_client}\"."
 
 function update_compile_database()
 {
-    local source_folder=$1 build_folder=$2
+    local source_folder=${1} build_folder=${2}
 
     if ! command -v cmake >/dev/null 2>&1 || ! command -v ninja >/dev/null 2>&1; then
         die "No cmake or ninja program. Please install it."
@@ -1160,7 +1160,7 @@ function perform_query_option()
     fi
 
     local build_script
-    build_script="./${FOLDER[scr]}/$(basename "$0")"
+    build_script="./${FOLDER[scr]}/$(basename "${0}")"
     local other_option=""
     if [[ ${ARGS[release]} == true ]]; then
         other_option=" --release"
@@ -1173,7 +1173,7 @@ function perform_query_option()
 set -e
 
 export FOO_BLD_FORCE=on
-$(realpath "$0") \"\\\$@\"
+$(realpath "${0}") \"\\\$@\"
 EOF"
         shell_command "chmod +x ${rebuild_script}"
     fi
@@ -1199,7 +1199,7 @@ to improve accuracy. (y or n)"
     local codeql_sarif="${codeql_db_path}/codeql.sarif"
     shell_command "codeql database analyze ${codeql_db_path} --format sarif-latest -o ${codeql_sarif}"
     if echo "${input}" | grep -iq '^y'; then
-        build_script=./${FOLDER[scr]}/$(basename "$0")
+        build_script=./${FOLDER[scr]}/$(basename "${0}")
         shell_command "${build_script}${other_option} >/dev/null && ${build_script} --test${other_option} >/dev/null"
     fi
 
@@ -1225,7 +1225,7 @@ to improve accuracy. (y or n)"
 
 function package_for_doxygen()
 {
-    local commit_id=$1
+    local commit_id=${1}
 
     local doxygen_folder="doxygen"
     shell_command "rm -rf ./${FOLDER[doc]}/artifact/${FOLDER[proj]}_${doxygen_folder}_*.tar.bz2 \
@@ -1274,7 +1274,7 @@ function perform_doxygen_option()
 
 function package_for_browser()
 {
-    local commit_id=$1
+    local commit_id=${1}
 
     update_all_compile_databases
     if [[ ${DEV_OPT[pch]} == true ]] || [[ ${DEV_OPT[unity]} == true ]]; then
