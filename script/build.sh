@@ -3,8 +3,8 @@
 declare -rA FOLDER=([proj]="foo" [app]="application" [util]="utility" [algo]="algorithm" [ds]="data_structure"
     [dp]="design_pattern" [num]="numeric" [tst]="test" [scr]="script" [doc]="document" [dock]="docker" [bld]="build"
     [rep]="report" [cac]=".cache")
-declare -rA ANSI_STYLE=([exec]="\033[0;33;40m\033[1m\033[49m" [succ]="\033[0;32;40m\033[1m\033[49m"
-    [fail]="\033[0;31;40m\033[1m\033[49m" [time]="\033[0;39;40m\033[1m\033[2m\033[49m" [off]="\033[0m")
+declare -rA ANSI_STYLE=([exec]="\033[0;33m\033[1m\033[49m" [succ]="\033[0;32m\033[1m\033[49m"
+    [fail]="\033[0;31m\033[1m\033[49m" [time]="\033[0;39m\033[1m\033[2m\033[49m" [off]="\033[0m")
 declare -r BASH_RC=".bashrc"
 declare -r COMPILE_DB="compile_commands.json"
 declare -r GIT_COMMIT_CMD="git rev-parse --short=7 HEAD"
