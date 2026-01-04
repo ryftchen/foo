@@ -98,17 +98,18 @@ class Task:
     _run_log_file = f"{_report_path}/foo_run.log"
     _run_report_file = f"{_report_path}/foo_run.report"
     _ansi_sgr = {
-        "red": "\033[0;31;40m",
-        "green": "\033[0;32;40m",
-        "yellow": "\033[0;33;40m",
-        "blue": "\033[0;34;40m",
-        "bold": "\033[1m\033[49m",
-        "reverse": "\033[7m\033[49m",
+        "red": "\033[0;31m",
+        "green": "\033[0;32m",
+        "yellow": "\033[0;33m",
+        "blue": "\033[0;34m",
+        "bold": "\033[1m",
+        "reverse": "\033[7m",
+        "def_bg": "\033[49m",
         "reset": "\033[0m",
     }
     _suspicious_trait = [
-        f""" {_ansi_sgr["red"]}{_ansi_sgr["bold"]}[ERR]{_ansi_sgr["reset"]} """,
-        f""" {_ansi_sgr["yellow"]}{_ansi_sgr["bold"]}[WRN]{_ansi_sgr["reset"]} """,
+        f""" {_ansi_sgr["red"]}{_ansi_sgr["bold"]}{_ansi_sgr["def_bg"]}[ERR]{_ansi_sgr["reset"]} """,
+        f""" {_ansi_sgr["yellow"]}{_ansi_sgr["bold"]}{_ansi_sgr["def_bg"]}[WRN]{_ansi_sgr["reset"]} """,
     ]
     _stat_default_len = 55
     _stat_at_least_len = 15
@@ -419,9 +420,9 @@ class Task:
         stdout, stderr, return_code = execute_command(full_cmd, stdin)
         if not stdout or stderr or return_code:
             print(
-                f"""{self._ansi_sgr["reverse"]}[STDOUT]{self._ansi_sgr["reset"]}\n{stdout}\n\
-{self._ansi_sgr["reverse"]}[STDERR]{self._ansi_sgr["reset"]}\n{stderr}\n\
-{self._ansi_sgr["reverse"]}[RETURN CODE]{self._ansi_sgr["reset"]}\n{return_code}"""
+                f"""{self._ansi_sgr["reverse"]}{self._ansi_sgr["def_bg"]}[STDOUT]{self._ansi_sgr["reset"]}\n{stdout}\n\
+{self._ansi_sgr["reverse"]}{self._ansi_sgr["def_bg"]}[STDERR]{self._ansi_sgr["reset"]}\n{stderr}\n\
+{self._ansi_sgr["reverse"]}{self._ansi_sgr["def_bg"]}[RETURN CODE]{self._ansi_sgr["reset"]}\n{return_code}"""
             )
             self._hint_with_highlight(
                 self._ansi_sgr["red"], f"{f'STAT: FAILURE NO.{str(self._complete_steps + 1)}':<{align_len}}"
@@ -461,10 +462,10 @@ class Task:
         self._progress_bar.draw_progress_bar(int(self._complete_steps / self._total_steps * 100))
         sys.stdout = self._stream_logger
 
-    def _hint_with_highlight(self, esc_color: str, hint: str):
+    def _hint_with_highlight(self, fore_color: str, hint: str):
         print(
-            f"""{esc_color}{self._ansi_sgr["bold"]}[ {datetime.strftime(datetime.now(), "%b %d %H:%M:%S")} # {hint} ]\
-{self._ansi_sgr["reset"]}"""
+            f"""{fore_color}{self._ansi_sgr["bold"]}{self._ansi_sgr["def_bg"]}\
+[ {datetime.strftime(datetime.now(), "%b %d %H:%M:%S")} # {hint} ]{self._ansi_sgr["reset"]}"""
         )
 
     def _initialize_for_check_coverage(self):
@@ -510,7 +511,10 @@ class Task:
             )
         )
         execute_command(f"rm -rf {folder_path}/{{*.profraw,*.profdata}}")
-        print(f"""{self._ansi_sgr["reverse"]}[CHECK COVERAGE]{self._ansi_sgr["reset"]}\n{stdout}""")
+        print(
+            f"""{self._ansi_sgr["reverse"]}{self._ansi_sgr["def_bg"]}[CHECK COVERAGE]{self._ansi_sgr["reset"]}\n\
+{stdout}"""
+        )
         if "error" in stdout:
             print("Please further check the compilation parameters related to instrumentation.")
 
@@ -550,7 +554,7 @@ class Task:
             or not os.path.isfile(f"{pkg_loc}/valgrind.js")
         ):
             print(
-                f"""{self._ansi_sgr["reverse"]}[CHECK MEMORY]{self._ansi_sgr["reset"]}\n\
+                f"""{self._ansi_sgr["reverse"]}{self._ansi_sgr["def_bg"]}[CHECK MEMORY]{self._ansi_sgr["reset"]}\n\
 Missing source files prevent indexing."""
             )
         execute_command(f"cp -rf {pkg_loc}/{{index.html,valgrind.css,valgrind.js}} {self._report_path}/dca/chk_mem/")
@@ -608,7 +612,10 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
 
         if "errors" in stdout:
             stdout = stdout.expandtabs()
-            print(f"""{self._ansi_sgr["reverse"]}[CHECK MEMORY]{self._ansi_sgr["reset"]}\n{stdout}""")
+            print(
+                f"""{self._ansi_sgr["reverse"]}{self._ansi_sgr["def_bg"]}[CHECK MEMORY]{self._ansi_sgr["reset"]}\n\
+{stdout}"""
+            )
             case_path = f"{self._report_path}/dca/chk_mem/memory/case_{str(self._complete_steps + 1)}"
             if inst_num == 1:
                 execute_command(f"valgrind-ci {xml_filename}.xml --source-dir ./ --output-dir {case_path}")
@@ -629,7 +636,7 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
         elif inst_num not in (1, 2) or stderr:
             self._passed_steps -= 1
             print(
-                f"""{self._ansi_sgr["reverse"]}[CHECK MEMORY]{self._ansi_sgr["reset"]}\n\
+                f"""{self._ansi_sgr["reverse"]}{self._ansi_sgr["def_bg"]}[CHECK MEMORY]{self._ansi_sgr["reset"]}\n\
 Unsupported valgrind output xml file content."""
             )
             self._hint_with_highlight(

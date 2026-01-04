@@ -21,34 +21,38 @@
 
 namespace application::log
 {
+//! @brief The SGR (select graphic rendition) of ANSI control sequences.
+namespace ansi_sgr
+{
+//! @brief ANSI escape codes for red foreground color.
+constexpr std::string_view red = "\033[0;31m";
+//! @brief ANSI escape codes for green foreground color.
+constexpr std::string_view green = "\033[0;32m";
+//! @brief ANSI escape codes for yellow foreground color.
+constexpr std::string_view yellow = "\033[0;33m";
+//! @brief ANSI escape codes for blue foreground color.
+constexpr std::string_view blue = "\033[0;34m";
+//! @brief ANSI escape codes for bold foreground color.
+constexpr std::string_view bold = "\033[1m";
+//! @brief ANSI escape codes for dim foreground color.
+constexpr std::string_view dim = "\033[2m";
+//! @brief ANSI escape codes for italic foreground color.
+constexpr std::string_view italic = "\033[3m";
+//! @brief ANSI escape codes for underline foreground color.
+constexpr std::string_view underline = "\033[4m";
+//! @brief ANSI escape codes for reverse.
+constexpr std::string_view reverse = "\033[7m";
+//! @brief ANSI escape codes for default foreground color.
+constexpr std::string_view defaultFg = "\033[39m";
+//! @brief ANSI escape codes for default background color.
+constexpr std::string_view defaultBg = "\033[49m";
+//! @brief ANSI escape codes for reset.
+constexpr std::string_view reset = "\033[0m";
+} // namespace ansi_sgr
+
 //! @brief Anonymous namespace.
 inline namespace
 {
-//! @brief ANSI escape codes for red foreground color.
-constexpr std::string_view escColorRed = "\033[0;31;40m";
-//! @brief ANSI escape codes for green foreground color.
-constexpr std::string_view escColorGreen = "\033[0;32;40m";
-//! @brief ANSI escape codes for yellow foreground color.
-constexpr std::string_view escColorYellow = "\033[0;33;40m";
-//! @brief ANSI escape codes for blue foreground color.
-constexpr std::string_view escColorBlue = "\033[0;34;40m";
-//! @brief ANSI escape codes for the bold font.
-constexpr std::string_view escFontBold = "\033[1m";
-//! @brief ANSI escape codes for the dim font.
-constexpr std::string_view escFontDim = "\033[2m";
-//! @brief ANSI escape codes for the italic font.
-constexpr std::string_view escFontItalic = "\033[3m";
-//! @brief ANSI escape codes for the underline font.
-constexpr std::string_view escFontUnderline = "\033[4m";
-//! @brief ANSI escape codes for the inverse font.
-constexpr std::string_view escFontInverse = "\033[7m";
-//! @brief ANSI escape codes for default foreground color.
-constexpr std::string_view escFgColor = "\033[39m";
-//! @brief ANSI escape codes for default background color.
-constexpr std::string_view escBgColor = "\033[49m";
-//! @brief ANSI escape codes for ending.
-constexpr std::string_view escReset = "\033[0m";
-
 //! @brief Prefix of debug level in log.
 constexpr std::string_view debugLevelPrefix = "[DBG]";
 //! @brief Prefix of info level in log.
@@ -75,26 +79,29 @@ constexpr std::string_view dateTimeRegex = R"(\[(\d{4})-(\d{2})-(\d{2})T(\d{2}):
 constexpr std::string_view codeFileRegex = R"(\[[^ ]+\.(cpp|hpp)#\d+\])";
 
 //! @brief Debug level prefix with color. Include ANSI escape codes.
-constexpr auto debugLevelPrefixWithColor =
-    utility::common::concatString<escColorBlue, escFontBold, escBgColor, debugLevelPrefix, escReset>;
+constexpr auto debugLevelPrefixWithColor = utility::common::
+    concatString<ansi_sgr::blue, ansi_sgr::bold, ansi_sgr::defaultBg, debugLevelPrefix, ansi_sgr::reset>;
 //! @brief Info level prefix with color. Include ANSI escape codes.
-constexpr auto infoLevelPrefixWithColor =
-    utility::common::concatString<escColorGreen, escFontBold, escBgColor, infoLevelPrefix, escReset>;
+constexpr auto infoLevelPrefixWithColor = utility::common::
+    concatString<ansi_sgr::green, ansi_sgr::bold, ansi_sgr::defaultBg, infoLevelPrefix, ansi_sgr::reset>;
 //! @brief Warning level prefix with color. Include ANSI escape codes.
-constexpr auto warningLevelPrefixWithColor =
-    utility::common::concatString<escColorYellow, escFontBold, escBgColor, warningLevelPrefix, escReset>;
+constexpr auto warningLevelPrefixWithColor = utility::common::
+    concatString<ansi_sgr::yellow, ansi_sgr::bold, ansi_sgr::defaultBg, warningLevelPrefix, ansi_sgr::reset>;
 //! @brief Error level prefix with color. Include ANSI escape codes.
-constexpr auto errorLevelPrefixWithColor =
-    utility::common::concatString<escColorRed, escFontBold, escBgColor, errorLevelPrefix, escReset>;
+constexpr auto errorLevelPrefixWithColor = utility::common::
+    concatString<ansi_sgr::red, ansi_sgr::bold, ansi_sgr::defaultBg, errorLevelPrefix, ansi_sgr::reset>;
 //! @brief Trace level prefix with color. Include ANSI escape codes.
-constexpr auto traceLevelPrefixWithColor =
-    utility::common::concatString<escFontInverse, escFontBold, escBgColor, traceLevelPrefix, escReset>;
+constexpr auto traceLevelPrefixWithColor = utility::common::
+    concatString<ansi_sgr::reverse, ansi_sgr::bold, ansi_sgr::defaultBg, traceLevelPrefix, ansi_sgr::reset>;
 //! @brief Base color of the date time. Include ANSI escape codes.
-constexpr auto dateTimeBaseColor = utility::common::concatString<escFgColor, escFontBold, escFontDim, escBgColor>;
+constexpr auto dateTimeBaseColor =
+    utility::common::concatString<ansi_sgr::defaultFg, ansi_sgr::bold, ansi_sgr::dim, ansi_sgr::defaultBg>;
 //! @brief Base color of the code file. Include ANSI escape codes.
-constexpr auto codeFileBaseColor = utility::common::concatString<escFgColor, escFontBold, escFontUnderline, escBgColor>;
+constexpr auto codeFileBaseColor =
+    utility::common::concatString<ansi_sgr::defaultFg, ansi_sgr::bold, ansi_sgr::underline, ansi_sgr::defaultBg>;
 //! @brief Base color of the history cache. Include ANSI escape codes.
-constexpr auto historyCacheBaseColor = utility::common::concatString<escFontInverse, escFontItalic, escBgColor>;
+constexpr auto historyCacheBaseColor =
+    utility::common::concatString<ansi_sgr::reverse, ansi_sgr::italic, ansi_sgr::defaultBg>;
 
 //! @brief Regular expressions for log highlighting.
 struct HlRegex
@@ -469,7 +476,7 @@ void Log::startLogging()
     cacheSwitch.lock();
     while (!unprocessedCache.empty())
     {
-        std::osyncstream(std::cout) << historyCacheBaseColor.data() + unprocessedCache.front() + escReset.data()
+        std::osyncstream(std::cout) << historyCacheBaseColor.data() + unprocessedCache.front() + ansi_sgr::reset.data()
                                     << std::endl;
         unprocessedCache.pop_front();
     }
@@ -632,7 +639,7 @@ std::string& changeToLogStyle(std::string& line)
     {
         if (std::regex_search(line, match, segment))
         {
-            line = match.prefix().str() + scheme + match.str() + escReset.data() + match.suffix().str();
+            line = match.prefix().str() + scheme + match.str() + ansi_sgr::reset.data() + match.suffix().str();
         }
     }
     return line;
