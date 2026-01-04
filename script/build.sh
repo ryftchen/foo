@@ -3,13 +3,12 @@
 declare -rA FOLDER=([proj]="foo" [app]="application" [util]="utility" [algo]="algorithm" [ds]="data_structure"
     [dp]="design_pattern" [num]="numeric" [tst]="test" [scr]="script" [doc]="document" [dock]="docker" [bld]="build"
     [rep]="report" [cac]=".cache")
-declare -r COMPILE_DB="compile_commands.json"
+declare -rA ANSI_STYLE=([exec]="\033[0;33;40m\033[1m\033[49m" [succ]="\033[0;32;40m\033[1m\033[49m"
+    [fail]="\033[0;31;40m\033[1m\033[49m" [time]="\033[0;39;40m\033[1m\033[2m\033[49m" [off]="\033[0m")
 declare -r BASH_RC=".bashrc"
+declare -r COMPILE_DB="compile_commands.json"
 declare -r GIT_COMMIT_CMD="git rev-parse --short=7 HEAD"
 declare -r GIT_CHANGE_CMD="git status --porcelain -z | cut -z -c4- | tr '\0' '\n'"
-declare -rA ESC_COLOR=([exec]="\033[0;33;40m\033[1m\033[49m" [succ]="\033[0;32;40m\033[1m\033[49m"
-    [fail]="\033[0;31;40m\033[1m\033[49m" [time]="\033[0;39;40m\033[1m\033[2m\033[49m")
-declare -r ESC_OFF="\033[0m"
 declare -A ARGS=([help]=false [assume]=false [quick]=false [dry]=false [initialize]=false [clean]=false [install]=false
     [uninstall]=false [container]=false [archive]=false [test]=false [release]=false [precheck]=false [statistics]=false
     [format]=false [lint]=false [query]=false [doxygen]=false [browser]=false)
@@ -35,16 +34,16 @@ function die()
 function shell_command()
 {
     if [[ ${ARGS[dry]} == true ]]; then
-        printf "${ESC_COLOR[exec]}[ exec ] ${ESC_COLOR[time]}$(date "+%b %d %T")${ESC_OFF} $ %s\n" "$*"
+        printf "${ANSI_STYLE[exec]}[ exec ] ${ANSI_STYLE[time]}$(date "+%b %d %T")${ANSI_STYLE[off]} $ %s\n" "$*"
         echo
         return
     fi
 
-    printf "${ESC_COLOR[exec]}[ exec ] ${ESC_COLOR[time]}$(date "+%b %d %T")${ESC_OFF} $ %s\n" "$*"
+    printf "${ANSI_STYLE[exec]}[ exec ] ${ANSI_STYLE[time]}$(date "+%b %d %T")${ANSI_STYLE[off]} $ %s\n" "$*"
     if shell "$@"; then
-        printf "${ESC_COLOR[succ]}[ succ ] ${ESC_COLOR[time]}$(date "+%b %d %T")${ESC_OFF} $ %s\n" "$*"
+        printf "${ANSI_STYLE[succ]}[ succ ] ${ANSI_STYLE[time]}$(date "+%b %d %T")${ANSI_STYLE[off]} $ %s\n" "$*"
     else
-        printf "${ESC_COLOR[fail]}[ fail ] ${ESC_COLOR[time]}$(date "+%b %d %T")${ESC_OFF} $ %s\n" "$*"
+        printf "${ANSI_STYLE[fail]}[ fail ] ${ANSI_STYLE[time]}$(date "+%b %d %T")${ANSI_STYLE[off]} $ %s\n" "$*"
         STATUS=1
     fi
     echo
@@ -234,7 +233,7 @@ function perform_help_option()
     echo "                        lint all code files or by type"
     echo "  -q, --query           scan and query source code only"
     echo "  -d, --doxygen         project documentation with doxygen"
-    echo "  -b, --browser         generate web-based code browser like IDE"
+    echo "  -b, --browser         generate source code browser like IDE"
     exit "${STATUS}"
 }
 

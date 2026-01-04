@@ -97,10 +97,21 @@ class Task:
     _report_path = "./report"
     _run_log_file = f"{_report_path}/foo_run.log"
     _run_report_file = f"{_report_path}/foo_run.report"
-    _suspicious_trait = [" \033[0;31;40m\033[1m\033[49m[ERR]\033[0m ", " \033[0;33;40m\033[1m\033[49m[WRN]\033[0m "]
+    _ansi_sgr = {
+        "red": "\033[0;31;40m",
+        "green": "\033[0;32;40m",
+        "yellow": "\033[0;33;40m",
+        "blue": "\033[0;34;40m",
+        "bold": "\033[1m\033[49m",
+        "reverse": "\033[7m\033[49m",
+        "reset": "\033[0m",
+    }
+    _suspicious_trait = [
+        f""" {_ansi_sgr["red"]}{_ansi_sgr["bold"]}[ERR]{_ansi_sgr["reset"]} """,
+        f""" {_ansi_sgr["yellow"]}{_ansi_sgr["bold"]}[WRN]{_ansi_sgr["reset"]} """,
+    ]
     _stat_default_len = 55
     _stat_at_least_len = 15
-    _esc_color = {"red": "\033[0;31;40m", "green": "\033[0;32;40m", "yellow": "\033[0;33;40m", "blue": "\033[0;34;40m"}
     _tbl_key_width = 15
     _tbl_value_width = 60
     _llvm_ver = 19
@@ -402,17 +413,18 @@ class Task:
             len(str(self._total_steps)) * 2 + len(" / ") + self._stat_at_least_len,
         )
         self._hint_with_highlight(
-            self._esc_color["blue"], f"CASE: {f'{command}':<{align_len - self._stat_at_least_len}} # START "
+            self._ansi_sgr["blue"], f"CASE: {f'{command}':<{align_len - self._stat_at_least_len}} # START "
         )
 
         stdout, stderr, return_code = execute_command(full_cmd, stdin)
         if not stdout or stderr or return_code:
             print(
-                f"\033[7m\033[49m[STDOUT]\033[0m\n{stdout}\n\033[7m\033[49m[STDERR]\033[0m\n{stderr}\n\
-\033[7m\033[49m[RETURN CODE]\033[0m\n{return_code}"
+                f"""{self._ansi_sgr["reverse"]}[STDOUT]{self._ansi_sgr["reset"]}\n{stdout}\n\
+{self._ansi_sgr["reverse"]}[STDERR]{self._ansi_sgr["reset"]}\n{stderr}\n\
+{self._ansi_sgr["reverse"]}[RETURN CODE]{self._ansi_sgr["reset"]}\n{return_code}"""
             )
             self._hint_with_highlight(
-                self._esc_color["red"], f"{f'STAT: FAILURE NO.{str(self._complete_steps + 1)}':<{align_len}}"
+                self._ansi_sgr["red"], f"{f'STAT: FAILURE NO.{str(self._complete_steps + 1)}':<{align_len}}"
             )
         else:
             stdout = stdout.expandtabs()
@@ -421,21 +433,21 @@ class Task:
             if any(sus in stdout for sus in self._suspicious_trait):
                 self._passed_steps -= 1
                 self._hint_with_highlight(
-                    self._esc_color["red"], f"{f'STAT: FAILURE NO.{str(self._complete_steps + 1)}':<{align_len}}"
+                    self._ansi_sgr["red"], f"{f'STAT: FAILURE NO.{str(self._complete_steps + 1)}':<{align_len}}"
                 )
             elif self._marked_options["chk"]["mem"]:
                 self._convert_valgrind_output(command, align_len)
 
         self._complete_steps += 1
         self._hint_with_highlight(
-            self._esc_color["blue"], f"CASE: {f'{command}':<{align_len - self._stat_at_least_len}} # FINISH"
+            self._ansi_sgr["blue"], f"CASE: {f'{command}':<{align_len - self._stat_at_least_len}} # FINISH"
         )
 
         stat = "SUCCESS" if self._passed_steps == self._complete_steps else "PARTIAL"
         stat_color = (
-            self._esc_color["yellow"]
+            self._ansi_sgr["yellow"]
             if stat != "SUCCESS" or self._complete_steps != self._total_steps
-            else self._esc_color["green"]
+            else self._ansi_sgr["green"]
         )
         self._hint_with_highlight(
             stat_color,
@@ -449,8 +461,11 @@ class Task:
         self._progress_bar.draw_progress_bar(int(self._complete_steps / self._total_steps * 100))
         sys.stdout = self._stream_logger
 
-    def _hint_with_highlight(self, color: str, hint: str):
-        print(f"""{color}\033[1m\033[49m[ {datetime.strftime(datetime.now(), "%b %d %H:%M:%S")} # {hint} ]\033[0m""")
+    def _hint_with_highlight(self, esc_color: str, hint: str):
+        print(
+            f"""{esc_color}{self._ansi_sgr["bold"]}[ {datetime.strftime(datetime.now(), "%b %d %H:%M:%S")} # {hint} ]\
+{self._ansi_sgr["reset"]}"""
+        )
 
     def _initialize_for_check_coverage(self):
         stdout, _, _ = execute_command(f"command -v llvm-profdata-{self._llvm_ver} llvm-cov-{self._llvm_ver} 2>&1")
@@ -495,7 +510,7 @@ class Task:
             )
         )
         execute_command(f"rm -rf {folder_path}/{{*.profraw,*.profdata}}")
-        print(f"\033[7m\033[49m[CHECK COVERAGE]\033[0m\n{stdout}")
+        print(f"""{self._ansi_sgr["reverse"]}[CHECK COVERAGE]{self._ansi_sgr["reset"]}\n{stdout}""")
         if "error" in stdout:
             print("Please further check the compilation parameters related to instrumentation.")
 
@@ -534,7 +549,10 @@ class Task:
             or not os.path.isfile(f"{pkg_loc}/valgrind.css")
             or not os.path.isfile(f"{pkg_loc}/valgrind.js")
         ):
-            print("\033[7m\033[49m[CHECK MEMORY]\033[0m\nMissing source files prevent indexing.")
+            print(
+                f"""{self._ansi_sgr["reverse"]}[CHECK MEMORY]{self._ansi_sgr["reset"]}\n\
+Missing source files prevent indexing."""
+            )
         execute_command(f"cp -rf {pkg_loc}/{{index.html,valgrind.css,valgrind.js}} {self._report_path}/dca/chk_mem/")
 
         with open(f"{self._report_path}/dca/chk_mem/index.html", "rt", encoding="utf-8") as index_content:
@@ -590,7 +608,7 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
 
         if "errors" in stdout:
             stdout = stdout.expandtabs()
-            print(f"\033[7m\033[49m[CHECK MEMORY]\033[0m\n{stdout}")
+            print(f"""{self._ansi_sgr["reverse"]}[CHECK MEMORY]{self._ansi_sgr["reset"]}\n{stdout}""")
             case_path = f"{self._report_path}/dca/chk_mem/memory/case_{str(self._complete_steps + 1)}"
             if inst_num == 1:
                 execute_command(f"valgrind-ci {xml_filename}.xml --source-dir ./ --output-dir {case_path}")
@@ -606,13 +624,16 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
                 pathlib.Path(f"{case_path}_inst_2/case_name").write_text(command, "utf-8")
             self._passed_steps -= 1
             self._hint_with_highlight(
-                self._esc_color["red"], f"{f'STAT: FAILURE NO.{str(self._complete_steps + 1)}':<{align_len}}"
+                self._ansi_sgr["red"], f"{f'STAT: FAILURE NO.{str(self._complete_steps + 1)}':<{align_len}}"
             )
         elif inst_num not in (1, 2) or stderr:
             self._passed_steps -= 1
-            print("\033[7m\033[49m[CHECK MEMORY]\033[0m\nUnsupported valgrind output xml file content.")
+            print(
+                f"""{self._ansi_sgr["reverse"]}[CHECK MEMORY]{self._ansi_sgr["reset"]}\n\
+Unsupported valgrind output xml file content."""
+            )
             self._hint_with_highlight(
-                self._esc_color["red"], f"{f'STAT: FAILURE NO.{str(self._complete_steps + 1)}':<{align_len}}"
+                self._ansi_sgr["red"], f"{f'STAT: FAILURE NO.{str(self._complete_steps + 1)}':<{align_len}}"
             )
 
     def _format_run_log(self):

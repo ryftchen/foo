@@ -47,7 +47,7 @@ constexpr std::string_view escFgColor = "\033[39m";
 //! @brief ANSI escape codes for default background color.
 constexpr std::string_view escBgColor = "\033[49m";
 //! @brief ANSI escape codes for ending.
-constexpr std::string_view escOff = "\033[0m";
+constexpr std::string_view escReset = "\033[0m";
 
 //! @brief Prefix of debug level in log.
 constexpr std::string_view debugLevelPrefix = "[DBG]";
@@ -76,19 +76,19 @@ constexpr std::string_view codeFileRegex = R"(\[[^ ]+\.(cpp|hpp)#\d+\])";
 
 //! @brief Debug level prefix with color. Include ANSI escape codes.
 constexpr auto debugLevelPrefixWithColor =
-    utility::common::concatString<escColorBlue, escFontBold, escBgColor, debugLevelPrefix, escOff>;
+    utility::common::concatString<escColorBlue, escFontBold, escBgColor, debugLevelPrefix, escReset>;
 //! @brief Info level prefix with color. Include ANSI escape codes.
 constexpr auto infoLevelPrefixWithColor =
-    utility::common::concatString<escColorGreen, escFontBold, escBgColor, infoLevelPrefix, escOff>;
+    utility::common::concatString<escColorGreen, escFontBold, escBgColor, infoLevelPrefix, escReset>;
 //! @brief Warning level prefix with color. Include ANSI escape codes.
 constexpr auto warningLevelPrefixWithColor =
-    utility::common::concatString<escColorYellow, escFontBold, escBgColor, warningLevelPrefix, escOff>;
+    utility::common::concatString<escColorYellow, escFontBold, escBgColor, warningLevelPrefix, escReset>;
 //! @brief Error level prefix with color. Include ANSI escape codes.
 constexpr auto errorLevelPrefixWithColor =
-    utility::common::concatString<escColorRed, escFontBold, escBgColor, errorLevelPrefix, escOff>;
+    utility::common::concatString<escColorRed, escFontBold, escBgColor, errorLevelPrefix, escReset>;
 //! @brief Trace level prefix with color. Include ANSI escape codes.
 constexpr auto traceLevelPrefixWithColor =
-    utility::common::concatString<escFontInverse, escFontBold, escBgColor, traceLevelPrefix, escOff>;
+    utility::common::concatString<escFontInverse, escFontBold, escBgColor, traceLevelPrefix, escReset>;
 //! @brief Base color of the date time. Include ANSI escape codes.
 constexpr auto dateTimeBaseColor = utility::common::concatString<escFgColor, escFontBold, escFontDim, escBgColor>;
 //! @brief Base color of the code file. Include ANSI escape codes.
@@ -469,7 +469,7 @@ void Log::startLogging()
     cacheSwitch.lock();
     while (!unprocessedCache.empty())
     {
-        std::osyncstream(std::cout) << historyCacheBaseColor.data() + unprocessedCache.front() + escOff.data()
+        std::osyncstream(std::cout) << historyCacheBaseColor.data() + unprocessedCache.front() + escReset.data()
                                     << std::endl;
         unprocessedCache.pop_front();
     }
@@ -632,7 +632,7 @@ std::string& changeToLogStyle(std::string& line)
     {
         if (std::regex_search(line, match, segment))
         {
-            line = match.prefix().str() + scheme + match.str() + escOff.data() + match.suffix().str();
+            line = match.prefix().str() + scheme + match.str() + escReset.data() + match.suffix().str();
         }
     }
     return line;
