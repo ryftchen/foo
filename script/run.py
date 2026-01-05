@@ -701,9 +701,7 @@ Unsupported valgrind output xml file content."""
             }
             hint = " (UNIT TEST)" if tags["tst"] else ""
             run_stat_rep = (
-                "REPORT FOR RUN STATISTICS:\n"
-                + self._format_as_table(run_stat, "ENTRY", f"RUN STATISTICS{hint}")
-                + "\n"
+                "REPORT FOR RUN STATISTIC:\n" + self._format_as_table(run_stat, "ENTRY", f"RUN STATISTIC{hint}") + "\n"
             )
             fail_res_rep = (
                 ("\nREPORT FOR FAILURE RESULT:\n" + self._format_as_table(fail_res, "CASE", "FAILURE RESULT") + "\n")
