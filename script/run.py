@@ -38,8 +38,8 @@ class Task:
     _lib_path = "./build/lib"
     _script_path = "./script"
     _build_script = f"{_script_path}/build.sh"
-    _run_dict = f"{_script_path}/.run_dict"
-    _run_console_batch = f"{_script_path}/.run_console_batch"
+    _run_dict = f"{_script_path}/.{os.path.splitext(os.path.basename(__file__))[0]}_dict"
+    _run_console_batch = f"{_script_path}/.{os.path.splitext(os.path.basename(__file__))[0]}_console_batch"
     _app_native_task_dict = {
         "--help": [],
         "--version": [],
@@ -92,11 +92,11 @@ class Task:
         },
     }
     _tst_task_filt = []
-    _marked_options = {"tst": False, "chk": {"cov": False, "mem": False}}
+    _marked_option = {"tst": False, "chk": {"cov": False, "mem": False}}
     _analyze_only = False
     _report_path = "./report"
-    _run_log_file = f"{_report_path}/foo_run.log"
-    _run_report_file = f"{_report_path}/foo_run.report"
+    _run_log_file = f"{_report_path}/foo_{os.path.splitext(os.path.basename(__file__))[0]}.log"
+    _run_report_file = f"{_report_path}/foo_{os.path.splitext(os.path.basename(__file__))[0]}.report"
     _ansi_sgr = {
         "red": "\033[0;31m",
         "green": "\033[0;32m",
@@ -154,7 +154,7 @@ class Task:
         self._prepare()
         start_time = datetime.now()
 
-        if not self._marked_options["tst"]:
+        if not self._marked_option["tst"]:
             thread_list = []
             producer = threading.Thread(target=self._generate_tasks(), args=())
             producer.start()
@@ -180,9 +180,9 @@ class Task:
 
     def stop(self, message: str = ""):
         try:
-            if self._marked_options["chk"]["cov"]:
+            if self._marked_option["chk"]["cov"]:
                 execute_command(f"rm -rf {self._report_path}/dca/chk_cov/{{*.profraw,*.profdata}}")
-            if self._marked_options["chk"]["mem"]:
+            if self._marked_option["chk"]["mem"]:
                 execute_command(f"rm -rf {self._report_path}/dca/chk_mem/*.xml")
             sys.stdout = STDOUT
             self._progress_bar.destroy_progress_bar()
@@ -256,7 +256,7 @@ class Task:
             sys.exit(0)
 
         if self._args.test:
-            self._marked_options["tst"] = True
+            self._marked_option["tst"] = True
 
         if self._args.repeat is not None:
             self._repeat_count = self._args.repeat
@@ -288,7 +288,7 @@ class Task:
         if self._args.build is not None:
             if os.path.isfile(self._build_script):
                 build_cmd = self._build_script
-                if self._marked_options["tst"]:
+                if self._marked_option["tst"]:
                     build_cmd += " --test"
                 if self._args.build == "rls":
                     build_cmd += " --release"
@@ -327,9 +327,9 @@ class Task:
             fcntl.flock(run_dict_content.fileno(), fcntl.LOCK_UN)
 
     def _prepare(self):
-        if not self._marked_options["tst"] and not os.path.isfile(f"{self._app_bin_path}/{self._app_bin_cmd}"):
+        if not self._marked_option["tst"] and not os.path.isfile(f"{self._app_bin_path}/{self._app_bin_cmd}"):
             exit_with_error("No executable file. Please use the --build option to build it.")
-        if self._marked_options["tst"] and not os.path.isfile(f"{self._tst_bin_path}/{self._tst_bin_cmd}"):
+        if self._marked_option["tst"] and not os.path.isfile(f"{self._tst_bin_path}/{self._tst_bin_cmd}"):
             exit_with_error("No executable file for testing. Please use the --build option to build it.")
 
         if not os.path.exists(self._report_path):
@@ -356,9 +356,9 @@ class Task:
         self._total_steps *= self._repeat_count
 
     def _complete(self):
-        if self._marked_options["chk"]["cov"]:
+        if self._marked_option["chk"]["cov"]:
             self._check_coverage_handling()
-        if self._marked_options["chk"]["mem"]:
+        if self._marked_option["chk"]["mem"]:
             self._check_memory_handling()
 
         sys.stdout = STDOUT
@@ -397,13 +397,13 @@ class Task:
     def _run_single_task(self, command: str, stdin: str = ""):
         full_cmd = (
             f"{self._app_bin_path}/{command}"
-            if not self._marked_options["tst"]
+            if not self._marked_option["tst"]
             else f"{self._tst_bin_path}/{command} --gtest_color=yes"
         )
-        if self._marked_options["chk"]["mem"]:
+        if self._marked_option["chk"]["mem"]:
             full_cmd = f"valgrind --tool=memcheck --xml=yes \
 --xml-file={self._report_path}/dca/chk_mem/foo_chk_mem_{str(self._complete_steps + 1)}.xml {full_cmd}"
-        if self._marked_options["chk"]["cov"]:
+        if self._marked_option["chk"]["cov"]:
             full_cmd = f"LLVM_PROFILE_FILE=\
 \"{self._report_path}/dca/chk_cov/foo_chk_cov_{str(self._complete_steps + 1)}.profraw\" {full_cmd}"
         if stdin:
@@ -436,7 +436,7 @@ class Task:
                 self._hint_with_highlight(
                     self._ansi_sgr["red"], f"{f'STAT: FAILURE NO.{str(self._complete_steps + 1)}':<{align_len}}"
                 )
-            elif self._marked_options["chk"]["mem"]:
+            elif self._marked_option["chk"]["mem"]:
                 self._convert_valgrind_output(command, align_len)
 
         self._complete_steps += 1
@@ -472,7 +472,7 @@ class Task:
         stdout, _, _ = execute_command(f"command -v llvm-profdata-{self._llvm_ver} llvm-cov-{self._llvm_ver} 2>&1")
         if stdout.find(f"llvm-profdata-{self._llvm_ver}") != -1 and stdout.find(f"llvm-cov-{self._llvm_ver}") != -1:
             os.environ["FOO_BLD_COV"] = "llvm-cov"
-            self._marked_options["chk"]["cov"] = True
+            self._marked_option["chk"]["cov"] = True
             execute_command(f"rm -rf {self._report_path}/dca/chk_cov && mkdir -p {self._report_path}/dca/chk_cov")
         else:
             exit_with_error(
@@ -485,7 +485,7 @@ class Task:
             f"llvm-profdata-{self._llvm_ver} merge -sparse {folder_path}/foo_chk_cov_*.profraw \
 -o {folder_path}/foo_chk_cov.profdata"
         )
-        if not self._marked_options["tst"]:
+        if not self._marked_option["tst"]:
             execute_command(
                 f"llvm-cov-{self._llvm_ver} show -instr-profile {folder_path}/foo_chk_cov.profdata \
 -show-branches=percent -show-expansions -show-regions -show-line-counts-or-regions -format html \
@@ -504,7 +504,7 @@ class Task:
 -object {self._app_bin_path}/{self._app_bin_cmd} \
 {' '.join([f'-object {self._lib_path}/{lib}' for lib in self._lib_list])}"
             )
-            if not self._marked_options["tst"]
+            if not self._marked_option["tst"]
             else execute_command(
                 f"llvm-cov-{self._llvm_ver} report -instr-profile {folder_path}/foo_chk_cov.profdata \
 -object {self._tst_bin_path}/{self._tst_bin_cmd}"
@@ -521,7 +521,7 @@ class Task:
     def _initialize_for_check_memory(self):
         stdout, _, _ = execute_command("command -v valgrind valgrind-ci 2>&1")
         if stdout.find("valgrind") != -1 and stdout.find("valgrind-ci") != -1:
-            self._marked_options["chk"]["mem"] = True
+            self._marked_option["chk"]["mem"] = True
             execute_command(f"rm -rf {self._report_path}/dca/chk_mem && mkdir -p {self._report_path}/dca/chk_mem")
         else:
             exit_with_error("No valgrind or valgrind-ci program. Please install it.")
@@ -669,9 +669,9 @@ Unsupported valgrind output xml file content."""
                 tags["chk"]["mem"] = True
             fcntl.flock(run_log.fileno(), fcntl.LOCK_UN)
         if not self._analyze_only and (
-            tags["tst"] != self._marked_options["tst"]
-            or tags["chk"]["cov"] != self._marked_options["chk"]["cov"]
-            or (tags["chk"]["mem"] and not self._marked_options["chk"]["mem"])
+            tags["tst"] != self._marked_option["tst"]
+            or tags["chk"]["cov"] != self._marked_option["chk"]["cov"]
+            or (tags["chk"]["mem"] and not self._marked_option["chk"]["mem"])
         ):
             exit_with_error(f"Run options do not match the actual contents of the run log {self.log_file} file.")
 
