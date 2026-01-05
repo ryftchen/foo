@@ -10,7 +10,7 @@ declare -r COMPILE_DB="compile_commands.json"
 declare -r GIT_COMMIT_CMD="git rev-parse --short=7 HEAD"
 declare -r GIT_CHANGE_CMD="git status --porcelain -z | cut -z -c4- | tr '\0' '\n'"
 declare -A ARGS=([help]=false [assume]=false [quick]=false [dry]=false [initialize]=false [clean]=false [install]=false
-    [uninstall]=false [container]=false [archive]=false [test]=false [release]=false [precheck]=false [statistics]=false
+    [uninstall]=false [container]=false [archive]=false [test]=false [release]=false [precheck]=false [statistic]=false
     [format]=false [lint]=false [query]=false [doxygen]=false [browser]=false)
 declare -A DEV_OPT=([compiler]="gcc" [parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]="localhost"
     [tmpfs]=false)
@@ -145,7 +145,7 @@ function count_enabled_multiple_choice_parameters()
 {
     local number=0
     for key in "${!ARGS[@]}"; do
-        if [[ ${key} == "release" ]] || [[ ${key} == "precheck" ]] || [[ ${key} == "statistics" ]] \
+        if [[ ${key} == "release" ]] || [[ ${key} == "precheck" ]] || [[ ${key} == "statistic" ]] \
             || [[ ${key} == "format" ]] || [[ ${key} == "lint" ]] || [[ ${key} == "query" ]] \
             || [[ ${key} == "doxygen" ]] || [[ ${key} == "browser" ]]; then
             if [[ ${ARGS[${key}]} != false ]]; then
@@ -226,7 +226,7 @@ function perform_help_option()
     echo "  -t, --test            only build unit test and exit"
     echo "  -r, --release         set as release version globally"
     echo "  -p, --precheck        run hooks before commit for precheck"
-    echo "  -s, --statistics      lines of code classification statistics"
+    echo "  -s, --statistic       lines of code classification statistic"
     echo "  -f [cpp,sh,py,rs], --format [cpp,sh,py,rs]"
     echo "                        format all code files or by type"
     echo "  -l [cpp,sh,py,rs], --lint [cpp,sh,py,rs]"
@@ -317,10 +317,10 @@ function parse_parameters()
             update_multiple_choice_order "precheck"
             ARGS[precheck]=true
             ;;
-        -s | --statistics)
+        -s | --statistic)
             validate_multiple_choice_exclusivity "${1}"
-            update_multiple_choice_order "statistics"
-            ARGS[statistics]=true
+            update_multiple_choice_order "statistic"
+            ARGS[statistic]=true
             ;;
         -f | --format)
             validate_multiple_choice_exclusivity "${1}"
@@ -913,9 +913,9 @@ function perform_precheck_option()
     shell_command "pre-commit run -c ./.pre-commit --all-files"
 }
 
-function perform_statistics_option()
+function perform_statistic_option()
 {
-    if [[ ${ARGS[statistics]} == false ]]; then
+    if [[ ${ARGS[statistic]} == false ]]; then
         return
     fi
     if ! command -v cloc >/dev/null 2>&1; then
@@ -1326,8 +1326,8 @@ function try_perform_multiple_choice_options()
     for choice in "${MULTI_CHOICE_ORDER[@]}"; do
         if [[ ${choice} == "precheck" ]]; then
             perform_precheck_option
-        elif [[ ${choice} == "statistics" ]]; then
-            perform_statistics_option
+        elif [[ ${choice} == "statistic" ]]; then
+            perform_statistic_option
         elif [[ ${choice} == "format" ]]; then
             perform_format_option
         elif [[ ${choice} == "lint" ]]; then

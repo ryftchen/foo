@@ -36,9 +36,9 @@ jobs:
       - name: Evaluate source code security
         run: |
           ./script/build.sh --query --assume y
-      - name: Statisticize
+      - name: Statistic
         run: |
-          ./script/build.sh --statistics
+          ./script/build.sh --statistic
           git status -sb
   dynamic_analysis:
     name: Dynamic analysis
