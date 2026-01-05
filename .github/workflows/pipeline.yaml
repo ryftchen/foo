@@ -30,16 +30,16 @@ jobs:
       - name: Precheck
         run: |
           ./script/build.sh --precheck
-      - name: Evaluate code quality
+      - name: Evaluate quality
         run: |
           ./script/build.sh --format --lint
-      - name: Evaluate security
+      - name: Evaluate source code security
         run: |
           ./script/build.sh --query --assume y
       - name: Statisticize
         run: |
           ./script/build.sh --statistics
-          git status
+          git status -sb
   dynamic_analysis:
     name: Dynamic analysis
     runs-on: ubuntu-latest
