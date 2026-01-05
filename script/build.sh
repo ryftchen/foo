@@ -359,7 +359,8 @@ function parse_parameters()
 
 function set_compile_condition()
 {
-    local compile_env="./${FOLDER[scr]}/.build_env"
+    local compile_env
+    compile_env="./${FOLDER[scr]}/.$(basename "${0}" .sh)_env"
     if [[ -f ${compile_env} ]] && ! {
         [[ -v FOO_BLD_FORCE ]] && [[ ${FOO_BLD_FORCE} == "on" ]]
     }; then
@@ -596,7 +597,7 @@ function perform_initialize_option()
         shell_command "echo \"${alias_cmd}\" >>~/${BASH_RC}"
     fi
 
-    shell_command "cat <<EOF >./${FOLDER[scr]}/.build_env
+    shell_command "cat <<EOF >./${FOLDER[scr]}/.$(basename "${0}" .sh)_env
 #!/bin/false
 
 FOO_BLD_COMPILER=gcc # gcc / clang
@@ -823,7 +824,8 @@ EOF
     if [[ ! -x ${server_path}/${server_bin} ]]; then
         die "There is no ${server_bin} binary file in the ${server_path} folder. Please finish compiling first."
     fi
-    local service_config="./${FOLDER[scr]}/.build_service"
+    local service_config
+    service_config="./${FOLDER[scr]}/.$(basename "${0}" .sh)_service"
     if [[ ! -f ${service_config} ]]; then
         local host_addr="127.0.0.1" start_port=61503
         shell_command "cat <<EOF >${service_config}
@@ -1146,7 +1148,8 @@ function perform_query_option()
     if [[ ${ARGS[release]} == true ]]; then
         other_option=" --release"
     fi
-    local rebuild_script="./${FOLDER[scr]}/.build_afresh"
+    local rebuild_script
+    rebuild_script="./${FOLDER[scr]}/.$(basename "${0}" .sh)_afresh"
     if [[ ! -f ${rebuild_script} ]]; then
         shell_command "cat <<EOF >${rebuild_script}
 #!/usr/bin/env bash
@@ -1159,8 +1162,8 @@ EOF"
         shell_command "chmod +x ${rebuild_script}"
     fi
 
-    echo "Please confirm whether need to temporarily force a full recompile (using the default .build_env) \
-to improve accuracy. (y or n)"
+    echo "Please confirm whether need to temporarily force a full recompile \
+(using the default .$(basename "${0}" .sh)_env) to improve accuracy. (y or n)"
     local input
     input=$(wait_until_get_input)
     if echo "${input}" | grep -iq '^y'; then
