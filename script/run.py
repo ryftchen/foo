@@ -107,10 +107,17 @@ class Task:
         "def_bg": "\033[49m",
         "reset": "\033[0m",
     }
+    _extended_trait = {
+        "chk": {
+            "cov": f"""{_ansi_sgr["reverse"]}{_ansi_sgr["def_bg"]}[CHECK COVERAGE]{_ansi_sgr["reset"]}""",
+            "mem": f"""{_ansi_sgr["reverse"]}{_ansi_sgr["def_bg"]}[CHECK MEMORY]{_ansi_sgr["reset"]}""",
+        }
+    }
     _suspicious_trait = [
         f""" {_ansi_sgr["red"]}{_ansi_sgr["bold"]}{_ansi_sgr["def_bg"]}[ERR]{_ansi_sgr["reset"]} """,
         f""" {_ansi_sgr["yellow"]}{_ansi_sgr["bold"]}{_ansi_sgr["def_bg"]}[WRN]{_ansi_sgr["reset"]} """,
     ]
+    _ansi_esc_regex = r"\x1B(?:\[[0-?]*[ -/]*[@-~]|[PX^_].*?\x1B\\|.)"
     _stat_default_len = 55
     _stat_at_least_len = 15
     _tbl_key_width = 15
@@ -511,10 +518,7 @@ class Task:
             )
         )
         execute_command(f"rm -rf {folder_path}/{{*.profraw,*.profdata}}")
-        print(
-            f"""{self._ansi_sgr["reverse"]}{self._ansi_sgr["def_bg"]}[CHECK COVERAGE]{self._ansi_sgr["reset"]}\n\
-{stdout}"""
-        )
+        print(f"""{self._extended_trait["chk"]["cov"]}\n{stdout}""")
         if "error" in stdout:
             print("Please further check the compilation parameters related to instrumentation.")
 
@@ -553,10 +557,7 @@ class Task:
             or not os.path.isfile(f"{pkg_loc}/valgrind.css")
             or not os.path.isfile(f"{pkg_loc}/valgrind.js")
         ):
-            print(
-                f"""{self._ansi_sgr["reverse"]}{self._ansi_sgr["def_bg"]}[CHECK MEMORY]{self._ansi_sgr["reset"]}\n\
-Missing source files prevent indexing."""
-            )
+            print(f"""{self._extended_trait["chk"]["mem"]}\nMissing source files prevent indexing.""")
         execute_command(f"cp -rf {pkg_loc}/{{index.html,valgrind.css,valgrind.js}} {self._report_path}/dca/chk_mem/")
 
         with open(f"{self._report_path}/dca/chk_mem/index.html", "rt", encoding="utf-8") as index_content:
@@ -612,10 +613,7 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
 
         if "errors" in stdout:
             stdout = stdout.expandtabs()
-            print(
-                f"""{self._ansi_sgr["reverse"]}{self._ansi_sgr["def_bg"]}[CHECK MEMORY]{self._ansi_sgr["reset"]}\n\
-{stdout}"""
-            )
+            print(f"""{self._extended_trait["chk"]["mem"]}\n{stdout}""")
             case_path = f"{self._report_path}/dca/chk_mem/memory/case_{str(self._complete_steps + 1)}"
             if inst_num == 1:
                 execute_command(f"valgrind-ci {xml_filename}.xml --source-dir ./ --output-dir {case_path}")
@@ -635,10 +633,7 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
             )
         elif inst_num not in (1, 2) or stderr:
             self._passed_steps -= 1
-            print(
-                f"""{self._ansi_sgr["reverse"]}{self._ansi_sgr["def_bg"]}[CHECK MEMORY]{self._ansi_sgr["reset"]}\n\
-Unsupported valgrind output xml file content."""
-            )
+            print(f"""{self._extended_trait["chk"]["mem"]}\nUnsupported valgrind output xml file content.""")
             self._hint_with_highlight(
                 self._ansi_sgr["red"], f"{f'STAT: FAILURE NO.{str(self._complete_steps + 1)}':<{align_len}}"
             )
@@ -648,7 +643,7 @@ Unsupported valgrind output xml file content."""
             fcntl.flock(run_log.fileno(), fcntl.LOCK_EX)
             old_content = run_log.read()
             fcntl.flock(run_log.fileno(), fcntl.LOCK_UN)
-        new_content = re.compile(r"\x1B(?:\[[0-?]*[ -/]*[@-~]|[PX^_].*?\x1B\\|.)").sub("", old_content)
+        new_content = re.compile(self._ansi_esc_regex).sub("", old_content)
         with open(self._run_log_file, "wt", encoding="utf-8") as run_log:
             fcntl.flock(run_log.fileno(), fcntl.LOCK_EX)
             run_log.write(new_content)
@@ -663,9 +658,9 @@ Unsupported valgrind output xml file content."""
             content = run_log.read()
             if self._tst_bin_cmd in content:
                 tags["tst"] = True
-            if "[CHECK COVERAGE]" in content:
+            if re.compile(self._ansi_esc_regex).sub("", self._extended_trait["chk"]["cov"]) in content:
                 tags["chk"]["cov"] = True
-            if "[CHECK MEMORY]" in content:
+            if re.compile(self._ansi_esc_regex).sub("", self._extended_trait["chk"]["mem"]) in content:
                 tags["chk"]["mem"] = True
             fcntl.flock(run_log.fileno(), fcntl.LOCK_UN)
         if not self._analyze_only and (
@@ -690,14 +685,24 @@ Unsupported valgrind output xml file content."""
         ):
             exit_with_error(f"The run log {self._run_log_file} file is incomplete. Please retry.")
 
-        dur_time, fail_res, cov_per, mem_leak = self._analyze_for_report(readlines, start_indices, finish_indices, tags)
+        begin_date_match = re.search(r"(\b[a-zA-Z]{3} \d{2} \d{2}:\d{2}:\d{2}\b)", readlines[start_indices[0]])
+        end_date_match = re.search(r"(\b[a-zA-Z]{3} \d{2} \d{2}:\d{2}:\d{2}\b)", readlines[finish_indices[-1]])
+        dur_time = (
+            (
+                datetime.strptime(end_date_match.group(), "%b %d %H:%M:%S")
+                - datetime.strptime(begin_date_match.group(), "%b %d %H:%M:%S")
+            ).total_seconds()
+            if begin_date_match and end_date_match
+            else 0.0
+        )
+        fail_res, cov_per, mem_leak = self._analyze_for_report(readlines, start_indices, finish_indices, tags)
         with open(self._run_report_file, "wt", encoding="utf-8") as run_report:
             fcntl.flock(run_report.fileno(), fcntl.LOCK_EX)
             run_stat = {
-                "Summary": "Unstable" if fail_res else "Stable",
+                "Summary": "Stable" if not fail_res else "Unstable",
                 "Passed": str(len(finish_indices) - len(fail_res)),
                 "Failed": str(len(fail_res)),
-                "Duration": f"{self._duration} s" if not self._analyze_only else f"{dur_time} s",
+                "Duration": f"{self._duration} s" if not self._analyze_only else f"est. {dur_time} s",
             }
             hint = " (UNIT TEST)" if tags["tst"] else ""
             run_stat_rep = (
@@ -738,20 +743,11 @@ Unsupported valgrind output xml file content."""
         finish_indices: list[int],
         tags: dict[str, bool | dict[str, bool]],
     ) -> tuple[dict[str, str], dict[str, str], dict[str, str]]:
-        begin_date_match = re.search(r"(\b[a-zA-Z]{3} \d{2} \d{2}:\d{2}:\d{2}\b)", readlines[start_indices[0]])
-        end_date_match = re.search(r"(\b[a-zA-Z]{3} \d{2} \d{2}:\d{2}:\d{2}\b)", readlines[finish_indices[-1]])
-        dur_time = (
-            (
-                datetime.strptime(end_date_match.group(), "%b %d %H:%M:%S")
-                - datetime.strptime(begin_date_match.group(), "%b %d %H:%M:%S")
-            ).total_seconds()
-            if begin_date_match and end_date_match
-            else 0.0
-        )
-
         fail_res = {}
         cov_per = {}
         mem_leak = {}
+        cov_trait = re.compile(self._ansi_esc_regex).sub("", self._extended_trait["chk"]["cov"])
+        mem_trait = re.compile(self._ansi_esc_regex).sub("", self._extended_trait["chk"]["mem"])
         for start_index, finish_index in zip(start_indices, finish_indices):
             if "# STAT: FAILURE" in readlines[finish_index - 1]:
                 fail_line = readlines[finish_index - 1]
@@ -790,16 +786,20 @@ Unsupported valgrind output xml file content."""
                 last_index = finish_index
                 if tags["chk"]["mem"]:
                     for index, line in enumerate(readlines[start_index + 1 : finish_index]):
-                        if "[CHECK MEMORY]" in line:
+                        if mem_trait in line:
                             index += start_index + 1
                             mem_leak[case_task] = "".join(readlines[index + 1 : finish_index - 1])
                             last_index = index
                 fail_res[case_task] = "".join(readlines[start_index + 1 : last_index - 1])
 
         if tags["chk"]["cov"]:
+            has_cov_trait = False
             category = ["Regions", "Functions", "Lines", "Branches"]
             for line in readlines:
-                if re.search(r"(^TOTAL(\s+\d+\s+\d+\s+\d+\.\d+%){4}$)", line):
+                if cov_trait in line:
+                    has_cov_trait = True
+                    continue
+                if has_cov_trait and re.search(r"(^TOTAL(\s+\d+\s+\d+\s+\d+\.\d+%){4}$)", line):
                     matches = re.findall(r"(\d+\.\d+%)", line)
                     percentages = [float(s.strip("%")) for s in matches]
                     if len(percentages) == 4:
@@ -809,7 +809,7 @@ Unsupported valgrind output xml file content."""
             if not cov_per:
                 for cat in category:
                     cov_per[cat] = "-"
-        return dur_time, fail_res, cov_per, mem_leak
+        return fail_res, cov_per, mem_leak
 
     def _format_as_table(self, data: dict[str, str], key_title: str, value_title: str) -> str:
         rows = []
