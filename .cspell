@@ -26,7 +26,6 @@ words:
   - compdb
   - CPLUS
   - creational
-  - cword
   - distcc
   - distccd
   - Doxyfile
@@ -44,9 +43,7 @@ words:
   - Karp
   - Kernighan
   - Landis
-  - levelname
   - libfoo
-  - manpath
   - memcheck
   - mpfr
   - nodaemon
@@ -54,17 +51,14 @@ words:
   - optflag
   - optmulti
   - PDEATHSIG
-  - pgrep
   - precheck
   - profdata
   - profraw
   - pylintrc
-  - qlpacks
-  - rcfile
-  - rpcinterface
-  - rustc
   - Ritchie
   - RNDN
+  - rpcinterface
+  - rustc
   - ryftchen
   - sarif
   - serverurl
