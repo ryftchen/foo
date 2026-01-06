@@ -554,7 +554,7 @@ function build_native_if_needed()
     }; then
         set_compile_condition
         update_compile_database "" "${FOLDER[bld]}"
-        NINJA_STATUS=$(echo -e "\e[92m[\e[92m%f/\e[92m%t\e[92m]\e[39m\e[49m ")
+        NINJA_STATUS=$(echo -e "\033[92m[\033[92m%f/\033[92m%t\033[92m]\033[39m\033[49m ")
         export NINJA_STATUS CLICOLOR_FORCE=1 TERM=dumb
         shell_command "cmake --build ./${FOLDER[bld]}""${CMAKE_BUILD_OPTION}"
         exit "${STATUS}"
@@ -567,7 +567,7 @@ function build_native_if_needed()
     }; then
         set_compile_condition
         update_compile_database "${FOLDER[tst]}" "${FOLDER[tst]}/${FOLDER[bld]}"
-        NINJA_STATUS=$(echo -e "\e[92m[\e[92m%f/\e[92m%t\e[92m]\e[39m\e[49m ")
+        NINJA_STATUS=$(echo -e "\033[92m[\033[92m%f/\033[92m%t\033[92m]\033[39m\033[49m ")
         export NINJA_STATUS CLICOLOR_FORCE=1 TERM=dumb
         shell_command "cmake --build ./${FOLDER[tst]}/${FOLDER[bld]}""${CMAKE_BUILD_OPTION}"
         exit "${STATUS}"
@@ -1071,7 +1071,7 @@ FOO_BLD_UNITY is turned on."
         fi
         shell_command "rm -rf ./${tst_comp_db} && mv ./${tst_comp_db}.bak ./${tst_comp_db}"
 
-        shell_command "(test -f ${clang_tidy_log} && cat ${clang_tidy_log}) | sed 's/\x1b\[[0-9;]*m//g' \
+        shell_command "(test -f ${clang_tidy_log} && cat ${clang_tidy_log}) | sed 's/\033\[[0-9;]*m//g' \
 | python3 -m clang_tidy_converter -r ./ html >${clang_tidy_output_path}/index.html"
     fi
 

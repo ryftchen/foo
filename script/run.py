@@ -117,7 +117,7 @@ class Task:
         f""" {_ansi_sgr["red"]}{_ansi_sgr["bold"]}{_ansi_sgr["def_bg"]}[ERR]{_ansi_sgr["reset"]} """,
         f""" {_ansi_sgr["yellow"]}{_ansi_sgr["bold"]}{_ansi_sgr["def_bg"]}[WRN]{_ansi_sgr["reset"]} """,
     ]
-    _ansi_esc_regex = r"\x1B(?:\[[0-?]*[ -/]*[@-~]|[PX^_].*?\x1B\\|.)"
+    _ansi_esc_regex = r"\033(?:\[[0-?]*[ -/]*[@-~]|[PX^_].*?\033\\|.)"
     _stat_default_len = 55
     _stat_at_least_len = 15
     _tbl_key_width = 15
