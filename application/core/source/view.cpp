@@ -911,8 +911,8 @@ void View::segmentedOutput(const std::string& cache)
 {
     constexpr std::uint8_t terminalRows = 24;
     constexpr std::string_view prompt = "--- Type <CR> for more, c to continue, n to show next page, q to quit ---: ";
-    constexpr std::string_view escapeClear = "\x1b[1A\x1b[2K\r";
-    constexpr std::string_view escapeMoveUp = "\n\x1b[1A\x1b[";
+    constexpr std::string_view escapeClear = "\033[1A\033[2K\r";
+    constexpr std::string_view escapeMoveUp = "\n\033[1A\033[";
     std::istringstream transfer(cache);
     const std::size_t lineNum =
         std::count(std::istreambuf_iterator<char>(transfer), std::istreambuf_iterator<char>{}, '\n');
