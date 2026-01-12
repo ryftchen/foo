@@ -55,14 +55,13 @@ Result Gradient::operator()(const double left, const double right, const double 
 
 std::unordered_multiset<double> Gradient::createClimbers(const double left, const double right) const
 {
-    std::mt19937_64 engine(std::random_device{}());
-    std::uniform_real_distribution<double> candidate(left, right);
     std::unordered_multiset<double> climbing{};
     climbing.reserve(loopTime);
-    while (climbing.size() < loopTime)
-    {
-        climbing.emplace(candidate(engine));
-    }
+    std::generate_n(
+        std::inserter(climbing, climbing.end()),
+        loopTime,
+        [engine = std::mt19937_64(std::random_device{}()),
+         candidate = std::uniform_real_distribution<double>(left, right)]() mutable { return candidate(engine); });
     return climbing;
 }
 
