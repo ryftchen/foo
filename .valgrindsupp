@@ -1,17 +1,7 @@
 {
-    ignore_libreadline_leaks
-    Memcheck:Leak
-    match-leak-kinds: reachable
-    ...
-    obj:*/libreadline.so.*
-}
-
-{
-   ignore_llvm_profile_leaks
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   ...
-   fun:parseAndSetFilename
-   fun:__llvm_profile_initialize
-   ...
+  ignore_libreadline_leaks
+  Memcheck:Leak
+  match-leak-kinds: reachable
+  ...
+  obj:*/libreadline.so.*
 }
