@@ -1,20 +1,15 @@
 .cache/
-.devcontainer/
-.vscode/
-__pycache__/
 build/
 document/artifact/
 document/browser/
 document/doxygen/
 document/server/target/
 report/
+script/__pycache__/
 
 *.profraw
-.build_afresh
-.build_env
-.build_service
-.run_console_batch
-.run_dict
+.build_*
+.run_*
 core.*
 document/*.css
 document/*.html
