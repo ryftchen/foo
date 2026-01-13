@@ -15,7 +15,7 @@
 #include <syncstream>
 #else
 #include "application/pch/precompiled_header.hpp"
-#endif // _PRECOMPILED_HEADER
+#endif
 
 #include "utility/include/common.hpp"
 #include "utility/include/fsm.hpp"

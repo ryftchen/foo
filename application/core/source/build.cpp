@@ -19,7 +19,7 @@ std::string revision()
 #else
 #pragma message("Unknown revision at compile time.")
     return "unknown revision";
-#endif // _COMMIT_REVISION
+#endif
 }
 
 //! @brief Compiler name.
@@ -29,13 +29,13 @@ std::string compiler()
 #ifdef __clang__
     return "clang " MACRO_STRINGIFY(__clang_major__) "." MACRO_STRINGIFY(__clang_minor__) "." MACRO_STRINGIFY(
         __clang_patchlevel__) "";
-#elif __GNUC__
+#elif defined(__GNUC__)
     return "gcc " MACRO_STRINGIFY(__GNUC__) "." MACRO_STRINGIFY(__GNUC_MINOR__) "." MACRO_STRINGIFY(
         __GNUC_PATCHLEVEL__) "";
 #else
 #pragma message("Unknown compiler at compile time.")
     return "unknown compiler";
-#endif // __clang__, __GNUC__
+#endif
 }
 
 //! @brief Target processor.
@@ -47,7 +47,7 @@ std::string processor()
 #else
 #pragma message("Unknown processor at compile time.")
     return "unknown processor";
-#endif // _TARGET_PROCESSOR
+#endif
 }
 
 //! @brief Build date.
@@ -59,6 +59,6 @@ std::string date()
 #else
 #pragma message("Unknown date at compile time.")
     return "unknown date";
-#endif // defined(__DATE__) && defined(__TIME__)
+#endif
 }
 } // namespace application::build

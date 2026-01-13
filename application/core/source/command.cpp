@@ -15,7 +15,7 @@
 #include <ranges>
 #else
 #include "application/pch/precompiled_header.hpp"
-#endif // _PRECOMPILED_HEADER
+#endif
 
 #include "utility/include/benchmark.hpp"
 #include "utility/include/currying.hpp"
@@ -931,7 +931,7 @@ void Command::displayVersionInfo() const
         "            DEBUG VERSION {} "
 #else
         "          RELEASE VERSION {} "
-#endif // NDEBUG
+#endif
         "\033[0m\nBuilt {} with {} for {} on {}.\n{}\n",
         build::banner(),
         mainCLI.version(),

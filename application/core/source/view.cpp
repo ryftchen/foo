@@ -11,25 +11,25 @@
 #ifndef _PRECOMPILED_HEADER
 #if __has_include(<gsl/gsl_version.h>)
 #include <gsl/gsl_version.h>
-#endif // __has_include(<gsl/gsl_version.h>)
+#endif
 #include <openssl/evp.h>
 #include <readline/readline.h>
 #include <sys/shm.h>
 #include <sys/stat.h>
 #if __has_include(<gmp.h>)
 #include <gmp.h>
-#endif // __has_include(<gmp.h>)
+#endif
 #include <lz4.h>
 #include <mpfr.h>
 #if __has_include(<ncurses.h>)
 #include <ncurses.h>
-#endif // __has_include(<ncurses.h>)
+#endif
 #include <cassert>
 #include <iterator>
 #include <numeric>
 #else
 #include "application/pch/precompiled_header.hpp"
-#endif // _PRECOMPILED_HEADER
+#endif
 
 #include "utility/include/benchmark.hpp"
 #include "utility/include/time.hpp"
@@ -576,50 +576,50 @@ std::size_t View::buildCustomTLVPacket<View::OptDepend>(const Args& /*args*/, Bu
     extLibraries += "GNU C Library " MACRO_STRINGIFY(__GLIBC__) "." MACRO_STRINGIFY(__GLIBC_MINOR__) "\n";
 #else
 #error Could not find the GNU C Library version.
-#endif // defined(__GLIBC__) && defined(__GLIBC_MINOR__)
+#endif
 #if defined(_GLIBCXX_RELEASE) && defined(__GLIBCXX__)
     extLibraries +=
         "GNU C++ Standard Library " MACRO_STRINGIFY(_GLIBCXX_RELEASE) " (" MACRO_STRINGIFY(__GLIBCXX__) ")\n";
 #else
 #error Could not find the GNU C++ Standard Library version.
-#endif // defined(_GLIBCXX_RELEASE) && defined(__GLIBCXX__)
+#endif
 #if defined(__GNU_MP_VERSION) && defined(__GNU_MP_VERSION_MINOR) && defined(__GNU_MP_VERSION_PATCHLEVEL)
     extLibraries += "GNU MP Library " MACRO_STRINGIFY(__GNU_MP_VERSION) "." MACRO_STRINGIFY(
         __GNU_MP_VERSION_MINOR) "." MACRO_STRINGIFY(__GNU_MP_VERSION_PATCHLEVEL) "\n";
 #else
 #pragma message("Could not find the GNU MP Library version.")
-#endif // defined(__GNU_MP_VERSION) && defined(__GNU_MP_VERSION_MINOR) && defined(__GNU_MP_VERSION_PATCHLEVEL)
+#endif
 #if defined(MPFR_VERSION_STRING)
     extLibraries += "GNU MPFR Library " MPFR_VERSION_STRING "\n";
 #else
 #error Could not find the GNU MPFR Library version.
-#endif // defined(MPFR_VERSION_STRING)
+#endif
 #if defined(GSL_VERSION)
     extLibraries += "GNU Scientific Library " GSL_VERSION " (CBLAS)\n";
 #else
 #error Could not find the GNU Scientific Library (CBLAS) version.
-#endif // defined(GSL_VERSION)
+#endif
 #if defined(RL_VERSION_MAJOR) && defined(RL_VERSION_MINOR)
     extLibraries +=
         "GNU Readline Library " MACRO_STRINGIFY(RL_VERSION_MAJOR) "." MACRO_STRINGIFY(RL_VERSION_MINOR) "\n";
 #else
 #error Could not find the GNU Readline Library version.
-#endif // defined(RL_VERSION_MAJOR) && defined(RL_VERSION_MINOR)
+#endif
 #if defined(LZ4_VERSION_STRING)
     extLibraries += "LZ4 Library " LZ4_VERSION_STRING "\n";
 #else
 #error Could not find the LZ4 Library version.
-#endif // defined(LZ4_VERSION_STRING)
+#endif
 #if defined(NCURSES_VERSION)
     extLibraries += "Ncurses Library " NCURSES_VERSION "\n";
 #else
 #pragma message("Could not find the Ncurses Library version.")
-#endif // defined(NCURSES_VERSION)
+#endif
 #if defined(OPENSSL_VERSION_STR)
     extLibraries += "OpenSSL Library " OPENSSL_VERSION_STR "";
 #else
 #error Could not find the OpenSSL Library version.
-#endif // defined(OPENSSL_VERSION_STR)
+#endif
     std::strncpy(val.libInfo, extLibraries.c_str(), sizeof(val.libInfo) - 1);
     val.libInfo[sizeof(val.libInfo) - 1] = '\0';
     char* const buf = buffer.data();

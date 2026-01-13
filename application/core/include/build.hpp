@@ -10,7 +10,7 @@
 #include <string>
 #else
 #include "application/pch/precompiled_header.hpp"
-#endif // _PRECOMPILED_HEADER
+#endif
 
 //! @brief The application module.
 namespace application // NOLINT(modernize-concat-nested-namespaces)

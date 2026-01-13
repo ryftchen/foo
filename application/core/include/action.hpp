@@ -10,7 +10,7 @@
 #include <coroutine>
 #else
 #include "application/pch/precompiled_header.hpp"
-#endif // _PRECOMPILED_HEADER
+#endif
 
 #include "application/example/include/register_algorithm.hpp"
 #include "application/example/include/register_data_structure.hpp"

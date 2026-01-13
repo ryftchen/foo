@@ -12,7 +12,7 @@
 #include <ranges>
 #else
 #include "application/pch/precompiled_header.hpp"
-#endif // _PRECOMPILED_HEADER
+#endif
 
 #include "application/core/include/log.hpp"
 #include "utility/include/currying.hpp"

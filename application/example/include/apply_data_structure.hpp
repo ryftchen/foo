@@ -10,7 +10,7 @@
 #include <sstream>
 #else
 #include "application/pch/precompiled_header.hpp"
-#endif // _PRECOMPILED_HEADER
+#endif
 
 #include "data_structure/include/cache.hpp"
 #include "data_structure/include/filter.hpp"
