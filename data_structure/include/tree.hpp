@@ -29,7 +29,7 @@ namespace bs
 #ifdef __cplusplus
 extern "C"
 {
-#endif // __cplusplus
+#endif
     //! @brief Alias for the compare function type.
     typedef int (*Compare)(const void* const, const void* const);
 
@@ -58,7 +58,7 @@ extern "C"
 #pragma pack(pop)
 #ifdef __cplusplus
 }
-#endif // __cplusplus
+#endif
 
 extern Node* getMinimum(const BSTree* const tree);
 extern Node* getMaximum(const BSTree* const tree);
@@ -78,7 +78,7 @@ namespace avl
 #ifdef __cplusplus
 extern "C"
 {
-#endif // __cplusplus
+#endif
     //! @brief Alias for the compare function type.
     typedef int (*Compare)(const void* const, const void* const);
 
@@ -107,7 +107,7 @@ extern "C"
 #pragma pack(pop)
 #ifdef __cplusplus
 }
-#endif // __cplusplus
+#endif
 
 extern int getHeight(const AVLTree* const tree);
 extern Node* getMinimum(const AVLTree* const tree);
@@ -126,7 +126,7 @@ namespace splay
 #ifdef __cplusplus
 extern "C"
 {
-#endif // __cplusplus
+#endif
     //! @brief Alias for the compare function type.
     typedef int (*Compare)(const void* const, const void* const);
 
@@ -153,7 +153,7 @@ extern "C"
 #pragma pack(pop)
 #ifdef __cplusplus
 }
-#endif // __cplusplus
+#endif
 
 extern Node* getMinimum(const SplayTree* const tree);
 extern Node* getMaximum(const SplayTree* const tree);

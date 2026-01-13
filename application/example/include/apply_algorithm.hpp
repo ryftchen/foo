@@ -15,7 +15,7 @@
 #include <span>
 #else
 #include "application/pch/precompiled_header.hpp"
-#endif // _PRECOMPILED_HEADER
+#endif
 
 #include "algorithm/include/match.hpp"
 #include "algorithm/include/notation.hpp"
@@ -137,7 +137,7 @@ private:
                                   : brief.substr(maxNumPerLineOfPrint + 1, brief.length()))
                           << std::endl;
             }
-#endif // _RUNTIME_PRINTING
+#endif
         }
         ::mpfr_clear(operand);
         ::mpfr_free_str(piText);
@@ -176,7 +176,7 @@ public:
     {
 #ifdef _RUNTIME_PRINTING
         std::cout << "\nInfix notation:\n" << infixNotation << std::endl;
-#endif // _RUNTIME_PRINTING
+#endif
     }
 
     //! @brief Get the infix notation.
@@ -256,7 +256,7 @@ public:
     {
 #ifdef _RUNTIME_PRINTING
         std::cout << "\nOptimal function:\n" << funcDescr << std::endl;
-#endif // _RUNTIME_PRINTING
+#endif
     }
 
     //! @brief Get the target function.
@@ -409,7 +409,7 @@ private:
         std::cout << "\nGenerate " << sequence.size() << " ordered integral numbers from " << left << " to " << right
                   << ":\n"
                   << spliceAll(sequence.data(), sequence.size(), fmtBuffer.data(), bufferSize + 1) << std::endl;
-#endif // _RUNTIME_PRINTING
+#endif
     }
     //! @brief Set the ordered array.
     //! @param array - ordered array
@@ -436,7 +436,7 @@ private:
         std::cout << "\nGenerate " << sequence.size() << " ordered floating point numbers from " << left << " to "
                   << right << ":\n"
                   << spliceAll(sequence.data(), sequence.size(), fmtBuffer.data(), bufferSize + 1) << std::endl;
-#endif // _RUNTIME_PRINTING
+#endif
     }
 };
 } // namespace search
@@ -570,7 +570,7 @@ private:
         std::cout << "\nGenerate " << sequence.size() << " random integral numbers from " << left << " to " << right
                   << ":\n"
                   << spliceAll(sequence.data(), sequence.size(), fmtBuffer.data(), bufferSize + 1) << std::endl;
-#endif // _RUNTIME_PRINTING
+#endif
     }
     //! @brief Set the random array.
     //! @param array - random array
@@ -596,7 +596,7 @@ private:
         std::cout << "\nGenerate " << sequence.size() << " random floating point numbers from " << left << " to "
                   << right << ":\n"
                   << spliceAll(sequence.data(), sequence.size(), fmtBuffer.data(), bufferSize + 1) << std::endl;
-#endif // _RUNTIME_PRINTING
+#endif
     }
 };
 } // namespace sort

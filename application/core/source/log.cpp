@@ -14,7 +14,7 @@
 #include <regex>
 #else
 #include "application/pch/precompiled_header.hpp"
-#endif // _PRECOMPILED_HEADER
+#endif
 
 #include "utility/include/benchmark.hpp"
 #include "utility/include/time.hpp"

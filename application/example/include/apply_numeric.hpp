@@ -12,7 +12,7 @@
 #include <numeric>
 #else
 #include "application/pch/precompiled_header.hpp"
-#endif // _PRECOMPILED_HEADER
+#endif
 
 #include "numeric/include/arithmetic.hpp"
 #include "numeric/include/divisor.hpp"
@@ -51,7 +51,7 @@ public:
     {
 #ifdef _RUNTIME_PRINTING
         std::cout << "\nElementary arithmetic of " << operand1 << " and " << operand2 << ':' << std::endl;
-#endif // _RUNTIME_PRINTING
+#endif
     }
 
     //! @brief Get the pair of operands.
@@ -101,7 +101,7 @@ public:
     {
 #ifdef _RUNTIME_PRINTING
         std::cout << "\nAll common divisors of " << number1 << " and " << number2 << ':' << std::endl;
-#endif // _RUNTIME_PRINTING
+#endif
     }
 
     //! @brief Get the pair of numbers.
@@ -222,7 +222,7 @@ public:
     {
 #ifdef _RUNTIME_PRINTING
         std::cout << "\nIntegral expression:\n" << exprDescr << std::endl;
-#endif // _RUNTIME_PRINTING
+#endif
     }
 
     //! @brief Get the target expression.
@@ -271,7 +271,7 @@ public:
     {
 #ifdef _RUNTIME_PRINTING
         std::cout << "\nAll prime numbers smaller than " << upperBound << ':' << std::endl;
-#endif // _RUNTIME_PRINTING
+#endif
     }
 
     //! @brief Get the upper bound.

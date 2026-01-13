@@ -26,7 +26,7 @@ extern const char* version() noexcept;
 #ifdef __cplusplus
 extern "C"
 {
-#endif // __cplusplus
+#endif
 #pragma pack(push, 8)
     //! @brief The node of the linear structure.
     typedef struct Node
@@ -41,7 +41,7 @@ extern "C"
 #pragma pack(pop)
 #ifdef __cplusplus
 }
-#endif // __cplusplus
+#endif
 
 //! @brief The doubly linked list structure.
 namespace dll

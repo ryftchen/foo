@@ -15,7 +15,7 @@
 #include <ranges>
 #else
 #include "application/pch/precompiled_header.hpp"
-#endif // _PRECOMPILED_HEADER
+#endif
 
 namespace application::console
 {

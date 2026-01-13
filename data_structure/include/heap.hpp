@@ -29,7 +29,7 @@ namespace binary
 #ifdef __cplusplus
 extern "C"
 {
-#endif // __cplusplus
+#endif
     //! @brief Alias for the compare function type.
     typedef int (*Compare)(const void* const, const void* const);
 
@@ -49,7 +49,7 @@ extern "C"
 #pragma pack(pop)
 #ifdef __cplusplus
 }
-#endif // __cplusplus
+#endif
 
 extern BinaryHeap* create(const int cap, const Compare cmp);
 extern void destroy(BinaryHeap* heap);
@@ -82,7 +82,7 @@ namespace leftist
 #ifdef __cplusplus
 extern "C"
 {
-#endif // __cplusplus
+#endif
     //! @brief Alias for the compare function type.
     typedef int (*CompareFunc)(const void* const, const void* const);
 
@@ -111,7 +111,7 @@ extern "C"
 #pragma pack(pop)
 #ifdef __cplusplus
 }
-#endif // __cplusplus
+#endif
 
 void* getMinimum(const LeftistHeap* const heap);
 
@@ -128,7 +128,7 @@ namespace skew
 #ifdef __cplusplus
 extern "C"
 {
-#endif // __cplusplus
+#endif
     //! @brief Alias for the compare function type.
     typedef int (*CompareFunc)(const void* const, const void* const);
 
@@ -155,7 +155,7 @@ extern "C"
 #pragma pack(pop)
 #ifdef __cplusplus
 }
-#endif // __cplusplus
+#endif
 
 void* getMinimum(const SkewHeap* const heap);
 

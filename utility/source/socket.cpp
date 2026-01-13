@@ -42,7 +42,7 @@ static std::string safeStrErrno()
     return ::strerror_r(errno, buffer.data(), buffer.size());
 #else
     return (::strerror_r(errno, buffer.data(), buffer.size()) == 0) ? std::string{buffer.data()} : "Unknown error";
-#endif // _GNU_SOURCE
+#endif
 }
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)

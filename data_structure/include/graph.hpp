@@ -30,7 +30,7 @@ constexpr int maxVertexNum = 256;
 #ifdef __cplusplus
 extern "C"
 {
-#endif // __cplusplus
+#endif
     //! @brief Alias for the compare function type.
     typedef int (*Compare)(const void* const, const void* const);
 
@@ -72,7 +72,7 @@ extern "C"
 #pragma pack(pop)
 #ifdef __cplusplus
 }
-#endif // __cplusplus
+#endif
 
 extern AMLGraph* create(const Compare cmp);
 extern void destroy(AMLGraph* graph);
@@ -123,7 +123,7 @@ constexpr int maxVertexNum = 256;
 #ifdef __cplusplus
 extern "C"
 {
-#endif // __cplusplus
+#endif
     //! @brief Alias for the compare function type.
     typedef int (*Compare)(const void* const, const void* const);
 
@@ -167,7 +167,7 @@ extern "C"
 #pragma pack(pop)
 #ifdef __cplusplus
 }
-#endif // __cplusplus
+#endif
 
 extern OLGraph* create(const Compare cmp);
 extern void destroy(OLGraph* graph);

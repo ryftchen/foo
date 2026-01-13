@@ -10,7 +10,7 @@
 #include <gsl/gsl_sf.h>
 #if __has_include(<gsl/gsl_version.h>)
 #include <gsl/gsl_version.h>
-#endif // __has_include(<gsl/gsl_version.h>)
+#endif
 #include <netinet/in.h>
 #include <openssl/evp.h>
 #include <readline/history.h>
@@ -24,12 +24,12 @@
 #include <execinfo.h>
 #if __has_include(<gmp.h>)
 #include <gmp.h>
-#endif // __has_include(<gmp.h>)
+#endif
 #include <lz4.h>
 #include <mpfr.h>
 #if __has_include(<ncurses.h>)
 #include <ncurses.h>
-#endif // __has_include(<ncurses.h>)
+#endif
 #include <algorithm>
 #include <array>
 #include <barrier>
@@ -58,4 +58,4 @@
 #include <syncstream>
 #include <vector>
 
-#endif // APPLICATION_PCH_H
+#endif
