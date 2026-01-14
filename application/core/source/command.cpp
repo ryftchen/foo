@@ -716,7 +716,7 @@ void Command::precheck()
     for (constexpr auto helpArgName = toString(Category::help);
          [[maybe_unused]] const auto& [subCLIName, categoryMap] : taskDispatcher.extraChoiceRegistry
              | std::views::filter([this](const auto& subCLIPair)
-                                  { return mainCLI.isSubCommandUsed(subCLIPair.first) && (checkExcessArgs(), true); }))
+                                  { return mainCLI.isSubcommandUsed(subCLIPair.first) && (checkExcessArgs(), true); }))
     {
         const auto& subCLI = mainCLI.at<utility::argument::Argument>(subCLIName);
         const bool notAssigned = !subCLI;
@@ -769,7 +769,7 @@ void Command::dispatchAll()
         {
             if (auto whichUsed = std::views::keys(taskDispatcher.extraChoiceRegistry)
                     | std::views::filter([this](const auto& subCLIName)
-                                         { return mainCLI.isSubCommandUsed(subCLIName); });
+                                         { return mainCLI.isSubcommandUsed(subCLIName); });
                 std::ranges::distance(whichUsed) != 0)
             {
                 std::cout << mainCLI.at<utility::argument::Argument>(*std::ranges::begin(whichUsed)).help().str()

@@ -697,11 +697,11 @@ public:
     //! @brief Check whether the sub-command is used.
     //! @param parserName - target sub-parser name
     //! @return be used or not
-    bool isSubCommandUsed(const std::string_view parserName) const;
+    bool isSubcommandUsed(const std::string_view parserName) const;
     //! @brief Check whether the sub-command is used.
-    //! @param subParser - target sub-parser
+    //! @param parser - target sub-parser
     //! @return be used or not
-    bool isSubCommandUsed(const Argument& subParser) const;
+    bool isSubcommandUsed(const Argument& parser) const;
     //! @brief Clear all used flags.
     void clearUsed();
     //! @brief Get the title name.
@@ -717,7 +717,7 @@ public:
     //! @return usage content
     std::string usage() const;
     //! @brief Add a sub-parser.
-    //! @param parser - sub-parser
+    //! @param parser - target sub-parser
     void addSubParser(Argument& parser);
 
 private:
