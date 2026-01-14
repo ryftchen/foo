@@ -1,17 +1,10 @@
 language: en
-files:
-  - '**/*.{cpp,hpp,sh,py,rs}'
 dictionaries:
-  - bash
   - cpp
   - en_GB
   - en_US
-  - filetypes
-  - fullstack
-  - git
   - python
   - rust
-  - software-terms
   - shell
 words:
   - adaptee
@@ -35,6 +28,7 @@ words:
   - EXTSUM
   - filedir
   - gdbinit
+  - getopts
   - gitmessage
   - gtest
   - indexgenerator
@@ -72,6 +66,7 @@ words:
   - supervisord
   - tmpfs
   - tparam
+  - tput
   - tsan
   - ubsan
   - uncurried
@@ -83,10 +78,6 @@ words:
   - Werror
   - woboq
   - Xdemangler
-enableFiletypes:
-  - shellscript
-ignorePaths:
-  - '**/.github'
 useGitignore: true
 ignoreRegExpList:
   - \/\/ NOLINT.*
