@@ -140,10 +140,10 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
     const auto inputData = std::make_shared<InputBuilder>(operandA, operandB);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
-        [allocatedJob, &inputData, &taskNamer](const std::string_view subTask, const ArithmeticMethod method)
+        [allocatedJob, &inputData, &taskNamer](const std::string_view subtask, const ArithmeticMethod method)
     {
         allocatedJob->enqueue(
-            taskNamer(subTask),
+            taskNamer(subtask),
             arithmetic::calculation,
             method,
             inputData->getOperands().first,
@@ -242,10 +242,10 @@ void applyingDivisor(const std::vector<std::string>& candidates)
     const auto inputData = std::make_shared<InputBuilder>(numberA, numberB);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
-        [allocatedJob, &inputData, &taskNamer](const std::string_view subTask, const DivisorMethod method)
+        [allocatedJob, &inputData, &taskNamer](const std::string_view subtask, const DivisorMethod method)
     {
         allocatedJob->enqueue(
-            taskNamer(subTask),
+            taskNamer(subtask),
             divisor::calculation,
             method,
             inputData->getNumbers().first,
@@ -345,10 +345,10 @@ void applyingIntegral(const std::vector<std::string>& candidates)
         CylindricalBessel{}, CylindricalBessel::range1, CylindricalBessel::range2, CylindricalBessel::exprDescr);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
-        [allocatedJob, &inputData, &taskNamer](const std::string_view subTask, const IntegralMethod method)
+        [allocatedJob, &inputData, &taskNamer](const std::string_view subtask, const IntegralMethod method)
     {
         allocatedJob->enqueue(
-            taskNamer(subTask),
+            taskNamer(subtask),
             integral::calculation,
             method,
             inputData->getExpression(),
@@ -450,8 +450,8 @@ void applyingPrime(const std::vector<std::string>& candidates)
     const auto inputData = std::make_shared<InputBuilder>(upperBound);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
-        [allocatedJob, &inputData, &taskNamer](const std::string_view subTask, const PrimeMethod method)
-    { allocatedJob->enqueue(taskNamer(subTask), prime::calculation, method, inputData->getUpperBound()); };
+        [allocatedJob, &inputData, &taskNamer](const std::string_view subtask, const PrimeMethod method)
+    { allocatedJob->enqueue(taskNamer(subtask), prime::calculation, method, inputData->getUpperBound()); };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     for (const auto index :

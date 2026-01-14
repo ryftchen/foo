@@ -163,10 +163,10 @@ void applyingMatch(const std::vector<std::string>& candidates)
     const auto inputData = std::make_shared<InputBuilder>(patternString);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
-        [allocatedJob, &inputData, &taskNamer](const std::string_view subTask, const MatchMethod method)
+        [allocatedJob, &inputData, &taskNamer](const std::string_view subtask, const MatchMethod method)
     {
         allocatedJob->enqueue(
-            taskNamer(subTask),
+            taskNamer(subtask),
             match::solution,
             method,
             inputData->getMatchingText().get(),
@@ -265,8 +265,8 @@ void applyingNotation(const std::vector<std::string>& candidates)
     const auto inputData = std::make_shared<InputBuilder>(infixString);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
-        [allocatedJob, &inputData, &taskNamer](const std::string_view subTask, const NotationMethod method)
-    { allocatedJob->enqueue(taskNamer(subTask), notation::solution, method, inputData->getInfixNotation()); };
+        [allocatedJob, &inputData, &taskNamer](const std::string_view subtask, const NotationMethod method)
+    { allocatedJob->enqueue(taskNamer(subtask), notation::solution, method, inputData->getInfixNotation()); };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     for (const auto index :
@@ -379,10 +379,10 @@ void applyingOptimal(const std::vector<std::string>& candidates)
         SphericalBessel{}, SphericalBessel::range1, SphericalBessel::range2, SphericalBessel::funcDescr);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
-        [allocatedJob, &inputData, &taskNamer](const std::string_view subTask, const OptimalMethod method)
+        [allocatedJob, &inputData, &taskNamer](const std::string_view subtask, const OptimalMethod method)
     {
         allocatedJob->enqueue(
-            taskNamer(subTask),
+            taskNamer(subtask),
             optimal::solution,
             method,
             inputData->getFunction(),
@@ -504,10 +504,10 @@ void applyingSearch(const std::vector<std::string>& candidates)
     const auto inputData = std::make_shared<InputBuilder<float>>(arrayLength, arrayRangeMin, arrayRangeMax);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
-        [allocatedJob, &inputData, &taskNamer](const std::string_view subTask, const SearchMethod method)
+        [allocatedJob, &inputData, &taskNamer](const std::string_view subtask, const SearchMethod method)
     {
         allocatedJob->enqueue(
-            taskNamer(subTask),
+            taskNamer(subtask),
             search::solution,
             method,
             inputData->getOrderedArray().get(),
@@ -628,10 +628,10 @@ void applyingSort(const std::vector<std::string>& candidates)
     static_assert((arrayRangeMin < arrayRangeMax) && (arrayLength > 0));
     const auto inputData = std::make_shared<InputBuilder<std::int32_t>>(arrayLength, arrayRangeMin, arrayRangeMax);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = [allocatedJob, &inputData, &taskNamer](const std::string_view subTask, const SortMethod method)
+    const auto addTask = [allocatedJob, &inputData, &taskNamer](const std::string_view subtask, const SortMethod method)
     {
         allocatedJob->enqueue(
-            taskNamer(subTask), sort::solution, method, inputData->getRandomArray().get(), inputData->getLength());
+            taskNamer(subtask), sort::solution, method, inputData->getRandomArray().get(), inputData->getLength());
     };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 

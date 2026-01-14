@@ -147,8 +147,8 @@ void applyingBehavioral(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(spec.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const BehavioralInstance instance)
-    { allocatedJob->enqueue(taskNamer(subTask), behavioral::pattern, instance); };
+    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subtask, const BehavioralInstance instance)
+    { allocatedJob->enqueue(taskNamer(subtask), behavioral::pattern, instance); };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " pattern:" << std::endl;
@@ -260,8 +260,8 @@ void applyingCreational(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(spec.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const CreationalInstance instance)
-    { allocatedJob->enqueue(taskNamer(subTask), creational::pattern, instance); };
+    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subtask, const CreationalInstance instance)
+    { allocatedJob->enqueue(taskNamer(subtask), creational::pattern, instance); };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " pattern:" << std::endl;
@@ -361,8 +361,8 @@ void applyingStructural(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(spec.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const StructuralInstance instance)
-    { allocatedJob->enqueue(taskNamer(subTask), structural::pattern, instance); };
+    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subtask, const StructuralInstance instance)
+    { allocatedJob->enqueue(taskNamer(subtask), structural::pattern, instance); };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " pattern:" << std::endl;

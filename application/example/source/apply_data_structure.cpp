@@ -123,8 +123,8 @@ void applyingCache(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(spec.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const CacheInstance instance)
-    { allocatedJob->enqueue(taskNamer(subTask), cache::structure, instance); };
+    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subtask, const CacheInstance instance)
+    { allocatedJob->enqueue(taskNamer(subtask), cache::structure, instance); };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
@@ -203,8 +203,8 @@ void applyingFilter(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(spec.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const FilterInstance instance)
-    { allocatedJob->enqueue(taskNamer(subTask), filter::structure, instance); };
+    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subtask, const FilterInstance instance)
+    { allocatedJob->enqueue(taskNamer(subtask), filter::structure, instance); };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
@@ -280,8 +280,8 @@ void applyingGraph(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(spec.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const GraphInstance instance)
-    { allocatedJob->enqueue(taskNamer(subTask), graph::structure, instance); };
+    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subtask, const GraphInstance instance)
+    { allocatedJob->enqueue(taskNamer(subtask), graph::structure, instance); };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
@@ -360,8 +360,8 @@ void applyingHeap(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(spec.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const HeapInstance instance)
-    { allocatedJob->enqueue(taskNamer(subTask), heap::structure, instance); };
+    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subtask, const HeapInstance instance)
+    { allocatedJob->enqueue(taskNamer(subtask), heap::structure, instance); };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
@@ -443,8 +443,8 @@ void applyingLinear(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(spec.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const LinearInstance instance)
-    { allocatedJob->enqueue(taskNamer(subTask), linear::structure, instance); };
+    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subtask, const LinearInstance instance)
+    { allocatedJob->enqueue(taskNamer(subtask), linear::structure, instance); };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
@@ -526,8 +526,8 @@ void applyingTree(const std::vector<std::string>& candidates)
     auto& pooling = configure::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(spec.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
-    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subTask, const TreeInstance instance)
-    { allocatedJob->enqueue(taskNamer(subTask), tree::structure, instance); };
+    const auto addTask = [allocatedJob, &taskNamer](const std::string_view subtask, const TreeInstance instance)
+    { allocatedJob->enqueue(taskNamer(subtask), tree::structure, instance); };
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
