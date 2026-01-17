@@ -17,6 +17,8 @@
 #include "application/pch/precompiled_header.hpp"
 #endif
 
+#include "utility/include/macro.hpp"
+
 namespace application::console
 {
 //! @brief Anonymous namespace.
@@ -25,6 +27,21 @@ inline namespace
 //! @brief Current console instance.
 thread_local constinit Console* currentSession = nullptr; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 } // namespace
+
+//! @brief Local options.
+namespace local
+{
+//! @brief The "usage" option.
+constexpr const char* const usage = MACRO_STRINGIFY(usage);
+//! @brief The "quit" option.
+constexpr const char* const quit = MACRO_STRINGIFY(quit);
+//! @brief The "trace" option.
+constexpr const char* const trace = MACRO_STRINGIFY(trace);
+//! @brief The "clean" option.
+constexpr const char* const clean = MACRO_STRINGIFY(clean);
+//! @brief The "batch" option.
+constexpr const char* const batch = MACRO_STRINGIFY(batch);
+} // namespace local
 
 Console::Console(const std::string_view greeting) : terminal{std::make_unique<Terminal>(greeting)}
 {
@@ -69,7 +86,8 @@ Console::RetCode Console::optionExecutor(const std::string& option) const
     if (regIter == terminal->regTable.cend())
     {
         throw std::runtime_error{
-            "The console option (" + inputs.front() + ") could not be found. Enter the \"usage\" for help."};
+            "The console option (" + inputs.front() + ") could not be found. Enter the \"" + local::usage
+            + "\" for help."};
     }
     const auto& mappedCallback = std::get<Callback>(regIter->second);
     return mappedCallback ? mappedCallback(inputs) : dummyCallback(inputs);
@@ -77,16 +95,16 @@ Console::RetCode Console::optionExecutor(const std::string& option) const
 
 Console::RetCode Console::fileExecutor(const std::string& filename) const
 {
-    std::ifstream batch(filename);
-    if (!batch)
+    std::ifstream batches(filename);
+    if (!batches)
     {
-        throw std::runtime_error{"Could not find the batch file to run."};
+        throw std::runtime_error{"Could not find the " + filename + " file to run."};
     }
 
     std::string input{};
     std::uint32_t counter = 0;
     std::ostringstream out{};
-    while (std::getline(batch, input))
+    while (std::getline(batches, input))
     {
         if (input.empty() || (input.front() == '#'))
         {
@@ -141,7 +159,7 @@ void Console::setDefaultOptions()
     auto& regTable = terminal->regTable;
     auto& orderList = terminal->orderList;
 
-    regTable["usage"] = std::make_pair(
+    regTable[local::usage] = std::make_pair(
         "show help message",
         [this](const Args& /*inputs*/)
         {
@@ -159,18 +177,18 @@ void Console::setDefaultOptions()
             std::cout << out.str() << std::flush;
             return RetCode::success;
         });
-    orderList.emplace_back("usage");
+    orderList.emplace_back(local::usage);
 
-    regTable["quit"] = std::make_pair(
+    regTable[local::quit] = std::make_pair(
         "exit the console",
         [](const Args& /*inputs*/)
         {
             std::cout << "exit" << std::endl;
             return RetCode::quit;
         });
-    orderList.emplace_back("quit");
+    orderList.emplace_back(local::quit);
 
-    regTable["trace"] = std::make_pair(
+    regTable[local::trace] = std::make_pair(
         "get history of applied options",
         [](const Args& /*inputs*/)
         {
@@ -194,9 +212,9 @@ void Console::setDefaultOptions()
             }
             return RetCode::success;
         });
-    orderList.emplace_back("trace");
+    orderList.emplace_back(local::trace);
 
-    regTable["clean"] = std::make_pair(
+    regTable[local::clean] = std::make_pair(
         "clear full screen",
         [](const Args& /*inputs*/)
         {
@@ -204,19 +222,20 @@ void Console::setDefaultOptions()
             std::cout << build::banner() << std::endl;
             return RetCode::success;
         });
-    orderList.emplace_back("clean");
+    orderList.emplace_back(local::clean);
 
-    regTable["batch"] = std::make_pair(
+    regTable[local::batch] = std::make_pair(
         "run lines from the file [inputs: FILE]",
         [this](const Args& inputs)
         {
             if (inputs.size() < 2)
             {
-                throw std::runtime_error{"Please enter the \"" + inputs.at(0) + "\" and append with FILE (full path)."};
+                throw std::runtime_error{
+                    "Please enter the \"" + std::string{local::batch} + "\" and append with FILE (full path)."};
             }
             return fileExecutor(inputs.at(1));
         });
-    orderList.emplace_back("batch");
+    orderList.emplace_back(local::batch);
 }
 
 void Console::saveState()

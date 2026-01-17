@@ -648,7 +648,8 @@ std::size_t View::buildCustomTLVPacket<View::OptExecute>(const Args& args, Buffe
     if (((cmd.find_first_not_of('\'') == 0) || (cmd.find_last_not_of('\'') == (cmd.length() - 1)))
         && ((cmd.find_first_not_of('"') == 0) || (cmd.find_last_not_of('"') == (cmd.length() - 1))))
     {
-        throw std::runtime_error{"Please enter the \"execute\" and append with 'CMD' (include quotes)."};
+        throw std::runtime_error{
+            "Please enter the \"" + std::string{OptExecute::name} + "\" and append with 'CMD' (include quotes)."};
     }
 
     char* const buf = buffer.data();
@@ -692,7 +693,8 @@ std::size_t View::buildCustomTLVPacket<View::OptMonitor>(const Args& args, Buffe
     {
         if (const auto& input = args.front(); (input.length() != 1) || (std::isdigit(input.front()) == 0))
         {
-            throw std::runtime_error{"Please enter the \"monitor\" and append with or without NUM (0 to 9)."};
+            throw std::runtime_error{
+                "Please enter the \"" + std::string{OptMonitor::name} + "\" and append with or without NUM (0 to 9)."};
         }
     }
 
@@ -1058,16 +1060,12 @@ void View::renewServer<utility::socket::TCPServer>()
     tcpServer->subscribeConnection(
         [](const std::shared_ptr<utility::socket::TCPSocket> client) // NOLINT(performance-unnecessary-value-param)
         {
-            const std::weak_ptr<utility::socket::TCPSocket> weakSock = client;
+            const std::weak_ptr weakSock = client;
             client->subscribeMessage(
                 [weakSock](const std::string_view message)
                 {
-                    if (message.empty())
-                    {
-                        return;
-                    }
-                    auto newSocket = weakSock.lock();
-                    if (!newSocket)
+                    auto currSock = weakSock.lock();
+                    if (!currSock || message.empty())
                     {
                         return;
                     }
@@ -1076,7 +1074,7 @@ void View::renewServer<utility::socket::TCPServer>()
                     try
                     {
                         const auto reqPlaintext = utility::common::base64Decode(message);
-                        newSocket->toSend(
+                        currSock->toSend(
                             respBuffer.data(),
                             (reqPlaintext != exitSymbol) ? buildResponse(reqPlaintext, respBuffer)
                                                          : buildFinTLVPacket(respBuffer));
@@ -1084,7 +1082,7 @@ void View::renewServer<utility::socket::TCPServer>()
                     catch (const std::exception& err)
                     {
                         LOG_WRN << err.what();
-                        newSocket->toSend(respBuffer.data(), buildAckTLVPacket(respBuffer));
+                        currSock->toSend(respBuffer.data(), buildAckTLVPacket(respBuffer));
                     }
                 });
         });
@@ -1095,10 +1093,12 @@ template <>
 void View::renewServer<utility::socket::UDPServer>()
 {
     udpServer = std::make_shared<utility::socket::UDPServer>();
+    const std::weak_ptr weakSock = udpServer;
     udpServer->subscribeMessage(
-        [this](const std::string_view message, const std::string& ip, const std::uint16_t port)
+        [weakSock](const std::string_view message, const std::string& ip, const std::uint16_t port)
         {
-            if (message.empty())
+            auto currSock = weakSock.lock();
+            if (!currSock || message.empty())
             {
                 return;
             }
@@ -1107,7 +1107,7 @@ void View::renewServer<utility::socket::UDPServer>()
             try
             {
                 const auto reqPlaintext = utility::common::base64Decode(message);
-                udpServer->toSendTo(
+                currSock->toSendTo(
                     respBuffer.data(),
                     (reqPlaintext != exitSymbol) ? buildResponse(reqPlaintext, respBuffer)
                                                  : buildFinTLVPacket(respBuffer),
@@ -1117,7 +1117,7 @@ void View::renewServer<utility::socket::UDPServer>()
             catch (const std::exception& err)
             {
                 LOG_WRN << err.what();
-                udpServer->toSendTo(respBuffer.data(), buildAckTLVPacket(respBuffer), ip, port);
+                currSock->toSendTo(respBuffer.data(), buildAckTLVPacket(respBuffer), ip, port);
             }
         });
 }
