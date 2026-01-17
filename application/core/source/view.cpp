@@ -1196,7 +1196,7 @@ void View::notificationLoop()
     {
         std::unique_lock<std::mutex> daemonLock(daemonMtx);
         daemonCond.wait(daemonLock, [this]() { return !isOngoing.load() || inResetting.load(); });
-        if (inResetting.load())
+        if (inResetting.load() || (tcpServer->stopRequested() && udpServer->stopRequested()))
         {
             break;
         }
