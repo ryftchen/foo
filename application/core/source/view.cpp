@@ -1196,9 +1196,15 @@ void View::notificationLoop()
     {
         std::unique_lock<std::mutex> daemonLock(daemonMtx);
         daemonCond.wait(daemonLock, [this]() { return !isOngoing.load() || inResetting.load(); });
-        if (inResetting.load() || (tcpServer->stopRequested() && udpServer->stopRequested()))
+        if (inResetting.load())
         {
             break;
+        }
+
+        if (MACRO_IMPLIES(tcpServer, tcpServer->stopRequested())
+            || MACRO_IMPLIES(udpServer, udpServer->stopRequested()))
+        {
+            throw std::runtime_error{"Found that the server did not work as expected."};
         }
     }
 }
