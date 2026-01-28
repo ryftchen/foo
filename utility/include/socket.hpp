@@ -40,9 +40,9 @@ public:
     Socket& operator=(Socket&&) = delete;
 
     //! @brief Close the socket.
-    void toClose();
+    void close();
     //! @brief Wait for the task to be done and then exit.
-    void toJoin();
+    void join();
     //! @brief Set the flag to indicate that a stop has been requested.
     void requestStop();
     //! @brief Check whether a stop has been requested.
@@ -72,7 +72,7 @@ private:
     //! @brief Flag for request of stop.
     std::atomic_bool exitReady{false};
     //! @brief Result of asynchronous operations for the non-detached thread.
-    std::future<void> asyncTask;
+    std::future<void> ownedTask;
     //! @brief Spin lock to synchronize access to the socket.
     mutable ::pthread_spinlock_t sockLock{};
 
@@ -89,13 +89,20 @@ protected:
     //! @brief Destroy the Socket object.
     ~Socket();
 
-    //! @brief Launch the asynchronous operations.
+    //! @brief Start the detached operations.
     //! @tparam Func - type of callable function
     //! @tparam Args - type of function arguments
     //! @param func - callable function
     //! @param args - function arguments
     template <typename Func, typename... Args>
-    void launchAsyncTask(Func&& func, Args&&... args);
+    static void spawnDetached(Func&& func, Args&&... args);
+    //! @brief Start the joinable operations.
+    //! @tparam Func - type of callable function
+    //! @tparam Args - type of function arguments
+    //! @param func - callable function
+    //! @param args - function arguments
+    template <typename Func, typename... Args>
+    void spawnJoinable(Func&& func, Args&&... args);
     //! @brief Guard for the spin lock to ensure mutual exclusion.
     class Guard
     {
@@ -137,18 +144,18 @@ public:
     //! @param bytes - bytes buffer
     //! @param size - length of buffer
     //! @return sent size
-    ::ssize_t toSend(const char* const bytes, const std::size_t size);
+    ::ssize_t send(const char* const bytes, const std::size_t size);
     //! @brief Send the message string to socket FD.
     //! @param message - message string
     //! @return sent size
-    ::ssize_t toSend(const std::string_view message);
+    ::ssize_t send(const std::string_view message);
     //! @brief Open a connection on socket FD to peer.
     //! @param ip - peer ip address
     //! @param port - peer port number
-    void toConnect(const std::string& ip, const std::uint16_t port);
+    void connect(const std::string& ip, const std::uint16_t port);
     //! @brief Create the thread to receive.
-    //! @param detach - whether to detach
-    void toReceive(const bool detach = false);
+    //! @param detached - whether to detach
+    void receive(const bool detached = false);
 
     //! @brief Alias for the handling on message received.
     using MessageCallback = std::function<void(const std::string_view)>;
@@ -169,7 +176,7 @@ private:
 
     //! @brief Receive bytes from socket FD.
     //! @param socket - target socket
-    static void toRecv(const std::shared_ptr<TCPSocket> socket);
+    static void doReceive(const std::shared_ptr<TCPSocket> socket);
 
     //! @brief Emit the received message.
     //! @param message - received message
@@ -190,15 +197,15 @@ public:
     //! @brief Bind to transport ip address and port number.
     //! @param ip - ip address
     //! @param port - port number
-    void toBind(const std::string& ip, const std::uint16_t port);
+    void bind(const std::string& ip, const std::uint16_t port);
     //! @brief Bind to transport port number with default ip address.
     //! @param port - port number
-    void toBind(const std::uint16_t port);
+    void bind(const std::uint16_t port);
     //! @brief Listen on a port number. Wait for the connection to be established.
-    void toListen();
+    void listen();
     //! @brief Create the thread to accept the connection from the client.
-    //! @param detach - whether to detach
-    void toAccept(const bool detach = false);
+    //! @param detached - whether to detach
+    void accept(const bool detached = false);
 
     //! @brief Alias for the handling on new connection.
     using ConnectionCallback = std::function<void(const std::shared_ptr<TCPSocket>)>;
@@ -212,7 +219,7 @@ private:
 
     //! @brief Accept the connection on socket FD.
     //! @param server - target server
-    static void toAccept(const std::shared_ptr<TCPServer> server);
+    static void accept(const std::shared_ptr<TCPServer> server);
 
     //! @brief Emit the new connection.
     //! @param client - new connected client
@@ -233,33 +240,32 @@ public:
     //! @param ip - peer ip address
     //! @param port - peer port number
     //! @return sent size
-    ::ssize_t toSendTo(
-        const char* const bytes, const std::size_t size, const std::string& ip, const std::uint16_t port);
+    ::ssize_t sendTo(const char* const bytes, const std::size_t size, const std::string& ip, const std::uint16_t port);
     //! @brief Send the message string on socket FD to peer.
     //! @param message - message string
     //! @param ip - peer ip address
     //! @param port - peer port number
     //! @return sent size
-    ::ssize_t toSendTo(const std::string_view message, const std::string& ip, const std::uint16_t port);
+    ::ssize_t sendTo(const std::string_view message, const std::string& ip, const std::uint16_t port);
     //! @brief Send bytes from the buffer to socket FD.
     //! @param bytes - bytes buffer
     //! @param size - length of buffer
     //! @return sent size
-    ::ssize_t toSend(const char* const bytes, const std::size_t size);
+    ::ssize_t send(const char* const bytes, const std::size_t size);
     //! @brief Send the message string to socket FD.
     //! @param message - message string
     //! @return sent size
-    ::ssize_t toSend(const std::string_view message);
+    ::ssize_t send(const std::string_view message);
     //! @brief Open a connection on socket FD to peer.
     //! @param ip - peer ip address
     //! @param port - peer port number
-    void toConnect(const std::string& ip, const std::uint16_t port);
+    void connect(const std::string& ip, const std::uint16_t port);
     //! @brief Create the thread to receive.
-    //! @param detach - whether to detach
-    void toReceive(const bool detach = false);
+    //! @param detached - whether to detach
+    void receive(const bool detached = false);
     //! @brief Create the thread to receive from peer.
-    //! @param detach - whether to detach
-    void toReceiveFrom(const bool detach = false);
+    //! @param detached - whether to detach
+    void receiveFrom(const bool detached = false);
 
     //! @brief Alias for the handling on message received.
     using MessageCallback = std::function<void(const std::string_view, const std::string&, const std::uint16_t)>;
@@ -281,10 +287,10 @@ private:
 
     //! @brief Receive bytes from socket FD.
     //! @param socket - target socket
-    static void toRecv(const std::shared_ptr<UDPSocket> socket);
+    static void doReceive(const std::shared_ptr<UDPSocket> socket);
     //! @brief Receive bytes through socket FD.
     //! @param socket - target socket
-    static void toRecvFrom(const std::shared_ptr<UDPSocket> socket);
+    static void doReceiveFrom(const std::shared_ptr<UDPSocket> socket);
 
     //! @brief Emit the received message.
     //! @param message - received message
@@ -306,10 +312,10 @@ public:
     //! @brief Bind to transport ip address and port number.
     //! @param ip - ip address
     //! @param port - port number
-    void toBind(const std::string& ip, const std::uint16_t port);
+    void bind(const std::string& ip, const std::uint16_t port);
     //! @brief Bind to transport port number with default ip address.
     //! @param port - port number
-    void toBind(const std::uint16_t port);
+    void bind(const std::uint16_t port);
 };
 } // namespace socket
 } // namespace utility
