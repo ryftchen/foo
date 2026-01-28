@@ -8,7 +8,6 @@
 
 #include <list>
 #include <map>
-#include <mutex>
 #include <numeric>
 #include <optional>
 #include <unordered_map>
@@ -100,13 +99,13 @@ public:
 
     //! @brief Check whether any elements do not exist in the cache.
     //! @return any elements do not exist or exist
-    bool empty() const;
+    [[nodiscard]] bool empty() const;
     //! @brief Get the number of elements currently in the cache.
     //! @return number of used slots
-    std::size_t size() const;
+    [[nodiscard]] std::size_t size() const;
     //! @brief Get the total capacity of the cache.
     //! @return maximum number of elements the cache can hold
-    std::size_t capacity() const;
+    [[nodiscard]] std::size_t capacity() const;
 
 private:
     struct Element;
@@ -129,8 +128,6 @@ private:
     std::unordered_map<Key, FIFOIter> keyedElements{};
     //! @brief Number of elements.
     std::size_t usedSize{0};
-    //! @brief Mutex for controlling elements.
-    mutable std::mutex mtx;
 
     //! @brief Operation of inserting or updating.
     //! @param key - key associated with the value
@@ -163,7 +160,6 @@ FIFO<Key, Value>::FIFO(const std::size_t capacity, const float maxLoadFactor) : 
 template <typename Key, typename Value>
 void FIFO<Key, Value>::insert(const Key& key, Value value)
 {
-    const std::lock_guard<std::mutex> lock(mtx);
     doInsertOrUpdate(key, std::move(value));
 }
 
@@ -171,7 +167,6 @@ template <typename Key, typename Value>
 template <typename Range>
 std::size_t FIFO<Key, Value>::insertRange(Range&& keyValueRange)
 {
-    const std::lock_guard<std::mutex> lock(mtx);
     auto&& range = std::forward<Range>(keyValueRange);
     std::size_t inserted = 0;
     for (auto& [key, value] : range)
@@ -185,7 +180,6 @@ std::size_t FIFO<Key, Value>::insertRange(Range&& keyValueRange)
 template <typename Key, typename Value>
 bool FIFO<Key, Value>::erase(const Key& key)
 {
-    const std::lock_guard<std::mutex> lock(mtx);
     if (const auto keyedPos = keyedElements.find(key); keyedPos != keyedElements.cend())
     {
         doErase(keyedPos->second);
@@ -198,7 +192,6 @@ template <typename Key, typename Value>
 template <typename Iterator>
 std::size_t FIFO<Key, Value>::erase(Iterator begin, const Iterator end)
 {
-    const std::lock_guard<std::mutex> lock(mtx);
     std::size_t erased = 0;
     while (begin != end)
     {
@@ -222,7 +215,6 @@ std::size_t FIFO<Key, Value>::eraseRange(const Range& keyRange)
 template <typename Key, typename Value>
 std::optional<Value> FIFO<Key, Value>::find(const Key& key)
 {
-    const std::lock_guard<std::mutex> lock(mtx);
     return doFind(key);
 }
 
@@ -231,7 +223,6 @@ template <typename Iterator>
 auto FIFO<Key, Value>::find(Iterator begin, const Iterator end, const std::size_t distance)
     -> std::vector<std::pair<Key, std::optional<Value>>>
 {
-    const std::lock_guard<std::mutex> lock(mtx);
     std::vector<std::pair<Key, std::optional<Value>>> result{};
     if (distance > 0)
     {
@@ -256,7 +247,6 @@ template <typename Key, typename Value>
 template <typename Iterator>
 void FIFO<Key, Value>::resolveRange(Iterator begin, const Iterator end)
 {
-    const std::lock_guard<std::mutex> lock(mtx);
     while (begin != end)
     {
         auto& [key, optValue] = *begin;
@@ -415,13 +405,13 @@ public:
 
     //! @brief Check whether any elements do not exist in the cache.
     //! @return any elements do not exist or exist
-    bool empty() const;
+    [[nodiscard]] bool empty() const;
     //! @brief Get the number of elements currently in the cache.
     //! @return number of used slots
-    std::size_t size() const;
+    [[nodiscard]] std::size_t size() const;
     //! @brief Get the total capacity of the cache.
     //! @return maximum number of elements the cache can hold
-    std::size_t capacity() const;
+    [[nodiscard]] std::size_t capacity() const;
 
 private:
     struct Element;
@@ -452,8 +442,6 @@ private:
     std::unordered_map<Key, OpenSlotIter> keyedElements{};
     //! @brief Number of elements.
     std::size_t usedSize{0};
-    //! @brief Mutex for controlling elements.
-    mutable std::mutex mtx;
 
     //! @brief Operation of inserting or updating.
     //! @param key - key associated with the value
@@ -498,7 +486,6 @@ LFU<Key, Value>::LFU(const std::size_t capacity, const float maxLoadFactor) :
 template <typename Key, typename Value>
 void LFU<Key, Value>::insert(const Key& key, Value value)
 {
-    const std::lock_guard<std::mutex> lock(mtx);
     doInsertOrUpdate(key, std::move(value));
 }
 
@@ -506,7 +493,6 @@ template <typename Key, typename Value>
 template <typename Range>
 std::size_t LFU<Key, Value>::insertRange(Range&& keyValueRange)
 {
-    const std::lock_guard<std::mutex> lock(mtx);
     auto&& range = std::forward<Range>(keyValueRange);
     std::size_t inserted = 0;
     for (auto& [key, value] : range)
@@ -520,7 +506,6 @@ std::size_t LFU<Key, Value>::insertRange(Range&& keyValueRange)
 template <typename Key, typename Value>
 bool LFU<Key, Value>::erase(const Key& key)
 {
-    const std::lock_guard<std::mutex> lock(mtx);
     if (const auto keyedPos = keyedElements.find(key); keyedPos != keyedElements.cend())
     {
         doErase(keyedPos->second);
@@ -533,7 +518,6 @@ template <typename Key, typename Value>
 template <typename Range>
 std::size_t LFU<Key, Value>::eraseRange(const Range& keyRange)
 {
-    const std::lock_guard<std::mutex> lock(mtx);
     std::size_t erased = 0;
     for (const auto& key : keyRange)
     {
@@ -549,14 +533,12 @@ std::size_t LFU<Key, Value>::eraseRange(const Range& keyRange)
 template <typename Key, typename Value>
 std::optional<Value> LFU<Key, Value>::find(const Key& key, const bool peek)
 {
-    const std::lock_guard<std::mutex> lock(mtx);
     return doFind(key, peek);
 }
 
 template <typename Key, typename Value>
 auto LFU<Key, Value>::findWithRefcount(const Key& key, const bool peek) -> std::optional<std::pair<Value, std::size_t>>
 {
-    const std::lock_guard<std::mutex> lock(mtx);
     return doFindWithRefcount(key, peek);
 }
 
@@ -565,7 +547,6 @@ template <typename Range>
 auto LFU<Key, Value>::findRange(const Range& keyRange, const bool peek)
     -> std::vector<std::pair<Key, std::optional<Value>>>
 {
-    const std::lock_guard<std::mutex> lock(mtx);
     std::vector<std::pair<Key, std::optional<Value>>> result{};
     result.reserve(std::size(keyRange));
     for (const auto& key : keyRange)
@@ -579,7 +560,6 @@ template <typename Key, typename Value>
 template <typename Range>
 void LFU<Key, Value>::resolveRange(Range& keyOptValueRange, const bool peek)
 {
-    const std::lock_guard<std::mutex> lock(mtx);
     for (auto& [key, optValue] : keyOptValueRange)
     {
         optValue = doFind(key, peek);
@@ -761,13 +741,13 @@ public:
 
     //! @brief Check whether any elements do not exist in the cache.
     //! @return any elements do not exist or exist
-    bool empty() const;
+    [[nodiscard]] bool empty() const;
     //! @brief Get the number of elements currently in the cache.
     //! @return number of used slots
-    std::size_t size() const;
+    [[nodiscard]] std::size_t size() const;
     //! @brief Get the total capacity of the cache.
     //! @return maximum number of elements the cache can hold
-    std::size_t capacity() const;
+    [[nodiscard]] std::size_t capacity() const;
 
 private:
     //! @brief Alias for the iterator of the internal LRU list.
@@ -795,8 +775,6 @@ private:
     std::unordered_map<Key, std::size_t> keyedElements{};
     //! @brief Number of elements.
     std::size_t usedSize{0};
-    //! @brief Mutex for controlling elements.
-    mutable std::mutex mtx;
 
     //! @brief Operation of inserting or updating.
     //! @param key - key associated with the value
@@ -838,7 +816,6 @@ LRU<Key, Value>::LRU(const std::size_t capacity, const float maxLoadFactor) : el
 template <typename Key, typename Value>
 void LRU<Key, Value>::insert(const Key& key, Value value)
 {
-    const std::lock_guard<std::mutex> lock(mtx);
     doInsertOrUpdate(key, std::move(value));
 }
 
@@ -846,7 +823,6 @@ template <typename Key, typename Value>
 template <typename Range>
 std::size_t LRU<Key, Value>::insertRange(Range&& keyValueRange)
 {
-    const std::lock_guard<std::mutex> lock(mtx);
     auto&& range = std::forward<Range>(keyValueRange);
     std::size_t inserted = 0;
     for (auto& [key, value] : range)
@@ -860,7 +836,6 @@ std::size_t LRU<Key, Value>::insertRange(Range&& keyValueRange)
 template <typename Key, typename Value>
 bool LRU<Key, Value>::erase(const Key& key)
 {
-    const std::lock_guard<std::mutex> lock(mtx);
     if (const auto keyedPos = keyedElements.find(key); keyedPos != keyedElements.cend())
     {
         doErase(keyedPos->second);
@@ -873,7 +848,6 @@ template <typename Key, typename Value>
 template <typename Range>
 std::size_t LRU<Key, Value>::eraseRange(const Range& keyRange)
 {
-    const std::lock_guard<std::mutex> lock(mtx);
     std::size_t erased = 0;
     for (const auto& key : keyRange)
     {
@@ -889,7 +863,6 @@ std::size_t LRU<Key, Value>::eraseRange(const Range& keyRange)
 template <typename Key, typename Value>
 std::optional<Value> LRU<Key, Value>::find(const Key& key, const bool peek)
 {
-    const std::lock_guard<std::mutex> lock(mtx);
     return doFind(key, peek);
 }
 
@@ -898,7 +871,6 @@ template <typename Range>
 auto LRU<Key, Value>::findRange(const Range& keyRange, const bool peek)
     -> std::vector<std::pair<Key, std::optional<Value>>>
 {
-    const std::lock_guard<std::mutex> lock(mtx);
     std::vector<std::pair<Key, std::optional<Value>>> result{};
     result.reserve(std::size(keyRange));
     for (const auto& key : keyRange)
@@ -912,7 +884,6 @@ template <typename Key, typename Value>
 template <typename Range>
 void LRU<Key, Value>::resolveRange(Range& keyOptValueRange, const bool peek)
 {
-    const std::lock_guard<std::mutex> lock(mtx);
     for (auto& [key, optValue] : keyOptValueRange)
     {
         optValue = doFind(key, peek);
