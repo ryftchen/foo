@@ -267,10 +267,10 @@ private:
     //! @return status reports
     static std::string statusReportsPreview(const std::uint16_t frame);
 
-    //! @brief TCP server.
-    std::shared_ptr<utility::socket::TCPServer> tcpServer;
-    //! @brief UDP server.
-    std::shared_ptr<utility::socket::UDPServer> udpServer;
+    //! @brief The server (TCP) of the permanent session.
+    std::shared_ptr<utility::socket::TCPServer> permSessServer;
+    //! @brief The server (UDP) of the temporary session.
+    std::shared_ptr<utility::socket::UDPServer> tempSessServer;
     //! @brief Mutex for controlling daemon.
     mutable std::mutex daemonMtx;
     //! @brief The synchronization condition for daemon. Use with daemonMtx.

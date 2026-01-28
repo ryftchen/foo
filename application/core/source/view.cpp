@@ -1044,20 +1044,26 @@ std::string View::statusReportsPreview(const std::uint16_t frame)
         statements.emplace_back(execStmt.data());
         prev += pos - prev + 1;
     }
-    return std::accumulate(
+
+    auto reports = std::accumulate(
         statements.cbegin(),
         statements.cend(),
         std::string{},
         [](const auto& acc, const auto& stmt)
         { return acc.empty() ? utility::io::executeCommand(stmt) : (acc + '\n' + utility::io::executeCommand(stmt)); });
+    while (!reports.empty() && (reports.back() == '\n'))
+    {
+        reports.pop_back();
+    }
+    return reports;
 }
 
 //! @brief Renew the TCP server.
 template <>
 void View::renewServer<utility::socket::TCPServer>()
 {
-    tcpServer = std::make_shared<utility::socket::TCPServer>();
-    tcpServer->subscribeConnection(
+    permSessServer = std::make_shared<utility::socket::TCPServer>();
+    permSessServer->subscribeConnection(
         [](const std::shared_ptr<utility::socket::TCPSocket> client) // NOLINT(performance-unnecessary-value-param)
         {
             const std::weak_ptr weakSock = client;
@@ -1074,7 +1080,7 @@ void View::renewServer<utility::socket::TCPServer>()
                     try
                     {
                         const auto reqPlaintext = utility::common::base64Decode(message);
-                        currSock->toSend(
+                        currSock->send(
                             respBuffer.data(),
                             (reqPlaintext != exitSymbol) ? buildResponse(reqPlaintext, respBuffer)
                                                          : buildFinTLVPacket(respBuffer));
@@ -1082,7 +1088,7 @@ void View::renewServer<utility::socket::TCPServer>()
                     catch (const std::exception& err)
                     {
                         LOG_WRN << err.what();
-                        currSock->toSend(respBuffer.data(), buildAckTLVPacket(respBuffer));
+                        currSock->send(respBuffer.data(), buildAckTLVPacket(respBuffer));
                     }
                 });
         });
@@ -1092,9 +1098,9 @@ void View::renewServer<utility::socket::TCPServer>()
 template <>
 void View::renewServer<utility::socket::UDPServer>()
 {
-    udpServer = std::make_shared<utility::socket::UDPServer>();
-    const std::weak_ptr weakSock = udpServer;
-    udpServer->subscribeMessage(
+    tempSessServer = std::make_shared<utility::socket::UDPServer>();
+    const std::weak_ptr weakSock = tempSessServer;
+    tempSessServer->subscribeMessage(
         [weakSock](const std::string_view message, const std::string& ip, const std::uint16_t port)
         {
             auto currSock = weakSock.lock();
@@ -1107,7 +1113,7 @@ void View::renewServer<utility::socket::UDPServer>()
             try
             {
                 const auto reqPlaintext = utility::common::base64Decode(message);
-                currSock->toSendTo(
+                currSock->sendTo(
                     respBuffer.data(),
                     (reqPlaintext != exitSymbol) ? buildResponse(reqPlaintext, respBuffer)
                                                  : buildFinTLVPacket(respBuffer),
@@ -1117,7 +1123,7 @@ void View::renewServer<utility::socket::UDPServer>()
             catch (const std::exception& err)
             {
                 LOG_WRN << err.what();
-                currSock->toSendTo(respBuffer.data(), buildAckTLVPacket(respBuffer), ip, port);
+                currSock->sendTo(respBuffer.data(), buildAckTLVPacket(respBuffer), ip, port);
             }
         });
 }
@@ -1135,34 +1141,34 @@ void View::createViewServer()
 
 void View::destroyViewServer()
 {
-    if (tcpServer)
+    if (permSessServer)
     {
-        tcpServer->toClose();
-        tcpServer->toJoin();
+        permSessServer->close();
+        permSessServer->join();
     }
-    tcpServer.reset();
+    permSessServer.reset();
 
-    if (udpServer)
+    if (tempSessServer)
     {
-        udpServer->toClose();
-        udpServer->toJoin();
+        tempSessServer->close();
+        tempSessServer->join();
     }
-    udpServer.reset();
+    tempSessServer.reset();
 }
 
 void View::startViewing()
 {
-    if (tcpServer)
+    if (permSessServer)
     {
-        tcpServer->toBind(tcpPort);
-        tcpServer->toListen();
-        tcpServer->toAccept();
+        permSessServer->bind(tcpPort);
+        permSessServer->listen();
+        permSessServer->accept();
     }
 
-    if (udpServer)
+    if (tempSessServer)
     {
-        udpServer->toBind(udpPort);
-        udpServer->toReceiveFrom();
+        tempSessServer->bind(udpPort);
+        tempSessServer->receiveFrom();
     }
 }
 
@@ -1201,8 +1207,8 @@ void View::notificationLoop()
             break;
         }
 
-        if (MACRO_IMPLIES(tcpServer, tcpServer->stopRequested())
-            || MACRO_IMPLIES(udpServer, udpServer->stopRequested()))
+        if (MACRO_IMPLIES(permSessServer, permSessServer->stopRequested())
+            || MACRO_IMPLIES(tempSessServer, tempSessServer->stopRequested()))
         {
             throw std::runtime_error{"Found that the server did not work as expected."};
         }

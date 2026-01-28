@@ -838,7 +838,7 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
                 LOG_WRN << err.what();
             }
         });
-    client->toConnect(view::info::currentTCPHost(), view::info::currentTCPPort());
+    client->connect(view::info::currentTCPHost(), view::info::currentTCPPort());
 }
 
 //! @brief Launch the UDP client for console mode.
@@ -862,8 +862,8 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
                 LOG_WRN << err.what();
             }
         });
-    client->toReceive();
-    client->toConnect(view::info::currentUDPHost(), view::info::currentUDPPort());
+    client->receive();
+    client->connect(view::info::currentUDPHost(), view::info::currentUDPPort());
 }
 
 void Command::executeInConsole() const
@@ -882,9 +882,9 @@ void Command::executeInConsole() const
 
     constexpr std::string_view greeting = "> ";
     const auto session = std::make_unique<console::Console>(greeting);
-    auto udpClient = std::make_shared<utility::socket::UDPSocket>();
-    launchClient(udpClient);
-    registerOnConsole(*session, udpClient);
+    auto tempClient = std::make_shared<utility::socket::UDPSocket>();
+    launchClient(tempClient);
+    registerOnConsole(*session, tempClient);
 
     for (std::ostringstream out{}; const auto& input : pendingInputs)
     {
@@ -906,8 +906,8 @@ void Command::executeInConsole() const
             interactionLatency();
         }
     }
-    udpClient->toSend(buildDisconnectRequest());
-    udpClient->toJoin();
+    tempClient->send(buildDisconnectRequest());
+    tempClient->join();
     interactionLatency();
 }
 
@@ -1045,9 +1045,9 @@ try
     }
     const auto greeting = userName + '@' + hostName.data() + " foo > ";
     const auto session = std::make_unique<console::Console>(greeting);
-    auto tcpClient = std::make_shared<utility::socket::TCPSocket>();
-    launchClient(tcpClient);
-    registerOnConsole(*session, tcpClient);
+    auto permClient = std::make_shared<utility::socket::TCPSocket>();
+    launchClient(permClient);
+    registerOnConsole(*session, permClient);
 
     std::cout << build::banner() << std::endl;
     using RetCode = console::Console::RetCode;
@@ -1066,8 +1066,8 @@ try
         interactionLatency();
     }
     while (retCode != RetCode::quit);
-    tcpClient->toSend(buildDisconnectRequest());
-    tcpClient->toJoin();
+    permClient->send(buildDisconnectRequest());
+    permClient->join();
     interactionLatency();
 
     LOG_DBG << "Exit console mode.";
@@ -1116,7 +1116,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<Sock>
                     inputs.cend(),
                     std::string{},
                     [](const auto& acc, const auto& token) { return acc.empty() ? token : (acc + ' ' + token); }));
-                client->toSend(std::move(reqBuffer));
+                client->send(std::move(reqBuffer));
                 waitClientOutputDone();
             });
     };
@@ -1142,8 +1142,8 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<Sock>
             return processConsoleInputs(
                 [&client]()
                 {
-                    client->toSend(buildDisconnectRequest());
-                    client->toJoin();
+                    client->send(buildDisconnectRequest());
+                    client->join();
                     interactionLatency();
                     client.reset();
 
