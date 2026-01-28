@@ -162,7 +162,7 @@ std::vector<Elem> Sort<Elem>::insertion(const Elem* const array, const std::uint
     for (std::uint32_t i = 1; i < length; ++i)
     {
         std::int64_t n = i - 1;
-        Elem temp = sorting[i];
+        const Elem temp = sorting[i];
         while ((n >= 0) && (sorting[n] > temp))
         {
             sorting[n + 1] = sorting[n];
@@ -222,24 +222,25 @@ void Sort<Elem>::mergeSortRecursive(Elem* const sorting, const std::uint32_t beg
     mergeSortRecursive(sorting, begin, mid);
     mergeSortRecursive(sorting, mid + 1, end);
 
+    std::vector<Elem> leftPart(sorting + begin, sorting + mid + 1);
+    std::vector<Elem> rightPart(sorting + mid + 1, sorting + end + 1);
+    const std::uint32_t leftSize = leftPart.size();
+    const std::uint32_t rightSize = rightPart.size();
     std::uint32_t leftIdx = 0;
     std::uint32_t rightIdx = 0;
-    std::vector<Elem> leftSub(sorting + begin, sorting + mid + 1);
-    std::vector<Elem> rightSub(sorting + mid + 1, sorting + end + 1);
-    leftSub.emplace(leftSub.cend(), std::numeric_limits<Elem>::max());
-    rightSub.emplace(rightSub.cend(), std::numeric_limits<Elem>::max());
-    for (std::uint32_t i = begin; i <= end; ++i)
+    std::uint32_t pos = begin;
+    while ((leftIdx < leftSize) && (rightIdx < rightSize))
     {
-        if (leftSub[leftIdx] < rightSub[rightIdx])
-        {
-            sorting[i] = leftSub[leftIdx];
-            ++leftIdx;
-        }
-        else
-        {
-            sorting[i] = rightSub[rightIdx];
-            ++rightIdx;
-        }
+        sorting[pos++] = (leftPart[leftIdx] < rightPart[rightIdx]) ? leftPart[leftIdx++] : rightPart[rightIdx++];
+    }
+
+    while (leftIdx < leftSize)
+    {
+        sorting[pos++] = leftPart[leftIdx++];
+    }
+    while (rightIdx < rightSize)
+    {
+        sorting[pos++] = rightPart[rightIdx++];
     }
 }
 
@@ -264,7 +265,7 @@ void Sort<Elem>::quickSortRecursive(Elem* const sorting, const std::uint32_t beg
         return;
     }
 
-    Elem pivot = sorting[end];
+    const Elem pivot = sorting[end];
     std::uint32_t leftIdx = begin;
     std::uint32_t rightIdx = end - 1;
     while (leftIdx < rightIdx)
@@ -288,10 +289,7 @@ void Sort<Elem>::quickSortRecursive(Elem* const sorting, const std::uint32_t beg
         ++leftIdx;
     }
 
-    if (leftIdx != 0)
-    {
-        quickSortRecursive(sorting, begin, leftIdx - 1);
-    }
+    quickSortRecursive(sorting, begin, (leftIdx > 0) ? (leftIdx - 1) : 0);
     quickSortRecursive(sorting, leftIdx + 1, end);
 }
 
