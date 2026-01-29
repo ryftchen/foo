@@ -324,11 +324,11 @@ static void display(
 static void solution(const OptimalMethod method, const Function& func, const double left, const double right)
 try
 {
-    std::optional<std::tuple<double, double>> result = std::nullopt;
+    using namespace algorithm::optimal; // NOLINT(google-build-using-namespace)
+    Result result{};
     const utility::time::Stopwatch timing{};
     switch (method)
     {
-        using namespace algorithm::optimal; // NOLINT(google-build-using-namespace)
         case OptimalMethod::gradient:
             result = Gradient(func)(left, right, epsilon);
             break;
