@@ -293,11 +293,11 @@ static void display(const IntegralMethod method, const double result, const doub
 static void calculation(const IntegralMethod method, const Expression& expr, const double lower, const double upper)
 try
 {
-    double result = 0.0;
+    using namespace numeric::integral; // NOLINT(google-build-using-namespace)
+    Result result = 0.0;
     const utility::time::Stopwatch timing{};
     switch (method)
     {
-        using namespace numeric::integral; // NOLINT(google-build-using-namespace)
         case IntegralMethod::trapezoidal:
             result = Trapezoidal(expr)(lower, upper, epsilon);
             break;
