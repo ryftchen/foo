@@ -24,6 +24,7 @@
 .gitignore text eol=lf
 .gitlint text eol=lf
 .gitmessage text eol=lf
+.mailmap text eol=lf
 .markdownlint text eol=lf
 .pre-commit text eol=lf
 .pylintrc text eol=lf
