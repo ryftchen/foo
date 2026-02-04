@@ -203,11 +203,11 @@ class Task:
             sys.exit(1)
 
     def _parse_arguments(self):
-        def _check_positive_integer(value: int) -> int:
-            value = int(value)
-            if value > 0:
-                return value
-            raise argparse.ArgumentTypeError("Must be a positive integer.")
+        def _check_positive_integer(number: int) -> int:
+            number = int(number)
+            if number > 0:
+                return number
+            raise argparse.ArgumentTypeError("The number must be a positive integer.")
 
         parser = argparse.ArgumentParser(description="run script", formatter_class=argparse.RawTextHelpFormatter)
         parser.add_argument("-t", "--test", action="store_true", default=False, help="switch to unit test mode")

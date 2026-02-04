@@ -30,7 +30,7 @@ The **[foo](https://github.com/ryftchen/foo)** is a personal roadmap for learnin
 2. Prepare the environment:
 
     ```bash
-    docker-compose -f foo/docker/docker-compose.yaml up -d
+    docker compose -f foo/docker/docker-compose.yaml up -d
     docker exec -it -w /workspaces/foo foo_dev /bin/bash
     ```
 

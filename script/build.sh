@@ -232,7 +232,7 @@ function perform_help_option()
     echo "  -l [cpp,sh,py,rs], --lint [cpp,sh,py,rs]"
     echo "                        lint all code files or by type"
     echo "  -q, --query           scan and query source code only"
-    echo "  -d, --doxygen         project documentation with doxygen"
+    echo "  -d, --doxygen         project API documentation with doxygen"
     echo "  -b, --browser         generate source code browser like IDE"
     exit "${STATUS}"
 }
