@@ -164,7 +164,7 @@ class Schedule:  # pylint: disable=too-few-public-methods
         for entry in command_list:
             _, stderr, return_code = self._executor(entry)
             if stderr or return_code:
-                self._executor(f"rm -rf {self._storage_dir}/doxygen {self._storage_dir}/browser")
+                self._executor(f"rm -rf {self._storage_dir}/*")
                 self._abort(f"Interrupted due to a failure of the \"{entry}\" command.")
 
     def _get_redirect_location(self, url: str, headers: dict[str, str]) -> str:
