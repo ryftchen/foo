@@ -23,11 +23,11 @@ class Schedule:  # pylint: disable=too-few-public-methods
     _repo_url = "https://github.com/ryftchen/foo.git"
     _api_url = "https://api.github.com/repos/ryftchen/foo/actions/artifacts?per_page=5"
     _artifact_name = "foo_artifact"
-    _target_dir = "/var/www/foo_doc"
     _netrc_file = "~/.netrc"
 
     def __init__(self, logger: logging.Logger):
         self._logger = logger
+        self._storage_dir = None
         self._forced_pull = False
         self._proxy_port = None
 
@@ -45,20 +45,33 @@ class Schedule:  # pylint: disable=too-few-public-methods
         self._configure_from_cli()
 
         self._notice(">>>>>>>>>>>>>>>> PULL ARTIFACT >>>>>>>>>>>>>>>>")
-        if not os.path.exists(self._target_dir):
-            self._abort(f"Please create a {self._target_dir} folder for storing pages.")
         self._download_artifact()
         self._update_document()
         self._notice("<<<<<<<<<<<<<<<< PULL ARTIFACT <<<<<<<<<<<<<<<<")
 
     def _configure_from_cli(self):
-        def _check_port_range(value: int):
-            value = int(value)
-            if 0 <= value <= 65535:
-                return value
-            raise argparse.ArgumentTypeError("Must be in the range of 0-65535.")
+        def _validate_directory(path: str) -> str:
+            if not os.path.exists(path):
+                raise argparse.ArgumentTypeError("The path does not exist.")
+            if not os.path.isdir(path):
+                raise argparse.ArgumentTypeError("The path is not a directory.")
+            return path
+
+        def _check_port_range(number: int) -> int:
+            number = int(number)
+            if 0 <= number <= 65535:
+                return number
+            raise argparse.ArgumentTypeError("The number must be in the range of 0-65535.")
 
         parser = argparse.ArgumentParser(description="pull artifact script")
+        parser.add_argument(
+            "-d",
+            "--directory",
+            type=_validate_directory,
+            required=True,
+            help="storage directory",
+            metavar="PATH",
+        )
         parser.add_argument("-f", "--force", action="store_true", default=False, help="forced pull")
         parser.add_argument(
             "-p",
@@ -70,10 +83,9 @@ class Schedule:  # pylint: disable=too-few-public-methods
         )
 
         args = parser.parse_args()
-        if args.force:
-            self._forced_pull = True
-        if args.port is not None:
-            self._proxy_port = args.port
+        self._storage_dir = args.directory
+        self._forced_pull = args.force
+        self._proxy_port = args.port
 
     def _download_artifact(self):
         self._notice("############## DOWNLOAD ARTIFACT ##############")
@@ -87,8 +99,8 @@ class Schedule:  # pylint: disable=too-few-public-methods
             self._executor(f"git -C {self._project_path} pull origin master")
         elif (
             not self._forced_pull
-            and os.path.exists(f"{self._target_dir}/doxygen")
-            and os.path.exists(f"{self._target_dir}/browser")
+            and os.path.exists(f"{self._storage_dir}/doxygen")
+            and os.path.exists(f"{self._storage_dir}/browser")
         ):
             self._abort("No commit change.")
 
@@ -129,30 +141,30 @@ class Schedule:  # pylint: disable=too-few-public-methods
                     raise urllib.error.HTTPError(
                         redirect_location, response.status, "File download failed.", response.headers, None
                     )
-                with open(f"{self._target_dir}/{self._artifact_name}.zip", "wb") as output_file:
+                with open(f"{self._storage_dir}/{self._artifact_name}.zip", "wb") as output_file:
                     output_file.write(response.read())
 
-            with zipfile.ZipFile(f"{self._target_dir}/{self._artifact_name}.zip", "r") as zip_file:
+            with zipfile.ZipFile(f"{self._storage_dir}/{self._artifact_name}.zip", "r") as zip_file:
                 if zip_file.testzip() is not None:
                     raise zipfile.BadZipFile("Corrupted zip file.")
         except Exception as error:
-            self._executor(f"rm -rf {self._target_dir}/{self._artifact_name}.zip")
+            self._executor(f"rm -rf {self._storage_dir}/{self._artifact_name}.zip")
             self._executor(f"git -C {self._project_path} reset --hard {local_commit_id}")
             raise type(error)(str(error)) from None
 
     def _update_document(self):
         self._notice("############### UPDATE DOCUMENT ###############")
         command_list = [
-            f"rm -rf {self._target_dir}/doxygen {self._target_dir}/browser",
-            f"unzip {self._target_dir}/{self._artifact_name}.zip -d {self._target_dir}",
-            f"tar -jxvf {self._target_dir}/foo_doxygen_*.tar.bz2 -C {self._target_dir} >/dev/null",
-            f"tar -jxvf {self._target_dir}/foo_browser_*.tar.bz2 -C {self._target_dir} >/dev/null",
-            f"rm -rf {self._target_dir}/*.zip {self._target_dir}/*.tar.bz2",
+            f"rm -rf {self._storage_dir}/doxygen {self._storage_dir}/browser",
+            f"unzip {self._storage_dir}/{self._artifact_name}.zip -d {self._storage_dir}",
+            f"tar -jxvf {self._storage_dir}/foo_doxygen_*.tar.bz2 -C {self._storage_dir} >/dev/null",
+            f"tar -jxvf {self._storage_dir}/foo_browser_*.tar.bz2 -C {self._storage_dir} >/dev/null",
+            f"rm -rf {self._storage_dir}/*.zip {self._storage_dir}/*.tar.bz2",
         ]
         for entry in command_list:
             _, stderr, return_code = self._executor(entry)
             if stderr or return_code:
-                self._executor(f"rm -rf {self._target_dir}/doxygen {self._target_dir}/browser")
+                self._executor(f"rm -rf {self._storage_dir}/doxygen {self._storage_dir}/browser")
                 self._abort(f"Interrupted due to a failure of the \"{entry}\" command.")
 
     def _get_redirect_location(self, url: str, headers: dict[str, str]) -> str:
