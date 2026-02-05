@@ -79,7 +79,7 @@ The **[foo](https://github.com/ryftchen/foo)** is a personal roadmap for learnin
 
 ## Documentation
 
-The project documentation can be found on the [GitHub Pages](https://ryftchen.github.io/foo/). When using local documentation via script, `./document` is used as the generation directory. Support is also available for deploying the local archive service.
+The project API documentation can be found on [GitHub Pages](https://ryftchen.github.io/foo/). When using local documentation via script, `./document` is used as the generation directory. Support is also available for deploying the local archive service.
 
 ## License
 
