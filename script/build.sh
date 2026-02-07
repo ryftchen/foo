@@ -585,8 +585,9 @@ function perform_initialize_option()
         shell_command "echo '${export_cmd}' >>~/${BASH_RC}"
     fi
 
-    local validate_proj="[[ \\\"\\\$(basename \\\"\\\$(pwd)\\\")\\\" == \\\"${FOLDER[proj]}\\\" ]] \
-&& git rev-parse --git-dir >/dev/null 2>&1 && source ~/${BASH_RC}"
+    local validate_proj="git rev-parse --is-inside-work-tree >/dev/null 2>&1 \
+&& [[ \\\"\\\$(basename \\\"\\\$(git rev-parse --show-toplevel)\\\")\\\" == \\\"${FOLDER[proj]}\\\" ]] \
+&& source ~/${BASH_RC}"
     local alias_cmd
     if ! grep -Fwq "alias ${FOLDER[proj]:0:1}build" ~/"${BASH_RC}" 2>/dev/null; then
         alias_cmd="alias ${FOLDER[proj]:0:1}build='${validate_proj} && ./${FOLDER[scr]}/build.sh'"
