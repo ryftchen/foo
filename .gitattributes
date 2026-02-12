@@ -1,3 +1,4 @@
+*.1 text eol=lf
 *.cmake text eol=lf
 *.cpp text eol=lf
 *.css text eol=lf
@@ -10,7 +11,6 @@
 *.toml text eol=lf
 *.txt text eol=lf
 *.yaml text eol=lf
-*.1 text eol=lf
 .clang-format text eol=lf
 .clang-tidy text eol=lf
 .cloc text eol=lf
