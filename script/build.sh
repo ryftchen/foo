@@ -646,10 +646,10 @@ function perform_clean_option()
         shell_command "sed -i '/alias ${FOLDER[proj]:0:1}\(build\|run\)/d' ~/${BASH_RC}"
     fi
     shell_command "find ./ -maxdepth 3 -type d | sed 1d \
-| grep -E '(${FOLDER[bld]}|${FOLDER[rep]}|${FOLDER[cac]}|__pycache__|artifact|browser|doxygen|target)$' \
+| grep -E '(${FOLDER[bld]}|browser|doxygen|target|${FOLDER[rep]}|artifact|${FOLDER[cac]}|__pycache__)$' \
 | xargs -i rm -rf {}"
-    shell_command "rm -rf ./${FOLDER[scr]}/.* ./${FOLDER[doc]}/*.{css,html} ./${FOLDER[doc]}/server/Cargo.lock \
-./core.* ./vgcore.* ./*.profraw"
+    shell_command "rm -rf ./${FOLDER[scr]}/.{build,run}_* ./core.* ./vgcore.* ./*.profraw \
+./${FOLDER[doc]}/*.{css,html} ./${FOLDER[doc]}/server/Cargo.lock"
     shell_command "git config --local --unset commit.template || true"
 
     if [[ -f ./.git/hooks/pre-commit ]]; then
@@ -1184,7 +1184,7 @@ EOF"
     local codeql_sarif="${codeql_db_path}/codeql.sarif"
     shell_command "codeql database analyze ${codeql_db_path} --format sarif-latest -o ${codeql_sarif}"
     if echo "${input}" | grep -iq '^y'; then
-        build_script=./${FOLDER[scr]}/$(basename "${0}")
+        build_script="./${FOLDER[scr]}/$(basename "${0}")"
         shell_command "${build_script}${other_option} >/dev/null && ${build_script} --test${other_option} >/dev/null"
     fi
 
@@ -1272,25 +1272,26 @@ FOO_BLD_UNITY is turned on."
     fi
     local browser_folder="browser"
     shell_command "rm -rf ./${FOLDER[doc]}/artifact/${FOLDER[proj]}_${browser_folder}_*.tar.bz2 \
-./${FOLDER[doc]}/${browser_folder} && mkdir ./${FOLDER[doc]}/${browser_folder}"
+./${FOLDER[doc]}/${browser_folder}"
 
-    shell_command "cp -rf /usr/local/share/woboq/data ./${FOLDER[doc]}/${browser_folder}/"
+    local browser_path="./${FOLDER[doc]}/${browser_folder}/${FOLDER[proj]}"
+    shell_command "mkdir -p ${browser_path} && cp -rf /usr/local/share/woboq/data ${browser_path}/"
     shell_command "sed -i \"s|'><img src='|'><img src='https://web.archive.org/web/20220224111803/|g\" \
-./${FOLDER[doc]}/${browser_folder}/data/codebrowser.js"
-    shell_command "codebrowser_generator -color -a -b ./${FOLDER[bld]}/${COMPILE_DB} \
--o ./${FOLDER[doc]}/${browser_folder} -p ${FOLDER[proj]}:.:${commit_id} -d ./data"
-    shell_command "codebrowser_generator -color -a -b ./${FOLDER[tst]}/${FOLDER[bld]}/${COMPILE_DB} \
--o ./${FOLDER[doc]}/${browser_folder} -p ${FOLDER[proj]}:.:${commit_id} -d ./data"
-    shell_command "codebrowser_indexgenerator ./${FOLDER[doc]}/${browser_folder} -d ./data"
+${browser_path}/data/codebrowser.js"
+    shell_command "codebrowser_generator -color -a -b ./${FOLDER[bld]}/${COMPILE_DB} -o ${browser_path} \
+-p ${FOLDER[proj]}:.:${commit_id} -d ./data"
+    shell_command "codebrowser_generator -color -a -b ./${FOLDER[tst]}/${FOLDER[bld]}/${COMPILE_DB} -o ${browser_path} \
+-p ${FOLDER[proj]}:.:${commit_id} -d ./data"
+    shell_command "codebrowser_indexgenerator ${browser_path} -d ./data"
 
-    shell_command "find \"./${FOLDER[doc]}/${browser_folder}/index.html\" \
-\"./${FOLDER[doc]}/${browser_folder}/${FOLDER[proj]}\" \"./${FOLDER[doc]}/${browser_folder}/include\" -name \"*.html\" \
--exec sed -i '/^<\/head>$/i <link rel=\"shortcut icon\" \
+    shell_command "find \"${browser_path}/index.html\" \"${browser_path}/${FOLDER[proj]}\" \"${browser_path}/include\" \
+-name \"*.html\" -exec sed -i '/^<\/head>$/i <link rel=\"shortcut icon\" \
 href=\"https://web.archive.org/web/20220309195008if_/https://code.woboq.org/favicon.ico\" type=\"image/x-icon\"/>' {} +"
-    shell_command "find \"./${FOLDER[doc]}/${browser_folder}/index.html\" \
-\"./${FOLDER[doc]}/${browser_folder}/${FOLDER[proj]}\" \"./${FOLDER[doc]}/${browser_folder}/include\" -name \"*.html\" \
--exec sed -i 's|https://code.woboq.org/woboq-16.png\
+    shell_command "find \"${browser_path}/index.html\" \"${browser_path}/${FOLDER[proj]}\" \"${browser_path}/include\" \
+-name \"*.html\" -exec sed -i 's|https://code.woboq.org/woboq-16.png\
 |https://web.archive.org/web/20220224111804if_/https://code.woboq.org/woboq-16.png|g' {} +"
+    shell_command "mv ${browser_path} ${browser_path}_temp \
+&& mv ${browser_path}_temp/* ./${FOLDER[doc]}/${browser_folder}/ && rm -rf ${browser_path}_temp"
     local browser_tar="${FOLDER[proj]}_${browser_folder}_${commit_id}.tar.bz2"
     shell_command "tar -jcvf ./${FOLDER[doc]}/artifact/${browser_tar} -C ./${FOLDER[doc]} ${browser_folder} >/dev/null"
 }
