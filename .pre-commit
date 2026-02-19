@@ -16,7 +16,7 @@ repos:
           )
       - id: check-merge-conflict
       - id: check-shebang-scripts-are-executable
-        exclude: ^script/bash_completion\.sh$
+        exclude: bash_completion\.sh$
       - id: check-toml
         types: []
         files: \.toml$
