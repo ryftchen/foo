@@ -3,9 +3,9 @@
 try:
     import argparse
     import fnmatch
-    import logging
     import http
     import json
+    import logging
     import netrc
     import os
     import subprocess
@@ -155,11 +155,11 @@ class Schedule:  # pylint: disable=too-few-public-methods
     def _update_document(self):
         self._notice("############### UPDATE DOCUMENT ###############")
         command_list = [
-            f"rm -rf {self._storage_dir}/doxygen {self._storage_dir}/browser",
+            f"rm -rf {self._storage_dir}/{{doxygen,browser}}",
             f"unzip {self._storage_dir}/{self._artifact_name}.zip -d {self._storage_dir}",
             f"tar -jxvf {self._storage_dir}/foo_doxygen_*.tar.bz2 -C {self._storage_dir} >/dev/null",
             f"tar -jxvf {self._storage_dir}/foo_browser_*.tar.bz2 -C {self._storage_dir} >/dev/null",
-            f"rm -rf {self._storage_dir}/*.zip {self._storage_dir}/*.tar.bz2",
+            f"rm -rf {self._storage_dir}/*.{{zip,tar.bz2}}",
         ]
         for entry in command_list:
             _, stderr, return_code = self._executor(entry)

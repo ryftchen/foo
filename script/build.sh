@@ -8,7 +8,8 @@ declare -rA ANSI_STYLE=([exec]="\033[0;33m\033[1m\033[49m" [succ]="\033[0;32m\03
 declare -r BASH_RC=".bashrc"
 declare -r COMPILE_DB="compile_commands.json"
 declare -r GIT_COMMIT_CMD="git rev-parse --short=7 HEAD"
-declare -r GIT_CHANGE_CMD="git status --porcelain -z | cut -z -c4- | tr '\0' '\n'"
+declare -r GIT_CHANGE_CMD="git status --porcelain=v2 -z \
+| awk -v RS='\0' '\$1==\"1\"{print \$9} \$1==\"2\"{print \$10} \$1==\"?\"{print \$2}'"
 declare -A ARGS=([help]=false [assume]=false [quick]=false [dry]=false [initialize]=false [clean]=false [install]=false
     [uninstall]=false [container]=false [archive]=false [test]=false [release]=false [precheck]=false [statistic]=false
     [format]=false [lint]=false [query]=false [doxygen]=false [browser]=false)
@@ -974,7 +975,7 @@ function perform_format_option()
         fi
 
         if [[ ${ARGS[quick]} == false ]]; then
-            shell_command "black --config ./.toml ./${FOLDER[scr]}/*.py"
+            shell_command "black --config ./.toml ./{${FOLDER[scr]},.github}/*.py"
         else
             local format_changed_py="${GIT_CHANGE_CMD} | grep -E '\.py$'"
             if eval "${format_changed_py}" >/dev/null; then
@@ -1097,7 +1098,7 @@ FOO_BLD_UNITY is turned on."
         fi
 
         if [[ ${ARGS[quick]} == false ]]; then
-            shell_command "pylint --rcfile ./.pylintrc ./${FOLDER[scr]}/*.py"
+            shell_command "pylint --rcfile ./.pylintrc ./{${FOLDER[scr]},.github}/*.py"
         else
             local lint_changed_py="${GIT_CHANGE_CMD} | grep -E '\.py$'"
             if eval "${lint_changed_py}" >/dev/null; then
