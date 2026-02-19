@@ -684,17 +684,18 @@ function perform_install_option()
         fi
 
         local completion_bash="bash_completion"
+        shell_command \
+            "${SUDO_PREFIX}cp ./${FOLDER[doc]}/install/${completion_bash}.sh ${install_path}/${completion_bash}"
         export_cmd="[ \"\${BASH_COMPLETION_VERSINFO}\" != \"\" ] && [ -s ${install_path}/${completion_bash} ] \
-&& \. ${install_path}/${completion_bash}"
-        shell_command "${SUDO_PREFIX}cp ./${FOLDER[scr]}/${completion_bash}.sh ${install_path}/${completion_bash}"
+&& source ${install_path}/${completion_bash}"
         if ! grep -Fxq "${export_cmd}" ~/"${BASH_RC}" 2>/dev/null; then
             shell_command "echo '${export_cmd}' >>~/${BASH_RC}"
         fi
 
         local man_path="${install_path}/man"
-        export_cmd="MANDATORY_MANPATH ${man_path}"
         shell_command "${SUDO_PREFIX}mkdir -p ${man_path}/man1 \
-&& ${SUDO_PREFIX}cp ./${FOLDER[doc]}/manual/man.1 ${man_path}/man1/${FOLDER[proj]}.1"
+&& ${SUDO_PREFIX}cp ./${FOLDER[doc]}/install/man.1 ${man_path}/man1/${FOLDER[proj]}.1"
+        export_cmd="MANDATORY_MANPATH ${man_path}"
         if ! grep -Fxq "${export_cmd}" ~/.manpath 2>/dev/null; then
             shell_command "echo '${export_cmd}' >>~/.manpath"
         fi
@@ -723,7 +724,7 @@ function perform_uninstall_option()
         "cat ./${FOLDER[bld]}/${manifest_txt} | xargs -L1 dirname | xargs ${SUDO_PREFIX}rmdir -p 2>/dev/null || true"
     if [[ -f ~/${BASH_RC} ]]; then
         shell_command "sed -i '/export PATH=\/opt\/${FOLDER[proj]}\/bin:\$PATH/d' ~/${BASH_RC}"
-        shell_command "sed -i '/\\\. \/opt\/${FOLDER[proj]}\/${completion_bash}/d' ~/${BASH_RC}"
+        shell_command "sed -i '/source \/opt\/${FOLDER[proj]}\/${completion_bash}/d' ~/${BASH_RC}"
     fi
     if [[ -f ~/.manpath ]]; then
         shell_command "sed -i '/MANDATORY_MANPATH \/opt\/${FOLDER[proj]}\/man/d' ~/.manpath"
@@ -960,7 +961,7 @@ function perform_format_option()
         fi
 
         if [[ ${ARGS[quick]} == false ]]; then
-            shell_command "shfmt -l -w ./${FOLDER[scr]}/*.sh"
+            shell_command "shfmt -l -w ./{${FOLDER[scr]},${FOLDER[doc]}/install}/*.sh"
         else
             local format_changed_sh="${GIT_CHANGE_CMD} | grep -E '\.sh$'"
             if eval "${format_changed_sh}" >/dev/null; then
@@ -1083,7 +1084,7 @@ FOO_BLD_UNITY is turned on."
         fi
 
         if [[ ${ARGS[quick]} == false ]]; then
-            shell_command "shellcheck -a ./${FOLDER[scr]}/*.sh"
+            shell_command "shellcheck -a ./{${FOLDER[scr]},${FOLDER[doc]}/install}/*.sh"
         else
             local lint_changed_sh="${GIT_CHANGE_CMD} | grep -E '\.sh$'"
             if eval "${lint_changed_sh}" >/dev/null; then
