@@ -27,6 +27,7 @@ class Schedule:  # pylint: disable=too-few-public-methods
 
     def __init__(self, logger: logging.Logger):
         self._logger = logger
+        self._local_commit = ""
         self._storage_dir = None
         self._forced_pull = False
         self._proxy_port = None
@@ -34,19 +35,20 @@ class Schedule:  # pylint: disable=too-few-public-methods
         env = os.getenv("FOO_ENV")
         if env is None:
             self._abort("Please export the environment variable FOO_ENV.")
-        if env != "foo_doc":
+        elif env != "foo_doc":
             self._abort("The environment variable FOO_ENV must be foo_doc.")
         self_path = os.path.split(os.path.realpath(__file__))[0]
-        if not fnmatch.fnmatch(self_path, "*foo/script"):
-            self._abort("Illegal path to current script.")
+        if not fnmatch.fnmatch(self_path, "*/foo/.github"):
+            self._abort("Ensure the current script is located within the project path.")
         self._project_path = os.path.dirname(self_path)
 
     def pull_artifact(self):
         self._configure_from_cli()
 
         self._notice(">>>>>>>>>>>>>>>> PULL ARTIFACT >>>>>>>>>>>>>>>>")
+        self._update_repository()
         self._download_artifact()
-        self._update_document()
+        self._deploy_document()
         self._notice("<<<<<<<<<<<<<<<< PULL ARTIFACT <<<<<<<<<<<<<<<<")
 
     def _configure_from_cli(self):
@@ -87,15 +89,15 @@ class Schedule:  # pylint: disable=too-few-public-methods
         self._forced_pull = args.force
         self._proxy_port = args.port
 
-    def _download_artifact(self):
-        self._notice("############## DOWNLOAD ARTIFACT ##############")
-        local_commit_id, _, _ = self._executor(f"git -C {self._project_path} rev-parse HEAD")
-        remote_commit_id, _, _ = self._executor(
+    def _update_repository(self):
+        self._notice("############## UPDATE REPOSITORY ##############")
+        self._local_commit, _, _ = self._executor(f"git -C {self._project_path} rev-parse HEAD")
+        remote_commit, _, _ = self._executor(
             f"git -C {self._project_path} ls-remote {self._repo_url} refs/heads/master | cut -f 1"
         )
-        if not remote_commit_id:
+        if not remote_commit:
             self._abort("Could not get the latest commit id.")
-        if local_commit_id != remote_commit_id:
+        elif self._local_commit != remote_commit:
             self._executor(f"git -C {self._project_path} pull origin master")
         elif (
             not self._forced_pull
@@ -104,6 +106,8 @@ class Schedule:  # pylint: disable=too-few-public-methods
         ):
             self._abort("No commit change.")
 
+    def _download_artifact(self):
+        self._notice("############## DOWNLOAD ARTIFACT ##############")
         try:
             if self._proxy_port is not None:
                 proxy = {
@@ -149,11 +153,11 @@ class Schedule:  # pylint: disable=too-few-public-methods
                     raise zipfile.BadZipFile("Corrupted zip file.")
         except Exception as error:
             self._executor(f"rm -rf {self._storage_dir}/{self._artifact_name}.zip")
-            self._executor(f"git -C {self._project_path} reset --hard {local_commit_id}")
+            self._executor(f"git -C {self._project_path} reset --hard {self._local_commit}")
             raise type(error)(str(error)) from None
 
-    def _update_document(self):
-        self._notice("############### UPDATE DOCUMENT ###############")
+    def _deploy_document(self):
+        self._notice("############### DEPLOY DOCUMENT ###############")
         command_list = [
             f"rm -rf {self._storage_dir}/{{doxygen,browser}}",
             f"unzip {self._storage_dir}/{self._artifact_name}.zip -d {self._storage_dir}",
