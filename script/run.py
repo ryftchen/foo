@@ -140,7 +140,7 @@ class Task:
         if env != "foo_dev":
             exit_with_error("The environment variable FOO_ENV must be foo_dev.")
         self_path = os.path.split(os.path.realpath(__file__))[0]
-        if not fnmatch.fnmatch(self_path, "*foo/script"):
+        if not fnmatch.fnmatch(self_path, "*/foo/script"):
             exit_with_error("Illegal path to current script.")
         os.chdir(os.path.dirname(self_path))
         sys.path.append("./")
@@ -188,7 +188,7 @@ class Task:
     def stop(self, message: str = ""):
         try:
             if self._marked_option["chk"]["cov"]:
-                execute_command(f"rm -rf {self._report_path}/dca/chk_cov/{{*.profraw,*.profdata}}")
+                execute_command(f"rm -rf {self._report_path}/dca/chk_cov/*.{{profraw,profdata}}")
             if self._marked_option["chk"]["mem"]:
                 execute_command(f"rm -rf {self._report_path}/dca/chk_mem/*.xml")
             sys.stdout = STDOUT
@@ -517,7 +517,7 @@ class Task:
 -object {self._tst_bin_path}/{self._tst_bin_cmd}"
             )
         )
-        execute_command(f"rm -rf {folder_path}/{{*.profraw,*.profdata}}")
+        execute_command(f"rm -rf {folder_path}/*.{{profraw,profdata}}")
         print(f"""{self._extended_trait["chk"]["cov"]}\n{stdout}""")
         if "error" in stdout:
             print("Please further check the compilation parameters related to instrumentation.")

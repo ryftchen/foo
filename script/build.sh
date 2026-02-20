@@ -99,7 +99,7 @@ function prepare_environment()
 
     local script_path
     script_path=$(cd "$(dirname "${0}")" >/dev/null 2>&1 && pwd)
-    if [[ ${script_path} != *"${FOLDER[proj]}/${FOLDER[scr]}" ]]; then
+    if [[ ${script_path} != */${FOLDER[proj]}/${FOLDER[scr]} ]]; then
         die "Illegal path to current script."
     fi
     cd "$(dirname "${script_path}")" || exit 1
