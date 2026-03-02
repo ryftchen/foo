@@ -56,7 +56,7 @@ The **[foo](https://github.com/ryftchen/foo)** is a personal roadmap for learnin
   ./build/bin/foo --help
   ```
 
-  Configuration information is stored in `$HOME/.foo/configure/foo.json`, and the executed log is also written to `$HOME/.foo/log/foo.log`.
+  Configuration information is stored in `$HOME/.foo/conf/foo.json`, and the executed log is also written to `$HOME/.foo/log/foo.log`.
 - The parameters are provided for building or static analysis. Build with options like *-\-lint cpp*, etc.
 
 ### How to run

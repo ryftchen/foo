@@ -55,7 +55,7 @@ constexpr const char* const helperTimeout = MACRO_STRINGIFY(helperTimeout);
 //! @brief Maximum access limit.
 constexpr std::uint8_t maxAccessLimit = 10;
 //! @brief Default configuration filename.
-constexpr std::string_view defaultConfigFile = "configure/foo.json";
+constexpr std::string_view defaultConfigFile = "conf/foo.json";
 //! @brief Get the full path to the configuration file.
 //! @param filename - configuration file path
 //! @return full path to the configuration file
