@@ -34,7 +34,7 @@ The **[foo](https://github.com/ryftchen/foo)** is a personal roadmap for learnin
     docker exec -it -w /workspaces/foo foo_dev /bin/bash
     ```
 
-    For environment dependencies and container construction, see the [Compose file](https://github.com/ryftchen/foo/blob/master/docker/docker-compose.yaml).
+    For environment dependencies and container construction, see the profiles in the `./docker` directory.
 
 ### How to build
 
