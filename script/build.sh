@@ -646,13 +646,8 @@ function perform_clean_option()
         shell_command "sed -i '/export FOO_ENV=${FOLDER[proj]}_dev/d' ~/${BASH_RC}"
         shell_command "sed -i '/alias ${FOLDER[proj]:0:1}\(build\|run\)/d' ~/${BASH_RC}"
     fi
-    shell_command "find ./ -maxdepth 3 -type d | sed 1d \
-| grep -E '(${FOLDER[bld]}|browser|doxygen|target|${FOLDER[rep]}|artifact|${FOLDER[cac]}|__pycache__)$' \
-| xargs -i rm -rf {}"
-    shell_command "rm -rf ./${FOLDER[scr]}/.{build,run}_* ./core.* ./vgcore.* ./*.profraw \
-./${FOLDER[doc]}/*.{css,html} ./${FOLDER[doc]}/server/Cargo.lock"
-    shell_command "git config --local --unset commit.template || true"
 
+    shell_command "git config --local --unset commit.template || true"
     if [[ -f ./.git/hooks/pre-commit ]]; then
         shell_command "pre-commit uninstall"
     fi

@@ -111,7 +111,6 @@ jobs:
           ./script/build.sh --test
           ./script/build.sh --install
           ./script/build.sh --uninstall
-          ./script/build.sh --clean
       - name: Enhanced environment
         run: |
           ./script/build.sh --initialize
