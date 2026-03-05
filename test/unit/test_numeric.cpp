@@ -155,15 +155,18 @@ private:
     //! @brief Prepare scenario.
     static void prepareScenario()
     {
-        using application::app_num::integral::input::CylindricalBessel;
+        using application::app_num::integral::input::CylindricalBessel, numeric::integral::Trapezoidal,
+            numeric::integral::Simpson, numeric::integral::Romberg, numeric::integral::Gauss,
+            numeric::integral::MonteCarlo;
         fixture = std::make_unique<InputBuilder>(
             CylindricalBessel{}, CylindricalBessel::range1, CylindricalBessel::range2, CylindricalBessel::exprDescr);
         sut.clear();
-        sut["Trapezoidal"] = std::make_unique<numeric::integral::Trapezoidal>(fixture->getExpression());
-        sut["Simpson"] = std::make_unique<numeric::integral::Simpson>(fixture->getExpression());
-        sut["Romberg"] = std::make_unique<numeric::integral::Romberg>(fixture->getExpression());
-        sut["Gauss"] = std::make_unique<numeric::integral::Gauss>(fixture->getExpression());
-        sut["MonteCarlo"] = std::make_unique<numeric::integral::MonteCarlo>(fixture->getExpression());
+        const auto expression = fixture->getExpression();
+        sut["Trapezoidal"] = std::make_unique<Trapezoidal>(expression);
+        sut["Simpson"] = std::make_unique<Simpson>(expression);
+        sut["Romberg"] = std::make_unique<Romberg>(expression);
+        sut["Gauss"] = std::make_unique<Gauss>(expression);
+        sut["MonteCarlo"] = std::make_unique<MonteCarlo>(expression);
     }
     //! @brief Reset scenario.
     static void resetScenario()

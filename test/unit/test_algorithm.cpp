@@ -187,16 +187,19 @@ private:
     //! @brief Prepare scenario.
     static void prepareScenario()
     {
-        using application::app_algo::optimal::input::SphericalBessel;
+        using application::app_algo::optimal::input::SphericalBessel, algorithm::optimal::Gradient,
+            algorithm::optimal::Tabu, algorithm::optimal::Annealing, algorithm::optimal::Particle,
+            algorithm::optimal::Ant, algorithm::optimal::Genetic;
         fixture = std::make_unique<InputBuilder>(
             SphericalBessel{}, SphericalBessel::range1, SphericalBessel::range2, SphericalBessel::funcDescr);
         sut.clear();
-        sut["Gradient"] = std::make_unique<algorithm::optimal::Gradient>(fixture->getFunction());
-        sut["Tabu"] = std::make_unique<algorithm::optimal::Tabu>(fixture->getFunction());
-        sut["Annealing"] = std::make_unique<algorithm::optimal::Annealing>(fixture->getFunction());
-        sut["Particle"] = std::make_unique<algorithm::optimal::Particle>(fixture->getFunction());
-        sut["Ant"] = std::make_unique<algorithm::optimal::Ant>(fixture->getFunction());
-        sut["Genetic"] = std::make_unique<algorithm::optimal::Genetic>(fixture->getFunction());
+        const auto function = fixture->getFunction();
+        sut["Gradient"] = std::make_unique<Gradient>(function);
+        sut["Tabu"] = std::make_unique<Tabu>(function);
+        sut["Annealing"] = std::make_unique<Annealing>(function);
+        sut["Particle"] = std::make_unique<Particle>(function);
+        sut["Ant"] = std::make_unique<Ant>(function);
+        sut["Genetic"] = std::make_unique<Genetic>(function);
     }
     //! @brief Reset scenario.
     static void resetScenario()
