@@ -2,7 +2,7 @@
 
 [![pipeline](https://img.shields.io/github/actions/workflow/status/ryftchen/foo/pipeline.yaml?branch=master&event=push&logo=github&logoColor=white&label=pipeline)](https://github.com/ryftchen/foo/actions/workflows/pipeline.yaml?query=branch%3Amaster+event%3Apush) [![document](https://img.shields.io/website?url=https%3A%2F%2Fryftchen.github.io%2Ffoo%2F&up_message=available&down_message=unavailable&logo=github&logoColor=white&label=document)](https://ryftchen.github.io/foo/)
 
-The **[foo](https://github.com/ryftchen/foo)** is a personal roadmap for learning programming, like an exploratory demo. Its main purpose is to use the C++ language to implement or improve some common basic functions. It also contains detailed comments for easy summary and archive. The goal is to develop good programming habits while improving programming skills with best practices.
+The **[foo](https://github.com/ryftchen/foo)** repository is a personal roadmap for learning programming, serving as an exploratory project. Its main purpose is to implement and refine fundamental components using C++, along with related engineering practices. It also includes detailed comments for easier review and documentation. The goal is to develop good programming habits while improving coding skills through best practices.
 
 ---
 
@@ -12,12 +12,12 @@ The **[foo](https://github.com/ryftchen/foo)** is a personal roadmap for learnin
 
 ## Features
 
-- Specific [application](https://github.com/ryftchen/foo/tree/master/application) of the following:
-  - Related to [algorithm](https://github.com/ryftchen/foo/tree/master/algorithm).
-  - Related to [design pattern](https://github.com/ryftchen/foo/tree/master/design_pattern).
-  - Related to [data structure](https://github.com/ryftchen/foo/tree/master/data_structure).
-  - Related to [numeric](https://github.com/ryftchen/foo/tree/master/numeric).
-- Other [utility](https://github.com/ryftchen/foo/tree/master/utility) functions.
+- Hands-on examples under [application](https://github.com/ryftchen/foo/tree/master/application), covering:
+  - [algorithm](https://github.com/ryftchen/foo/tree/master/algorithm)
+  - [design pattern](https://github.com/ryftchen/foo/tree/master/design_pattern)
+  - [data structure](https://github.com/ryftchen/foo/tree/master/data_structure)
+  - [numeric](https://github.com/ryftchen/foo/tree/master/numeric)
+- General-purpose [utility](https://github.com/ryftchen/foo/tree/master/utility) functions.
 
 ## Getting started
 
@@ -34,11 +34,11 @@ The **[foo](https://github.com/ryftchen/foo)** is a personal roadmap for learnin
     docker exec -it -w /workspaces/foo foo_dev /bin/bash
     ```
 
-    For environment dependencies and container construction, see the profiles in the `./docker` directory.
+    For environment dependencies and container setup, refer to the configuration file under the `./docker` directory.
 
 ### How to build
 
-> The [build script](https://github.com/ryftchen/foo/blob/master/script/build.sh) contains a number of parameters, please use the *-\-help* option first for detailed instructions.
+> The [build script](https://github.com/ryftchen/foo/blob/master/script/build.sh) supports a number of options, use the *-\-help* option first to see detailed instructions.
 >
 > ```bash
 > ./script/build.sh --help
@@ -50,18 +50,18 @@ The **[foo](https://github.com/ryftchen/foo)** is a personal roadmap for learnin
   ./script/build.sh
   ```
 
-  The binary and the libraries will be created in the `./build` directory. Then execute the binary, such as:
+  The binary and libraries are generated under the `./build` directory. Then execute the binary, for example:
 
   ```bash
   ./build/bin/foo --help
   ```
 
-  Configuration information is stored in `$HOME/.foo/conf/foo.json`, and the executed log is also written to `$HOME/.foo/log/foo.log`.
-- The parameters are provided for building or static analysis. Build with options like *-\-lint cpp*, etc.
+  Configuration is stored in `$HOME/.foo/conf/foo.json`, and runtime logs are written to `$HOME/.foo/log/foo.log`.
+- Additional options are available for building or static analysis, e.g. *-\-lint cpp*.
 
 ### How to run
 
-> The [run script](https://github.com/ryftchen/foo/blob/master/script/run.py) contains a number of parameters, please use the *-\-help* option first for detailed instructions.
+> The [run script](https://github.com/ryftchen/foo/blob/master/script/run.py) supports a number of options, use the *-\-help* option first to see detailed instructions.
 >
 > ```bash
 > ./script/run.py --help
@@ -73,13 +73,13 @@ The **[foo](https://github.com/ryftchen/foo)** is a personal roadmap for learnin
   ./script/run.py
   ```
 
-  Also, add the *-\-build* option to support building before running. The result of running will also be written to `./report/foo_run.log` and the analysis will be generated in `./report/foo_run.report`.
+  Also, pass the *-\-build* option to trigger a build before running. The run output is written to `./report/foo_run.log`, and the analysis report is produced at `./report/foo_run.report`.
 
-- The parameters are provided for running or dynamic analysis. Run with options like *-\-check mem*, etc.
+- Additional options are available for running or dynamic analysis, e.g. *-\-check mem*.
 
 ## Documentation
 
-The project API documentation can be found on [GitHub Pages](https://ryftchen.github.io/foo/). When using local documentation via script, `./document` is used as the generation directory. Support is also available for deploying the local archive service.
+The project API documentation is hosted on [GitHub Pages](https://ryftchen.github.io/foo/). When generating documentation locally via the script, `./document` is used as the output directory. It also supports deploying a local archive service.
 
 ## License
 
