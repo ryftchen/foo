@@ -96,107 +96,87 @@ protected:
     std::streamsize showmanyc() override;
 };
 
-//! @brief Handle reading from a file using a custom stream buffer.
-class FileReader
+//! @brief Handling from a file using a custom stream buffer.
+//! @tparam Stream - type of stream
+template <typename Stream>
+class FileHandle
 {
 public:
-    //! @brief Construct a new FileReader object.
-    //! @param filename - file path to be read
-    explicit FileReader(const std::string_view filename) : name{filename} {}
-    //! @brief Destroy the FileReader object.
-    virtual ~FileReader();
-    //! @brief Construct a new FileReader object.
-    FileReader(const FileReader&) = delete;
-    //! @brief Construct a new FileReader object.
-    FileReader(FileReader&&) = delete;
-    //! @brief The operator (=) overloading of FileReader class.
-    //! @return reference of the FileReader object
-    FileReader& operator=(const FileReader&) = delete;
-    //! @brief The operator (=) overloading of FileReader class.
-    //! @return reference of the FileReader object
-    FileReader& operator=(FileReader&&) = delete;
+    //! @brief Construct a new FileHandle object.
+    //! @param filename - file path to be accessed
+    explicit FileHandle(const std::string_view filename) : name{filename} {}
+    //! @brief Destroy the FileHandle object.
+    virtual ~FileHandle();
+    //! @brief Construct a new FileHandle object.
+    FileHandle(const FileHandle&) = delete;
+    //! @brief Construct a new FileHandle object.
+    FileHandle(FileHandle&&) = delete;
+    //! @brief The operator (=) overloading of FileHandle class.
+    //! @return reference of the FileHandle object
+    FileHandle& operator=(const FileHandle&) = delete;
+    //! @brief The operator (=) overloading of FileHandle class.
+    //! @return reference of the FileHandle object
+    FileHandle& operator=(FileHandle&&) = delete;
 
     //! @brief Checks if the file is currently opened.
     //! @return be opened or not
-    bool isOpened() const;
-    //! @brief Open the file for reading.
-    void open();
+    [[nodiscard]] bool isOpened() const;
     //! @brief Close the file.
     void close();
     //! @brief Checks if the file is currently locked.
     //! @return be locked or not
-    bool isLocked() const;
-    //! @brief Lock the file for shared reading.
-    void lock();
+    [[nodiscard]] bool isLocked() const;
     //! @brief Unlock the file.
     void unlock();
-    //! @brief Get the input stream.
-    //! @return reference to the input stream
-    std::istream& stream() noexcept;
+    //! @brief Get the stream.
+    //! @return reference to the stream
+    Stream& stream() noexcept;
 
-private:
-    //! @brief Name of the file being read.
+protected:
+    //! @brief Open the file descriptor with the specified flag.
+    //! @param flag - flag forwarded to open
+    //! @param action - action name
+    void doOpen(const int flag, const std::string_view action);
+    //! @brief Lock the file descriptor with the specified mode.
+    //! @param mode - mode forwarded to lock
+    //! @param action - action name
+    void doLock(const int mode, const std::string_view action);
+    //! @brief Name of the file being accessed.
     const std::string name;
     //! @brief File descriptor associated with the file.
     int fd{-1};
-    //! @brief Custom stream buffer for reading.
-    FDStreamBuffer strBuf;
-    //! @brief Input stream associated with the file.
-    std::istream input{&strBuf};
+    //! @brief Custom stream buffer.
+    FDStreamBuffer stmBuf;
+    //! @brief Stream associated with the file.
+    Stream stm{&stmBuf};
     //! @brief Locking status.
     bool lockActive{false};
 };
 
-//! @brief Handle writing from a file using a custom stream buffer.
-class FileWriter
+extern template class FileHandle<std::istream>;
+extern template class FileHandle<std::ostream>;
+
+//! @brief Handle reading from a file using a custom stream buffer.
+class FileReader final : public FileHandle<std::istream>
 {
 public:
-    //! @brief Construct a new FileWriter object.
-    //! @param filename - file path to be written
-    explicit FileWriter(const std::string_view filename) : name{filename} {}
-    //! @brief Destroy the FileWriter object.
-    virtual ~FileWriter();
-    //! @brief Construct a new FileWriter object.
-    FileWriter(const FileWriter&) = delete;
-    //! @brief Construct a new FileWriter object.
-    FileWriter(FileWriter&&) = delete;
-    //! @brief The operator (=) overloading of FileWriter class.
-    //! @return reference of the FileWriter object
-    FileWriter& operator=(const FileWriter&) = delete;
-    //! @brief The operator (=) overloading of FileWriter class.
-    //! @return reference of the FileWriter object
-    FileWriter& operator=(FileWriter&&) = delete;
-
-    //! @brief Checks if the file is currently opened.
-    //! @return be opened or not
-    bool isOpened() const;
+    using FileHandle::FileHandle;
     //! @brief Open the file for reading.
+    void open();
+    //! @brief Lock the file for shared reading.
+    void lock();
+};
+
+//! @brief Handle writing from a file using a custom stream buffer.
+class FileWriter final : public FileHandle<std::ostream>
+{
+public:
+    using FileHandle::FileHandle;
+    //! @brief Open the file for writing.
     //! @param overwrite - overwrite or not
     void open(const bool overwrite = false);
-    //! @brief Close the file.
-    void close();
-    //! @brief Checks if the file is currently locked.
-    //! @return be locked or not
-    bool isLocked() const;
-    //! @brief Lock the file for exclusive reading.
+    //! @brief Lock the file for exclusive writing.
     void lock();
-    //! @brief Unlock the file.
-    void unlock();
-    //! @brief Get the output stream.
-    //! @return reference to the output stream
-    std::ostream& stream() noexcept;
-
-private:
-    //! @brief Name of the file being written.
-    const std::string name;
-    //! @brief File descriptor associated with the file.
-    int fd{-1};
-    //! @brief Custom stream buffer for writing.
-    FDStreamBuffer strBuf;
-    //! @brief Output stream associated with the file.
-    std::ostream output{&strBuf};
-    //! @brief Locking status.
-    bool lockActive{false};
 };
 } // namespace io
 } // namespace utility

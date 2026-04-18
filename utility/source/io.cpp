@@ -310,150 +310,108 @@ std::streamsize FDStreamBuffer::showmanyc()
     return ((fd >= 0) && gptr() && egptr()) ? (egptr() - gptr()) : 0;
 }
 
-FileReader::~FileReader()
+template <typename Stream>
+FileHandle<Stream>::~FileHandle()
 {
     unlock();
     close();
 }
 
-bool FileReader::isOpened() const
+template <typename Stream>
+bool FileHandle<Stream>::isOpened() const
 {
     return fd >= 0;
 }
 
-void FileReader::open()
-{
-    if (isOpened())
-    {
-        return;
-    }
-
-    fd = ::open(name.c_str(), O_CREAT | O_RDONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-    if (fd < 0)
-    {
-        throw std::runtime_error{
-            "Failed to open " + std::filesystem::path{name}.filename().string() + " file for reading."};
-    }
-    strBuf.set(fd);
-}
-
-void FileReader::close()
+template <typename Stream>
+void FileHandle<Stream>::close()
 {
     if (!isOpened())
     {
         return;
     }
 
-    strBuf.reset();
+    stmBuf.reset();
     fd = -1;
 }
 
-bool FileReader::isLocked() const
+template <typename Stream>
+bool FileHandle<Stream>::isLocked() const
 {
     return lockActive;
+}
+
+template <typename Stream>
+void FileHandle<Stream>::unlock()
+{
+    if (!isLocked())
+    {
+        return;
+    }
+
+    ::flock(fd, LOCK_UN);
+    lockActive = false;
+}
+
+template <typename Stream>
+Stream& FileHandle<Stream>::stream() noexcept
+{
+    return stm;
+}
+
+template <typename Stream>
+void FileHandle<Stream>::doOpen(const int flag, const std::string_view action)
+{
+    if (isOpened())
+    {
+        return;
+    }
+
+    fd = ::open(name.c_str(), flag, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+    if (fd < 0)
+    {
+        throw std::runtime_error{
+            "Failed to open " + std::filesystem::path{name}.filename().string() + " file for " + action.data() + '.'};
+    }
+    stmBuf.set(fd);
+}
+
+template <typename Stream>
+void FileHandle<Stream>::doLock(const int mode, const std::string_view action)
+{
+    if (isLocked())
+    {
+        return;
+    }
+
+    if (::flock(fd, mode | LOCK_NB) != 0)
+    {
+        throw std::runtime_error{
+            "Failed to lock file descriptor " + std::to_string(fd) + " for " + action.data() + '.'};
+    }
+    lockActive = true;
+}
+
+template class FileHandle<std::istream>;
+template class FileHandle<std::ostream>;
+
+void FileReader::open()
+{
+    doOpen(O_CREAT | O_RDONLY, "reading");
 }
 
 void FileReader::lock()
 {
-    if (isLocked())
-    {
-        return;
-    }
-
-    if (::flock(fd, LOCK_SH | LOCK_NB) != 0)
-    {
-        throw std::runtime_error{"Failed to lock file descriptor " + std::to_string(fd) + " for reading."};
-    }
-    lockActive = true;
-}
-
-void FileReader::unlock()
-{
-    if (!isLocked())
-    {
-        return;
-    }
-
-    ::flock(fd, LOCK_UN);
-    lockActive = false;
-}
-
-std::istream& FileReader::stream() noexcept
-{
-    return input;
-}
-
-FileWriter::~FileWriter()
-{
-    unlock();
-    close();
-}
-
-bool FileWriter::isOpened() const
-{
-    return fd >= 0;
+    doLock(LOCK_SH, "reading");
 }
 
 void FileWriter::open(const bool overwrite)
 {
-    if (isOpened())
-    {
-        return;
-    }
-
-    fd = ::open(
-        name.c_str(), O_CREAT | (overwrite ? O_TRUNC : O_APPEND) | O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-    if (fd < 0)
-    {
-        throw std::runtime_error{
-            "Failed to open " + std::filesystem::path{name}.filename().string() + " file for writing."};
-    }
-    strBuf.set(fd);
-}
-
-void FileWriter::close()
-{
-    if (!isOpened())
-    {
-        return;
-    }
-
-    strBuf.reset();
-    fd = -1;
-}
-
-bool FileWriter::isLocked() const
-{
-    return lockActive;
+    doOpen(O_CREAT | (overwrite ? O_TRUNC : O_APPEND) | O_WRONLY, "writing");
 }
 
 void FileWriter::lock()
 {
-    if (isLocked())
-    {
-        return;
-    }
-
-    if (::flock(fd, LOCK_EX | LOCK_NB) != 0)
-    {
-        throw std::runtime_error{"Failed to lock file descriptor " + std::to_string(fd) + " for writing."};
-    }
-    lockActive = true;
-}
-
-void FileWriter::unlock()
-{
-    if (!isLocked())
-    {
-        return;
-    }
-
-    ::flock(fd, LOCK_UN);
-    lockActive = false;
-}
-
-std::ostream& FileWriter::stream() noexcept
-{
-    return output;
+    doLock(LOCK_EX, "writing");
 }
 } // namespace utility::io
