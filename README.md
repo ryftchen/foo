@@ -73,7 +73,7 @@ The **[foo](https://github.com/ryftchen/foo)** repository is a personal roadmap 
   ./script/run.py
   ```
 
-  Also, pass the *-\-build* option to trigger a build before running. The run output is written to `./report/foo_run.log`, and the analysis report is produced at `./report/foo_run.report`.
+  Also, pass the *-\-build* option to trigger a build before running. Run output is written to `./report/foo_run.log`, and analysis report is produced at `./report/foo_run.report`.
 
 - Additional options are available for running or dynamic analysis, e.g. *-\-check mem*.
 
