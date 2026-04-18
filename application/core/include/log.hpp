@@ -111,8 +111,8 @@ public:
         //! @brief Idle.
         idle
     };
-    //! @brief Access for the instance.
-    class Access
+    //! @brief Access controller. For the instance.
+    class Controller
     {
     public:
         //! @brief Wait for the logger to start. Interface controller for external use.

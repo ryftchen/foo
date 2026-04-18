@@ -425,7 +425,7 @@ retry:
 }
 // NOLINTEND(cppcoreguidelines-avoid-goto)
 
-void View::Access::startup() const
+void View::Controller::startup() const
 try
 {
     waitOr(State::active, []() { throw std::runtime_error{"The " + View::name + " did not set up successfully ..."}; });
@@ -439,7 +439,7 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-void View::Access::shutdown() const
+void View::Controller::shutdown() const
 try
 {
     notifyVia([this]() { inst->isOngoing.store(false); });
@@ -450,7 +450,7 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-void View::Access::reload() const
+void View::Controller::reload() const
 try
 {
     notifyVia([this]() { inst->inResetting.store(true); });
@@ -467,7 +467,7 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-bool View::Access::onParsing(char* const bytes, const std::size_t size) const
+bool View::Controller::onParsing(char* const bytes, const std::size_t size) const
 {
     data::decryptMessage(bytes, size);
     tlv::TLVValue value{};
@@ -503,7 +503,7 @@ bool View::Access::onParsing(char* const bytes, const std::size_t size) const
     return !value.stopTag;
 }
 
-void View::Access::waitOr(const State state, const std::function<void()>& handling) const
+void View::Controller::waitOr(const State state, const std::function<void()>& handling) const
 {
     do
     {
@@ -516,7 +516,7 @@ void View::Access::waitOr(const State state, const std::function<void()>& handli
     while (!inst->isInServingState(state));
 }
 
-void View::Access::notifyVia(const std::function<void()>& action) const
+void View::Controller::notifyVia(const std::function<void()>& action) const
 {
     std::unique_lock<std::mutex> daemonLock(inst->daemonMtx);
     if (action)
@@ -527,7 +527,7 @@ void View::Access::notifyVia(const std::function<void()>& action) const
     inst->daemonCond.notify_one();
 }
 
-void View::Access::countdownIf(const std::function<bool()>& condition, const std::function<void()>& handling) const
+void View::Controller::countdownIf(const std::function<bool()>& condition, const std::function<void()>& handling) const
 {
     for (const utility::time::Stopwatch timing{}; timing.elapsedTime() <= inst->timeoutPeriod;)
     {
@@ -543,20 +543,20 @@ void View::Access::countdownIf(const std::function<bool()>& condition, const std
     }
 }
 
-void View::Sync::waitTaskDone() const
+void View::Completion::waitTaskDone() const
 {
     std::unique_lock<std::mutex> outputLock(inst->outputMtx);
     inst->outputCompleted.store(false);
 
     const auto maxWaitTime = std::chrono::milliseconds{inst->timeoutPeriod};
     utility::time::Timer expiryTimer(
-        inst->isInServingState(State::established) ? []() {} : []() { Sync().notifyTaskDone(); });
+        inst->isInServingState(State::established) ? []() {} : []() { Completion().notifyTaskDone(); });
     expiryTimer.start(maxWaitTime);
     inst->outputCond.wait(outputLock, [this]() { return inst->outputCompleted.load(); });
     expiryTimer.stop();
 }
 
-void View::Sync::notifyTaskDone() const
+void View::Completion::notifyTaskDone() const
 {
     std::unique_lock<std::mutex> outputLock(inst->outputMtx);
     inst->outputCompleted.store(true);
@@ -981,7 +981,7 @@ void View::segmentedOutput(const std::string& cache)
 std::string View::logContentsPreview()
 {
     std::ostringstream transfer{};
-    log::Log::Access().onPreviewing(
+    log::Log::Controller().onPreviewing(
         [&transfer](const std::string& filePath)
         {
             constexpr std::uint16_t lineLimit = 24 * 100;

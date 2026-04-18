@@ -184,7 +184,7 @@ retry:
 }
 // NOLINTEND(cppcoreguidelines-avoid-goto)
 
-void Log::Access::startup() const
+void Log::Controller::startup() const
 try
 {
     waitOr(State::active, []() { throw std::runtime_error{"The " + Log::name + " did not set up successfully ..."}; });
@@ -197,7 +197,7 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-void Log::Access::shutdown() const
+void Log::Controller::shutdown() const
 try
 {
     notifyVia([this]() { inst->isOngoing.store(false); });
@@ -208,7 +208,7 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-void Log::Access::reload() const
+void Log::Controller::reload() const
 try
 {
     notifyVia([this]() { inst->inResetting.store(true); });
@@ -225,7 +225,7 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-void Log::Access::onPreviewing(const std::function<void(const std::string&)>& peeking) const
+void Log::Controller::onPreviewing(const std::function<void(const std::string&)>& peeking) const
 {
     const LockGuard guard(inst->fileLock, LockMode::read);
     if (peeking)
@@ -234,7 +234,7 @@ void Log::Access::onPreviewing(const std::function<void(const std::string&)>& pe
     }
 }
 
-void Log::Access::waitOr(const State state, const std::function<void()>& handling) const
+void Log::Controller::waitOr(const State state, const std::function<void()>& handling) const
 {
     do
     {
@@ -247,7 +247,7 @@ void Log::Access::waitOr(const State state, const std::function<void()>& handlin
     while (!inst->isInServingState(state));
 }
 
-void Log::Access::notifyVia(const std::function<void()>& action) const
+void Log::Controller::notifyVia(const std::function<void()>& action) const
 {
     std::unique_lock<std::mutex> daemonLock(inst->daemonMtx);
     if (action)
@@ -258,7 +258,7 @@ void Log::Access::notifyVia(const std::function<void()>& action) const
     inst->daemonCond.notify_one();
 }
 
-void Log::Access::countdownIf(const std::function<bool()>& condition, const std::function<void()>& handling) const
+void Log::Controller::countdownIf(const std::function<bool()>& condition, const std::function<void()>& handling) const
 {
     for (const utility::time::Stopwatch timing{}; timing.elapsedTime() <= inst->timeoutPeriod;)
     {

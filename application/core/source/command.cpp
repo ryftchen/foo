@@ -68,13 +68,13 @@ static void triggerEvent(const ExtEvent event)
     switch (event)
     {
         case ExtEvent::startup:
-            typename Helper::Access().startup();
+            typename Helper::Controller().startup();
             return;
         case ExtEvent::shutdown:
-            typename Helper::Access().shutdown();
+            typename Helper::Controller().shutdown();
             return;
         case ExtEvent::reload:
-            typename Helper::Access().reload();
+            typename Helper::Controller().reload();
             return;
         default:
             break;
@@ -1174,17 +1174,17 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<Sock>
 
 bool Command::onParsing4Client(char* const bytes, const std::size_t size)
 {
-    return (size == 0) || view::View::Access().onParsing(bytes, size);
+    return (size == 0) || view::View::Controller().onParsing(bytes, size);
 }
 
 void Command::waitClientOutputDone()
 {
-    view::View::Sync().waitTaskDone();
+    view::View::Completion().waitTaskDone();
 }
 
 void Command::notifyClientOutputDone()
 {
-    view::View::Sync().notifyTaskDone();
+    view::View::Completion().notifyTaskDone();
 }
 
 std::string Command::buildDisconnectRequest()

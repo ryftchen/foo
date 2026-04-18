@@ -64,8 +64,8 @@ public:
         //! @brief Idle.
         idle
     };
-    //! @brief Access for the instance.
-    class Access
+    //! @brief Access controller. For the instance.
+    class Controller
     {
     public:
         //! @brief Wait for the viewer to start. Interface controller for external use.
@@ -112,8 +112,8 @@ public:
         //! @param handling - handling if timeout
         void countdownIf(const std::function<bool()>& condition, const std::function<void()>& handling) const;
     };
-    //! @brief Synchronization for the instance.
-    class Sync
+    //! @brief Completion barrier. For the instance.
+    class Completion
     {
     public:
         //! @brief Block the caller until the output task is marked as done.
@@ -368,31 +368,31 @@ namespace info
 //! @return current supported viewer options
 inline auto currentSupportedOptions()
 {
-    return View::Access().getSupportedOptions();
+    return View::Controller().getSupportedOptions();
 }
 //! @brief Get the current TCP host address being used for viewing.
 //! @return current TCP host address being used for viewing
 inline std::string currentTCPHost()
 {
-    return View::Access().getTCPHost();
+    return View::Controller().getTCPHost();
 }
 //! @brief Get the current TCP port number being used for viewing.
 //! @return current TCP port number being used for viewing
 inline std::uint16_t currentTCPPort()
 {
-    return View::Access().getTCPPort();
+    return View::Controller().getTCPPort();
 }
 //! @brief Get the current UDP host address being used for viewing.
 //! @return current UDP host address being used for viewing
 inline std::string currentUDPHost()
 {
-    return View::Access().getUDPHost();
+    return View::Controller().getUDPHost();
 }
 //! @brief Get the current UDP port number being used for viewing.
 //! @return current UDP port number being used for viewing
 inline std::uint16_t currentUDPPort()
 {
-    return View::Access().getUDPPort();
+    return View::Controller().getUDPPort();
 }
 } // namespace info
 } // namespace view
