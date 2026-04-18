@@ -221,9 +221,8 @@ void TCPSocket::doReceive(const std::shared_ptr<TCPSocket> socket) // NOLINT(per
                 }
             }
 
-            tempBuffer[msgLen] = '\0';
-            socket->onMessage(std::string(tempBuffer.data(), msgLen));
-            socket->onRawMessage(tempBuffer.data(), msgLen);
+            socket->onMessage(std::string_view(tempBuffer.data(), static_cast<std::size_t>(msgLen)));
+            socket->onRawMessage(tempBuffer.data(), static_cast<std::size_t>(msgLen));
         }
     }
 
@@ -476,10 +475,15 @@ void UDPSocket::doReceive(const std::shared_ptr<UDPSocket> socket) // NOLINT(per
                 }
             }
 
-            tempBuffer[msgLen] = '\0';
             socket->onMessage(
-                std::string_view(tempBuffer.data(), msgLen), socket->transportAddress(), socket->transportPort());
-            socket->onRawMessage(tempBuffer.data(), msgLen, socket->transportAddress(), socket->transportPort());
+                std::string_view(tempBuffer.data(), static_cast<std::size_t>(msgLen)),
+                socket->transportAddress(),
+                socket->transportPort());
+            socket->onRawMessage(
+                tempBuffer.data(),
+                static_cast<std::size_t>(msgLen),
+                socket->transportAddress(),
+                socket->transportPort());
         }
     }
 }
@@ -522,9 +526,12 @@ void UDPSocket::doReceiveFrom(const std::shared_ptr<UDPSocket> socket) // NOLINT
                 }
             }
 
-            tempBuffer[msgLen] = '\0';
-            socket->onMessage(std::string_view(tempBuffer.data(), msgLen), ipAddrString(addr), ::ntohs(addr.sin_port));
-            socket->onRawMessage(tempBuffer.data(), msgLen, ipAddrString(addr), ::ntohs(addr.sin_port));
+            socket->onMessage(
+                std::string_view(tempBuffer.data(), static_cast<std::size_t>(msgLen)),
+                ipAddrString(addr),
+                ::ntohs(addr.sin_port));
+            socket->onRawMessage(
+                tempBuffer.data(), static_cast<std::size_t>(msgLen), ipAddrString(addr), ::ntohs(addr.sin_port));
         }
     }
 }

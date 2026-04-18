@@ -593,7 +593,7 @@ static Node* insert(Node* root, const void* const key, const Compare cmp)
     else if (cmp(key, root->key) < 0)
     {
         root->left = insert(root->left, key, cmp);
-        if ((getHeight(root->left) - getHeight(root->right)) > 1)
+        if (root->left && ((getHeight(root->left) - getHeight(root->right)) > 1))
         {
             root = (cmp(key, root->left->key) < 0) ? leftLeftRotation(root) : leftRightRotation(root);
         }
@@ -601,7 +601,7 @@ static Node* insert(Node* root, const void* const key, const Compare cmp)
     else if (cmp(key, root->key) > 0)
     {
         root->right = insert(root->right, key, cmp);
-        if ((getHeight(root->left) - getHeight(root->right)) < -1)
+        if (root->right && ((getHeight(root->left) - getHeight(root->right)) < -1))
         {
             root = (cmp(key, root->right->key) > 0) ? rightRightRotation(root) : rightLeftRotation(root);
         }

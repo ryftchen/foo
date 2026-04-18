@@ -92,7 +92,7 @@ public:
     //! @tparam Value - type of string value
     //! @param s - string value
     template <typename Value>
-    JSON(const Value s, std::enable_if_t<std::is_convertible_v<Value, std::string>>* /*sfinae*/ = nullptr) :
+    JSON(const Value& s, std::enable_if_t<std::is_convertible_v<Value, std::string>>* /*sfinae*/ = nullptr) :
         data{String{s}}
     {
     }

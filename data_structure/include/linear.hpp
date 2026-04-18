@@ -97,7 +97,14 @@ std::ostream& operator<<(std::ostream& os, const Printer<NV>& printer)
         os << "HEAD -> ";
         for (int i = 0; i < size; ++i)
         {
-            os << *static_cast<const NV*>(get(dll, i));
+            if (const auto* const value = dll::get(dll, i); value)
+            {
+                os << *static_cast<const NV*>(value);
+            }
+            else
+            {
+                os << "<null>";
+            }
             if (i < (size - 1))
             {
                 os << " <-> ";
@@ -157,7 +164,14 @@ std::ostream& operator<<(std::ostream& os, const Printer<NV>& printer)
         os << "TOP [ ";
         for (int i = 0; i < size; ++i)
         {
-            os << *static_cast<const NV*>(dll::get(stk, i));
+            if (const auto* const value = dll::get(stk, i); value)
+            {
+                os << *static_cast<const NV*>(value);
+            }
+            else
+            {
+                os << "<null>";
+            }
             if (i < (size - 1))
             {
                 os << " | ";
@@ -217,7 +231,14 @@ std::ostream& operator<<(std::ostream& os, const Printer<NV>& printer)
         os << "FRONT [ ";
         for (int i = 0; i < size; ++i)
         {
-            os << *static_cast<const NV*>(dll::get(que, i));
+            if (const auto* const value = dll::get(que, i); value)
+            {
+                os << *static_cast<const NV*>(value);
+            }
+            else
+            {
+                os << "<null>";
+            }
             if (i < (size - 1))
             {
                 os << " | ";

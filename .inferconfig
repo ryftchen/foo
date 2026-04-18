@@ -1,0 +1,6 @@
+{
+  "sarif": true,
+  "report-block-list-path-regex": [
+    "^/usr/include/.*"
+  ]
+}

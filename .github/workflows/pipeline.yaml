@@ -30,12 +30,12 @@ jobs:
       - name: Precheck
         run: |
           ./script/build.sh --precheck
-      - name: Evaluate quality
+      - name: Check quality
         run: |
           ./script/build.sh --format --lint
-      - name: Evaluate source code security
+      - name: Evaluate source code
         run: |
-          ./script/build.sh --query --assume y
+          ./script/build.sh --evaluate --assume y
       - name: Statistic
         run: |
           ./script/build.sh --statistic
@@ -55,7 +55,7 @@ jobs:
         uses: actions/checkout@v4.1.0
       - name: Run base debug version
         run: |
-          ./script/build.sh --initialize
+          ./script/build.sh --setup
           ./script/run.py --test --build dbg --repeat 1
           cat ./report/foo_run.report
           ./script/run.py --build dbg --repeat 1
@@ -113,7 +113,7 @@ jobs:
           ./script/build.sh --uninstall
       - name: Enhanced environment
         run: |
-          ./script/build.sh --initialize
+          ./script/build.sh --setup
           sed -i 's/FOO_BLD_PARALLEL=.*/FOO_BLD_PARALLEL=2/' ./script/.build_env
           sed -i 's/FOO_BLD_CCACHE=.*/FOO_BLD_CCACHE=on/' ./script/.build_env
           sed -i 's/FOO_BLD_TMPFS=.*/FOO_BLD_TMPFS=on/' ./script/.build_env
@@ -166,7 +166,7 @@ jobs:
           ./script/run.py --analyze
           sed -i 's/FOO_BLD_DISTCC=.*/FOO_BLD_DISTCC=localhost/' ./script/.build_env
           pkill distccd
-          ./script/build.sh --clean
+          ./script/build.sh --cleanup
       - name: Run sanitizer (debug)
         run: |
           ./script/run.py --test --sanitizer asan --build dbg --repeat 1

@@ -15,7 +15,6 @@ words:
   - CBLAS
   - CLICOLOR
   - codebrowser
-  - codescanning
   - compdb
   - CPLUS
   - creational
@@ -32,6 +31,7 @@ words:
   - gitmessage
   - gtest
   - indexgenerator
+  - inferconfig
   - jcvf
   - jxvf
   - Karp

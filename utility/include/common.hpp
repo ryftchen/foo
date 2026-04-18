@@ -97,7 +97,7 @@ private:
             constexpr auto len = (Strings.length() + ... + 0);
             std::array<char, len + 1> str{};
             char* dst = str.data();
-            ((std::copy_n(Strings.cbegin(), Strings.length(), dst), dst += Strings.length()), ...);
+            ((std::copy_n(Strings.cbegin(), Strings.length(), dst), static_cast<void>(dst += Strings.length())), ...);
             str[len] = '\0';
             return str;
         }()};

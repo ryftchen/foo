@@ -90,30 +90,41 @@ static void calculation(const ArithmeticMethod method, const std::int32_t a, con
 try
 {
     std::int32_t result = 0;
-    char op = ' ';
+    constexpr auto getOp = [](const ArithmeticMethod method) constexpr
+    {
+        switch (method)
+        {
+            case ArithmeticMethod::addition:
+                return '+';
+            case ArithmeticMethod::subtraction:
+                return '-';
+            case ArithmeticMethod::multiplication:
+                return '*';
+            case ArithmeticMethod::division:
+                return '/';
+            default:
+                return '?';
+        }
+    };
     switch (method)
     {
         using numeric::arithmetic::Arithmetic;
         case ArithmeticMethod::addition:
             result = Arithmetic::addition(a, b);
-            op = '+';
             break;
         case ArithmeticMethod::subtraction:
             result = Arithmetic::subtraction(a, b);
-            op = '-';
             break;
         case ArithmeticMethod::multiplication:
             result = Arithmetic::multiplication(a, b);
-            op = '*';
             break;
         case ArithmeticMethod::division:
             result = Arithmetic::division(a, b);
-            op = '/';
             break;
         default:
             return;
     }
-    display(method, result, a, b, op);
+    display(method, result, a, b, getOp(method));
 }
 catch (const std::exception& err)
 {

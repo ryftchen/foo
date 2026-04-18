@@ -560,9 +560,9 @@ template <typename Key, typename Value>
 template <typename Range>
 void LFU<Key, Value>::resolveRange(Range& keyOptValueRange, const bool peek)
 {
-    for (auto& [key, optValue] : keyOptValueRange)
+    for (auto& keyOptValue : keyOptValueRange)
     {
-        optValue = doFind(key, peek);
+        keyOptValue.second = doFind(keyOptValue.first, peek);
     }
 }
 
@@ -884,9 +884,9 @@ template <typename Key, typename Value>
 template <typename Range>
 void LRU<Key, Value>::resolveRange(Range& keyOptValueRange, const bool peek)
 {
-    for (auto& [key, optValue] : keyOptValueRange)
+    for (auto& keyOptValue : keyOptValueRange)
     {
-        optValue = doFind(key, peek);
+        keyOptValue.second = doFind(keyOptValue.first, peek);
     }
 }
 

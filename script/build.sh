@@ -10,9 +10,9 @@ declare -r COMPILE_DB="compile_commands.json"
 declare -r GIT_COMMIT_CMD="git rev-parse --short=7 HEAD"
 declare -r GIT_CHANGE_CMD="git status --porcelain=v2 -z \
 | awk -v RS='\0' '\$1==\"1\"{print \$9} \$1==\"2\"{print \$10} \$1==\"?\"{print \$2}'"
-declare -A ARGS=([help]=false [assume]=false [quick]=false [dry]=false [initialize]=false [clean]=false [install]=false
+declare -A ARGS=([help]=false [assume]=false [quick]=false [dry]=false [setup]=false [cleanup]=false [install]=false
     [uninstall]=false [container]=false [archive]=false [test]=false [release]=false [precheck]=false [statistic]=false
-    [format]=false [lint]=false [query]=false [doxygen]=false [browser]=false)
+    [format]=false [lint]=false [evaluate]=false [doxygen]=false [browser]=false)
 declare -A DEV_OPT=([compiler]="gcc" [parallel]=0 [pch]=false [unity]=false [ccache]=false [distcc]="localhost"
     [tmpfs]=false)
 declare MULTI_CHOICE_ORDER=()
@@ -67,7 +67,7 @@ function wait_until_get_input()
     return 0
 }
 
-function clean_up_temporary_files()
+function clean_temporary_files()
 {
     local app_comp_db="${FOLDER[bld]}/${COMPILE_DB}"
     if [[ -f ./${app_comp_db}.bak ]]; then
@@ -82,7 +82,7 @@ function clean_up_temporary_files()
 # shellcheck disable=SC2317
 function signal_handler()
 {
-    clean_up_temporary_files
+    clean_temporary_files
     exit 1
 }
 
@@ -108,7 +108,7 @@ function prepare_environment()
         SUDO_PREFIX="sudo "
     fi
     trap signal_handler SIGINT SIGTERM
-    clean_up_temporary_files
+    clean_temporary_files
 }
 
 function validate_single_choice_exclusivity()
@@ -130,7 +130,7 @@ function count_enabled_single_choice_parameters()
 {
     local number=0
     for key in "${!ARGS[@]}"; do
-        if [[ ${key} == "initialize" ]] || [[ ${key} == "clean" ]] || [[ ${key} == "install" ]] \
+        if [[ ${key} == "setup" ]] || [[ ${key} == "cleanup" ]] || [[ ${key} == "install" ]] \
             || [[ ${key} == "uninstall" ]] || [[ ${key} == "container" ]] || [[ ${key} == "archive" ]] \
             || [[ ${key} == "test" ]]; then
             if [[ ${ARGS[${key}]} != false ]]; then
@@ -147,7 +147,7 @@ function count_enabled_multiple_choice_parameters()
     local number=0
     for key in "${!ARGS[@]}"; do
         if [[ ${key} == "release" ]] || [[ ${key} == "precheck" ]] || [[ ${key} == "statistic" ]] \
-            || [[ ${key} == "format" ]] || [[ ${key} == "lint" ]] || [[ ${key} == "query" ]] \
+            || [[ ${key} == "format" ]] || [[ ${key} == "lint" ]] || [[ ${key} == "evaluate" ]] \
             || [[ ${key} == "doxygen" ]] || [[ ${key} == "browser" ]]; then
             if [[ ${ARGS[${key}]} != false ]]; then
                 number+=1
@@ -213,28 +213,28 @@ function perform_help_option()
     echo "build script"
     echo
     echo "options:"
-    echo "  -h, --help            show this help message and exit"
+    echo "  -h, --help           show this help message and exit"
     echo "  -A {y,n}, --assume {y,n}"
-    echo "                        assume confirmation is a yes or no"
-    echo "  -Q, --quick           quick process if support filter by type"
-    echo "  -D, --dry             dry run for script to preview"
-    echo "  -I, --initialize      initialize environment and exit"
-    echo "  -C, --clean           clean up project folder and exit"
-    echo "  -i, --install         install target deliverables and exit"
-    echo "  -u, --uninstall       uninstall target deliverables and exit"
-    echo "  -c, --container       construct docker container and exit"
-    echo "  -a, --archive         start or stop archive service and exit"
-    echo "  -t, --test            only build unit test and exit"
-    echo "  -r, --release         set as release version globally"
-    echo "  -p, --precheck        run hooks before commit for precheck"
-    echo "  -s, --statistic       lines of code classification statistic"
+    echo "                       assume confirmation is a yes or no"
+    echo "  -Q, --quick          quick process if support filter by type"
+    echo "  -D, --dry            dry run for script to preview"
+    echo "  -S, --setup          set up environment and exit"
+    echo "  -C, --cleanup        clean up project folder and exit"
+    echo "  -i, --install        install target deliverables and exit"
+    echo "  -u, --uninstall      uninstall target deliverables and exit"
+    echo "  -c, --container      construct docker container and exit"
+    echo "  -a, --archive        start or stop archive service and exit"
+    echo "  -t, --test           only build unit test and exit"
+    echo "  -r, --release        set as release version globally"
+    echo "  -p, --precheck       run hooks before commit for precheck"
+    echo "  -s, --statistic      lines of code classification statistic"
     echo "  -f [cpp,sh,py,rs], --format [cpp,sh,py,rs]"
-    echo "                        format all code files or by type"
+    echo "                       format all code files or by type"
     echo "  -l [cpp,sh,py,rs], --lint [cpp,sh,py,rs]"
-    echo "                        lint all code files or by type"
-    echo "  -q, --query           scan and query source code only"
-    echo "  -d, --doxygen         project API documentation with doxygen"
-    echo "  -b, --browser         generate source code browser like IDE"
+    echo "                       lint all code files or by type"
+    echo "  -e, --evaluate       scan and evaluate source code only"
+    echo "  -d, --doxygen        project API documentation with doxygen"
+    echo "  -b, --browser        generate source code browser like IDE"
     exit "${STATUS}"
 }
 
@@ -269,13 +269,13 @@ function parse_parameters()
         -D | --dry)
             ARGS[dry]=true
             ;;
-        -I | --initialize)
+        -S | --setup)
             validate_single_choice_exclusivity "${1}"
-            ARGS[initialize]=true
+            ARGS[setup]=true
             ;;
-        -C | --clean)
+        -C | --cleanup)
             validate_single_choice_exclusivity "${1}"
-            ARGS[clean]=true
+            ARGS[cleanup]=true
             ;;
         -i | --install)
             validate_single_choice_exclusivity "${1}"
@@ -335,10 +335,10 @@ function parse_parameters()
             handle_type_related_parameter "lint" "$@"
             shift $?
             ;;
-        -q | --query)
+        -e | --evaluate)
             validate_multiple_choice_exclusivity "${1}"
-            update_multiple_choice_order "query"
-            ARGS[query]=true
+            update_multiple_choice_order "evaluate"
+            ARGS[evaluate]=true
             ;;
         -d | --doxygen)
             validate_multiple_choice_exclusivity "${1}"
@@ -575,9 +575,9 @@ function build_native_if_needed()
     fi
 }
 
-function perform_initialize_option()
+function perform_setup_option()
 {
-    if [[ ${ARGS[initialize]} == false ]]; then
+    if [[ ${ARGS[setup]} == false ]]; then
         return
     fi
 
@@ -625,13 +625,13 @@ EOF"
     shell_command "echo 0 | ${SUDO_PREFIX}tee /proc/sys/kernel/yama/ptrace_scope"
     shell_command "git config --local commit.template ./.gitmessage"
 
-    echo "To initialize for effect, type \"exec bash\" manually."
+    echo "To set up for effect, type \"exec bash\" manually."
     exit "${STATUS}"
 }
 
-function perform_clean_option()
+function perform_cleanup_option()
 {
-    if [[ ${ARGS[clean]} == false ]]; then
+    if [[ ${ARGS[cleanup]} == false ]]; then
         return
     fi
 
@@ -800,15 +800,15 @@ EOF
         local item_rows
         item_rows=$(
             cat <<EOF
+<li>sca</li>
+<ul>
+<li><a href="./sca/lint/${index_html}" target="_blank" rel="noopener">clang-tidy ${FOLDER[rep]}</a></li>
+<li><a href="./sca/evaluate/${index_html}" target="_blank" rel="noopener">infer ${FOLDER[rep]}</a></li>
+</ul>
 <li>dca</li>
 <ul>
 <li><a href="./dca/chk_cov/${index_html}" target="_blank" rel="noopener">llvm-cov ${FOLDER[rep]}</a></li>
 <li><a href="./dca/chk_mem/${index_html}" target="_blank" rel="noopener">valgrind ${FOLDER[rep]}</a></li>
-</ul>
-<li>sca</li>
-<ul>
-<li><a href="./sca/lint/${index_html}" target="_blank" rel="noopener">clang-tidy ${FOLDER[rep]}</a></li>
-<li><a href="./sca/query/${index_html}" target="_blank" rel="noopener">codeql ${FOLDER[rep]}</a></li>
 </ul>
 EOF
         )
@@ -892,8 +892,8 @@ EOF"
 
 function try_perform_single_choice_options()
 {
-    perform_initialize_option
-    perform_clean_option
+    perform_setup_option
+    perform_cleanup_option
     perform_install_option
     perform_uninstall_option
     perform_container_option
@@ -1131,13 +1131,13 @@ do while [[ ! -f \${path}/${cargo_toml} ]] && [[ \${path} != \"/\" ]]; do path=\
     fi
 }
 
-function perform_query_option()
+function perform_evaluate_option()
 {
-    if [[ ${ARGS[query]} == false ]]; then
+    if [[ ${ARGS[evaluate]} == false ]]; then
         return
     fi
-    if ! command -v codeql >/dev/null 2>&1 || ! command -v sarif >/dev/null 2>&1; then
-        die "No codeql or sarif program. Please install it."
+    if ! command -v infer >/dev/null 2>&1 || ! command -v sarif >/dev/null 2>&1; then
+        die "No infer or sarif program. Please install it."
     fi
 
     local build_script
@@ -1173,20 +1173,21 @@ EOF"
         echo "No"
         echo
     fi
+    shell_command "${build_script}${other_option} >/dev/null && ${build_script} --test${other_option} >/dev/null"
 
-    local codeql_db_path="./${FOLDER[rep]}/sca/query"
-    shell_command "rm -rf ${codeql_db_path} && mkdir -p ${codeql_db_path}"
-    shell_command "codeql database create ${codeql_db_path} --codescanning-config ./.codeql -l cpp -s ./ \
--c '${build_script}${other_option}' -c '${build_script} --test${other_option}'"
-    local codeql_sarif="${codeql_db_path}/codeql.sarif"
-    shell_command "codeql database analyze ${codeql_db_path} --format sarif-latest -o ${codeql_sarif}"
+    local infer_eval_path="./${FOLDER[rep]}/sca/evaluate"
+    shell_command "rm -rf ${infer_eval_path} && mkdir -p ${infer_eval_path}"
+    local app_comp_db="${FOLDER[bld]}/${COMPILE_DB}" tst_comp_db="${FOLDER[tst]}/${FOLDER[bld]}/${COMPILE_DB}"
+    shell_command "infer run --results-dir ${infer_eval_path}/infer --project-root ./ \
+--inferconfig-path ./.inferconfig --compilation-database ./${app_comp_db} --compilation-database ./${tst_comp_db}"
     if echo "${input}" | grep -iq '^y'; then
         build_script="./${FOLDER[scr]}/$(basename "${0}")"
         shell_command "${build_script}${other_option} >/dev/null && ${build_script} --test${other_option} >/dev/null"
     fi
 
-    if [[ -f ${codeql_sarif} ]]; then
-        local sarif_sum="sarif summary ${codeql_sarif}" sarif_sum_output
+    local infer_sarif="${infer_eval_path}/infer/report.sarif"
+    if [[ -f ${infer_sarif} ]]; then
+        local sarif_sum="sarif summary ${infer_sarif}" sarif_sum_output
         sarif_sum_output=$(eval "${sarif_sum}")
         if {
             echo "${sarif_sum_output}" | grep -q 'error: 0'
@@ -1199,9 +1200,9 @@ EOF"
         else
             shell_command "! ${sarif_sum}"
         fi
-        shell_command "sarif html ${codeql_sarif} -o ${codeql_db_path}/index.html"
+        shell_command "sarif html ${infer_sarif} -o ${infer_eval_path}/index.html"
     else
-        die "Could not find sarif file in codeql database."
+        die "Could not find sarif file from infer report."
     fi
 }
 
@@ -1334,8 +1335,8 @@ function try_perform_multiple_choice_options()
             perform_format_option
         elif [[ ${choice} == "lint" ]]; then
             perform_lint_option
-        elif [[ ${choice} == "query" ]]; then
-            perform_query_option
+        elif [[ ${choice} == "evaluate" ]]; then
+            perform_evaluate_option
         elif [[ ${choice} == "doxygen" ]]; then
             perform_doxygen_option
         elif [[ ${choice} == "browser" ]]; then

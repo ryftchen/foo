@@ -428,7 +428,7 @@ retry:
 void View::Access::startup() const
 try
 {
-    waitOr(State::active, []() { throw std::runtime_error{"The " + View::name + " did not setup successfully ..."}; });
+    waitOr(State::active, []() { throw std::runtime_error{"The " + View::name + " did not set up successfully ..."}; });
     notifyVia([this]() { inst->isOngoing.store(true); });
     waitOr(
         State::established,
@@ -757,7 +757,12 @@ std::size_t View::buildResponse(const std::string& reqPlaintext, Buffer& respBuf
 View::OptionType View::extractOption(const std::string& reqPlaintext)
 {
     auto args = splitString(reqPlaintext);
-    const auto optName = args.empty() ? std::string{} : args.at(0);
+    if (args.empty())
+    {
+        return {};
+    }
+
+    const auto& optName = args.front();
     switch (utility::common::bkdrHash(optName.c_str()))
     {
         using utility::common::operator""_bkdrHash;

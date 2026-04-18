@@ -291,7 +291,7 @@ class Elements
 public:
     //! @brief Construct a new Elements object.
     //! @param es - list of elements
-    constexpr explicit Elements(const Es... es) : elems{es...} {}
+    constexpr explicit Elements(const Es&... es) : elems{es...} {}
 
     //! @brief Size of list of the elements.
     static constexpr std::size_t size{sizeof...(Es)};
@@ -440,19 +440,25 @@ template <typename... Es>
 template <typename Value, typename Str>
 constexpr const Value* Elements<Es...>::valuePtrOfName(const Str& name) const
 {
-    return accumulate(
-        nullptr,
-        [&name](const auto ret, const auto& elem)
+    const Value* ptr = nullptr;
+    std::apply(
+        [&name, &ptr](const auto&... elem) constexpr
         {
-            if constexpr (std::is_same_v<Value, decltype(elem.value)>)
-            {
-                return (elem.name == name) ? &elem.value : ret;
-            }
-            else
-            {
-                return ret;
-            }
-        });
+            (
+                [&name, &ptr, &elem]() constexpr
+                {
+                    if constexpr (std::is_same_v<Value, decltype(elem.value)>)
+                    {
+                        if (elem.name == name)
+                        {
+                            ptr = &elem.value;
+                        }
+                    }
+                }(),
+                ...);
+        },
+        elems);
+    return ptr;
 }
 
 template <typename... Es>
@@ -588,7 +594,7 @@ struct FieldList : public Elements<Fs...>
 {
     //! @brief Construct a new FieldList object.
     //! @param fs - list of fields
-    constexpr explicit FieldList(const Fs... fs) : Elements<Fs...>{fs...} {}
+    constexpr explicit FieldList(const Fs&... fs) : Elements<Fs...>{fs...} {}
 };
 
 //! @brief Type information.

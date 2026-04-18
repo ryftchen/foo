@@ -189,10 +189,9 @@ std::string ArgTrait::getInlineUsage() const
         out << '[';
     }
     out << longestName;
-    const auto var = metaVar.empty() ? "VAR" : metaVar;
     if (const auto numMax = argsNumRange.max; numMax > 0)
     {
-        out << ' ' << var;
+        out << ' ' << (metaVar.empty() ? "VAR" : metaVar);
         if (numMax > 1)
         {
             out << "...";

@@ -15,7 +15,6 @@
 .clang-tidy text eol=lf
 .cloc text eol=lf
 .cmake-format text eol=lf
-.codeql text eol=lf
 .cspell text eol=lf
 .dockerignore text eol=lf
 .editorconfig text eol=lf
@@ -24,6 +23,7 @@
 .gitignore text eol=lf
 .gitlint text eol=lf
 .gitmessage text eol=lf
+.inferconfig text eol=lf
 .mailmap text eol=lf
 .markdownlint text eol=lf
 .pre-commit text eol=lf

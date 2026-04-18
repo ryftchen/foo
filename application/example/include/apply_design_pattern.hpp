@@ -289,10 +289,28 @@ public:
         Client::init();
 
         const std::unique_ptr<Prototype> prototype1 = Client::make(0);
-        output() << "prototype: " << prototype1->type() << '\n';
+        output() << "prototype: ";
+        if (prototype1)
+        {
+            output() << prototype1->type();
+        }
+        else
+        {
+            output() << "<null>";
+        }
+        output() << '\n';
 
         const std::unique_ptr<Prototype> prototype2 = Client::make(1);
-        output() << "prototype: " << prototype2->type() << '\n';
+        output() << "prototype: ";
+        if (prototype2)
+        {
+            output() << prototype2->type();
+        }
+        else
+        {
+            output() << "<null>";
+        }
+        output() << '\n';
 
         Client::remove();
         return transferOutputs(output());

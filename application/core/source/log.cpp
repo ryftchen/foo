@@ -187,7 +187,7 @@ retry:
 void Log::Access::startup() const
 try
 {
-    waitOr(State::active, []() { throw std::runtime_error{"The " + Log::name + " did not setup successfully ..."}; });
+    waitOr(State::active, []() { throw std::runtime_error{"The " + Log::name + " did not set up successfully ..."}; });
     notifyVia([this]() { inst->isOngoing.store(true); });
     waitOr(
         State::established, []() { throw std::runtime_error{"The " + Log::name + " did not start successfully ..."}; });

@@ -13,6 +13,7 @@ repos:
           (?x)(
             .*\.json$
             |(^|/)\.cmake-format$
+            |(^|/)\.inferconfig$
           )
       - id: check-merge-conflict
       - id: check-shebang-scripts-are-executable
@@ -28,7 +29,6 @@ repos:
             .*\.ya?ml$
             |(^|/)\.clang-format$
             |(^|/)\.clang-tidy$
-            |(^|/)\.codeql$
             |(^|/)\.cspell$
             |(^|/)\.markdownlint$
             |(^|/)\.pre-commit$
@@ -48,6 +48,7 @@ repos:
           (?x)(
             .*\.json$
             |(^|/)\.cmake-format$
+            |(^|/)\.inferconfig$
           )
         args:
           - '--autofix'
