@@ -300,8 +300,6 @@ static void forcedConfigUpdateByDefault(const std::string_view filePath)
     configWriter.open(true);
     configWriter.lock();
     configWriter.stream() << configure::dumpDefaultConfig() << std::endl;
-    configWriter.unlock();
-    configWriter.close();
 }
 
 //! @brief Initialize the configuration.

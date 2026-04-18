@@ -155,12 +155,6 @@ std::vector<std::string> readFileLines(
             contents.emplace_back(std::move(temp));
         }
     }
-
-    if (lock)
-    {
-        reader.unlock();
-    }
-    reader.close();
     return contents;
 }
 
