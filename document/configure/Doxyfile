@@ -1,7 +1,7 @@
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = foo
 PROJECT_NUMBER         =
-PROJECT_BRIEF          = bar
+PROJECT_BRIEF          = 101
 PROJECT_LOGO           =
 OUTPUT_DIRECTORY       = ./document
 CREATE_SUBDIRS         = YES
