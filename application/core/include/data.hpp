@@ -8,7 +8,8 @@
 
 #ifndef _PRECOMPILED_HEADER
 #include <netinet/in.h>
-#include <string>
+#include <cstdint>
+#include <system_error>
 #include <vector>
 #else
 #include "application/pch/precompiled_header.hpp"
@@ -105,6 +106,35 @@ bool Packet::read(Data* const data)
     }
     return isEnd;
 }
+
+//! @brief Type-length-value scheme.
+namespace tlv
+{
+//! @brief Invalid shared memory id.
+inline constexpr int invalidShmId = -1;
+//! @brief Default information size.
+inline constexpr std::uint16_t defInfoSize = 256;
+
+//! @brief Value in TLV.
+struct TLVValue
+{
+    //! @brief Flag for stopping the connection.
+    bool stopTag{false};
+    //! @brief Information about the runtime library.
+    char libInfo[defInfoSize]{'\0'};
+    //! @brief Shared memory id of the bash outputs.
+    int bashShmId{invalidShmId};
+    //! @brief Shared memory id of the log contents.
+    int logShmId{invalidShmId};
+    //! @brief Shared memory id of the status reports.
+    int statusShmId{invalidShmId};
+    //! @brief Information about the current configuration.
+    char configInfo[defInfoSize * 2]{'\0'};
+};
+
+extern std::error_code encodeTLV(char* const buf, std::size_t& len, const TLVValue& val);
+extern std::error_code decodeTLV(char* const buf, const std::size_t len, TLVValue& val);
+} // namespace tlv
 
 extern void encryptMessage(char* const buffer, const std::size_t length);
 extern void decryptMessage(char* const buffer, const std::size_t length);

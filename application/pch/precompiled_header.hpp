@@ -37,6 +37,7 @@
 #include <cassert>
 #include <coroutine>
 #include <csignal>
+#include <cstdint>
 #include <cstring>
 #include <filesystem>
 #include <forward_list>
@@ -56,6 +57,7 @@
 #include <sstream>
 #include <string>
 #include <syncstream>
+#include <system_error>
 #include <vector>
 
 #endif
