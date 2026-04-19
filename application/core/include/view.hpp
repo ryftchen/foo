@@ -80,21 +80,6 @@ public:
         //! @param size - message length
         //! @return need to continue parsing or not
         bool onParsing(char* const bytes, const std::size_t size) const;
-        //! @brief Get the supported options.
-        //! @return supported options
-        [[nodiscard]] auto getSupportedOptions() const noexcept { return inst->supportedOptions; }
-        //! @brief Get the TCP server host address.
-        //! @return TCP server host address
-        [[nodiscard]] std::string getTCPHost() const noexcept { return inst->tcpHost; }
-        //! @brief Get the TCP server port number.
-        //! @return TCP server port number
-        [[nodiscard]] std::uint16_t getTCPPort() const noexcept { return inst->tcpPort; }
-        //! @brief Get the UDP server host address.
-        //! @return UDP server host address
-        [[nodiscard]] std::string getUDPHost() const noexcept { return inst->udpHost; }
-        //! @brief Get the UDP server port number.
-        //! @return UDP server port number
-        [[nodiscard]] std::uint16_t getUDPPort() const noexcept { return inst->udpPort; }
 
     private:
         //! @brief Instance to be accessed.
@@ -112,6 +97,32 @@ public:
         //! @param handling - handling if timeout
         void countdownIf(const std::function<bool()>& condition, const std::function<void()>& handling) const;
     };
+    //! @brief Alias for the map of option name and description.
+    using OptionMap = std::map<std::string, std::string>;
+    //! @brief Settings inspector. For the instance.
+    class Inspector
+    {
+    public:
+        //! @brief Get the supported options.
+        //! @return supported options
+        [[nodiscard]] OptionMap getSupportedOptions() const noexcept;
+        //! @brief Get the TCP server host address.
+        //! @return TCP server host address
+        [[nodiscard]] std::string getTCPHost() const noexcept;
+        //! @brief Get the TCP server port number.
+        //! @return TCP server port number
+        [[nodiscard]] std::uint16_t getTCPPort() const noexcept;
+        //! @brief Get the UDP server host address.
+        //! @return UDP server host address
+        [[nodiscard]] std::string getUDPHost() const noexcept;
+        //! @brief Get the UDP server port number.
+        //! @return UDP server port number
+        [[nodiscard]] std::uint16_t getUDPPort() const noexcept;
+
+    private:
+        //! @brief Instance to be accessed.
+        const std::shared_ptr<View> inst{getInstance()};
+    };
     //! @brief Completion barrier. For the instance.
     class Completion
     {
@@ -122,7 +133,7 @@ public:
         void notifyTaskDone() const;
 
     private:
-        //! @brief Instance to be synchronized.
+        //! @brief Instance to be accessed.
         const std::shared_ptr<View> inst{getInstance()};
     };
 
@@ -191,8 +202,6 @@ private:
     };
     //! @brief Alias for the option type.
     using OptionType = std::variant<OptBase, OptDepend, OptExecute, OptJournal, OptMonitor, OptProfile>;
-    //! @brief Alias for the map of option name and OptionAttr.
-    using OptionMap = std::map<std::string, std::string>;
     //! @brief Mapping table of all viewer options.
     const OptionMap supportedOptions{
         {OptDepend::name, OptDepend::description},
@@ -368,31 +377,31 @@ namespace info
 //! @return current supported viewer options
 inline auto currentSupportedOptions()
 {
-    return View::Controller().getSupportedOptions();
+    return View::Inspector().getSupportedOptions();
 }
 //! @brief Get the current TCP host address being used for viewing.
 //! @return current TCP host address being used for viewing
 inline std::string currentTCPHost()
 {
-    return View::Controller().getTCPHost();
+    return View::Inspector().getTCPHost();
 }
 //! @brief Get the current TCP port number being used for viewing.
 //! @return current TCP port number being used for viewing
 inline std::uint16_t currentTCPPort()
 {
-    return View::Controller().getTCPPort();
+    return View::Inspector().getTCPPort();
 }
 //! @brief Get the current UDP host address being used for viewing.
 //! @return current UDP host address being used for viewing
 inline std::string currentUDPHost()
 {
-    return View::Controller().getUDPHost();
+    return View::Inspector().getUDPHost();
 }
 //! @brief Get the current UDP port number being used for viewing.
 //! @return current UDP port number being used for viewing
 inline std::uint16_t currentUDPPort()
 {
-    return View::Controller().getUDPPort();
+    return View::Inspector().getUDPPort();
 }
 } // namespace info
 } // namespace view
