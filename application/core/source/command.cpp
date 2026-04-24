@@ -132,16 +132,6 @@ static action::Awaitable launchLifecycle()
     waitPoint.wait();
 }
 // NOLINTEND(readability-static-accessed-through-instance)
-
-//! @brief Enter the next phase of the coroutine of helpers.
-//! @param awaitable - awaitable instance
-static void enterNextPhase(action::Awaitable& awaitable)
-{
-    if (!awaitable.done())
-    {
-        awaitable.resume();
-    }
-}
 } // namespace help
 
 //! @brief Convert category enumeration to string.
@@ -162,14 +152,14 @@ Command& getInstance()
     return commander;
 }
 
-template <typename Key, typename Subject>
-void Notifier<Key, Subject>::attach(const Key key, std::shared_ptr<Operation> handler)
+template <typename Key, typename Inst>
+void Notifier<Key, Inst>::attach(const Key key, std::shared_ptr<Operation> handler)
 {
     handlers[key] = std::move(handler);
 }
 
-template <typename Key, typename Subject>
-void Notifier<Key, Subject>::notify(const Key key) const
+template <typename Key, typename Inst>
+void Notifier<Key, Inst>::notify(const Key key) const
 {
     if (handlers.contains(key))
     {
@@ -226,7 +216,7 @@ try
     isFaulty.store(false);
     isParsed.store(false);
     auto helpCtrl = help::launchLifecycle<log::Log, view::View>();
-    help::enterNextPhase(helpCtrl);
+    action::enterNextPhase(helpCtrl);
 
     if (argc > 1)
     {
@@ -240,7 +230,7 @@ try
         enterConsoleMode();
     }
 
-    help::enterNextPhase(helpCtrl);
+    action::enterNextPhase(helpCtrl);
     return !isFaulty.load();
 }
 catch (const std::exception& err)
@@ -304,7 +294,7 @@ void Command::setupSubCLI<reg_algo::ApplyAlgorithm>()
     using namespace reg_algo;
     using Intf = ExtraManager::Intf;
     using Attr = ExtraManager::Attr;
-    using action::name, action::alias, action::descr;
+    using action::info::name, action::info::alias, action::info::descr;
     constexpr std::string_view helpDescr = mappedDescr(Category::help);
     const std::string helpArg1 = shortPrefix + std::string{mappedAlias(Category::help)};
     const std::string helpArg2 = longPrefix + std::string{toString(Category::help)};
@@ -397,7 +387,7 @@ void Command::setupSubCLI<reg_dp::ApplyDesignPattern>()
     using namespace reg_dp;
     using Intf = ExtraManager::Intf;
     using Attr = ExtraManager::Attr;
-    using action::name, action::alias, action::descr;
+    using action::info::name, action::info::alias, action::info::descr;
     constexpr std::string_view helpDescr = mappedDescr(Category::help);
     const std::string helpArg1 = shortPrefix + std::string{mappedAlias(Category::help)};
     const std::string helpArg2 = longPrefix + std::string{toString(Category::help)};
@@ -467,7 +457,7 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
     using namespace reg_ds;
     using Intf = ExtraManager::Intf;
     using Attr = ExtraManager::Attr;
-    using action::name, action::alias, action::descr;
+    using action::info::name, action::info::alias, action::info::descr;
     constexpr std::string_view helpDescr = mappedDescr(Category::help);
     const std::string helpArg1 = shortPrefix + std::string{mappedAlias(Category::help)};
     const std::string helpArg2 = longPrefix + std::string{toString(Category::help)};
@@ -575,7 +565,7 @@ void Command::setupSubCLI<reg_num::ApplyNumeric>()
     using namespace reg_num;
     using Intf = ExtraManager::Intf;
     using Attr = ExtraManager::Attr;
-    using action::name, action::alias, action::descr;
+    using action::info::name, action::info::alias, action::info::descr;
     constexpr std::string_view helpDescr = mappedDescr(Category::help);
     const std::string helpArg1 = shortPrefix + std::string{mappedAlias(Category::help)};
     const std::string helpArg2 = longPrefix + std::string{toString(Category::help)};
@@ -838,7 +828,7 @@ void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::
                 LOG_WRN << err.what();
             }
         });
-    client->connect(view::info::currentTCPHost(), view::info::currentTCPPort());
+    client->connect(view::insight::currentTCPHost(), view::insight::currentTCPPort());
 }
 
 //! @brief Launch the UDP client for console mode.
@@ -863,7 +853,7 @@ void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::
             }
         });
     client->receive();
-    client->connect(view::info::currentUDPHost(), view::info::currentUDPPort());
+    client->connect(view::insight::currentUDPHost(), view::insight::currentUDPPort());
 }
 
 void Command::executeInConsole() const
@@ -1155,7 +1145,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<Sock>
                 });
         });
 
-    auto supportedOptions = view::info::currentSupportedOptions();
+    auto supportedOptions = view::insight::currentSupportedOptions();
     decltype(supportedOptions) validOptions{};
     for (auto iterator = supportedOptions.cbegin(); iterator != supportedOptions.cend();)
     {

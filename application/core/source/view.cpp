@@ -213,31 +213,6 @@ void View::Controller::countdownIf(const std::function<bool()>& condition, const
     }
 }
 
-View::OptionMap View::Inspector::getSupportedOptions() const noexcept
-{
-    return inst->supportedOptions;
-}
-
-std::string View::Inspector::getTCPHost() const noexcept
-{
-    return inst->tcpHost;
-}
-
-std::uint16_t View::Inspector::getTCPPort() const noexcept
-{
-    return inst->tcpPort;
-}
-
-std::string View::Inspector::getUDPHost() const noexcept
-{
-    return inst->udpHost;
-}
-
-std::uint16_t View::Inspector::getUDPPort() const noexcept
-{
-    return inst->udpPort;
-}
-
 void View::Completion::waitTaskDone() const
 {
     std::unique_lock<std::mutex> outputLock(inst->outputMtx);

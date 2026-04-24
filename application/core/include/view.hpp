@@ -97,27 +97,25 @@ public:
         //! @param handling - handling if timeout
         void countdownIf(const std::function<bool()>& condition, const std::function<void()>& handling) const;
     };
-    //! @brief Alias for the map of option name and description.
-    using OptionMap = std::map<std::string, std::string>;
     //! @brief Settings inspector. For the instance.
     class Inspector
     {
     public:
         //! @brief Get the supported options.
         //! @return supported options
-        [[nodiscard]] OptionMap getSupportedOptions() const noexcept;
+        [[nodiscard]] auto getSupportedOptions() const noexcept { return inst->supportedOptions; }
         //! @brief Get the TCP server host address.
         //! @return TCP server host address
-        [[nodiscard]] std::string getTCPHost() const noexcept;
+        [[nodiscard]] std::string getTCPHost() const noexcept { return inst->tcpHost; }
         //! @brief Get the TCP server port number.
         //! @return TCP server port number
-        [[nodiscard]] std::uint16_t getTCPPort() const noexcept;
+        [[nodiscard]] std::uint16_t getTCPPort() const noexcept { return inst->tcpPort; }
         //! @brief Get the UDP server host address.
         //! @return UDP server host address
-        [[nodiscard]] std::string getUDPHost() const noexcept;
+        [[nodiscard]] std::string getUDPHost() const noexcept { return inst->udpHost; }
         //! @brief Get the UDP server port number.
         //! @return UDP server port number
-        [[nodiscard]] std::uint16_t getUDPPort() const noexcept;
+        [[nodiscard]] std::uint16_t getUDPPort() const noexcept { return inst->udpPort; }
 
     private:
         //! @brief Instance to be accessed.
@@ -202,6 +200,8 @@ private:
     };
     //! @brief Alias for the option type.
     using OptionType = std::variant<OptBase, OptDepend, OptExecute, OptJournal, OptMonitor, OptProfile>;
+    //! @brief Alias for the map of option name and description.
+    using OptionMap = std::map<std::string, std::string>;
     //! @brief Mapping table of all viewer options.
     const OptionMap supportedOptions{
         {OptDepend::name, OptDepend::description},
@@ -370,8 +370,8 @@ protected:
     friend std::ostream& operator<<(std::ostream& os, const State state);
 };
 
-//! @brief Instance information, if enabled.
-namespace info
+//! @brief Instance insight, if enabled.
+namespace insight
 {
 //! @brief Get the current supported viewer options.
 //! @return current supported viewer options
@@ -403,6 +403,6 @@ inline std::uint16_t currentUDPPort()
 {
     return View::Inspector().getUDPPort();
 }
-} // namespace info
+} // namespace insight
 } // namespace view
 } // namespace application

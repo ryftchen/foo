@@ -40,4 +40,14 @@ bool Awaitable::done() const
 {
     return !handle || handle.done();
 }
+
+//! @brief Enter the next phase of the coroutine.
+//! @param awaitable - awaitable instance
+void enterNextPhase(action::Awaitable& awaitable)
+{
+    if (!awaitable.done())
+    {
+        awaitable.resume();
+    }
+}
 } // namespace application::action

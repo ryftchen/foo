@@ -135,13 +135,13 @@ private:
     //! @brief Parse argument helper for commander.
     utility::argument::Argument mainCLI{"foo", build::version()};
     //! @brief Parse argument helper to apply algorithm.
-    utility::argument::Argument subCLIAppAlgo{action::name<reg_algo::ApplyAlgorithm>(), reg_algo::version()};
+    utility::argument::Argument subCLIAppAlgo{action::info::name<reg_algo::ApplyAlgorithm>(), reg_algo::version()};
     //! @brief Parse argument helper to apply design pattern.
-    utility::argument::Argument subCLIAppDp{action::name<reg_dp::ApplyDesignPattern>(), reg_dp::version()};
+    utility::argument::Argument subCLIAppDp{action::info::name<reg_dp::ApplyDesignPattern>(), reg_dp::version()};
     //! @brief Parse argument helper to apply data structure.
-    utility::argument::Argument subCLIAppDs{action::name<reg_ds::ApplyDataStructure>(), reg_ds::version()};
+    utility::argument::Argument subCLIAppDs{action::info::name<reg_ds::ApplyDataStructure>(), reg_ds::version()};
     //! @brief Parse argument helper to apply numeric.
-    utility::argument::Argument subCLIAppNum{action::name<reg_num::ApplyNumeric>(), reg_num::version()};
+    utility::argument::Argument subCLIAppNum{action::info::name<reg_num::ApplyNumeric>(), reg_num::version()};
     //! @brief The short prefix for the option.
     const std::string shortPrefix{"-"};
     //! @brief The Long prefix for the option.
@@ -255,6 +255,9 @@ private:
         //! @brief Wrap interfaces to check for existing and reset extra choices.
         struct Intf
         {
+            //! @brief Construct a new Intf object.
+            //! @param presentCb - callback of checking
+            //! @param clearCb - callback of resetting
             Intf(std::function<bool()> presentCb, std::function<void()> clearCb) :
                 present{std::move(presentCb)}, clear{std::move(clearCb)}
             {
@@ -323,11 +326,9 @@ private:
             constexpr std::size_t magicNumber = 0x9E3779B9;
             constexpr std::size_t leftShift = 6;
             constexpr std::size_t rightShift = 2;
-            const std::size_t hash1 = std::hash<std::string>()(key.first);
-            const std::size_t hash2 = std::hash<std::string>()(key.second);
             std::size_t seed = 0;
-            seed ^= hash1 + magicNumber + (seed << leftShift) + (seed >> rightShift);
-            seed ^= hash2 + magicNumber + (seed << leftShift) + (seed >> rightShift);
+            seed ^= std::hash<std::string>()(key.first) + magicNumber + (seed << leftShift) + (seed >> rightShift);
+            seed ^= std::hash<std::string>()(key.second) + magicNumber + (seed << leftShift) + (seed >> rightShift);
             return seed;
         }
     };
