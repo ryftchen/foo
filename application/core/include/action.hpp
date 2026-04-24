@@ -427,6 +427,26 @@ consteval std::string_view descr()
 {
     return TypeInfo<MappedCLI>::attrs.find(REFLECTION_STR("descr")).value;
 }
+
+//! @brief Extract all choices in the sub-cli's category.
+//! @tparam SubCLI - type of sub-cli's category
+//! @return all choices
+template <typename SubCLI>
+constexpr std::vector<std::string> choice()
+{
+    constexpr auto refl = REFLECTION_STR("choice");
+    std::vector<std::string> choices{};
+    choices.reserve(TypeInfo<SubCLI>::fields.size);
+    TypeInfo<SubCLI>::fields.forEach(
+        [refl, &choices](const auto field)
+        {
+            static_assert(field.attrs.contains(refl) && (field.attrs.size == 1));
+            const auto attr = field.attrs.find(refl);
+            static_assert(attr.hasValue);
+            choices.emplace_back(attr.value);
+        });
+    return choices;
+}
 } // namespace info
 } // namespace action
 } // namespace application

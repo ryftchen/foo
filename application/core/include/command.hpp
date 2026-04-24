@@ -161,12 +161,12 @@ private:
     void initializeNativeCLI();
     //! @brief Initialize the parse argument helpers for extra.
     void initializeExtraCLI();
-    //! @brief Setup the main command line interface.
-    void setupMainCLI();
-    //! @brief Setup the sub-command line interface.
-    //! @tparam SubCLI - type of type of sub-cli
+    //! @brief Set up the main command line interface.
+    void mainCLISetup();
+    //! @brief Set up the sub-command line interface.
+    //! @tparam SubCLI - type of sub-cli
     template <typename SubCLI>
-    void setupSubCLI();
+    void subCLISetup();
     //! @brief Front-end handler for parsing command line arguments.
     //! @param argc - argument count
     //! @param argv - argument vector
@@ -203,11 +203,6 @@ private:
     //! @param cat - native category
     //! @return description
     static consteval std::string_view mappedDescr(const Category cat);
-    //! @brief Extract all choices in the sub-cli's category.
-    //! @tparam Cat - type of sub-cli's category
-    //! @return all choices
-    template <typename Cat>
-    static std::vector<std::string> extractChoices();
 
     //! @brief Manage tasks.
     class TaskManager

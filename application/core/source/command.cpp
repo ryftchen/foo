@@ -240,7 +240,7 @@ catch (const std::exception& err)
     return !isFaulty.load();
 }
 
-void Command::setupMainCLI()
+void Command::mainCLISetup()
 {
     using ArgsNumPattern = utility::argument::ArgsNumPattern;
     mainCLI
@@ -287,14 +287,14 @@ void Command::setupMainCLI()
 }
 
 // NOLINTBEGIN(google-build-using-namespace, readability-function-size)
-//! @brief Setup the sub-command line interface (algorithm module).
+//! @brief Set up the sub-command line interface (algorithm module).
 template <>
-void Command::setupSubCLI<reg_algo::ApplyAlgorithm>()
+void Command::subCLISetup<reg_algo::ApplyAlgorithm>()
 {
     using namespace reg_algo;
     using Intf = ExtraManager::Intf;
     using Attr = ExtraManager::Attr;
-    using action::info::name, action::info::alias, action::info::descr;
+    using action::info::name, action::info::alias, action::info::descr, action::info::choice;
     constexpr std::string_view helpDescr = mappedDescr(Category::help);
     const std::string helpArg1 = shortPrefix + std::string{mappedAlias(Category::help)};
     const std::string helpArg2 = longPrefix + std::string{toString(Category::help)};
@@ -305,7 +305,7 @@ void Command::setupSubCLI<reg_algo::ApplyAlgorithm>()
     subCLIAppAlgo.addDescription(descr<ApplyAlgorithm>());
     subCLIAppAlgo.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
 
-    candidates = extractChoices<MatchMethod>();
+    candidates = choice<MatchMethod>();
     registry.emplace(name<MatchMethod>(), Attr{candidates, MatchMethod{}});
     subCLIAppAlgo
         .addArgument(shortPrefix + std::string{alias<MatchMethod>()}, longPrefix + std::string{name<MatchMethod>()})
@@ -319,7 +319,7 @@ void Command::setupSubCLI<reg_algo::ApplyAlgorithm>()
     applyingForwarder.registerHandler([](const action::RunCandidates<MatchMethod>& msg)
                                       { runCandidates<MatchMethod>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyAlgorithm>(), match::version()}, name<MatchMethod>());
-    candidates = extractChoices<NotationMethod>();
+    candidates = choice<NotationMethod>();
     registry.emplace(name<NotationMethod>(), Attr{candidates, NotationMethod{}});
     subCLIAppAlgo
         .addArgument(
@@ -334,7 +334,7 @@ void Command::setupSubCLI<reg_algo::ApplyAlgorithm>()
     applyingForwarder.registerHandler([](const action::RunCandidates<NotationMethod>& msg)
                                       { runCandidates<NotationMethod>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyAlgorithm>(), notation::version()}, name<NotationMethod>());
-    candidates = extractChoices<OptimalMethod>();
+    candidates = choice<OptimalMethod>();
     registry.emplace(name<OptimalMethod>(), Attr{candidates, OptimalMethod{}});
     subCLIAppAlgo
         .addArgument(shortPrefix + std::string{alias<OptimalMethod>()}, longPrefix + std::string{name<OptimalMethod>()})
@@ -348,7 +348,7 @@ void Command::setupSubCLI<reg_algo::ApplyAlgorithm>()
     applyingForwarder.registerHandler([](const action::RunCandidates<OptimalMethod>& msg)
                                       { runCandidates<OptimalMethod>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyAlgorithm>(), optimal::version()}, name<OptimalMethod>());
-    candidates = extractChoices<SearchMethod>();
+    candidates = choice<SearchMethod>();
     registry.emplace(name<SearchMethod>(), Attr{candidates, SearchMethod{}});
     subCLIAppAlgo
         .addArgument(shortPrefix + std::string{alias<SearchMethod>()}, longPrefix + std::string{name<SearchMethod>()})
@@ -362,7 +362,7 @@ void Command::setupSubCLI<reg_algo::ApplyAlgorithm>()
     applyingForwarder.registerHandler([](const action::RunCandidates<SearchMethod>& msg)
                                       { runCandidates<SearchMethod>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyAlgorithm>(), search::version()}, name<SearchMethod>());
-    candidates = extractChoices<SortMethod>();
+    candidates = choice<SortMethod>();
     registry.emplace(name<SortMethod>(), Attr{candidates, SortMethod{}});
     subCLIAppAlgo
         .addArgument(shortPrefix + std::string{alias<SortMethod>()}, longPrefix + std::string{name<SortMethod>()})
@@ -380,14 +380,14 @@ void Command::setupSubCLI<reg_algo::ApplyAlgorithm>()
     mainCLI.addSubParser(subCLIAppAlgo);
 }
 
-//! @brief Setup the sub-command line interface (design pattern module).
+//! @brief Set up the sub-command line interface (design pattern module).
 template <>
-void Command::setupSubCLI<reg_dp::ApplyDesignPattern>()
+void Command::subCLISetup<reg_dp::ApplyDesignPattern>()
 {
     using namespace reg_dp;
     using Intf = ExtraManager::Intf;
     using Attr = ExtraManager::Attr;
-    using action::info::name, action::info::alias, action::info::descr;
+    using action::info::name, action::info::alias, action::info::descr, action::info::choice;
     constexpr std::string_view helpDescr = mappedDescr(Category::help);
     const std::string helpArg1 = shortPrefix + std::string{mappedAlias(Category::help)};
     const std::string helpArg2 = longPrefix + std::string{toString(Category::help)};
@@ -398,7 +398,7 @@ void Command::setupSubCLI<reg_dp::ApplyDesignPattern>()
     subCLIAppDp.addDescription(descr<ApplyDesignPattern>());
     subCLIAppDp.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
 
-    candidates = extractChoices<BehavioralInstance>();
+    candidates = choice<BehavioralInstance>();
     registry.emplace(name<BehavioralInstance>(), Attr{candidates, BehavioralInstance{}});
     subCLIAppDp
         .addArgument(
@@ -414,7 +414,7 @@ void Command::setupSubCLI<reg_dp::ApplyDesignPattern>()
     applyingForwarder.registerHandler([](const action::RunCandidates<BehavioralInstance>& msg)
                                       { runCandidates<BehavioralInstance>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyDesignPattern>(), behavioral::version()}, name<BehavioralInstance>());
-    candidates = extractChoices<CreationalInstance>();
+    candidates = choice<CreationalInstance>();
     registry.emplace(name<CreationalInstance>(), Attr{candidates, CreationalInstance{}});
     subCLIAppDp
         .addArgument(
@@ -430,7 +430,7 @@ void Command::setupSubCLI<reg_dp::ApplyDesignPattern>()
     applyingForwarder.registerHandler([](const action::RunCandidates<CreationalInstance>& msg)
                                       { runCandidates<CreationalInstance>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyDesignPattern>(), creational::version()}, name<CreationalInstance>());
-    candidates = extractChoices<StructuralInstance>();
+    candidates = choice<StructuralInstance>();
     registry.emplace(name<StructuralInstance>(), Attr{candidates, StructuralInstance{}});
     subCLIAppDp
         .addArgument(
@@ -450,14 +450,14 @@ void Command::setupSubCLI<reg_dp::ApplyDesignPattern>()
     mainCLI.addSubParser(subCLIAppDp);
 }
 
-//! @brief Setup the sub-command line interface (data structure module).
+//! @brief Set up the sub-command line interface (data structure module).
 template <>
-void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
+void Command::subCLISetup<reg_ds::ApplyDataStructure>()
 {
     using namespace reg_ds;
     using Intf = ExtraManager::Intf;
     using Attr = ExtraManager::Attr;
-    using action::info::name, action::info::alias, action::info::descr;
+    using action::info::name, action::info::alias, action::info::descr, action::info::choice;
     constexpr std::string_view helpDescr = mappedDescr(Category::help);
     const std::string helpArg1 = shortPrefix + std::string{mappedAlias(Category::help)};
     const std::string helpArg2 = longPrefix + std::string{toString(Category::help)};
@@ -468,7 +468,7 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
     subCLIAppDs.addDescription(descr<ApplyDataStructure>());
     subCLIAppDs.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
 
-    candidates = extractChoices<CacheInstance>();
+    candidates = choice<CacheInstance>();
     registry.emplace(name<CacheInstance>(), Attr{candidates, CacheInstance{}});
     subCLIAppDs
         .addArgument(shortPrefix + std::string{alias<CacheInstance>()}, longPrefix + std::string{name<CacheInstance>()})
@@ -482,7 +482,7 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
     applyingForwarder.registerHandler([](const action::RunCandidates<CacheInstance>& msg)
                                       { runCandidates<CacheInstance>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyDataStructure>(), cache::version()}, name<CacheInstance>());
-    candidates = extractChoices<FilterInstance>();
+    candidates = choice<FilterInstance>();
     registry.emplace(name<FilterInstance>(), Attr{candidates, FilterInstance{}});
     subCLIAppDs
         .addArgument(
@@ -497,7 +497,7 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
     applyingForwarder.registerHandler([](const action::RunCandidates<FilterInstance>& msg)
                                       { runCandidates<FilterInstance>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyDataStructure>(), filter::version()}, name<FilterInstance>());
-    candidates = extractChoices<GraphInstance>();
+    candidates = choice<GraphInstance>();
     registry.emplace(name<GraphInstance>(), Attr{candidates, GraphInstance{}});
     subCLIAppDs
         .addArgument(shortPrefix + std::string{alias<GraphInstance>()}, longPrefix + std::string{name<GraphInstance>()})
@@ -511,7 +511,7 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
     applyingForwarder.registerHandler([](const action::RunCandidates<GraphInstance>& msg)
                                       { runCandidates<GraphInstance>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyDataStructure>(), graph::version()}, name<GraphInstance>());
-    candidates = extractChoices<HeapInstance>();
+    candidates = choice<HeapInstance>();
     registry.emplace(name<HeapInstance>(), Attr{candidates, HeapInstance{}});
     subCLIAppDs
         .addArgument(shortPrefix + std::string{alias<HeapInstance>()}, longPrefix + std::string{name<HeapInstance>()})
@@ -525,7 +525,7 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
     applyingForwarder.registerHandler([](const action::RunCandidates<HeapInstance>& msg)
                                       { runCandidates<HeapInstance>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyDataStructure>(), heap::version()}, name<HeapInstance>());
-    candidates = extractChoices<LinearInstance>();
+    candidates = choice<LinearInstance>();
     registry.emplace(name<LinearInstance>(), Attr{candidates, LinearInstance{}});
     subCLIAppDs
         .addArgument(
@@ -540,7 +540,7 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
     applyingForwarder.registerHandler([](const action::RunCandidates<LinearInstance>& msg)
                                       { runCandidates<LinearInstance>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyDataStructure>(), linear::version()}, name<LinearInstance>());
-    candidates = extractChoices<TreeInstance>();
+    candidates = choice<TreeInstance>();
     registry.emplace(name<TreeInstance>(), Attr{candidates, TreeInstance{}});
     subCLIAppDs
         .addArgument(shortPrefix + std::string{alias<TreeInstance>()}, longPrefix + std::string{name<TreeInstance>()})
@@ -558,14 +558,14 @@ void Command::setupSubCLI<reg_ds::ApplyDataStructure>()
     mainCLI.addSubParser(subCLIAppDs);
 }
 
-//! @brief Setup the sub-command line interface (numeric module).
+//! @brief Set up the sub-command line interface (numeric module).
 template <>
-void Command::setupSubCLI<reg_num::ApplyNumeric>()
+void Command::subCLISetup<reg_num::ApplyNumeric>()
 {
     using namespace reg_num;
     using Intf = ExtraManager::Intf;
     using Attr = ExtraManager::Attr;
-    using action::info::name, action::info::alias, action::info::descr;
+    using action::info::name, action::info::alias, action::info::descr, action::info::choice;
     constexpr std::string_view helpDescr = mappedDescr(Category::help);
     const std::string helpArg1 = shortPrefix + std::string{mappedAlias(Category::help)};
     const std::string helpArg2 = longPrefix + std::string{toString(Category::help)};
@@ -576,7 +576,7 @@ void Command::setupSubCLI<reg_num::ApplyNumeric>()
     subCLIAppNum.addDescription(descr<ApplyNumeric>());
     subCLIAppNum.addArgument(helpArg1, helpArg2).argsNum(0).implicitValue(true).help(helpDescr);
 
-    candidates = extractChoices<ArithmeticMethod>();
+    candidates = choice<ArithmeticMethod>();
     registry.emplace(name<ArithmeticMethod>(), Attr{candidates, ArithmeticMethod{}});
     subCLIAppNum
         .addArgument(
@@ -591,7 +591,7 @@ void Command::setupSubCLI<reg_num::ApplyNumeric>()
     applyingForwarder.registerHandler([](const action::RunCandidates<ArithmeticMethod>& msg)
                                       { runCandidates<ArithmeticMethod>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyNumeric>(), arithmetic::version()}, name<ArithmeticMethod>());
-    candidates = extractChoices<DivisorMethod>();
+    candidates = choice<DivisorMethod>();
     registry.emplace(name<DivisorMethod>(), Attr{candidates, DivisorMethod{}});
     subCLIAppNum
         .addArgument(shortPrefix + std::string{alias<DivisorMethod>()}, longPrefix + std::string{name<DivisorMethod>()})
@@ -605,7 +605,7 @@ void Command::setupSubCLI<reg_num::ApplyNumeric>()
     applyingForwarder.registerHandler([](const action::RunCandidates<DivisorMethod>& msg)
                                       { runCandidates<DivisorMethod>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyNumeric>(), divisor::version()}, name<DivisorMethod>());
-    candidates = extractChoices<IntegralMethod>();
+    candidates = choice<IntegralMethod>();
     registry.emplace(name<IntegralMethod>(), Attr{candidates, IntegralMethod{}});
     subCLIAppNum
         .addArgument(
@@ -620,7 +620,7 @@ void Command::setupSubCLI<reg_num::ApplyNumeric>()
     applyingForwarder.registerHandler([](const action::RunCandidates<IntegralMethod>& msg)
                                       { runCandidates<IntegralMethod>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{name<ApplyNumeric>(), integral::version()}, name<IntegralMethod>());
-    candidates = extractChoices<PrimeMethod>();
+    candidates = choice<PrimeMethod>();
     registry.emplace(name<PrimeMethod>(), Attr{candidates, PrimeMethod{}});
     subCLIAppNum
         .addArgument(shortPrefix + std::string{alias<PrimeMethod>()}, longPrefix + std::string{name<PrimeMethod>()})
@@ -641,15 +641,15 @@ void Command::setupSubCLI<reg_num::ApplyNumeric>()
 
 void Command::initializeNativeCLI()
 {
-    setupMainCLI();
+    mainCLISetup();
 }
 
 void Command::initializeExtraCLI()
 {
-    setupSubCLI<reg_algo::ApplyAlgorithm>();
-    setupSubCLI<reg_dp::ApplyDesignPattern>();
-    setupSubCLI<reg_ds::ApplyDataStructure>();
-    setupSubCLI<reg_num::ApplyNumeric>();
+    subCLISetup<reg_algo::ApplyAlgorithm>();
+    subCLISetup<reg_dp::ApplyDesignPattern>();
+    subCLISetup<reg_ds::ApplyDataStructure>();
+    subCLISetup<reg_num::ApplyNumeric>();
 }
 
 void Command::frontEndHandler(const int argc, const char* const argv[])
@@ -788,23 +788,6 @@ void Command::checkExcessArgs()
         clearSelected();
         throw std::runtime_error{"Excessive arguments were found."};
     }
-}
-
-template <typename Cat>
-std::vector<std::string> Command::extractChoices()
-{
-    constexpr auto refl = REFLECTION_STR("choice");
-    std::vector<std::string> choices{};
-    choices.reserve(utility::reflection::TypeInfo<Cat>::fields.size);
-    utility::reflection::TypeInfo<Cat>::fields.forEach(
-        [refl, &choices](const auto field)
-        {
-            static_assert(field.attrs.contains(refl) && (field.attrs.size == 1));
-            const auto attr = field.attrs.find(refl);
-            static_assert(attr.hasValue);
-            choices.emplace_back(attr.value);
-        });
-    return choices;
 }
 
 //! @brief Launch the TCP client for console mode.
