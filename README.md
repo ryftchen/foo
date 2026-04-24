@@ -1,8 +1,8 @@
 # foo
 
-[![pipeline](https://img.shields.io/github/actions/workflow/status/ryftchen/foo/pipeline.yaml?branch=master&event=push&logo=github&logoColor=white&label=pipeline)](https://github.com/ryftchen/foo/actions/workflows/pipeline.yaml?query=branch%3Amaster+event%3Apush) [![document](https://img.shields.io/website?url=https%3A%2F%2Fryftchen.github.io%2Ffoo%2F&up_message=available&down_message=unavailable&logo=github&logoColor=white&label=document)](https://ryftchen.github.io/foo/)
+[![pipeline](https://img.shields.io/github/actions/workflow/status/ryftchen/foo/pipeline.yaml?branch=master&logo=github&logoColor=white&label=pipeline)](https://github.com/ryftchen/foo/actions/workflows/pipeline.yaml?query=branch%3Amaster) [![document](https://img.shields.io/website?url=https%3A%2F%2Fryftchen.github.io%2Ffoo%2F&up_message=available&down_message=unavailable&logo=github&logoColor=white&label=document)](https://ryftchen.github.io/foo/)
 
-The **[foo](https://github.com/ryftchen/foo)** repository is a personal roadmap for learning programming, serving as an exploratory project. Its main purpose is to implement and refine fundamental components using C++, along with related engineering practices. It also includes detailed comments for easier review and documentation. The goal is to develop good programming habits while improving coding skills through best practices.
+The **[foo](https://github.com/ryftchen/foo)** repository is a personal roadmap for learning programming, serving as an exploratory sandbox. Its main purpose is to implement and refine fundamental components using C++, along with related engineering practices. It also includes detailed comments for easier review and documentation. The goal is to develop good programming habits while improving coding skills through best practices.
 
 ---
 
@@ -12,7 +12,7 @@ The **[foo](https://github.com/ryftchen/foo)** repository is a personal roadmap 
 
 ## Features
 
-- Hands-on examples under [application](https://github.com/ryftchen/foo/tree/master/application), covering:
+- Hands-on examples in the [application](https://github.com/ryftchen/foo/tree/master/application) section, covering:
   - [algorithm](https://github.com/ryftchen/foo/tree/master/algorithm)
   - [design pattern](https://github.com/ryftchen/foo/tree/master/design_pattern)
   - [data structure](https://github.com/ryftchen/foo/tree/master/data_structure)
