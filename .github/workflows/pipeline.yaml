@@ -9,8 +9,6 @@ name: Pipeline
         description: Pipeline
         default: Retrigger
         required: false
-  schedule:
-    - cron: 0 0 * * MON
 env:
   FOO_ENV: foo_dev
 jobs:
@@ -197,7 +195,6 @@ jobs:
           ./script/run.py --analyze
   deploy_pages:
     name: Deploy pages
-    if: (github.event_name == 'push') || (github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     container:
       image: ryftchen/foo:latest
