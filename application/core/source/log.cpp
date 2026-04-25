@@ -498,6 +498,7 @@ void Log::stopLogging()
 void Log::doToggle()
 {
     utility::benchmark::escape(this);
+    utility::benchmark::clobber();
 }
 
 void Log::doRollback()
