@@ -140,15 +140,22 @@ extern bool present();
 extern void clear();
 } // namespace manage
 
+//! @brief Constraint for numeric-registering.
+//! @tparam Meth - type of method
+template <typename Meth>
+concept Registrant = std::is_same_v<Meth, ArithmeticMethod> || std::is_same_v<Meth, DivisorMethod>
+    || std::is_same_v<Meth, IntegralMethod> || std::is_same_v<Meth, PrimeMethod>;
 //! @brief Set choice.
 //! @tparam Meth - type of target method
 //! @param choice - target choice
 template <typename Meth>
+requires Registrant<Meth>
 void setChoice(const std::string& choice);
 //! @brief Run candidates.
 //! @tparam Meth - type of target method
 //! @param candidates - container for the candidate target choices
 template <typename Meth>
+requires Registrant<Meth>
 void runCandidates(const std::vector<std::string>& candidates);
 
 //! @brief Register arithmetic.

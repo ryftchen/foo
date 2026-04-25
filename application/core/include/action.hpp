@@ -357,21 +357,19 @@ template <typename UDT>
 using TypeInfo = utility::reflection::TypeInfo<UDT>;
 
 //! @brief Get the name field directly for sub-cli related registrations.
-//! @tparam MappedCLI - type of sub-cli or sub-cli's category
+//! @tparam Mapped - type of sub-cli or sub-cli's category
 //! @return name field
-template <typename MappedCLI>
+template <typename Mapped>
 consteval std::string_view name()
 {
-    return TypeInfo<MappedCLI>::name;
+    return TypeInfo<Mapped>::name;
 }
 
 //! @brief Get the alias attribute directly for sub-cli related registrations.
 //! @tparam Meth - type of sub-cli's category
 //! @return alias attribute
 template <typename Meth>
-requires std::is_same_v<Meth, reg_algo::MatchMethod> || std::is_same_v<Meth, reg_algo::NotationMethod>
-    || std::is_same_v<Meth, reg_algo::OptimalMethod> || std::is_same_v<Meth, reg_algo::SearchMethod>
-    || std::is_same_v<Meth, reg_algo::SortMethod>
+requires reg_algo::Registrant<Meth>
 consteval std::string_view alias()
 {
     return TypeInfo<reg_algo::ApplyAlgorithm>::fields.find(REFLECTION_STR(TypeInfo<Meth>::name))
@@ -383,8 +381,7 @@ consteval std::string_view alias()
 //! @tparam Inst - type of sub-cli's category
 //! @return alias attribute
 template <typename Inst>
-requires std::is_same_v<Inst, reg_dp::BehavioralInstance> || std::is_same_v<Inst, reg_dp::CreationalInstance>
-    || std::is_same_v<Inst, reg_dp::StructuralInstance>
+requires reg_dp::Registrant<Inst>
 consteval std::string_view alias()
 {
     return TypeInfo<reg_dp::ApplyDesignPattern>::fields.find(REFLECTION_STR(TypeInfo<Inst>::name))
@@ -396,9 +393,7 @@ consteval std::string_view alias()
 //! @tparam Inst - type of sub-cli's category
 //! @return alias attribute
 template <typename Inst>
-requires std::is_same_v<Inst, reg_ds::CacheInstance> || std::is_same_v<Inst, reg_ds::FilterInstance>
-    || std::is_same_v<Inst, reg_ds::GraphInstance> || std::is_same_v<Inst, reg_ds::HeapInstance>
-    || std::is_same_v<Inst, reg_ds::LinearInstance> || std::is_same_v<Inst, reg_ds::TreeInstance>
+requires reg_ds::Registrant<Inst>
 consteval std::string_view alias()
 {
     return TypeInfo<reg_ds::ApplyDataStructure>::fields.find(REFLECTION_STR(TypeInfo<Inst>::name))
@@ -410,8 +405,7 @@ consteval std::string_view alias()
 //! @tparam Meth - type of sub-cli's category
 //! @return alias attribute
 template <typename Meth>
-requires std::is_same_v<Meth, reg_num::ArithmeticMethod> || std::is_same_v<Meth, reg_num::DivisorMethod>
-    || std::is_same_v<Meth, reg_num::IntegralMethod> || std::is_same_v<Meth, reg_num::PrimeMethod>
+requires reg_num::Registrant<Meth>
 consteval std::string_view alias()
 {
     return TypeInfo<reg_num::ApplyNumeric>::fields.find(REFLECTION_STR(TypeInfo<Meth>::name))
@@ -420,24 +414,24 @@ consteval std::string_view alias()
 }
 
 //! @brief Get the description attribute directly for sub-cli related registrations.
-//! @tparam MappedCLI - type of sub-cli or sub-cli's category
+//! @tparam Mapped - type of sub-cli or sub-cli's category
 //! @return description attribute
-template <typename MappedCLI>
+template <typename Mapped>
 consteval std::string_view descr()
 {
-    return TypeInfo<MappedCLI>::attrs.find(REFLECTION_STR("descr")).value;
+    return TypeInfo<Mapped>::attrs.find(REFLECTION_STR("descr")).value;
 }
 
 //! @brief Extract all choices in the sub-cli's category.
-//! @tparam SubCLI - type of sub-cli's category
+//! @tparam Cat - type of sub-cli's category
 //! @return all choices
-template <typename SubCLI>
+template <typename Cat>
 constexpr std::vector<std::string> choice()
 {
     constexpr auto refl = REFLECTION_STR("choice");
     std::vector<std::string> choices{};
-    choices.reserve(TypeInfo<SubCLI>::fields.size);
-    TypeInfo<SubCLI>::fields.forEach(
+    choices.reserve(TypeInfo<Cat>::fields.size);
+    TypeInfo<Cat>::fields.forEach(
         [refl, &choices](const auto field)
         {
             static_assert(field.attrs.contains(refl) && (field.attrs.size == 1));

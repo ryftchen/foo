@@ -144,15 +144,22 @@ extern bool present();
 extern void clear();
 } // namespace manage
 
+//! @brief Constraint for design-pattern-registering.
+//! @tparam Inst - type of instance
+template <typename Inst>
+concept Registrant = std::is_same_v<Inst, BehavioralInstance> || std::is_same_v<Inst, CreationalInstance>
+    || std::is_same_v<Inst, StructuralInstance>;
 //! @brief Set choice.
 //! @tparam Inst - type of target instance
 //! @param choice - target choice
 template <typename Inst>
+requires Registrant<Inst>
 void setChoice(const std::string& choice);
 //! @brief Run candidates.
 //! @tparam Inst - type of target instance
 //! @param candidates - container for the candidate target choices
 template <typename Inst>
+requires Registrant<Inst>
 void runCandidates(const std::vector<std::string>& candidates);
 
 //! @brief Register behavioral.

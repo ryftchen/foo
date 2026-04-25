@@ -178,15 +178,23 @@ extern bool present();
 extern void clear();
 } // namespace manage
 
+//! @brief Constraint for data-structure-registering.
+//! @tparam Inst - type of instance
+template <typename Inst>
+concept Registrant =
+    std::is_same_v<Inst, CacheInstance> || std::is_same_v<Inst, FilterInstance> || std::is_same_v<Inst, GraphInstance>
+    || std::is_same_v<Inst, HeapInstance> || std::is_same_v<Inst, LinearInstance> || std::is_same_v<Inst, TreeInstance>;
 //! @brief Set choice.
 //! @tparam Inst - type of target instance
 //! @param choice - target choice
 template <typename Inst>
+requires Registrant<Inst>
 void setChoice(const std::string& choice);
 //! @brief Run candidates.
 //! @tparam Inst - type of target instance
 //! @param candidates - container for the candidate target choices
 template <typename Inst>
+requires Registrant<Inst>
 void runCandidates(const std::vector<std::string>& candidates);
 
 //! @brief Register cache.

@@ -182,15 +182,22 @@ extern bool present();
 extern void clear();
 } // namespace manage
 
+//! @brief Constraint for algorithm-registering.
+//! @tparam Meth - type of method
+template <typename Meth>
+concept Registrant = std::is_same_v<Meth, MatchMethod> || std::is_same_v<Meth, NotationMethod>
+    || std::is_same_v<Meth, OptimalMethod> || std::is_same_v<Meth, SearchMethod> || std::is_same_v<Meth, SortMethod>;
 //! @brief Set choice.
 //! @tparam Meth - type of target method
 //! @param choice - target choice
 template <typename Meth>
+requires Registrant<Meth>
 void setChoice(const std::string& choice);
 //! @brief Run candidates.
 //! @tparam Meth - type of target method
 //! @param candidates - container for the candidate target choices
 template <typename Meth>
+requires Registrant<Meth>
 void runCandidates(const std::vector<std::string>& candidates);
 
 //! @brief Register match.
