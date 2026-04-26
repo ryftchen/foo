@@ -548,6 +548,22 @@ const char* const version = data_structure::heap::version();
 static constexpr std::string_view separator = ", ";
 //! @brief Alias for the key.
 using Key = std::int16_t;
+//! @brief The operator (<<) overloading of the pointer of node key.
+//! @param os - output stream object
+//! @param key - pointer of node key
+//! @return reference of the output stream object
+static std::ostream& operator<<(std::ostream& os, void* const key)
+{
+    if (key)
+    {
+        os << *static_cast<Key*>(key);
+    }
+    else
+    {
+        os << "<null>";
+    }
+    return os;
+}
 //! @brief Compare function for the key.
 //! @param a - first key
 //! @param b - second key
@@ -617,18 +633,6 @@ public:
         std::ostringstream process{};
         const auto opInTraversal = [&process](const void* const key)
         { process << *static_cast<const Key*>(key) << " ... "; };
-        const auto appendNullable = [&process](const void* const key)
-        {
-            if (key)
-            {
-                process << *static_cast<const Key*>(key);
-            }
-            else
-            {
-                process << "<null>";
-            }
-            process << '\n';
-        };
 
         leftist::LeftistHeap* const heapA = leftist::create(compareKey);
         if (!heapA)
@@ -670,8 +674,7 @@ public:
         process << "\nA post-order traversal: ";
         traverseA.postOrder(opInTraversal);
 
-        process << "\nA minimum: ";
-        appendNullable(leftist::getMinimum(heapA));
+        process << "\nA minimum: " << leftist::getMinimum(heapA) << '\n';
         process << "A remove\n";
         leftist::remove(heapA);
         process << "A all details:\n" << Printer(heapA->root);
@@ -692,18 +695,6 @@ public:
         std::ostringstream process{};
         const auto opInTraversal = [&process](const void* const key)
         { process << *static_cast<const Key*>(key) << " ... "; };
-        const auto appendNullable = [&process](const void* const key)
-        {
-            if (key)
-            {
-                process << *static_cast<const Key*>(key);
-            }
-            else
-            {
-                process << "<null>";
-            }
-            process << '\n';
-        };
 
         skew::SkewHeap* const heapA = skew::create(compareKey);
         if (!heapA)
@@ -745,8 +736,7 @@ public:
         process << "\nA post-order traversal: ";
         traverseA.postOrder(opInTraversal);
 
-        process << "\nA minimum: ";
-        appendNullable(skew::getMinimum(heapA));
+        process << "\nA minimum: " << skew::getMinimum(heapA) << '\n';
         process << "A remove\n";
         skew::remove(heapA);
         process << "A all details:\n" << Printer(heapA->root);
@@ -766,6 +756,22 @@ const char* const version = data_structure::linear::version();
 
 //! @brief Alias for the value.
 using Value = std::int16_t;
+//! @brief The operator (<<) overloading of the pointer of node value.
+//! @param os - output stream object
+//! @param value - pointer of node value
+//! @return reference of the output stream object
+static std::ostream& operator<<(std::ostream& os, void* const value)
+{
+    if (value)
+    {
+        os << *static_cast<Value*>(value);
+    }
+    else
+    {
+        os << "<null>";
+    }
+    return os;
+}
 
 //! @brief Showcase for linear instances.
 class Showcase
@@ -780,18 +786,6 @@ public:
         using Printer = dll::Printer<Value>;
         constexpr std::array<Value, 4> values = {'a', 'b', 'c', 'd'};
         std::ostringstream process{};
-        const auto appendNullable = [&process](const void* const value)
-        {
-            if (value)
-            {
-                process << *static_cast<const Value*>(value);
-            }
-            else
-            {
-                process << "<null>";
-            }
-            process << '\n';
-        };
 
         dll::DLL linear{};
         if (!dll::create(&linear))
@@ -812,10 +806,8 @@ public:
 
         process << "insert first " << values[0] << ": " << dll::insertFirst(linear, values.data()) << '\n';
         process << "insert last " << values[3] << ": " << dll::insertLast(linear, &values[3]) << '\n';
-        process << "get first: ";
-        appendNullable(dll::getFirst(linear));
-        process << "get last: ";
-        appendNullable(dll::getLast(linear));
+        process << "get first: " << dll::getFirst(linear) << '\n';
+        process << "get last: " << dll::getLast(linear) << '\n';
         process << "remove first: " << dll::removeFirst(linear) << '\n';
         process << "remove last: " << dll::removeLast(linear) << '\n';
 
@@ -834,18 +826,6 @@ public:
         using Printer = stack::Printer<Value>;
         constexpr std::array<Value, 4> values = {'a', 'b', 'c', 'd'};
         std::ostringstream process{};
-        const auto appendNullable = [&process](const void* const value)
-        {
-            if (value)
-            {
-                process << *static_cast<const Value*>(value);
-            }
-            else
-            {
-                process << "<null>";
-            }
-            process << '\n';
-        };
 
         stack::Stack linear{};
         if (!stack::create(&linear))
@@ -861,10 +841,8 @@ public:
         Traverse(&linear).order([&process](const void* const value)
                                 { process << *static_cast<const Value*>(value) << " ... "; });
 
-        process << "\npop: ";
-        appendNullable(stack::pop(linear));
-        process << "top: ";
-        appendNullable(stack::top(linear));
+        process << "\npop: " << stack::pop(linear) << '\n';
+        process << "top: " << stack::top(linear) << '\n';
         process << "push " << values[3] << ": " << stack::push(linear, &values[3]) << '\n';
 
         process << "whether it is empty: " << stack::empty(linear) << '\n';
@@ -882,18 +860,6 @@ public:
         using Printer = queue::Printer<Value>;
         constexpr std::array<Value, 4> values = {'a', 'b', 'c', 'd'};
         std::ostringstream process{};
-        const auto appendNullable = [&process](const void* const value)
-        {
-            if (value)
-            {
-                process << *static_cast<const Value*>(value);
-            }
-            else
-            {
-                process << "<null>";
-            }
-            process << '\n';
-        };
 
         queue::Queue linear{};
         if (!queue::create(&linear))
@@ -909,10 +875,8 @@ public:
         Traverse(&linear).order([&process](const void* const value)
                                 { process << *static_cast<const Value*>(value) << " ... "; });
 
-        process << "\npop: ";
-        appendNullable(queue::pop(linear));
-        process << "front: ";
-        appendNullable(queue::front(linear));
+        process << "\npop: " << queue::pop(linear) << '\n';
+        process << "front: " << queue::front(linear) << '\n';
         process << "push " << values[0] << ": " << queue::push(linear, values.data()) << '\n';
 
         process << "whether it is empty: " << queue::empty(linear) << '\n';
@@ -935,6 +899,25 @@ const char* const version = data_structure::tree::version();
 static constexpr std::string_view separator = ", ";
 //! @brief Alias for the key.
 using Key = std::int16_t;
+//! @brief The operator (<<) overloading of the pointer of node.
+//! @tparam Node - type of node
+//! @param os - output stream object
+//! @param node - pointer of node
+//! @return reference of the output stream object
+template <typename Node>
+requires std::is_class_v<Node>
+static std::ostream& operator<<(std::ostream& os, const Node* const node)
+{
+    if (node && node->key)
+    {
+        os << *static_cast<Key*>(node->key);
+    }
+    else
+    {
+        os << "<null>";
+    }
+    return os;
+}
 //! @brief Compare function for the key.
 //! @param a - first key
 //! @param b - second key
@@ -961,18 +944,6 @@ public:
         std::ostringstream process{};
         const auto opInTraversal = [&process](const void* const key)
         { process << *static_cast<const Key*>(key) << " ... "; };
-        const auto appendNullable = [&process](const auto* const node)
-        {
-            if (node && node->key)
-            {
-                process << *static_cast<Key*>(node->key);
-            }
-            else
-            {
-                process << "<null>";
-            }
-            process << '\n';
-        };
 
         bs::BSTree* const tree = bs::create(compareKey);
         if (!tree)
@@ -996,19 +967,15 @@ public:
         process << "\npost-order traversal: ";
         traverse.postOrder(opInTraversal);
 
-        process << "\nminimum: ";
-        appendNullable(bs::getMinimum(tree));
-        process << "maximum: ";
-        appendNullable(bs::getMaximum(tree));
+        process << "\nminimum: " << bs::getMinimum(tree) << '\n';
+        process << "maximum: " << bs::getMaximum(tree) << '\n';
         process << "all details:\n" << Printer(tree->root);
 
         constexpr Key searchKey = 3;
         const auto* const searchNode = bs::search(tree, &searchKey);
         process << "search " << searchKey << ": " << static_cast<bool>(searchNode) << '\n';
-        process << "predecessor of " << searchKey << ": ";
-        appendNullable(bs::getPredecessor(searchNode));
-        process << "successor of " << searchKey << ": ";
-        appendNullable(bs::getSuccessor(searchNode));
+        process << "predecessor of " << searchKey << ": " << bs::getPredecessor(searchNode) << '\n';
+        process << "successor of " << searchKey << ": " << bs::getSuccessor(searchNode) << '\n';
         process << "remove " << searchKey << '\n';
         bs::remove(tree, &searchKey);
 
@@ -1029,18 +996,6 @@ public:
         std::ostringstream process{};
         const auto opInTraversal = [&process](const void* const key)
         { process << *static_cast<const Key*>(key) << " ... "; };
-        const auto appendNullable = [&process](const auto* const node)
-        {
-            if (node && node->key)
-            {
-                process << *static_cast<Key*>(node->key);
-            }
-            else
-            {
-                process << "<null>";
-            }
-            process << '\n';
-        };
 
         avl::AVLTree* const tree = avl::create(compareKey);
         if (!tree)
@@ -1066,10 +1021,8 @@ public:
         traverse.postOrder(opInTraversal);
 
         process << "\nheight: " << avl::getHeight(tree) << '\n';
-        process << "minimum: ";
-        appendNullable(avl::getMinimum(tree));
-        process << "maximum: ";
-        appendNullable(avl::getMaximum(tree));
+        process << "minimum: " << avl::getMinimum(tree) << '\n';
+        process << "maximum: " << avl::getMaximum(tree) << '\n';
         process << "all details:\n" << Printer(tree->root);
         constexpr Key searchKey = 13;
         const auto* const searchNode = avl::search(tree, &searchKey);
@@ -1095,18 +1048,6 @@ public:
         std::ostringstream process{};
         const auto opInTraversal = [&process](const void* const key)
         { process << *static_cast<const Key*>(key) << " ... "; };
-        const auto appendNullable = [&process](const auto* const node)
-        {
-            if (node && node->key)
-            {
-                process << *static_cast<Key*>(node->key);
-            }
-            else
-            {
-                process << "<null>";
-            }
-            process << '\n';
-        };
 
         splay::SplayTree* const tree = splay::create(compareKey);
         if (!tree)
@@ -1130,10 +1071,8 @@ public:
         process << "\npost-order traversal: ";
         traverse.postOrder(opInTraversal);
 
-        process << "\nminimum: ";
-        appendNullable(splay::getMinimum(tree));
-        process << "maximum: ";
-        appendNullable(splay::getMaximum(tree));
+        process << "\nminimum: " << splay::getMinimum(tree) << '\n';
+        process << "maximum: " << splay::getMaximum(tree) << '\n';
         process << "all details:\n" << Printer(tree->root);
 
         constexpr Key searchKey = 70;
