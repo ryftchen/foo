@@ -169,7 +169,7 @@ void TCPSocket::connect(const std::string& ip, const std::uint16_t port)
     sockAddr.sin_family = AF_INET;
     sockAddr.sin_port = ::htons(port);
     sockAddr.sin_addr.s_addr = static_cast<std::uint32_t>(sockAddr.sin_addr.s_addr);
-    if (::connect(sock, reinterpret_cast<const ::sockaddr*>(&sockAddr), sizeof(::sockaddr_in)) == -1)
+    if (::connect(sock, reinterpret_cast<::sockaddr*>(&sockAddr), sizeof(::sockaddr_in)) == -1)
     {
         throw std::runtime_error{"Failed to connect to the socket, errno: " + safeStrErrno() + '.'};
     }
@@ -265,7 +265,7 @@ void TCPServer::bind(const std::string& ip, const std::uint16_t port)
 
     sockAddr.sin_family = AF_INET;
     sockAddr.sin_port = ::htons(port);
-    if (const Guard lock(*this); ::bind(sock, reinterpret_cast<const ::sockaddr*>(&sockAddr), sizeof(sockAddr)) == -1)
+    if (const Guard lock(*this); ::bind(sock, reinterpret_cast<::sockaddr*>(&sockAddr), sizeof(sockAddr)) == -1)
     {
         throw std::runtime_error{"Failed to bind the socket, errno: " + safeStrErrno() + '.'};
     }
@@ -369,7 +369,7 @@ void TCPServer::onConnection(
     ::ssize_t sent = 0;
     if (const Guard lock(*this); true)
     {
-        sent = ::sendto(sock, bytes, size, 0, reinterpret_cast<const ::sockaddr*>(&addr), sizeof(addr));
+        sent = ::sendto(sock, bytes, size, 0, reinterpret_cast<::sockaddr*>(&addr), sizeof(addr));
         if (sent == -1)
         {
             throw std::runtime_error{"Unable to send message to address, errno: " + safeStrErrno() + '.'};
@@ -420,7 +420,7 @@ void UDPSocket::connect(const std::string& ip, const std::uint16_t port)
     sockAddr.sin_family = AF_INET;
     sockAddr.sin_port = ::htons(port);
     sockAddr.sin_addr.s_addr = static_cast<std::uint32_t>(sockAddr.sin_addr.s_addr);
-    if (::connect(sock, reinterpret_cast<const ::sockaddr*>(&sockAddr), sizeof(::sockaddr_in)) == -1)
+    if (::connect(sock, reinterpret_cast<::sockaddr*>(&sockAddr), sizeof(::sockaddr_in)) == -1)
     {
         throw std::runtime_error{"Failed to connect to the socket, errno: " + safeStrErrno() + '.'};
     }
@@ -564,7 +564,7 @@ void UDPServer::bind(const std::string& ip, const std::uint16_t port)
 
     sockAddr.sin_family = AF_INET;
     sockAddr.sin_port = ::htons(port);
-    if (const Guard lock(*this); ::bind(sock, reinterpret_cast<const ::sockaddr*>(&sockAddr), sizeof(sockAddr)) == -1)
+    if (const Guard lock(*this); ::bind(sock, reinterpret_cast<::sockaddr*>(&sockAddr), sizeof(sockAddr)) == -1)
     {
         throw std::runtime_error{"Failed to bind the socket, errno: " + safeStrErrno() + '.'};
     }
