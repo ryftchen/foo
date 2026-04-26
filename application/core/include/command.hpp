@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "action.hpp"
 #include "build.hpp"
 #include "console.hpp"
+#include "schedule.hpp"
 
 #include "utility/include/argument.hpp"
 
@@ -20,88 +20,6 @@ namespace command
 {
 //! @brief Instance title.
 inline constexpr std::string title = "commander";
-
-//! @brief Represent the maximum value of an enum.
-//! @tparam Enum - type of specific enum
-template <typename Enum>
-struct Bottom;
-
-//! @brief Enumerate specific native categories.
-enum class Category : std::uint8_t
-{
-    //! @brief Console.
-    console,
-    //! @brief Dump.
-    dump,
-    //! @brief Help.
-    help,
-    //! @brief Version.
-    version
-};
-//! @brief Store the maximum value of the Category enum.
-template <>
-struct Bottom<Category>
-{
-    //! @brief Maximum value of the Category enum.
-    static constexpr std::uint8_t value{4};
-};
-
-//! @brief Gather and notify handlers.
-//! @tparam Key - type of key
-//! @tparam Inst - type of instance
-template <typename Key, typename Inst>
-class Notifier
-{
-public:
-    //! @brief The base procedure when notified.
-    class Operation
-    {
-    public:
-        //! @brief Destroy the Operation object.
-        virtual ~Operation() = default;
-
-        //! @brief Perform the specific operation.
-        virtual void execute() const = 0;
-    };
-    //! @brief The procedure when notified.
-    //! @tparam CRTP - type of derived class
-    template <typename CRTP>
-    class OperationImpl : public Operation
-    {
-    public:
-        //! @brief Perform the specific operation.
-        void execute() const override { static_cast<const CRTP&>(*this).execute(); }
-    };
-    //! @brief The handler used to trigger a procedure when notified.
-    //! @tparam key - specific key
-    template <Key key>
-    class Handler : public OperationImpl<Handler<key>>
-    {
-    public:
-        //! @brief Construct a new Handler object.
-        //! @param inst - involved instance
-        explicit Handler(const Inst& inst) : inst{inst} {}
-
-        //! @brief Perform the specific operation.
-        void execute() const override;
-
-    private:
-        //! @brief The involved instance.
-        const Inst& inst{};
-    };
-
-    //! @brief Attach a handler with a specific key to the notifier.
-    //! @param key - specific key
-    //! @param handler - handler to be attached
-    void attach(const Key key, std::shared_ptr<Operation> handler);
-    //! @brief Notify the handler associated with the given key.
-    //! @param key - specific key
-    void notify(const Key key) const;
-
-private:
-    //! @brief Map of handlers identified by a key.
-    std::map<Key, std::shared_ptr<Operation>> handlers{};
-};
 
 //! @brief Execute the command line.
 class Command final
@@ -135,13 +53,13 @@ private:
     //! @brief Parse argument helper for commander.
     utility::argument::Argument mainCLI{"foo", build::version()};
     //! @brief Parse argument helper to apply algorithm.
-    utility::argument::Argument subCLIAppAlgo{action::info::name<reg_algo::ApplyAlgorithm>(), reg_algo::version()};
+    utility::argument::Argument subCLIAppAlgo{schedule::meta::name<reg_algo::ApplyAlgorithm>(), reg_algo::version()};
     //! @brief Parse argument helper to apply design pattern.
-    utility::argument::Argument subCLIAppDp{action::info::name<reg_dp::ApplyDesignPattern>(), reg_dp::version()};
+    utility::argument::Argument subCLIAppDp{schedule::meta::name<reg_dp::ApplyDesignPattern>(), reg_dp::version()};
     //! @brief Parse argument helper to apply data structure.
-    utility::argument::Argument subCLIAppDs{action::info::name<reg_ds::ApplyDataStructure>(), reg_ds::version()};
+    utility::argument::Argument subCLIAppDs{schedule::meta::name<reg_ds::ApplyDataStructure>(), reg_ds::version()};
     //! @brief Parse argument helper to apply numeric.
-    utility::argument::Argument subCLIAppNum{action::info::name<reg_num::ApplyNumeric>(), reg_num::version()};
+    utility::argument::Argument subCLIAppNum{schedule::meta::name<reg_num::ApplyNumeric>(), reg_num::version()};
     //! @brief The short prefix for the option.
     const std::string shortPrefix{"-"};
     //! @brief The Long prefix for the option.
@@ -208,119 +126,13 @@ private:
     //! @brief Validate the version of all dependencies.
     void validateDependencies() const;
 
-    //! @brief Map the alias name.
-    //! @param cat - native category
-    //! @return alias name
-    static consteval std::string_view mappedAlias(const Category cat);
-    //! @brief Map the description.
-    //! @param cat - native category
-    //! @return description
-    static consteval std::string_view mappedDescr(const Category cat);
-
-    //! @brief Manage tasks.
-    class TaskManager
-    {
-    public:
-        //! @brief Destroy the TaskManager object.
-        virtual ~TaskManager() = default;
-
-        //! @brief Check whether any tasks do not exist.
-        //! @return any tasks do not exist or exist
-        [[nodiscard]] virtual bool empty() const = 0;
-        //! @brief Reset bit flags that manage all tasks.
-        virtual void reset() = 0;
-    };
-    //! @brief Manage native categories.
-    class NativeManager : virtual public TaskManager
-    {
-    public:
-        //! @brief Bit flags for managing native categories.
-        std::bitset<Bottom<Category>::value> nativeCategories;
-
-        //! @brief Check whether any native categories do not exist.
-        //! @return any native categories do not exist or exist
-        [[nodiscard]] bool empty() const override { return nativeCategories.none(); }
-        //! @brief Reset bit flags that manage native categories.
-        void reset() override { nativeCategories.reset(); }
-    };
-    //! @brief Manage extra choices of sub-cli.
-    class ExtraManager : virtual public TaskManager
-    {
-    public:
-        //! @brief Alias for the attribute of the registered sub-cli's category.
-        struct Attr
-        {
-            //! @brief The candidates for the choice.
-            const std::vector<std::string> choices;
-            //! @brief The internal event for applying.
-            const action::EventType event;
-        };
-        //! @brief Alias for the map of sub-cli's category name and Attr.
-        using CategoryMap = std::map<std::string, Attr>;
-        //! @brief Mapping table of all extra choices. Fill as needed.
-        std::map<std::string, CategoryMap> extraChoiceRegistry;
-
-        //! @brief Wrap interfaces to check for existing and reset extra choices.
-        struct Intf
-        {
-            //! @brief Construct a new Intf object.
-            //! @param presentCb - callback of checking
-            //! @param clearCb - callback of resetting
-            Intf(std::function<bool()> presentCb, std::function<void()> clearCb) :
-                present{std::move(presentCb)}, clear{std::move(clearCb)}
-            {
-                if (!present || !clear)
-                {
-                    throw std::runtime_error{"Invalid sub-command interfaces are being used."};
-                }
-            }
-
-            //! @brief Check the existence status of the extra choice.
-            const std::function<bool()> present;
-            //! @brief Reset control of the extra choice.
-            const std::function<void()> clear;
-        };
-        //! @brief Existence status and reset control of the sub-cli to which the extra choices belong.
-        std::map<std::string, Intf> extraChecklist;
-        //! @brief Flag for help only.
-        bool extraHelping{false};
-
-        //! @brief Check whether any extra choices do not exist.
-        //! @return any extra choices do not exist or exist
-        [[nodiscard]] bool empty() const override
-        {
-            return !extraHelping
-                && std::ranges::none_of(extraChecklist, [](const auto& pair) { return pair.second.present(); });
-        }
-        //! @brief Reset bit flags that manage extra choices.
-        void reset() override
-        {
-            extraHelping = false;
-            std::ranges::for_each(extraChecklist, [](const auto& pair) { pair.second.clear(); });
-        }
-    };
-    //! @brief Schedule all managed tasks.
-    class TaskDispatcher : public NativeManager, public ExtraManager
-    {
-    public:
-        //! @brief Check whether any tasks do not exist.
-        //! @return any tasks do not exist or exist
-        [[nodiscard]] bool empty() const final { return NativeManager::empty() && ExtraManager::empty(); }
-        //! @brief Reset bit flags that manage all tasks.
-        void reset() final
-        {
-            NativeManager::reset();
-            ExtraManager::reset();
-        }
-    } /** @brief Dispatch all types of tasks. */ taskDispatcher{};
-
-    friend class Notifier<Category, Command>;
-    //! @brief Alias for the local notifier.
-    using LocalNotifier = Notifier<Category, Command>;
+    friend schedule::native::Notifier<Command>;
     //! @brief Local notification for native type tasks.
-    LocalNotifier builtInNotifier{};
+    schedule::native::Notifier<Command> builtInNotifier{};
     //! @brief Forward messages for extra type tasks.
-    action::MessageForwarder applyingForwarder{};
+    schedule::extra::MessageForwarder applyingForwarder{};
+    //! @brief Dispatch all types of tasks.
+    schedule::TaskScheduler scheduleDispatcher{};
     //! @brief Alias for the pair of the sub-cli name and the sub-cli version.
     using VerLinkKey = std::pair<std::string, std::string>;
     //! @brief Mapping hash value for the related versions.

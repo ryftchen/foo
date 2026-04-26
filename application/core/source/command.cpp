@@ -21,8 +21,19 @@
 #include "utility/include/currying.hpp"
 #include "utility/include/time.hpp"
 
-namespace application::command
+namespace application
 {
+namespace command
+{
+//! @brief Alias for the native categories.
+using Category = schedule::native::Category;
+//! @brief Alias for the representing of the maximum value of an enum.
+//! @tparam Enum - type of specific enum
+template <typename Enum>
+using Bottom = schedule::native::Bottom<Enum>;
+//! @brief Alias for the local notifier.
+using LocalNotifier = schedule::native::Notifier<Command>;
+
 //! @brief Anonymous namespace.
 inline namespace
 {
@@ -96,7 +107,7 @@ static void daemonService()
 //! @tparam Hs - type of helpers
 //! @return awaitable instance
 template <typename... Hs>
-static action::Awaitable launchLifecycle()
+static schedule::Awaitable launchLifecycle()
 {
     if (!configure::detail::activateHelper())
     {
@@ -134,6 +145,46 @@ static action::Awaitable launchLifecycle()
 // NOLINTEND(readability-static-accessed-through-instance)
 } // namespace help
 
+// clang-format off
+//! @brief Mapping table for enum and attribute about command categories. X macro.
+#define COMMAND_CATEGORY_X_MACRO_MAPPING                                \
+    X(Category::console, "c", "run options in console mode and exit\n"  \
+                              "separate with quotes"                  ) \
+    X(Category::dump   , "d", "dump default configuration and exit"   ) \
+    X(Category::help   , "h", "show this help message and exit"       ) \
+    X(Category::version, "v", "show version information and exit"     )
+// clang-format on
+
+//! @brief Map the alias name.
+//! @param cat - native category
+//! @return alias name
+static consteval std::string_view mappedAlias(const Category cat)
+{
+//! @cond
+#define X(enum, descr, alias) {descr, alias},
+    constexpr std::string_view table[][2] = {COMMAND_CATEGORY_X_MACRO_MAPPING};
+    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<Category>::value);
+    return table[static_cast<std::underlying_type_t<Category>>(cat)][0];
+//! @endcond
+#undef X
+}
+
+//! @brief Map the description.
+//! @param cat - native category
+//! @return description
+static consteval std::string_view mappedDescr(const Category cat)
+{
+//! @cond
+#define X(enum, descr, alias) {descr, alias},
+    constexpr std::string_view table[][2] = {COMMAND_CATEGORY_X_MACRO_MAPPING};
+    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<Category>::value);
+    return table[static_cast<std::underlying_type_t<Category>>(cat)][1];
+//! @endcond
+#undef X
+}
+
+#undef COMMAND_CATEGORY_X_MACRO_MAPPING
+
 //! @brief Convert category enumeration to string.
 //! @param cat - native category
 //! @return category name
@@ -152,53 +203,6 @@ Command& getInstance()
     return commander;
 }
 
-template <typename Key, typename Inst>
-void Notifier<Key, Inst>::attach(const Key key, std::shared_ptr<Operation> handler)
-{
-    handlers[key] = std::move(handler);
-}
-
-template <typename Key, typename Inst>
-void Notifier<Key, Inst>::notify(const Key key) const
-{
-    if (handlers.contains(key))
-    {
-        handlers.at(key)->execute();
-    }
-}
-
-// clang-format off
-//! @brief Mapping table for enum and attribute about command categories. X macro.
-#define COMMAND_CATEGORY_X_MACRO_MAPPING                                \
-    X(Category::console, "c", "run options in console mode and exit\n"  \
-                              "separate with quotes"                  ) \
-    X(Category::dump   , "d", "dump default configuration and exit"   ) \
-    X(Category::help   , "h", "show this help message and exit"       ) \
-    X(Category::version, "v", "show version information and exit"     )
-// clang-format on
-consteval std::string_view Command::mappedAlias(const Category cat)
-{
-//! @cond
-#define X(enum, descr, alias) {descr, alias},
-    constexpr std::string_view table[][2] = {COMMAND_CATEGORY_X_MACRO_MAPPING};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<Category>::value);
-    return table[static_cast<std::underlying_type_t<Category>>(cat)][0];
-//! @endcond
-#undef X
-}
-
-consteval std::string_view Command::mappedDescr(const Category cat)
-{
-//! @cond
-#define X(enum, descr, alias) {descr, alias},
-    constexpr std::string_view table[][2] = {COMMAND_CATEGORY_X_MACRO_MAPPING};
-    static_assert((sizeof(table) / sizeof(table[0])) == Bottom<Category>::value);
-    return table[static_cast<std::underlying_type_t<Category>>(cat)][1];
-//! @endcond
-#undef X
-}
-#undef COMMAND_CATEGORY_X_MACRO_MAPPING
-
 Command::Command()
 {
     initializeNativeCLI();
@@ -216,7 +220,7 @@ try
     isFaulty.store(false);
     isParsed.store(false);
     auto helpCtrl = help::launchLifecycle<log::Log, view::View>();
-    action::enterNextPhase(helpCtrl);
+    schedule::enterNextPhase(helpCtrl);
 
     if (argc > 1)
     {
@@ -230,7 +234,7 @@ try
         enterConsoleMode();
     }
 
-    action::enterNextPhase(helpCtrl);
+    schedule::enterNextPhase(helpCtrl);
     return !isFaulty.load();
 }
 catch (const std::exception& err)
@@ -311,9 +315,9 @@ utility::argument::Argument& Command::resolveSubCLI()
 template <typename SubCLI, typename Intf>
 void Command::injectNewSubCLI(Intf&& intf)
 {
-    using action::info::descr;
+    using schedule::meta::descr;
     auto& subCLI = resolveSubCLI<SubCLI>();
-    auto& checklist = taskDispatcher.extraChecklist;
+    auto& checklist = scheduleDispatcher.extraChecklist;
     checklist.emplace(subCLI.title(), std::forward<Intf>(intf));
     subCLI.addDescription(descr<SubCLI>());
     subCLI
@@ -333,20 +337,21 @@ void Command::addNewCategoryToSubCLI(const std::string_view version)
     using namespace reg_dp;
     using namespace reg_ds;
     using namespace reg_num;
-    using action::info::name, action::info::alias, action::info::descr, action::info::choice;
+    using Attr = schedule::ExtraManager::Attr;
+    using schedule::extra::SetChoice, schedule::extra::RunCandidates, schedule::meta::name, schedule::meta::alias,
+        schedule::meta::descr, schedule::meta::choice;
     auto& subCLI = resolveSubCLI<Cat>();
-    auto& registry = taskDispatcher.extraChoiceRegistry[subCLI.title()];
+    auto& registry = scheduleDispatcher.extraChoiceRegistry[subCLI.title()];
     auto candidates = choice<Cat>();
-    registry.emplace(name<Cat>(), ExtraManager::Attr{candidates, Cat{}});
+    registry.emplace(name<Cat>(), Attr{candidates, Cat{}});
     subCLI.addArgument(shortPrefix + std::string{alias<Cat>()}, longPrefix + std::string{name<Cat>()})
         .argsNum(0, candidates.size())
         .template defaultValue<decltype(candidates)>(std::move(candidates))
         .remaining()
         .metaVariable("OPT")
         .help(descr<Cat>());
-    applyingForwarder.registerHandler([](const action::SetChoice<Cat>& msg) { setChoice<Cat>(msg.choice); });
-    applyingForwarder.registerHandler([](const action::RunCandidates<Cat>& msg)
-                                      { runCandidates<Cat>(msg.candidates); });
+    applyingForwarder.registerHandler([](const SetChoice<Cat>& msg) { setChoice<Cat>(msg.choice); });
+    applyingForwarder.registerHandler([](const RunCandidates<Cat>& msg) { runCandidates<Cat>(msg.candidates); });
     versionLinks.emplace(VerLinkKey{subCLI.title(), version}, name<Cat>());
 }
 
@@ -355,7 +360,8 @@ template <>
 void Command::subCLISetup<reg_algo::ApplyAlgorithm>()
 {
     using namespace reg_algo;
-    injectNewSubCLI<ApplyAlgorithm>(ExtraManager::Intf{manage::present, manage::clear});
+    using Intf = schedule::ExtraManager::Intf;
+    injectNewSubCLI<ApplyAlgorithm>(Intf{manage::present, manage::clear});
     addNewCategoryToSubCLI<MatchMethod>(match::version());
     addNewCategoryToSubCLI<NotationMethod>(notation::version());
     addNewCategoryToSubCLI<OptimalMethod>(optimal::version());
@@ -368,7 +374,8 @@ template <>
 void Command::subCLISetup<reg_dp::ApplyDesignPattern>()
 {
     using namespace reg_dp;
-    injectNewSubCLI<ApplyDesignPattern>(ExtraManager::Intf{manage::present, manage::clear});
+    using Intf = schedule::ExtraManager::Intf;
+    injectNewSubCLI<ApplyDesignPattern>(Intf{manage::present, manage::clear});
     addNewCategoryToSubCLI<BehavioralInstance>(behavioral::version());
     addNewCategoryToSubCLI<CreationalInstance>(creational::version());
     addNewCategoryToSubCLI<StructuralInstance>(structural::version());
@@ -379,7 +386,8 @@ template <>
 void Command::subCLISetup<reg_ds::ApplyDataStructure>()
 {
     using namespace reg_ds;
-    injectNewSubCLI<ApplyDataStructure>(ExtraManager::Intf{manage::present, manage::clear});
+    using Intf = schedule::ExtraManager::Intf;
+    injectNewSubCLI<ApplyDataStructure>(Intf{manage::present, manage::clear});
     addNewCategoryToSubCLI<CacheInstance>(cache::version());
     addNewCategoryToSubCLI<FilterInstance>(filter::version());
     addNewCategoryToSubCLI<GraphInstance>(graph::version());
@@ -393,7 +401,8 @@ template <>
 void Command::subCLISetup<reg_num::ApplyNumeric>()
 {
     using namespace reg_num;
-    injectNewSubCLI<ApplyNumeric>(ExtraManager::Intf{manage::present, manage::clear});
+    using Intf = schedule::ExtraManager::Intf;
+    injectNewSubCLI<ApplyNumeric>(Intf{manage::present, manage::clear});
     addNewCategoryToSubCLI<ArithmeticMethod>(arithmetic::version());
     addNewCategoryToSubCLI<DivisorMethod>(divisor::version());
     addNewCategoryToSubCLI<IntegralMethod>(integral::version());
@@ -457,7 +466,7 @@ catch (const std::exception& err)
 
 void Command::precheck()
 {
-    for (auto& spec = taskDispatcher.nativeCategories;
+    for (auto& spec = scheduleDispatcher.nativeCategories;
          const auto index : std::views::iota(0U, spec.size())
              | std::views::filter([this](const auto i) { return mainCLI.isUsed(toString(static_cast<Category>(i))); }))
     {
@@ -466,13 +475,13 @@ void Command::precheck()
     }
 
     for (constexpr auto helpArgName = toString(Category::help);
-         [[maybe_unused]] const auto& [subCLIName, categoryMap] : taskDispatcher.extraChoiceRegistry
+         [[maybe_unused]] const auto& [subCLIName, categoryMap] : scheduleDispatcher.extraChoiceRegistry
              | std::views::filter([this](const auto& subCLIPair)
                                   { return mainCLI.isSubcommandUsed(subCLIPair.first) && (checkExcessArgs(), true); }))
     {
         const auto& subCLI = mainCLI.at<utility::argument::Argument>(subCLIName);
         const bool notAssigned = !subCLI;
-        taskDispatcher.extraHelping = notAssigned || subCLI.isUsed(helpArgName);
+        scheduleDispatcher.extraHelping = notAssigned || subCLI.isUsed(helpArgName);
         if (notAssigned)
         {
             return;
@@ -484,10 +493,11 @@ void Command::precheck()
         {
             for (const auto& choice : subCLI.get<std::vector<std::string>>(categoryName))
             {
+                using schedule::extra::SetChoice;
                 utility::common::patternMatch(
                     categoryAttr.event,
                     [this, &choice](auto&& event)
-                    { applyingForwarder.onMessage(action::SetChoice<std::decay_t<decltype(event)>>{choice}); });
+                    { applyingForwarder.onMessage(SetChoice<std::decay_t<decltype(event)>>{choice}); });
             }
         }
     }
@@ -495,19 +505,19 @@ void Command::precheck()
 
 bool Command::anySelected() const
 {
-    return !taskDispatcher.empty();
+    return !scheduleDispatcher.empty();
 }
 
 void Command::clearSelected()
 {
-    taskDispatcher.reset();
+    scheduleDispatcher.reset();
 }
 
 void Command::dispatchAll()
 {
-    if (!taskDispatcher.NativeManager::empty())
+    if (!scheduleDispatcher.NativeManager::empty())
     {
-        for (const auto& spec = taskDispatcher.nativeCategories;
+        for (const auto& spec = scheduleDispatcher.nativeCategories;
              const auto index :
              std::views::iota(0U, spec.size()) | std::views::filter([&spec](const auto i) { return spec.test(i); }))
         {
@@ -515,11 +525,11 @@ void Command::dispatchAll()
         }
     }
 
-    if (!taskDispatcher.ExtraManager::empty())
+    if (!scheduleDispatcher.ExtraManager::empty())
     {
-        if (taskDispatcher.extraHelping)
+        if (scheduleDispatcher.extraHelping)
         {
-            if (auto whichUsed = std::views::keys(taskDispatcher.extraChoiceRegistry)
+            if (auto whichUsed = std::views::keys(scheduleDispatcher.extraChoiceRegistry)
                     | std::views::filter([this](const auto& subCLIName)
                                          { return mainCLI.isSubcommandUsed(subCLIName); });
                 std::ranges::distance(whichUsed) != 0)
@@ -530,15 +540,16 @@ void Command::dispatchAll()
             return;
         }
 
-        for ([[maybe_unused]] const auto& [categoryName, categoryAttr] : taskDispatcher.extraChoiceRegistry
+        for ([[maybe_unused]] const auto& [categoryName, categoryAttr] : scheduleDispatcher.extraChoiceRegistry
                  | std::views::filter([this](const auto& subCLIPair)
-                                      { return taskDispatcher.extraChecklist.at(subCLIPair.first).present(); })
+                                      { return scheduleDispatcher.extraChecklist.at(subCLIPair.first).present(); })
                  | std::views::values | std::views::join)
         {
+            using schedule::extra::RunCandidates;
             utility::common::patternMatch(
                 categoryAttr.event,
                 [this, &candidates = categoryAttr.choices](auto&& event)
-                { applyingForwarder.onMessage(action::RunCandidates<std::decay_t<decltype(event)>>{candidates}); });
+                { applyingForwarder.onMessage(RunCandidates<std::decay_t<decltype(event)>>{candidates}); });
         }
     }
 }
@@ -680,38 +691,6 @@ void Command::displayVersionInfo() const
     std::cout << briefReview << std::flush;
 }
 
-//! @brief Perform the specific operation for Category::console.
-template <>
-template <>
-void Command::LocalNotifier::Handler<Category::console>::execute() const
-{
-    inst.executeInConsole();
-}
-
-//! @brief Perform the specific operation for Category::dump.
-template <>
-template <>
-void Command::LocalNotifier::Handler<Category::dump>::execute() const
-{
-    Command::dumpConfiguration();
-}
-
-//! @brief Perform the specific operation for Category::help.
-template <>
-template <>
-void Command::LocalNotifier::Handler<Category::help>::execute() const
-{
-    inst.showHelpMessage();
-}
-
-//! @brief Perform the specific operation for Category::version.
-template <>
-template <>
-void Command::LocalNotifier::Handler<Category::version>::execute() const
-{
-    inst.displayVersionInfo();
-}
-
 void Command::validateDependencies() const
 {
     const bool isNativeVerMatched = utility::common::areStringsEqual(
@@ -737,7 +716,7 @@ void Command::validateDependencies() const
             mainCLI.version())};
     }
 
-    const auto& choiceRegistry = taskDispatcher.extraChoiceRegistry;
+    const auto& choiceRegistry = scheduleDispatcher.extraChoiceRegistry;
     const bool isExtraVerMatched = (versionLinks.count({subCLIAppAlgo.title(), subCLIAppAlgo.version()})
                                     == choiceRegistry.at(subCLIAppAlgo.title()).size())
         && (versionLinks.count({subCLIAppDp.title(), subCLIAppDp.version()})
@@ -952,4 +931,37 @@ catch (...)
     cliSem.release();
     throw;
 }
-} // namespace application::command
+} // namespace command
+
+//! @brief Perform the specific operation for Category::console.
+template <>
+template <>
+void command::LocalNotifier::Handler<command::Category::console>::execute() const
+{
+    ctx.executeInConsole();
+}
+
+//! @brief Perform the specific operation for Category::dump.
+template <>
+template <>
+void command::LocalNotifier::Handler<command::Category::dump>::execute() const
+{
+    command::Command::dumpConfiguration();
+}
+
+//! @brief Perform the specific operation for Category::help.
+template <>
+template <>
+void command::LocalNotifier::Handler<command::Category::help>::execute() const
+{
+    ctx.showHelpMessage();
+}
+
+//! @brief Perform the specific operation for Category::version.
+template <>
+template <>
+void command::LocalNotifier::Handler<command::Category::version>::execute() const
+{
+    ctx.displayVersionInfo();
+}
+} // namespace application
