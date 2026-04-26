@@ -429,6 +429,10 @@ public:
         { process << *static_cast<const Data*>(data) << ' '; };
 
         undirected::AMLGraph* const graph = undirected::create(compareData);
+        if (!graph)
+        {
+            return std::ostringstream{process.str()};
+        }
         const auto traverse = Traverse(graph);
         process << std::boolalpha;
         for (const auto& vertex : vertices)
@@ -486,6 +490,10 @@ public:
         { process << *static_cast<const Data*>(data) << ' '; };
 
         directed::OLGraph* const graph = directed::create(compareData);
+        if (!graph)
+        {
+            return std::ostringstream{process.str()};
+        }
         const auto traverse = Traverse(graph);
         process << std::boolalpha;
         for (const auto& vertex : vertices)
@@ -567,6 +575,10 @@ public:
         { process << *static_cast<const Key*>(key) << " ... "; };
 
         binary::BinaryHeap* const heap = binary::create(capacity, compareKey);
+        if (!heap)
+        {
+            return std::ostringstream{process.str()};
+        }
         const auto traverse = binary::Traverse(heap);
         process << std::boolalpha;
         process << "insert ";
@@ -768,9 +780,24 @@ public:
         using Printer = dll::Printer<Value>;
         constexpr std::array<Value, 4> values = {'a', 'b', 'c', 'd'};
         std::ostringstream process{};
+        const auto appendNullable = [&process](const void* const value)
+        {
+            if (value)
+            {
+                process << *static_cast<const Value*>(value);
+            }
+            else
+            {
+                process << "<null>";
+            }
+            process << '\n';
+        };
 
         dll::DLL linear{};
-        dll::create(&linear);
+        if (!dll::create(&linear))
+        {
+            return std::ostringstream{process.str()};
+        }
         process << std::boolalpha;
         for (const auto& value : values)
         {
@@ -785,8 +812,10 @@ public:
 
         process << "insert first " << values[0] << ": " << dll::insertFirst(linear, values.data()) << '\n';
         process << "insert last " << values[3] << ": " << dll::insertLast(linear, &values[3]) << '\n';
-        process << "get first: " << *static_cast<Value*>(dll::getFirst(linear)) << '\n';
-        process << "get last: " << *static_cast<Value*>(dll::getLast(linear)) << '\n';
+        process << "get first: ";
+        appendNullable(dll::getFirst(linear));
+        process << "get last: ";
+        appendNullable(dll::getLast(linear));
         process << "remove first: " << dll::removeFirst(linear) << '\n';
         process << "remove last: " << dll::removeLast(linear) << '\n';
 
