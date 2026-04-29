@@ -1021,12 +1021,12 @@ function perform_lint_option()
             die "Due to the unconventional ${COMPILE_DB} file, the --lint option cannot run if the FOO_BLD_PCH or \
 FOO_BLD_UNITY is turned on."
         fi
-        local clang_tidy_output_path="./${FOLDER[rep]}/sca/lint"
-        local clang_tidy_log="${clang_tidy_output_path}/clang-tidy.log"
-        if [[ ! -d ${clang_tidy_output_path} ]]; then
-            shell_command "mkdir -p ${clang_tidy_output_path}"
-        elif [[ -f ${clang_tidy_log} ]]; then
-            shell_command "rm -rf ${clang_tidy_log}"
+        local clang_tidy_lint_path="./${FOLDER[rep]}/sca/lint"
+        local clang_tidy_output="${clang_tidy_lint_path}/clang-tidy.output"
+        if [[ ! -d ${clang_tidy_lint_path} ]]; then
+            shell_command "mkdir -p ${clang_tidy_lint_path}"
+        elif [[ -f ${clang_tidy_output} ]]; then
+            shell_command "rm -rf ${clang_tidy_output}"
         fi
 
         local app_comp_db="${FOLDER[bld]}/${COMPILE_DB}"
@@ -1038,13 +1038,13 @@ FOO_BLD_UNITY is turned on."
         if [[ ${ARGS[quick]} == false ]]; then
             shell_command "set -o pipefail && find ./${FOLDER[app]} ./${FOLDER[util]} ./${FOLDER[algo]} \
 ./${FOLDER[ds]} ./${FOLDER[dp]} ./${FOLDER[num]} -name '*.cpp' -o -name '*.hpp' \
-| xargs run-clang-tidy-19 -config-file ./.clang-tidy -p ./${FOLDER[bld]} -quiet | tee -a ${clang_tidy_log}"
+| xargs run-clang-tidy-19 -config-file ./.clang-tidy -p ./${FOLDER[bld]} -quiet | tee -a ${clang_tidy_output}"
         else
             local lint_changed_cpp_for_app="${GIT_CHANGE_CMD} \
 | grep -E '^(${FOLDER[app]}|${FOLDER[util]}|${FOLDER[algo]}|${FOLDER[ds]}|${FOLDER[dp]}|${FOLDER[num]})/.*\.(cpp|hpp)$'"
             if eval "${lint_changed_cpp_for_app}" >/dev/null; then
                 shell_command "set -o pipefail && ${lint_changed_cpp_for_app} \
-| xargs run-clang-tidy-19 -config-file ./.clang-tidy -p ./${FOLDER[bld]} -quiet | tee -a ${clang_tidy_log}"
+| xargs run-clang-tidy-19 -config-file ./.clang-tidy -p ./${FOLDER[bld]} -quiet | tee -a ${clang_tidy_output}"
             fi
         fi
         shell_command "rm -rf ./${app_comp_db} && mv ./${app_comp_db}.bak ./${app_comp_db}"
@@ -1058,19 +1058,19 @@ FOO_BLD_UNITY is turned on."
         if [[ ${ARGS[quick]} == false ]]; then
             shell_command "set -o pipefail && find ./${FOLDER[tst]} -name '*.cpp' \
 | xargs run-clang-tidy-19 -config-file ./.clang-tidy -p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet \
-| tee -a ${clang_tidy_log}"
+| tee -a ${clang_tidy_output}"
         else
             local lint_changed_cpp_for_tst="${GIT_CHANGE_CMD} | grep -E '^${FOLDER[tst]}/.*\.cpp$'"
             if eval "${lint_changed_cpp_for_tst}" >/dev/null; then
                 shell_command "set -o pipefail && ${lint_changed_cpp_for_tst} \
 | xargs run-clang-tidy-19 -config-file ./.clang-tidy -p ./${FOLDER[tst]}/${FOLDER[bld]} -quiet \
-| tee -a ${clang_tidy_log}"
+| tee -a ${clang_tidy_output}"
             fi
         fi
         shell_command "rm -rf ./${tst_comp_db} && mv ./${tst_comp_db}.bak ./${tst_comp_db}"
 
-        shell_command "(test -f ${clang_tidy_log} && cat ${clang_tidy_log}) | sed 's/\033\[[0-9;]*m//g' \
-| python3 -m clang_tidy_converter -r ./ html >${clang_tidy_output_path}/index.html"
+        shell_command "(test -f ${clang_tidy_output} && cat ${clang_tidy_output}) | sed 's/\033\[[0-9;]*m//g' \
+| python3 -m clang_tidy_converter -r ./ html >${clang_tidy_lint_path}/index.html"
     fi
 
     if [[ ${ARGS[lint]} == true ]] || [[ ${ARGS[lint]} == "sh" ]]; then
