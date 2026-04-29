@@ -1029,7 +1029,7 @@ void forwardByClient(std::shared_ptr<utility::socket::UDPSocket>& client, const 
 } // namespace intf
 } // namespace view
 
-//! @brief Wait for the viewer to start. Access controller for external use.
+//! @brief Wait for the viewer to start.
 template <>
 void view::AccessController::startup() const
 try
@@ -1048,7 +1048,7 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-//! @brief Wait for the viewer to stop. Access controller for external use.
+//! @brief Wait for the viewer to stop.
 template <>
 void view::AccessController::shutdown() const
 try
@@ -1064,7 +1064,7 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-//! @brief Request to reset the viewer. Access controller for external use.
+//! @brief Request to reset the viewer.
 template <>
 void view::AccessController::reload() const
 try

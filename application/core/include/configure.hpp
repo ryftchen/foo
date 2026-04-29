@@ -151,11 +151,11 @@ template <typename Helper>
 class Controller
 {
 public:
-    //! @brief Wait for the helper to start. Interface controller for external use.
+    //! @brief Wait for the helper to start.
     void startup() const;
-    //! @brief Wait for the helper to stop. Interface controller for external use.
+    //! @brief Wait for the helper to stop.
     void shutdown() const;
-    //! @brief Request to reset the helper. Interface controller for external use.
+    //! @brief Request to reset the helper.
     void reload() const;
 
 private:

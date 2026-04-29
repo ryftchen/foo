@@ -625,7 +625,7 @@ void previewInContext(const std::function<void(const std::string&)>& peeking)
 } // namespace intf
 } // namespace log
 
-//! @brief Wait for the logger to start. Access controller for external use.
+//! @brief Wait for the logger to start.
 template <>
 void log::AccessController::startup() const
 try
@@ -643,7 +643,7 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-//! @brief Wait for the logger to stop. Access controller for external use.
+//! @brief Wait for the logger to stop.
 template <>
 void log::AccessController::shutdown() const
 try
@@ -659,7 +659,7 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-//! @brief Request to reset the logger. Access controller for external use.
+//! @brief Request to reset the logger.
 template <>
 void log::AccessController::reload() const
 try
