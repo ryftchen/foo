@@ -11,7 +11,6 @@
 #ifndef _PRECOMPILED_HEADER
 #include <barrier>
 #include <latch>
-#include <numeric>
 #include <ranges>
 #else
 #include "application/pch/precompiled_header.hpp"
@@ -78,14 +77,15 @@ static void triggerEvent(const ExtEvent event)
 
     switch (event)
     {
+        using Controller = configure::Controller<Helper>;
         case ExtEvent::startup:
-            typename Helper::Controller().startup();
+            Controller().startup();
             return;
         case ExtEvent::shutdown:
-            typename Helper::Controller().shutdown();
+            Controller().shutdown();
             return;
         case ExtEvent::reload:
-            typename Helper::Controller().reload();
+            Controller().reload();
             return;
         default:
             break;
@@ -563,57 +563,6 @@ void Command::checkExcessArgs()
     }
 }
 
-//! @brief Launch the TCP client for console mode.
-//! @param client - TCP client to be launched
-template <>
-void Command::launchClient<utility::socket::TCPSocket>(std::shared_ptr<utility::socket::TCPSocket>& client)
-{
-    client->subscribeRawMessage(
-        [&client](char* const bytes, const std::size_t size)
-        {
-            try
-            {
-                MACRO_DEFER([]() { notifyClientOutputDone(); });
-                if (client->stopRequested() || onParsing4Client(bytes, size))
-                {
-                    return;
-                }
-                client->requestStop();
-            }
-            catch (const std::exception& err)
-            {
-                LOG_WRN << err.what();
-            }
-        });
-    client->connect(view::insight::currentTCPHost(), view::insight::currentTCPPort());
-}
-
-//! @brief Launch the UDP client for console mode.
-//! @param client - UDP client to be launched
-template <>
-void Command::launchClient<utility::socket::UDPSocket>(std::shared_ptr<utility::socket::UDPSocket>& client)
-{
-    client->subscribeRawMessage(
-        [&client](char* const bytes, const std::size_t size, const std::string& /*ip*/, const std::uint16_t /*port*/)
-        {
-            try
-            {
-                MACRO_DEFER([]() { notifyClientOutputDone(); });
-                if (client->stopRequested() || onParsing4Client(bytes, size))
-                {
-                    return;
-                }
-                client->requestStop();
-            }
-            catch (const std::exception& err)
-            {
-                LOG_WRN << err.what();
-            }
-        });
-    client->receive();
-    client->connect(view::insight::currentUDPHost(), view::insight::currentUDPPort());
-}
-
 void Command::executeInConsole() const
 {
     if (!configure::detail::activateHelper())
@@ -631,7 +580,7 @@ void Command::executeInConsole() const
     constexpr std::string_view greeting = "> ";
     const auto session = std::make_unique<console::Console>(greeting);
     auto tempClient = std::make_shared<utility::socket::UDPSocket>();
-    launchClient(tempClient);
+    view::conn::launchOnClient(tempClient);
     registerOnConsole(*session, tempClient);
 
     for (std::ostringstream out{}; const auto& input : pendingInputs)
@@ -651,12 +600,12 @@ void Command::executeInConsole() const
         catch (const std::exception& err)
         {
             LOG_WRN << err.what();
-            interactionLatency();
+            view::interactionLatency();
         }
     }
-    tempClient->send(buildDisconnectRequest());
+    tempClient->send(view::buildDisconnectRequest());
     tempClient->join();
-    interactionLatency();
+    view::interactionLatency();
 }
 
 void Command::showHelpMessage() const
@@ -750,7 +699,7 @@ try
     }
     LOG_DBG << "Enter console mode.";
 
-    interactionLatency();
+    view::interactionLatency();
     const char* const userEnv = std::getenv("USER"); // NOLINT(concurrency-mt-unsafe)
     const std::string userName = userEnv ? userEnv : "USER";
     std::array<char, HOST_NAME_MAX> hostName{};
@@ -762,7 +711,7 @@ try
     const auto greeting = userName + '@' + hostName.data() + " foo > ";
     const auto session = std::make_unique<console::Console>(greeting);
     auto permClient = std::make_shared<utility::socket::TCPSocket>();
-    launchClient(permClient);
+    view::conn::launchOnClient(permClient);
     registerOnConsole(*session, permClient);
 
     std::cout << build::banner() << std::endl;
@@ -779,12 +728,12 @@ try
             LOG_WRN << err.what();
         }
         session->setGreeting(greeting);
-        interactionLatency();
+        view::interactionLatency();
     }
     while (retCode != RetCode::quit);
-    permClient->send(buildDisconnectRequest());
+    permClient->send(view::buildDisconnectRequest());
     permClient->join();
-    interactionLatency();
+    view::interactionLatency();
 
     LOG_DBG << "Exit console mode.";
 }
@@ -809,7 +758,7 @@ auto Command::processConsoleInputs(const std::function<void()>& handling)
         retCode = RetCode::error;
         LOG_WRN << err.what();
     }
-    interactionLatency();
+    view::interactionLatency();
     return retCode;
 }
 
@@ -823,19 +772,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<Sock>
         triggerEvent<Helper>(ExtEvent::startup);
     };
     const auto asyncReqSender = [&client](const auto& inputs)
-    {
-        return processConsoleInputs(
-            [&client, &inputs]()
-            {
-                auto reqBuffer = utility::common::base64Encode(std::accumulate(
-                    inputs.cbegin(),
-                    inputs.cend(),
-                    std::string{},
-                    [](const auto& acc, const auto& token) { return acc.empty() ? token : (acc + ' ' + token); }));
-                client->send(std::move(reqBuffer));
-                waitClientOutputDone();
-            });
-    };
+    { return processConsoleInputs([&client, &inputs]() { view::conn::forwardByClient(client, inputs); }); };
 
     session.registerOption(
         "refresh",
@@ -858,20 +795,20 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<Sock>
             return processConsoleInputs(
                 [&client]()
                 {
-                    client->send(buildDisconnectRequest());
+                    client->send(view::buildDisconnectRequest());
                     client->join();
-                    interactionLatency();
+                    view::interactionLatency();
                     client.reset();
 
                     using view::View;
                     gracefulReset.template operator()<View>();
                     client = std::make_shared<Sock>();
-                    launchClient(client);
+                    view::conn::launchOnClient(client);
                     LOG_INF_F("Reconnected to the {} servers.", View::name);
                 });
         });
 
-    auto supportedOptions = view::insight::currentSupportedOptions();
+    auto supportedOptions = view::obtainSupportedOptions();
     decltype(supportedOptions) validOptions{};
     for (auto iterator = supportedOptions.cbegin(); iterator != supportedOptions.cend();)
     {
@@ -886,32 +823,6 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<Sock>
     {
         session.registerOption(name, description, asyncReqSender);
     }
-}
-
-bool Command::onParsing4Client(char* const bytes, const std::size_t size)
-{
-    return (size == 0) || view::View::Controller().onParsing(bytes, size);
-}
-
-void Command::waitClientOutputDone()
-{
-    view::View::Completion().waitTaskDone();
-}
-
-void Command::notifyClientOutputDone()
-{
-    view::View::Completion().notifyTaskDone();
-}
-
-std::string Command::buildDisconnectRequest()
-{
-    return utility::common::base64Encode(view::exitSymbol);
-}
-
-void Command::interactionLatency()
-{
-    constexpr auto latency = std::chrono::milliseconds{10};
-    std::this_thread::sleep_for(latency);
 }
 
 //! @brief Safely execute the command line interfaces using the given arguments.

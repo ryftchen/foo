@@ -19,8 +19,13 @@
 #include "utility/include/benchmark.hpp"
 #include "utility/include/time.hpp"
 
-namespace application::log
+namespace application
 {
+namespace log
+{
+//! @brief Alias for the access controller.
+using AccessController = configure::Controller<Log>;
+
 //! @brief The SGR (select graphic rendition) of ANSI control sequences.
 namespace ansi_sgr
 {
@@ -184,96 +189,6 @@ retry:
 }
 // NOLINTEND(cppcoreguidelines-avoid-goto)
 
-void Log::Controller::startup() const
-try
-{
-    waitOr(State::active, []() { throw std::runtime_error{"The " + Log::name + " did not set up successfully ..."}; });
-    notifyVia([this]() { inst->isOngoing.store(true); });
-    waitOr(
-        State::established, []() { throw std::runtime_error{"The " + Log::name + " did not start successfully ..."}; });
-}
-catch (const std::exception& err)
-{
-    LOG_ERR << err.what();
-}
-
-void Log::Controller::shutdown() const
-try
-{
-    notifyVia([this]() { inst->isOngoing.store(false); });
-    waitOr(State::inactive, []() { throw std::runtime_error{"The " + Log::name + " did not stop successfully ..."}; });
-}
-catch (const std::exception& err)
-{
-    LOG_ERR << err.what();
-}
-
-void Log::Controller::reload() const
-try
-{
-    notifyVia([this]() { inst->inResetting.store(true); });
-    countdownIf(
-        [this]() { return inst->inResetting.load(); },
-        [this]()
-        {
-            throw std::runtime_error{
-                "The " + Log::name + " did not reset properly in " + std::to_string(inst->timeoutPeriod) + " ms ..."};
-        });
-}
-catch (const std::exception& err)
-{
-    LOG_ERR << err.what();
-}
-
-void Log::Controller::onPreviewing(const std::function<void(const std::string&)>& peeking) const
-{
-    const LockGuard guard(inst->fileLock, LockMode::read);
-    if (peeking)
-    {
-        peeking(inst->filePath);
-    }
-}
-
-void Log::Controller::waitOr(const State state, const std::function<void()>& handling) const
-{
-    do
-    {
-        if (inst->isInServingState(State::idle) && handling)
-        {
-            handling();
-        }
-        std::this_thread::yield();
-    }
-    while (!inst->isInServingState(state));
-}
-
-void Log::Controller::notifyVia(const std::function<void()>& action) const
-{
-    std::unique_lock<std::mutex> daemonLock(inst->daemonMtx);
-    if (action)
-    {
-        action();
-    }
-    daemonLock.unlock();
-    inst->daemonCond.notify_one();
-}
-
-void Log::Controller::countdownIf(const std::function<bool()>& condition, const std::function<void()>& handling) const
-{
-    for (const utility::time::Stopwatch timing{}; timing.elapsedTime() <= inst->timeoutPeriod;)
-    {
-        if (!condition || !condition())
-        {
-            return;
-        }
-        std::this_thread::yield();
-    }
-    if (handling)
-    {
-        handling();
-    }
-}
-
 void Log::flush(const OutputLevel severity, const std::string_view labelTpl, const std::string_view formatted)
 {
     if (severity < priorityLevel)
@@ -382,6 +297,59 @@ std::vector<std::string> Log::reformatContents(const std::string_view label, con
         | std::views::filter([](const auto& line) { return !line.empty(); })
         | std::views::transform([&label](const auto& line) { return label.data() + line; });
     return std::vector<std::string>{std::ranges::begin(reformatted), std::ranges::end(reformatted)};
+}
+
+void Log::previewInContext(const std::function<void(const std::string&)>& peeking) const
+{
+    const LockGuard guard(fileLock, LockMode::read);
+    if (peeking)
+    {
+        peeking(filePath);
+    }
+}
+
+void Log::syncWaitOr(const State state, const std::function<void()>& handling) const
+{
+    do
+    {
+        if (isInServingState(State::idle) && handling)
+        {
+            handling();
+        }
+        std::this_thread::yield();
+    }
+    while (!isInServingState(state));
+}
+
+void Log::syncNotifyVia(const std::function<void()>& action)
+{
+    std::unique_lock<std::mutex> daemonLock(daemonMtx);
+    if (action)
+    {
+        action();
+    }
+    daemonLock.unlock();
+    daemonCond.notify_one();
+}
+
+void Log::syncCountdownIf(const std::function<bool()>& condition, const std::function<void()>& handling) const
+{
+    if (!condition)
+    {
+        return;
+    }
+    for (const utility::time::Stopwatch timing{}; timing.elapsedTime() <= timeoutPeriod;)
+    {
+        if (!condition())
+        {
+            return;
+        }
+        std::this_thread::yield();
+    }
+    if (handling)
+    {
+        handling();
+    }
 }
 
 bool Log::isInServingState(const State state) const
@@ -645,4 +613,69 @@ std::string& changeToLogStyle(std::string& line)
     }
     return line;
 }
-} // namespace application::log
+
+namespace conn
+{
+//! @brief Preview in the current log context.
+//! @param peeking - further handling for peeking
+void previewInContext(const std::function<void(const std::string&)>& peeking)
+{
+    Log::getInstance()->previewInContext(peeking);
+}
+} // namespace conn
+} // namespace log
+
+//! @brief Wait for the logger to start. Interface controller for external use.
+template <>
+void log::AccessController::startup() const
+try
+{
+    using Log = log::Log;
+    using State = Log::State;
+    srv->syncWaitOr(
+        State::active, []() { throw std::runtime_error{"The " + Log::name + " did not set up successfully ..."}; });
+    srv->syncNotifyVia([this]() { srv->isOngoing.store(true); });
+    srv->syncWaitOr(
+        State::established, []() { throw std::runtime_error{"The " + Log::name + " did not start successfully ..."}; });
+}
+catch (const std::exception& err)
+{
+    LOG_ERR << err.what();
+}
+
+//! @brief Wait for the logger to stop. Interface controller for external use.
+template <>
+void log::AccessController::shutdown() const
+try
+{
+    using Log = log::Log;
+    using State = Log::State;
+    srv->syncNotifyVia([this]() { srv->isOngoing.store(false); });
+    srv->syncWaitOr(
+        State::inactive, []() { throw std::runtime_error{"The " + Log::name + " did not stop successfully ..."}; });
+}
+catch (const std::exception& err)
+{
+    LOG_ERR << err.what();
+}
+
+//! @brief Request to reset the logger. Interface controller for external use.
+template <>
+void log::AccessController::reload() const
+try
+{
+    using Log = log::Log;
+    srv->syncNotifyVia([this]() { srv->inResetting.store(true); });
+    srv->syncCountdownIf(
+        [this]() { return srv->inResetting.load(); },
+        [this]()
+        {
+            throw std::runtime_error{
+                "The " + Log::name + " did not reset properly in " + std::to_string(srv->timeoutPeriod) + " ms ..."};
+        });
+}
+catch (const std::exception& err)
+{
+    LOG_ERR << err.what();
+}
+} // namespace application

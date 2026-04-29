@@ -145,6 +145,24 @@ extern Retrieve retrieveDataRepo();
 extern utility::json::JSON dumpDefaultConfig();
 extern bool loadSettings(const std::string_view filename = defaultConfigFile);
 
+//! @brief Access controller. For the instance.
+//! @tparam Helper - type of helper
+template <typename Helper>
+class Controller
+{
+public:
+    //! @brief Wait for the helper to start. Interface controller for external use.
+    void startup() const;
+    //! @brief Wait for the helper to stop. Interface controller for external use.
+    void shutdown() const;
+    //! @brief Request to reset the helper. Interface controller for external use.
+    void reload() const;
+
+private:
+    //! @brief Instance to be accessed.
+    const std::shared_ptr<Helper> srv{Helper::getInstance()};
+};
+
 //! @brief Configuration details.
 namespace detail
 {

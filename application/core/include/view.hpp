@@ -21,8 +21,31 @@ namespace view
 inline constexpr std::uint16_t minPortNumber = 1024;
 //! @brief Maximum port number.
 inline constexpr std::uint16_t maxPortNumber = 65535;
-//! @brief The internal symbol for exiting.
-inline constexpr std::string_view exitSymbol = "stop";
+
+//! @brief Connection interface.
+namespace conn
+{
+//! @brief Launch on the client.
+//! @tparam Sock - type of client
+//! @param client - client to be launched
+template <typename Sock>
+void launchOnClient(std::shared_ptr<Sock>& client);
+//! @brief Forward message by client.
+//! @tparam Sock - type of client
+//! @param client - client to be used for forwarding
+//! @param inputs - input strings to be forwarded
+template <typename Sock>
+void forwardByClient(std::shared_ptr<Sock>& client, const std::vector<std::string>& inputs);
+
+template <>
+void launchOnClient(std::shared_ptr<utility::socket::TCPSocket>& client);
+template <>
+void launchOnClient(std::shared_ptr<utility::socket::UDPSocket>& client);
+template <>
+void forwardByClient(std::shared_ptr<utility::socket::TCPSocket>& client, const std::vector<std::string>& inputs);
+template <>
+void forwardByClient(std::shared_ptr<utility::socket::UDPSocket>& client, const std::vector<std::string>& inputs);
+} // namespace conn
 
 //! @brief Viewer.
 class View final : public utility::fsm::FSM<View>
@@ -49,7 +72,6 @@ public:
     static std::shared_ptr<View> getInstance();
     //! @brief Service for running.
     void service();
-
     //! @brief Enumerate specific states for FSM.
     enum State : std::uint8_t
     {
@@ -64,76 +86,12 @@ public:
         //! @brief Idle.
         idle
     };
-    //! @brief Access controller. For the instance.
-    class Controller
-    {
-    public:
-        //! @brief Wait for the viewer to start. Interface controller for external use.
-        void startup() const;
-        //! @brief Wait for the viewer to stop. Interface controller for external use.
-        void shutdown() const;
-        //! @brief Request to reset the viewer. Interface controller for external use.
-        void reload() const;
 
-        //! @brief Parse the TLV packet of message.
-        //! @param bytes - message buffer
-        //! @param size - message length
-        //! @return need to continue parsing or not
-        bool onParsing(char* const bytes, const std::size_t size) const;
-
-    private:
-        //! @brief Instance to be accessed.
-        const std::shared_ptr<View> inst{getInstance()};
-
-        //! @brief Wait until the viewer reaches the target state.
-        //! @param state - target state
-        //! @param handling - handling if unexpected state
-        void waitOr(const State state, const std::function<void()>& handling) const;
-        //! @brief Notify the viewer to change the state.
-        //! @param action - action to be executed
-        void notifyVia(const std::function<void()>& action) const;
-        //! @brief Keep countdown if the viewer does not meet the condition in time.
-        //! @param condition - condition of countdown
-        //! @param handling - handling if timeout
-        void countdownIf(const std::function<bool()>& condition, const std::function<void()>& handling) const;
-    };
-    //! @brief Settings inspector. For the instance.
-    class Inspector
-    {
-    public:
-        //! @brief Get the supported options.
-        //! @return supported options
-        [[nodiscard]] auto getSupportedOptions() const noexcept { return inst->supportedOptions; }
-        //! @brief Get the TCP server host address.
-        //! @return TCP server host address
-        [[nodiscard]] std::string getTCPHost() const noexcept { return inst->tcpHost; }
-        //! @brief Get the TCP server port number.
-        //! @return TCP server port number
-        [[nodiscard]] std::uint16_t getTCPPort() const noexcept { return inst->tcpPort; }
-        //! @brief Get the UDP server host address.
-        //! @return UDP server host address
-        [[nodiscard]] std::string getUDPHost() const noexcept { return inst->udpHost; }
-        //! @brief Get the UDP server port number.
-        //! @return UDP server port number
-        [[nodiscard]] std::uint16_t getUDPPort() const noexcept { return inst->udpPort; }
-
-    private:
-        //! @brief Instance to be accessed.
-        const std::shared_ptr<View> inst{getInstance()};
-    };
-    //! @brief Completion barrier. For the instance.
-    class Completion
-    {
-    public:
-        //! @brief Block the caller until the output task is marked as done.
-        void waitTaskDone() const;
-        //! @brief Notify that the output task has been completed and unblock any waiters.
-        void notifyTaskDone() const;
-
-    private:
-        //! @brief Instance to be accessed.
-        const std::shared_ptr<View> inst{getInstance()};
-    };
+    friend class configure::Controller<View>;
+    template <typename Sock>
+    friend void conn::launchOnClient(std::shared_ptr<Sock>& client);
+    template <typename Sock>
+    friend void conn::forwardByClient(std::shared_ptr<Sock>& client, const std::vector<std::string>& inputs);
 
 private:
     //! @brief Construct a new View object.
@@ -198,17 +156,7 @@ private:
         //! @brief The option description.
         static constexpr const char* const description{"display current configuration"};
     };
-    //! @brief Alias for the option type.
-    using OptionType = std::variant<OptBase, OptDepend, OptExecute, OptJournal, OptMonitor, OptProfile>;
-    //! @brief Alias for the map of option name and description.
-    using OptionMap = std::map<std::string, std::string>;
-    //! @brief Mapping table of all viewer options.
-    const OptionMap supportedOptions{
-        {OptDepend::name, OptDepend::description},
-        {OptExecute::name, OptExecute::description},
-        {OptJournal::name, OptJournal::description},
-        {OptMonitor::name, OptMonitor::description},
-        {OptProfile::name, OptProfile::description}};
+    friend std::map<std::string, std::string> obtainSupportedOptions();
     //! @brief Maximum size of the shared memory buffer.
     static constexpr std::size_t shmLimitSize{static_cast<std::size_t>(65536 * 10)};
     //! @brief Memory that can be accessed by multiple programs simultaneously.
@@ -222,6 +170,8 @@ private:
         alignas(64) std::atomic_bool signal;
     };
 
+    //! @brief Alias for the option type.
+    using OptionType = std::variant<OptBase, OptDepend, OptExecute, OptJournal, OptMonitor, OptProfile>;
     //! @brief Alias for the buffer.
     using Buffer = std::array<char, 1024>;
     //! @brief Build the response message.
@@ -268,13 +218,13 @@ private:
     //! @brief Segmented output.
     //! @param cache - output cache
     static void segmentedOutput(const std::string& cache);
-    //! @brief Log contents preview.
-    //! @return log contents
-    static std::string logContentsPreview();
-    //! @brief Status reports preview.
+    //! @brief Log context preview.
+    //! @return log context
+    static std::string logContextPreview();
+    //! @brief Status report preview.
     //! @param frame - maximum frame
-    //! @return status reports
-    static std::string statusReportsPreview(const std::uint16_t frame);
+    //! @return status report
+    static std::string statusReportPreview(const std::uint16_t frame);
 
     //! @brief The server (TCP) of the permanent session.
     std::shared_ptr<utility::socket::TCPServer> permSessServer;
@@ -298,6 +248,40 @@ private:
     //! @tparam Sock - type of server
     template <typename Sock>
     void renewServer();
+
+    //! @brief Launch on the client.
+    //! @tparam Sock - type of client
+    //! @param client - client to be launched
+    template <typename Sock>
+    void launchOnClient(std::shared_ptr<Sock>& client);
+    //! @brief Forward message by client.
+    //! @tparam Sock - type of client
+    //! @param client - client to be used for forwarding
+    //! @param inputs - input strings to be forwarded
+    template <typename Sock>
+    void forwardByClient(std::shared_ptr<Sock>& client, const std::vector<std::string>& inputs);
+    //! @brief Parse the TLV packet of message.
+    //! @tparam Sock - type of client
+    //! @param client - client associated with parsing
+    //! @param bytes - message buffer
+    //! @param size - message length
+    template <typename Sock>
+    void onParsingCallback(std::shared_ptr<Sock>& client, char* const bytes, const std::size_t size);
+    //! @brief Block the caller until the output task is marked as done.
+    void waitTaskDone();
+    //! @brief Notify that the output task has been completed and unblock any waiters.
+    void notifyTaskDone();
+    //! @brief Wait until the viewer reaches the target state. Interface controller for external use.
+    //! @param state - target state
+    //! @param handling - handling if unexpected state
+    void syncWaitOr(const State state, const std::function<void()>& handling) const;
+    //! @brief Notify the viewer to change the state. Interface controller for external use.
+    //! @param action - action to be executed
+    void syncNotifyVia(const std::function<void()>& action);
+    //! @brief Keep countdown if the viewer does not meet the condition in time. Interface controller for external use.
+    //! @param condition - condition of countdown
+    //! @param handling - handling if timeout
+    void syncCountdownIf(const std::function<bool()>& condition, const std::function<void()>& handling) const;
 
     //! @brief Check whether it is in the uninterrupted serving state.
     //! @param state - target state
@@ -370,39 +354,8 @@ protected:
     friend std::ostream& operator<<(std::ostream& os, const State state);
 };
 
-//! @brief Instance insight, if enabled.
-namespace insight
-{
-//! @brief Get the current supported viewer options.
-//! @return current supported viewer options
-inline auto currentSupportedOptions()
-{
-    return View::Inspector().getSupportedOptions();
-}
-//! @brief Get the current TCP host address being used for viewing.
-//! @return current TCP host address being used for viewing
-inline std::string currentTCPHost()
-{
-    return View::Inspector().getTCPHost();
-}
-//! @brief Get the current TCP port number being used for viewing.
-//! @return current TCP port number being used for viewing
-inline std::uint16_t currentTCPPort()
-{
-    return View::Inspector().getTCPPort();
-}
-//! @brief Get the current UDP host address being used for viewing.
-//! @return current UDP host address being used for viewing
-inline std::string currentUDPHost()
-{
-    return View::Inspector().getUDPHost();
-}
-//! @brief Get the current UDP port number being used for viewing.
-//! @return current UDP port number being used for viewing
-inline std::uint16_t currentUDPPort()
-{
-    return View::Inspector().getUDPPort();
-}
-} // namespace insight
+extern std::map<std::string, std::string> obtainSupportedOptions();
+extern std::string buildDisconnectRequest();
+extern void interactionLatency();
 } // namespace view
 } // namespace application

@@ -71,6 +71,12 @@ namespace log
 //! @brief Directory of the source code.
 constexpr std::string_view sourceDirectory = "/foo/";
 
+//! @brief Connection interface.
+namespace conn
+{
+extern void previewInContext(const std::function<void(const std::string&)>& peeking);
+} // namespace conn
+
 //! @brief Logger.
 class Log final : public utility::fsm::FSM<Log>
 {
@@ -96,7 +102,6 @@ public:
     static std::shared_ptr<Log> getInstance();
     //! @brief Service for running.
     void service();
-
     //! @brief Enumerate specific states for FSM.
     enum State : std::uint8_t
     {
@@ -111,38 +116,6 @@ public:
         //! @brief Idle.
         idle
     };
-    //! @brief Access controller. For the instance.
-    class Controller
-    {
-    public:
-        //! @brief Wait for the logger to start. Interface controller for external use.
-        void startup() const;
-        //! @brief Wait for the logger to stop. Interface controller for external use.
-        void shutdown() const;
-        //! @brief Request to reset the logger. Interface controller for external use.
-        void reload() const;
-
-        //! @brief Preview the log.
-        //! @param peeking - further handling for peeking
-        void onPreviewing(const std::function<void(const std::string&)>& peeking) const;
-
-    private:
-        //! @brief Instance to be accessed.
-        const std::shared_ptr<Log> inst{getInstance()};
-
-        //! @brief Wait until the logger reaches the target state.
-        //! @param state - target state
-        //! @param handling - handling if unexpected state
-        void waitOr(const State state, const std::function<void()>& handling) const;
-        //! @brief Notify the logger to change the state.
-        //! @param action - action to be executed
-        void notifyVia(const std::function<void()>& action) const;
-        //! @brief Keep countdown if the logger does not meet the condition in time.
-        //! @param condition - condition of countdown
-        //! @param handling - handling if timeout
-        void countdownIf(const std::function<bool()>& condition, const std::function<void()>& handling) const;
-    };
-
     //! @brief Enumerate specific output levels.
     enum class OutputLevel : std::uint8_t
     {
@@ -173,6 +146,8 @@ public:
         //! @brief All.
         all
     };
+
+    friend class configure::Controller<Log>;
     template <typename... Args>
     friend void printfStyle(
         const OutputLevel severity,
@@ -187,6 +162,7 @@ public:
         const std::uint32_t srcLine,
         const std::string& format,
         Args&&... args);
+    friend void conn::previewInContext(const std::function<void(const std::string&)>& peeking);
     static_assert((sourceDirectory.front() == '/') && (sourceDirectory.back() == '/'));
 
 private:
@@ -245,6 +221,21 @@ private:
     //! @param formatted - formatted body
     //! @return log contents
     static std::vector<std::string> reformatContents(const std::string_view label, const std::string_view formatted);
+
+    //! @brief Preview in the current log context.
+    //! @param peeking - further handling for peeking
+    void previewInContext(const std::function<void(const std::string&)>& peeking) const;
+    //! @brief Wait until the logger reaches the target state. Interface controller for external use.
+    //! @param state - target state
+    //! @param handling - handling if unexpected state
+    void syncWaitOr(const State state, const std::function<void()>& handling) const;
+    //! @brief Notify the logger to change the state. Interface controller for external use.
+    //! @param action - action to be executed
+    void syncNotifyVia(const std::function<void()>& action);
+    //! @brief Keep countdown if the logger does not meet the condition in time. Interface controller for external use.
+    //! @param condition - condition of countdown
+    //! @param handling - handling if timeout
+    void syncCountdownIf(const std::function<bool()>& condition, const std::function<void()>& handling) const;
 
     //! @brief Check whether it is in the uninterrupted serving state.
     //! @param state - target state

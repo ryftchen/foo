@@ -34,8 +34,20 @@
 #include "utility/include/benchmark.hpp"
 #include "utility/include/time.hpp"
 
-namespace application::view
+namespace application
 {
+namespace view
+{
+//! @brief Alias for the access controller.
+using AccessController = configure::Controller<View>;
+
+//! @brief Anonymous namespace.
+inline namespace
+{
+//! @brief The internal symbol for exiting.
+constexpr std::string_view exitSymbol = "stop";
+} // namespace
+
 //! @brief Alias for the type-length-value scheme.
 namespace tlv = data::tlv;
 
@@ -94,145 +106,6 @@ retry:
     }
 }
 // NOLINTEND(cppcoreguidelines-avoid-goto)
-
-void View::Controller::startup() const
-try
-{
-    waitOr(State::active, []() { throw std::runtime_error{"The " + View::name + " did not set up successfully ..."}; });
-    notifyVia([this]() { inst->isOngoing.store(true); });
-    waitOr(
-        State::established,
-        []() { throw std::runtime_error{"The " + View::name + " did not start successfully ..."}; });
-}
-catch (const std::exception& err)
-{
-    LOG_ERR << err.what();
-}
-
-void View::Controller::shutdown() const
-try
-{
-    notifyVia([this]() { inst->isOngoing.store(false); });
-    waitOr(State::inactive, []() { throw std::runtime_error{"The " + View::name + " did not stop successfully ..."}; });
-}
-catch (const std::exception& err)
-{
-    LOG_ERR << err.what();
-}
-
-void View::Controller::reload() const
-try
-{
-    notifyVia([this]() { inst->inResetting.store(true); });
-    countdownIf(
-        [this]() { return inst->inResetting.load(); },
-        [this]()
-        {
-            throw std::runtime_error{
-                "The " + View::name + " did not reset properly in " + std::to_string(inst->timeoutPeriod) + " ms ..."};
-        });
-}
-catch (const std::exception& err)
-{
-    LOG_ERR << err.what();
-}
-
-bool View::Controller::onParsing(char* const bytes, const std::size_t size) const
-{
-    data::decryptMessage(bytes, size);
-    tlv::TLVValue value{};
-    if (const auto ec = tlv::decodeTLV(bytes, size, value); ec)
-    {
-        throw std::runtime_error{
-            "Invalid message content \"" + data::toHexString(bytes, size) + "\" (" + ec.message() + ")."};
-    }
-
-    if (const std::size_t actLibLen = ::strnlen(value.libInfo, sizeof(value.libInfo));
-        (actLibLen != 0) && (actLibLen < sizeof(value.libInfo)))
-    {
-        std::cout << value.libInfo << std::endl;
-    }
-    if (value.bashShmId != tlv::invalidShmId)
-    {
-        printSharedMemory(value.bashShmId);
-    }
-    if (value.logShmId != tlv::invalidShmId)
-    {
-        printSharedMemory(value.logShmId, !inst->isInServingState(State::established));
-    }
-    if (value.statusShmId != tlv::invalidShmId)
-    {
-        printSharedMemory(value.statusShmId);
-    }
-    if (const std::size_t actConfigLen = ::strnlen(value.configInfo, sizeof(value.configInfo));
-        (actConfigLen != 0) && (actConfigLen < sizeof(value.configInfo)))
-    {
-        using utility::json::JSON;
-        std::cout << JSON::load(value.configInfo) << std::endl;
-    }
-    return !value.stopTag;
-}
-
-void View::Controller::waitOr(const State state, const std::function<void()>& handling) const
-{
-    do
-    {
-        if (inst->isInServingState(State::idle) && handling)
-        {
-            handling();
-        }
-        std::this_thread::yield();
-    }
-    while (!inst->isInServingState(state));
-}
-
-void View::Controller::notifyVia(const std::function<void()>& action) const
-{
-    std::unique_lock<std::mutex> daemonLock(inst->daemonMtx);
-    if (action)
-    {
-        action();
-    }
-    daemonLock.unlock();
-    inst->daemonCond.notify_one();
-}
-
-void View::Controller::countdownIf(const std::function<bool()>& condition, const std::function<void()>& handling) const
-{
-    for (const utility::time::Stopwatch timing{}; timing.elapsedTime() <= inst->timeoutPeriod;)
-    {
-        if (!condition || !condition())
-        {
-            return;
-        }
-        std::this_thread::yield();
-    }
-    if (handling)
-    {
-        handling();
-    }
-}
-
-void View::Completion::waitTaskDone() const
-{
-    std::unique_lock<std::mutex> outputLock(inst->outputMtx);
-    inst->outputCompleted.store(false);
-
-    const auto maxWaitTime = std::chrono::milliseconds{inst->timeoutPeriod};
-    utility::time::Timer expiryTimer(
-        inst->isInServingState(State::established) ? []() {} : []() { Completion().notifyTaskDone(); });
-    expiryTimer.start(maxWaitTime);
-    inst->outputCond.wait(outputLock, [this]() { return inst->outputCompleted.load(); });
-    expiryTimer.stop();
-}
-
-void View::Completion::notifyTaskDone() const
-{
-    std::unique_lock<std::mutex> outputLock(inst->outputMtx);
-    inst->outputCompleted.store(true);
-    outputLock.unlock();
-    inst->outputCond.notify_one();
-}
 
 //! @brief Build the TLV packet of the response message to get library information.
 //! @param buffer - TLV packet buffer
@@ -342,7 +215,7 @@ std::size_t View::buildCustomTLVPacket<View::OptJournal>(const Args& /*args*/, B
 {
     char* const buf = buffer.data();
     std::size_t len = buffer.size();
-    const int shmId = fillSharedMemory(logContentsPreview());
+    const int shmId = fillSharedMemory(logContextPreview());
     if (const auto ec = tlv::encodeTLV(buf, len, tlv::TLVValue{.logShmId = shmId}); ec)
     {
         throw std::runtime_error{
@@ -370,7 +243,7 @@ std::size_t View::buildCustomTLVPacket<View::OptMonitor>(const Args& args, Buffe
 
     char* const buf = buffer.data();
     std::size_t len = buffer.size();
-    const int shmId = fillSharedMemory(statusReportsPreview(args.empty() ? 0 : std::stoul(args.front())));
+    const int shmId = fillSharedMemory(statusReportPreview(args.empty() ? 0 : std::stoul(args.front())));
     if (const auto ec = tlv::encodeTLV(buf, len, tlv::TLVValue{.statusShmId = shmId}); ec)
     {
         throw std::runtime_error{
@@ -648,10 +521,10 @@ void View::segmentedOutput(const std::string& cache)
     }
 }
 
-std::string View::logContentsPreview()
+std::string View::logContextPreview()
 {
     std::ostringstream transfer{};
-    log::Log::Controller().onPreviewing(
+    log::conn::previewInContext(
         [&transfer](const std::string& filePath)
         {
             constexpr std::uint16_t lineLimit = 24 * 100;
@@ -662,7 +535,7 @@ std::string View::logContentsPreview()
     return std::move(transfer).str();
 }
 
-std::string View::statusReportsPreview(const std::uint16_t frame)
+std::string View::statusReportPreview(const std::uint16_t frame)
 {
     if ((frame > 0)
         && (::system( // NOLINT(cert-env33-c, concurrency-mt-unsafe)
@@ -803,6 +676,157 @@ void View::renewServer<utility::socket::UDPServer>()
         });
 }
 
+//! @brief Launch on the TCP client.
+//! @param client - TCP client to be launched
+template <>
+void View::launchOnClient<utility::socket::TCPSocket>(std::shared_ptr<utility::socket::TCPSocket>& client)
+{
+    client->subscribeRawMessage([this, &client](char* const bytes, const std::size_t size)
+                                { onParsingCallback(client, bytes, size); });
+    client->connect(tcpHost, tcpPort);
+}
+
+//! @brief Launch on the UDP client.
+//! @param client - UDP client to be launched
+template <>
+void View::launchOnClient<utility::socket::UDPSocket>(std::shared_ptr<utility::socket::UDPSocket>& client)
+{
+    client->subscribeRawMessage(
+        [this,
+         &client](char* const bytes, const std::size_t size, const std::string& /*ip*/, const std::uint16_t /*port*/)
+        { onParsingCallback(client, bytes, size); });
+    client->receive();
+    client->connect(udpHost, udpPort);
+}
+
+template <typename Sock>
+void View::forwardByClient(std::shared_ptr<Sock>& client, const std::vector<std::string>& inputs)
+{
+    auto reqBuffer = utility::common::base64Encode(std::accumulate(
+        inputs.cbegin(),
+        inputs.cend(),
+        std::string{},
+        [](const auto& acc, const auto& token) { return acc.empty() ? token : (acc + ' ' + token); }));
+    client->send(std::move(reqBuffer));
+    waitTaskDone();
+}
+
+template <typename Sock>
+void View::onParsingCallback(std::shared_ptr<Sock>& client, char* const bytes, const std::size_t size)
+try
+{
+    MACRO_DEFER([this]() { notifyTaskDone(); });
+    if (client->stopRequested() || !bytes || (size == 0))
+    {
+        return;
+    }
+
+    data::decryptMessage(bytes, size);
+    tlv::TLVValue value{};
+    if (const auto ec = tlv::decodeTLV(bytes, size, value); ec)
+    {
+        throw std::runtime_error{
+            "Invalid message content \"" + data::toHexString(bytes, size) + "\" (" + ec.message() + ")."};
+    }
+
+    if (const std::size_t actLibLen = ::strnlen(value.libInfo, sizeof(value.libInfo));
+        (actLibLen != 0) && (actLibLen < sizeof(value.libInfo)))
+    {
+        std::cout << value.libInfo << std::endl;
+    }
+    if (value.bashShmId != tlv::invalidShmId)
+    {
+        printSharedMemory(value.bashShmId);
+    }
+    if (value.logShmId != tlv::invalidShmId)
+    {
+        printSharedMemory(value.logShmId, !isInServingState(State::established));
+    }
+    if (value.statusShmId != tlv::invalidShmId)
+    {
+        printSharedMemory(value.statusShmId);
+    }
+    if (const std::size_t actConfigLen = ::strnlen(value.configInfo, sizeof(value.configInfo));
+        (actConfigLen != 0) && (actConfigLen < sizeof(value.configInfo)))
+    {
+        using utility::json::JSON;
+        std::cout << JSON::load(value.configInfo) << std::endl;
+    }
+
+    if (value.stopTag)
+    {
+        client->requestStop();
+    }
+}
+catch (const std::exception& err)
+{
+    LOG_WRN << err.what();
+}
+
+void View::waitTaskDone()
+{
+    std::unique_lock<std::mutex> outputLock(outputMtx);
+    outputCompleted.store(false);
+
+    const auto maxWaitTime = std::chrono::milliseconds{timeoutPeriod};
+    utility::time::Timer expiryTimer(
+        isInServingState(State::established) ? std::function<void()>{[]() {}} : [this]() { notifyTaskDone(); });
+    expiryTimer.start(maxWaitTime);
+    outputCond.wait(outputLock, [this]() { return outputCompleted.load(); });
+}
+
+void View::notifyTaskDone()
+{
+    std::unique_lock<std::mutex> outputLock(outputMtx);
+    outputCompleted.store(true);
+    outputLock.unlock();
+    outputCond.notify_one();
+}
+
+void View::syncWaitOr(const State state, const std::function<void()>& handling) const
+{
+    do
+    {
+        if (isInServingState(State::idle) && handling)
+        {
+            handling();
+        }
+        std::this_thread::yield();
+    }
+    while (!isInServingState(state));
+}
+
+void View::syncNotifyVia(const std::function<void()>& action)
+{
+    std::unique_lock<std::mutex> daemonLock(daemonMtx);
+    if (action)
+    {
+        action();
+    }
+    daemonLock.unlock();
+    daemonCond.notify_one();
+}
+
+void View::syncCountdownIf(const std::function<bool()>& condition, const std::function<void()>& handling) const
+{
+    if (!condition)
+    {
+        return;
+    }
+    for (const utility::time::Stopwatch timing{}; timing.elapsedTime() <= timeoutPeriod;)
+    {
+        if (!condition())
+        {
+            return;
+        }
+        std::this_thread::yield();
+    }
+    if (handling)
+    {
+        handling();
+    }
+}
+
 bool View::isInServingState(const State state) const
 {
     return (currentState() == state) && !inResetting.load();
@@ -934,4 +958,129 @@ std::ostream& operator<<(std::ostream& os, const View::State state)
     }
     return os;
 }
-} // namespace application::view
+
+//! @brief Obtain the supported viewer options.
+//! @return supported viewer options
+std::map<std::string, std::string> obtainSupportedOptions()
+{
+    using OptDepend = View::OptDepend;
+    using OptExecute = View::OptExecute;
+    using OptJournal = View::OptJournal;
+    using OptMonitor = View::OptMonitor;
+    using OptProfile = View::OptProfile;
+    static const auto supportedOptions = std::map<std::string, std::string>{
+        {OptDepend::name, OptDepend::description},
+        {OptExecute::name, OptExecute::description},
+        {OptJournal::name, OptJournal::description},
+        {OptMonitor::name, OptMonitor::description},
+        {OptProfile::name, OptProfile::description}};
+    return supportedOptions;
+}
+
+//! @brief Build the disconnect request message.
+//! @return disconnect request message
+std::string buildDisconnectRequest()
+{
+    return utility::common::base64Encode(exitSymbol);
+}
+
+//! @brief Latency in the millisecond range.
+void interactionLatency()
+{
+    constexpr auto latency = std::chrono::milliseconds{10};
+    std::this_thread::sleep_for(latency);
+}
+
+namespace conn
+{
+//! @brief Launch on the TCP client.
+//! @param client - TCP client to be launched
+template <>
+void launchOnClient(std::shared_ptr<utility::socket::TCPSocket>& client)
+{
+    View::getInstance()->launchOnClient(client);
+}
+
+//! @brief Launch on the UDP client.
+//! @param client - UDP client to be launched
+template <>
+void launchOnClient(std::shared_ptr<utility::socket::UDPSocket>& client)
+{
+    View::getInstance()->launchOnClient(client);
+}
+
+//! @brief Forward message by TCP client.
+//! @param client - TCP client to be used for forwarding
+//! @param inputs - input strings to be forwarded
+template <>
+void forwardByClient(std::shared_ptr<utility::socket::TCPSocket>& client, const std::vector<std::string>& inputs)
+{
+    View::getInstance()->forwardByClient(client, inputs);
+}
+
+//! @brief Forward message by UDP client.
+//! @param client - UDP client to be used for forwarding
+//! @param inputs - input strings to be forwarded
+template <>
+void forwardByClient(std::shared_ptr<utility::socket::UDPSocket>& client, const std::vector<std::string>& inputs)
+{
+    View::getInstance()->forwardByClient(client, inputs);
+}
+} // namespace conn
+} // namespace view
+
+//! @brief Wait for the viewer to start. Interface controller for external use.
+template <>
+void view::AccessController::startup() const
+try
+{
+    using View = view::View;
+    using State = View::State;
+    srv->syncWaitOr(
+        State::active, []() { throw std::runtime_error{"The " + View::name + " did not set up successfully ..."}; });
+    srv->syncNotifyVia([this]() { srv->isOngoing.store(true); });
+    srv->syncWaitOr(
+        State::established,
+        []() { throw std::runtime_error{"The " + View::name + " did not start successfully ..."}; });
+}
+catch (const std::exception& err)
+{
+    LOG_ERR << err.what();
+}
+
+//! @brief Wait for the viewer to stop. Interface controller for external use.
+template <>
+void view::AccessController::shutdown() const
+try
+{
+    using View = view::View;
+    using State = View::State;
+    srv->syncNotifyVia([this]() { srv->isOngoing.store(false); });
+    srv->syncWaitOr(
+        State::inactive, []() { throw std::runtime_error{"The " + View::name + " did not stop successfully ..."}; });
+}
+catch (const std::exception& err)
+{
+    LOG_ERR << err.what();
+}
+
+//! @brief Request to reset the viewer. Interface controller for external use.
+template <>
+void view::AccessController::reload() const
+try
+{
+    using View = view::View;
+    srv->syncNotifyVia([this]() { srv->inResetting.store(true); });
+    srv->syncCountdownIf(
+        [this]() { return srv->inResetting.load(); },
+        [this]()
+        {
+            throw std::runtime_error{
+                "The " + View::name + " did not reset properly in " + std::to_string(srv->timeoutPeriod) + " ms ..."};
+        });
+}
+catch (const std::exception& err)
+{
+    LOG_ERR << err.what();
+}
+} // namespace application

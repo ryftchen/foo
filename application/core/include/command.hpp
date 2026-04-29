@@ -163,29 +163,10 @@ private:
     //! @param client - client used to send
     template <typename Sock>
     static void registerOnConsole(console::Console& session, std::shared_ptr<Sock>& client);
-    //! @brief Launch the client for console mode.
-    //! @tparam Sock - type of client
-    //! @param client - client to be launched
-    template <typename Sock>
-    static void launchClient(std::shared_ptr<Sock>& client);
     //! @brief Process the inputs  in console mode.
     //! @param handling - handling for inputs
     //! @return console return code
     static auto processConsoleInputs(const std::function<void()>& handling);
-    //! @brief Parse the message inside the client in console mode.
-    //! @param bytes - message buffer
-    //! @param size - message length
-    //! @return need to continue parsing or not
-    static bool onParsing4Client(char* const bytes, const std::size_t size);
-    //! @brief Await outside the client in console mode.
-    static void waitClientOutputDone();
-    //! @brief Awaken inside the client in console mode.
-    static void notifyClientOutputDone();
-    //! @brief Build the exit request message in console mode.
-    //! @return exit request message
-    static std::string buildDisconnectRequest();
-    //! @brief Console latency in the millisecond range.
-    static void interactionLatency();
 };
 
 extern bool executeCLI(const int argc, const char* const argv[]);
