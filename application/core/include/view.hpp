@@ -266,7 +266,7 @@ private:
     //! @param bytes - message buffer
     //! @param size - message length
     template <typename Sock>
-    void onParsingCallback(std::shared_ptr<Sock>& client, char* const bytes, const std::size_t size);
+    void parseTLVPacket(std::shared_ptr<Sock>& client, char* const bytes, const std::size_t size);
     //! @brief Block the caller until the output task is marked as done.
     void waitTaskDone();
     //! @brief Notify that the output task has been completed and unblock any waiters.

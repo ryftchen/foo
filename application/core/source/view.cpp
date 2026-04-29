@@ -682,7 +682,7 @@ template <>
 void View::launchOnClient<utility::socket::TCPSocket>(std::shared_ptr<utility::socket::TCPSocket>& client)
 {
     client->subscribeRawMessage([this, &client](char* const bytes, const std::size_t size)
-                                { onParsingCallback(client, bytes, size); });
+                                { parseTLVPacket(client, bytes, size); });
     client->connect(tcpHost, tcpPort);
 }
 
@@ -694,7 +694,7 @@ void View::launchOnClient<utility::socket::UDPSocket>(std::shared_ptr<utility::s
     client->subscribeRawMessage(
         [this,
          &client](char* const bytes, const std::size_t size, const std::string& /*ip*/, const std::uint16_t /*port*/)
-        { onParsingCallback(client, bytes, size); });
+        { parseTLVPacket(client, bytes, size); });
     client->receive();
     client->connect(udpHost, udpPort);
 }
@@ -712,7 +712,7 @@ void View::forwardByClient(std::shared_ptr<Sock>& client, const std::vector<std:
 }
 
 template <typename Sock>
-void View::onParsingCallback(std::shared_ptr<Sock>& client, char* const bytes, const std::size_t size)
+void View::parseTLVPacket(std::shared_ptr<Sock>& client, char* const bytes, const std::size_t size)
 try
 {
     MACRO_DEFER([this]() { notifyTaskDone(); });
