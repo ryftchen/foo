@@ -580,7 +580,7 @@ void Command::executeInConsole() const
     constexpr std::string_view greeting = "> ";
     const auto session = std::make_unique<console::Console>(greeting);
     auto tempClient = std::make_shared<utility::socket::UDPSocket>();
-    view::conn::launchOnClient(tempClient);
+    view::intf::connectFromClient(tempClient);
     registerOnConsole(*session, tempClient);
 
     for (std::ostringstream out{}; const auto& input : pendingInputs)
@@ -711,7 +711,7 @@ try
     const auto greeting = userName + '@' + hostName.data() + " foo > ";
     const auto session = std::make_unique<console::Console>(greeting);
     auto permClient = std::make_shared<utility::socket::TCPSocket>();
-    view::conn::launchOnClient(permClient);
+    view::intf::connectFromClient(permClient);
     registerOnConsole(*session, permClient);
 
     std::cout << build::banner() << std::endl;
@@ -772,7 +772,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<Sock>
         triggerEvent<Helper>(ExtEvent::startup);
     };
     const auto asyncReqSender = [&client](const auto& inputs)
-    { return processConsoleInputs([&client, &inputs]() { view::conn::forwardByClient(client, inputs); }); };
+    { return processConsoleInputs([&client, &inputs]() { view::intf::forwardByClient(client, inputs); }); };
 
     session.registerOption(
         "refresh",
@@ -803,7 +803,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<Sock>
                     using view::View;
                     gracefulReset.template operator()<View>();
                     client = std::make_shared<Sock>();
-                    view::conn::launchOnClient(client);
+                    view::intf::connectFromClient(client);
                     LOG_INF_F("Reconnected to the {} servers.", View::name);
                 });
         });

@@ -22,14 +22,14 @@ inline constexpr std::uint16_t minPortNumber = 1024;
 //! @brief Maximum port number.
 inline constexpr std::uint16_t maxPortNumber = 65535;
 
-//! @brief Connection interface.
-namespace conn
+//! @brief Simplified interface.
+namespace intf
 {
-//! @brief Launch on the client.
+//! @brief Connect from the client.
 //! @tparam Sock - type of client
-//! @param client - client to be launched
+//! @param client - client to be connected
 template <typename Sock>
-void launchOnClient(std::shared_ptr<Sock>& client);
+void connectFromClient(std::shared_ptr<Sock>& client);
 //! @brief Forward message by client.
 //! @tparam Sock - type of client
 //! @param client - client to be used for forwarding
@@ -38,14 +38,14 @@ template <typename Sock>
 void forwardByClient(std::shared_ptr<Sock>& client, const std::vector<std::string>& inputs);
 
 template <>
-void launchOnClient(std::shared_ptr<utility::socket::TCPSocket>& client);
+void connectFromClient(std::shared_ptr<utility::socket::TCPSocket>& client);
 template <>
-void launchOnClient(std::shared_ptr<utility::socket::UDPSocket>& client);
+void connectFromClient(std::shared_ptr<utility::socket::UDPSocket>& client);
 template <>
 void forwardByClient(std::shared_ptr<utility::socket::TCPSocket>& client, const std::vector<std::string>& inputs);
 template <>
 void forwardByClient(std::shared_ptr<utility::socket::UDPSocket>& client, const std::vector<std::string>& inputs);
-} // namespace conn
+} // namespace intf
 
 //! @brief Viewer.
 class View final : public utility::fsm::FSM<View>
@@ -89,9 +89,9 @@ public:
 
     friend class configure::Controller<View>;
     template <typename Sock>
-    friend void conn::launchOnClient(std::shared_ptr<Sock>& client);
+    friend void intf::connectFromClient(std::shared_ptr<Sock>& client);
     template <typename Sock>
-    friend void conn::forwardByClient(std::shared_ptr<Sock>& client, const std::vector<std::string>& inputs);
+    friend void intf::forwardByClient(std::shared_ptr<Sock>& client, const std::vector<std::string>& inputs);
 
 private:
     //! @brief Construct a new View object.
@@ -249,36 +249,36 @@ private:
     template <typename Sock>
     void renewServer();
 
-    //! @brief Launch on the client.
+    //! @brief Connect from the client. Simplified interface for external use.
     //! @tparam Sock - type of client
-    //! @param client - client to be launched
+    //! @param client - client to be connected
     template <typename Sock>
-    void launchOnClient(std::shared_ptr<Sock>& client);
-    //! @brief Forward message by client.
+    void onConnecting(std::shared_ptr<Sock>& client);
+    //! @brief Forward message by client. Simplified interface for external use.
     //! @tparam Sock - type of client
     //! @param client - client to be used for forwarding
     //! @param inputs - input strings to be forwarded
     template <typename Sock>
-    void forwardByClient(std::shared_ptr<Sock>& client, const std::vector<std::string>& inputs);
+    void onForwarding(std::shared_ptr<Sock>& client, const std::vector<std::string>& inputs);
     //! @brief Parse the TLV packet of message.
     //! @tparam Sock - type of client
     //! @param client - client associated with parsing
     //! @param bytes - message buffer
     //! @param size - message length
     template <typename Sock>
-    void parseTLVPacket(std::shared_ptr<Sock>& client, char* const bytes, const std::size_t size);
+    void parseTLVMessage(std::shared_ptr<Sock>& client, char* const bytes, const std::size_t size);
     //! @brief Block the caller until the output task is marked as done.
     void waitTaskDone();
     //! @brief Notify that the output task has been completed and unblock any waiters.
     void notifyTaskDone();
-    //! @brief Wait until the viewer reaches the target state. Interface controller for external use.
+    //! @brief Wait until the viewer reaches the target state. Access controller for external use.
     //! @param state - target state
     //! @param handling - handling if unexpected state
     void syncWaitOr(const State state, const std::function<void()>& handling) const;
-    //! @brief Notify the viewer to change the state. Interface controller for external use.
+    //! @brief Notify the viewer to change the state. Access controller for external use.
     //! @param action - action to be executed
     void syncNotifyVia(const std::function<void()>& action);
-    //! @brief Keep countdown if the viewer does not meet the condition in time. Interface controller for external use.
+    //! @brief Keep countdown if the viewer does not meet the condition in time. Access controller for external use.
     //! @param condition - condition of countdown
     //! @param handling - handling if timeout
     void syncCountdownIf(const std::function<bool()>& condition, const std::function<void()>& handling) const;

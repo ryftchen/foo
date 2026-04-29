@@ -71,11 +71,11 @@ namespace log
 //! @brief Directory of the source code.
 constexpr std::string_view sourceDirectory = "/foo/";
 
-//! @brief Connection interface.
-namespace conn
+//! @brief Simplified interface.
+namespace intf
 {
 extern void previewInContext(const std::function<void(const std::string&)>& peeking);
-} // namespace conn
+} // namespace intf
 
 //! @brief Logger.
 class Log final : public utility::fsm::FSM<Log>
@@ -147,7 +147,6 @@ public:
         all
     };
 
-    friend class configure::Controller<Log>;
     template <typename... Args>
     friend void printfStyle(
         const OutputLevel severity,
@@ -162,7 +161,8 @@ public:
         const std::uint32_t srcLine,
         const std::string& format,
         Args&&... args);
-    friend void conn::previewInContext(const std::function<void(const std::string&)>& peeking);
+    friend class configure::Controller<Log>;
+    friend void intf::previewInContext(const std::function<void(const std::string&)>& peeking);
     static_assert((sourceDirectory.front() == '/') && (sourceDirectory.back() == '/'));
 
 private:
@@ -222,17 +222,17 @@ private:
     //! @return log contents
     static std::vector<std::string> reformatContents(const std::string_view label, const std::string_view formatted);
 
-    //! @brief Preview in the current log context.
+    //! @brief Preview in the log context. Simplified interface for external use.
     //! @param peeking - further handling for peeking
-    void previewInContext(const std::function<void(const std::string&)>& peeking) const;
-    //! @brief Wait until the logger reaches the target state. Interface controller for external use.
+    void onPreviewing(const std::function<void(const std::string&)>& peeking) const;
+    //! @brief Wait until the logger reaches the target state. Access controller for external use.
     //! @param state - target state
     //! @param handling - handling if unexpected state
     void syncWaitOr(const State state, const std::function<void()>& handling) const;
-    //! @brief Notify the logger to change the state. Interface controller for external use.
+    //! @brief Notify the logger to change the state. Access controller for external use.
     //! @param action - action to be executed
     void syncNotifyVia(const std::function<void()>& action);
-    //! @brief Keep countdown if the logger does not meet the condition in time. Interface controller for external use.
+    //! @brief Keep countdown if the logger does not meet the condition in time. Access controller for external use.
     //! @param condition - condition of countdown
     //! @param handling - handling if timeout
     void syncCountdownIf(const std::function<bool()>& condition, const std::function<void()>& handling) const;

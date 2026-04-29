@@ -524,7 +524,7 @@ void View::segmentedOutput(const std::string& cache)
 std::string View::logContextPreview()
 {
     std::ostringstream transfer{};
-    log::conn::previewInContext(
+    log::intf::previewInContext(
         [&transfer](const std::string& filePath)
         {
             constexpr std::uint16_t lineLimit = 24 * 100;
@@ -676,31 +676,31 @@ void View::renewServer<utility::socket::UDPServer>()
         });
 }
 
-//! @brief Launch on the TCP client.
-//! @param client - TCP client to be launched
+//! @brief Connect from the TCP client. Simplified interface for external use.
+//! @param client - TCP client to be connected
 template <>
-void View::launchOnClient<utility::socket::TCPSocket>(std::shared_ptr<utility::socket::TCPSocket>& client)
+void View::onConnecting<utility::socket::TCPSocket>(std::shared_ptr<utility::socket::TCPSocket>& client)
 {
     client->subscribeRawMessage([this, &client](char* const bytes, const std::size_t size)
-                                { parseTLVPacket(client, bytes, size); });
+                                { parseTLVMessage(client, bytes, size); });
     client->connect(tcpHost, tcpPort);
 }
 
-//! @brief Launch on the UDP client.
-//! @param client - UDP client to be launched
+//! @brief Connect from the UDP client. Simplified interface for external use.
+//! @param client - UDP client to be connected
 template <>
-void View::launchOnClient<utility::socket::UDPSocket>(std::shared_ptr<utility::socket::UDPSocket>& client)
+void View::onConnecting<utility::socket::UDPSocket>(std::shared_ptr<utility::socket::UDPSocket>& client)
 {
     client->subscribeRawMessage(
         [this,
          &client](char* const bytes, const std::size_t size, const std::string& /*ip*/, const std::uint16_t /*port*/)
-        { parseTLVPacket(client, bytes, size); });
+        { parseTLVMessage(client, bytes, size); });
     client->receive();
     client->connect(udpHost, udpPort);
 }
 
 template <typename Sock>
-void View::forwardByClient(std::shared_ptr<Sock>& client, const std::vector<std::string>& inputs)
+void View::onForwarding(std::shared_ptr<Sock>& client, const std::vector<std::string>& inputs)
 {
     auto reqBuffer = utility::common::base64Encode(std::accumulate(
         inputs.cbegin(),
@@ -712,7 +712,7 @@ void View::forwardByClient(std::shared_ptr<Sock>& client, const std::vector<std:
 }
 
 template <typename Sock>
-void View::parseTLVPacket(std::shared_ptr<Sock>& client, char* const bytes, const std::size_t size)
+void View::parseTLVMessage(std::shared_ptr<Sock>& client, char* const bytes, const std::size_t size)
 try
 {
     MACRO_DEFER([this]() { notifyTaskDone(); });
@@ -991,22 +991,22 @@ void interactionLatency()
     std::this_thread::sleep_for(latency);
 }
 
-namespace conn
+namespace intf
 {
-//! @brief Launch on the TCP client.
-//! @param client - TCP client to be launched
+//! @brief Connect from the TCP client.
+//! @param client - TCP client to be connected
 template <>
-void launchOnClient(std::shared_ptr<utility::socket::TCPSocket>& client)
+void connectFromClient(std::shared_ptr<utility::socket::TCPSocket>& client)
 {
-    View::getInstance()->launchOnClient(client);
+    View::getInstance()->onConnecting(client);
 }
 
-//! @brief Launch on the UDP client.
-//! @param client - UDP client to be launched
+//! @brief Connect from the UDP client.
+//! @param client - UDP client to be connected
 template <>
-void launchOnClient(std::shared_ptr<utility::socket::UDPSocket>& client)
+void connectFromClient(std::shared_ptr<utility::socket::UDPSocket>& client)
 {
-    View::getInstance()->launchOnClient(client);
+    View::getInstance()->onConnecting(client);
 }
 
 //! @brief Forward message by TCP client.
@@ -1015,7 +1015,7 @@ void launchOnClient(std::shared_ptr<utility::socket::UDPSocket>& client)
 template <>
 void forwardByClient(std::shared_ptr<utility::socket::TCPSocket>& client, const std::vector<std::string>& inputs)
 {
-    View::getInstance()->forwardByClient(client, inputs);
+    View::getInstance()->onForwarding(client, inputs);
 }
 
 //! @brief Forward message by UDP client.
@@ -1024,12 +1024,12 @@ void forwardByClient(std::shared_ptr<utility::socket::TCPSocket>& client, const 
 template <>
 void forwardByClient(std::shared_ptr<utility::socket::UDPSocket>& client, const std::vector<std::string>& inputs)
 {
-    View::getInstance()->forwardByClient(client, inputs);
+    View::getInstance()->onForwarding(client, inputs);
 }
-} // namespace conn
+} // namespace intf
 } // namespace view
 
-//! @brief Wait for the viewer to start. Interface controller for external use.
+//! @brief Wait for the viewer to start. Access controller for external use.
 template <>
 void view::AccessController::startup() const
 try
@@ -1048,7 +1048,7 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-//! @brief Wait for the viewer to stop. Interface controller for external use.
+//! @brief Wait for the viewer to stop. Access controller for external use.
 template <>
 void view::AccessController::shutdown() const
 try
@@ -1064,7 +1064,7 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-//! @brief Request to reset the viewer. Interface controller for external use.
+//! @brief Request to reset the viewer. Access controller for external use.
 template <>
 void view::AccessController::reload() const
 try

@@ -299,7 +299,7 @@ std::vector<std::string> Log::reformatContents(const std::string_view label, con
     return std::vector<std::string>{std::ranges::begin(reformatted), std::ranges::end(reformatted)};
 }
 
-void Log::previewInContext(const std::function<void(const std::string&)>& peeking) const
+void Log::onPreviewing(const std::function<void(const std::string&)>& peeking) const
 {
     const LockGuard guard(fileLock, LockMode::read);
     if (peeking)
@@ -614,18 +614,18 @@ std::string& changeToLogStyle(std::string& line)
     return line;
 }
 
-namespace conn
+namespace intf
 {
-//! @brief Preview in the current log context.
+//! @brief Preview in the log context.
 //! @param peeking - further handling for peeking
 void previewInContext(const std::function<void(const std::string&)>& peeking)
 {
-    Log::getInstance()->previewInContext(peeking);
+    Log::getInstance()->onPreviewing(peeking);
 }
-} // namespace conn
+} // namespace intf
 } // namespace log
 
-//! @brief Wait for the logger to start. Interface controller for external use.
+//! @brief Wait for the logger to start. Access controller for external use.
 template <>
 void log::AccessController::startup() const
 try
@@ -643,7 +643,7 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-//! @brief Wait for the logger to stop. Interface controller for external use.
+//! @brief Wait for the logger to stop. Access controller for external use.
 template <>
 void log::AccessController::shutdown() const
 try
@@ -659,7 +659,7 @@ catch (const std::exception& err)
     LOG_ERR << err.what();
 }
 
-//! @brief Request to reset the logger. Interface controller for external use.
+//! @brief Request to reset the logger. Access controller for external use.
 template <>
 void log::AccessController::reload() const
 try
