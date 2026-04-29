@@ -83,11 +83,6 @@ private:
     //! @tparam SubCLI - type of sub-cli
     template <typename SubCLI>
     void subCLISetup();
-    //! @brief Resolve target sub-cli.
-    //! @tparam Mapped - type of sub-cli or sub-cli's category
-    //! @return parse argument helper to apply
-    template <typename Mapped>
-    utility::argument::Argument& resolveSubCLI();
     //! @brief Inject a new sub-cli.
     //! @tparam SubCLI - type of sub-cli
     //! @tparam Intf - type of wrapped interface
@@ -98,6 +93,11 @@ private:
     //! @param version - category version
     template <typename Cat>
     void addNewCategoryToSubCLI(const std::string_view version);
+    //! @brief Resolve target sub-cli.
+    //! @tparam Mapped - type of sub-cli or sub-cli's category
+    //! @return parse argument helper to apply
+    template <typename Mapped>
+    auto& resolveSubCLI();
     //! @brief Front-end handler for parsing command line arguments.
     //! @param argc - argument count
     //! @param argv - argument vector

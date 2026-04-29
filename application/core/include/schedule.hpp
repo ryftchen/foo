@@ -642,7 +642,7 @@ consteval std::string_view descr()
 //! @tparam Cat - type of sub-cli's category
 //! @return all choices
 template <typename Cat>
-constexpr std::vector<std::string> choice()
+constexpr auto choice()
 {
     constexpr auto refl = REFLECTION_STR("choice");
     std::vector<std::string> choices{};

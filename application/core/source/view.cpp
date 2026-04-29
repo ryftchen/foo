@@ -297,6 +297,18 @@ std::size_t View::buildResponse(const std::string& reqPlaintext, Buffer& respBuf
         });
 }
 
+auto View::splitString(const std::string& str)
+{
+    std::vector<std::string> split{};
+    std::istringstream transfer(str);
+    std::string token{};
+    while (transfer >> token)
+    {
+        split.emplace_back(token);
+    }
+    return split;
+}
+
 View::OptionType View::extractOption(const std::string& reqPlaintext)
 {
     auto args = splitString(reqPlaintext);
@@ -325,18 +337,6 @@ View::OptionType View::extractOption(const std::string& reqPlaintext)
             break;
     }
     return {};
-}
-
-std::vector<std::string> View::splitString(const std::string& str)
-{
-    std::vector<std::string> split{};
-    std::istringstream transfer(str);
-    std::string token{};
-    while (transfer >> token)
-    {
-        split.emplace_back(token);
-    }
-    return split;
 }
 
 std::size_t View::buildAckTLVPacket(Buffer& buffer)

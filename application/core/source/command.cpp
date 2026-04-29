@@ -274,7 +274,7 @@ void Command::mainCLISetup()
             shortPrefix + std::string{mappedAlias(Category::console)},
             longPrefix + std::string{toString(Category::console)})
         .argsNum(ArgsNumPattern::any)
-        .defaultValue<std::vector<std::string>>({"usage"})
+        .defaultValue<console::Console::Args>({"usage"})
         .appending()
         .action(
             [](const std::string& input)
@@ -291,7 +291,7 @@ void Command::mainCLISetup()
 }
 
 template <typename Mapped>
-utility::argument::Argument& Command::resolveSubCLI()
+auto& Command::resolveSubCLI()
 {
     if constexpr (std::is_same_v<Mapped, reg_algo::ApplyAlgorithm> || reg_algo::Registrant<Mapped>)
     {
@@ -491,7 +491,7 @@ void Command::precheck()
                  | std::views::filter([this, &subCLI](const auto& categoryPair)
                                       { return subCLI.isUsed(categoryPair.first) && (checkExcessArgs(), true); }))
         {
-            for (const auto& choice : subCLI.get<std::vector<std::string>>(categoryName))
+            for (const auto& choice : subCLI.get<std::remove_const_t<decltype(categoryAttr.choices)>>(categoryName))
             {
                 using schedule::extra::SetChoice;
                 utility::common::patternMatch(
@@ -571,7 +571,7 @@ void Command::executeInConsole() const
         return;
     }
 
-    const auto pendingInputs = mainCLI.get<std::vector<std::string>>(toString(Category::console));
+    const auto pendingInputs = mainCLI.get<console::Console::Args>(toString(Category::console));
     if (pendingInputs.empty())
     {
         return;

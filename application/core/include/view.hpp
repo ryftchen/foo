@@ -186,7 +186,7 @@ private:
     //! @brief Split string by space.
     //! @param str - target string
     //! @return strings after split
-    static std::vector<std::string> splitString(const std::string& str);
+    static auto splitString(const std::string& str);
     //! @brief Build the TLV packet of the response message to acknowledge only.
     //! @param buffer - TLV packet buffer
     //! @return buffer length
