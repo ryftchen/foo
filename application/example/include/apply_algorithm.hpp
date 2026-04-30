@@ -35,7 +35,7 @@ namespace match
 //! @brief The version used to apply.
 const char* const version = algorithm::match::version();
 
-//! @brief Set input parameters.
+//! @brief Set the input parameters.
 namespace input
 {
 //! @brief Single pattern for match methods.
@@ -159,7 +159,7 @@ namespace notation
 //! @brief The version used to apply.
 const char* const version = algorithm::notation::version();
 
-//! @brief Set input parameters.
+//! @brief Set the input parameters.
 namespace input
 {
 //! @brief Infix string for notation methods.
@@ -217,7 +217,7 @@ public:
     }
 };
 
-//! @brief Set input parameters.
+//! @brief Set the input parameters.
 namespace input
 {
 //! @brief Spherical Bessel.
@@ -283,7 +283,7 @@ namespace search
 //! @brief The version used to apply.
 const char* const version = algorithm::search::version();
 
-//! @brief Set input parameters.
+//! @brief Set the input parameters.
 namespace input
 {
 //! @brief Minimum of the array for search methods.
@@ -448,7 +448,7 @@ namespace sort
 //! @brief The version used to apply.
 const char* const version = algorithm::sort::version();
 
-//! @brief Set input parameters.
+//! @brief Set the input parameters.
 namespace input
 {
 //! @brief Minimum of the array for sort methods.

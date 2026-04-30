@@ -62,7 +62,7 @@ const char* version() noexcept
     return app_algo::match::version;
 }
 } // namespace match
-//! @brief Set match-related choice.
+//! @brief Set the match-related choice.
 //! @param choice - target choice
 template <>
 void setChoice<MatchMethod>(const std::string& choice)
@@ -92,7 +92,7 @@ void setChoice<MatchMethod>(const std::string& choice)
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run match-related candidates.
+//! @brief Run the match-related candidates.
 //! @param candidates - container for the candidate target choices
 template <>
 void runCandidates<MatchMethod>(const std::vector<std::string>& candidates)
@@ -109,7 +109,7 @@ const char* version() noexcept
     return app_algo::notation::version;
 }
 } // namespace notation
-//! @brief Set notation-related choice.
+//! @brief Set the notation-related choice.
 //! @param choice - target choice
 template <>
 void setChoice<NotationMethod>(const std::string& choice)
@@ -130,7 +130,7 @@ void setChoice<NotationMethod>(const std::string& choice)
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run notation-related candidates.
+//! @brief Run the notation-related candidates.
 //! @param candidates - container for the candidate target choices
 template <>
 void runCandidates<NotationMethod>(const std::vector<std::string>& candidates)
@@ -147,7 +147,7 @@ const char* version() noexcept
     return app_algo::optimal::version;
 }
 } // namespace optimal
-//! @brief Set optimal-related choice.
+//! @brief Set the optimal-related choice.
 //! @param choice - target choice
 template <>
 void setChoice<OptimalMethod>(const std::string& choice)
@@ -180,7 +180,7 @@ void setChoice<OptimalMethod>(const std::string& choice)
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run optimal-related candidates.
+//! @brief Run the optimal-related candidates.
 //! @param candidates - container for the candidate target choices
 template <>
 void runCandidates<OptimalMethod>(const std::vector<std::string>& candidates)
@@ -197,7 +197,7 @@ const char* version() noexcept
     return app_algo::search::version;
 }
 } // namespace search
-//! @brief Set search-related choice.
+//! @brief Set the search-related choice.
 //! @param choice - target choice
 template <>
 void setChoice<SearchMethod>(const std::string& choice)
@@ -221,7 +221,7 @@ void setChoice<SearchMethod>(const std::string& choice)
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run search-related candidates.
+//! @brief Run the search-related candidates.
 //! @param candidates - container for the candidate target choices
 template <>
 void runCandidates<SearchMethod>(const std::vector<std::string>& candidates)
@@ -238,7 +238,7 @@ const char* version() noexcept
     return app_algo::sort::version;
 }
 } // namespace sort
-//! @brief Set sort-related choice.
+//! @brief Set the sort-related choice.
 //! @param choice - target choice
 template <>
 void setChoice<SortMethod>(const std::string& choice)
@@ -283,7 +283,7 @@ void setChoice<SortMethod>(const std::string& choice)
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run sort-related candidates.
+//! @brief Run the sort-related candidates.
 //! @param candidates - container for the candidate target choices
 template <>
 void runCandidates<SortMethod>(const std::vector<std::string>& candidates)

@@ -31,7 +31,7 @@ namespace arithmetic
 //! @brief The version used to apply.
 const char* const version = numeric::arithmetic::version();
 
-//! @brief Set input parameters.
+//! @brief Set the input parameters.
 namespace input
 {
 //! @brief One of operands for arithmetic methods.
@@ -76,7 +76,7 @@ namespace divisor
 //! @brief The version used to apply.
 const char* const version = numeric::divisor::version();
 
-//! @brief Set input parameters.
+//! @brief Set the input parameters.
 namespace input
 {
 //! @brief One of numbers for divisor methods.
@@ -183,7 +183,7 @@ public:
     }
 };
 
-//! @brief Set input parameters.
+//! @brief Set the input parameters.
 namespace input
 {
 //! @brief Cylindrical Bessel.
@@ -249,7 +249,7 @@ namespace prime
 //! @brief The version used to apply.
 const char* const version = numeric::prime::version();
 
-//! @brief Set input parameters.
+//! @brief Set the input parameters.
 namespace input
 {
 //! @brief Upper bound for prime methods.

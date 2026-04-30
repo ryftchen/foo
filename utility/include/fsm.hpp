@@ -235,8 +235,8 @@ public:
     //! @param event - event to be processed
     template <typename Event>
     void processEvent(const Event& event);
-    //! @brief Get current state.
-    //! @return State current state
+    //! @brief Get the current state.
+    //! @return current state
     State currentState() const;
 
 private:
@@ -252,10 +252,10 @@ private:
         using StateType = State;
         //! @brief Alias for the event.
         using EventType = Event;
-        //! @brief Get source state.
+        //! @brief Get the source state.
         //! @return source state
         static constexpr StateType sourceState() { return Source; }
-        //! @brief Get target state.
+        //! @brief Get the target state.
         //! @return target state
         static constexpr StateType targetState() { return Target; }
 

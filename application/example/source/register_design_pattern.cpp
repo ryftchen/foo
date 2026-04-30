@@ -62,7 +62,7 @@ const char* version() noexcept
     return app_dp::behavioral::version;
 }
 } // namespace behavioral
-//! @brief Set behavioral-related choice.
+//! @brief Set the behavioral-related choice.
 //! @param choice - target choice
 template <>
 void setChoice<BehavioralInstance>(const std::string& choice)
@@ -110,7 +110,7 @@ void setChoice<BehavioralInstance>(const std::string& choice)
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run behavioral-related candidates.
+//! @brief Run the behavioral-related candidates.
 //! @param candidates - container for the candidate target choices
 template <>
 void runCandidates<BehavioralInstance>(const std::vector<std::string>& candidates)
@@ -127,7 +127,7 @@ const char* version() noexcept
     return app_dp::creational::version;
 }
 } // namespace creational
-//! @brief Set creational-related choice.
+//! @brief Set the creational-related choice.
 //! @param choice - target choice
 template <>
 void setChoice<CreationalInstance>(const std::string& choice)
@@ -157,7 +157,7 @@ void setChoice<CreationalInstance>(const std::string& choice)
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run creational-related candidates.
+//! @brief Run the creational-related candidates.
 //! @param candidates - container for the candidate target choices
 template <>
 void runCandidates<CreationalInstance>(const std::vector<std::string>& candidates)
@@ -174,7 +174,7 @@ const char* version() noexcept
     return app_dp::structural::version;
 }
 } // namespace structural
-//! @brief Set structural-related choice.
+//! @brief Set the structural-related choice.
 //! @param choice - target choice
 template <>
 void setChoice<StructuralInstance>(const std::string& choice)
@@ -210,7 +210,7 @@ void setChoice<StructuralInstance>(const std::string& choice)
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run structural-related candidates.
+//! @brief Run the structural-related candidates.
 //! @param candidates - container for the candidate target choices
 template <>
 void runCandidates<StructuralInstance>(const std::vector<std::string>& candidates)

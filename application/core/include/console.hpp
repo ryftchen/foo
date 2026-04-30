@@ -56,12 +56,12 @@ public:
     using Args = std::vector<std::string>;
     //! @brief Alias for the callback of option.
     using Callback = std::function<RetCode(const Args&)>;
-    //! @brief Register console option.
+    //! @brief Register the console option.
     //! @param name - option name
     //! @param description - option description
     //! @param callback - callback function
     void registerOption(const std::string_view name, const std::string_view description, Callback callback);
-    //! @brief Set greeting information.
+    //! @brief Set the greeting information.
     //! @param greeting - greeting information
     void setGreeting(const std::string_view greeting);
     //! @brief Execute the target console option.

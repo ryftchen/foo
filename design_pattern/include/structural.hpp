@@ -39,7 +39,7 @@ public:
     virtual void request() = 0;
 };
 
-//! @brief Get calls that client makes on the target because of the adapter.
+//! @brief Get the calls that client makes on the target because of the adapter.
 class Adaptee
 {
 public:

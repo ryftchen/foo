@@ -62,7 +62,7 @@ const char* version() noexcept
     return app_num::arithmetic::version;
 }
 } // namespace arithmetic
-//! @brief Set arithmetic-related choice.
+//! @brief Set the arithmetic-related choice.
 //! @param choice - target choice
 template <>
 void setChoice<ArithmeticMethod>(const std::string& choice)
@@ -89,7 +89,7 @@ void setChoice<ArithmeticMethod>(const std::string& choice)
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run arithmetic-related candidates.
+//! @brief Run the arithmetic-related candidates.
 //! @param candidates - container for the candidate target choices
 template <>
 void runCandidates<ArithmeticMethod>(const std::vector<std::string>& candidates)
@@ -106,7 +106,7 @@ const char* version() noexcept
     return app_num::divisor::version;
 }
 } // namespace divisor
-//! @brief Set divisor-related choice.
+//! @brief Set the divisor-related choice.
 //! @param choice - target choice
 template <>
 void setChoice<DivisorMethod>(const std::string& choice)
@@ -127,7 +127,7 @@ void setChoice<DivisorMethod>(const std::string& choice)
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run divisor-related candidates.
+//! @brief Run the divisor-related candidates.
 //! @param candidates - container for the candidate target choices
 template <>
 void runCandidates<DivisorMethod>(const std::vector<std::string>& candidates)
@@ -144,7 +144,7 @@ const char* version() noexcept
     return app_num::integral::version;
 }
 } // namespace integral
-//! @brief Set integral-related choice.
+//! @brief Set the integral-related choice.
 //! @param choice - target choice
 template <>
 void setChoice<IntegralMethod>(const std::string& choice)
@@ -174,7 +174,7 @@ void setChoice<IntegralMethod>(const std::string& choice)
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run integral-related candidates.
+//! @brief Run the integral-related candidates.
 //! @param candidates - container for the candidate target choices
 template <>
 void runCandidates<IntegralMethod>(const std::vector<std::string>& candidates)
@@ -191,7 +191,7 @@ const char* version() noexcept
     return app_num::prime::version;
 }
 } // namespace prime
-//! @brief Set prime-related choice.
+//! @brief Set the prime-related choice.
 //! @param choice - target choice
 template <>
 void setChoice<PrimeMethod>(const std::string& choice)
@@ -212,7 +212,7 @@ void setChoice<PrimeMethod>(const std::string& choice)
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run prime-related candidates.
+//! @brief Run the prime-related candidates.
 //! @param candidates - container for the candidate target choices
 template <>
 void runCandidates<PrimeMethod>(const std::vector<std::string>& candidates)

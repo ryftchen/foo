@@ -69,11 +69,11 @@ private:
     //! @param key - key to hash
     //! @param length - length of the key
     void bloomHash(const void* const key, const int length);
-    //! @brief Set a bit in the filter.
+    //! @brief Set the bit in the filter.
     //! @param filter - filter to set the bit in
     //! @param pos - hash position to set the bit
     static void setBit(std::uint8_t filter[], const std::uint32_t pos);
-    //! @brief Get a bit from the filter.
+    //! @brief Get the bit from the filter.
     //! @param filter - filter to get the bit from
     //! @param pos - hash position to get the bit
     //! @return bit from the filter
@@ -243,7 +243,7 @@ private:
     //! @param elem - element to check
     //! @return be occupied or not
     static bool isOccupied(const std::uint64_t elem);
-    //! @brief Set an element as occupied.
+    //! @brief Set the element as occupied.
     //! @param elem - element to set
     //! @return element with occupied status set
     static std::uint64_t setOccupied(const std::uint64_t elem);
@@ -255,7 +255,7 @@ private:
     //! @param elem - element to check
     //! @return be a continuation or not
     static bool isContinuation(const std::uint64_t elem);
-    //! @brief Set an element as a continuation.
+    //! @brief Set the element as a continuation.
     //! @param elem - element to set
     //! @return element with continuation status set
     static std::uint64_t setContinuation(const std::uint64_t elem);
@@ -267,7 +267,7 @@ private:
     //! @param elem - element to check
     //! @return be shifted or not
     static bool isShifted(const std::uint64_t elem);
-    //! @brief Set an element as shifted.
+    //! @brief Set the element as shifted.
     //! @param elem - element to set
     //! @return element with shifted status set
     static std::uint64_t setShifted(const std::uint64_t elem);

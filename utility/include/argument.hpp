@@ -171,25 +171,25 @@ public:
     template <typename RHS>
     bool operator!=(const RHS& rhs) const;
 
-    //! @brief Set help message.
+    //! @brief Set the help message.
     //! @param message - help message
     //! @return reference of the ArgTrait object
     ArgTrait& help(const std::string_view message);
-    //! @brief Set meta variable.
+    //! @brief Set the meta variable.
     //! @param variable - meta variable
     //! @return reference of the ArgTrait object
     ArgTrait& metaVariable(const std::string_view variable);
-    //! @brief Set default value.
+    //! @brief Set the default value.
     //! @tparam Value - type of default value
     //! @param value - default value
     //! @return reference of the ArgTrait object
     template <typename Value>
     ArgTrait& defaultValue(Value&& value);
-    //! @brief Set default value.
+    //! @brief Set the default value.
     //! @param value - default value
     //! @return reference of the ArgTrait object
     ArgTrait& defaultValue(const std::string_view value);
-    //! @brief Set implicit value.
+    //! @brief Set the implicit value.
     //! @param value - implicit value
     //! @return reference of the ArgTrait object
     ArgTrait& implicitValue(std::any value);
@@ -211,16 +211,16 @@ public:
     template <typename Func, typename... Args>
     auto action(Func&& callable, Args&&... boundArgs)
         -> std::enable_if_t<std::is_invocable_v<Func, Args..., const std::string&>, ArgTrait&>;
-    //! @brief Set number of arguments.
+    //! @brief Set the number of arguments.
     //! @param num - number of arguments
     //! @return reference of the ArgTrait object
     ArgTrait& argsNum(const std::size_t num);
-    //! @brief Set minimum number and maximum number of arguments.
+    //! @brief Set the minimum number and maximum number of arguments.
     //! @param numMin - minimum number
     //! @param numMax - maximum number
     //! @return reference of the ArgTrait object
     ArgTrait& argsNum(const std::size_t numMin, const std::size_t numMax);
-    //! @brief Set number of arguments with pattern.
+    //! @brief Set the number of arguments with pattern.
     //! @param pattern - argument pattern
     //! @return reference of the ArgTrait object
     ArgTrait& argsNum(const ArgsNumPattern pattern);
@@ -678,7 +678,7 @@ public:
     //! @param argc - argument count
     //! @param argv - argument vector
     void parseArgs(const int argc, const char* const argv[]);
-    //! @brief Get argument value by name.
+    //! @brief Get the argument value by name.
     //! @tparam Arg - type of argument
     //! @param argName - target argument name
     //! @return argument value

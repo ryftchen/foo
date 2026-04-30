@@ -187,13 +187,13 @@ extern void clear();
 template <typename Meth>
 concept Registrant = std::is_same_v<Meth, MatchMethod> || std::is_same_v<Meth, NotationMethod>
     || std::is_same_v<Meth, OptimalMethod> || std::is_same_v<Meth, SearchMethod> || std::is_same_v<Meth, SortMethod>;
-//! @brief Set choice.
+//! @brief Set the choice.
 //! @tparam Meth - type of target method
 //! @param choice - target choice
 template <typename Meth>
 requires Registrant<Meth>
 void setChoice(const std::string& choice);
-//! @brief Run candidates.
+//! @brief Run the candidates.
 //! @tparam Meth - type of target method
 //! @param candidates - container for the candidate target choices
 template <typename Meth>

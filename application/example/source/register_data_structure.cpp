@@ -62,7 +62,7 @@ const char* version() noexcept
     return app_ds::cache::version;
 }
 } // namespace cache
-//! @brief Set cache-related choice.
+//! @brief Set the cache-related choice.
 //! @param choice - target choice
 template <>
 void setChoice<CacheInstance>(const std::string& choice)
@@ -86,7 +86,7 @@ void setChoice<CacheInstance>(const std::string& choice)
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run cache-related candidates.
+//! @brief Run the cache-related candidates.
 //! @param candidates - container for the candidate target choices
 template <>
 void runCandidates<CacheInstance>(const std::vector<std::string>& candidates)
@@ -103,7 +103,7 @@ const char* version() noexcept
     return app_ds::filter::version;
 }
 } // namespace filter
-//! @brief Set filter-related choice.
+//! @brief Set the filter-related choice.
 //! @param choice - target choice
 template <>
 void setChoice<FilterInstance>(const std::string& choice)
@@ -124,7 +124,7 @@ void setChoice<FilterInstance>(const std::string& choice)
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run filter-related candidates.
+//! @brief Run the filter-related candidates.
 //! @param candidates - container for the candidate target choices
 template <>
 void runCandidates<FilterInstance>(const std::vector<std::string>& candidates)
@@ -141,7 +141,7 @@ const char* version() noexcept
     return app_ds::graph::version;
 }
 } // namespace graph
-//! @brief Set graph-related choice.
+//! @brief Set the graph-related choice.
 //! @param choice - target choice
 template <>
 void setChoice<GraphInstance>(const std::string& choice)
@@ -162,7 +162,7 @@ void setChoice<GraphInstance>(const std::string& choice)
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run graph-related candidates.
+//! @brief Run the graph-related candidates.
 //! @param candidates - container for the candidate target choices
 template <>
 void runCandidates<GraphInstance>(const std::vector<std::string>& candidates)
@@ -179,7 +179,7 @@ const char* version() noexcept
     return app_ds::heap::version;
 }
 } // namespace heap
-//! @brief Set heap-related choice.
+//! @brief Set the heap-related choice.
 //! @param choice - target choice
 template <>
 void setChoice<HeapInstance>(const std::string& choice)
@@ -203,7 +203,7 @@ void setChoice<HeapInstance>(const std::string& choice)
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run heap-related candidates.
+//! @brief Run the heap-related candidates.
 //! @param candidates - container for the candidate target choices
 template <>
 void runCandidates<HeapInstance>(const std::vector<std::string>& candidates)
@@ -220,7 +220,7 @@ const char* version() noexcept
     return app_ds::linear::version;
 }
 } // namespace linear
-//! @brief Set linear-related choice.
+//! @brief Set the linear-related choice.
 //! @param choice - target choice
 template <>
 void setChoice<LinearInstance>(const std::string& choice)
@@ -244,7 +244,7 @@ void setChoice<LinearInstance>(const std::string& choice)
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run linear-related candidates.
+//! @brief Run the linear-related candidates.
 //! @param candidates - container for the candidate target choices
 template <>
 void runCandidates<LinearInstance>(const std::vector<std::string>& candidates)
@@ -261,7 +261,7 @@ const char* version() noexcept
     return app_ds::tree::version;
 }
 } // namespace tree
-//! @brief Set tree-related choice.
+//! @brief Set the tree-related choice.
 //! @param choice - target choice
 template <>
 void setChoice<TreeInstance>(const std::string& choice)
@@ -285,7 +285,7 @@ void setChoice<TreeInstance>(const std::string& choice)
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
-//! @brief Run tree-related candidates.
+//! @brief Run the tree-related candidates.
 //! @param candidates - container for the candidate target choices
 template <>
 void runCandidates<TreeInstance>(const std::vector<std::string>& candidates)
