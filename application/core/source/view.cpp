@@ -45,7 +45,7 @@ using AccessController = configure::Controller<View>;
 inline namespace
 {
 //! @brief The internal symbol for exiting.
-constexpr std::string_view exitSymbol = "stop";
+constexpr std::string_view exitSymbol = MACRO_STRINGIFY(stop);
 } // namespace
 
 //! @brief Alias for the type-length-value scheme.
@@ -297,18 +297,6 @@ std::size_t View::buildResponse(const std::string& reqPlaintext, Buffer& respBuf
         });
 }
 
-auto View::splitString(const std::string& str)
-{
-    std::vector<std::string> split{};
-    std::istringstream transfer(str);
-    std::string token{};
-    while (transfer >> token)
-    {
-        split.emplace_back(token);
-    }
-    return split;
-}
-
 View::OptionType View::extractOption(const std::string& reqPlaintext)
 {
     auto args = splitString(reqPlaintext);
@@ -337,6 +325,18 @@ View::OptionType View::extractOption(const std::string& reqPlaintext)
             break;
     }
     return {};
+}
+
+std::vector<std::string> View::splitString(const std::string& str)
+{
+    std::vector<std::string> split{};
+    std::istringstream transfer(str);
+    std::string token{};
+    while (transfer >> token)
+    {
+        split.emplace_back(token);
+    }
+    return split;
 }
 
 std::size_t View::buildAckTLVPacket(Buffer& buffer)
@@ -692,9 +692,11 @@ template <>
 void View::onConnecting<utility::socket::UDPSocket>(std::shared_ptr<utility::socket::UDPSocket>& client)
 {
     client->subscribeRawMessage(
-        [this,
-         &client](char* const bytes, const std::size_t size, const std::string& /*ip*/, const std::uint16_t /*port*/)
-        { parseTLVMessage(client, bytes, size); });
+        [this, &client](char* const bytes, const std::size_t size, const std::string& ip, const std::uint16_t port)
+        {
+            MACRO_IGNORE(ip, port);
+            parseTLVMessage(client, bytes, size);
+        });
     client->receive();
     client->connect(udpHost, udpPort);
 }
@@ -961,20 +963,19 @@ std::ostream& operator<<(std::ostream& os, const View::State state)
 
 //! @brief Obtain the supported viewer options.
 //! @return supported viewer options
-std::map<std::string, std::string> obtainSupportedOptions()
+auto obtainSupportedOptions() -> std::map<std::string, std::string>
 {
     using OptDepend = View::OptDepend;
     using OptExecute = View::OptExecute;
     using OptJournal = View::OptJournal;
     using OptMonitor = View::OptMonitor;
     using OptProfile = View::OptProfile;
-    static const auto supportedOptions = std::map<std::string, std::string>{
+    return std::map<std::string, std::string>{
         {OptDepend::name, OptDepend::description},
         {OptExecute::name, OptExecute::description},
         {OptJournal::name, OptJournal::description},
         {OptMonitor::name, OptMonitor::description},
         {OptProfile::name, OptProfile::description}};
-    return supportedOptions;
 }
 
 //! @brief Build the disconnect request message.

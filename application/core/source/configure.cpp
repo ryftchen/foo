@@ -379,11 +379,11 @@ bool loadSettings(const std::string_view filename)
 
 namespace task
 {
-//! @brief Get memory pool for task when making multi-threading.
-//! @return reference of the ResourcePool object
-ResourcePool& resourcePool()
+//! @brief Get the memory pool for task when making multi-threading.
+//! @return reference of the Pooling object
+Pooling& resourcePool()
 {
-    static ResourcePool pooling{};
+    static Pooling pooling{};
     return pooling;
 }
 } // namespace task

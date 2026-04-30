@@ -170,8 +170,6 @@ private:
         alignas(64) std::atomic_bool signal;
     };
 
-    //! @brief Alias for the option type.
-    using OptionType = std::variant<OptBase, OptDepend, OptExecute, OptJournal, OptMonitor, OptProfile>;
     //! @brief Alias for the buffer.
     using Buffer = std::array<char, 1024>;
     //! @brief Build the response message.
@@ -179,6 +177,8 @@ private:
     //! @param respBuffer - buffer to store the response
     //! @return length of the response message
     static std::size_t buildResponse(const std::string& reqPlaintext, Buffer& respBuffer);
+    //! @brief Alias for the option type.
+    using OptionType = std::variant<OptBase, OptDepend, OptExecute, OptJournal, OptMonitor, OptProfile>;
     //! @brief Extract the option from the request.
     //! @param reqPlaintext - plaintext of the request
     //! @return option type
@@ -186,7 +186,7 @@ private:
     //! @brief Split string by space.
     //! @param str - target string
     //! @return strings after split
-    static auto splitString(const std::string& str);
+    static std::vector<std::string> splitString(const std::string& str);
     //! @brief Build the TLV packet of the response message to acknowledge only.
     //! @param buffer - TLV packet buffer
     //! @return buffer length
@@ -354,7 +354,7 @@ protected:
     friend std::ostream& operator<<(std::ostream& os, const State state);
 };
 
-extern std::map<std::string, std::string> obtainSupportedOptions();
+extern auto obtainSupportedOptions() -> std::map<std::string, std::string>;
 extern std::string buildDisconnectRequest();
 extern void interactionLatency();
 } // namespace view
