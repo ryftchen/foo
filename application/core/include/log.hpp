@@ -161,8 +161,6 @@ public:
         const std::uint32_t srcLine,
         const std::string& format,
         Args&&... args);
-    friend class configure::Controller<Log>;
-    friend void intf::previewInContext(const std::function<void(const std::string&)>& peeking);
     static_assert((sourceDirectory.front() == '/') && (sourceDirectory.back() == '/'));
 
 private:
@@ -222,12 +220,14 @@ private:
     //! @return log contents
     static std::vector<std::string> reformatContents(const std::string_view label, const std::string_view formatted);
 
+    friend void intf::previewInContext(const std::function<void(const std::string&)>& peeking);
     //! @brief Preview in the log context. Simplified interface for external use.
     //! @param peeking - further handling for peeking
     void onPreviewing(const std::function<void(const std::string&)>& peeking) const;
     //! @brief Wait until the logger reaches the target state. Access controller for external use.
     //! @param state - target state
     //! @param handling - handling if unexpected state
+    friend class configure::Controller<Log>;
     void syncWaitOr(const State state, const std::function<void()>& handling) const;
     //! @brief Notify the logger to change the state. Access controller for external use.
     //! @param action - action to be executed

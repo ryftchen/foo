@@ -24,15 +24,6 @@ namespace application
 {
 namespace command
 {
-//! @brief Alias for the native categories.
-using Category = schedule::native::Category;
-//! @brief Alias for the representing of the maximum value of an enum.
-//! @tparam Enum - type of specific enum
-template <typename Enum>
-using Bottom = schedule::native::Bottom<Enum>;
-//! @brief Alias for the local notifier.
-using LocalNotifier = schedule::native::Notifier<Command>;
-
 //! @brief Anonymous namespace.
 inline namespace
 {
@@ -214,7 +205,7 @@ Command::~Command()
     clearSelected();
 }
 
-bool Command::execute(const int argc, const char* const argv[])
+bool Command::doExecute(const int argc, const char* const argv[])
 try
 {
     isFaulty.store(false);
@@ -244,31 +235,21 @@ catch (const std::exception& err)
     return !isFaulty.load();
 }
 
-void Command::mainCLISetup()
+template <Category Cat>
+void Command::buildSimpleFlagInMainCLI()
+{
+    mainCLI.addArgument(shortPrefix + std::string{mappedAlias(Cat)}, longPrefix + std::string{toString(Cat)})
+        .argsNum(0)
+        .implicitValue(true)
+        .help(mappedDescr(Cat));
+    builtInNotifier.attach(Cat, std::make_shared<LocalNotifier::Handler<Cat>>(*this));
+}
+
+//! @brief Build a custom option in the main cli for Category::console.
+template <>
+void Command::buildCustomOptionInMainCLI<Category::console>()
 {
     using ArgsNumPattern = utility::argument::ArgsNumPattern;
-    mainCLI
-        .addArgument(
-            shortPrefix + std::string{mappedAlias(Category::help)}, longPrefix + std::string{toString(Category::help)})
-        .argsNum(0)
-        .implicitValue(true)
-        .help(mappedDescr(Category::help));
-    builtInNotifier.attach(Category::help, std::make_shared<LocalNotifier::Handler<Category::help>>(*this));
-    mainCLI
-        .addArgument(
-            shortPrefix + std::string{mappedAlias(Category::version)},
-            longPrefix + std::string{toString(Category::version)})
-        .argsNum(0)
-        .implicitValue(true)
-        .help(mappedDescr(Category::version));
-    builtInNotifier.attach(Category::version, std::make_shared<LocalNotifier::Handler<Category::version>>(*this));
-    mainCLI
-        .addArgument(
-            shortPrefix + std::string{mappedAlias(Category::dump)}, longPrefix + std::string{toString(Category::dump)})
-        .argsNum(0)
-        .implicitValue(true)
-        .help(mappedDescr(Category::dump));
-    builtInNotifier.attach(Category::dump, std::make_shared<LocalNotifier::Handler<Category::dump>>(*this));
     mainCLI
         .addArgument(
             shortPrefix + std::string{mappedAlias(Category::console)},
@@ -290,6 +271,14 @@ void Command::mainCLISetup()
     builtInNotifier.attach(Category::console, std::make_shared<LocalNotifier::Handler<Category::console>>(*this));
 }
 
+void Command::mainCLISetup()
+{
+    buildSimpleFlagInMainCLI<Category::help>();
+    buildSimpleFlagInMainCLI<Category::version>();
+    buildSimpleFlagInMainCLI<Category::dump>();
+    buildCustomOptionInMainCLI<Category::console>();
+}
+
 template <typename Mapped>
 auto& Command::resolveSubCLI()
 {
@@ -309,7 +298,7 @@ auto& Command::resolveSubCLI()
     {
         return subCLIAppNum;
     }
-    throw std::runtime_error{"Invalid sub-command registration."};
+    throw std::runtime_error{"Unknown sub-command registration."};
 }
 
 template <typename SubCLI, typename Intf>
@@ -429,7 +418,7 @@ try
     std::unique_lock<std::mutex> parserLock(parserMtx);
     mainCLI.clearUsed();
     mainCLI.parseArgs(argc, argv);
-    precheck();
+    precheckSchedule();
 
     isParsed.store(true);
     parserLock.unlock();
@@ -453,7 +442,7 @@ try
 
     if (anySelected())
     {
-        dispatchAll();
+        dispatchTasks();
         clearSelected();
     }
 }
@@ -464,7 +453,7 @@ catch (const std::exception& err)
     LOG_WRN << err.what();
 }
 
-void Command::precheck()
+void Command::precheckSchedule()
 {
     for (auto& spec = scheduleDispatcher.nativeCategories;
          const auto index : std::views::iota(0U, spec.size())
@@ -474,14 +463,13 @@ void Command::precheck()
         spec.set(index);
     }
 
-    for (constexpr auto helpArgName = toString(Category::help);
-         [[maybe_unused]] const auto& [subCLIName, categoryMap] : scheduleDispatcher.extraChoiceRegistry
+    for ([[maybe_unused]] const auto& [subCLIName, categoryMap] : scheduleDispatcher.extraChoiceRegistry
              | std::views::filter([this](const auto& subCLIPair)
                                   { return mainCLI.isSubcommandUsed(subCLIPair.first) && (checkExcessArgs(), true); }))
     {
-        const auto& subCLI = mainCLI.at<utility::argument::Argument>(subCLIName);
+        const auto& subCLI = mainCLI.at<Argument>(subCLIName);
         const bool notAssigned = !subCLI;
-        scheduleDispatcher.extraHelping = notAssigned || subCLI.isUsed(helpArgName);
+        scheduleDispatcher.extraHelping = notAssigned || subCLI.isUsed(toString(Category::help));
         if (notAssigned)
         {
             return;
@@ -513,7 +501,7 @@ void Command::clearSelected()
     scheduleDispatcher.reset();
 }
 
-void Command::dispatchAll()
+void Command::dispatchTasks()
 {
     if (!scheduleDispatcher.NativeManager::empty())
     {
@@ -527,29 +515,26 @@ void Command::dispatchAll()
 
     if (!scheduleDispatcher.ExtraManager::empty())
     {
-        if (scheduleDispatcher.extraHelping)
+        if (!scheduleDispatcher.extraHelping)
         {
-            if (auto whichUsed = std::views::keys(scheduleDispatcher.extraChoiceRegistry)
-                    | std::views::filter([this](const auto& subCLIName)
-                                         { return mainCLI.isSubcommandUsed(subCLIName); });
-                std::ranges::distance(whichUsed) != 0)
+            for ([[maybe_unused]] const auto& [categoryName, categoryAttr] : scheduleDispatcher.extraChoiceRegistry
+                     | std::views::filter([this](const auto& subCLIPair)
+                                          { return scheduleDispatcher.extraChecklist.at(subCLIPair.first).present(); })
+                     | std::views::values | std::views::join)
             {
-                std::cout << mainCLI.at<utility::argument::Argument>(*std::ranges::begin(whichUsed)).help().str()
-                          << std::flush;
+                using schedule::extra::RunCandidates;
+                utility::common::patternMatch(
+                    categoryAttr.event,
+                    [this, &candidates = categoryAttr.choices](auto&& event)
+                    { applyingForwarder.onMessage(RunCandidates<std::decay_t<decltype(event)>>{candidates}); });
             }
-            return;
         }
-
-        for ([[maybe_unused]] const auto& [categoryName, categoryAttr] : scheduleDispatcher.extraChoiceRegistry
-                 | std::views::filter([this](const auto& subCLIPair)
-                                      { return scheduleDispatcher.extraChecklist.at(subCLIPair.first).present(); })
-                 | std::views::values | std::views::join)
+        else if (auto whichUsed = std::views::keys(scheduleDispatcher.extraChoiceRegistry)
+                     | std::views::filter([this](const auto& subCLIName)
+                                          { return mainCLI.isSubcommandUsed(subCLIName); });
+                 std::ranges::distance(whichUsed) != 0)
         {
-            using schedule::extra::RunCandidates;
-            utility::common::patternMatch(
-                categoryAttr.event,
-                [this, &candidates = categoryAttr.choices](auto&& event)
-                { applyingForwarder.onMessage(RunCandidates<std::decay_t<decltype(event)>>{candidates}); });
+            std::cout << mainCLI.at<Argument>(*std::ranges::begin(whichUsed)).help().str() << std::flush;
         }
     }
 }
@@ -833,7 +818,7 @@ bool executeCLI(const int argc, const char* const argv[])
 try
 {
     cliSem.acquire();
-    const bool status = getInstance().execute(argc, argv);
+    const bool status = getInstance().doExecute(argc, argv);
     cliSem.release();
     return status;
 }

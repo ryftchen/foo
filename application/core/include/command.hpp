@@ -21,6 +21,16 @@ namespace command
 //! @brief Instance title.
 inline constexpr std::string title = "commander";
 
+//! @brief Alias for the native categories.
+using Category = schedule::native::Category;
+//! @brief Alias for the representing of the maximum value of an enum.
+//! @tparam Enum - type of specific enum
+template <typename Enum>
+using Bottom = schedule::native::Bottom<Enum>;
+class Command;
+//! @brief Alias for the local notifier.
+using LocalNotifier = schedule::native::Notifier<Command>;
+
 //! @brief Execute the command line.
 class Command final
 {
@@ -50,16 +60,18 @@ private:
     std::condition_variable parserCond;
     //! @brief Flag to indicate whether parsing of arguments is completed.
     std::atomic_bool isParsed{false};
-    //! @brief Parse argument helper for commander.
-    utility::argument::Argument mainCLI{"foo", build::version()};
-    //! @brief Parse argument helper to apply algorithm.
-    utility::argument::Argument subCLIAppAlgo{schedule::meta::name<reg_algo::ApplyAlgorithm>(), reg_algo::version()};
-    //! @brief Parse argument helper to apply design pattern.
-    utility::argument::Argument subCLIAppDp{schedule::meta::name<reg_dp::ApplyDesignPattern>(), reg_dp::version()};
-    //! @brief Parse argument helper to apply data structure.
-    utility::argument::Argument subCLIAppDs{schedule::meta::name<reg_ds::ApplyDataStructure>(), reg_ds::version()};
-    //! @brief Parse argument helper to apply numeric.
-    utility::argument::Argument subCLIAppNum{schedule::meta::name<reg_num::ApplyNumeric>(), reg_num::version()};
+    //! @brief Alias for the argument parser.
+    using Argument = utility::argument::Argument;
+    //! @brief The main argument parser.
+    Argument mainCLI{"foo", build::version()};
+    //! @brief The argument parser used to apply algorithm.
+    Argument subCLIAppAlgo{schedule::meta::name<reg_algo::ApplyAlgorithm>(), reg_algo::version()};
+    //! @brief The argument parser used to apply design pattern.
+    Argument subCLIAppDp{schedule::meta::name<reg_dp::ApplyDesignPattern>(), reg_dp::version()};
+    //! @brief The argument parser used to apply data structure.
+    Argument subCLIAppDs{schedule::meta::name<reg_ds::ApplyDataStructure>(), reg_ds::version()};
+    //! @brief The argument parser used to apply numeric.
+    Argument subCLIAppNum{schedule::meta::name<reg_num::ApplyNumeric>(), reg_num::version()};
     //! @brief The short prefix for the option.
     const std::string shortPrefix{"-"};
     //! @brief The Long prefix for the option.
@@ -72,13 +84,21 @@ private:
     //! @param argc - argument count
     //! @param argv - argument vector
     //! @return successful or failed to execute
-    bool execute(const int argc, const char* const argv[]);
+    bool doExecute(const int argc, const char* const argv[]);
     //! @brief Initialize the parse argument helpers for native.
     void initializeNativeCLI();
     //! @brief Initialize the parse argument helpers for extra.
     void initializeExtraCLI();
     //! @brief Set up the main command line interface.
     void mainCLISetup();
+    //! @brief Build a simple flag in the main cli.
+    //! @tparam Cat - target native category
+    template <Category Cat>
+    void buildSimpleFlagInMainCLI();
+    //! @brief Build a custom option in the main cli.
+    //! @tparam Cat - target native category
+    template <Category Cat>
+    void buildCustomOptionInMainCLI();
     //! @brief Set up the sub-command line interface.
     //! @tparam SubCLI - type of sub-cli
     template <typename SubCLI>
@@ -105,14 +125,14 @@ private:
     //! @brief Back-end handler for performing the specific tasks.
     void backEndHandler();
     //! @brief Precheck the native type or extra type task.
-    void precheck();
+    void precheckSchedule();
     //! @brief Check whether any type tasks exist.
     //! @return any type tasks exist or do not exist
     bool anySelected() const;
     //! @brief Clear all type tasks.
     void clearSelected();
     //! @brief Dispatch all specific tasks.
-    void dispatchAll();
+    void dispatchTasks();
     //! @brief Check for excessive arguments.
     void checkExcessArgs();
     //! @brief Execute the command line of console mode.
@@ -126,9 +146,9 @@ private:
     //! @brief Validate the version of all dependencies.
     void validateDependencies() const;
 
-    friend schedule::native::Notifier<Command>;
+    friend LocalNotifier;
     //! @brief Local notification for native type tasks.
-    schedule::native::Notifier<Command> builtInNotifier{};
+    LocalNotifier builtInNotifier{};
     //! @brief Forward messages for extra type tasks.
     schedule::extra::MessageForwarder applyingForwarder{};
     //! @brief Dispatch all types of tasks.

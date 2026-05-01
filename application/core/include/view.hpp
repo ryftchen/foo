@@ -87,12 +87,6 @@ public:
         idle
     };
 
-    friend class configure::Controller<View>;
-    template <typename Sock>
-    friend void intf::connectFromClient(std::shared_ptr<Sock>& client);
-    template <typename Sock>
-    friend void intf::forwardByClient(std::shared_ptr<Sock>& client, const std::vector<std::string>& inputs);
-
 private:
     //! @brief Construct a new View object.
     View();
@@ -249,11 +243,15 @@ private:
     template <typename Sock>
     void renewServer();
 
+    template <typename Sock>
+    friend void intf::connectFromClient(std::shared_ptr<Sock>& client);
     //! @brief Connect from the client. Simplified interface for external use.
     //! @tparam Sock - type of client
     //! @param client - client to be connected
     template <typename Sock>
     void onConnecting(std::shared_ptr<Sock>& client);
+    template <typename Sock>
+    friend void intf::forwardByClient(std::shared_ptr<Sock>& client, const std::vector<std::string>& inputs);
     //! @brief Forward message by client. Simplified interface for external use.
     //! @tparam Sock - type of client
     //! @param client - client to be used for forwarding
@@ -271,6 +269,7 @@ private:
     void waitTaskDone();
     //! @brief Notify that the output task has been completed and unblock any waiters.
     void notifyTaskDone();
+    friend class configure::Controller<View>;
     //! @brief Wait until the viewer reaches the target state. Access controller for external use.
     //! @param state - target state
     //! @param handling - handling if unexpected state
