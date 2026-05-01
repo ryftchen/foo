@@ -97,7 +97,7 @@ private:
     //! @param begin - index of beginning
     //! @param end - index of ending
     static void quickSortRecursive(Elem* const sorting, const std::uint32_t begin, const std::uint32_t end);
-    //! @brief Build maximum heap for the heap method.
+    //! @brief Build the maximum heap for the heap method.
     //! @param sorting - array to be sorted
     //! @param begin - index of beginning
     //! @param end - index of ending
