@@ -163,8 +163,8 @@ class Schedule:  # pylint: disable=too-few-public-methods
         command_list = [
             f"rm -rf {self._storage_dir}/{{{self._doxygen_folder},{self._browser_folder}}}",
             f"unzip {self._storage_dir}/{self._artifact_name}.zip -d {self._storage_dir}",
-            f"tar -jxvf {self._storage_dir}/foo_doxygen_*.tar.bz2 -C {self._storage_dir} >/dev/null",
-            f"tar -jxvf {self._storage_dir}/foo_browser_*.tar.bz2 -C {self._storage_dir} >/dev/null",
+            f"tar -jxvf {self._storage_dir}/foo{self._doxygen_folder}_*.tar.bz2 -C {self._storage_dir} >/dev/null",
+            f"tar -jxvf {self._storage_dir}/foo{self._browser_folder}_*.tar.bz2 -C {self._storage_dir} >/dev/null",
             f"rm -rf {self._storage_dir}/*.tar.bz2",
         ]
         for entry in command_list:
