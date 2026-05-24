@@ -188,9 +188,9 @@ class Task:
     def stop(self, message: str = ""):
         try:
             if self._marked_option["chk"]["cov"]:
-                execute_command(f"rm -rf {self._report_path}/dca/chk_cov/*.{{profraw,profdata}}")
+                execute_command(f"rm -rf {self._report_path}/_dca/chk_cov/*.{{profraw,profdata}}")
             if self._marked_option["chk"]["mem"]:
-                execute_command(f"rm -rf {self._report_path}/dca/chk_mem/*.xml")
+                execute_command(f"rm -rf {self._report_path}/_dca/chk_mem/*.xml")
             sys.stdout = STDOUT
             self._progress_bar.destroy_progress_bar()
             del self._stream_logger
@@ -409,10 +409,10 @@ class Task:
         )
         if self._marked_option["chk"]["mem"]:
             full_cmd = f"valgrind --tool=memcheck --xml=yes \
---xml-file={self._report_path}/dca/chk_mem/foo_chk_mem_{str(self._complete_steps + 1)}.xml {full_cmd}"
+--xml-file={self._report_path}/_dca/chk_mem/foo_chk_mem_{str(self._complete_steps + 1)}.xml {full_cmd}"
         if self._marked_option["chk"]["cov"]:
             full_cmd = f"LLVM_PROFILE_FILE=\
-\"{self._report_path}/dca/chk_cov/foo_chk_cov_{str(self._complete_steps + 1)}.profraw\" {full_cmd}"
+\"{self._report_path}/_dca/chk_cov/foo_chk_cov_{str(self._complete_steps + 1)}.profraw\" {full_cmd}"
         if stdin:
             command += " > " + stdin.replace("\nquit", "")
         align_len = max(
@@ -480,14 +480,14 @@ class Task:
         if stdout.find(f"llvm-profdata-{self._llvm_ver}") != -1 and stdout.find(f"llvm-cov-{self._llvm_ver}") != -1:
             os.environ["FOO_BLD_COV"] = "llvm-cov"
             self._marked_option["chk"]["cov"] = True
-            execute_command(f"rm -rf {self._report_path}/dca/chk_cov && mkdir -p {self._report_path}/dca/chk_cov")
+            execute_command(f"rm -rf {self._report_path}/_dca/chk_cov && mkdir -p {self._report_path}/_dca/chk_cov")
         else:
             exit_with_error(
                 f"No llvm-profdata-{self._llvm_ver} or llvm-cov-{self._llvm_ver} program. Please install it."
             )
 
     def _check_coverage_handling(self):
-        folder_path = f"{self._report_path}/dca/chk_cov"
+        folder_path = f"{self._report_path}/_dca/chk_cov"
         execute_command(
             f"llvm-profdata-{self._llvm_ver} merge -sparse {folder_path}/foo_chk_cov_*.profraw \
 -o {folder_path}/foo_chk_cov.profdata"
@@ -526,13 +526,13 @@ class Task:
         stdout, _, _ = execute_command("command -v valgrind valgrind-ci 2>&1")
         if stdout.find("valgrind") != -1 and stdout.find("valgrind-ci") != -1:
             self._marked_option["chk"]["mem"] = True
-            execute_command(f"rm -rf {self._report_path}/dca/chk_mem && mkdir -p {self._report_path}/dca/chk_mem")
+            execute_command(f"rm -rf {self._report_path}/_dca/chk_mem && mkdir -p {self._report_path}/_dca/chk_mem")
         else:
             exit_with_error("No valgrind or valgrind-ci program. Please install it.")
 
     def _check_memory_handling(self):
-        execute_command(f"rm -rf {self._report_path}/dca/chk_mem/*.xml")
-        folder_path = f"{self._report_path}/dca/chk_mem/memory"
+        execute_command(f"rm -rf {self._report_path}/_dca/chk_mem/*.xml")
+        folder_path = f"{self._report_path}/_dca/chk_mem/memory"
         if not os.path.exists(folder_path):
             os.mkdir(folder_path)
         case_folders = [folder.path for folder in os.scandir(folder_path) if folder.is_dir()]
@@ -558,9 +558,9 @@ class Task:
             or not os.path.isfile(f"{pkg_loc}/valgrind.js")
         ):
             print(f"""{self._extended_trait["chk"]["mem"]}\nMissing source files prevent indexing.""")
-        execute_command(f"cp -rf {pkg_loc}/{{index.html,valgrind.css,valgrind.js}} {self._report_path}/dca/chk_mem/")
+        execute_command(f"cp -rf {pkg_loc}/{{index.html,valgrind.css,valgrind.js}} {self._report_path}/_dca/chk_mem/")
 
-        with open(f"{self._report_path}/dca/chk_mem/index.html", "rt", encoding="utf-8") as index_content:
+        with open(f"{self._report_path}/_dca/chk_mem/index.html", "rt", encoding="utf-8") as index_content:
             fcntl.flock(index_content.fileno(), fcntl.LOCK_EX)
             old_content = index_content.read()
             fcntl.flock(index_content.fileno(), fcntl.LOCK_UN)
@@ -584,13 +584,13 @@ class Task:
         new_content = re.sub(
             r"(                {% for item in source_list %}.*?{% endfor %}\n)", new_body, old_content, flags=re.DOTALL
         )
-        with open(f"{self._report_path}/dca/chk_mem/index.html", "wt", encoding="utf-8") as index_content:
+        with open(f"{self._report_path}/_dca/chk_mem/index.html", "wt", encoding="utf-8") as index_content:
             fcntl.flock(index_content.fileno(), fcntl.LOCK_EX)
             index_content.write(new_content)
             fcntl.flock(index_content.fileno(), fcntl.LOCK_UN)
 
     def _convert_valgrind_output(self, command: str, align_len: int):
-        xml_filename = f"{self._report_path}/dca/chk_mem/foo_chk_mem_{str(self._complete_steps + 1)}"
+        xml_filename = f"{self._report_path}/_dca/chk_mem/foo_chk_mem_{str(self._complete_steps + 1)}"
         with open(f"{xml_filename}.xml", "rt", encoding="utf-8") as mem_xml:
             inst_num = mem_xml.read().count("</valgrindoutput>")
         stdout = ""
@@ -614,7 +614,7 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
         if "errors" in stdout:
             stdout = stdout.expandtabs()
             print(f"""{self._extended_trait["chk"]["mem"]}\n{stdout}""")
-            case_path = f"{self._report_path}/dca/chk_mem/memory/case_{str(self._complete_steps + 1)}"
+            case_path = f"{self._report_path}/_dca/chk_mem/memory/case_{str(self._complete_steps + 1)}"
             if inst_num == 1:
                 execute_command(f"valgrind-ci {xml_filename}.xml --source-dir ./ --output-dir {case_path}")
                 pathlib.Path(f"{case_path}/case_name").write_text(command, "utf-8")

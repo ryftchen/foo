@@ -800,13 +800,13 @@ EOF
             cat <<EOF
 <li>sca</li>
 <ul>
-<li><a href="./sca/lint/${index_html}" target="_blank" rel="noopener">clang-tidy ${FOLDER[rep]}</a></li>
-<li><a href="./sca/evaluate/${index_html}" target="_blank" rel="noopener">infer ${FOLDER[rep]}</a></li>
+<li><a href="./_sca/lint/${index_html}" target="_blank" rel="noopener">clang-tidy ${FOLDER[rep]}</a></li>
+<li><a href="./_sca/evaluate/${index_html}" target="_blank" rel="noopener">infer ${FOLDER[rep]}</a></li>
 </ul>
 <li>dca</li>
 <ul>
-<li><a href="./dca/chk_cov/${index_html}" target="_blank" rel="noopener">llvm-cov ${FOLDER[rep]}</a></li>
-<li><a href="./dca/chk_mem/${index_html}" target="_blank" rel="noopener">valgrind ${FOLDER[rep]}</a></li>
+<li><a href="./_dca/chk_cov/${index_html}" target="_blank" rel="noopener">llvm-cov ${FOLDER[rep]}</a></li>
+<li><a href="./_dca/chk_mem/${index_html}" target="_blank" rel="noopener">valgrind ${FOLDER[rep]}</a></li>
 </ul>
 EOF
         )
@@ -1027,7 +1027,7 @@ function perform_lint_option()
             die "Due to the unconventional ${COMPILE_DB} file, the --lint option cannot run if the FOO_BLD_PCH or \
 FOO_BLD_UNITY is turned on."
         fi
-        local clang_tidy_lint_path="./${FOLDER[rep]}/sca/lint"
+        local clang_tidy_lint_path="./${FOLDER[rep]}/_sca/lint"
         local clang_tidy_output="${clang_tidy_lint_path}/clang-tidy.output"
         if [[ ! -d ${clang_tidy_lint_path} ]]; then
             shell_command "mkdir -p ${clang_tidy_lint_path}"
@@ -1181,7 +1181,7 @@ EOF"
     fi
     shell_command "${build_script}${other_option} >/dev/null && ${build_script} --test${other_option} >/dev/null"
 
-    local infer_eval_path="./${FOLDER[rep]}/sca/evaluate"
+    local infer_eval_path="./${FOLDER[rep]}/_sca/evaluate"
     shell_command "rm -rf ${infer_eval_path} && mkdir -p ${infer_eval_path}"
     local app_comp_db="${FOLDER[bld]}/${COMPILE_DB}" tst_comp_db="${FOLDER[tst]}/${FOLDER[bld]}/${COMPILE_DB}"
     shell_command "infer run --results-dir ${infer_eval_path}/infer --project-root ./ \
