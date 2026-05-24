@@ -768,11 +768,9 @@ function perform_archive_option()
     fi
 
     if ! command -v cargo >/dev/null 2>&1 || ! command -v rustc >/dev/null 2>&1 \
-        || ! command -v supervisord >/dev/null 2>&1; then
-        die "No cargo, rustc or supervisord program. Please install it."
+        || ! command -v upx >/dev/null 2>&1 || ! command -v supervisord >/dev/null 2>&1; then
+        die "No cargo, rustc, upx or supervisord program. Please install it."
     fi
-
-    shell_command "cargo build --manifest-path ./${FOLDER[doc]}/server/Cargo.toml -r"
 
     local index_html="index.html" main_css="main.css"
     if [[ ! -f ./${FOLDER[doc]}/${index_html} ]] || [[ ! -f ./${FOLDER[doc]}/${main_css} ]]; then
@@ -818,10 +816,6 @@ EOF
     fi
 
     local server_bin="${FOLDER[proj]}_arc"
-    local server_path="./${FOLDER[doc]}/server/target/release"
-    if [[ ! -x ${server_path}/${server_bin} ]]; then
-        die "There is no ${server_bin} binary file in the ${server_path} folder. Please finish compiling first."
-    fi
     local service_config
     service_config="./${FOLDER[scr]}/.$(basename "${0}" .sh)_service"
     if [[ ! -f ${service_config} ]]; then
@@ -843,8 +837,8 @@ serverurl=unix:///tmp/${server_bin}_supervisor.sock
 
 [program:${server_bin}]
 directory=$(pwd)
-command=$(realpath "${server_path}/${server_bin}") --root-dir ./${FOLDER[doc]} --root-dir ./${FOLDER[rep]} \
---host ${host_addr} --port ${start_port}
+command=$(realpath "./${FOLDER[doc]}/server")/target/${server_bin} --root-dir ./${FOLDER[doc]} \
+--root-dir ./${FOLDER[rep]} --host ${host_addr} --port ${start_port}
 autostart=false
 autorestart=true
 stdout_logfile=/tmp/${server_bin}_supervisor.out
@@ -861,6 +855,18 @@ EOF"
         if echo "${input}" | grep -iq '^y'; then
             echo "Yes"
             echo
+
+            shell_command "cargo build --manifest-path ./${FOLDER[doc]}/server/Cargo.toml -r"
+            local server_path="./${FOLDER[doc]}/server/target"
+            local release_server="${server_path}/release/${server_bin}"
+            if [[ ! -x ${release_server} ]]; then
+                die "There is no ${server_bin} binary file in the ${server_path} folder. Please finish compiling first."
+            fi
+            local packed_server="${server_path}/${server_bin}"
+            if [[ ${release_server} -nt ${packed_server} ]]; then
+                shell_command "rm -rf ${packed_server}"
+                shell_command "upx --best ${release_server} -o ${packed_server}"
+            fi
             shell_command "supervisord -c ${service_config}"
             shell_command "supervisorctl -c ${service_config} start ${server_bin}"
 
@@ -1221,7 +1227,7 @@ function package_for_doxygen()
         shell_command "! ${check_comment}"
     fi
     shell_command \
-        "(cat ./${FOLDER[doc]}/configure/Doxyfile; echo 'PROJECT_NUMBER=\"$(${GIT_COMMIT_CMD})\"') | doxygen -"
+        "(cat ./${FOLDER[doc]}/customize/Doxyfile; echo 'PROJECT_NUMBER=\"$(${GIT_COMMIT_CMD})\"') | doxygen -"
     local doxygen_tar="${FOLDER[proj]}_${doxygen_folder}_${commit_id}.tar.bz2"
     shell_command "tar -jcvf ./${FOLDER[doc]}/artifact/${doxygen_tar} -C ./${FOLDER[doc]} ${doxygen_folder} >/dev/null"
 }
@@ -1274,8 +1280,7 @@ FOO_BLD_UNITY is turned on."
 
     local browser_path="./${FOLDER[doc]}/${browser_folder}/${FOLDER[proj]}"
     shell_command "mkdir -p ${browser_path} && cp -rf /usr/local/share/woboq/data ${browser_path}/"
-    shell_command "sed -i \"s|'><img src='|'><img src='https://web.archive.org/web/20220224111803/|g\" \
-${browser_path}/data/codebrowser.js"
+    shell_command "sed -i \"s|cwo_url + \\\"/data|data_path + \\\"|g\" ${browser_path}/data/codebrowser.js"
     shell_command "codebrowser_generator -color -a -b ./${FOLDER[bld]}/${COMPILE_DB} -o ${browser_path} \
 -p ${FOLDER[proj]}:.:${commit_id} -d ./data"
     shell_command "codebrowser_generator -color -a -b ./${FOLDER[tst]}/${FOLDER[bld]}/${COMPILE_DB} -o ${browser_path} \
@@ -1283,11 +1288,14 @@ ${browser_path}/data/codebrowser.js"
     shell_command "codebrowser_indexgenerator ${browser_path} -d ./data"
 
     shell_command "find \"${browser_path}/index.html\" \"${browser_path}/${FOLDER[proj]}\" \"${browser_path}/include\" \
--name \"*.html\" -exec sed -i '/^<\/head>$/i <link rel=\"shortcut icon\" \
-href=\"https://web.archive.org/web/20220309195008if_/https://code.woboq.org/favicon.ico\" type=\"image/x-icon\"/>' {} +"
-    shell_command "find \"${browser_path}/index.html\" \"${browser_path}/${FOLDER[proj]}\" \"${browser_path}/include\" \
--name \"*.html\" -exec sed -i 's|https://code.woboq.org/woboq-16.png\
-|https://web.archive.org/web/20220224111804if_/https://code.woboq.org/woboq-16.png|g' {} +"
+-name \"*.html\" -exec bash -c 'for file\
+; do path=\$(grep -o \"var root_path = '\\''[^'\\'']*'\\''\" \"\${file}\" | sed \"s/.*'\\''\\(.*\\)'\\''/\\1/\")\
+; [[ -n \"\${path}\" ]] && [[ \"\${path%/}\" == \"\${path}\" ]] && path=\"\${path}/\"\
+; sed -i \"/^<\\\\/head>\$/i <link rel=\\\"shortcut icon\\\" href=\\\"\${path}./data/favicon.ico\\\" \
+type=\\\"image/x-icon\\\"/>\" \"\${file}\"\
+; sed -i \"s|src='\\''https://code.woboq.org/woboq-16.png'\\''|src='\\''\${path}./data/woboq-16.png'\\''|g\" \
+\"\${file}\"\
+; done' bash {} +"
     shell_command "mv ${browser_path} ${browser_path}_temp \
 && mv ${browser_path}_temp/* ./${FOLDER[doc]}/${browser_folder}/ && rm -rf ${browser_path}_temp"
     local browser_tar="${FOLDER[proj]}_${browser_folder}_${commit_id}.tar.bz2"
