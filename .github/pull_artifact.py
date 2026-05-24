@@ -23,6 +23,8 @@ class Schedule:  # pylint: disable=too-few-public-methods
     _repo_url = "https://github.com/ryftchen/foo.git"
     _api_url = "https://api.github.com/repos/ryftchen/foo/actions/artifacts?per_page=5"
     _artifact_name = "foo_artifact"
+    _doxygen_folder = "_doxygen"
+    _browser_folder = "_browser"
     _netrc_file = "~/.netrc"
 
     def __init__(self, logger: logging.Logger):
@@ -101,8 +103,8 @@ class Schedule:  # pylint: disable=too-few-public-methods
             self._executor(f"git -C {self._project_path} pull origin master")
         elif (
             not self._forced_pull
-            and os.path.exists(f"{self._storage_dir}/doxygen")
-            and os.path.exists(f"{self._storage_dir}/browser")
+            and os.path.exists(f"{self._storage_dir}/{self._doxygen_folder}")
+            and os.path.exists(f"{self._storage_dir}/{self._browser_folder}")
         ):
             self._abort("No commit change.")
 
@@ -159,7 +161,7 @@ class Schedule:  # pylint: disable=too-few-public-methods
     def _deploy_document(self):
         self._notice("############### DEPLOY DOCUMENT ###############")
         command_list = [
-            f"rm -rf {self._storage_dir}/{{doxygen,browser}}",
+            f"rm -rf {self._storage_dir}/{{{self._doxygen_folder},{self._browser_folder}}}",
             f"unzip {self._storage_dir}/{self._artifact_name}.zip -d {self._storage_dir}",
             f"tar -jxvf {self._storage_dir}/foo_doxygen_*.tar.bz2 -C {self._storage_dir} >/dev/null",
             f"tar -jxvf {self._storage_dir}/foo_browser_*.tar.bz2 -C {self._storage_dir} >/dev/null",

@@ -780,8 +780,8 @@ function perform_archive_option()
         local item_rows
         item_rows=$(
             cat <<EOF
-<li><a href="./doxygen/${index_html}" target="_blank" rel="noopener">doxygen ${FOLDER[doc]}</a></li>
-<li><a href="./browser/${index_html}" target="_blank" rel="noopener">codebrowser ${FOLDER[doc]}</a></li>
+<li><a href="./_doxygen/${index_html}" target="_blank" rel="noopener">doxygen ${FOLDER[doc]}</a></li>
+<li><a href="./_browser/${index_html}" target="_blank" rel="noopener">codebrowser ${FOLDER[doc]}</a></li>
 EOF
         )
         local item_row_single_line
@@ -1216,8 +1216,8 @@ function package_for_doxygen()
 {
     local commit_id=${1}
 
-    local doxygen_folder="doxygen"
-    shell_command "rm -rf ./${FOLDER[doc]}/artifact/${FOLDER[proj]}_${doxygen_folder}_*.tar.bz2 \
+    local doxygen_folder="_doxygen"
+    shell_command "rm -rf ./${FOLDER[doc]}/_artifact/${FOLDER[proj]}${doxygen_folder}_*.tar.bz2 \
 ./${FOLDER[doc]}/${doxygen_folder} && mkdir ./${FOLDER[doc]}/${doxygen_folder}"
 
     local check_comment="grep -nE '\/\/! @((brief (([a-z].+)|(.+[^.])))|((param|tparam) (.+[.]))|(return (.+[.])))$' \
@@ -1228,8 +1228,8 @@ function package_for_doxygen()
     fi
     shell_command \
         "(cat ./${FOLDER[doc]}/customize/Doxyfile; echo 'PROJECT_NUMBER=\"$(${GIT_COMMIT_CMD})\"') | doxygen -"
-    local doxygen_tar="${FOLDER[proj]}_${doxygen_folder}_${commit_id}.tar.bz2"
-    shell_command "tar -jcvf ./${FOLDER[doc]}/artifact/${doxygen_tar} -C ./${FOLDER[doc]} ${doxygen_folder} >/dev/null"
+    local doxygen_tar="${FOLDER[proj]}${doxygen_folder}_${commit_id}.tar.bz2"
+    shell_command "tar -jcvf ./${FOLDER[doc]}/_artifact/${doxygen_tar} -C ./${FOLDER[doc]} ${doxygen_folder} >/dev/null"
 }
 
 function perform_doxygen_option()
@@ -1246,17 +1246,17 @@ function perform_doxygen_option()
     if [[ -z ${commit_id} ]]; then
         commit_id="local"
     fi
-    if [[ -d ./${FOLDER[doc]}/artifact ]]; then
+    if [[ -d ./${FOLDER[doc]}/_artifact ]]; then
         local last_tar="${FOLDER[proj]}_doxygen_${commit_id}.tar.bz2"
-        if [[ -f ./${FOLDER[doc]}/artifact/${last_tar} ]]; then
-            local time_interval=$(($(date +%s) - $(stat -L -c %Y "./${FOLDER[doc]}/artifact/${last_tar}")))
+        if [[ -f ./${FOLDER[doc]}/_artifact/${last_tar} ]]; then
+            local time_interval=$(($(date +%s) - $(stat -L -c %Y "./${FOLDER[doc]}/_artifact/${last_tar}")))
             if [[ ${time_interval} -lt 60 ]]; then
                 die "The latest doxygen artifact ${last_tar} has been generated since ${time_interval} s ago."
             fi
         fi
         package_for_doxygen "${commit_id}"
     else
-        shell_command "mkdir ./${FOLDER[doc]}/artifact"
+        shell_command "mkdir ./${FOLDER[doc]}/_artifact"
         package_for_doxygen "${commit_id}"
     fi
 }
@@ -1274,8 +1274,8 @@ FOO_BLD_UNITY is turned on."
     if [[ ! -f ./${FOLDER[bld]}/${COMPILE_DB} ]]; then
         die "There is no ${COMPILE_DB} file in the ${FOLDER[bld]} folder. Please generate it."
     fi
-    local browser_folder="browser"
-    shell_command "rm -rf ./${FOLDER[doc]}/artifact/${FOLDER[proj]}_${browser_folder}_*.tar.bz2 \
+    local browser_folder="_browser"
+    shell_command "rm -rf ./${FOLDER[doc]}/_artifact/${FOLDER[proj]}${browser_folder}_*.tar.bz2 \
 ./${FOLDER[doc]}/${browser_folder}"
 
     local browser_path="./${FOLDER[doc]}/${browser_folder}/${FOLDER[proj]}"
@@ -1298,8 +1298,8 @@ type=\\\"image/x-icon\\\"/>\" \"\${file}\"\
 ; done' bash {} +"
     shell_command "mv ${browser_path} ${browser_path}_temp \
 && mv ${browser_path}_temp/* ./${FOLDER[doc]}/${browser_folder}/ && rm -rf ${browser_path}_temp"
-    local browser_tar="${FOLDER[proj]}_${browser_folder}_${commit_id}.tar.bz2"
-    shell_command "tar -jcvf ./${FOLDER[doc]}/artifact/${browser_tar} -C ./${FOLDER[doc]} ${browser_folder} >/dev/null"
+    local browser_tar="${FOLDER[proj]}${browser_folder}_${commit_id}.tar.bz2"
+    shell_command "tar -jcvf ./${FOLDER[doc]}/_artifact/${browser_tar} -C ./${FOLDER[doc]} ${browser_folder} >/dev/null"
 }
 
 function perform_browser_option()
@@ -1317,17 +1317,17 @@ function perform_browser_option()
     if [[ -z ${commit_id} ]]; then
         commit_id="local"
     fi
-    if [[ -d ./${FOLDER[doc]}/artifact ]]; then
+    if [[ -d ./${FOLDER[doc]}/_artifact ]]; then
         local last_tar="${FOLDER[proj]}_browser_${commit_id}.tar.bz2"
-        if [[ -f ./${FOLDER[doc]}/artifact/${last_tar} ]]; then
-            local time_interval=$(($(date +%s) - $(stat -L -c %Y "./${FOLDER[doc]}/artifact/${last_tar}")))
+        if [[ -f ./${FOLDER[doc]}/_artifact/${last_tar} ]]; then
+            local time_interval=$(($(date +%s) - $(stat -L -c %Y "./${FOLDER[doc]}/_artifact/${last_tar}")))
             if [[ ${time_interval} -lt 60 ]]; then
                 die "The latest browser artifact ${last_tar} has been generated since ${time_interval} s ago."
             fi
         fi
         package_for_browser "${commit_id}"
     else
-        shell_command "mkdir ./${FOLDER[doc]}/artifact"
+        shell_command "mkdir ./${FOLDER[doc]}/_artifact"
         package_for_browser "${commit_id}"
     fi
 }

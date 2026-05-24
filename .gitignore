@@ -2,9 +2,7 @@
 .cache/
 build/
 core.*
-document/artifact/
-document/browser/
-document/doxygen/
+document/_*
 document/index.html
 document/main.css
 document/server/Cargo.lock
