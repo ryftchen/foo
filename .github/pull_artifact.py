@@ -110,6 +110,7 @@ class Schedule:  # pylint: disable=too-few-public-methods
 
     def _download_artifact(self):
         self._notice("############## DOWNLOAD ARTIFACT ##############")
+        self._executor(f"rm -rf {self._storage_dir}/{self._artifact_name}.zip")
         try:
             if self._proxy_port is not None:
                 proxy = {
@@ -154,7 +155,6 @@ class Schedule:  # pylint: disable=too-few-public-methods
                 if zip_file.testzip() is not None:
                     raise zipfile.BadZipFile("Corrupted zip file.")
         except Exception as error:
-            self._executor(f"rm -rf {self._storage_dir}/{self._artifact_name}.zip")
             self._executor(f"git -C {self._project_path} reset --hard {self._local_commit}")
             raise type(error)(str(error)) from None
 
@@ -165,7 +165,7 @@ class Schedule:  # pylint: disable=too-few-public-methods
             f"unzip {self._storage_dir}/{self._artifact_name}.zip -d {self._storage_dir}",
             f"tar -jxvf {self._storage_dir}/foo_doxygen_*.tar.bz2 -C {self._storage_dir} >/dev/null",
             f"tar -jxvf {self._storage_dir}/foo_browser_*.tar.bz2 -C {self._storage_dir} >/dev/null",
-            f"rm -rf {self._storage_dir}/*.{{zip,tar.bz2}}",
+            f"rm -rf {self._storage_dir}/*.tar.bz2",
         ]
         for entry in command_list:
             _, stderr, return_code = self._executor(entry)
