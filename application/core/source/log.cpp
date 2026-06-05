@@ -308,20 +308,20 @@ void Log::onPreviewing(const std::function<void(const std::string&)>& peeking) c
     }
 }
 
-void Log::syncWaitOr(const State state, const std::function<void()>& handling) const
+void Log::syncWaitOr(const State target, const SyncCallback& onIdle) const
 {
     do
     {
-        if (isInServingState(State::idle) && handling)
+        if (isInServingState(State::idle) && onIdle)
         {
-            handling();
+            onIdle();
         }
         std::this_thread::yield();
     }
-    while (!isInServingState(state));
+    while (!isInServingState(target));
 }
 
-void Log::syncNotifyVia(const std::function<void()>& action)
+void Log::syncNotifyVia(const SyncCallback& action)
 {
     std::unique_lock<std::mutex> daemonLock(daemonMtx);
     if (action)
@@ -332,7 +332,7 @@ void Log::syncNotifyVia(const std::function<void()>& action)
     daemonCond.notify_one();
 }
 
-void Log::syncCountdownIf(const std::function<bool()>& condition, const std::function<void()>& handling) const
+void Log::syncCountdownIf(const SyncPredicate& condition, const SyncCallback& onTimeout) const
 {
     if (!condition)
     {
@@ -346,9 +346,9 @@ void Log::syncCountdownIf(const std::function<bool()>& condition, const std::fun
         }
         std::this_thread::yield();
     }
-    if (handling)
+    if (onTimeout)
     {
-        handling();
+        onTimeout();
     }
 }
 

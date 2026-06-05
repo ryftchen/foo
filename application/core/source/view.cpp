@@ -785,20 +785,20 @@ void View::notifyTaskDone()
     outputCond.notify_one();
 }
 
-void View::syncWaitOr(const State state, const std::function<void()>& handling) const
+void View::syncWaitOr(const State target, const SyncCallback& onIdle) const
 {
     do
     {
-        if (isInServingState(State::idle) && handling)
+        if (isInServingState(State::idle) && onIdle)
         {
-            handling();
+            onIdle();
         }
         std::this_thread::yield();
     }
-    while (!isInServingState(state));
+    while (!isInServingState(target));
 }
 
-void View::syncNotifyVia(const std::function<void()>& action)
+void View::syncNotifyVia(const SyncCallback& action)
 {
     std::unique_lock<std::mutex> daemonLock(daemonMtx);
     if (action)
@@ -809,7 +809,7 @@ void View::syncNotifyVia(const std::function<void()>& action)
     daemonCond.notify_one();
 }
 
-void View::syncCountdownIf(const std::function<bool()>& condition, const std::function<void()>& handling) const
+void View::syncCountdownIf(const SyncPredicate& condition, const SyncCallback& onTimeout) const
 {
     if (!condition)
     {
@@ -823,9 +823,9 @@ void View::syncCountdownIf(const std::function<bool()>& condition, const std::fu
         }
         std::this_thread::yield();
     }
-    if (handling)
+    if (onTimeout)
     {
-        handling();
+        onTimeout();
     }
 }
 

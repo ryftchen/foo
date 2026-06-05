@@ -224,18 +224,22 @@ private:
     //! @brief Preview in the log context. Simplified interface for external use.
     //! @param peeking - further handling for peeking
     void onPreviewing(const std::function<void(const std::string&)>& peeking) const;
-    //! @brief Wait until the logger reaches the target state. Access controller for external use.
-    //! @param state - target state
-    //! @param handling - handling if unexpected state
     friend class configure::Controller<Log>;
-    void syncWaitOr(const State state, const std::function<void()>& handling) const;
+    //! @brief Synchronous callback.
+    using SyncCallback = std::function<void()>;
+    //! @brief Synchronous predicate.
+    using SyncPredicate = std::function<bool()>;
+    //! @brief Wait until the logger reaches the target state. Access controller for external use.
+    //! @param target - target state
+    //! @param onIdle - handling if idle state
+    void syncWaitOr(const State target, const SyncCallback& onIdle) const;
     //! @brief Notify the logger to change the state. Access controller for external use.
-    //! @param action - action to be executed
-    void syncNotifyVia(const std::function<void()>& action);
+    //! @param action - action before notification
+    void syncNotifyVia(const SyncCallback& action);
     //! @brief Keep countdown if the logger does not meet the condition in time. Access controller for external use.
     //! @param condition - condition of countdown
-    //! @param handling - handling if timeout
-    void syncCountdownIf(const std::function<bool()>& condition, const std::function<void()>& handling) const;
+    //! @param onTimeout - handling if timeout
+    void syncCountdownIf(const SyncPredicate& condition, const SyncCallback& onTimeout) const;
 
     //! @brief Check whether it is in the uninterrupted serving state.
     //! @param state - target state

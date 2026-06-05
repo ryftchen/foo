@@ -270,17 +270,21 @@ private:
     //! @brief Notify that the output task has been completed and unblock any waiters.
     void notifyTaskDone();
     friend class configure::Controller<View>;
+    //! @brief Synchronous callback.
+    using SyncCallback = std::function<void()>;
+    //! @brief Synchronous predicate.
+    using SyncPredicate = std::function<bool()>;
     //! @brief Wait until the viewer reaches the target state. Access controller for external use.
-    //! @param state - target state
-    //! @param handling - handling if unexpected state
-    void syncWaitOr(const State state, const std::function<void()>& handling) const;
+    //! @param target - target state
+    //! @param onIdle - handling if idle state
+    void syncWaitOr(const State target, const SyncCallback& onIdle) const;
     //! @brief Notify the viewer to change the state. Access controller for external use.
-    //! @param action - action to be executed
-    void syncNotifyVia(const std::function<void()>& action);
+    //! @param action - action before notification
+    void syncNotifyVia(const SyncCallback& action);
     //! @brief Keep countdown if the viewer does not meet the condition in time. Access controller for external use.
     //! @param condition - condition of countdown
-    //! @param handling - handling if timeout
-    void syncCountdownIf(const std::function<bool()>& condition, const std::function<void()>& handling) const;
+    //! @param onTimeout - handling if timeout
+    void syncCountdownIf(const SyncPredicate& condition, const SyncCallback& onTimeout) const;
 
     //! @brief Check whether it is in the uninterrupted serving state.
     //! @param state - target state
