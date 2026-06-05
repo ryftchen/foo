@@ -657,6 +657,136 @@ constexpr auto choice()
         });
     return choices;
 }
+
+// NOLINTBEGIN(google-build-using-namespace)
+//! @brief Find the category version for sub-cli related registrations.
+//! @tparam Meth - type of sub-cli's category
+//! @return category version
+template <typename Meth>
+requires reg_algo::Registrant<Meth>
+constexpr std::string_view version()
+{
+    using namespace reg_algo;
+    if constexpr (std::is_same_v<Meth, MatchMethod>)
+    {
+        return match::version();
+    }
+    else if constexpr (std::is_same_v<Meth, NotationMethod>)
+    {
+        return notation::version();
+    }
+    else if constexpr (std::is_same_v<Meth, OptimalMethod>)
+    {
+        return optimal::version();
+    }
+    else if constexpr (std::is_same_v<Meth, SearchMethod>)
+    {
+        return search::version();
+    }
+    else if constexpr (std::is_same_v<Meth, SortMethod>)
+    {
+        return sort::version();
+    }
+    else
+    {
+        return "";
+    }
+}
+
+//! @brief Find the category version for sub-cli related registrations.
+//! @tparam Inst - type of sub-cli's category
+//! @return category version
+template <typename Inst>
+requires reg_dp::Registrant<Inst>
+constexpr std::string_view version()
+{
+    using namespace reg_dp;
+    if constexpr (std::is_same_v<Inst, BehavioralInstance>)
+    {
+        return behavioral::version();
+    }
+    else if constexpr (std::is_same_v<Inst, CreationalInstance>)
+    {
+        return creational::version();
+    }
+    else if constexpr (std::is_same_v<Inst, StructuralInstance>)
+    {
+        return structural::version();
+    }
+    else
+    {
+        return "";
+    }
+}
+
+//! @brief Find the category version for sub-cli related registrations.
+//! @tparam Inst - type of sub-cli's category
+//! @return category version
+template <typename Inst>
+requires reg_ds::Registrant<Inst>
+constexpr std::string_view version()
+{
+    using namespace reg_ds;
+    if constexpr (std::is_same_v<Inst, CacheInstance>)
+    {
+        return cache::version();
+    }
+    else if constexpr (std::is_same_v<Inst, FilterInstance>)
+    {
+        return filter::version();
+    }
+    else if constexpr (std::is_same_v<Inst, GraphInstance>)
+    {
+        return graph::version();
+    }
+    if constexpr (std::is_same_v<Inst, HeapInstance>)
+    {
+        return heap::version();
+    }
+    else if constexpr (std::is_same_v<Inst, LinearInstance>)
+    {
+        return linear::version();
+    }
+    else if constexpr (std::is_same_v<Inst, TreeInstance>)
+    {
+        return tree::version();
+    }
+    else
+    {
+        return "";
+    }
+}
+
+//! @brief Find the category version for sub-cli related registrations.
+//! @tparam Meth - type of sub-cli's category
+//! @return category version
+template <typename Meth>
+requires reg_num::Registrant<Meth>
+constexpr std::string_view version()
+{
+    using namespace reg_num;
+    if constexpr (std::is_same_v<Meth, ArithmeticMethod>)
+    {
+        return arithmetic::version();
+    }
+    else if constexpr (std::is_same_v<Meth, DivisorMethod>)
+    {
+        return divisor::version();
+    }
+    else if constexpr (std::is_same_v<Meth, IntegralMethod>)
+    {
+        return integral::version();
+    }
+    else if constexpr (std::is_same_v<Meth, PrimeMethod>)
+    {
+        return prime::version();
+    }
+    else
+    {
+        return "";
+    }
+}
+// NOLINTEND(google-build-using-namespace)
 } // namespace meta
 } // namespace schedule
 } // namespace application

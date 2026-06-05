@@ -110,9 +110,8 @@ private:
     void injectNewSubCLI(Intf&& intf);
     //! @brief Add a new category registration to the sub-cli.
     //! @tparam Cat - type of sub-cli's category
-    //! @param version - category version
     template <typename Cat>
-    void addNewCategoryToSubCLI(const std::string_view version);
+    void addNewCategoryToSubCLI();
     //! @brief Resolve target sub-cli.
     //! @tparam Mapped - type of sub-cli or sub-cli's category
     //! @return parse argument helper to apply

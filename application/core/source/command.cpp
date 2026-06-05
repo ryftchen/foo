@@ -320,7 +320,7 @@ void Command::injectNewSubCLI(Intf&& intf)
 
 // NOLINTBEGIN(google-build-using-namespace)
 template <typename Cat>
-void Command::addNewCategoryToSubCLI(const std::string_view version)
+void Command::addNewCategoryToSubCLI()
 {
     using namespace reg_algo;
     using namespace reg_dp;
@@ -328,7 +328,7 @@ void Command::addNewCategoryToSubCLI(const std::string_view version)
     using namespace reg_num;
     using Attr = schedule::ExtraManager::Attr;
     using schedule::extra::SetChoice, schedule::extra::RunCandidates, schedule::meta::name, schedule::meta::alias,
-        schedule::meta::descr, schedule::meta::choice;
+        schedule::meta::descr, schedule::meta::choice, schedule::meta::version;
     auto& subCLI = resolveSubCLI<Cat>();
     auto& registry = scheduleDispatcher.extraChoiceRegistry[subCLI.title()];
     auto candidates = choice<Cat>();
@@ -341,7 +341,7 @@ void Command::addNewCategoryToSubCLI(const std::string_view version)
         .help(descr<Cat>());
     applyingForwarder.registerHandler([](const SetChoice<Cat>& msg) { setChoice<Cat>(msg.choice); });
     applyingForwarder.registerHandler([](const RunCandidates<Cat>& msg) { runCandidates<Cat>(msg.candidates); });
-    versionLinks.emplace(VerLinkKey{subCLI.title(), version}, name<Cat>());
+    versionLinks.emplace(VerLinkKey{subCLI.title(), version<Cat>()}, name<Cat>());
 }
 
 //! @brief Set up the sub-command line interface (algorithm module).
@@ -351,11 +351,11 @@ void Command::subCLISetup<reg_algo::ApplyAlgorithm>()
     using namespace reg_algo;
     using Intf = schedule::ExtraManager::Intf;
     injectNewSubCLI<ApplyAlgorithm>(Intf{manage::present, manage::clear});
-    addNewCategoryToSubCLI<MatchMethod>(match::version());
-    addNewCategoryToSubCLI<NotationMethod>(notation::version());
-    addNewCategoryToSubCLI<OptimalMethod>(optimal::version());
-    addNewCategoryToSubCLI<SearchMethod>(search::version());
-    addNewCategoryToSubCLI<SortMethod>(sort::version());
+    addNewCategoryToSubCLI<MatchMethod>();
+    addNewCategoryToSubCLI<NotationMethod>();
+    addNewCategoryToSubCLI<OptimalMethod>();
+    addNewCategoryToSubCLI<SearchMethod>();
+    addNewCategoryToSubCLI<SortMethod>();
 }
 
 //! @brief Set up the sub-command line interface (design pattern module).
@@ -365,9 +365,9 @@ void Command::subCLISetup<reg_dp::ApplyDesignPattern>()
     using namespace reg_dp;
     using Intf = schedule::ExtraManager::Intf;
     injectNewSubCLI<ApplyDesignPattern>(Intf{manage::present, manage::clear});
-    addNewCategoryToSubCLI<BehavioralInstance>(behavioral::version());
-    addNewCategoryToSubCLI<CreationalInstance>(creational::version());
-    addNewCategoryToSubCLI<StructuralInstance>(structural::version());
+    addNewCategoryToSubCLI<BehavioralInstance>();
+    addNewCategoryToSubCLI<CreationalInstance>();
+    addNewCategoryToSubCLI<StructuralInstance>();
 }
 
 //! @brief Set up the sub-command line interface (data structure module).
@@ -377,12 +377,12 @@ void Command::subCLISetup<reg_ds::ApplyDataStructure>()
     using namespace reg_ds;
     using Intf = schedule::ExtraManager::Intf;
     injectNewSubCLI<ApplyDataStructure>(Intf{manage::present, manage::clear});
-    addNewCategoryToSubCLI<CacheInstance>(cache::version());
-    addNewCategoryToSubCLI<FilterInstance>(filter::version());
-    addNewCategoryToSubCLI<GraphInstance>(graph::version());
-    addNewCategoryToSubCLI<HeapInstance>(heap::version());
-    addNewCategoryToSubCLI<LinearInstance>(linear::version());
-    addNewCategoryToSubCLI<TreeInstance>(tree::version());
+    addNewCategoryToSubCLI<CacheInstance>();
+    addNewCategoryToSubCLI<FilterInstance>();
+    addNewCategoryToSubCLI<GraphInstance>();
+    addNewCategoryToSubCLI<HeapInstance>();
+    addNewCategoryToSubCLI<LinearInstance>();
+    addNewCategoryToSubCLI<TreeInstance>();
 }
 
 //! @brief Set up the sub-command line interface (numeric module).
@@ -392,10 +392,10 @@ void Command::subCLISetup<reg_num::ApplyNumeric>()
     using namespace reg_num;
     using Intf = schedule::ExtraManager::Intf;
     injectNewSubCLI<ApplyNumeric>(Intf{manage::present, manage::clear});
-    addNewCategoryToSubCLI<ArithmeticMethod>(arithmetic::version());
-    addNewCategoryToSubCLI<DivisorMethod>(divisor::version());
-    addNewCategoryToSubCLI<IntegralMethod>(integral::version());
-    addNewCategoryToSubCLI<PrimeMethod>(prime::version());
+    addNewCategoryToSubCLI<ArithmeticMethod>();
+    addNewCategoryToSubCLI<DivisorMethod>();
+    addNewCategoryToSubCLI<IntegralMethod>();
+    addNewCategoryToSubCLI<PrimeMethod>();
 }
 // NOLINTEND(google-build-using-namespace)
 
