@@ -60,10 +60,22 @@ Console::~Console()
     currentSession = nullptr;
 }
 
-void Console::registerOption(const std::string_view name, const std::string_view description, Callback callback)
+auto Console::getOptionHelpPairs() const
 {
-    terminal->regTable.emplace(name, std::make_pair(description, std::move(callback)));
+    const auto transformed = terminal->orderList
+        | std::views::transform([this](const auto& option)
+                                { return std::make_pair(option, std::get<Help>(terminal->regTable.at(option))); });
+    return std::vector<std::ranges::range_value_t<decltype(transformed)>>{transformed.begin(), transformed.end()};
+}
+
+void Console::registerOption(Option name, Help description, Action handler)
+{
     terminal->orderList.emplace_back(name);
+    terminal->regTable.emplace(std::move(name), std::make_pair(std::move(description), std::move(handler)));
+    terminal->helpAlign =
+        std::ranges::max(
+            getOptionHelpPairs(), std::less<std::size_t>{}, [](const auto& pair) { return pair.first.length(); })
+            .first.length();
 }
 
 void Console::setGreeting(const std::string_view greeting)
@@ -89,7 +101,7 @@ Console::RetCode Console::optionExecutor(const std::string& option) const
             "The console option (" + inputs.front() + ") could not be found. Enter the \"" + local::usage
             + "\" for help."};
     }
-    const auto& mappedCallback = std::get<Callback>(regIter->second);
+    const auto& mappedCallback = std::get<Action>(regIter->second);
     return mappedCallback ? mappedCallback(inputs) : dummyCallback(inputs);
 }
 
@@ -144,16 +156,6 @@ Console::RetCode Console::readLine()
     return optionExecutor(input);
 }
 
-auto Console::getOptionHelpPairs() const
-{
-    const auto transformed =
-        terminal->orderList
-        | std::views::transform(
-            [this](const auto& option)
-            { return std::make_pair(option, std::get<std::string>(terminal->regTable.at(option))); });
-    return std::vector<std::ranges::range_value_t<decltype(transformed)>>{transformed.begin(), transformed.end()};
-}
-
 void Console::setDefaultOptions()
 {
     auto& regTable = terminal->regTable;
@@ -163,15 +165,11 @@ void Console::setDefaultOptions()
         "show help message",
         [this](const Args& /*inputs*/)
         {
-            const auto pairs = getOptionHelpPairs();
-            const auto align =
-                std::ranges::max(pairs, std::less<std::size_t>{}, [](const auto& pair) { return pair.first.length(); })
-                    .first.length();
             std::ostringstream out{};
             out << std::setiosflags(std::ios_base::left);
-            for (const auto& [option, help] : pairs)
+            for (const auto& [option, help] : getOptionHelpPairs())
             {
-                out << "- " << std::setw(static_cast<int>(align)) << option << "    " << help << '\n';
+                out << "- " << std::setw(terminal->helpAlign) << option << "    " << help << '\n';
             }
             out << std::resetiosflags(std::ios_base::left);
             std::cout << out.str() << std::flush;
@@ -261,27 +259,64 @@ void Console::reserveConsole()
 
 char** Console::customCompleter(const char* text, int start, int /*end*/)
 {
-    return (start == 0) ? ::rl_completion_matches(text, customCompentry) : nullptr;
-}
-
-char* Console::customCompentry(const char* text, int state)
-{
-    static thread_local Terminal::RegisteredOption::iterator optionIterator{};
     if (!currentSession)
     {
         return nullptr;
     }
 
+    ::rl_attempted_completion_over = 1;
+    if (start == 0)
+    {
+        return ::rl_completion_matches(text, customCompentry);
+    }
+
+    const std::string buffer = ::rl_line_buffer;
+    if (buffer.empty())
+    {
+        return nullptr;
+    }
+    const auto pos = buffer.find(' ');
+    if (pos == std::string::npos)
+    {
+        return nullptr;
+    }
+    if (const auto& rest = buffer.substr(pos + 1); !rest.empty() && (rest.find_first_not_of(' ') != std::string::npos))
+    {
+        return nullptr;
+    }
+
+    const auto& option = buffer.substr(0, pos);
+    auto& regTable = currentSession->terminal->regTable;
+    if (const auto optIter = regTable.find(option); optIter != regTable.cend())
+    {
+        std::ostringstream out{};
+        out << std::setiosflags(std::ios_base::left) << "\n- " << std::setw(currentSession->terminal->helpAlign)
+            << option << "    " << std::get<Help>(optIter->second) << '\n'
+            << std::resetiosflags(std::ios_base::left);
+        std::cout << out.str() << std::flush;
+        ::rl_on_new_line();
+    }
+    return nullptr;
+}
+
+char* Console::customCompentry(const char* text, int state)
+{
+    if (!currentSession)
+    {
+        return nullptr;
+    }
+
+    static thread_local Terminal::RegisteredOption::iterator completionIterator{};
     auto& regTable = currentSession->terminal->regTable;
     if (state == 0)
     {
-        optionIterator = regTable.begin();
+        completionIterator = regTable.begin();
     }
 
-    while (optionIterator != regTable.cend())
+    while (completionIterator != regTable.cend())
     {
-        const auto& option = optionIterator->first;
-        ++optionIterator;
+        const auto& option = completionIterator->first;
+        ++completionIterator;
         if (option.starts_with(text))
         {
             return ::strdup(option.c_str());

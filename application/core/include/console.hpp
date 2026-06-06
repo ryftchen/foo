@@ -52,15 +52,19 @@ public:
         //! @brief Error.
         error = 1
     };
+    //! @brief Alias for the option name.
+    using Option = std::string;
+    //! @brief Alias for the help description.
+    using Help = std::string;
     //! @brief Alias for the container of arguments.
     using Args = std::vector<std::string>;
-    //! @brief Alias for the callback of option.
-    using Callback = std::function<RetCode(const Args&)>;
+    //! @brief Alias for the action handler.
+    using Action = std::function<RetCode(const Args&)>;
     //! @brief Register the console option.
     //! @param name - option name
-    //! @param description - option description
-    //! @param callback - callback function
-    void registerOption(const std::string_view name, const std::string_view description, Callback callback);
+    //! @param description - help description
+    //! @param handler - action handler
+    void registerOption(Option name, Help description, Action handler);
     //! @brief Set the greeting information.
     //! @param greeting - greeting information
     void setGreeting(const std::string_view greeting);
@@ -103,19 +107,21 @@ private:
 
         //! @brief Greeting information.
         std::string greeting;
-        //! @brief Alias for the map of option and callback in console.
-        using RegisteredOption = std::unordered_map<std::string, std::pair<std::string, Callback>>;
+        //! @brief Register order.
+        std::list<Option> orderList;
+        //! @brief Alias for the map of options and help/action pairs in console.
+        using RegisteredOption = std::unordered_map<Option, std::pair<Help, Action>>;
         //! @brief Mapping table of all registered options.
         RegisteredOption regTable;
-        //! @brief Register order.
-        std::list<std::string> orderList;
+        //! @brief Alignment width of help information.
+        std::uint8_t helpAlign{0};
         //! @brief Saved history state.
         HistoryState* history{nullptr};
     };
     //! @brief Internal terminal.
     const std::unique_ptr<Terminal> terminal;
-    //! @brief Dummy callback function.
-    const Callback dummyCallback{[](const Args& /*inputs*/) { return RetCode::success; }};
+    //! @brief Dummy callback action.
+    const Action dummyCallback{[](const Args& /*inputs*/) { return RetCode::success; }};
 
     //! @brief Get all registered options with help information.
     //! @return all registered options with help information
