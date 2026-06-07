@@ -35,16 +35,16 @@ function die()
 function shell_command()
 {
     if [[ ${ARGS[dry]} == true ]]; then
-        printf "${ANSI_STYLE[exec]}[ exec ] ${ANSI_STYLE[time]}$(date "+%b %d %T")${ANSI_STYLE[off]} $ %s\n" "$*"
+        printf "${ANSI_STYLE[exec]}[ exec ] ${ANSI_STYLE[time]}$(date "+%b %d %T.%3N")${ANSI_STYLE[off]} $ %s\n" "$*"
         echo
         return
     fi
 
-    printf "${ANSI_STYLE[exec]}[ exec ] ${ANSI_STYLE[time]}$(date "+%b %d %T")${ANSI_STYLE[off]} $ %s\n" "$*"
+    printf "${ANSI_STYLE[exec]}[ exec ] ${ANSI_STYLE[time]}$(date "+%b %d %T.%3N")${ANSI_STYLE[off]} $ %s\n" "$*"
     if shell "$@"; then
-        printf "${ANSI_STYLE[succ]}[ succ ] ${ANSI_STYLE[time]}$(date "+%b %d %T")${ANSI_STYLE[off]} $ %s\n" "$*"
+        printf "${ANSI_STYLE[succ]}[ succ ] ${ANSI_STYLE[time]}$(date "+%b %d %T.%3N")${ANSI_STYLE[off]} $ %s\n" "$*"
     else
-        printf "${ANSI_STYLE[fail]}[ fail ] ${ANSI_STYLE[time]}$(date "+%b %d %T")${ANSI_STYLE[off]} $ %s\n" "$*"
+        printf "${ANSI_STYLE[fail]}[ fail ] ${ANSI_STYLE[time]}$(date "+%b %d %T.%3N")${ANSI_STYLE[off]} $ %s\n" "$*"
         STATUS=1
     fi
     echo

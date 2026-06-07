@@ -473,7 +473,7 @@ class Task:
     def _hint_with_highlight(self, fore_color: str, hint: str):
         print(
             f"""{fore_color}{self._ansi_sgr["bold"]}{self._ansi_sgr["def_bg"]}\
-[ {datetime.strftime(datetime.now(), "%b %d %H:%M:%S")} # {hint} ]{self._ansi_sgr["reset"]}"""
+[ {datetime.now().strftime("%b %d %H:%M:%S.%f")[:-3]} # {hint} ]{self._ansi_sgr["reset"]}"""
         )
 
     def _initialize_for_check_coverage(self):
@@ -567,7 +567,7 @@ class Task:
             fcntl.flock(index_content.fileno(), fcntl.LOCK_UN)
         multi_inst_count = sum(1 for sub in sorted_case_folders if "_inst_" in sub)
         fail_case_num = len(sorted_case_folders) - multi_inst_count + int(multi_inst_count / 2)
-        exec_date = datetime.strftime(datetime.now(), "%Y-%m-%d")
+        exec_date = datetime.now().strftime("%Y-%m-%d")
         old_content = (
             old_content.replace(
                 r"<p><b>{{ num_errors }}</b> errors</p>", f"<p><b>{fail_case_num}</b> failure cases on {exec_date}</p>"
@@ -686,12 +686,14 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
         ):
             exit_with_error(f"The run log {self._run_log_file} file is incomplete. Please retry.")
 
-        begin_date_match = re.search(r"(\b[a-zA-Z]{3} \d{2} \d{2}:\d{2}:\d{2}\b)", readlines[start_indices[0]])
-        end_date_match = re.search(r"(\b[a-zA-Z]{3} \d{2} \d{2}:\d{2}:\d{2}\b)", readlines[finish_indices[-1]])
+        date_regex = r"(\b[a-zA-Z]{3} \d{2} \d{2}:\d{2}:\d{2}\.\d{3}\b)"
+        begin_date_match = re.search(date_regex, readlines[start_indices[0]])
+        end_date_match = re.search(date_regex, readlines[finish_indices[-1]])
+        date_format = "%b %d %H:%M:%S.%f"
         dur_time = (
             (
-                datetime.strptime(end_date_match.group(), "%b %d %H:%M:%S")
-                - datetime.strptime(begin_date_match.group(), "%b %d %H:%M:%S")
+                datetime.strptime(end_date_match.group(), date_format)
+                - datetime.strptime(begin_date_match.group(), date_format)
             ).total_seconds()
             if begin_date_match and end_date_match
             else 0.0
