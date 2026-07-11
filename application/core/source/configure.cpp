@@ -356,6 +356,7 @@ static bool handleConfigException(const std::string_view filePath)
 bool loadSettings(const std::string_view filename)
 {
     const auto filePath = getFullConfigPath(filename);
+
     try
     {
         if (!std::filesystem::is_regular_file(filePath))
@@ -367,14 +368,15 @@ bool loadSettings(const std::string_view filename)
     }
     catch (...)
     {
-        std::cerr << "Configuration load exception ..." << std::endl;
+        std::cout << "Configuration load exception ..." << std::endl;
         if (handleConfigException(filePath))
         {
             std::cout << '\n' << std::endl;
             throw;
         }
-        std::cout << std::endl;
     }
+
+    std::cout << std::endl;
     return false;
 }
 

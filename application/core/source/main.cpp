@@ -22,10 +22,10 @@ namespace application
 inline namespace
 {
 // NOLINTBEGIN(cppcoreguidelines-avoid-non-const-global-variables)
-//! @brief Interrupt flag for the SIGALRM signal.
-volatile std::sig_atomic_t alarmInterrupted = 0;
 //! @brief Interrupt flag for the SIGCHLD signal.
 volatile std::sig_atomic_t childInterrupted = 0;
+//! @brief Interrupt flag for the SIGALRM signal.
+volatile std::sig_atomic_t alarmInterrupted = 0;
 // NOLINTEND(cppcoreguidelines-avoid-non-const-global-variables)
 } // namespace
 
@@ -55,33 +55,42 @@ catch (const std::exception& err)
 //! @param pid - pid by fork
 //! @return 0 if successful, otherwise 1
 static int watchdog(const ::pid_t pid)
+try
 {
-    std::signal(SIGALRM, [](const int sig) { application::alarmInterrupted = sig; });
     std::signal(SIGCHLD, [](const int sig) { application::childInterrupted = sig; });
+    std::signal(SIGALRM, [](const int sig) { application::alarmInterrupted = sig; });
+    ::sigset_t unblockMask{};
+    ::sigemptyset(&unblockMask);
+    ::sigaddset(&unblockMask, SIGCHLD);
+    ::sigaddset(&unblockMask, SIGALRM);
+    ::pthread_sigmask(SIG_UNBLOCK, &unblockMask, nullptr);
 
     constexpr std::uint8_t timeout = 60;
     ::alarm(timeout);
-    ::pause();
-    if (application::alarmInterrupted != 0)
+    for (;;)
     {
-        if (::waitpid(pid, nullptr, WNOHANG) == 0)
+        ::pause();
+
+        if (application::childInterrupted != 0)
         {
-            ::kill(pid, SIGKILL);
-            std::cerr << application::executableName() << ": Kill the child process (" << pid << ") due to timeout."
-                      << std::endl;
+            int status = 0;
+            ::waitpid(pid, &status, 0);
+            return (WIFEXITED(status) && (WEXITSTATUS(status) == EXIT_SUCCESS)) ? EXIT_SUCCESS : EXIT_FAILURE;
         }
-        return EXIT_FAILURE;
-    }
-    if (application::childInterrupted != 0)
-    {
-        int status = 0;
-        ::wait(&status);
-        if (WIFEXITED(status) && (WEXITSTATUS(status) != EXIT_SUCCESS))
+        if (application::alarmInterrupted != 0)
         {
-            return EXIT_FAILURE;
+            if (::waitpid(pid, nullptr, WNOHANG) == 0)
+            {
+                ::kill(pid, SIGKILL);
+            }
+            throw std::runtime_error{"The child process (" + std::to_string(pid) + ") has timed out."};
         }
     }
-    return EXIT_SUCCESS;
+}
+catch (const std::exception& err)
+{
+    std::cerr << executableName() << ": " << err.what() << std::endl;
+    return EXIT_FAILURE;
 }
 } // namespace application
 
@@ -96,6 +105,13 @@ int main(int argc, char* argv[])
         return application::run(argc, argv);
     }
 
+    ::sigset_t blockMask{};
+    ::sigemptyset(&blockMask);
+    ::sigaddset(&blockMask, SIGCHLD);
+    ::sigaddset(&blockMask, SIGALRM);
+    ::sigset_t prevMask{};
+    ::pthread_sigmask(SIG_BLOCK, &blockMask, &prevMask);
+
     const ::pid_t ppidBeforeFork = ::getpid();
     const ::pid_t pid = ::fork();
     if (pid < 0)
@@ -104,6 +120,7 @@ int main(int argc, char* argv[])
     }
     if (pid == 0)
     {
+        ::pthread_sigmask(SIG_SETMASK, &prevMask, nullptr);
         ::prctl(PR_SET_PDEATHSIG, SIGTERM);
         return (::getppid() == ppidBeforeFork) ? application::run(argc, argv) : EXIT_FAILURE;
     }
