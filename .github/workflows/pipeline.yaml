@@ -54,37 +54,37 @@ jobs:
       - name: Run quick tests (debug)
         run: |
           ./script/build.sh --setup
-          ./script/run.py --test --build dbg --repeat 1
+          ./script/run.py --unit --build dbg --repeat 1
           cat ./report/foo_run.report
           ./script/run.py --build dbg --repeat 1
           cat ./report/foo_run.report
       - name: Run quick tests (release)
         run: |
-          ./script/run.py --test --build rls --repeat 1
+          ./script/run.py --unit --build rls --repeat 1
           cat ./report/foo_run.report
           ./script/run.py --build rls --repeat 1
           cat ./report/foo_run.report
       - name: Perform code coverage checks (debug)
         run: |
-          ./script/run.py --test --check cov --build dbg --repeat 1
+          ./script/run.py --unit --check cov --build dbg --repeat 1
           cat ./report/foo_run.report
           ./script/run.py --check cov --build dbg --repeat 1
           cat ./report/foo_run.report
       - name: Perform code coverage checks (release)
         run: |
-          ./script/run.py --test --check cov --build rls --repeat 1
+          ./script/run.py --unit --check cov --build rls --repeat 1
           cat ./report/foo_run.report
           ./script/run.py --check cov --build rls --repeat 1
           cat ./report/foo_run.report
       - name: Perform memory leak checks (debug)
         run: |
-          ./script/run.py --test --check mem --build dbg --repeat 1
+          ./script/run.py --unit --check mem --build dbg --repeat 1
           cat ./report/foo_run.report
           ./script/run.py --check mem --build dbg --repeat 1
           cat ./report/foo_run.report
       - name: Perform memory leak checks (release)
         run: |
-          ./script/run.py --test --check mem --build rls --repeat 1
+          ./script/run.py --unit --check mem --build rls --repeat 1
           cat ./report/foo_run.report
           ./script/run.py --check mem --build rls --repeat 1
           cat ./report/foo_run.report
@@ -101,7 +101,7 @@ jobs:
           git config --global --add safe.directory '*'
       - name: Checkout
         uses: actions/checkout@v6.0.0
-      - name: Build development and integration environment
+      - name: Setup development and integration
         run: |
           ./script/build.sh --container --assume y
           ./script/build.sh --archive --assume y
@@ -117,11 +117,11 @@ jobs:
           sed -i 's/FOO_BLD_TMPFS=.*/FOO_BLD_TMPFS=on/' ./script/.build_env
           ./script/run.py --dump
           sed -i 's/FOO_BLD_COMPILER=.*/FOO_BLD_COMPILER=clang/' ./script/.build_env
-          ./script/run.py --test --build dbg --repeat 1
+          ./script/run.py --unit --build dbg --repeat 1
           ./script/run.py --analyze
           ./script/run.py --build dbg --repeat 1
           ./script/run.py --analyze
-          ./script/run.py --test --build rls --repeat 1
+          ./script/run.py --unit --build rls --repeat 1
           ./script/run.py --analyze
           ./script/run.py --build rls --repeat 1
           ./script/run.py --analyze
@@ -129,11 +129,11 @@ jobs:
       - name: Apply toolchain (part 1)
         run: |
           sed -i 's/FOO_BLD_PCH=.*/FOO_BLD_PCH=on/' ./script/.build_env
-          ./script/run.py --test --build dbg --repeat 1
+          ./script/run.py --unit --build dbg --repeat 1
           ./script/run.py --analyze
           ./script/run.py --build dbg --repeat 1
           ./script/run.py --analyze
-          ./script/run.py --test --build rls --repeat 1
+          ./script/run.py --unit --build rls --repeat 1
           ./script/run.py --analyze
           ./script/run.py --build rls --repeat 1
           ./script/run.py --analyze
@@ -141,11 +141,11 @@ jobs:
       - name: Apply toolchain (part 2)
         run: |
           sed -i 's/FOO_BLD_UNITY=.*/FOO_BLD_UNITY=on/' ./script/.build_env
-          ./script/run.py --test --build dbg --repeat 1
+          ./script/run.py --unit --build dbg --repeat 1
           ./script/run.py --analyze
           ./script/run.py --build dbg --repeat 1
           ./script/run.py --analyze
-          ./script/run.py --test --build rls --repeat 1
+          ./script/run.py --unit --build rls --repeat 1
           ./script/run.py --analyze
           ./script/run.py --build rls --repeat 1
           ./script/run.py --analyze
@@ -154,11 +154,11 @@ jobs:
         run: |
           distccd --daemon --allow 127.0.0.1/32
           sed -i 's/FOO_BLD_DISTCC=.*/FOO_BLD_DISTCC="127.0.0.1,lzo"/' ./script/.build_env
-          ./script/run.py --test --build dbg --repeat 1
+          ./script/run.py --unit --build dbg --repeat 1
           ./script/run.py --analyze
           ./script/run.py --build dbg --repeat 1
           ./script/run.py --analyze
-          ./script/run.py --test --build rls --repeat 1
+          ./script/run.py --unit --build rls --repeat 1
           ./script/run.py --analyze
           ./script/run.py --build rls --repeat 1
           ./script/run.py --analyze
@@ -167,29 +167,29 @@ jobs:
           ./script/build.sh --cleanup
       - name: Run sanitizer (debug)
         run: |
-          ./script/run.py --test --sanitizer asan --build dbg --repeat 1
+          ./script/run.py --unit --sanitizer asan --build dbg --repeat 1
           ./script/run.py --analyze
           ./script/run.py --sanitizer asan --build dbg --repeat 1
           ./script/run.py --analyze
-          ./script/run.py --test --sanitizer tsan --build dbg --repeat 1
+          ./script/run.py --unit --sanitizer tsan --build dbg --repeat 1
           ./script/run.py --analyze
           ./script/run.py --sanitizer tsan --build dbg --repeat 1
           ./script/run.py --analyze
-          ./script/run.py --test --sanitizer ubsan --build dbg --repeat 1
+          ./script/run.py --unit --sanitizer ubsan --build dbg --repeat 1
           ./script/run.py --analyze
           ./script/run.py --sanitizer ubsan --build dbg --repeat 1
           ./script/run.py --analyze
       - name: Run sanitizer (release)
         run: |
-          ./script/run.py --test --sanitizer asan --build rls --repeat 1
+          ./script/run.py --unit --sanitizer asan --build rls --repeat 1
           ./script/run.py --analyze
           ./script/run.py --sanitizer asan --build rls --repeat 1
           ./script/run.py --analyze
-          ./script/run.py --test --sanitizer tsan --build rls --repeat 1
+          ./script/run.py --unit --sanitizer tsan --build rls --repeat 1
           ./script/run.py --analyze
           ./script/run.py --sanitizer tsan --build rls --repeat 1
           ./script/run.py --analyze
-          ./script/run.py --test --sanitizer ubsan --build rls --repeat 1
+          ./script/run.py --unit --sanitizer ubsan --build rls --repeat 1
           ./script/run.py --analyze
           ./script/run.py --sanitizer ubsan --build rls --repeat 1
           ./script/run.py --analyze

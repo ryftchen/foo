@@ -67,7 +67,7 @@ The **[foo](https://github.com/ryftchen/foo)** repository is a personal roadmap 
 > ./script/run.py --help
 > ```
 
-- Run all cases by default:
+- Run all smoke test cases by default:
 
   ```bash
   ./script/run.py

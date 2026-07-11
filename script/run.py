@@ -92,7 +92,7 @@ class Task:
         },
     }
     _tst_task_filt = []
-    _marked_option = {"tst": False, "chk": {"cov": False, "mem": False}}
+    _marked_option = {"ut": False, "chk": {"cov": False, "mem": False}}
     _analyze_only = False
     _report_path = "./report"
     _run_log_file = f"{_report_path}/foo_{os.path.splitext(os.path.basename(__file__))[0]}.log"
@@ -162,7 +162,7 @@ class Task:
         self._prepare()
         start_time = datetime.now()
 
-        if not self._marked_option["tst"]:
+        if not self._marked_option["ut"]:
             thread_list = []
             producer = threading.Thread(target=self._generate_tasks(), args=())
             producer.start()
@@ -211,7 +211,9 @@ class Task:
             raise argparse.ArgumentTypeError("The number must be a positive integer.")
 
         parser = argparse.ArgumentParser(description="run script", formatter_class=argparse.RawTextHelpFormatter)
-        parser.add_argument("-t", "--test", action="store_true", default=False, help="switch to unit test mode")
+        parser.add_argument(
+            "-u", "--unit", action="store_true", default=False, help="switch from smoke test to unit test"
+        )
         parser.add_argument(
             "-r",
             "--repeat",
@@ -263,8 +265,8 @@ class Task:
             self._dump_run_dict()
             sys.exit(0)
 
-        if self._args.test:
-            self._marked_option["tst"] = True
+        if self._args.unit:
+            self._marked_option["ut"] = True
 
         if self._args.repeat is not None:
             self._repeat_count = self._args.repeat
@@ -296,7 +298,7 @@ class Task:
         if self._args.build is not None:
             if os.path.isfile(self._build_script):
                 build_cmd = self._build_script
-                if self._marked_option["tst"]:
+                if self._marked_option["ut"]:
                     build_cmd += " --test"
                 if self._args.build == "rls":
                     build_cmd += " --release"
@@ -335,10 +337,14 @@ class Task:
             fcntl.flock(run_dict_content.fileno(), fcntl.LOCK_UN)
 
     def _prepare(self):
-        if not self._marked_option["tst"] and not os.path.isfile(f"{self._app_bin_path}/{self._app_bin_cmd}"):
-            exit_with_error("No executable file. Please use the --build option to build it.")
-        if self._marked_option["tst"] and not os.path.isfile(f"{self._tst_bin_path}/{self._tst_bin_cmd}"):
-            exit_with_error("No executable file for testing. Please use the --build option to build it.")
+        is_ut_mode = self._marked_option["ut"]
+        bin_path = self._app_bin_path if not is_ut_mode else self._tst_bin_path
+        bin_cmd = self._app_bin_cmd if not is_ut_mode else self._tst_bin_cmd
+        if not os.path.isfile(f"{bin_path}/{bin_cmd}"):
+            exit_with_error(
+                f"\
+No executable file for {'smoke' if not is_ut_mode else 'unit'} test. Please use the --build option to build it."
+            )
 
         if not os.path.exists(self._report_path):
             os.makedirs(self._report_path)
@@ -405,7 +411,7 @@ class Task:
     def _run_single_task(self, command: str, stdin: str = ""):
         full_cmd = (
             f"{self._app_bin_path}/{command}"
-            if not self._marked_option["tst"]
+            if not self._marked_option["ut"]
             else f"{self._tst_bin_path}/{command} --gtest_color=yes"
         )
         if self._marked_option["chk"]["mem"]:
@@ -493,7 +499,7 @@ class Task:
             f"llvm-profdata-{self._llvm_ver} merge -sparse {folder_path}/foo_chk_cov_*.profraw \
 -o {folder_path}/foo_chk_cov.profdata"
         )
-        if not self._marked_option["tst"]:
+        if not self._marked_option["ut"]:
             execute_command(
                 f"llvm-cov-{self._llvm_ver} show -instr-profile {folder_path}/foo_chk_cov.profdata \
 -show-branches=percent -show-expansions -show-regions -show-line-counts-or-regions -format html \
@@ -512,7 +518,7 @@ class Task:
 -object {self._app_bin_path}/{self._app_bin_cmd} \
 {' '.join([f'-object {self._lib_path}/{lib}' for lib in self._lib_list])}"
             )
-            if not self._marked_option["tst"]
+            if not self._marked_option["ut"]
             else execute_command(
                 f"llvm-cov-{self._llvm_ver} report -instr-profile {folder_path}/foo_chk_cov.profdata \
 -object {self._tst_bin_path}/{self._tst_bin_cmd}"
@@ -651,21 +657,21 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
             fcntl.flock(run_log.fileno(), fcntl.LOCK_UN)
 
     def _summarize_run_log(self):
-        tags = {"tst": False, "chk": {"cov": False, "mem": False}}
+        tags = {"ut": False, "chk": {"cov": False, "mem": False}}
         with open(self._run_log_file, "rt", encoding="utf-8") as run_log:
             fcntl.flock(run_log.fileno(), fcntl.LOCK_EX)
             readlines = run_log.readlines()
             run_log.seek(0)
             content = run_log.read()
             if self._tst_bin_cmd in content:
-                tags["tst"] = True
+                tags["ut"] = True
             if re.compile(self._ansi_esc_regex).sub("", self._extended_trait["chk"]["cov"]) in content:
                 tags["chk"]["cov"] = True
             if re.compile(self._ansi_esc_regex).sub("", self._extended_trait["chk"]["mem"]) in content:
                 tags["chk"]["mem"] = True
             fcntl.flock(run_log.fileno(), fcntl.LOCK_UN)
         if not self._analyze_only and (
-            tags["tst"] != self._marked_option["tst"]
+            tags["ut"] != self._marked_option["ut"]
             or tags["chk"]["cov"] != self._marked_option["chk"]["cov"]
             or (tags["chk"]["mem"] and not self._marked_option["chk"]["mem"])
         ):
@@ -707,9 +713,12 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
                 "Failed": str(len(fail_res)),
                 "Duration": f"{self._duration} s" if not self._analyze_only else f"est. {dur_time} s",
             }
-            hint = " (UNIT TEST)" if tags["tst"] else ""
             run_stat_rep = (
-                "REPORT FOR RUN STATISTIC:\n" + self._format_as_table(run_stat, "ENTRY", f"RUN STATISTIC{hint}") + "\n"
+                "REPORT FOR RUN STATISTIC:\n"
+                + self._format_as_table(
+                    run_stat, "ENTRY", f"RUN STATISTIC ({'SMOKE' if not tags['ut'] else 'UNIT'} TEST)"
+                )
+                + "\n"
             )
             fail_res_rep = (
                 ("\nREPORT FOR FAILURE RESULT:\n" + self._format_as_table(fail_res, "CASE", "FAILURE RESULT") + "\n")
@@ -760,13 +769,13 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
                     number
                     + ": "
                     + cmd_line[
-                        cmd_line.find(self._app_bin_cmd if not tags["tst"] else self._tst_bin_cmd) : cmd_line.find(
+                        cmd_line.find(self._app_bin_cmd if not tags["ut"] else self._tst_bin_cmd) : cmd_line.find(
                             "# START"
                         )
                     ].strip()
                 )
 
-                if tags["tst"] and "FAILED TEST" in "".join(readlines[start_index + 1 : finish_index]):
+                if tags["ut"] and "FAILED TEST" in "".join(readlines[start_index + 1 : finish_index]):
                     ut_case = ""
                     ut_run_index = -1
                     ut_run_indices = []
