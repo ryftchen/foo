@@ -51,14 +51,14 @@ jobs:
           git config --global --add safe.directory '*'
       - name: Checkout
         uses: actions/checkout@v4.1.0
-      - name: Run base debug version
+      - name: Run quick tests (debug)
         run: |
           ./script/build.sh --setup
           ./script/run.py --test --build dbg --repeat 1
           cat ./report/foo_run.report
           ./script/run.py --build dbg --repeat 1
           cat ./report/foo_run.report
-      - name: Run base release version
+      - name: Run quick tests (release)
         run: |
           ./script/run.py --test --build rls --repeat 1
           cat ./report/foo_run.report
@@ -101,7 +101,7 @@ jobs:
           git config --global --add safe.directory '*'
       - name: Checkout
         uses: actions/checkout@v4.1.0
-      - name: Development environment
+      - name: Build development and integration environment
         run: |
           ./script/build.sh --container --assume y
           ./script/build.sh --archive --assume y
@@ -109,7 +109,7 @@ jobs:
           ./script/build.sh --test
           ./script/build.sh --install
           ./script/build.sh --uninstall
-      - name: Enhanced environment
+      - name: Verify persistent environment
         run: |
           ./script/build.sh --setup
           sed -i 's/FOO_BLD_PARALLEL=.*/FOO_BLD_PARALLEL=2/' ./script/.build_env
