@@ -58,6 +58,8 @@ constexpr std::string_view reset = "\033[0m";
 //! @brief Anonymous namespace.
 inline namespace
 {
+//! @brief Directory of the source code.
+constexpr std::string_view sourceDirectory = "/" _PROJECT_NAME "/";
 //! @brief Prefix of debug level in log.
 constexpr std::string_view debugLevelPrefix = "[DBG]";
 //! @brief Prefix of info level in log.
@@ -235,6 +237,7 @@ void Log::flush(const OutputLevel severity, const std::string_view labelTpl, con
 
 std::string Log::createLabelTemplate(const std::string_view srcFile, const std::uint32_t srcLine)
 {
+    static_assert((sourceDirectory.front() == '/') && (sourceDirectory.back() == '/'));
     return std::format(
         "[{}] {{}} [{}#{}] ",
         utility::time::currentStandardTime(),

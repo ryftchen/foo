@@ -48,7 +48,6 @@ if(DEFINED ENV{FOO_BLD_SAN})
 endif()
 include(${CMAKE_SOURCE_DIR}/cmake/toolchain.cmake)
 set(RUNTIME_PRINTING ON CACHE BOOL "runtime printing" FORCE)
-include(${CMAKE_SOURCE_DIR}/cmake/condition.cmake)
 
 set(BIN_NAME foo)
 set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
@@ -92,6 +91,11 @@ if((NOT COMMIT_REVISION STREQUAL "") AND (NOT TARGET_PROCESSOR STREQUAL ""))
         PROPERTIES COMPILE_DEFINITIONS
                    "_COMMIT_REVISION=\"${COMMIT_REVISION}\";_TARGET_PROCESSOR=\"${TARGET_PROCESSOR}\"")
 endif()
+target_compile_definitions(
+    ${BIN_NAME}
+    PRIVATE _PROJECT_NAME="${PROJECT_NAME}"
+            $<$<BOOL:${PRECOMPILED_HEADER}>:_PRECOMPILED_HEADER>
+            $<$<BOOL:${RUNTIME_PRINTING}>:_RUNTIME_PRINTING>)
 if(PRECOMPILED_HEADER)
     target_precompile_headers(${BIN_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/application/pch/precompiled_header.hpp)
 endif()

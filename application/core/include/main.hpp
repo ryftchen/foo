@@ -17,6 +17,8 @@
 #include "application/pch/precompiled_header.hpp"
 #endif
 
+#include "utility/include/macro.hpp"
+
 //! @brief The application module.
 namespace application
 {
@@ -98,6 +100,7 @@ static void signalHandler(const int sig)
 //! @brief The constructor function before starting the main function. Switch to the target path.
 [[using gnu: constructor, noinline]] static void onInitial()
 {
+    MACRO_ASSERT(executableName() == _PROJECT_NAME);
     std::signal(SIGABRT, signalHandler);
     std::signal(SIGSEGV, signalHandler);
     ::setenv("TERM", "linux", 1);
@@ -112,7 +115,7 @@ static void signalHandler(const int sig)
         std::exit(EXIT_FAILURE);
     }
 
-    const auto processPath = homePath / ".foo";
+    const auto processPath = homePath / "." _PROJECT_NAME;
     if (!std::filesystem::is_directory(processPath))
     {
         std::filesystem::create_directory(processPath);

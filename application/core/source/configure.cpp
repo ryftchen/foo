@@ -9,6 +9,7 @@
 #include "view.hpp"
 
 #ifndef _PRECOMPILED_HEADER
+#include <cassert>
 #include <filesystem>
 #include <iterator>
 #else
@@ -252,7 +253,7 @@ utility::json::JSON dumpDefaultConfig()
 {
     using log::Log;
     auto loggerProperties = utility::json::object();
-    loggerProperties.at(field::filePath) = "log/foo.log";
+    loggerProperties.at(field::filePath) = log::defaultLogFile.data();
     loggerProperties.at(field::priorityLevel) =
         static_cast<std::underlying_type_t<Log::OutputLevel>>(Log::OutputLevel::debug);
     loggerProperties.at(field::targetType) = static_cast<std::underlying_type_t<Log::OutputType>>(Log::OutputType::all);
@@ -260,7 +261,7 @@ utility::json::JSON dumpDefaultConfig()
         static_cast<std::underlying_type_t<Log::OutputMode>>(Log::OutputMode::append);
     auto loggerRequired = utility::json::array();
     loggerRequired.append(field::filePath, field::priorityLevel, field::targetType, field::writeMode);
-    MACRO_ASSERT(loggerProperties.size() == loggerRequired.length());
+    assert(loggerProperties.size() == loggerRequired.length());
 
     auto viewerProperties = utility::json::object();
     viewerProperties.at(field::tcpHost) = "localhost";
@@ -269,7 +270,7 @@ utility::json::JSON dumpDefaultConfig()
     viewerProperties.at(field::udpPort) = 61502;
     auto viewerRequired = utility::json::array();
     viewerRequired.append(field::tcpHost, field::tcpPort, field::udpHost, field::udpPort);
-    MACRO_ASSERT(viewerProperties.size() == viewerRequired.length());
+    assert(viewerProperties.size() == viewerRequired.length());
     // clang-format off
     return utility::json::JSON
     (

@@ -63,7 +63,7 @@ private:
     //! @brief Alias for the argument parser.
     using Argument = utility::argument::Argument;
     //! @brief The main argument parser.
-    Argument mainCLI{"foo", build::version()};
+    Argument mainCLI{_PROJECT_NAME, build::version()};
     //! @brief The argument parser used to apply algorithm.
     Argument subCLIAppAlgo{schedule::meta::name<reg_algo::ApplyAlgorithm>(), reg_algo::version()};
     //! @brief The argument parser used to apply design pattern.

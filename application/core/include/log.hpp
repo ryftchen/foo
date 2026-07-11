@@ -68,8 +68,8 @@ namespace application // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Log-related functions in the application module.
 namespace log
 {
-//! @brief Directory of the source code.
-constexpr std::string_view sourceDirectory = "/foo/";
+//! @brief Default log filename.
+constexpr std::string_view defaultLogFile = "log/" _PROJECT_NAME ".log";
 
 //! @brief Simplified interface.
 namespace intf
@@ -161,7 +161,6 @@ public:
         const std::uint32_t srcLine,
         const std::string& format,
         Args&&... args);
-    static_assert((sourceDirectory.front() == '/') && (sourceDirectory.back() == '/'));
 
 private:
     //! @brief Construct a new Log object.
@@ -248,7 +247,7 @@ private:
     //! @brief Get the full path to the log file.
     //! @param filename - log file path
     //! @return full path to the log file
-    static std::string getFullLogPath(const std::string_view filename = "log/foo.log");
+    static std::string getFullLogPath(const std::string_view filename = defaultLogFile);
     //! @brief Try to create the log folder.
     void tryCreateLogFolder() const;
     //! @brief Back up the log file if needed.
@@ -355,8 +354,7 @@ void printfStyle(
     }
 
     const auto rows = Log::reformatContents(
-        std::string{sourceDirectory.substr(1, sourceDirectory.length() - 2)} + ": ",
-        utility::common::printfString(format.c_str(), std::forward<Args>(args)...));
+        _PROJECT_NAME ": ", utility::common::printfString(format.c_str(), std::forward<Args>(args)...));
     std::ranges::for_each(rows, [](const auto& output) { std::osyncstream(std::clog) << output << std::endl; });
 }
 
@@ -384,9 +382,8 @@ void formatStyle(
         return;
     }
 
-    const auto rows = Log::reformatContents(
-        std::string{sourceDirectory.substr(1, sourceDirectory.length() - 2)} + ": ",
-        utility::common::formatString(format, std::forward<Args>(args)...));
+    const auto rows =
+        Log::reformatContents(_PROJECT_NAME ": ", utility::common::formatString(format, std::forward<Args>(args)...));
     std::ranges::for_each(rows, [](const auto& output) { std::osyncstream(std::clog) << output << std::endl; });
 }
 

@@ -35,7 +35,6 @@ if(DEFINED ENV{FOO_BLD_SAN})
 endif()
 include(${CMAKE_SOURCE_DIR}/../cmake/toolchain.cmake)
 set(RUNTIME_PRINTING OFF CACHE BOOL "runtime printing" FORCE)
-include(${CMAKE_SOURCE_DIR}/../cmake/condition.cmake)
 
 set(BIN_NAME foo_test)
 set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
@@ -57,6 +56,9 @@ foreach(MODULE_NAME IN LISTS MODULE_TARGETS)
 endforeach()
 target_link_libraries(${BIN_NAME} PRIVATE GTest::gtest ${GSL_LIBRARIES} ${MPFR_LIBRARIES})
 
+target_compile_definitions(
+    ${BIN_NAME}
+    PRIVATE $<$<BOOL:${PRECOMPILED_HEADER}>:_PRECOMPILED_HEADER> $<$<BOOL:${RUNTIME_PRINTING}>:_RUNTIME_PRINTING>)
 if(PRECOMPILED_HEADER)
     target_precompile_headers(${BIN_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/../application/pch/precompiled_header.hpp)
 endif()
