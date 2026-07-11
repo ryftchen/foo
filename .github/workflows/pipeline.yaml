@@ -24,7 +24,7 @@ jobs:
         run: |
           git config --global --add safe.directory '*'
       - name: Checkout
-        uses: actions/checkout@v4.1.0
+        uses: actions/checkout@v6.0.0
       - name: Precheck
         run: |
           ./script/build.sh --precheck
@@ -50,7 +50,7 @@ jobs:
         run: |
           git config --global --add safe.directory '*'
       - name: Checkout
-        uses: actions/checkout@v4.1.0
+        uses: actions/checkout@v6.0.0
       - name: Run quick tests (debug)
         run: |
           ./script/build.sh --setup
@@ -100,7 +100,7 @@ jobs:
         run: |
           git config --global --add safe.directory '*'
       - name: Checkout
-        uses: actions/checkout@v4.1.0
+        uses: actions/checkout@v6.0.0
       - name: Build development and integration environment
         run: |
           ./script/build.sh --container --assume y
@@ -212,31 +212,31 @@ jobs:
         run: |
           git config --global --add safe.directory '*'
       - name: Checkout
-        uses: actions/checkout@v4.1.0
+        uses: actions/checkout@v6.0.0
       - name: Do documentation
         run: |
           ./script/build.sh --doxygen --browser
       - name: Upload artifact
-        uses: actions/upload-artifact@v4.3.0
+        uses: actions/upload-artifact@v6.0.0
         with:
           name: foo_artifact
           path: ./document/_artifact/foo_*.tar.bz2
           retention-days: 7
       - name: Delete deployment environment
-        uses: strumwolf/delete-deployment-environment@v3.0.0
+        uses: strumwolf/delete-deployment-environment@v4.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           environment: github-pages
           onlyRemoveDeployments: true
       - name: Configure pages
-        uses: actions/configure-pages@v5.0.0
+        uses: actions/configure-pages@v6.0.0
       - name: Upload pages artifact
-        uses: actions/upload-pages-artifact@v3.0.0
+        uses: actions/upload-pages-artifact@v5.0.0
         with:
           path: ./document/_doxygen
       - name: Deploy pages
         id: deployment
-        uses: actions/deploy-pages@v4.0.0
+        uses: actions/deploy-pages@v5.0.0
       - name: Delete workflow runs
         uses: Mattraks/delete-workflow-runs@v2.1.0
         with:
