@@ -224,7 +224,7 @@ function perform_help_option()
     echo "  -u, --uninstall      uninstall target deliverables and exit"
     echo "  -c, --container      construct docker container and exit"
     echo "  -a, --archive        start or stop archive service and exit"
-    echo "  -t, --test           only build unit test and exit"
+    echo "  -t, --test           only build testing binary and exit"
     echo "  -r, --release        set as release version globally"
     echo "  -p, --precheck       run hooks before commit for precheck"
     echo "  -s, --statistic      lines of code classification statistic"

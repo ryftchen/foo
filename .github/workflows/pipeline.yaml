@@ -101,7 +101,7 @@ jobs:
           git config --global --add safe.directory '*'
       - name: Checkout
         uses: actions/checkout@v6.0.0
-      - name: Setup development and integration
+      - name: Set up development and integration
         run: |
           ./script/build.sh --container --assume y
           ./script/build.sh --archive --assume y
