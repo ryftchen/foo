@@ -237,8 +237,7 @@ jobs:
       - name: Deploy pages
         id: deployment
         uses: actions/deploy-pages@v4.0.0
-      - name: Clean workflow runs
-        uses: dmvict/clean-workflow-runs@v1.2.2
+      - name: Delete workflow runs
+        uses: Mattraks/delete-workflow-runs@v2.1.0
         with:
-          save_period: '00:01:00'
-          save_min_runs_number: 0
+          keep_minimum_runs: 0
