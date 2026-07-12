@@ -717,7 +717,7 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
                     break
                 first_lines.append(line)
             fcntl.flock(run_log.fileno(), fcntl.LOCK_UN)
-        return f"CASE: {self._tst_bin_cmd}" in "".join(first_lines)
+        return f"# CASE: {self._tst_bin_cmd}" in "".join(first_lines)
 
     def _scan_run_log(self, is_smoke_test: bool) -> tuple[float, dict[str, str], dict[str, str], dict[str, str]]:
         start_count = 0
