@@ -1212,7 +1212,7 @@ EOF"
     fi
 }
 
-function package_for_doxygen()
+function build_project_interface_artifact()
 {
     local commit_id=${1}
 
@@ -1254,14 +1254,14 @@ function perform_doxygen_option()
                 die "The latest doxygen artifact ${last_tar} has been generated since ${time_interval} s ago."
             fi
         fi
-        package_for_doxygen "${commit_id}"
+        build_project_interface_artifact "${commit_id}"
     else
         shell_command "mkdir ./${FOLDER[doc]}/_artifact"
-        package_for_doxygen "${commit_id}"
+        build_project_interface_artifact "${commit_id}"
     fi
 }
 
-function package_for_browser()
+function build_project_code_artifact()
 {
     local commit_id=${1}
 
@@ -1325,10 +1325,10 @@ function perform_browser_option()
                 die "The latest browser artifact ${last_tar} has been generated since ${time_interval} s ago."
             fi
         fi
-        package_for_browser "${commit_id}"
+        build_project_code_artifact "${commit_id}"
     else
         shell_command "mkdir ./${FOLDER[doc]}/_artifact"
-        package_for_browser "${commit_id}"
+        build_project_code_artifact "${commit_id}"
     fi
 }
 
