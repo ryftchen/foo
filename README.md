@@ -44,7 +44,7 @@ The **[foo](https://github.com/ryftchen/foo)** repository is a personal roadmap 
 > ./script/build.sh --help
 > ```
 
-- Build by default:
+- Build executable file by default:
 
   ```bash
   ./script/build.sh
