@@ -3,6 +3,7 @@
 try:
     import argparse
     import ast
+    import collections
     import curses
     import errno
     import fcntl
@@ -18,6 +19,7 @@ try:
     import signal
     import subprocess
     import sys
+    import tempfile
     import threading
     import time
     import traceback
@@ -444,14 +446,16 @@ No executable file for {'smoke' if not is_ut_mode else 'unit'} test. Please use 
         else:
             stdout = stdout.expandtabs()
             print(stdout)
-            self._passed_steps += 1
-            if any(sus in stdout for sus in self._suspicious_trait):
-                self._passed_steps -= 1
+            if (
+                self._marked_option["chk"]["mem"]
+                and not self._convert_valgrind_output(command)
+                or any(sus in stdout for sus in self._suspicious_trait)
+            ):
                 self._hint_with_highlight(
                     self._ansi_sgr["red"], f"{f'STAT: FAILURE NO.{str(self._complete_steps + 1)}':<{align_len}}"
                 )
-            elif self._marked_option["chk"]["mem"]:
-                self._convert_valgrind_output(command, align_len)
+            else:
+                self._passed_steps += 1
 
         self._complete_steps += 1
         self._hint_with_highlight(
@@ -596,7 +600,7 @@ No executable file for {'smoke' if not is_ut_mode else 'unit'} test. Please use 
             index_content.write(new_content)
             fcntl.flock(index_content.fileno(), fcntl.LOCK_UN)
 
-    def _convert_valgrind_output(self, command: str, align_len: int):
+    def _convert_valgrind_output(self, command: str) -> bool:
         xml_filename = f"{self._dca_output_path}/chk_mem/foo_chk_mem_{str(self._complete_steps + 1)}"
         with open(f"{xml_filename}.xml", "rt", encoding="utf-8") as mem_xml:
             inst_num = mem_xml.read().count("</valgrindoutput>")
@@ -634,89 +638,40 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
                     f"valgrind-ci {xml_filename}_inst_2.xml --source-dir ./ --output-dir {case_path}_inst_2"
                 )
                 pathlib.Path(f"{case_path}_inst_2/case_name").write_text(command, "utf-8")
-            self._passed_steps -= 1
-            self._hint_with_highlight(
-                self._ansi_sgr["red"], f"{f'STAT: FAILURE NO.{str(self._complete_steps + 1)}':<{align_len}}"
-            )
-        elif inst_num not in (1, 2) or stderr:
-            self._passed_steps -= 1
+            return False
+        if inst_num not in (1, 2) or stderr:
             print(f"""{self._extended_trait["chk"]["mem"]}\nUnsupported valgrind output xml file content.""")
-            self._hint_with_highlight(
-                self._ansi_sgr["red"], f"{f'STAT: FAILURE NO.{str(self._complete_steps + 1)}':<{align_len}}"
-            )
+            return False
+        return True
 
     def _format_run_log(self):
-        with open(self._run_log_file, "rt", encoding="utf-8") as run_log:
-            fcntl.flock(run_log.fileno(), fcntl.LOCK_EX)
-            old_content = run_log.read()
-            fcntl.flock(run_log.fileno(), fcntl.LOCK_UN)
-        new_content = re.compile(self._ansi_esc_regex).sub("", old_content)
-        with open(self._run_log_file, "wt", encoding="utf-8") as run_log:
-            fcntl.flock(run_log.fileno(), fcntl.LOCK_EX)
-            run_log.write(new_content)
-            fcntl.flock(run_log.fileno(), fcntl.LOCK_UN)
+        fd, temp_file = tempfile.mkstemp(
+            prefix=f"{os.path.basename(self._run_log_file)}.temp.", dir=os.path.dirname(self._run_log_file), text=True
+        )
+        with open(self._run_log_file, "rt", encoding="utf-8") as src, open(fd, "wt", encoding="utf-8") as dst:
+            fcntl.flock(src.fileno(), fcntl.LOCK_EX)
+            ansi = re.compile(self._ansi_esc_regex)
+            for line in src:
+                dst.write(ansi.sub("", line))
+            fcntl.flock(src.fileno(), fcntl.LOCK_UN)
+        os.replace(temp_file, self._run_log_file)
 
     def _summarize_run_log(self):
-        tags = {"ut": False, "chk": {"cov": False, "mem": False}}
-        with open(self._run_log_file, "rt", encoding="utf-8") as run_log:
-            fcntl.flock(run_log.fileno(), fcntl.LOCK_EX)
-            readlines = run_log.readlines()
-            run_log.seek(0)
-            content = run_log.read()
-            if self._tst_bin_cmd in content:
-                tags["ut"] = True
-            if re.compile(self._ansi_esc_regex).sub("", self._extended_trait["chk"]["cov"]) in content:
-                tags["chk"]["cov"] = True
-            if re.compile(self._ansi_esc_regex).sub("", self._extended_trait["chk"]["mem"]) in content:
-                tags["chk"]["mem"] = True
-            fcntl.flock(run_log.fileno(), fcntl.LOCK_UN)
-        if not self._analyze_only and (
-            tags["ut"] != self._marked_option["ut"]
-            or tags["chk"]["cov"] != self._marked_option["chk"]["cov"]
-            or (tags["chk"]["mem"] and not self._marked_option["chk"]["mem"])
-        ):
-            exit_with_error(f"Run options do not match the actual contents of the run log {self.log_file} file.")
+        is_smoke_test = not self._detect_ut_mode()
+        dur_time, fail_res, mem_leak, cov_per = self._scan_run_log(is_smoke_test)
 
-        start_indices = []
-        finish_indices = []
-        for index, line in enumerate(readlines):
-            if "# START" in line:
-                start_indices.append(index)
-            elif "# FINISH" in line:
-                finish_indices.append(index)
-        if (
-            not start_indices
-            or not finish_indices
-            or len(start_indices) != len(finish_indices)
-            or (not self._analyze_only and len(finish_indices) != self._total_steps)
-        ):
-            exit_with_error(f"The run log {self._run_log_file} file is incomplete. Please retry.")
-
-        date_regex = r"(\b[a-zA-Z]{3} \d{2} \d{2}:\d{2}:\d{2}\.\d{3}\b)"
-        begin_date_match = re.search(date_regex, readlines[start_indices[0]])
-        end_date_match = re.search(date_regex, readlines[finish_indices[-1]])
-        date_format = "%b %d %H:%M:%S.%f"
-        dur_time = (
-            (
-                datetime.strptime(end_date_match.group(), date_format)
-                - datetime.strptime(begin_date_match.group(), date_format)
-            ).total_seconds()
-            if begin_date_match and end_date_match
-            else 0.0
-        )
-        fail_res, cov_per, mem_leak = self._analyze_for_report(readlines, start_indices, finish_indices, tags)
         with open(self._run_report_file, "wt", encoding="utf-8") as run_report:
             fcntl.flock(run_report.fileno(), fcntl.LOCK_EX)
             run_stat = {
                 "Summary": "Stable" if not fail_res else "Unstable",
-                "Passed": str(len(finish_indices) - len(fail_res)),
+                "Passed": str(self._total_steps - len(fail_res)),
                 "Failed": str(len(fail_res)),
-                "Duration": f"{self._duration} s" if not self._analyze_only else f"est. {dur_time} s",
+                "Duration": (f"{self._duration} s" if not self._analyze_only else f"est. {dur_time} s"),
             }
             run_stat_rep = (
                 "REPORT FOR RUN STATISTIC:\n"
                 + self._format_as_table(
-                    run_stat, "ENTRY", f"RUN STATISTIC ({'SMOKE' if not tags['ut'] else 'UNIT'} TEST)"
+                    run_stat, "ENTRY", f"RUN STATISTIC ({'SMOKE' if is_smoke_test else 'UNIT'} TEST)"
                 )
                 + "\n"
             )
@@ -748,80 +703,166 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
         if fail_res:
             sys.exit(1)
 
-    def _analyze_for_report(
-        self,
-        readlines: list[str],
-        start_indices: list[int],
-        finish_indices: list[int],
-        tags: dict[str, bool | dict[str, bool]],
-    ) -> tuple[dict[str, str], dict[str, str], dict[str, str]]:
-        fail_res = {}
-        cov_per = {}
-        mem_leak = {}
-        cov_trait = re.compile(self._ansi_esc_regex).sub("", self._extended_trait["chk"]["cov"])
-        mem_trait = re.compile(self._ansi_esc_regex).sub("", self._extended_trait["chk"]["mem"])
-        for start_index, finish_index in zip(start_indices, finish_indices):
-            if "# STAT: FAILURE" in readlines[finish_index - 1]:
-                fail_line = readlines[finish_index - 1]
-                number = fail_line[fail_line.find("NO.") : fail_line.find("]")].strip()
-                cmd_line = readlines[start_index]
-                case_task = (
-                    number
-                    + ": "
-                    + cmd_line[
-                        cmd_line.find(self._app_bin_cmd if not tags["ut"] else self._tst_bin_cmd) : cmd_line.find(
-                            "# START"
-                        )
-                    ].strip()
-                )
+    def _detect_ut_mode(self) -> bool:
+        if not self._analyze_only:
+            return self._marked_option["ut"]
 
-                if tags["ut"] and "FAILED TEST" in "".join(readlines[start_index + 1 : finish_index]):
-                    ut_case = ""
-                    ut_run_index = -1
-                    ut_run_indices = []
-                    ut_fail_indices = []
-                    for index, line in enumerate(readlines[start_index + 1 : finish_index]):
-                        index += start_index + 1
-                        if "[ RUN      ]" in line:
-                            ut_case = line[line.find("]") + 2 : line.find("\n")]
-                            ut_run_index = index
-                        elif ut_case and f"[  FAILED  ] {ut_case}" in line:
-                            ut_run_indices.append(ut_run_index)
-                            ut_fail_indices.append(index)
-                            ut_case = ""
-                    ut_fail_res = ""
-                    for ut_run_index, ut_fail_index in zip(ut_run_indices, ut_fail_indices):
-                        ut_fail_res += "".join(readlines[ut_run_index : ut_fail_index + 1])
-                    fail_res[case_task] = ut_fail_res
-                    continue
-
-                last_index = finish_index
-                if tags["chk"]["mem"]:
-                    for index, line in enumerate(readlines[start_index + 1 : finish_index]):
-                        if mem_trait in line:
-                            index += start_index + 1
-                            mem_leak[case_task] = "".join(readlines[index + 1 : finish_index - 1])
-                            last_index = index
-                fail_res[case_task] = "".join(readlines[start_index + 1 : last_index - 1])
-
-        if tags["chk"]["cov"]:
-            has_cov_trait = False
-            category = ["Regions", "Functions", "Lines", "Branches"]
-            for line in readlines:
-                if cov_trait in line:
-                    has_cov_trait = True
-                    continue
-                if has_cov_trait and re.search(r"(^TOTAL(\s+\d+\s+\d+\s+\d+\.\d+%){4}$)", line):
-                    matches = re.findall(r"(\d+\.\d+%)", line)
-                    percentages = [float(s.strip("%")) for s in matches]
-                    if len(percentages) == 4:
-                        for index, per in enumerate(percentages):
-                            cov_per[category[index]] = f"{per:.2f}%"
+        preview_num = 10
+        with open(self._run_log_file, "rt", encoding="utf-8") as run_log:
+            fcntl.flock(run_log.fileno(), fcntl.LOCK_EX)
+            first_lines = []
+            for _ in range(preview_num):
+                line = run_log.readline()
+                if not line:
                     break
-            if not cov_per:
-                for cat in category:
-                    cov_per[cat] = "-"
-        return fail_res, cov_per, mem_leak
+                first_lines.append(line)
+            fcntl.flock(run_log.fileno(), fcntl.LOCK_UN)
+        return f"CASE: {self._tst_bin_cmd}" in "".join(first_lines)
+
+    def _scan_run_log(self, is_smoke_test: bool) -> tuple[float, dict[str, str], dict[str, str], dict[str, str]]:
+        start_count = 0
+        finish_count = 0
+        first_start_line = None
+        last_finish_line = None
+        case_lines = []
+        is_in_case = False
+        tail_lines = collections.deque(maxlen=200)
+        fail_res = {}
+        mem_leak = {}
+        for chunk in self._iterator_log_chunks():
+            for line in chunk:
+                tail_lines.append(line)
+                if "# START" in line:
+                    start_count += 1
+                    if first_start_line is None:
+                        first_start_line = line
+                    is_in_case = True
+                    case_lines = [line]
+                    continue
+
+                if is_in_case:
+                    case_lines.append(line)
+                if "# FINISH" in line:
+                    finish_count += 1
+                    last_finish_line = line
+                    if not is_in_case:
+                        continue
+
+                    result = self._try_scan_in_one_case(case_lines, is_smoke_test)
+                    if result:
+                        case_task, fail_text, mem_text = result
+                        if fail_text:
+                            fail_res[case_task] = fail_text
+                        if mem_text:
+                            mem_leak[case_task] = mem_text
+                    case_lines = []
+                    is_in_case = False
+
+        if (
+            start_count == 0
+            or finish_count == 0
+            or start_count != finish_count
+            or (not self._analyze_only and finish_count != self._total_steps)
+        ):
+            exit_with_error(f"The run log {self._run_log_file} file is incomplete. Please retry.")
+        self._total_steps = finish_count
+
+        cov_per = self._try_scan_after_all_cases(tail_lines)
+
+        date_regex = r"(\b[a-zA-Z]{3} \d{2} \d{2}:\d{2}:\d{2}\.\d{3}\b)"
+        begin_date_match = re.search(date_regex, first_start_line)
+        end_date_match = re.search(date_regex, last_finish_line)
+        date_format = "%b %d %H:%M:%S.%f"
+        dur_time = (
+            (
+                datetime.strptime(end_date_match.group(), date_format)
+                - datetime.strptime(begin_date_match.group(), date_format)
+            ).total_seconds()
+            if begin_date_match and end_date_match
+            else 0.0
+        )
+        return dur_time, fail_res, mem_leak, cov_per
+
+    def _iterator_log_chunks(self, chunk_size: int = 5000) -> typing.Iterator[list[str]]:
+        with open(self._run_log_file, "rt", encoding="utf-8") as run_log:
+            fcntl.flock(run_log.fileno(), fcntl.LOCK_EX)
+            while True:
+                chunk = []
+                for _ in range(chunk_size):
+                    line = run_log.readline()
+                    if not line:
+                        break
+                    chunk.append(line)
+                if not chunk:
+                    break
+                yield chunk
+            fcntl.flock(run_log.fileno(), fcntl.LOCK_UN)
+
+    def _try_scan_in_one_case(self, case_lines: list[str], is_smoke_test: bool) -> tuple[str, str, str] | None:
+        if len(case_lines) < 2:
+            return None
+        finish_index = len(case_lines) - 1
+        if "# STAT: FAILURE" not in case_lines[finish_index - 1]:
+            return None
+
+        fail_line = case_lines[finish_index - 1]
+        number = fail_line[fail_line.find("NO.") : fail_line.find("]")].strip()
+        cmd_line = case_lines[0]
+        bin_cmd = self._app_bin_cmd if is_smoke_test else self._tst_bin_cmd
+        case_task = number + ": " + cmd_line[cmd_line.find(bin_cmd) : cmd_line.find("# START")].strip()
+
+        if not is_smoke_test and "FAILED TEST" in "".join(case_lines[1:finish_index]):
+            ut_case = ""
+            ut_run_index = -1
+            ut_fail_indices = []
+            ut_run_indices = []
+            for index, line in enumerate(case_lines[1:finish_index], start=1):
+                if "[ RUN      ]" in line:
+                    ut_case = line[line.find("]") + 2 : line.find("\n")]
+                    ut_run_index = index
+                elif ut_case and f"[  FAILED  ] {ut_case}" in line:
+                    ut_run_indices.append(ut_run_index)
+                    ut_fail_indices.append(index)
+                    ut_case = ""
+            ut_fail_res = ""
+            for ut_run_index, ut_fail_index in zip(ut_run_indices, ut_fail_indices):
+                ut_fail_res += "".join(case_lines[ut_run_index : ut_fail_index + 1])
+            return case_task, ut_fail_res, ""
+
+        last_index = finish_index - 1
+        ansi = re.compile(self._ansi_esc_regex)
+        mem_trait = ansi.sub("", self._extended_trait["chk"]["mem"])
+        mem_text = ""
+        for index, line in enumerate(case_lines[1:finish_index], start=1):
+            if mem_trait in line:
+                mem_text = "".join(case_lines[index + 1 : last_index])
+                break
+
+        fail_text = "".join(case_lines[1:last_index])
+        return case_task, fail_text, mem_text
+
+    def _try_scan_after_all_cases(self, tail_lines: list[str]) -> dict[str, str]:
+        cov_per = {}
+        ansi = re.compile(self._ansi_esc_regex)
+        cov_trait = ansi.sub("", self._extended_trait["chk"]["cov"])
+        has_cov_trait = False
+        category = ["Regions", "Functions", "Lines", "Branches"]
+        for line in tail_lines:
+            if cov_trait in line:
+                has_cov_trait = True
+                continue
+            if has_cov_trait and re.search(r"(^TOTAL(\s+\d+\s+\d+\s+\d+\.\d+%){4}$)", line):
+                matches = re.findall(r"(\d+\.\d+%)", line)
+                percentages = [float(s.strip("%")) for s in matches]
+                if len(percentages) == 4:
+                    for index, per in enumerate(percentages):
+                        cov_per[category[index]] = f"{per:.2f}%"
+                break
+
+        if has_cov_trait and not cov_per:
+            for cat in category:
+                cov_per[cat] = "-"
+        return cov_per
 
     def _format_as_table(self, data: dict[str, str], key_title: str, value_title: str) -> str:
         rows = []
