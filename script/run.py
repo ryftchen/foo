@@ -344,8 +344,8 @@ class Task:
         bin_cmd = self._app_bin_cmd if not is_ut_mode else self._tst_bin_cmd
         if not os.path.isfile(f"{bin_path}/{bin_cmd}"):
             exit_with_error(
-                f"\
-No executable file for {'smoke' if not is_ut_mode else 'unit'} test. Please use the --build option to build it."
+                f"""\
+No executable file for {"smoke" if not is_ut_mode else "unit"} test. Please use the --build option to build it."""
             )
 
         if not os.path.exists(self._report_path):
@@ -434,28 +434,22 @@ No executable file for {'smoke' if not is_ut_mode else 'unit'} test. Please use 
         )
 
         stdout, stderr, return_code = execute_command(full_cmd, stdin)
-        if not stdout or stderr or return_code:
+        vg_output = "" if not self._marked_option["chk"]["mem"] else self._convert_valgrind_output(command)
+        if not stdout or stderr or return_code or any(sus in stdout for sus in self._suspicious_trait) or vg_output:
             print(
                 f"""{self._ansi_sgr["reverse"]}{self._ansi_sgr["def_bg"]}[STDOUT]{self._ansi_sgr["reset"]}\n{stdout}\n\
 {self._ansi_sgr["reverse"]}{self._ansi_sgr["def_bg"]}[STDERR]{self._ansi_sgr["reset"]}\n{stderr}\n\
 {self._ansi_sgr["reverse"]}{self._ansi_sgr["def_bg"]}[RETURN CODE]{self._ansi_sgr["reset"]}\n{return_code}"""
             )
+            if vg_output:
+                print(vg_output)
             self._hint_with_highlight(
                 self._ansi_sgr["red"], f"{f'STAT: FAILURE NO.{str(self._complete_steps + 1)}':<{align_len}}"
             )
         else:
             stdout = stdout.expandtabs()
             print(stdout)
-            if (
-                self._marked_option["chk"]["mem"]
-                and not self._convert_valgrind_output(command)
-                or any(sus in stdout for sus in self._suspicious_trait)
-            ):
-                self._hint_with_highlight(
-                    self._ansi_sgr["red"], f"{f'STAT: FAILURE NO.{str(self._complete_steps + 1)}':<{align_len}}"
-                )
-            else:
-                self._passed_steps += 1
+            self._passed_steps += 1
 
         self._complete_steps += 1
         self._hint_with_highlight(
@@ -600,7 +594,7 @@ No executable file for {'smoke' if not is_ut_mode else 'unit'} test. Please use 
             index_content.write(new_content)
             fcntl.flock(index_content.fileno(), fcntl.LOCK_UN)
 
-    def _convert_valgrind_output(self, command: str) -> bool:
+    def _convert_valgrind_output(self, command: str) -> str:
         xml_filename = f"{self._dca_output_path}/chk_mem/foo_chk_mem_{str(self._complete_steps + 1)}"
         with open(f"{xml_filename}.xml", "rt", encoding="utf-8") as mem_xml:
             inst_num = mem_xml.read().count("</valgrindoutput>")
@@ -623,8 +617,6 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
             )
 
         if "errors" in stdout:
-            stdout = stdout.expandtabs()
-            print(f"""{self._extended_trait["chk"]["mem"]}\n{stdout}""")
             case_path = f"{self._dca_output_path}/chk_mem/memory/case_{str(self._complete_steps + 1)}"
             if inst_num == 1:
                 execute_command(f"valgrind-ci {xml_filename}.xml --source-dir ./ --output-dir {case_path}")
@@ -638,11 +630,10 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
                     f"valgrind-ci {xml_filename}_inst_2.xml --source-dir ./ --output-dir {case_path}_inst_2"
                 )
                 pathlib.Path(f"{case_path}_inst_2/case_name").write_text(command, "utf-8")
-            return False
+            return f"""{self._extended_trait["chk"]["mem"]}\n{stdout.expandtabs()}"""
         if inst_num not in (1, 2) or stderr:
-            print(f"""{self._extended_trait["chk"]["mem"]}\nUnsupported valgrind output xml file content.""")
-            return False
-        return True
+            return f"""{self._extended_trait["chk"]["mem"]}\nUnsupported valgrind output xml file content."""
+        return ""
 
     def _format_run_log(self):
         fd, temp_file = tempfile.mkstemp(
@@ -657,9 +648,23 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
         os.replace(temp_file, self._run_log_file)
 
     def _summarize_run_log(self):
-        is_smoke_test = not self._detect_ut_mode()
-        dur_time, fail_res, mem_leak, cov_per = self._scan_run_log(is_smoke_test)
+        is_smoke_test = True
+        if not self._analyze_only:
+            is_smoke_test = self._marked_option["ut"]
+        else:
+            preview_num = 10
+            with open(self._run_log_file, "rt", encoding="utf-8") as run_log:
+                fcntl.flock(run_log.fileno(), fcntl.LOCK_EX)
+                first_lines = []
+                for _ in range(preview_num):
+                    line = run_log.readline()
+                    if not line:
+                        break
+                    first_lines.append(line)
+                fcntl.flock(run_log.fileno(), fcntl.LOCK_UN)
+            is_smoke_test = f"# CASE: {self._tst_bin_cmd}" in "".join(first_lines)
 
+        dur_time, fail_res, mem_leak, cov_per = self._scan_run_log(is_smoke_test)
         with open(self._run_report_file, "wt", encoding="utf-8") as run_report:
             fcntl.flock(run_report.fileno(), fcntl.LOCK_EX)
             run_stat = {
@@ -671,7 +676,7 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
             run_stat_rep = (
                 "REPORT FOR RUN STATISTIC:\n"
                 + self._format_as_table(
-                    run_stat, "ENTRY", f"RUN STATISTIC ({'SMOKE' if is_smoke_test else 'UNIT'} TEST)"
+                    run_stat, "ENTRY", f"""RUN STATISTIC ({"SMOKE" if is_smoke_test else "UNIT"} TEST)"""
                 )
                 + "\n"
             )
@@ -702,22 +707,6 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
 
         if fail_res:
             sys.exit(1)
-
-    def _detect_ut_mode(self) -> bool:
-        if not self._analyze_only:
-            return self._marked_option["ut"]
-
-        preview_num = 10
-        with open(self._run_log_file, "rt", encoding="utf-8") as run_log:
-            fcntl.flock(run_log.fileno(), fcntl.LOCK_EX)
-            first_lines = []
-            for _ in range(preview_num):
-                line = run_log.readline()
-                if not line:
-                    break
-                first_lines.append(line)
-            fcntl.flock(run_log.fileno(), fcntl.LOCK_UN)
-        return f"# CASE: {self._tst_bin_cmd}" in "".join(first_lines)
 
     def _scan_run_log(self, is_smoke_test: bool) -> tuple[float, dict[str, str], dict[str, str], dict[str, str]]:
         start_count = 0
@@ -835,7 +824,8 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
         mem_text = ""
         for index, line in enumerate(case_lines[1:finish_index], start=1):
             if mem_trait in line:
-                mem_text = "".join(case_lines[index + 1 : last_index])
+                mem_text = "".join(case_lines[index + 1 : finish_index - 1])
+                last_index = index
                 break
 
         fail_text = "".join(case_lines[1:last_index])
