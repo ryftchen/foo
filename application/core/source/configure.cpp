@@ -187,8 +187,8 @@ void Configure::verifyConfigData(const utility::json::JSON& configData)
     }
 
     if (!configData.at(field::activateHelper).isBooleanType() || !configData.at(field::helperList).isObjectType()
-        || !configData.at(field::helperTimeout).isIntegralType()
-        || configData.at(field::helperTimeout).asIntegral() < 0)
+        || !configData.at(field::helperTimeout).isFloatingType()
+        || configData.at(field::helperTimeout).asFloating() < 0.0)
     {
         throw std::runtime_error{"Illegal 1st level configuration (" + configData.asUnescapedString() + ")."};
     }
@@ -286,7 +286,7 @@ utility::json::JSON dumpDefaultConfig()
           field::required, std::move(viewerRequired)
         }
       },
-      field::helperTimeout, 1000
+      field::helperTimeout, 1.0
     }
     );
     // clang-format on

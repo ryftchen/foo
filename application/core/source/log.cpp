@@ -341,7 +341,7 @@ void Log::syncCountdownIf(const SyncPredicate& condition, const SyncCallback& on
     {
         return;
     }
-    for (const utility::time::Stopwatch timing{}; timing.elapsedTime() <= timeoutPeriod;)
+    for (const utility::time::Stopwatch timing{}; timing.elapsedTime() <= (timeoutPeriod * 1000.0);)
     {
         if (!condition())
         {
@@ -674,7 +674,7 @@ try
         [this]()
         {
             throw std::runtime_error{
-                "The " + Log::name + " did not reset properly in " + std::to_string(srv->timeoutPeriod) + " ms ..."};
+                "The " + Log::name + " did not reset properly in " + std::to_string(srv->timeoutPeriod) + " s ..."};
         });
 }
 catch (const std::exception& err)

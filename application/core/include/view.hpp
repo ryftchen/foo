@@ -99,8 +99,8 @@ private:
     const std::string udpHost{configure::detail::udpHost4Viewer()};
     //! @brief UDP server port number.
     const std::uint16_t udpPort{static_cast<std::uint16_t>(configure::detail::udpPort4Viewer())};
-    //! @brief Timeout period (ms) to waiting for the viewer to change to the target state.
-    const std::uint32_t timeoutPeriod{static_cast<std::uint32_t>(configure::detail::helperTimeout())};
+    //! @brief Timeout period (s) to waiting for the viewer to change to the target state.
+    const double timeoutPeriod{configure::detail::helperTimeout()};
 
     //! @brief Alias for the option arguments.
     using Args = std::vector<std::string>;

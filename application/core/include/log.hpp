@@ -174,8 +174,8 @@ private:
     const OutputType targetType{static_cast<OutputType>(configure::detail::targetType4Logger())};
     //! @brief Write mode.
     const OutputMode writeMode{static_cast<OutputMode>(configure::detail::writeMode4Logger())};
-    //! @brief Timeout period (ms) to waiting for the logger to change to the target state.
-    const std::uint32_t timeoutPeriod{static_cast<std::uint32_t>(configure::detail::helperTimeout())};
+    //! @brief Timeout period (s) to waiting for the logger to change to the target state.
+    const double timeoutPeriod{configure::detail::helperTimeout()};
     //! @brief The queue of logs.
     std::queue<std::string> logQueue;
     //! @brief Mutex for controlling daemon.

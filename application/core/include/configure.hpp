@@ -235,7 +235,7 @@ inline auto udpPort4Viewer() noexcept
 //! @return "helperTimeout" configuration
 inline auto helperTimeout() noexcept
 {
-    return (retrieveDataRepo() / field::helperTimeout).asIntegral();
+    return (retrieveDataRepo() / field::helperTimeout).asFloating();
 }
 } // namespace detail
 

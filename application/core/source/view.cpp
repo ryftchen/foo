@@ -770,7 +770,8 @@ void View::waitTaskDone()
     std::unique_lock<std::mutex> outputLock(outputMtx);
     outputCompleted.store(false);
 
-    const auto maxWaitTime = std::chrono::milliseconds{timeoutPeriod};
+    const auto maxWaitTime =
+        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::duration<double>(timeoutPeriod));
     utility::time::Timer expiryTimer(
         isInServingState(State::established) ? std::function<void()>{[]() {}} : [this]() { notifyTaskDone(); });
     expiryTimer.start(maxWaitTime);
@@ -815,7 +816,7 @@ void View::syncCountdownIf(const SyncPredicate& condition, const SyncCallback& o
     {
         return;
     }
-    for (const utility::time::Stopwatch timing{}; timing.elapsedTime() <= timeoutPeriod;)
+    for (const utility::time::Stopwatch timing{}; timing.elapsedTime() <= (timeoutPeriod * 1000.0);)
     {
         if (!condition())
         {
@@ -1077,7 +1078,7 @@ try
         [this]()
         {
             throw std::runtime_error{
-                "The " + View::name + " did not reset properly in " + std::to_string(srv->timeoutPeriod) + " ms ..."};
+                "The " + View::name + " did not reset properly in " + std::to_string(srv->timeoutPeriod) + " s ..."};
         });
 }
 catch (const std::exception& err)
