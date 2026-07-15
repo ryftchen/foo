@@ -566,7 +566,7 @@ No executable file for {"smoke" if not is_ut_mode else "unit"} test. Please use 
         execute_command(f"cp -rf {pkg_loc}/{{index.html,valgrind.css,valgrind.js}} {self._dca_output_path}/chk_mem/")
 
         with open(f"{self._dca_output_path}/chk_mem/index.html", "rt", encoding="utf-8") as index_content:
-            fcntl.flock(index_content.fileno(), fcntl.LOCK_EX)
+            fcntl.flock(index_content.fileno(), fcntl.LOCK_SH)
             old_content = index_content.read()
             fcntl.flock(index_content.fileno(), fcntl.LOCK_UN)
         multi_inst_count = sum(1 for sub in sorted_case_folders if "_inst_" in sub)
@@ -654,7 +654,7 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
         else:
             preview_num = 10
             with open(self._run_log_file, "rt", encoding="utf-8") as run_log:
-                fcntl.flock(run_log.fileno(), fcntl.LOCK_EX)
+                fcntl.flock(run_log.fileno(), fcntl.LOCK_SH)
                 first_lines = []
                 for _ in range(preview_num):
                     line = run_log.readline()
@@ -774,7 +774,7 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
 
     def _iterator_log_chunks(self, chunk_size: int = 5000) -> typing.Iterator[list[str]]:
         with open(self._run_log_file, "rt", encoding="utf-8") as run_log:
-            fcntl.flock(run_log.fileno(), fcntl.LOCK_EX)
+            fcntl.flock(run_log.fileno(), fcntl.LOCK_SH)
             while True:
                 chunk = []
                 for _ in range(chunk_size):
@@ -941,9 +941,8 @@ def execute_in_pty(command: str):
                 buffer = lines.pop()
                 for raw in lines:
                     print(raw.decode("utf-8", "ignore"))
-
             if process.poll() is not None:
-                continue
+                break
         return process.wait()
 
 
@@ -1088,12 +1087,12 @@ def main():
         task = Task()
         task.run()
     except Exception:  # pylint: disable=broad-except
-        if task is not None:
+        if task:
             task.stop(f"Raised exception.\n{traceback.format_exc()}")
         else:
             raise
     except KeyboardInterrupt:
-        if task is not None:
+        if task:
             task.stop()
 
 
