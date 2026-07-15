@@ -6,6 +6,7 @@
 
 #include "json.hpp"
 
+#include <array>
 #include <charconv>
 #include <cmath>
 
@@ -303,7 +304,7 @@ static JSON parseNumber(const std::string_view fmt, std::size_t& offset)
 
     long long exp = 0;
     std::string expStr{};
-    if ((c == 'E') || (c == 'e'))
+    if ((c == 'e') || (c == 'E'))
     {
         expStr = extractExponent(fmt, offset);
         exp = std::stol(expStr);
@@ -400,6 +401,26 @@ static JSON parseNext(const std::string_view fmt, std::size_t& offset)
             break;
     }
     throw std::runtime_error{"JSON syntax error, unknown starting character '" + std::string{c} + "'."};
+}
+
+//! @brief Format as a round-trip string.
+//! @param value - floating point value
+//! @return round-trip string
+static std::string toRoundTripString(const std::floating_point auto value)
+{
+    std::array<char, 64> buffer{};
+    const auto result = std::to_chars(buffer.data(), buffer.data() + buffer.size(), value);
+    if (result.ec != std::errc{})
+    {
+        throw std::runtime_error("For JSON number, failed to format as a round-trip string.");
+    }
+
+    std::string fmt(buffer.data(), result.ptr);
+    if (fmt.find_first_of(".eE") == std::string::npos)
+    {
+        fmt += ".0";
+    }
+    return fmt;
 }
 
 JSON::JSON(const Type type)
@@ -570,7 +591,7 @@ JSON::String JSON::asString() const
             [](const Data::StringPtr& val) -> String { return jsonEscape(*val); },
             [this](const Data::ObjectPtr& /*val*/) -> String { return dumpMinified(); },
             [this](const Data::ArrayPtr& /*val*/) -> String { return dumpMinified(); },
-            [](const Floating& val) -> String { return std::to_string(val); },
+            [](const Floating& val) -> String { return toRoundTripString(val); },
             [](const Integral& val) -> String { return std::to_string(val); },
             [](const Boolean& val) -> String { return val ? "true" : "false"; },
             [](const Null& /*val*/) -> String { return "null"; },
@@ -585,7 +606,7 @@ JSON::String JSON::asUnescapedString() const
             [](const Data::StringPtr& val) -> String { return *val; },
             [this](const Data::ObjectPtr& /*val*/) -> String { return dumpMinified(); },
             [this](const Data::ArrayPtr& /*val*/) -> String { return dumpMinified(); },
-            [](const Floating& val) -> String { return std::to_string(val); },
+            [](const Floating& val) -> String { return toRoundTripString(val); },
             [](const Integral& val) -> String { return std::to_string(val); },
             [](const Boolean& val) -> String { return val ? "true" : "false"; },
             [](const Null& /*val*/) -> String { return "null"; },
@@ -737,7 +758,7 @@ std::string JSON::dump(const std::uint32_t depth, const std::string_view tab) co
                 return s;
             },
             [](const Data::StringPtr& val) -> std::string { return '\"' + jsonEscape(*val) + '\"'; },
-            [](const Floating& val) -> std::string { return std::to_string(val); },
+            [](const Floating& val) -> std::string { return toRoundTripString(val); },
             [](const Integral& val) -> std::string { return std::to_string(val); },
             [](const Boolean& val) -> std::string { return val ? "true" : "false"; },
             [](const auto& /*val*/) -> std::string { return {}; }},
@@ -780,7 +801,7 @@ std::string JSON::dumpMinified() const
                 return s;
             },
             [](const Data::StringPtr& val) -> std::string { return '\"' + jsonEscape(*val) + '\"'; },
-            [](const Floating& val) -> std::string { return std::to_string(val); },
+            [](const Floating& val) -> std::string { return toRoundTripString(val); },
             [](const Integral& val) -> std::string { return std::to_string(val); },
             [](const Boolean& val) -> std::string { return val ? "true" : "false"; },
             [](const auto& /*val*/) -> std::string { return {}; }},
