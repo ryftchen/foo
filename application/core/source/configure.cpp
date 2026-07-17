@@ -315,10 +315,10 @@ static void initializeConfig(const std::string_view filePath)
     forcedConfigUpdateByDefault(filePath);
 }
 
-//! @brief Show prompt and wait for input on configuration exception.
+//! @brief Prompt to recover configuration after a configuration exception.
 //! @param filePath - full path to the configuration file
 //! @return whether to continue throwing exception
-static bool handleConfigException(const std::string_view filePath)
+static bool promptConfigRecovery(const std::string_view filePath)
 {
     constexpr std::string_view prompt = "Type y to force an update to the default configuration, n to exit: ";
     constexpr std::string_view escapeClear = "\033[1A\033[2K\r";
@@ -369,7 +369,7 @@ bool loadSettings(const std::string_view filename)
     catch (...)
     {
         std::cout << "Configuration load exception ..." << std::endl;
-        if (handleConfigException(filePath))
+        if (promptConfigRecovery(filePath))
         {
             std::cout << '\n' << std::endl;
             throw;
