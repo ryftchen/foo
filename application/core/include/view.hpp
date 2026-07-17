@@ -357,7 +357,10 @@ protected:
     friend std::ostream& operator<<(std::ostream& os, const State state);
 };
 
-extern auto obtainSupportedOptions() -> std::map<std::string, std::string>;
+//! @brief Alias for the map of viewer option names and help descriptions.
+using OptionMap = std::map<std::string, std::string>;
+
+extern OptionMap obtainSupportedOptions();
 extern std::string buildDisconnectRequest();
 extern void interactionLatency();
 } // namespace view

@@ -341,7 +341,7 @@ void Command::addNewCategoryToSubCLI()
         .help(descr<Cat>());
     applyingForwarder.registerHandler([](const SetChoice<Cat>& msg) { setChoice<Cat>(msg.choice); });
     applyingForwarder.registerHandler([](const RunCandidates<Cat>& msg) { runCandidates<Cat>(msg.candidates); });
-    versionLinks.emplace(VerLinkKey{subCLI.title(), version<Cat>()}, name<Cat>());
+    versionLinks.emplace(VersionKey{subCLI.title(), version<Cat>()}, name<Cat>());
 }
 
 //! @brief Set up the sub-command line interface (algorithm module).
@@ -628,7 +628,7 @@ void Command::displayVersionInfo() const
 void Command::validateDependencies() const
 {
     const bool isNativeVerMatched = utility::common::areStringsEqual(
-        mainCLI.version().data(),
+        mainCLI.version().c_str(),
         utility::argument::version(),
         utility::benchmark::version(),
         utility::common::version(),

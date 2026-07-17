@@ -153,26 +153,29 @@ private:
     //! @brief Dispatch all types of tasks.
     schedule::TaskScheduler scheduleDispatcher{};
     //! @brief Alias for the pair of the sub-cli name and the sub-cli version.
-    using VerLinkKey = std::pair<std::string, std::string>;
+    using VersionKey =
+        std::pair<decltype(std::declval<Argument>().title()), decltype(std::declval<Argument>().version())>;
     //! @brief Mapping hash value for the related versions.
-    struct VerLinkHash
+    struct VersionKeyHash
     {
-        //! @brief The operator (()) overloading of VerLinkHash struct.
+        //! @brief The operator (()) overloading of VersionKeyHash struct.
         //! @param key - pair of the sub-cli name and the sub-cli version
         //! @return hash value
-        std::size_t operator()(const VerLinkKey& key) const
+        std::size_t operator()(const VersionKey& key) const
         {
             constexpr std::size_t magicNumber = 0x9E3779B9;
             constexpr std::size_t leftShift = 6;
             constexpr std::size_t rightShift = 2;
             std::size_t seed = 0;
-            seed ^= std::hash<std::string>()(key.first) + magicNumber + (seed << leftShift) + (seed >> rightShift);
-            seed ^= std::hash<std::string>()(key.second) + magicNumber + (seed << leftShift) + (seed >> rightShift);
+            seed ^= std::hash<VersionKey::first_type>()(key.first) + magicNumber + (seed << leftShift)
+                + (seed >> rightShift);
+            seed ^= std::hash<VersionKey::second_type>()(key.second) + magicNumber + (seed << leftShift)
+                + (seed >> rightShift);
             return seed;
         }
     };
     //! @brief Mapping table of related versions. Fill as needed.
-    std::unordered_multimap<VerLinkKey, std::string, VerLinkHash> versionLinks;
+    std::unordered_multimap<VersionKey, schedule::TaskScheduler::CategoryMap::key_type, VersionKeyHash> versionLinks;
 
     //! @brief Go to console mode for troubleshooting.
     static void enterConsoleMode();

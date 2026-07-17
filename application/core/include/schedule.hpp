@@ -516,10 +516,12 @@ public:
         //! @brief The internal event for applying.
         const extra::EventType event;
     };
-    //! @brief Alias for the map of sub-cli's category name and Attr.
+    //! @brief Alias for the sub-cli name.
+    using SubCLIName = std::string;
+    //! @brief Alias for the map of sub-cli's category names and their attributes.
     using CategoryMap = std::map<std::string, Attr>;
     //! @brief Mapping table of all extra choices. Fill as needed.
-    std::map<std::string, CategoryMap> extraChoiceRegistry;
+    std::map<SubCLIName, CategoryMap> extraChoiceRegistry;
 
     //! @brief Wrap interfaces to check for existing and reset extra choices.
     struct Intf
@@ -542,7 +544,7 @@ public:
         const std::function<void()> clear;
     };
     //! @brief Existence status and reset control of the sub-cli to which the extra choices belong.
-    std::map<std::string, Intf> extraChecklist;
+    std::map<SubCLIName, Intf> extraChecklist;
     //! @brief Flag for help only.
     bool extraHelping{false};
 

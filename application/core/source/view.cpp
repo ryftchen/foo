@@ -964,14 +964,14 @@ std::ostream& operator<<(std::ostream& os, const View::State state)
 
 //! @brief Obtain the supported viewer options.
 //! @return supported viewer options
-auto obtainSupportedOptions() -> std::map<std::string, std::string>
+OptionMap obtainSupportedOptions()
 {
     using OptDepend = View::OptDepend;
     using OptExecute = View::OptExecute;
     using OptJournal = View::OptJournal;
     using OptMonitor = View::OptMonitor;
     using OptProfile = View::OptProfile;
-    return std::map<std::string, std::string>{
+    return OptionMap{
         {OptDepend::name, OptDepend::description},
         {OptExecute::name, OptExecute::description},
         {OptJournal::name, OptJournal::description},
