@@ -52,7 +52,7 @@ static std::string customTitle(const Inst instance)
 static const auto& curriedTaskName()
 {
     static const auto curried =
-        utility::currying::curry(configure::task::presetName, TypeInfo<ApplyDataStructure>::name);
+        utility::currying::curry(configuration::task::presetName, TypeInfo<ApplyDataStructure>::name);
     return curried;
 }
 
@@ -120,7 +120,7 @@ void applyingCache(const std::vector<std::string>& candidates)
     const std::string_view title = data_structure::cache::description();
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = configure::task::resourcePool();
+    auto& pooling = configuration::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(spec.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subtask, const CacheInstance instance)
@@ -200,7 +200,7 @@ void applyingFilter(const std::vector<std::string>& candidates)
     const std::string_view title = data_structure::filter::description();
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = configure::task::resourcePool();
+    auto& pooling = configuration::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(spec.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subtask, const FilterInstance instance)
@@ -277,7 +277,7 @@ void applyingGraph(const std::vector<std::string>& candidates)
     const std::string_view title = data_structure::graph::description();
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = configure::task::resourcePool();
+    auto& pooling = configuration::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(spec.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subtask, const GraphInstance instance)
@@ -357,7 +357,7 @@ void applyingHeap(const std::vector<std::string>& candidates)
     const std::string_view title = data_structure::heap::description();
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = configure::task::resourcePool();
+    auto& pooling = configuration::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(spec.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subtask, const HeapInstance instance)
@@ -440,7 +440,7 @@ void applyingLinear(const std::vector<std::string>& candidates)
     const std::string_view title = data_structure::linear::description();
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = configure::task::resourcePool();
+    auto& pooling = configuration::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(spec.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subtask, const LinearInstance instance)
@@ -523,7 +523,7 @@ void applyingTree(const std::vector<std::string>& candidates)
     const std::string_view title = data_structure::tree::description();
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = configure::task::resourcePool();
+    auto& pooling = configuration::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(spec.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subtask, const TreeInstance instance)

@@ -52,7 +52,7 @@ static std::string customTitle(const Inst instance)
 static const auto& curriedTaskName()
 {
     static const auto curried =
-        utility::currying::curry(configure::task::presetName, TypeInfo<ApplyDesignPattern>::name);
+        utility::currying::curry(configuration::task::presetName, TypeInfo<ApplyDesignPattern>::name);
     return curried;
 }
 
@@ -144,7 +144,7 @@ void applyingBehavioral(const std::vector<std::string>& candidates)
     const std::string_view title = design_pattern::behavioral::description();
     APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = configure::task::resourcePool();
+    auto& pooling = configuration::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(spec.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subtask, const BehavioralInstance instance)
@@ -257,7 +257,7 @@ void applyingCreational(const std::vector<std::string>& candidates)
     const std::string_view title = design_pattern::creational::description();
     APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = configure::task::resourcePool();
+    auto& pooling = configuration::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(spec.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subtask, const CreationalInstance instance)
@@ -358,7 +358,7 @@ void applyingStructural(const std::vector<std::string>& candidates)
     const std::string_view title = design_pattern::structural::description();
     APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = configure::task::resourcePool();
+    auto& pooling = configuration::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(spec.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subtask, const StructuralInstance instance)

@@ -39,7 +39,7 @@ namespace application
 namespace view
 {
 //! @brief Alias for the access controller.
-using AccessController = configure::Controller<View>;
+using AccessController = configuration::Controller<View>;
 
 //! @brief Anonymous namespace.
 inline namespace
@@ -53,7 +53,7 @@ namespace tlv = data::tlv;
 
 View::View() : FSM(State::initial)
 {
-    if (!configure::detail::activateHelper()) [[unlikely]]
+    if (!configuration::detail::activateHelper()) [[unlikely]]
     {
         throw std::logic_error{"The " + name + " is disabled."};
     }
@@ -262,7 +262,7 @@ std::size_t View::buildCustomTLVPacket<View::OptProfile>(const Args& /*args*/, B
     tlv::TLVValue val{};
     std::strncpy(
         val.configInfo,
-        (static_cast<const utility::json::JSON&>(configure::retrieveDataRepo())).asUnescapedString().c_str(),
+        (static_cast<const utility::json::JSON&>(configuration::retrieveDataRepo())).asUnescapedString().c_str(),
         sizeof(val.configInfo) - 1);
     val.configInfo[sizeof(val.configInfo) - 1] = '\0';
     char* const buf = buffer.data();

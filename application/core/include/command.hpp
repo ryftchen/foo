@@ -31,7 +31,7 @@ class Command;
 //! @brief Alias for the local notifier.
 using LocalNotifier = schedule::native::Notifier<Command>;
 
-//! @brief Execute the command line.
+//! @brief Command line.
 class Command final
 {
 public:

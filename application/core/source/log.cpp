@@ -24,7 +24,7 @@ namespace application
 namespace log
 {
 //! @brief Alias for the access controller.
-using AccessController = configure::Controller<Log>;
+using AccessController = configuration::Controller<Log>;
 
 //! @brief The SGR (select graphic rendition) of ANSI control sequences.
 namespace ansi_sgr
@@ -136,7 +136,7 @@ static const HlRegex& logStyle()
 
 Log::Log() : FSM(State::initial)
 {
-    if (!configure::detail::activateHelper()) [[unlikely]]
+    if (!configuration::detail::activateHelper()) [[unlikely]]
     {
         throw std::logic_error{"The " + name + " is disabled."};
     }

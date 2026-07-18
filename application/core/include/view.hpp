@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "configure.hpp"
+#include "configuration.hpp"
 
 #include "utility/include/fsm.hpp"
 #include "utility/include/socket.hpp"
@@ -14,7 +14,7 @@
 //! @brief The application module.
 namespace application // NOLINT(modernize-concat-nested-namespaces)
 {
-//! @brief View-server-related functions in the application module.
+//! @brief Viewing-related functions in the application module.
 namespace view
 {
 //! @brief Minimum port number.
@@ -47,7 +47,7 @@ template <>
 void forwardByClient(std::shared_ptr<utility::socket::UDPSocket>& client, const std::vector<std::string>& inputs);
 } // namespace intf
 
-//! @brief Viewer.
+//! @brief The viewer.
 class View final : public utility::fsm::FSM<View>
 {
 public:
@@ -66,7 +66,7 @@ public:
     View& operator=(View&&) = delete;
 
     //! @brief Instance name.
-    static constexpr std::string name{configure::field::viewer};
+    static constexpr std::string name{configuration::field::viewer};
     //! @brief Get the View instance.
     //! @return reference of the View object
     static std::shared_ptr<View> getInstance();
@@ -92,15 +92,15 @@ private:
     View();
 
     //! @brief TCP server host address.
-    const std::string tcpHost{configure::detail::tcpHost4Viewer()};
+    const std::string tcpHost{configuration::detail::tcpHost4Viewer()};
     //! @brief TCP server port number.
-    const std::uint16_t tcpPort{static_cast<std::uint16_t>(configure::detail::tcpPort4Viewer())};
+    const std::uint16_t tcpPort{static_cast<std::uint16_t>(configuration::detail::tcpPort4Viewer())};
     //! @brief UDP server host address.
-    const std::string udpHost{configure::detail::udpHost4Viewer()};
+    const std::string udpHost{configuration::detail::udpHost4Viewer()};
     //! @brief UDP server port number.
-    const std::uint16_t udpPort{static_cast<std::uint16_t>(configure::detail::udpPort4Viewer())};
+    const std::uint16_t udpPort{static_cast<std::uint16_t>(configuration::detail::udpPort4Viewer())};
     //! @brief Timeout period (s) to waiting for the viewer to change to the target state.
-    const double timeoutPeriod{configure::detail::helperTimeout()};
+    const double timeoutPeriod{configuration::detail::helperTimeout()};
 
     //! @brief Alias for the option arguments.
     using Args = std::vector<std::string>;
@@ -269,7 +269,7 @@ private:
     void waitTaskDone();
     //! @brief Notify that the output task has been completed and unblock any waiters.
     void notifyTaskDone();
-    friend class configure::Controller<View>;
+    friend class configuration::Controller<View>;
     //! @brief Synchronous callback.
     using SyncCallback = std::function<void()>;
     //! @brief Synchronous predicate.

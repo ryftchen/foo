@@ -1,10 +1,10 @@
-//! @file configure.cpp
+//! @file configuration.cpp
 //! @author ryftchen
-//! @brief The definitions (configure) in the application module.
+//! @brief The definitions (configuration) in the application module.
 //! @version 0.1.0
 //! @copyright Copyright (c) 2022-2026 ryftchen. All rights reserved.
 
-#include "configure.hpp"
+#include "configuration.hpp"
 #include "log.hpp"
 #include "view.hpp"
 
@@ -16,7 +16,7 @@
 #include "application/pch/precompiled_header.hpp"
 #endif
 
-namespace application::configure
+namespace application::configuration
 {
 //! @brief Anonymous namespace.
 inline namespace
@@ -36,16 +36,16 @@ std::string getFullConfigPath(const std::string_view filename)
     return std::string{processHome} + '/' + filename.data();
 }
 
-//! @brief Get the Configure instance.
-//! @param filename - configure file path
-//! @return const reference of the Configure object
-const Configure& getInstance(const std::string_view filename = defaultConfigFile)
+//! @brief Get the Configuration instance.
+//! @param filename - file path for configuring
+//! @return const reference of the Configuration object
+const Configuration& getInstance(const std::string_view filename = defaultConfigFile)
 {
-    static const Configure configurator(filename);
+    static const Configuration configurator(filename);
     return configurator;
 }
 
-utility::json::JSON Configure::parseConfigFile(const std::string_view configFile)
+utility::json::JSON Configuration::parseConfigFile(const std::string_view configFile)
 {
     if (!std::filesystem::is_regular_file(configFile))
     {
@@ -64,7 +64,7 @@ utility::json::JSON Configure::parseConfigFile(const std::string_view configFile
 //! @brief Check the "logger" object in the helper list.
 //! @param helper - object of helper
 template <>
-void Configure::checkObjectInHelperList<log::Log>(const utility::json::JSON& helper)
+void Configuration::checkObjectInHelperList<log::Log>(const utility::json::JSON& helper)
 {
     if (!helper.hasKey(field::properties) || !helper.hasKey(field::required))
     {
@@ -127,7 +127,7 @@ void Configure::checkObjectInHelperList<log::Log>(const utility::json::JSON& hel
 //! @brief Check the "viewer" object in the helper list.
 //! @param helper - object of helper
 template <>
-void Configure::checkObjectInHelperList<view::View>(const utility::json::JSON& helper)
+void Configuration::checkObjectInHelperList<view::View>(const utility::json::JSON& helper)
 {
     if (!helper.hasKey(field::properties) || !helper.hasKey(field::required))
     {
@@ -178,7 +178,7 @@ void Configure::checkObjectInHelperList<view::View>(const utility::json::JSON& h
     }
 }
 
-void Configure::verifyConfigData(const utility::json::JSON& configData)
+void Configuration::verifyConfigData(const utility::json::JSON& configData)
 {
     if (!configData.hasKey(field::activateHelper) || !configData.hasKey(field::helperList)
         || !configData.hasKey(field::helperTimeout))
@@ -300,7 +300,7 @@ static void forcedConfigUpdateByDefault(const std::string_view filePath)
     utility::io::FileWriter configWriter(filePath);
     configWriter.open(true);
     configWriter.lock();
-    configWriter.stream() << configure::dumpDefaultConfig() << std::endl;
+    configWriter.stream() << configuration::dumpDefaultConfig() << std::endl;
 }
 
 //! @brief Initialize the configuration.
@@ -351,7 +351,7 @@ static bool promptConfigRecovery(const std::string_view filePath)
 }
 
 //! @brief Load the settings.
-//! @param filename - configure file path
+//! @param filename - file path for configuring
 //! @return successful or failed to load
 bool loadSettings(const std::string_view filename)
 {
@@ -390,4 +390,4 @@ Pooling& resourcePool()
     return pooling;
 }
 } // namespace task
-} // namespace application::configure
+} // namespace application::configuration

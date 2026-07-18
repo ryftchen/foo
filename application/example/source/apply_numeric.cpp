@@ -52,7 +52,7 @@ static std::string customTitle(const Meth method)
 //! @return curried task name
 static const auto& curriedTaskName()
 {
-    static const auto curried = utility::currying::curry(configure::task::presetName, TypeInfo<ApplyNumeric>::name);
+    static const auto curried = utility::currying::curry(configuration::task::presetName, TypeInfo<ApplyNumeric>::name);
     return curried;
 }
 
@@ -145,7 +145,7 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
     const std::string_view title = numeric::arithmetic::description();
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = configure::task::resourcePool();
+    auto& pooling = configuration::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(spec.count());
     using arithmetic::InputBuilder, arithmetic::input::operandA, arithmetic::input::operandB;
     const auto inputData = std::make_shared<InputBuilder>(operandA, operandB);
@@ -247,7 +247,7 @@ void applyingDivisor(const std::vector<std::string>& candidates)
     const std::string_view title = numeric::divisor::description();
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = configure::task::resourcePool();
+    auto& pooling = configuration::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(spec.count());
     using divisor::InputBuilder, divisor::input::numberA, divisor::input::numberB;
     const auto inputData = std::make_shared<InputBuilder>(numberA, numberB);
@@ -348,7 +348,7 @@ void applyingIntegral(const std::vector<std::string>& candidates)
     const std::string_view title = numeric::integral::description();
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = configure::task::resourcePool();
+    auto& pooling = configuration::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(spec.count());
     using integral::InputBuilder, integral::input::CylindricalBessel, integral::Expression;
     static_assert(numeric::integral::epsilon >= std::numeric_limits<double>::epsilon());
@@ -455,7 +455,7 @@ void applyingPrime(const std::vector<std::string>& candidates)
     const std::string_view title = numeric::prime::description();
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = configure::task::resourcePool();
+    auto& pooling = configuration::task::resourcePool();
     auto* const allocatedJob = pooling.newEntry(spec.count());
     using prime::InputBuilder, prime::input::upperBound;
     const auto inputData = std::make_shared<InputBuilder>(upperBound);

@@ -1,6 +1,6 @@
-//! @file configure.hpp
+//! @file configuration.hpp
 //! @author ryftchen
-//! @brief The declarations (configure) in the application module.
+//! @brief The declarations (configuration) in the application module.
 //! @version 0.1.0
 //! @copyright Copyright (c) 2022-2026 ryftchen. All rights reserved.
 
@@ -14,8 +14,8 @@
 //! @brief The application module.
 namespace application // NOLINT(modernize-concat-nested-namespaces)
 {
-//! @brief Configuration-related functions in the application module.
-namespace configure
+//! @brief Configuration-database-related functions in the application module.
+namespace configuration
 {
 //! @brief The literal string of the field.
 namespace field
@@ -57,33 +57,33 @@ constexpr std::uint8_t maxAccessLimit = 10;
 //! @brief Default configuration filename.
 constexpr std::string_view defaultConfigFile = "conf/" _PROJECT_NAME ".json";
 //! @brief Get the full path to the configuration file.
-//! @param filename - configuration file path
+//! @param filename - file path for configuring
 //! @return full path to the configuration file
 std::string getFullConfigPath(const std::string_view filename = defaultConfigFile);
 
-//! @brief Configuration.
-class Configure final
+//! @brief Configuration database.
+class Configuration final
 {
 public:
-    //! @brief Destroy the Configure object.
-    ~Configure() = default;
-    //! @brief Construct a new Configure object.
-    Configure(const Configure&) = delete;
-    //! @brief Construct a new Configure object.
-    Configure(Configure&&) = delete;
-    //! @brief The operator (=) overloading of Configure class.
-    //! @return reference of the Configure object
-    Configure& operator=(const Configure&) = delete;
-    //! @brief The operator (=) overloading of Configure class.
-    //! @return reference of the Configure object
-    Configure& operator=(Configure&&) = delete;
+    //! @brief Destroy the Configuration object.
+    ~Configuration() = default;
+    //! @brief Construct a new Configuration object.
+    Configuration(const Configuration&) = delete;
+    //! @brief Construct a new Configuration object.
+    Configuration(Configuration&&) = delete;
+    //! @brief The operator (=) overloading of Configuration class.
+    //! @return reference of the Configuration object
+    Configuration& operator=(const Configuration&) = delete;
+    //! @brief The operator (=) overloading of Configuration class.
+    //! @return reference of the Configuration object
+    Configuration& operator=(Configuration&&) = delete;
 
-    friend const Configure& getInstance(const std::string_view filename);
+    friend const Configuration& getInstance(const std::string_view filename);
 
 private:
-    //! @brief Construct a new Configure object.
-    //! @param filename - configure file path
-    explicit Configure(const std::string_view filename) :
+    //! @brief Construct a new Configuration object.
+    //! @param filename - file path for configuring
+    explicit Configuration(const std::string_view filename) :
         filePath{getFullConfigPath(filename)}, dataRepo(parseConfigFile(filePath))
     {
     }
@@ -255,5 +255,5 @@ inline std::string presetName(const std::string_view cli, const std::string_view
     return '@' + std::string{cli} + '_' + std::string{cat} + '_' + std::string{cho};
 }
 } // namespace task
-} // namespace configure
+} // namespace configuration
 } // namespace application

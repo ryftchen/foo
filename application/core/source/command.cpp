@@ -61,14 +61,14 @@ template <ExtHelper Helper>
 requires std::derived_from<Helper, utility::fsm::FSM<Helper>>
 static void triggerEvent(const ExtEvent event)
 {
-    if (!configure::detail::activateHelper())
+    if (!configuration::detail::activateHelper())
     {
         return;
     }
 
     switch (event)
     {
-        using Controller = configure::Controller<Helper>;
+        using Controller = configuration::Controller<Helper>;
         case ExtEvent::startup:
             Controller().startup();
             return;
@@ -100,7 +100,7 @@ static void daemonService()
 template <typename... Hs>
 static schedule::Awaitable launchLifecycle()
 {
-    if (!configure::detail::activateHelper())
+    if (!configuration::detail::activateHelper())
     {
         co_return;
     }
@@ -550,7 +550,7 @@ void Command::checkExcessArgs()
 
 void Command::executeInConsole() const
 {
-    if (!configure::detail::activateHelper())
+    if (!configuration::detail::activateHelper())
     {
         std::cout << "exit" << std::endl;
         return;
@@ -600,7 +600,7 @@ void Command::showHelpMessage() const
 
 void Command::dumpConfiguration()
 {
-    std::cout << configure::dumpDefaultConfig() << std::endl;
+    std::cout << configuration::dumpDefaultConfig() << std::endl;
 }
 
 void Command::displayVersionInfo() const
@@ -677,7 +677,7 @@ void Command::validateDependencies() const
 void Command::enterConsoleMode()
 try
 {
-    if (!configure::detail::activateHelper())
+    if (!configuration::detail::activateHelper())
     {
         std::cout << "exit" << std::endl;
         return;
