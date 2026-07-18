@@ -34,7 +34,7 @@ static volatile std::sig_atomic_t signalStatus = 0; // NOLINT(cppcoreguidelines-
 
 // NOLINTBEGIN(cppcoreguidelines-no-malloc, cppcoreguidelines-owning-memory)
 //! @brief Signal handler for SIGSEGV signal, etc.
-//! @param sig - signal type
+//! @param sig - signal number
 static void signalHandler(const int sig)
 {
     signalStatus = sig;

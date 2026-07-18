@@ -29,6 +29,18 @@ volatile std::sig_atomic_t alarmInterrupted = 0;
 // NOLINTEND(cppcoreguidelines-avoid-non-const-global-variables)
 } // namespace
 
+//! @brief Make the signal set.
+//! @tparam Sigs - type of signal numbers
+//! @return signal set
+template <auto... Sigs>
+static ::sigset_t signalSet()
+{
+    ::sigset_t set{};
+    ::sigemptyset(&set);
+    (::sigaddset(&set, static_cast<int>(Sigs)), ...);
+    return set;
+}
+
 //! @brief The run function.
 //! @param argc - argument count
 //! @param argv - argument vector
@@ -59,10 +71,7 @@ try
 {
     std::signal(SIGCHLD, [](const int sig) { application::childInterrupted = sig; });
     std::signal(SIGALRM, [](const int sig) { application::alarmInterrupted = sig; });
-    ::sigset_t unblockMask{};
-    ::sigemptyset(&unblockMask);
-    ::sigaddset(&unblockMask, SIGCHLD);
-    ::sigaddset(&unblockMask, SIGALRM);
+    const auto unblockMask = signalSet<SIGCHLD, SIGALRM>();
     ::pthread_sigmask(SIG_UNBLOCK, &unblockMask, nullptr);
 
     constexpr std::uint8_t timeout = 60;
@@ -105,15 +114,12 @@ int main(int argc, char* argv[])
         return application::run(argc, argv);
     }
 
-    ::sigset_t blockMask{};
-    ::sigemptyset(&blockMask);
-    ::sigaddset(&blockMask, SIGCHLD);
-    ::sigaddset(&blockMask, SIGALRM);
+    const auto blockMask = application::signalSet<SIGCHLD, SIGALRM>();
     ::sigset_t prevMask{};
     ::pthread_sigmask(SIG_BLOCK, &blockMask, &prevMask);
 
-    const ::pid_t ppidBeforeFork = ::getpid();
-    const ::pid_t pid = ::fork();
+    const auto ppidBeforeFork = ::getpid();
+    const auto pid = ::fork();
     if (pid < 0)
     {
         return EXIT_FAILURE;
