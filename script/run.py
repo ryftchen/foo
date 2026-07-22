@@ -94,12 +94,14 @@ class Task:
         },
     }
     _tst_task_filt = []
-    _marked_option = {"ut": False, "chk": {"cov": False, "mem": False}}
+    _is_smoke_test = True
+    _check_target = {"cov": False, "mem": False}
     _analyze_only = False
     _report_path = "./report"
     _run_log_file = f"{_report_path}/foo_{os.path.splitext(os.path.basename(__file__))[0]}.log"
     _run_report_file = f"{_report_path}/foo_{os.path.splitext(os.path.basename(__file__))[0]}.report"
-    _dca_output_path = f"{_report_path}/_dca"
+    _dca_chk_cov_path = f"{_report_path}/_dca/chk_cov"
+    _dca_chk_mem_path = f"{_report_path}/_dca/chk_mem"
     _ansi_sgr = {
         "red": "\033[0;31m",
         "green": "\033[0;32m",
@@ -111,10 +113,8 @@ class Task:
         "reset": "\033[0m",
     }
     _extended_trait = {
-        "chk": {
-            "cov": f"""{_ansi_sgr["reverse"]}{_ansi_sgr["def_bg"]}[CHECK COVERAGE]{_ansi_sgr["reset"]}""",
-            "mem": f"""{_ansi_sgr["reverse"]}{_ansi_sgr["def_bg"]}[CHECK MEMORY]{_ansi_sgr["reset"]}""",
-        }
+        "chk_cov": f"""{_ansi_sgr["reverse"]}{_ansi_sgr["def_bg"]}[CHECK COVERAGE]{_ansi_sgr["reset"]}""",
+        "chk_mem": f"""{_ansi_sgr["reverse"]}{_ansi_sgr["def_bg"]}[CHECK MEMORY]{_ansi_sgr["reset"]}""",
     }
     _suspicious_trait = [
         f""" {_ansi_sgr["red"]}{_ansi_sgr["bold"]}{_ansi_sgr["def_bg"]}[ERR]{_ansi_sgr["reset"]} """,
@@ -164,7 +164,7 @@ class Task:
         self._prepare()
         start_time = datetime.now()
 
-        if not self._marked_option["ut"]:
+        if self._is_smoke_test:
             thread_list = []
             producer = threading.Thread(target=self._generate_tasks(), args=())
             producer.start()
@@ -190,10 +190,10 @@ class Task:
 
     def stop(self, message: str = ""):
         try:
-            if self._marked_option["chk"]["cov"]:
-                execute_command(f"rm -rf {self._dca_output_path}/chk_cov/*.{{profraw,profdata}}")
-            if self._marked_option["chk"]["mem"]:
-                execute_command(f"rm -rf {self._dca_output_path}/chk_mem/*.xml")
+            if self._check_target["cov"]:
+                execute_command(f"rm -rf {self._dca_chk_cov_path}/*.{{profraw,profdata}}")
+            if self._check_target["mem"]:
+                execute_command(f"rm -rf {self._dca_chk_mem_path}/*.xml")
             sys.stdout = STDOUT
             self._progress_bar.destroy_progress_bar()
             del self._stream_logger
@@ -268,7 +268,7 @@ class Task:
             sys.exit(0)
 
         if self._args.unit:
-            self._marked_option["ut"] = True
+            self._is_smoke_test = False
 
         if self._args.repeat is not None:
             self._repeat_count = self._args.repeat
@@ -300,7 +300,7 @@ class Task:
         if self._args.build is not None:
             if os.path.isfile(self._build_script):
                 build_cmd = self._build_script
-                if self._marked_option["ut"]:
+                if not self._is_smoke_test:
                     build_cmd += " --test"
                 if self._args.build == "rls":
                     build_cmd += " --release"
@@ -339,13 +339,12 @@ class Task:
             fcntl.flock(run_dict_content.fileno(), fcntl.LOCK_UN)
 
     def _prepare(self):
-        is_ut_mode = self._marked_option["ut"]
-        bin_path = self._app_bin_path if not is_ut_mode else self._tst_bin_path
-        bin_cmd = self._app_bin_cmd if not is_ut_mode else self._tst_bin_cmd
+        bin_path = self._app_bin_path if self._is_smoke_test else self._tst_bin_path
+        bin_cmd = self._app_bin_cmd if self._is_smoke_test else self._tst_bin_cmd
         if not os.path.isfile(f"{bin_path}/{bin_cmd}"):
             exit_with_error(
                 f"""\
-No executable file for {"smoke" if not is_ut_mode else "unit"} test. Please use the --build option to build it."""
+No executable file for {"smoke" if self._is_smoke_test else "unit"} test. Please use the --build option to build it."""
             )
 
         if not os.path.exists(self._report_path):
@@ -372,9 +371,9 @@ No executable file for {"smoke" if not is_ut_mode else "unit"} test. Please use 
         self._total_steps *= self._repeat_count
 
     def _complete(self):
-        if self._marked_option["chk"]["cov"]:
+        if self._check_target["cov"]:
             self._check_coverage_handling()
-        if self._marked_option["chk"]["mem"]:
+        if self._check_target["mem"]:
             self._check_memory_handling()
 
         sys.stdout = STDOUT
@@ -413,15 +412,15 @@ No executable file for {"smoke" if not is_ut_mode else "unit"} test. Please use 
     def _run_single_task(self, command: str, stdin: str = ""):
         full_cmd = (
             f"{self._app_bin_path}/{command}"
-            if not self._marked_option["ut"]
+            if self._is_smoke_test
             else f"{self._tst_bin_path}/{command} --gtest_color=yes"
         )
-        if self._marked_option["chk"]["mem"]:
+        if self._check_target["mem"]:
             full_cmd = f"valgrind --tool=memcheck --xml=yes \
---xml-file={self._dca_output_path}/chk_mem/foo_chk_mem_{str(self._complete_steps + 1)}.xml {full_cmd}"
-        if self._marked_option["chk"]["cov"]:
+--xml-file={self._dca_chk_mem_path}/foo_chk_mem_{str(self._complete_steps + 1)}.xml {full_cmd}"
+        if self._check_target["cov"]:
             full_cmd = f"LLVM_PROFILE_FILE=\
-\"{self._dca_output_path}/chk_cov/foo_chk_cov_{str(self._complete_steps + 1)}.profraw\" {full_cmd}"
+\"{self._dca_chk_cov_path}/foo_chk_cov_{str(self._complete_steps + 1)}.profraw\" {full_cmd}"
         if stdin:
             command += " > " + stdin.replace("\nquit", "")
         align_len = max(
@@ -434,7 +433,7 @@ No executable file for {"smoke" if not is_ut_mode else "unit"} test. Please use 
         )
 
         stdout, stderr, return_code = execute_command(full_cmd, stdin)
-        vg_output = "" if not self._marked_option["chk"]["mem"] else self._convert_valgrind_output(command)
+        vg_output = "" if not self._check_target["mem"] else self._convert_valgrind_output(command)
         if not stdout or stderr or return_code or any(sus in stdout for sus in self._suspicious_trait) or vg_output:
             print(
                 f"""{self._ansi_sgr["reverse"]}{self._ansi_sgr["def_bg"]}[STDOUT]{self._ansi_sgr["reset"]}\n{stdout}\n\
@@ -484,60 +483,59 @@ No executable file for {"smoke" if not is_ut_mode else "unit"} test. Please use 
         stdout, _, _ = execute_command(f"command -v llvm-profdata-{self._llvm_ver} llvm-cov-{self._llvm_ver} 2>&1")
         if stdout.find(f"llvm-profdata-{self._llvm_ver}") != -1 and stdout.find(f"llvm-cov-{self._llvm_ver}") != -1:
             os.environ["FOO_BLD_COV"] = "llvm-cov"
-            self._marked_option["chk"]["cov"] = True
-            execute_command(f"rm -rf {self._dca_output_path}/chk_cov && mkdir -p {self._dca_output_path}/chk_cov")
+            self._check_target["cov"] = True
+            execute_command(f"rm -rf {self._dca_chk_cov_path} && mkdir -p {self._dca_chk_cov_path}")
         else:
             exit_with_error(
                 f"No llvm-profdata-{self._llvm_ver} or llvm-cov-{self._llvm_ver} program. Please install it."
             )
 
     def _check_coverage_handling(self):
-        folder_path = f"{self._dca_output_path}/chk_cov"
         execute_command(
-            f"llvm-profdata-{self._llvm_ver} merge -sparse {folder_path}/foo_chk_cov_*.profraw \
--o {folder_path}/foo_chk_cov.profdata"
+            f"llvm-profdata-{self._llvm_ver} merge -sparse {self._dca_chk_cov_path}/foo_chk_cov_*.profraw \
+-o {self._dca_chk_cov_path}/foo_chk_cov.profdata"
         )
-        if not self._marked_option["ut"]:
+        if self._is_smoke_test:
             execute_command(
-                f"llvm-cov-{self._llvm_ver} show -instr-profile {folder_path}/foo_chk_cov.profdata \
+                f"llvm-cov-{self._llvm_ver} show -instr-profile {self._dca_chk_cov_path}/foo_chk_cov.profdata \
 -show-branches=percent -show-expansions -show-regions -show-line-counts-or-regions -format html \
--output-dir {folder_path} -Xdemangler c++filt -object {self._app_bin_path}/{self._app_bin_cmd} \
+-output-dir {self._dca_chk_cov_path} -Xdemangler c++filt -object {self._app_bin_path}/{self._app_bin_cmd} \
 {' '.join([f'-object {self._lib_path}/{lib}' for lib in self._lib_list])}"
             )
         else:
             execute_command(
-                f"llvm-cov-{self._llvm_ver} show -instr-profile {folder_path}/foo_chk_cov.profdata \
+                f"llvm-cov-{self._llvm_ver} show -instr-profile {self._dca_chk_cov_path}/foo_chk_cov.profdata \
 -show-branches percent -show-expansions -show-regions -show-line-counts-or-regions -format html \
--output-dir {folder_path} -Xdemangler c++filt -object {self._tst_bin_path}/{self._tst_bin_cmd}"
+-output-dir {self._dca_chk_cov_path} -Xdemangler c++filt -object {self._tst_bin_path}/{self._tst_bin_cmd}"
             )
         stdout, _, _ = (
             execute_command(
-                f"llvm-cov-{self._llvm_ver} report -instr-profile {folder_path}/foo_chk_cov.profdata \
+                f"llvm-cov-{self._llvm_ver} report -instr-profile {self._dca_chk_cov_path}/foo_chk_cov.profdata \
 -object {self._app_bin_path}/{self._app_bin_cmd} \
 {' '.join([f'-object {self._lib_path}/{lib}' for lib in self._lib_list])}"
             )
-            if not self._marked_option["ut"]
+            if self._is_smoke_test
             else execute_command(
-                f"llvm-cov-{self._llvm_ver} report -instr-profile {folder_path}/foo_chk_cov.profdata \
+                f"llvm-cov-{self._llvm_ver} report -instr-profile {self._dca_chk_cov_path}/foo_chk_cov.profdata \
 -object {self._tst_bin_path}/{self._tst_bin_cmd}"
             )
         )
-        execute_command(f"rm -rf {folder_path}/*.{{profraw,profdata}}")
-        print(f"""{self._extended_trait["chk"]["cov"]}\n{stdout}""")
+        execute_command(f"rm -rf {self._dca_chk_cov_path}/*.{{profraw,profdata}}")
+        print(f"""{self._extended_trait["chk_cov"]}\n{stdout}""")
         if "error" in stdout:
             print("Please further check the compilation parameters related to instrumentation.")
 
     def _initialize_for_check_memory(self):
         stdout, _, _ = execute_command("command -v valgrind valgrind-ci 2>&1")
         if stdout.find("valgrind") != -1 and stdout.find("valgrind-ci") != -1:
-            self._marked_option["chk"]["mem"] = True
-            execute_command(f"rm -rf {self._dca_output_path}/chk_mem && mkdir -p {self._dca_output_path}/chk_mem")
+            self._check_target["mem"] = True
+            execute_command(f"rm -rf {self._dca_chk_mem_path} && mkdir -p {self._dca_chk_mem_path}")
         else:
             exit_with_error("No valgrind or valgrind-ci program. Please install it.")
 
     def _check_memory_handling(self):
-        execute_command(f"rm -rf {self._dca_output_path}/chk_mem/*.xml")
-        folder_path = f"{self._dca_output_path}/chk_mem/memory"
+        execute_command(f"rm -rf {self._dca_chk_mem_path}/*.xml")
+        folder_path = f"{self._dca_chk_mem_path}/memory"
         if not os.path.exists(folder_path):
             os.mkdir(folder_path)
         case_folders = [folder.path for folder in os.scandir(folder_path) if folder.is_dir()]
@@ -562,10 +560,10 @@ No executable file for {"smoke" if not is_ut_mode else "unit"} test. Please use 
             or not os.path.isfile(f"{pkg_loc}/valgrind.css")
             or not os.path.isfile(f"{pkg_loc}/valgrind.js")
         ):
-            print(f"""{self._extended_trait["chk"]["mem"]}\nMissing source files prevent indexing.""")
-        execute_command(f"cp -rf {pkg_loc}/{{index.html,valgrind.css,valgrind.js}} {self._dca_output_path}/chk_mem/")
+            print(f"""{self._extended_trait["chk_mem"]}\nMissing source files prevent indexing.""")
+        execute_command(f"cp -rf {pkg_loc}/{{index.html,valgrind.css,valgrind.js}} {self._dca_chk_mem_path}/")
 
-        with open(f"{self._dca_output_path}/chk_mem/index.html", "rt", encoding="utf-8") as index_content:
+        with open(f"{self._dca_chk_mem_path}/index.html", "rt", encoding="utf-8") as index_content:
             fcntl.flock(index_content.fileno(), fcntl.LOCK_SH)
             old_content = index_content.read()
             fcntl.flock(index_content.fileno(), fcntl.LOCK_UN)
@@ -589,13 +587,13 @@ No executable file for {"smoke" if not is_ut_mode else "unit"} test. Please use 
         new_content = re.sub(
             r"(                {% for item in source_list %}.*?{% endfor %}\n)", new_body, old_content, flags=re.DOTALL
         )
-        with open(f"{self._dca_output_path}/chk_mem/index.html", "wt", encoding="utf-8") as index_content:
+        with open(f"{self._dca_chk_mem_path}/index.html", "wt", encoding="utf-8") as index_content:
             fcntl.flock(index_content.fileno(), fcntl.LOCK_EX)
             index_content.write(new_content)
             fcntl.flock(index_content.fileno(), fcntl.LOCK_UN)
 
     def _convert_valgrind_output(self, command: str) -> str:
-        xml_filename = f"{self._dca_output_path}/chk_mem/foo_chk_mem_{str(self._complete_steps + 1)}"
+        xml_filename = f"{self._dca_chk_mem_path}/foo_chk_mem_{str(self._complete_steps + 1)}"
         with open(f"{xml_filename}.xml", "rt", encoding="utf-8") as mem_xml:
             inst_num = mem_xml.read().count("</valgrindoutput>")
         stdout = ""
@@ -617,7 +615,7 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
             )
 
         if "errors" in stdout:
-            case_path = f"{self._dca_output_path}/chk_mem/memory/case_{str(self._complete_steps + 1)}"
+            case_path = f"{self._dca_chk_mem_path}/memory/case_{str(self._complete_steps + 1)}"
             if inst_num == 1:
                 execute_command(f"valgrind-ci {xml_filename}.xml --source-dir ./ --output-dir {case_path}")
                 pathlib.Path(f"{case_path}/case_name").write_text(command, "utf-8")
@@ -630,9 +628,9 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
                     f"valgrind-ci {xml_filename}_inst_2.xml --source-dir ./ --output-dir {case_path}_inst_2"
                 )
                 pathlib.Path(f"{case_path}_inst_2/case_name").write_text(command, "utf-8")
-            return f"""{self._extended_trait["chk"]["mem"]}\n{stdout.expandtabs()}"""
+            return f"""{self._extended_trait["chk_mem"]}\n{stdout.expandtabs()}"""
         if inst_num not in (1, 2) or stderr:
-            return f"""{self._extended_trait["chk"]["mem"]}\nUnsupported valgrind output xml file content."""
+            return f"""{self._extended_trait["chk_mem"]}\nUnsupported valgrind output xml file content."""
         return ""
 
     def _format_run_log(self):
@@ -648,10 +646,7 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
         os.replace(temp_file, self._run_log_file)
 
     def _summarize_run_log(self):
-        is_smoke_test = True
-        if not self._analyze_only:
-            is_smoke_test = self._marked_option["ut"]
-        else:
+        if self._analyze_only:
             preview_num = 10
             with open(self._run_log_file, "rt", encoding="utf-8") as run_log:
                 fcntl.flock(run_log.fileno(), fcntl.LOCK_SH)
@@ -662,9 +657,9 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
                         break
                     first_lines.append(line)
                 fcntl.flock(run_log.fileno(), fcntl.LOCK_UN)
-            is_smoke_test = f"# CASE: {self._tst_bin_cmd}" in "".join(first_lines)
+            self._is_smoke_test = f"# CASE: {self._tst_bin_cmd}" not in "".join(first_lines)
 
-        dur_time, fail_res, mem_leak, cov_per = self._scan_run_log(is_smoke_test)
+        dur_time, fail_res, mem_leak, cov_per = self._scan_run_log()
         with open(self._run_report_file, "wt", encoding="utf-8") as run_report:
             fcntl.flock(run_report.fileno(), fcntl.LOCK_EX)
             run_stat = {
@@ -676,7 +671,7 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
             run_stat_rep = (
                 "REPORT FOR RUN STATISTIC:\n"
                 + self._format_as_table(
-                    run_stat, "ENTRY", f"""RUN STATISTIC ({"SMOKE" if is_smoke_test else "UNIT"} TEST)"""
+                    run_stat, "ENTRY", f"""RUN STATISTIC ({"SMOKE" if self._is_smoke_test else "UNIT"} TEST)"""
                 )
                 + "\n"
             )
@@ -708,7 +703,7 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
         if fail_res:
             sys.exit(1)
 
-    def _scan_run_log(self, is_smoke_test: bool) -> tuple[float, dict[str, str], dict[str, str], dict[str, str]]:
+    def _scan_run_log(self) -> tuple[float, dict[str, str], dict[str, str], dict[str, str]]:
         start_count = 0
         finish_count = 0
         first_start_line = None
@@ -737,7 +732,7 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
                     if not is_in_case:
                         continue
 
-                    result = self._try_scan_in_one_case(case_lines, is_smoke_test)
+                    result = self._try_scan_in_one_case(case_lines)
                     if result:
                         case_task, fail_text, mem_text = result
                         if fail_text:
@@ -754,7 +749,8 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
             or (not self._analyze_only and finish_count != self._total_steps)
         ):
             exit_with_error(f"The run log {self._run_log_file} file is incomplete. Please retry.")
-        self._total_steps = finish_count
+        if self._analyze_only:
+            self._total_steps = finish_count
 
         cov_per = self._try_scan_after_all_cases(tail_lines)
 
@@ -787,7 +783,7 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
                 yield chunk
             fcntl.flock(run_log.fileno(), fcntl.LOCK_UN)
 
-    def _try_scan_in_one_case(self, case_lines: list[str], is_smoke_test: bool) -> tuple[str, str, str] | None:
+    def _try_scan_in_one_case(self, case_lines: list[str]) -> tuple[str, str, str] | None:
         if len(case_lines) < 2:
             return None
         finish_index = len(case_lines) - 1
@@ -797,10 +793,10 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
         fail_line = case_lines[finish_index - 1]
         number = fail_line[fail_line.find("NO.") : fail_line.find("]")].strip()
         cmd_line = case_lines[0]
-        bin_cmd = self._app_bin_cmd if is_smoke_test else self._tst_bin_cmd
+        bin_cmd = self._app_bin_cmd if self._is_smoke_test else self._tst_bin_cmd
         case_task = number + ": " + cmd_line[cmd_line.find(bin_cmd) : cmd_line.find("# START")].strip()
 
-        if not is_smoke_test and "FAILED TEST" in "".join(case_lines[1:finish_index]):
+        if not self._is_smoke_test and "FAILED TEST" in "".join(case_lines[1:finish_index]):
             ut_case = ""
             ut_run_index = -1
             ut_fail_indices = []
@@ -820,7 +816,7 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
 
         last_index = finish_index - 1
         ansi = re.compile(self._ansi_esc_regex)
-        mem_trait = ansi.sub("", self._extended_trait["chk"]["mem"])
+        mem_trait = ansi.sub("", self._extended_trait["chk_mem"])
         mem_text = ""
         for index, line in enumerate(case_lines[1:finish_index], start=1):
             if mem_trait in line:
@@ -834,7 +830,7 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
     def _try_scan_after_all_cases(self, tail_lines: list[str]) -> dict[str, str]:
         cov_per = {}
         ansi = re.compile(self._ansi_esc_regex)
-        cov_trait = ansi.sub("", self._extended_trait["chk"]["cov"])
+        cov_trait = ansi.sub("", self._extended_trait["chk_cov"])
         has_cov_trait = False
         category = ["Regions", "Functions", "Lines", "Branches"]
         for line in tail_lines:
