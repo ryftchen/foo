@@ -6,7 +6,7 @@
 
 #include "main.hpp"
 #include "command.hpp"
-#include "configuration.hpp"
+#include "setting.hpp"
 
 #ifndef _PRECOMPILED_HEADER
 #include <sys/prctl.h>
@@ -53,7 +53,7 @@ try
         [=]()
         {
             ::pthread_setname_np(::pthread_self(), command::title.c_str());
-            return configuration::loadSettings() && command::executeCLI(argc, argv);
+            return setting::loadSettings() && command::executeCLI(argc, argv);
         });
     return running.get() ? EXIT_SUCCESS : EXIT_FAILURE;
 }

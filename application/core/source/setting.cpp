@@ -1,10 +1,10 @@
-//! @file configuration.cpp
+//! @file setting.cpp
 //! @author ryftchen
-//! @brief The definitions (configuration) in the application module.
+//! @brief The definitions (setting) in the application module.
 //! @version 0.1.0
 //! @copyright Copyright (c) 2022-2026 ryftchen. All rights reserved.
 
-#include "configuration.hpp"
+#include "setting.hpp"
 #include "log.hpp"
 #include "view.hpp"
 
@@ -16,7 +16,7 @@
 #include "application/pch/precompiled_header.hpp"
 #endif
 
-namespace application::configuration
+namespace application::setting
 {
 //! @brief Anonymous namespace.
 inline namespace
@@ -26,7 +26,10 @@ std::counting_semaphore<maxAccessLimit> configSem( // NOLINT(cppcoreguidelines-a
     maxAccessLimit);
 } // namespace
 
-std::string getFullConfigPath(const std::string_view filename)
+//! @brief Get the full path to the configuration file.
+//! @param filename - file path for configuring
+//! @return full path to the configuration file
+static std::string getFullConfigPath(const std::string_view filename = defaultConfigFile)
 {
     const char* const processHome = std::getenv("FOO_HOME"); // NOLINT(concurrency-mt-unsafe)
     if (!processHome)
@@ -35,6 +38,53 @@ std::string getFullConfigPath(const std::string_view filename)
     }
     return std::string{processHome} + '/' + filename.data();
 }
+
+//! @brief Configuration database.
+class Configuration final
+{
+public:
+    //! @brief Destroy the Configuration object.
+    ~Configuration() = default;
+    //! @brief Construct a new Configuration object.
+    Configuration(const Configuration&) = delete;
+    //! @brief Construct a new Configuration object.
+    Configuration(Configuration&&) = delete;
+    //! @brief The operator (=) overloading of Configuration class.
+    //! @return reference of the Configuration object
+    Configuration& operator=(const Configuration&) = delete;
+    //! @brief The operator (=) overloading of Configuration class.
+    //! @return reference of the Configuration object
+    Configuration& operator=(Configuration&&) = delete;
+
+    friend const Configuration& getInstance(const std::string_view filename);
+
+private:
+    //! @brief Construct a new Configuration object.
+    //! @param filename - file path for configuring
+    explicit Configuration(const std::string_view filename) :
+        filePath{getFullConfigPath(filename)}, dataRepo(parseConfigFile(filePath))
+    {
+    }
+
+    //! @brief Full path to the configuration file.
+    const std::string filePath;
+    //! @brief Configuration data repository.
+    const utility::json::JSON dataRepo;
+
+    friend class Retrieve;
+    //! @brief Parse the configuration file.
+    //! @param configFile - configuration file
+    //! @return configuration data
+    static utility::json::JSON parseConfigFile(const std::string_view configFile);
+    //! @brief Verify the configuration data.
+    //! @param configData - configuration data
+    static void verifyConfigData(const utility::json::JSON& configData);
+    //! @brief Check the object in the helper list.
+    //! @tparam Helper - type of helper
+    //! @param helper - object of helper
+    template <typename Helper>
+    static void checkObjectInHelperList(const utility::json::JSON& helper);
+};
 
 //! @brief Get the Configuration instance.
 //! @param filename - file path for configuring
@@ -300,7 +350,7 @@ static void forcedConfigUpdateByDefault(const std::string_view filePath)
     utility::io::FileWriter configWriter(filePath);
     configWriter.open(true);
     configWriter.lock();
-    configWriter.stream() << configuration::dumpDefaultConfig() << std::endl;
+    configWriter.stream() << dumpDefaultConfig() << std::endl;
 }
 
 //! @brief Initialize the configuration.
@@ -380,7 +430,7 @@ bool loadSettings(const std::string_view filename)
     return false;
 }
 
-namespace task
+namespace activity
 {
 //! @brief Get the memory pool for task when making multi-threading.
 //! @return reference of the Pooling object
@@ -389,5 +439,5 @@ Pooling& resourcePool()
     static Pooling pooling{};
     return pooling;
 }
-} // namespace task
-} // namespace application::configuration
+} // namespace activity
+} // namespace application::setting

@@ -52,8 +52,7 @@ static std::string customTitle(const Meth method)
 //! @return curried task name
 static const auto& curriedTaskName()
 {
-    static const auto curried =
-        utility::currying::curry(configuration::task::presetName, TypeInfo<ApplyAlgorithm>::name);
+    static const auto curried = utility::currying::curry(setting::activity::presetName, TypeInfo<ApplyAlgorithm>::name);
     return curried;
 }
 
@@ -157,7 +156,7 @@ void applyingMatch(const std::vector<std::string>& candidates)
     const std::string_view title = algorithm::match::description();
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = configuration::task::resourcePool();
+    auto& pooling = setting::activity::resourcePool();
     auto* const allocatedJob = pooling.newEntry(spec.count());
     using match::InputBuilder, match::input::patternString;
     static_assert(InputBuilder::maxDigit > patternString.length());
@@ -260,7 +259,7 @@ void applyingNotation(const std::vector<std::string>& candidates)
     const std::string_view title = algorithm::notation::description();
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = configuration::task::resourcePool();
+    auto& pooling = setting::activity::resourcePool();
     auto* const allocatedJob = pooling.newEntry(spec.count());
     using notation::InputBuilder, notation::input::infixString;
     const auto inputData = std::make_shared<InputBuilder>(infixString);
@@ -372,7 +371,7 @@ void applyingOptimal(const std::vector<std::string>& candidates)
     const std::string_view title = algorithm::optimal::description();
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = configuration::task::resourcePool();
+    auto& pooling = setting::activity::resourcePool();
     auto* const allocatedJob = pooling.newEntry(spec.count());
     using optimal::InputBuilder, optimal::input::SphericalBessel, optimal::Function;
     static_assert(algorithm::optimal::epsilon >= std::numeric_limits<double>::epsilon());
@@ -498,7 +497,7 @@ void applyingSearch(const std::vector<std::string>& candidates)
     const std::string_view title = algorithm::search::description();
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = configuration::task::resourcePool();
+    auto& pooling = setting::activity::resourcePool();
     auto* const allocatedJob = pooling.newEntry(spec.count());
     using search::InputBuilder, search::input::arrayLength, search::input::arrayRangeMin, search::input::arrayRangeMax;
     static_assert((arrayRangeMin < arrayRangeMax) && (arrayLength > 0));
@@ -623,7 +622,7 @@ void applyingSort(const std::vector<std::string>& candidates)
     const std::string_view title = algorithm::sort::description();
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = configuration::task::resourcePool();
+    auto& pooling = setting::activity::resourcePool();
     auto* const allocatedJob = pooling.newEntry(spec.count());
     using sort::InputBuilder, sort::input::arrayLength, sort::input::arrayRangeMin, sort::input::arrayRangeMax;
     static_assert((arrayRangeMin < arrayRangeMax) && (arrayLength > 0));

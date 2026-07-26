@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "configuration.hpp"
+#include "setting.hpp"
 
 #include "utility/include/fsm.hpp"
 #include "utility/include/socket.hpp"
@@ -47,6 +47,14 @@ template <>
 void forwardByClient(std::shared_ptr<utility::socket::UDPSocket>& client, const std::vector<std::string>& inputs);
 } // namespace intf
 
+//! @brief Predefined details.
+namespace detail
+{
+//! @brief Alias for the map of viewer option names and help descriptions.
+using OptionMap = std::map<std::string, std::string>;
+extern OptionMap obtainSupportedOptions();
+} // namespace detail
+
 //! @brief The viewer.
 class View final : public utility::fsm::FSM<View>
 {
@@ -66,7 +74,7 @@ public:
     View& operator=(View&&) = delete;
 
     //! @brief Instance name.
-    static constexpr std::string name{configuration::field::viewer};
+    static constexpr std::string name{setting::field::viewer};
     //! @brief Get the View instance.
     //! @return reference of the View object
     static std::shared_ptr<View> getInstance();
@@ -92,15 +100,15 @@ private:
     View();
 
     //! @brief TCP server host address.
-    const std::string tcpHost{configuration::detail::tcpHost4Viewer()};
+    const std::string tcpHost{setting::config::tcpHost4Viewer()};
     //! @brief TCP server port number.
-    const std::uint16_t tcpPort{static_cast<std::uint16_t>(configuration::detail::tcpPort4Viewer())};
+    const std::uint16_t tcpPort{static_cast<std::uint16_t>(setting::config::tcpPort4Viewer())};
     //! @brief UDP server host address.
-    const std::string udpHost{configuration::detail::udpHost4Viewer()};
+    const std::string udpHost{setting::config::udpHost4Viewer()};
     //! @brief UDP server port number.
-    const std::uint16_t udpPort{static_cast<std::uint16_t>(configuration::detail::udpPort4Viewer())};
+    const std::uint16_t udpPort{static_cast<std::uint16_t>(setting::config::udpPort4Viewer())};
     //! @brief Timeout period (s) to waiting for the viewer to change to the target state.
-    const double timeoutPeriod{configuration::detail::helperTimeout()};
+    const double timeoutPeriod{setting::config::helperTimeout()};
 
     //! @brief Alias for the option arguments.
     using Args = std::vector<std::string>;
@@ -150,7 +158,7 @@ private:
         //! @brief The option description.
         static constexpr const char* const description{"display current configuration"};
     };
-    friend std::map<std::string, std::string> obtainSupportedOptions();
+    friend detail::OptionMap detail::obtainSupportedOptions();
     //! @brief Maximum size of the shared memory buffer.
     static constexpr std::size_t shmLimitSize{static_cast<std::size_t>(65536 * 10)};
     //! @brief Memory that can be accessed by multiple programs simultaneously.
@@ -269,7 +277,7 @@ private:
     void waitTaskDone();
     //! @brief Notify that the output task has been completed and unblock any waiters.
     void notifyTaskDone();
-    friend class configuration::Controller<View>;
+    friend class setting::Controller<View>;
     //! @brief Synchronous callback.
     using SyncCallback = std::function<void()>;
     //! @brief Synchronous predicate.
@@ -357,10 +365,6 @@ protected:
     friend std::ostream& operator<<(std::ostream& os, const State state);
 };
 
-//! @brief Alias for the map of viewer option names and help descriptions.
-using OptionMap = std::map<std::string, std::string>;
-
-extern OptionMap obtainSupportedOptions();
 extern std::string buildDisconnectRequest();
 extern void interactionLatency();
 } // namespace view

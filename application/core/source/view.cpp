@@ -39,7 +39,7 @@ namespace application
 namespace view
 {
 //! @brief Alias for the access controller.
-using AccessController = configuration::Controller<View>;
+using AccessController = setting::Controller<View>;
 
 //! @brief Anonymous namespace.
 inline namespace
@@ -53,7 +53,7 @@ namespace tlv = data::tlv;
 
 View::View() : FSM(State::initial)
 {
-    if (!configuration::detail::activateHelper()) [[unlikely]]
+    if (!setting::config::activateHelper()) [[unlikely]]
     {
         throw std::logic_error{"The " + name + " is disabled."};
     }
@@ -262,7 +262,7 @@ std::size_t View::buildCustomTLVPacket<View::OptProfile>(const Args& /*args*/, B
     tlv::TLVValue val{};
     std::strncpy(
         val.configInfo,
-        (static_cast<const utility::json::JSON&>(configuration::retrieveDataRepo())).asUnescapedString().c_str(),
+        (static_cast<const utility::json::JSON&>(setting::retrieveDataRepo())).asUnescapedString().c_str(),
         sizeof(val.configInfo) - 1);
     val.configInfo[sizeof(val.configInfo) - 1] = '\0';
     char* const buf = buffer.data();
@@ -962,37 +962,6 @@ std::ostream& operator<<(std::ostream& os, const View::State state)
     return os;
 }
 
-//! @brief Obtain the supported viewer options.
-//! @return supported viewer options
-OptionMap obtainSupportedOptions()
-{
-    using OptDepend = View::OptDepend;
-    using OptExecute = View::OptExecute;
-    using OptJournal = View::OptJournal;
-    using OptMonitor = View::OptMonitor;
-    using OptProfile = View::OptProfile;
-    return OptionMap{
-        {OptDepend::name, OptDepend::description},
-        {OptExecute::name, OptExecute::description},
-        {OptJournal::name, OptJournal::description},
-        {OptMonitor::name, OptMonitor::description},
-        {OptProfile::name, OptProfile::description}};
-}
-
-//! @brief Build the disconnect request message.
-//! @return disconnect request message
-std::string buildDisconnectRequest()
-{
-    return utility::common::base64Encode(exitSymbol);
-}
-
-//! @brief Latency in the millisecond range.
-void interactionLatency()
-{
-    constexpr auto latency = std::chrono::milliseconds{10};
-    std::this_thread::sleep_for(latency);
-}
-
 namespace intf
 {
 //! @brief Connect from the TCP client.
@@ -1029,6 +998,40 @@ void forwardByClient(std::shared_ptr<utility::socket::UDPSocket>& client, const 
     View::getInstance()->onForwarding(client, inputs);
 }
 } // namespace intf
+
+namespace detail
+{
+//! @brief Obtain the supported viewer options.
+//! @return supported viewer options
+OptionMap obtainSupportedOptions()
+{
+    using OptDepend = View::OptDepend;
+    using OptExecute = View::OptExecute;
+    using OptJournal = View::OptJournal;
+    using OptMonitor = View::OptMonitor;
+    using OptProfile = View::OptProfile;
+    return OptionMap{
+        {OptDepend::name, OptDepend::description},
+        {OptExecute::name, OptExecute::description},
+        {OptJournal::name, OptJournal::description},
+        {OptMonitor::name, OptMonitor::description},
+        {OptProfile::name, OptProfile::description}};
+}
+} // namespace detail
+
+//! @brief Build the disconnect request message.
+//! @return disconnect request message
+std::string buildDisconnectRequest()
+{
+    return utility::common::base64Encode(exitSymbol);
+}
+
+//! @brief Latency in the millisecond range.
+void interactionLatency()
+{
+    constexpr auto latency = std::chrono::milliseconds{10};
+    std::this_thread::sleep_for(latency);
+}
 } // namespace view
 
 //! @brief Wait for the viewer to start.

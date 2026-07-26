@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "configuration.hpp"
+#include "setting.hpp"
 
 #ifndef _PRECOMPILED_HEADER
 #include <forward_list>
@@ -96,7 +96,7 @@ public:
     Log& operator=(Log&&) = delete;
 
     //! @brief Instance name.
-    static constexpr std::string name{configuration::field::logger};
+    static constexpr std::string name{setting::field::logger};
     //! @brief Get the Log instance.
     //! @return reference of the Log object
     static std::shared_ptr<Log> getInstance();
@@ -167,15 +167,15 @@ private:
     Log();
 
     //! @brief Full path to the log file.
-    const std::string filePath{getFullLogPath(configuration::detail::filePath4Logger())};
+    const std::string filePath{getFullLogPath(setting::config::filePath4Logger())};
     //! @brief Priority level.
-    const OutputLevel priorityLevel{static_cast<OutputLevel>(configuration::detail::priorityLevel4Logger())};
+    const OutputLevel priorityLevel{static_cast<OutputLevel>(setting::config::priorityLevel4Logger())};
     //! @brief Target type.
-    const OutputType targetType{static_cast<OutputType>(configuration::detail::targetType4Logger())};
+    const OutputType targetType{static_cast<OutputType>(setting::config::targetType4Logger())};
     //! @brief Write mode.
-    const OutputMode writeMode{static_cast<OutputMode>(configuration::detail::writeMode4Logger())};
+    const OutputMode writeMode{static_cast<OutputMode>(setting::config::writeMode4Logger())};
     //! @brief Timeout period (s) to waiting for the logger to change to the target state.
-    const double timeoutPeriod{configuration::detail::helperTimeout()};
+    const double timeoutPeriod{setting::config::helperTimeout()};
     //! @brief The queue of logs.
     std::queue<std::string> logQueue;
     //! @brief Mutex for controlling daemon.
@@ -223,7 +223,7 @@ private:
     //! @brief Preview in the log context. Simplified interface for external use.
     //! @param peeking - further handling for peeking
     void onPreviewing(const std::function<void(const std::string&)>& peeking) const;
-    friend class configuration::Controller<Log>;
+    friend class setting::Controller<Log>;
     //! @brief Synchronous callback.
     using SyncCallback = std::function<void()>;
     //! @brief Synchronous predicate.
@@ -344,7 +344,7 @@ void printfStyle(
     const std::string& format,
     Args&&... args)
 {
-    if (configuration::detail::activateHelper()) [[likely]]
+    if (setting::config::activateHelper()) [[likely]]
     {
         Log::getInstance()->flush(
             severity,
@@ -373,7 +373,7 @@ void formatStyle(
     const std::string& format,
     Args&&... args)
 {
-    if (configuration::detail::activateHelper()) [[likely]]
+    if (setting::config::activateHelper()) [[likely]]
     {
         Log::getInstance()->flush(
             severity,

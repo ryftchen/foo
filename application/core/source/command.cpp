@@ -61,14 +61,14 @@ template <ExtHelper Helper>
 requires std::derived_from<Helper, utility::fsm::FSM<Helper>>
 static void triggerEvent(const ExtEvent event)
 {
-    if (!configuration::detail::activateHelper())
+    if (!setting::config::activateHelper())
     {
         return;
     }
 
     switch (event)
     {
-        using Controller = configuration::Controller<Helper>;
+        using Controller = setting::Controller<Helper>;
         case ExtEvent::startup:
             Controller().startup();
             return;
@@ -100,7 +100,7 @@ static void daemonService()
 template <typename... Hs>
 static schedule::Awaitable launchLifecycle()
 {
-    if (!configuration::detail::activateHelper())
+    if (!setting::config::activateHelper())
     {
         co_return;
     }
@@ -550,7 +550,7 @@ void Command::checkExcessArgs()
 
 void Command::executeInConsole() const
 {
-    if (!configuration::detail::activateHelper())
+    if (!setting::config::activateHelper())
     {
         std::cout << "exit" << std::endl;
         return;
@@ -600,7 +600,7 @@ void Command::showHelpMessage() const
 
 void Command::dumpConfiguration()
 {
-    std::cout << configuration::dumpDefaultConfig() << std::endl;
+    std::cout << setting::dumpDefaultConfig() << std::endl;
 }
 
 void Command::displayVersionInfo() const
@@ -677,7 +677,7 @@ void Command::validateDependencies() const
 void Command::enterConsoleMode()
 try
 {
-    if (!configuration::detail::activateHelper())
+    if (!setting::config::activateHelper())
     {
         std::cout << "exit" << std::endl;
         return;
@@ -793,7 +793,7 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<Sock>
                 });
         });
 
-    auto supportedOptions = view::obtainSupportedOptions();
+    auto supportedOptions = view::detail::obtainSupportedOptions();
     decltype(supportedOptions) validOptions{};
     for (auto iterator = supportedOptions.cbegin(); iterator != supportedOptions.cend();)
     {

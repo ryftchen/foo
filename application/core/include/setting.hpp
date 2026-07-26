@@ -1,6 +1,6 @@
-//! @file configuration.hpp
+//! @file setting.hpp
 //! @author ryftchen
-//! @brief The declarations (configuration) in the application module.
+//! @brief The declarations (setting) in the application module.
 //! @version 0.1.0
 //! @copyright Copyright (c) 2022-2026 ryftchen. All rights reserved.
 
@@ -14,8 +14,8 @@
 //! @brief The application module.
 namespace application // NOLINT(modernize-concat-nested-namespaces)
 {
-//! @brief Configuration-database-related functions in the application module.
-namespace configuration
+//! @brief Settings-related functions in the application module.
+namespace setting
 {
 //! @brief The literal string of the field.
 namespace field
@@ -56,57 +56,6 @@ constexpr const char* const helperTimeout = MACRO_STRINGIFY(helperTimeout);
 constexpr std::uint8_t maxAccessLimit = 10;
 //! @brief Default configuration filename.
 constexpr std::string_view defaultConfigFile = "conf/" _PROJECT_NAME ".json";
-//! @brief Get the full path to the configuration file.
-//! @param filename - file path for configuring
-//! @return full path to the configuration file
-std::string getFullConfigPath(const std::string_view filename = defaultConfigFile);
-
-//! @brief Configuration database.
-class Configuration final
-{
-public:
-    //! @brief Destroy the Configuration object.
-    ~Configuration() = default;
-    //! @brief Construct a new Configuration object.
-    Configuration(const Configuration&) = delete;
-    //! @brief Construct a new Configuration object.
-    Configuration(Configuration&&) = delete;
-    //! @brief The operator (=) overloading of Configuration class.
-    //! @return reference of the Configuration object
-    Configuration& operator=(const Configuration&) = delete;
-    //! @brief The operator (=) overloading of Configuration class.
-    //! @return reference of the Configuration object
-    Configuration& operator=(Configuration&&) = delete;
-
-    friend const Configuration& getInstance(const std::string_view filename);
-
-private:
-    //! @brief Construct a new Configuration object.
-    //! @param filename - file path for configuring
-    explicit Configuration(const std::string_view filename) :
-        filePath{getFullConfigPath(filename)}, dataRepo(parseConfigFile(filePath))
-    {
-    }
-
-    //! @brief Full path to the configuration file.
-    const std::string filePath;
-    //! @brief Configuration data repository.
-    const utility::json::JSON dataRepo;
-
-    friend class Retrieve;
-    //! @brief Parse the configuration file.
-    //! @param configFile - configuration file
-    //! @return configuration data
-    static utility::json::JSON parseConfigFile(const std::string_view configFile);
-    //! @brief Verify the configuration data.
-    //! @param configData - configuration data
-    static void verifyConfigData(const utility::json::JSON& configData);
-    //! @brief Check the object in the helper list.
-    //! @tparam Helper - type of helper
-    //! @param helper - object of helper
-    template <typename Helper>
-    static void checkObjectInHelperList(const utility::json::JSON& helper);
-};
 
 //! @brief Guard for retrieve configuration.
 class Retrieve final
@@ -141,10 +90,6 @@ private:
     std::counting_semaphore<maxAccessLimit>& sem;
 };
 
-extern Retrieve retrieveDataRepo();
-extern utility::json::JSON dumpDefaultConfig();
-extern bool loadSettings(const std::string_view filename = defaultConfigFile);
-
 //! @brief Access controller. For the instance.
 //! @tparam Helper - type of helper
 template <typename Helper>
@@ -163,8 +108,12 @@ private:
     const std::shared_ptr<Helper> srv{Helper::getInstance()};
 };
 
-//! @brief Configuration details.
-namespace detail
+extern Retrieve retrieveDataRepo();
+extern utility::json::JSON dumpDefaultConfig();
+extern bool loadSettings(const std::string_view filename = defaultConfigFile);
+
+//! @brief Query the configuration.
+namespace config
 {
 //! @brief The operator (/) overloading of JSON class.
 //! @param json - specific JSON object
@@ -237,10 +186,10 @@ inline auto helperTimeout() noexcept
 {
     return (retrieveDataRepo() / field::helperTimeout).asFloating();
 }
-} // namespace detail
+} // namespace config
 
-//! @brief Activity configuration applied to tasks.
-namespace task
+//! @brief Activity settings applied to tasks.
+namespace activity
 {
 //! @brief Alias for the memory pool for task when making multi-threading.
 using Pooling = utility::memory::Memory<utility::thread::Thread>;
@@ -254,6 +203,6 @@ inline std::string presetName(const std::string_view cli, const std::string_view
 {
     return '@' + std::string{cli} + '_' + std::string{cat} + '_' + std::string{cho};
 }
-} // namespace task
-} // namespace configuration
+} // namespace activity
+} // namespace setting
 } // namespace application
