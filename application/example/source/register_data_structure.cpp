@@ -68,21 +68,21 @@ template <>
 void setChoice<CacheInstance>(const std::string& choice)
 {
     constexpr auto category = Category::cache;
-    auto& spec = categoryOpts<category>();
+    auto& specs = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(CacheInstance::firstInFirstOut):
-            spec.set(mappedPos<CacheInstance>(MACRO_STRINGIFY(firstInFirstOut)));
+            specs.set(mappedPos<CacheInstance>(MACRO_STRINGIFY(firstInFirstOut)));
             break;
         case abbrLitHash(CacheInstance::leastFrequentlyUsed):
-            spec.set(mappedPos<CacheInstance>(MACRO_STRINGIFY(leastFrequentlyUsed)));
+            specs.set(mappedPos<CacheInstance>(MACRO_STRINGIFY(leastFrequentlyUsed)));
             break;
         case abbrLitHash(CacheInstance::leastRecentlyUsed):
-            spec.set(mappedPos<CacheInstance>(MACRO_STRINGIFY(leastRecentlyUsed)));
+            specs.set(mappedPos<CacheInstance>(MACRO_STRINGIFY(leastRecentlyUsed)));
             break;
         default:
-            spec.reset();
+            specs.reset();
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
@@ -109,18 +109,18 @@ template <>
 void setChoice<FilterInstance>(const std::string& choice)
 {
     constexpr auto category = Category::filter;
-    auto& spec = categoryOpts<category>();
+    auto& specs = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(FilterInstance::bloom):
-            spec.set(mappedPos<FilterInstance>(MACRO_STRINGIFY(bloom)));
+            specs.set(mappedPos<FilterInstance>(MACRO_STRINGIFY(bloom)));
             break;
         case abbrLitHash(FilterInstance::quotient):
-            spec.set(mappedPos<FilterInstance>(MACRO_STRINGIFY(quotient)));
+            specs.set(mappedPos<FilterInstance>(MACRO_STRINGIFY(quotient)));
             break;
         default:
-            spec.reset();
+            specs.reset();
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
@@ -147,18 +147,18 @@ template <>
 void setChoice<GraphInstance>(const std::string& choice)
 {
     constexpr auto category = Category::graph;
-    auto& spec = categoryOpts<category>();
+    auto& specs = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(GraphInstance::undirected):
-            spec.set(mappedPos<GraphInstance>(MACRO_STRINGIFY(undirected)));
+            specs.set(mappedPos<GraphInstance>(MACRO_STRINGIFY(undirected)));
             break;
         case abbrLitHash(GraphInstance::directed):
-            spec.set(mappedPos<GraphInstance>(MACRO_STRINGIFY(directed)));
+            specs.set(mappedPos<GraphInstance>(MACRO_STRINGIFY(directed)));
             break;
         default:
-            spec.reset();
+            specs.reset();
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
@@ -185,21 +185,21 @@ template <>
 void setChoice<HeapInstance>(const std::string& choice)
 {
     constexpr auto category = Category::heap;
-    auto& spec = categoryOpts<category>();
+    auto& specs = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(HeapInstance::binary):
-            spec.set(mappedPos<HeapInstance>(MACRO_STRINGIFY(binary)));
+            specs.set(mappedPos<HeapInstance>(MACRO_STRINGIFY(binary)));
             break;
         case abbrLitHash(HeapInstance::leftist):
-            spec.set(mappedPos<HeapInstance>(MACRO_STRINGIFY(leftist)));
+            specs.set(mappedPos<HeapInstance>(MACRO_STRINGIFY(leftist)));
             break;
         case abbrLitHash(HeapInstance::skew):
-            spec.set(mappedPos<HeapInstance>(MACRO_STRINGIFY(skew)));
+            specs.set(mappedPos<HeapInstance>(MACRO_STRINGIFY(skew)));
             break;
         default:
-            spec.reset();
+            specs.reset();
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
@@ -226,21 +226,21 @@ template <>
 void setChoice<LinearInstance>(const std::string& choice)
 {
     constexpr auto category = Category::linear;
-    auto& spec = categoryOpts<category>();
+    auto& specs = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(LinearInstance::doublyLinkedList):
-            spec.set(mappedPos<LinearInstance>(MACRO_STRINGIFY(doublyLinkedList)));
+            specs.set(mappedPos<LinearInstance>(MACRO_STRINGIFY(doublyLinkedList)));
             break;
         case abbrLitHash(LinearInstance::stack):
-            spec.set(mappedPos<LinearInstance>(MACRO_STRINGIFY(stack)));
+            specs.set(mappedPos<LinearInstance>(MACRO_STRINGIFY(stack)));
             break;
         case abbrLitHash(LinearInstance::queue):
-            spec.set(mappedPos<LinearInstance>(MACRO_STRINGIFY(queue)));
+            specs.set(mappedPos<LinearInstance>(MACRO_STRINGIFY(queue)));
             break;
         default:
-            spec.reset();
+            specs.reset();
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
@@ -267,21 +267,21 @@ template <>
 void setChoice<TreeInstance>(const std::string& choice)
 {
     constexpr auto category = Category::tree;
-    auto& spec = categoryOpts<category>();
+    auto& specs = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(TreeInstance::binarySearch):
-            spec.set(mappedPos<TreeInstance>(MACRO_STRINGIFY(binarySearch)));
+            specs.set(mappedPos<TreeInstance>(MACRO_STRINGIFY(binarySearch)));
             break;
         case abbrLitHash(TreeInstance::adelsonVelskyLandis):
-            spec.set(mappedPos<TreeInstance>(MACRO_STRINGIFY(adelsonVelskyLandis)));
+            specs.set(mappedPos<TreeInstance>(MACRO_STRINGIFY(adelsonVelskyLandis)));
             break;
         case abbrLitHash(TreeInstance::splay):
-            spec.set(mappedPos<TreeInstance>(MACRO_STRINGIFY(splay)));
+            specs.set(mappedPos<TreeInstance>(MACRO_STRINGIFY(splay)));
             break;
         default:
-            spec.reset();
+            specs.reset();
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }

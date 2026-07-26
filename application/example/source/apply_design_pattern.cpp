@@ -135,8 +135,8 @@ catch (const std::exception& err)
 void applyingBehavioral(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::behavioral;
-    const auto& spec = categoryOpts<category>();
-    if (MACRO_IMPLIES(spec.any(), spec.size() != candidates.size()))
+    const auto& specs = categoryOpts<category>();
+    if (MACRO_IMPLIES(specs.any(), specs.size() != candidates.size()))
     {
         return;
     }
@@ -145,7 +145,7 @@ void applyingBehavioral(const std::vector<std::string>& candidates)
     APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = setting::activity::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(spec.count());
+    auto* const allocatedJob = pooling.newEntry(specs.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subtask, const BehavioralInstance instance)
     { allocatedJob->enqueue(taskNamer(subtask), behavioral::pattern, instance); };
@@ -153,7 +153,7 @@ void applyingBehavioral(const std::vector<std::string>& candidates)
 
     std::cout << "\nInstances of the " << toString(category) << " pattern:" << std::endl;
     for (const auto index :
-         std::views::iota(0U, spec.size()) | std::views::filter([&spec](const auto i) { return spec.test(i); }))
+         std::views::iota(0U, specs.size()) | std::views::filter([&specs](const auto i) { return specs.test(i); }))
     {
         const auto& choice = candidates.at(index);
         switch (utility::common::bkdrHash(choice.c_str()))
@@ -248,8 +248,8 @@ catch (const std::exception& err)
 void applyingCreational(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::creational;
-    const auto& spec = categoryOpts<category>();
-    if (MACRO_IMPLIES(spec.any(), spec.size() != candidates.size()))
+    const auto& specs = categoryOpts<category>();
+    if (MACRO_IMPLIES(specs.any(), specs.size() != candidates.size()))
     {
         return;
     }
@@ -258,7 +258,7 @@ void applyingCreational(const std::vector<std::string>& candidates)
     APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = setting::activity::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(spec.count());
+    auto* const allocatedJob = pooling.newEntry(specs.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subtask, const CreationalInstance instance)
     { allocatedJob->enqueue(taskNamer(subtask), creational::pattern, instance); };
@@ -266,7 +266,7 @@ void applyingCreational(const std::vector<std::string>& candidates)
 
     std::cout << "\nInstances of the " << toString(category) << " pattern:" << std::endl;
     for (const auto index :
-         std::views::iota(0U, spec.size()) | std::views::filter([&spec](const auto i) { return spec.test(i); }))
+         std::views::iota(0U, specs.size()) | std::views::filter([&specs](const auto i) { return specs.test(i); }))
     {
         const auto& choice = candidates.at(index);
         switch (utility::common::bkdrHash(choice.c_str()))
@@ -349,8 +349,8 @@ catch (const std::exception& err)
 void applyingStructural(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::structural;
-    const auto& spec = categoryOpts<category>();
-    if (MACRO_IMPLIES(spec.any(), spec.size() != candidates.size()))
+    const auto& specs = categoryOpts<category>();
+    if (MACRO_IMPLIES(specs.any(), specs.size() != candidates.size()))
     {
         return;
     }
@@ -359,7 +359,7 @@ void applyingStructural(const std::vector<std::string>& candidates)
     APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = setting::activity::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(spec.count());
+    auto* const allocatedJob = pooling.newEntry(specs.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subtask, const StructuralInstance instance)
     { allocatedJob->enqueue(taskNamer(subtask), structural::pattern, instance); };
@@ -367,7 +367,7 @@ void applyingStructural(const std::vector<std::string>& candidates)
 
     std::cout << "\nInstances of the " << toString(category) << " pattern:" << std::endl;
     for (const auto index :
-         std::views::iota(0U, spec.size()) | std::views::filter([&spec](const auto i) { return spec.test(i); }))
+         std::views::iota(0U, specs.size()) | std::views::filter([&specs](const auto i) { return specs.test(i); }))
     {
         const auto& choice = candidates.at(index);
         switch (utility::common::bkdrHash(choice.c_str()))

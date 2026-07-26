@@ -136,8 +136,8 @@ catch (const std::exception& err)
 void applyingArithmetic(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::arithmetic;
-    const auto& spec = categoryOpts<category>();
-    if (MACRO_IMPLIES(spec.any(), spec.size() != candidates.size()))
+    const auto& specs = categoryOpts<category>();
+    if (MACRO_IMPLIES(specs.any(), specs.size() != candidates.size()))
     {
         return;
     }
@@ -146,7 +146,7 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = setting::activity::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(spec.count());
+    auto* const allocatedJob = pooling.newEntry(specs.count());
     using arithmetic::InputBuilder, arithmetic::input::operandA, arithmetic::input::operandB;
     const auto inputData = std::make_shared<InputBuilder>(operandA, operandB);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
@@ -163,7 +163,7 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     for (const auto index :
-         std::views::iota(0U, spec.size()) | std::views::filter([&spec](const auto i) { return spec.test(i); }))
+         std::views::iota(0U, specs.size()) | std::views::filter([&specs](const auto i) { return specs.test(i); }))
     {
         const auto& choice = candidates.at(index);
         switch (utility::common::bkdrHash(choice.c_str()))
@@ -238,8 +238,8 @@ catch (const std::exception& err)
 void applyingDivisor(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::divisor;
-    const auto& spec = categoryOpts<category>();
-    if (MACRO_IMPLIES(spec.any(), spec.size() != candidates.size()))
+    const auto& specs = categoryOpts<category>();
+    if (MACRO_IMPLIES(specs.any(), specs.size() != candidates.size()))
     {
         return;
     }
@@ -248,7 +248,7 @@ void applyingDivisor(const std::vector<std::string>& candidates)
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = setting::activity::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(spec.count());
+    auto* const allocatedJob = pooling.newEntry(specs.count());
     using divisor::InputBuilder, divisor::input::numberA, divisor::input::numberB;
     const auto inputData = std::make_shared<InputBuilder>(numberA, numberB);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
@@ -265,7 +265,7 @@ void applyingDivisor(const std::vector<std::string>& candidates)
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     for (const auto index :
-         std::views::iota(0U, spec.size()) | std::views::filter([&spec](const auto i) { return spec.test(i); }))
+         std::views::iota(0U, specs.size()) | std::views::filter([&specs](const auto i) { return specs.test(i); }))
     {
         const auto& choice = candidates.at(index);
         switch (utility::common::bkdrHash(choice.c_str()))
@@ -339,8 +339,8 @@ catch (const std::exception& err)
 void applyingIntegral(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::integral;
-    const auto& spec = categoryOpts<category>();
-    if (MACRO_IMPLIES(spec.any(), spec.size() != candidates.size()))
+    const auto& specs = categoryOpts<category>();
+    if (MACRO_IMPLIES(specs.any(), specs.size() != candidates.size()))
     {
         return;
     }
@@ -349,7 +349,7 @@ void applyingIntegral(const std::vector<std::string>& candidates)
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = setting::activity::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(spec.count());
+    auto* const allocatedJob = pooling.newEntry(specs.count());
     using integral::InputBuilder, integral::input::CylindricalBessel, integral::Expression;
     static_assert(numeric::integral::epsilon >= std::numeric_limits<double>::epsilon());
     const auto inputData = std::make_shared<InputBuilder>(
@@ -369,7 +369,7 @@ void applyingIntegral(const std::vector<std::string>& candidates)
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     for (const auto index :
-         std::views::iota(0U, spec.size()) | std::views::filter([&spec](const auto i) { return spec.test(i); }))
+         std::views::iota(0U, specs.size()) | std::views::filter([&specs](const auto i) { return specs.test(i); }))
     {
         const auto& choice = candidates.at(index);
         switch (utility::common::bkdrHash(choice.c_str()))
@@ -446,8 +446,8 @@ catch (const std::exception& err)
 void applyingPrime(const std::vector<std::string>& candidates)
 {
     constexpr auto category = Category::prime;
-    const auto& spec = categoryOpts<category>();
-    if (MACRO_IMPLIES(spec.any(), spec.size() != candidates.size()))
+    const auto& specs = categoryOpts<category>();
+    if (MACRO_IMPLIES(specs.any(), specs.size() != candidates.size()))
     {
         return;
     }
@@ -456,7 +456,7 @@ void applyingPrime(const std::vector<std::string>& candidates)
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
     auto& pooling = setting::activity::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(spec.count());
+    auto* const allocatedJob = pooling.newEntry(specs.count());
     using prime::InputBuilder, prime::input::upperBound;
     const auto inputData = std::make_shared<InputBuilder>(upperBound);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
@@ -466,7 +466,7 @@ void applyingPrime(const std::vector<std::string>& candidates)
     MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
 
     for (const auto index :
-         std::views::iota(0U, spec.size()) | std::views::filter([&spec](const auto i) { return spec.test(i); }))
+         std::views::iota(0U, specs.size()) | std::views::filter([&specs](const auto i) { return specs.test(i); }))
     {
         const auto& choice = candidates.at(index);
         switch (utility::common::bkdrHash(choice.c_str()))

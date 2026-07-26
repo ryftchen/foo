@@ -455,12 +455,12 @@ catch (const std::exception& err)
 
 void Command::precheckSchedule()
 {
-    for (auto& spec = scheduleDispatcher.nativeCategories;
-         const auto index : std::views::iota(0U, spec.size())
+    for (auto& specs = scheduleDispatcher.nativeCategories;
+         const auto index : std::views::iota(0U, specs.size())
              | std::views::filter([this](const auto i) { return mainCLI.isUsed(toString(static_cast<Category>(i))); }))
     {
         checkExcessArgs();
-        spec.set(index);
+        specs.set(index);
     }
 
     for ([[maybe_unused]] const auto& [subCLIName, categoryMap] : scheduleDispatcher.extraChoiceRegistry
@@ -505,9 +505,9 @@ void Command::dispatchTasks()
 {
     if (!scheduleDispatcher.NativeManager::empty())
     {
-        for (const auto& spec = scheduleDispatcher.nativeCategories;
+        for (const auto& specs = scheduleDispatcher.nativeCategories;
              const auto index :
-             std::views::iota(0U, spec.size()) | std::views::filter([&spec](const auto i) { return spec.test(i); }))
+             std::views::iota(0U, specs.size()) | std::views::filter([&specs](const auto i) { return specs.test(i); }))
         {
             builtInNotifier.notify(static_cast<Category>(index));
         }

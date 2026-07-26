@@ -68,24 +68,24 @@ template <>
 void setChoice<ArithmeticMethod>(const std::string& choice)
 {
     constexpr auto category = Category::arithmetic;
-    auto& spec = categoryOpts<category>();
+    auto& specs = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(ArithmeticMethod::addition):
-            spec.set(mappedPos<ArithmeticMethod>(MACRO_STRINGIFY(addition)));
+            specs.set(mappedPos<ArithmeticMethod>(MACRO_STRINGIFY(addition)));
             break;
         case abbrLitHash(ArithmeticMethod::subtraction):
-            spec.set(mappedPos<ArithmeticMethod>(MACRO_STRINGIFY(subtraction)));
+            specs.set(mappedPos<ArithmeticMethod>(MACRO_STRINGIFY(subtraction)));
             break;
         case abbrLitHash(ArithmeticMethod::multiplication):
-            spec.set(mappedPos<ArithmeticMethod>(MACRO_STRINGIFY(multiplication)));
+            specs.set(mappedPos<ArithmeticMethod>(MACRO_STRINGIFY(multiplication)));
             break;
         case abbrLitHash(ArithmeticMethod::division):
-            spec.set(mappedPos<ArithmeticMethod>(MACRO_STRINGIFY(division)));
+            specs.set(mappedPos<ArithmeticMethod>(MACRO_STRINGIFY(division)));
             break;
         default:
-            spec.reset();
+            specs.reset();
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
@@ -112,18 +112,18 @@ template <>
 void setChoice<DivisorMethod>(const std::string& choice)
 {
     constexpr auto category = Category::divisor;
-    auto& spec = categoryOpts<category>();
+    auto& specs = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(DivisorMethod::euclidean):
-            spec.set(mappedPos<DivisorMethod>(MACRO_STRINGIFY(euclidean)));
+            specs.set(mappedPos<DivisorMethod>(MACRO_STRINGIFY(euclidean)));
             break;
         case abbrLitHash(DivisorMethod::stein):
-            spec.set(mappedPos<DivisorMethod>(MACRO_STRINGIFY(stein)));
+            specs.set(mappedPos<DivisorMethod>(MACRO_STRINGIFY(stein)));
             break;
         default:
-            spec.reset();
+            specs.reset();
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
@@ -150,27 +150,27 @@ template <>
 void setChoice<IntegralMethod>(const std::string& choice)
 {
     constexpr auto category = Category::integral;
-    auto& spec = categoryOpts<category>();
+    auto& specs = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(IntegralMethod::trapezoidal):
-            spec.set(mappedPos<IntegralMethod>(MACRO_STRINGIFY(trapezoidal)));
+            specs.set(mappedPos<IntegralMethod>(MACRO_STRINGIFY(trapezoidal)));
             break;
         case abbrLitHash(IntegralMethod::simpson):
-            spec.set(mappedPos<IntegralMethod>(MACRO_STRINGIFY(simpson)));
+            specs.set(mappedPos<IntegralMethod>(MACRO_STRINGIFY(simpson)));
             break;
         case abbrLitHash(IntegralMethod::romberg):
-            spec.set(mappedPos<IntegralMethod>(MACRO_STRINGIFY(romberg)));
+            specs.set(mappedPos<IntegralMethod>(MACRO_STRINGIFY(romberg)));
             break;
         case abbrLitHash(IntegralMethod::gauss):
-            spec.set(mappedPos<IntegralMethod>(MACRO_STRINGIFY(gauss)));
+            specs.set(mappedPos<IntegralMethod>(MACRO_STRINGIFY(gauss)));
             break;
         case abbrLitHash(IntegralMethod::monteCarlo):
-            spec.set(mappedPos<IntegralMethod>(MACRO_STRINGIFY(monteCarlo)));
+            specs.set(mappedPos<IntegralMethod>(MACRO_STRINGIFY(monteCarlo)));
             break;
         default:
-            spec.reset();
+            specs.reset();
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
@@ -197,18 +197,18 @@ template <>
 void setChoice<PrimeMethod>(const std::string& choice)
 {
     constexpr auto category = Category::prime;
-    auto& spec = categoryOpts<category>();
+    auto& specs = categoryOpts<category>();
 
     switch (utility::common::bkdrHash(choice.c_str()))
     {
         case abbrLitHash(PrimeMethod::eratosthenes):
-            spec.set(mappedPos<PrimeMethod>(MACRO_STRINGIFY(eratosthenes)));
+            specs.set(mappedPos<PrimeMethod>(MACRO_STRINGIFY(eratosthenes)));
             break;
         case abbrLitHash(PrimeMethod::euler):
-            spec.set(mappedPos<PrimeMethod>(MACRO_STRINGIFY(euler)));
+            specs.set(mappedPos<PrimeMethod>(MACRO_STRINGIFY(euler)));
             break;
         default:
-            spec.reset();
+            specs.reset();
             throw std::runtime_error{"Unexpected " + std::string{toString(category)} + " choice: " + choice + '.'};
     }
 }
