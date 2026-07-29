@@ -59,6 +59,7 @@
 #include <string>
 #include <syncstream>
 #include <system_error>
+#include <unordered_set>
 #include <vector>
 
 #endif

@@ -17,6 +17,8 @@ namespace application // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Viewing-related functions in the application module.
 namespace view
 {
+//! @brief Prefix of the internal message.
+inline constexpr std::string_view messagePrefix = _PROJECT_NAME " > ";
 //! @brief Minimum port number.
 inline constexpr std::uint16_t minPortNumber = 1024;
 //! @brief Maximum port number.
@@ -61,7 +63,7 @@ class View final : public utility::fsm::FSM<View>
 public:
     friend class FSM<View>;
     //! @brief Destroy the View object.
-    ~View() = default;
+    ~View();
     //! @brief Construct a new View object.
     View(const View&) = delete;
     //! @brief Construct a new View object.
@@ -172,6 +174,10 @@ private:
         alignas(64) std::atomic_bool signal;
     };
 
+    //! @brief Validate the request message.
+    //! @param message - request message
+    //! @return request body
+    static std::string validateRequest(const std::string_view message);
     //! @brief Alias for the buffer.
     using Buffer = std::array<char, 1024>;
     //! @brief Build the response message.

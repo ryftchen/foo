@@ -693,7 +693,7 @@ try
         std::strncpy(hostName.data(), "HOSTNAME", hostName.size() - 1);
         hostName[HOST_NAME_MAX - 1] = '\0';
     }
-    const auto greeting = userName + '@' + hostName.data() + " " _PROJECT_NAME " > ";
+    const auto greeting = userName + '@' + hostName.data() + ' ' + view::messagePrefix.data();
     const auto session = std::make_unique<console::Console>(greeting);
     auto permClient = std::make_shared<utility::socket::TCPSocket>();
     view::intf::connectFromClient(permClient);

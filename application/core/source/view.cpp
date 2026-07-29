@@ -27,6 +27,7 @@
 #include <cassert>
 #include <iterator>
 #include <numeric>
+#include <unordered_set>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif
@@ -46,10 +47,57 @@ inline namespace
 {
 //! @brief The internal symbol for exiting.
 constexpr std::string_view exitSymbol = MACRO_STRINGIFY(stop);
+
+//! @brief Manager for recording id.
+struct IdRegistry
+{
+    //! @brief All used ids.
+    std::unordered_set<int> usedIds;
+    //! @brief Operation lock.
+    mutable std::mutex opLock;
+};
 } // namespace
 
 //! @brief Alias for the type-length-value scheme.
 namespace tlv = data::tlv;
+
+//! @brief The id tracker of the shared memory registry.
+//! @return id tracker
+static auto& shmTracker()
+{
+    static IdRegistry registry{};
+    return registry;
+}
+
+//! @brief Clean up the shared memory in use according to the tracker.
+static void cleanUpShmInUse()
+{
+    auto& tracker = shmTracker();
+    const std::lock_guard<std::mutex> idLock(tracker.opLock);
+    if (auto& usedIds = tracker.usedIds; !usedIds.empty())
+    {
+        std::ranges::for_each(usedIds, [](const auto shmId) { ::shmctl(shmId, IPC_RMID, nullptr); });
+        usedIds.clear();
+    }
+}
+
+//! @brief Insert the shm id into the tracker.
+//! @param shmId - shm id
+static void trackShmId(const int shmId)
+{
+    auto& tracker = shmTracker();
+    const std::lock_guard<std::mutex> idLock(tracker.opLock);
+    tracker.usedIds.insert(shmId);
+}
+
+//! @brief Remove the shm id from the tracker.
+//! @param shmId - shm id
+static void untrackShmId(const int shmId)
+{
+    auto& tracker = shmTracker();
+    const std::lock_guard<std::mutex> idLock(tracker.opLock);
+    tracker.usedIds.erase(shmId);
+}
 
 View::View() : FSM(State::initial)
 {
@@ -57,6 +105,11 @@ View::View() : FSM(State::initial)
     {
         throw std::logic_error{"The " + name + " is disabled."};
     }
+}
+
+View::~View()
+{
+    cleanUpShmInUse();
 }
 
 std::shared_ptr<View> View::getInstance()
@@ -106,6 +159,16 @@ retry:
     }
 }
 // NOLINTEND(cppcoreguidelines-avoid-goto)
+
+std::string View::validateRequest(const std::string_view message)
+{
+    const auto reqBuffer = utility::common::base64Decode(message);
+    if (!reqBuffer.starts_with(messagePrefix))
+    {
+        throw std::runtime_error("Unknown internal request message.");
+    }
+    return reqBuffer.substr(messagePrefix.size());
+}
 
 //! @brief Build the TLV packet of the response message to get library information.
 //! @param buffer - TLV packet buffer
@@ -366,16 +429,25 @@ int View::fillSharedMemory(const std::string_view contents)
     {
         throw std::runtime_error{"Failed to create shared memory (" + std::to_string(shmId) + ")."};
     }
-    void* const shm = ::shmat(shmId, nullptr, 0);
-    if (!shm)
+    void* const shmSeg = ::shmat(shmId, nullptr, 0);
+    if (!shmSeg)
     {
+        ::shmctl(shmId, IPC_RMID, nullptr);
         throw std::runtime_error{"Failed to attach shared memory (" + std::to_string(shmId) + ")."};
     }
 
-    auto* const shrMem = reinterpret_cast<ShrMemBlock*>(shm);
-    for (shrMem->signal.store(false);;)
+    auto* const memBlock = reinterpret_cast<ShrMemBlock*>(shmSeg);
+    memBlock->signal.store(false);
+    MACRO_DEFER(
+        [shmId, shmSeg, memBlock]()
+        {
+            memBlock->signal.store(true);
+            ::shmdt(shmSeg);
+            trackShmId(shmId);
+        });
+    for (;;)
     {
-        if (shrMem->signal.load())
+        if (memBlock->signal.load())
         {
             std::this_thread::yield();
             continue;
@@ -383,58 +455,59 @@ int View::fillSharedMemory(const std::string_view contents)
 
         std::vector<char> processed(contents.data(), contents.data() + contents.length());
         data::compressData(processed);
-        if (processed.size() > sizeof(shrMem->data))
+        if (processed.size() > sizeof(memBlock->data))
         {
-            shrMem->signal.store(true);
             break;
         }
         data::encryptMessage(processed.data(), processed.size());
-        std::memset(shrMem->data, 0, sizeof(shrMem->data));
-        std::memcpy(shrMem->data, processed.data(), processed.size() * sizeof(char));
-        shrMem->size = processed.size();
-
-        shrMem->signal.store(true);
+        std::memset(memBlock->data, 0, sizeof(memBlock->data));
+        std::memcpy(memBlock->data, processed.data(), processed.size() * sizeof(char));
+        memBlock->size = processed.size();
         break;
     }
-    ::shmdt(shm);
     return shmId;
 }
 
 void View::fetchSharedMemory(const int shmId, std::string& contents)
 {
-    void* const shm = ::shmat(shmId, nullptr, 0);
-    if (!shm)
+    void* const shmSeg = ::shmat(shmId, nullptr, 0);
+    if (!shmSeg)
     {
+        ::shmctl(shmId, IPC_RMID, nullptr);
         throw std::runtime_error{"Failed to attach shared memory (" + std::to_string(shmId) + ")."};
     }
 
-    auto* const shrMem = reinterpret_cast<ShrMemBlock*>(shm);
-    for (shrMem->signal.store(true);;)
+    auto* const memBlock = reinterpret_cast<ShrMemBlock*>(shmSeg);
+    memBlock->signal.store(true);
+    MACRO_DEFER(
+        [shmId, shmSeg, memBlock]()
+        {
+            memBlock->signal.store(false);
+            ::shmdt(shmSeg);
+            ::shmctl(shmId, IPC_RMID, nullptr);
+            untrackShmId(shmId);
+        });
+    for (;;)
     {
-        if (!shrMem->signal.load())
+        if (!memBlock->signal.load())
         {
             std::this_thread::yield();
             continue;
         }
 
-        if (shrMem->size > sizeof(shrMem->data))
+        if (memBlock->size > sizeof(memBlock->data))
         {
-            shrMem->signal.store(false);
             break;
         }
-        std::vector<char> processed(shrMem->size);
-        shrMem->size = 0;
-        std::memcpy(processed.data(), shrMem->data, processed.size() * sizeof(char));
-        std::memset(shrMem->data, 0, sizeof(shrMem->data));
+        std::vector<char> processed(memBlock->size);
+        memBlock->size = 0;
+        std::memcpy(processed.data(), memBlock->data, processed.size() * sizeof(char));
+        std::memset(memBlock->data, 0, sizeof(memBlock->data));
         data::decryptMessage(processed.data(), processed.size());
         data::decompressData(processed);
         contents = std::string{processed.data(), processed.data() + processed.size()};
-
-        shrMem->signal.store(false);
         break;
     }
-    ::shmdt(shm);
-    ::shmctl(shmId, IPC_RMID, nullptr);
 }
 // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
 
@@ -627,7 +700,7 @@ void View::renewServer<utility::socket::TCPServer>()
                     Buffer respBuffer{};
                     try
                     {
-                        const auto reqPlaintext = utility::common::base64Decode(message);
+                        const auto reqPlaintext = validateRequest(message);
                         currSock->send(
                             respBuffer.data(),
                             (reqPlaintext != exitSymbol) ? buildResponse(reqPlaintext, respBuffer)
@@ -660,7 +733,7 @@ void View::renewServer<utility::socket::UDPServer>()
             Buffer respBuffer{};
             try
             {
-                const auto reqPlaintext = utility::common::base64Decode(message);
+                const auto reqPlaintext = validateRequest(message);
                 currSock->sendTo(
                     respBuffer.data(),
                     (reqPlaintext != exitSymbol) ? buildResponse(reqPlaintext, respBuffer)
@@ -704,11 +777,13 @@ void View::onConnecting<utility::socket::UDPSocket>(std::shared_ptr<utility::soc
 template <typename Sock>
 void View::onForwarding(std::shared_ptr<Sock>& client, const std::vector<std::string>& inputs)
 {
-    auto reqBuffer = utility::common::base64Encode(std::accumulate(
-        inputs.cbegin(),
-        inputs.cend(),
-        std::string{},
-        [](const auto& acc, const auto& token) { return acc.empty() ? token : (acc + ' ' + token); }));
+    auto reqBuffer = utility::common::base64Encode(
+        messagePrefix.data()
+        + std::accumulate(
+            inputs.cbegin(),
+            inputs.cend(),
+            std::string{},
+            [](const auto& acc, const auto& token) { return acc.empty() ? token : (acc + ' ' + token); }));
     client->send(std::move(reqBuffer));
     waitTaskDone();
 }
@@ -837,6 +912,9 @@ bool View::isInServingState(const State state) const
 
 void View::createViewServer()
 {
+    shmTracker();
+    cleanUpShmInUse();
+
     renewServer<utility::socket::TCPServer>();
     renewServer<utility::socket::UDPServer>();
 }
@@ -1023,7 +1101,7 @@ OptionMap obtainSupportedOptions()
 //! @return disconnect request message
 std::string buildDisconnectRequest()
 {
-    return utility::common::base64Encode(exitSymbol);
+    return utility::common::base64Encode(utility::common::concatString<messagePrefix, exitSymbol>);
 }
 
 //! @brief Latency in the millisecond range.
