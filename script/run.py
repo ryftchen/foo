@@ -32,11 +32,18 @@ STDOUT = sys.stdout
 
 
 class Task:
-    _app_bin_cmd = "foo"
+    _proj_name = "foo"
+    _app_bin_cmd = _proj_name
     _app_bin_path = "./build/bin"
-    _tst_bin_cmd = "foo_test"
+    _tst_bin_cmd = f"{_proj_name}_test"
     _tst_bin_path = "./test/build/bin"
-    _lib_list = ["libfoo_util.so", "libfoo_algo.so", "libfoo_dp.so", "libfoo_ds.so", "libfoo_num.so"]
+    _lib_list = [
+        f"lib{_proj_name}_util.so",
+        f"lib{_proj_name}_algo.so",
+        f"lib{_proj_name}_dp.so",
+        f"lib{_proj_name}_ds.so",
+        f"lib{_proj_name}_num.so",
+    ]
     _lib_path = "./build/lib"
     _script_path = "./script"
     _build_script = f"{_script_path}/build.sh"
@@ -98,8 +105,8 @@ class Task:
     _check_target = {"cov": False, "mem": False}
     _analyze_only = False
     _report_path = "./report"
-    _run_log_file = f"{_report_path}/foo_{os.path.splitext(os.path.basename(__file__))[0]}.log"
-    _run_report_file = f"{_report_path}/foo_{os.path.splitext(os.path.basename(__file__))[0]}.report"
+    _run_log_file = f"{_report_path}/{_proj_name}_{os.path.splitext(os.path.basename(__file__))[0]}.log"
+    _run_report_file = f"{_report_path}/{_proj_name}_{os.path.splitext(os.path.basename(__file__))[0]}.report"
     _dca_chk_cov_path = f"{_report_path}/_dca/chk_cov"
     _dca_chk_mem_path = f"{_report_path}/_dca/chk_mem"
     _ansi_sgr = {
@@ -140,16 +147,16 @@ class Task:
         env = os.getenv("FOO_ENV")
         if env is None:
             exit_with_error("Please export the environment variable FOO_ENV.")
-        if env != "foo_dev":
-            exit_with_error("The environment variable FOO_ENV must be foo_dev.")
+        if env != f"{self._proj_name}_dev":
+            exit_with_error(f"The environment variable FOO_ENV must be {self._proj_name}_dev.")
         self_path = os.path.split(os.path.realpath(__file__))[0]
-        if not fnmatch.fnmatch(self_path, "*/foo/script"):
+        if not fnmatch.fnmatch(self_path, f"*/{self._proj_name}/script"):
             exit_with_error("Illegal path to current script.")
         os.chdir(os.path.dirname(self_path))
         sys.path.append("./")
         if not os.path.exists(self._report_path):
             os.mkdir(self._report_path)
-        proc_path = os.path.expanduser("~/.foo")
+        proc_path = os.path.expanduser(f"~/.{self._proj_name}")
         if os.path.exists(proc_path):
             execute_command(f"rm -rf {proc_path}")
 
@@ -417,10 +424,10 @@ No executable file for {"smoke" if self._is_smoke_test else "unit"} test. Please
         )
         if self._check_target["mem"]:
             full_cmd = f"valgrind --tool=memcheck --xml=yes \
---xml-file={self._dca_chk_mem_path}/foo_chk_mem_{str(self._complete_steps + 1)}.xml {full_cmd}"
+--xml-file={self._dca_chk_mem_path}/{self._proj_name}_chk_mem_{str(self._complete_steps + 1)}.xml {full_cmd}"
         if self._check_target["cov"]:
             full_cmd = f"LLVM_PROFILE_FILE=\
-\"{self._dca_chk_cov_path}/foo_chk_cov_{str(self._complete_steps + 1)}.profraw\" {full_cmd}"
+\"{self._dca_chk_cov_path}/{self._proj_name}_chk_cov_{str(self._complete_steps + 1)}.profraw\" {full_cmd}"
         if stdin:
             command += " > " + stdin.replace("\nquit", "")
         align_len = max(
@@ -491,32 +498,32 @@ No executable file for {"smoke" if self._is_smoke_test else "unit"} test. Please
             )
 
     def _check_coverage_handling(self):
+        prof_prefix = f"{self._dca_chk_cov_path}/{self._proj_name}_chk_cov"
         execute_command(
-            f"llvm-profdata-{self._llvm_ver} merge -sparse {self._dca_chk_cov_path}/foo_chk_cov_*.profraw \
--o {self._dca_chk_cov_path}/foo_chk_cov.profdata"
+            f"llvm-profdata-{self._llvm_ver} merge -sparse {prof_prefix}_*.profraw -o {prof_prefix}.profdata"
         )
         if self._is_smoke_test:
             execute_command(
-                f"llvm-cov-{self._llvm_ver} show -instr-profile {self._dca_chk_cov_path}/foo_chk_cov.profdata \
--show-branches=percent -show-expansions -show-regions -show-line-counts-or-regions -format html \
--output-dir {self._dca_chk_cov_path} -Xdemangler c++filt -object {self._app_bin_path}/{self._app_bin_cmd} \
+                f"llvm-cov-{self._llvm_ver} show -instr-profile {prof_prefix}.profdata -show-branches=percent \
+-show-expansions -show-regions -show-line-counts-or-regions -format html -output-dir {self._dca_chk_cov_path} \
+-Xdemangler c++filt -object {self._app_bin_path}/{self._app_bin_cmd} \
 {' '.join([f'-object {self._lib_path}/{lib}' for lib in self._lib_list])}"
             )
         else:
             execute_command(
-                f"llvm-cov-{self._llvm_ver} show -instr-profile {self._dca_chk_cov_path}/foo_chk_cov.profdata \
--show-branches percent -show-expansions -show-regions -show-line-counts-or-regions -format html \
--output-dir {self._dca_chk_cov_path} -Xdemangler c++filt -object {self._tst_bin_path}/{self._tst_bin_cmd}"
+                f"llvm-cov-{self._llvm_ver} show -instr-profile {prof_prefix}.profdata -show-branches=percent \
+-show-expansions -show-regions -show-line-counts-or-regions -format html -output-dir {self._dca_chk_cov_path} \
+-Xdemangler c++filt -object {self._tst_bin_path}/{self._tst_bin_cmd}"
             )
         stdout, _, _ = (
             execute_command(
-                f"llvm-cov-{self._llvm_ver} report -instr-profile {self._dca_chk_cov_path}/foo_chk_cov.profdata \
+                f"llvm-cov-{self._llvm_ver} report -instr-profile {prof_prefix}.profdata \
 -object {self._app_bin_path}/{self._app_bin_cmd} \
 {' '.join([f'-object {self._lib_path}/{lib}' for lib in self._lib_list])}"
             )
             if self._is_smoke_test
             else execute_command(
-                f"llvm-cov-{self._llvm_ver} report -instr-profile {self._dca_chk_cov_path}/foo_chk_cov.profdata \
+                f"llvm-cov-{self._llvm_ver} report -instr-profile {prof_prefix}.profdata \
 -object {self._tst_bin_path}/{self._tst_bin_cmd}"
             )
         )
@@ -593,40 +600,35 @@ No executable file for {"smoke" if self._is_smoke_test else "unit"} test. Please
             fcntl.flock(index_content.fileno(), fcntl.LOCK_UN)
 
     def _convert_valgrind_output(self, command: str) -> str:
-        xml_filename = f"{self._dca_chk_mem_path}/foo_chk_mem_{str(self._complete_steps + 1)}"
-        with open(f"{xml_filename}.xml", "rt", encoding="utf-8") as mem_xml:
+        xml_prefix = f"{self._dca_chk_mem_path}/{self._proj_name}_chk_mem_{str(self._complete_steps + 1)}"
+        with open(f"{xml_prefix}.xml", "rt", encoding="utf-8") as mem_xml:
             inst_num = mem_xml.read().count("</valgrindoutput>")
         stdout = ""
         stderr = ""
         if inst_num == 1:
-            stdout, stderr, _ = execute_command(f"valgrind-ci {xml_filename}.xml --summary")
+            stdout, stderr, _ = execute_command(f"valgrind-ci {xml_prefix}.xml --summary")
         elif inst_num == 2:
             execute_command(
-                f"cp {xml_filename}.xml {xml_filename}_inst_1.xml && mv {xml_filename}.xml {xml_filename}_inst_2.xml"
+                f"cp {xml_prefix}.xml {xml_prefix}_inst_1.xml && mv {xml_prefix}.xml {xml_prefix}_inst_2.xml"
             )
             execute_command(
-                f"a=$(sed -n '/<\\/status>/!d;=;Q' {xml_filename}_inst_1.xml); \
-b=$(sed -n '/<\\/valgrindoutput>/!d;=;Q' {xml_filename}_inst_1.xml); \
-sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
+                f"a=$(sed -n '/<\\/status>/!d;=;Q' {xml_prefix}_inst_1.xml); \
+b=$(sed -n '/<\\/valgrindoutput>/!d;=;Q' {xml_prefix}_inst_1.xml); sed -i $(($a + 1)),$(($b))d {xml_prefix}_inst_1.xml"
             )
-            execute_command(f"sed -i '/<\\/valgrindoutput>/q' {xml_filename}_inst_2.xml")
+            execute_command(f"sed -i '/<\\/valgrindoutput>/q' {xml_prefix}_inst_2.xml")
             stdout, stderr, _ = execute_command(
-                f"valgrind-ci {xml_filename}_inst_1.xml --summary && valgrind-ci {xml_filename}_inst_2.xml --summary"
+                f"valgrind-ci {xml_prefix}_inst_1.xml --summary && valgrind-ci {xml_prefix}_inst_2.xml --summary"
             )
 
         if "errors" in stdout:
             case_path = f"{self._dca_chk_mem_path}/memory/case_{str(self._complete_steps + 1)}"
             if inst_num == 1:
-                execute_command(f"valgrind-ci {xml_filename}.xml --source-dir ./ --output-dir {case_path}")
+                execute_command(f"valgrind-ci {xml_prefix}.xml --source-dir ./ --output-dir {case_path}")
                 pathlib.Path(f"{case_path}/case_name").write_text(command, "utf-8")
             elif inst_num == 2:
-                execute_command(
-                    f"valgrind-ci {xml_filename}_inst_1.xml --source-dir ./ --output-dir {case_path}_inst_1"
-                )
+                execute_command(f"valgrind-ci {xml_prefix}_inst_1.xml --source-dir ./ --output-dir {case_path}_inst_1")
                 pathlib.Path(f"{case_path}_inst_1/case_name").write_text(command, "utf-8")
-                execute_command(
-                    f"valgrind-ci {xml_filename}_inst_2.xml --source-dir ./ --output-dir {case_path}_inst_2"
-                )
+                execute_command(f"valgrind-ci {xml_prefix}_inst_2.xml --source-dir ./ --output-dir {case_path}_inst_2")
                 pathlib.Path(f"{case_path}_inst_2/case_name").write_text(command, "utf-8")
             return f"""{self._extended_trait["chk_mem"]}\n{stdout.expandtabs()}"""
         if inst_num not in (1, 2) or stderr:
@@ -659,13 +661,13 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
                 fcntl.flock(run_log.fileno(), fcntl.LOCK_UN)
             self._is_smoke_test = f"# CASE: {self._tst_bin_cmd}" not in "".join(first_lines)
 
-        dur_time, fail_res, mem_leak, cov_per = self._scan_run_log()
+        dur_time, fail_rst, mem_leak, cov_per = self._scan_run_log()
         with open(self._run_report_file, "wt", encoding="utf-8") as run_report:
             fcntl.flock(run_report.fileno(), fcntl.LOCK_EX)
             run_stat = {
-                "Summary": "Stable" if not fail_res else "Unstable",
-                "Passed": str(self._total_steps - len(fail_res)),
-                "Failed": str(len(fail_res)),
+                "Summary": "Stable" if not fail_rst else "Unstable",
+                "Passed": str(self._total_steps - len(fail_rst)),
+                "Failed": str(len(fail_rst)),
                 "Duration": (f"{self._duration} s" if not self._analyze_only else f"est. {dur_time} s"),
             }
             run_stat_rep = (
@@ -675,9 +677,9 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
                 )
                 + "\n"
             )
-            fail_res_rep = (
-                ("\nREPORT FOR FAILURE RESULT:\n" + self._format_as_table(fail_res, "CASE", "FAILURE RESULT") + "\n")
-                if fail_res
+            fail_rst_rep = (
+                ("\nREPORT FOR FAILURE RESULT:\n" + self._format_as_table(fail_rst, "CASE", "FAILURE RESULT") + "\n")
+                if fail_rst
                 else ""
             )
             cov_per_rep = (
@@ -694,13 +696,13 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
                 if mem_leak
                 else ""
             )
-            summary = run_stat_rep + fail_res_rep + cov_per_rep + mem_err_rep
+            summary = run_stat_rep + fail_rst_rep + cov_per_rep + mem_err_rep
             run_report.write(summary)
             if self._analyze_only:
                 print(summary)
             fcntl.flock(run_report.fileno(), fcntl.LOCK_UN)
 
-        if fail_res:
+        if fail_rst:
             sys.exit(1)
 
     def _scan_run_log(self) -> tuple[float, dict[str, str], dict[str, str], dict[str, str]]:
@@ -711,7 +713,7 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
         case_lines = []
         is_in_case = False
         tail_lines = collections.deque(maxlen=200)
-        fail_res = {}
+        fail_rst = {}
         mem_leak = {}
         for chunk in self._iterator_log_chunks():
             for line in chunk:
@@ -736,7 +738,7 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
                     if result:
                         case_task, fail_text, mem_text = result
                         if fail_text:
-                            fail_res[case_task] = fail_text
+                            fail_rst[case_task] = fail_text
                         if mem_text:
                             mem_leak[case_task] = mem_text
                     case_lines = []
@@ -766,7 +768,7 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
             if begin_date_match and end_date_match
             else 0.0
         )
-        return dur_time, fail_res, mem_leak, cov_per
+        return dur_time, fail_rst, mem_leak, cov_per
 
     def _iterator_log_chunks(self, chunk_size: int = 5000) -> typing.Iterator[list[str]]:
         with open(self._run_log_file, "rt", encoding="utf-8") as run_log:
@@ -809,10 +811,10 @@ sed -i $(($a + 1)),$(($b))d {xml_filename}_inst_1.xml"
                     ut_run_indices.append(ut_run_index)
                     ut_fail_indices.append(index)
                     ut_case = ""
-            ut_fail_res = ""
+            ut_fail_rst = ""
             for ut_run_index, ut_fail_index in zip(ut_run_indices, ut_fail_indices):
-                ut_fail_res += "".join(case_lines[ut_run_index : ut_fail_index + 1])
-            return case_task, ut_fail_res, ""
+                ut_fail_rst += "".join(case_lines[ut_run_index : ut_fail_index + 1])
+            return case_task, ut_fail_rst, ""
 
         last_index = finish_index - 1
         ansi = re.compile(self._ansi_esc_regex)

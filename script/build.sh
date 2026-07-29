@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-declare -rA FOLDER=([proj]="foo" [app]="application" [util]="utility" [algo]="algorithm" [ds]="data_structure"
+declare -r PROJ_NAME="foo"
+declare -rA FOLDER=([proj]=${PROJ_NAME} [app]="application" [util]="utility" [algo]="algorithm" [ds]="data_structure"
     [dp]="design_pattern" [num]="numeric" [tst]="test" [scr]="script" [doc]="document" [dock]="docker" [bld]="build"
     [rep]="report" [cac]=".cache")
 declare -rA ANSI_STYLE=([exec]="\033[0;33m\033[1m\033[49m" [succ]="\033[0;32m\033[1m\033[49m"
@@ -93,8 +94,8 @@ function prepare_environment()
     if [[ ! -v FOO_ENV ]]; then
         die "Please export the environment variable FOO_ENV."
     fi
-    if [[ ${FOO_ENV} != "foo_dev" ]]; then
-        die "The environment variable FOO_ENV must be foo_dev."
+    if [[ ${FOO_ENV} != "${PROJ_NAME}_dev" ]]; then
+        die "The environment variable FOO_ENV must be ${PROJ_NAME}_dev."
     fi
 
     local script_path
@@ -581,21 +582,21 @@ function perform_setup_option()
         return
     fi
 
-    local export_cmd="export FOO_ENV=${FOLDER[proj]}_dev"
+    local export_cmd="export FOO_ENV=${PROJ_NAME}_dev"
     if ! grep -Fxq "${export_cmd}" ~/"${BASH_RC}" 2>/dev/null; then
         shell_command "echo '${export_cmd}' >>~/${BASH_RC}"
     fi
 
     local validate_proj="git rev-parse --is-inside-work-tree >/dev/null 2>&1 \
-&& [[ \\\"\\\$(basename \\\"\\\$(git rev-parse --show-toplevel)\\\")\\\" == \\\"${FOLDER[proj]}\\\" ]] \
+&& [[ \\\"\\\$(basename \\\"\\\$(git rev-parse --show-toplevel)\\\")\\\" == \\\"${PROJ_NAME}\\\" ]] \
 && source ~/${BASH_RC}"
     local alias_cmd
-    if ! grep -Fwq "alias ${FOLDER[proj]:0:1}build" ~/"${BASH_RC}" 2>/dev/null; then
-        alias_cmd="alias ${FOLDER[proj]:0:1}build='${validate_proj} && ./${FOLDER[scr]}/build.sh'"
+    if ! grep -Fwq "alias ${PROJ_NAME:0:1}build" ~/"${BASH_RC}" 2>/dev/null; then
+        alias_cmd="alias ${PROJ_NAME:0:1}build='${validate_proj} && ./${FOLDER[scr]}/build.sh'"
         shell_command "echo \"${alias_cmd}\" >>~/${BASH_RC}"
     fi
-    if ! grep -Fwq "alias ${FOLDER[proj]:0:1}run" ~/"${BASH_RC}" 2>/dev/null; then
-        alias_cmd="alias ${FOLDER[proj]:0:1}run='${validate_proj} && ./${FOLDER[scr]}/run.py'"
+    if ! grep -Fwq "alias ${PROJ_NAME:0:1}run" ~/"${BASH_RC}" 2>/dev/null; then
+        alias_cmd="alias ${PROJ_NAME:0:1}run='${validate_proj} && ./${FOLDER[scr]}/run.py'"
         shell_command "echo \"${alias_cmd}\" >>~/${BASH_RC}"
     fi
 
@@ -643,8 +644,8 @@ function perform_cleanup_option()
     fi
 
     if [[ -f ~/${BASH_RC} ]]; then
-        shell_command "sed -i '/export FOO_ENV=${FOLDER[proj]}_dev/d' ~/${BASH_RC}"
-        shell_command "sed -i '/alias ${FOLDER[proj]:0:1}\(build\|run\)/d' ~/${BASH_RC}"
+        shell_command "sed -i '/export FOO_ENV=${PROJ_NAME}_dev/d' ~/${BASH_RC}"
+        shell_command "sed -i '/alias ${PROJ_NAME:0:1}\(build\|run\)/d' ~/${BASH_RC}"
     fi
 
     shell_command "git config --local --unset commit.template || true"
@@ -665,12 +666,12 @@ function perform_install_option()
     if ! command -v cmake >/dev/null 2>&1; then
         die "No cmake program. Please install it."
     fi
-    if [[ ! -x ./${FOLDER[bld]}/bin/${FOLDER[proj]} ]]; then
-        die "There is no ${FOLDER[proj]} binary file in the ${FOLDER[bld]} folder. Please finish compiling first."
+    if [[ ! -x ./${FOLDER[bld]}/bin/${PROJ_NAME} ]]; then
+        die "There is no ${PROJ_NAME} binary file in the ${FOLDER[bld]} folder. Please finish compiling first."
     fi
 
     shell_command "${SUDO_PREFIX}cmake --install ./${FOLDER[bld]}"
-    local install_path="/opt/${FOLDER[proj]}"
+    local install_path="/opt/${PROJ_NAME}"
     if [[ -d ${install_path} ]]; then
         local bin_path="${install_path}/bin"
         local export_cmd="export PATH=${bin_path}:\$PATH"
@@ -689,7 +690,7 @@ function perform_install_option()
 
         local man_path="${install_path}/man"
         shell_command "${SUDO_PREFIX}mkdir -p ${man_path}/man1 \
-&& ${SUDO_PREFIX}cp ./${FOLDER[doc]}/install/man.1 ${man_path}/man1/${FOLDER[proj]}.1"
+&& ${SUDO_PREFIX}cp ./${FOLDER[doc]}/install/man.1 ${man_path}/man1/${PROJ_NAME}.1"
         export_cmd="MANDATORY_MANPATH ${man_path}"
         if ! grep -Fxq "${export_cmd}" ~/.manpath 2>/dev/null; then
             shell_command "echo '${export_cmd}' >>~/.manpath"
@@ -712,17 +713,17 @@ function perform_uninstall_option()
     fi
 
     local completion_bash="bash_completion"
-    shell_command "rm -rf ~/.${FOLDER[proj]}"
+    shell_command "rm -rf ~/.${PROJ_NAME}"
     shell_command "cat ./${FOLDER[bld]}/${manifest_txt} | xargs ${SUDO_PREFIX}rm -rf \
-&& ${SUDO_PREFIX}rm -rf /opt/${FOLDER[proj]}/${completion_bash} /opt/${FOLDER[proj]}/man"
+&& ${SUDO_PREFIX}rm -rf /opt/${PROJ_NAME}/${completion_bash} /opt/${PROJ_NAME}/man"
     shell_command \
         "cat ./${FOLDER[bld]}/${manifest_txt} | xargs -L1 dirname | xargs ${SUDO_PREFIX}rmdir -p 2>/dev/null || true"
     if [[ -f ~/${BASH_RC} ]]; then
-        shell_command "sed -i '/export PATH=\/opt\/${FOLDER[proj]}\/bin:\$PATH/d' ~/${BASH_RC}"
-        shell_command "sed -i '/source \/opt\/${FOLDER[proj]}\/${completion_bash}/d' ~/${BASH_RC}"
+        shell_command "sed -i '/export PATH=\/opt\/${PROJ_NAME}\/bin:\$PATH/d' ~/${BASH_RC}"
+        shell_command "sed -i '/source \/opt\/${PROJ_NAME}\/${completion_bash}/d' ~/${BASH_RC}"
     fi
     if [[ -f ~/.manpath ]]; then
-        shell_command "sed -i '/MANDATORY_MANPATH \/opt\/${FOLDER[proj]}\/man/d' ~/.manpath"
+        shell_command "sed -i '/MANDATORY_MANPATH \/opt\/${PROJ_NAME}\/man/d' ~/.manpath"
     fi
 
     echo "Manually type \"exec bash\" to uninstall for effect."
@@ -752,7 +753,7 @@ function perform_container_option()
     fi
 
     if ! docker ps -a --format "{{lower .Image}} {{lower .Names}}" \
-        | grep -q "ryftchen/${FOLDER[proj]}:latest ${FOLDER[proj]}_dev" 2>/dev/null; then
+        | grep -q "ryftchen/${PROJ_NAME}:latest ${PROJ_NAME}_dev" 2>/dev/null; then
         export COMPOSE_BAKE=false
         shell_command "docker compose -f ./${FOLDER[dock]}/docker-compose.yaml up -d --force-recreate"
     else
@@ -815,7 +816,7 @@ EOF
         shell_command "sed -i 's|<li>unamed item</li>|${item_row_single_line}|g' ./${FOLDER[rep]}/${index_html}"
     fi
 
-    local server_bin="${FOLDER[proj]}_arc"
+    local server_bin="${PROJ_NAME}_arc"
     local service_config
     service_config="./${FOLDER[scr]}/.$(basename "${0}" .sh)_service"
     if [[ ! -f ${service_config} ]]; then
@@ -1217,7 +1218,7 @@ function build_project_interface_artifact()
     local commit_id=${1}
 
     local doxygen_folder="_doxygen"
-    shell_command "rm -rf ./${FOLDER[doc]}/_artifact/${FOLDER[proj]}${doxygen_folder}_*.tar.bz2 \
+    shell_command "rm -rf ./${FOLDER[doc]}/_artifact/${PROJ_NAME}${doxygen_folder}_*.tar.bz2 \
 ./${FOLDER[doc]}/${doxygen_folder} && mkdir ./${FOLDER[doc]}/${doxygen_folder}"
 
     local check_comment="grep -nE '\/\/! @((brief (([a-z].+)|(.+[^.])))|((param|tparam) (.+[.]))|(return (.+[.])))$' \
@@ -1228,7 +1229,7 @@ function build_project_interface_artifact()
     fi
     shell_command \
         "(cat ./${FOLDER[doc]}/customize/Doxyfile; echo 'PROJECT_NUMBER=\"$(${GIT_COMMIT_CMD})\"') | doxygen -"
-    local doxygen_tar="${FOLDER[proj]}${doxygen_folder}_${commit_id}.tar.bz2"
+    local doxygen_tar="${PROJ_NAME}${doxygen_folder}_${commit_id}.tar.bz2"
     shell_command "tar -jcvf ./${FOLDER[doc]}/_artifact/${doxygen_tar} -C ./${FOLDER[doc]} ${doxygen_folder} >/dev/null"
 }
 
@@ -1247,7 +1248,7 @@ function perform_doxygen_option()
         commit_id="local"
     fi
     if [[ -d ./${FOLDER[doc]}/_artifact ]]; then
-        local last_tar="${FOLDER[proj]}_doxygen_${commit_id}.tar.bz2"
+        local last_tar="${PROJ_NAME}_doxygen_${commit_id}.tar.bz2"
         if [[ -f ./${FOLDER[doc]}/_artifact/${last_tar} ]]; then
             local time_interval=$(($(date +%s) - $(stat -L -c %Y "./${FOLDER[doc]}/_artifact/${last_tar}")))
             if [[ ${time_interval} -lt 60 ]]; then
@@ -1275,19 +1276,19 @@ FOO_BLD_UNITY is turned on."
         die "There is no ${COMPILE_DB} file in the ${FOLDER[bld]} folder. Please generate it."
     fi
     local browser_folder="_browser"
-    shell_command "rm -rf ./${FOLDER[doc]}/_artifact/${FOLDER[proj]}${browser_folder}_*.tar.bz2 \
-./${FOLDER[doc]}/${browser_folder}"
+    shell_command \
+        "rm -rf ./${FOLDER[doc]}/_artifact/${PROJ_NAME}${browser_folder}_*.tar.bz2 ./${FOLDER[doc]}/${browser_folder}"
 
-    local browser_path="./${FOLDER[doc]}/${browser_folder}/${FOLDER[proj]}"
+    local browser_path="./${FOLDER[doc]}/${browser_folder}/${PROJ_NAME}"
     shell_command "mkdir -p ${browser_path} && cp -rf /usr/local/share/woboq/data ${browser_path}/"
     shell_command "sed -i \"s|cwo_url + \\\"/data|data_path + \\\"|g\" ${browser_path}/data/codebrowser.js"
     shell_command "codebrowser_generator -color -a -b ./${FOLDER[bld]}/${COMPILE_DB} -o ${browser_path} \
--p ${FOLDER[proj]}:.:${commit_id} -d ./data"
+-p ${PROJ_NAME}:.:${commit_id} -d ./data"
     shell_command "codebrowser_generator -color -a -b ./${FOLDER[tst]}/${FOLDER[bld]}/${COMPILE_DB} -o ${browser_path} \
--p ${FOLDER[proj]}:.:${commit_id} -d ./data"
+-p ${PROJ_NAME}:.:${commit_id} -d ./data"
     shell_command "codebrowser_indexgenerator ${browser_path} -d ./data"
 
-    shell_command "find \"${browser_path}/index.html\" \"${browser_path}/${FOLDER[proj]}\" \"${browser_path}/include\" \
+    shell_command "find \"${browser_path}/index.html\" \"${browser_path}/${PROJ_NAME}\" \"${browser_path}/include\" \
 -name \"*.html\" -exec bash -c 'for file\
 ; do path=\$(grep -o \"var root_path = '\\''[^'\\'']*'\\''\" \"\${file}\" | sed \"s/.*'\\''\\(.*\\)'\\''/\\1/\")\
 ; [[ -n \"\${path}\" ]] && [[ \"\${path%/}\" == \"\${path}\" ]] && path=\"\${path}/\"\
@@ -1298,7 +1299,7 @@ type=\\\"image/x-icon\\\"/>\" \"\${file}\"\
 ; done' bash {} +"
     shell_command "mv ${browser_path} ${browser_path}_temp \
 && mv ${browser_path}_temp/* ./${FOLDER[doc]}/${browser_folder}/ && rm -rf ${browser_path}_temp"
-    local browser_tar="${FOLDER[proj]}${browser_folder}_${commit_id}.tar.bz2"
+    local browser_tar="${PROJ_NAME}${browser_folder}_${commit_id}.tar.bz2"
     shell_command "tar -jcvf ./${FOLDER[doc]}/_artifact/${browser_tar} -C ./${FOLDER[doc]} ${browser_folder} >/dev/null"
 }
 
@@ -1318,7 +1319,7 @@ function perform_browser_option()
         commit_id="local"
     fi
     if [[ -d ./${FOLDER[doc]}/_artifact ]]; then
-        local last_tar="${FOLDER[proj]}_browser_${commit_id}.tar.bz2"
+        local last_tar="${PROJ_NAME}_browser_${commit_id}.tar.bz2"
         if [[ -f ./${FOLDER[doc]}/_artifact/${last_tar} ]]; then
             local time_interval=$(($(date +%s) - $(stat -L -c %Y "./${FOLDER[doc]}/_artifact/${last_tar}")))
             if [[ ${time_interval} -lt 60 ]]; then

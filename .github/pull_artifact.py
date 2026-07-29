@@ -18,11 +18,13 @@ try:
 except ImportError as err:
     raise ImportError(err) from err
 
+PROJ_NAME = "foo"
+
 
 class Schedule:  # pylint: disable=too-few-public-methods
-    _repo_url = "https://github.com/ryftchen/foo.git"
-    _api_url = "https://api.github.com/repos/ryftchen/foo/actions/artifacts?per_page=5"
-    _artifact_name = "foo_artifact"
+    _repo_url = f"https://github.com/ryftchen/{PROJ_NAME}.git"
+    _api_url = f"https://api.github.com/repos/ryftchen/{PROJ_NAME}/actions/artifacts?per_page=5"
+    _artifact_name = f"{PROJ_NAME}_artifact"
     _doxygen_folder = "_doxygen"
     _browser_folder = "_browser"
     _netrc_file = "~/.netrc"
@@ -37,10 +39,10 @@ class Schedule:  # pylint: disable=too-few-public-methods
         env = os.getenv("FOO_ENV")
         if env is None:
             self._abort("Please export the environment variable FOO_ENV.")
-        elif env != "foo_doc":
-            self._abort("The environment variable FOO_ENV must be foo_doc.")
+        elif env != f"{PROJ_NAME}_doc":
+            self._abort(f"The environment variable FOO_ENV must be {PROJ_NAME}_doc.")
         self_path = os.path.split(os.path.realpath(__file__))[0]
-        if not fnmatch.fnmatch(self_path, "*/foo/.github"):
+        if not fnmatch.fnmatch(self_path, f"*/{PROJ_NAME}/.github"):
             self._abort("Ensure the current script is located within the project path.")
         self._project_path = os.path.dirname(self_path)
 
@@ -126,7 +128,7 @@ class Schedule:  # pylint: disable=too-few-public-methods
             netrc_info = netrc.netrc(os.path.expanduser(self._netrc_file))
             _, _, access_token = netrc_info.authenticators(urllib.parse.urlparse(self._api_url).hostname)
             if access_token:
-                headers = {"Authorization": f"token {access_token}", "User-Agent": "ryftchen/foo"}
+                headers = {"Authorization": f"token {access_token}", "User-Agent": f"ryftchen/{PROJ_NAME}"}
 
             download_url = ""
             request = urllib.request.Request(self._api_url, headers=headers)
@@ -163,8 +165,8 @@ class Schedule:  # pylint: disable=too-few-public-methods
         command_list = [
             f"rm -rf {self._storage_dir}/{{{self._doxygen_folder},{self._browser_folder}}}",
             f"unzip {self._storage_dir}/{self._artifact_name}.zip -d {self._storage_dir}",
-            f"tar -jxvf {self._storage_dir}/foo{self._doxygen_folder}_*.tar.bz2 -C {self._storage_dir} >/dev/null",
-            f"tar -jxvf {self._storage_dir}/foo{self._browser_folder}_*.tar.bz2 -C {self._storage_dir} >/dev/null",
+            f"tar -jxvf {self._storage_dir}/{PROJ_NAME}{self._doxygen_folder}_*.tar.bz2 -C {self._storage_dir}",
+            f"tar -jxvf {self._storage_dir}/{PROJ_NAME}{self._browser_folder}_*.tar.bz2 -C {self._storage_dir}",
             f"rm -rf {self._storage_dir}/*.tar.bz2",
         ]
         for entry in command_list:
@@ -229,7 +231,7 @@ def create_logger(log_level: int, log_file: str) -> logging.Logger:
 
 
 if __name__ == "__main__":
-    LOGGER = create_logger(logging.INFO, f"/tmp/foo_{os.path.splitext(os.path.basename(__file__))[0]}.log")
+    LOGGER = create_logger(logging.INFO, f"/tmp/{PROJ_NAME}_{os.path.splitext(os.path.basename(__file__))[0]}.log")
     try:
         Schedule(LOGGER).pull_artifact()
     except Exception:  # pylint: disable=broad-except
