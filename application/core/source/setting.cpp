@@ -434,7 +434,7 @@ namespace activity
 {
 //! @brief Get the memory pool for task when making multi-threading.
 //! @return reference of the Pooling object
-Pooling& resourcePool()
+Pooling& cyclePool()
 {
     static Pooling pooling{};
     return pooling;

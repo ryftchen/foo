@@ -193,7 +193,7 @@ namespace activity
 {
 //! @brief Alias for the memory pool for task when making multi-threading.
 using Pooling = utility::memory::Memory<utility::thread::Thread>;
-extern Pooling& resourcePool();
+extern Pooling& cyclePool();
 //! @brief Preset full name for the task.
 //! @param cli - sub-cli name
 //! @param cat - category name
