@@ -156,8 +156,8 @@ void applyingMatch(const std::vector<std::string>& candidates)
     const std::string_view title = algorithm::match::description();
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = setting::activity::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(specs.count());
+    auto& pooling = setting::activity::cyclePool();
+    auto* const allocatedJob = pooling.acquire(specs.count());
     using match::InputBuilder, match::input::patternString;
     static_assert(InputBuilder::maxDigit > patternString.length());
     const auto inputData = std::make_shared<InputBuilder>(patternString);
@@ -174,7 +174,7 @@ void applyingMatch(const std::vector<std::string>& candidates)
             inputData->getTextLength(),
             inputData->getPatternLength());
     };
-    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
+    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.release(allocatedJob); }));
 
     for (const auto index :
          std::views::iota(0U, specs.size()) | std::views::filter([&specs](const auto i) { return specs.test(i); }))
@@ -259,15 +259,15 @@ void applyingNotation(const std::vector<std::string>& candidates)
     const std::string_view title = algorithm::notation::description();
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = setting::activity::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(specs.count());
+    auto& pooling = setting::activity::cyclePool();
+    auto* const allocatedJob = pooling.acquire(specs.count());
     using notation::InputBuilder, notation::input::infixString;
     const auto inputData = std::make_shared<InputBuilder>(infixString);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
         [allocatedJob, &inputData, &taskNamer](const std::string_view subtask, const NotationMethod method)
     { allocatedJob->enqueue(taskNamer(subtask), notation::solution, method, inputData->getInfixNotation()); };
-    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
+    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.release(allocatedJob); }));
 
     for (const auto index :
          std::views::iota(0U, specs.size()) | std::views::filter([&specs](const auto i) { return specs.test(i); }))
@@ -371,8 +371,8 @@ void applyingOptimal(const std::vector<std::string>& candidates)
     const std::string_view title = algorithm::optimal::description();
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = setting::activity::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(specs.count());
+    auto& pooling = setting::activity::cyclePool();
+    auto* const allocatedJob = pooling.acquire(specs.count());
     using optimal::InputBuilder, optimal::input::SphericalBessel, optimal::Function;
     static_assert(algorithm::optimal::epsilon >= std::numeric_limits<double>::epsilon());
     const auto inputData = std::make_shared<InputBuilder>(
@@ -389,7 +389,7 @@ void applyingOptimal(const std::vector<std::string>& candidates)
             inputData->getRanges().first,
             inputData->getRanges().second);
     };
-    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
+    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.release(allocatedJob); }));
 
     for (const auto index :
          std::views::iota(0U, specs.size()) | std::views::filter([&specs](const auto i) { return specs.test(i); }))
@@ -497,8 +497,8 @@ void applyingSearch(const std::vector<std::string>& candidates)
     const std::string_view title = algorithm::search::description();
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = setting::activity::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(specs.count());
+    auto& pooling = setting::activity::cyclePool();
+    auto* const allocatedJob = pooling.acquire(specs.count());
     using search::InputBuilder, search::input::arrayLength, search::input::arrayRangeMin, search::input::arrayRangeMax;
     static_assert((arrayRangeMin < arrayRangeMax) && (arrayLength > 0));
     const auto inputData = std::make_shared<InputBuilder<float>>(arrayLength, arrayRangeMin, arrayRangeMax);
@@ -514,7 +514,7 @@ void applyingSearch(const std::vector<std::string>& candidates)
             inputData->getLength(),
             inputData->getSearchKey());
     };
-    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
+    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.release(allocatedJob); }));
 
     for (const auto index :
          std::views::iota(0U, specs.size()) | std::views::filter([&specs](const auto i) { return specs.test(i); }))
@@ -622,8 +622,8 @@ void applyingSort(const std::vector<std::string>& candidates)
     const std::string_view title = algorithm::sort::description();
     APP_ALGO_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = setting::activity::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(specs.count());
+    auto& pooling = setting::activity::cyclePool();
+    auto* const allocatedJob = pooling.acquire(specs.count());
     using sort::InputBuilder, sort::input::arrayLength, sort::input::arrayRangeMin, sort::input::arrayRangeMax;
     static_assert((arrayRangeMin < arrayRangeMax) && (arrayLength > 0));
     const auto inputData = std::make_shared<InputBuilder<std::int32_t>>(arrayLength, arrayRangeMin, arrayRangeMax);
@@ -633,7 +633,7 @@ void applyingSort(const std::vector<std::string>& candidates)
         allocatedJob->enqueue(
             taskNamer(subtask), sort::solution, method, inputData->getRandomArray().get(), inputData->getLength());
     };
-    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
+    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.release(allocatedJob); }));
 
     for (const auto index :
          std::views::iota(0U, specs.size()) | std::views::filter([&specs](const auto i) { return specs.test(i); }))

@@ -56,10 +56,10 @@ public:
     //! @param args - arguments for constructing the resource
     //! @return pointer of the allocated resource
     template <typename... Args>
-    Res* newEntry(Args&&... args);
+    Res* acquire(Args&&... args);
     //! @brief Delete an element.
     //! @param res - pointer of the allocated resource
-    void deleteEntry(Res* const res);
+    void release(Res* const res);
 
 private:
     //! @brief Union for the slot that stores element information.
@@ -155,7 +155,7 @@ Memory<Res, BlockSize>& Memory<Res, BlockSize>::operator=(Memory&& memory) noexc
 
 template <typename Res, std::size_t BlockSize>
 template <typename... Args>
-Res* Memory<Res, BlockSize>::newEntry(Args&&... args)
+Res* Memory<Res, BlockSize>::acquire(Args&&... args)
 {
     const std::lock_guard<std::recursive_mutex> lock(mtx);
     auto* const res = allocate();
@@ -164,7 +164,7 @@ Res* Memory<Res, BlockSize>::newEntry(Args&&... args)
 }
 
 template <typename Res, std::size_t BlockSize>
-void Memory<Res, BlockSize>::deleteEntry(Res* const res)
+void Memory<Res, BlockSize>::release(Res* const res)
 {
     const std::lock_guard<std::recursive_mutex> lock(mtx);
     if (res)

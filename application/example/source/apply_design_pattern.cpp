@@ -144,12 +144,12 @@ void applyingBehavioral(const std::vector<std::string>& candidates)
     const std::string_view title = design_pattern::behavioral::description();
     APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = setting::activity::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(specs.count());
+    auto& pooling = setting::activity::cyclePool();
+    auto* const allocatedJob = pooling.acquire(specs.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subtask, const BehavioralInstance instance)
     { allocatedJob->enqueue(taskNamer(subtask), behavioral::pattern, instance); };
-    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
+    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.release(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " pattern:" << std::endl;
     for (const auto index :
@@ -257,12 +257,12 @@ void applyingCreational(const std::vector<std::string>& candidates)
     const std::string_view title = design_pattern::creational::description();
     APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = setting::activity::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(specs.count());
+    auto& pooling = setting::activity::cyclePool();
+    auto* const allocatedJob = pooling.acquire(specs.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subtask, const CreationalInstance instance)
     { allocatedJob->enqueue(taskNamer(subtask), creational::pattern, instance); };
-    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
+    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.release(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " pattern:" << std::endl;
     for (const auto index :
@@ -358,12 +358,12 @@ void applyingStructural(const std::vector<std::string>& candidates)
     const std::string_view title = design_pattern::structural::description();
     APP_DP_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = setting::activity::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(specs.count());
+    auto& pooling = setting::activity::cyclePool();
+    auto* const allocatedJob = pooling.acquire(specs.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subtask, const StructuralInstance instance)
     { allocatedJob->enqueue(taskNamer(subtask), structural::pattern, instance); };
-    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
+    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.release(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " pattern:" << std::endl;
     for (const auto index :

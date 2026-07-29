@@ -145,8 +145,8 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
     const std::string_view title = numeric::arithmetic::description();
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = setting::activity::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(specs.count());
+    auto& pooling = setting::activity::cyclePool();
+    auto* const allocatedJob = pooling.acquire(specs.count());
     using arithmetic::InputBuilder, arithmetic::input::operandA, arithmetic::input::operandB;
     const auto inputData = std::make_shared<InputBuilder>(operandA, operandB);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
@@ -160,7 +160,7 @@ void applyingArithmetic(const std::vector<std::string>& candidates)
             inputData->getOperands().first,
             inputData->getOperands().second);
     };
-    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
+    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.release(allocatedJob); }));
 
     for (const auto index :
          std::views::iota(0U, specs.size()) | std::views::filter([&specs](const auto i) { return specs.test(i); }))
@@ -247,8 +247,8 @@ void applyingDivisor(const std::vector<std::string>& candidates)
     const std::string_view title = numeric::divisor::description();
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = setting::activity::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(specs.count());
+    auto& pooling = setting::activity::cyclePool();
+    auto* const allocatedJob = pooling.acquire(specs.count());
     using divisor::InputBuilder, divisor::input::numberA, divisor::input::numberB;
     const auto inputData = std::make_shared<InputBuilder>(numberA, numberB);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
@@ -262,7 +262,7 @@ void applyingDivisor(const std::vector<std::string>& candidates)
             inputData->getNumbers().first,
             inputData->getNumbers().second);
     };
-    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
+    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.release(allocatedJob); }));
 
     for (const auto index :
          std::views::iota(0U, specs.size()) | std::views::filter([&specs](const auto i) { return specs.test(i); }))
@@ -348,8 +348,8 @@ void applyingIntegral(const std::vector<std::string>& candidates)
     const std::string_view title = numeric::integral::description();
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = setting::activity::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(specs.count());
+    auto& pooling = setting::activity::cyclePool();
+    auto* const allocatedJob = pooling.acquire(specs.count());
     using integral::InputBuilder, integral::input::CylindricalBessel, integral::Expression;
     static_assert(numeric::integral::epsilon >= std::numeric_limits<double>::epsilon());
     const auto inputData = std::make_shared<InputBuilder>(
@@ -366,7 +366,7 @@ void applyingIntegral(const std::vector<std::string>& candidates)
             inputData->getRanges().first,
             inputData->getRanges().second);
     };
-    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
+    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.release(allocatedJob); }));
 
     for (const auto index :
          std::views::iota(0U, specs.size()) | std::views::filter([&specs](const auto i) { return specs.test(i); }))
@@ -455,15 +455,15 @@ void applyingPrime(const std::vector<std::string>& candidates)
     const std::string_view title = numeric::prime::description();
     APP_NUM_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = setting::activity::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(specs.count());
+    auto& pooling = setting::activity::cyclePool();
+    auto* const allocatedJob = pooling.acquire(specs.count());
     using prime::InputBuilder, prime::input::upperBound;
     const auto inputData = std::make_shared<InputBuilder>(upperBound);
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask =
         [allocatedJob, &inputData, &taskNamer](const std::string_view subtask, const PrimeMethod method)
     { allocatedJob->enqueue(taskNamer(subtask), prime::calculation, method, inputData->getUpperBound()); };
-    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
+    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.release(allocatedJob); }));
 
     for (const auto index :
          std::views::iota(0U, specs.size()) | std::views::filter([&specs](const auto i) { return specs.test(i); }))

@@ -120,12 +120,12 @@ void applyingCache(const std::vector<std::string>& candidates)
     const std::string_view title = data_structure::cache::description();
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = setting::activity::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(specs.count());
+    auto& pooling = setting::activity::cyclePool();
+    auto* const allocatedJob = pooling.acquire(specs.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subtask, const CacheInstance instance)
     { allocatedJob->enqueue(taskNamer(subtask), cache::structure, instance); };
-    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
+    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.release(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
     for (const auto index :
@@ -200,12 +200,12 @@ void applyingFilter(const std::vector<std::string>& candidates)
     const std::string_view title = data_structure::filter::description();
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = setting::activity::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(specs.count());
+    auto& pooling = setting::activity::cyclePool();
+    auto* const allocatedJob = pooling.acquire(specs.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subtask, const FilterInstance instance)
     { allocatedJob->enqueue(taskNamer(subtask), filter::structure, instance); };
-    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
+    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.release(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
     for (const auto index :
@@ -277,12 +277,12 @@ void applyingGraph(const std::vector<std::string>& candidates)
     const std::string_view title = data_structure::graph::description();
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = setting::activity::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(specs.count());
+    auto& pooling = setting::activity::cyclePool();
+    auto* const allocatedJob = pooling.acquire(specs.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subtask, const GraphInstance instance)
     { allocatedJob->enqueue(taskNamer(subtask), graph::structure, instance); };
-    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
+    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.release(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
     for (const auto index :
@@ -357,12 +357,12 @@ void applyingHeap(const std::vector<std::string>& candidates)
     const std::string_view title = data_structure::heap::description();
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = setting::activity::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(specs.count());
+    auto& pooling = setting::activity::cyclePool();
+    auto* const allocatedJob = pooling.acquire(specs.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subtask, const HeapInstance instance)
     { allocatedJob->enqueue(taskNamer(subtask), heap::structure, instance); };
-    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
+    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.release(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
     for (const auto index :
@@ -440,12 +440,12 @@ void applyingLinear(const std::vector<std::string>& candidates)
     const std::string_view title = data_structure::linear::description();
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = setting::activity::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(specs.count());
+    auto& pooling = setting::activity::cyclePool();
+    auto* const allocatedJob = pooling.acquire(specs.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subtask, const LinearInstance instance)
     { allocatedJob->enqueue(taskNamer(subtask), linear::structure, instance); };
-    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
+    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.release(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
     for (const auto index :
@@ -523,12 +523,12 @@ void applyingTree(const std::vector<std::string>& candidates)
     const std::string_view title = data_structure::tree::description();
     APP_DS_PRINT_TASK_TITLE_SCOPE_BEGIN(title);
 
-    auto& pooling = setting::activity::resourcePool();
-    auto* const allocatedJob = pooling.newEntry(specs.count());
+    auto& pooling = setting::activity::cyclePool();
+    auto* const allocatedJob = pooling.acquire(specs.count());
     const auto taskNamer = utility::currying::curry(curriedTaskName(), categoryAlias<category>());
     const auto addTask = [allocatedJob, &taskNamer](const std::string_view subtask, const TreeInstance instance)
     { allocatedJob->enqueue(taskNamer(subtask), tree::structure, instance); };
-    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.deleteEntry(allocatedJob); }));
+    MACRO_DEFER(utility::common::wrapClosure([&]() { pooling.release(allocatedJob); }));
 
     std::cout << "\nInstances of the " << toString(category) << " structure:" << std::endl;
     for (const auto index :
