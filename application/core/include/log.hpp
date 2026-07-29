@@ -69,7 +69,7 @@ namespace application // NOLINT(modernize-concat-nested-namespaces)
 namespace log
 {
 //! @brief Default log filename.
-constexpr std::string_view defaultLogFile = "log/" _PROJECT_NAME ".log";
+inline constexpr std::string_view defaultLogFile = "log/" _PROJECT_NAME ".log";
 
 //! @brief Simplified interface.
 namespace intf
@@ -191,7 +191,7 @@ private:
     //! @brief Operation lock for the log file.
     mutable utility::common::ReadWriteLock fileLock;
     //! @brief The cache logs that could not be processed properly.
-    std::forward_list<std::string> unprocessedCache;
+    std::forward_list<std::string> pendingCache;
     //! @brief Spin lock for controlling cache.
     mutable utility::common::SpinLock cacheSwitch;
 
@@ -254,6 +254,11 @@ private:
     void backUpLogFileIfNeeded() const;
     //! @brief Try to clear the log file.
     void tryClearLogFile() const;
+    //! @brief Enqueue the unprocessed outputs into the pending cache.
+    //! @param outputs - unprocessed outputs
+    void enqueueOutputs(std::vector<std::string>& outputs);
+    //! @brief Dequeue the unprocessed outputs from the pending cache.
+    void dequeueOutputs();
     //! @brief FSM event. Open file.
     struct OpenFile
     {
@@ -343,6 +348,7 @@ void printfStyle(
     const std::uint32_t srcLine,
     const std::string& format,
     Args&&... args)
+try
 {
     if (setting::config::activateHelper()) [[likely]]
     {
@@ -356,6 +362,10 @@ void printfStyle(
     const auto rows = Log::reformatContents(
         _PROJECT_NAME ": ", utility::common::printfString(format.c_str(), std::forward<Args>(args)...));
     std::ranges::for_each(rows, [](const auto& output) { std::osyncstream(std::clog) << output << std::endl; });
+}
+catch (const std::exception& err)
+{
+    std::clog << _PROJECT_NAME ": Log failed. " << err.what() << std::endl;
 }
 
 //! @brief Log output for modern (format style).
@@ -372,6 +382,7 @@ void formatStyle(
     const std::uint32_t srcLine,
     const std::string& format,
     Args&&... args)
+try
 {
     if (setting::config::activateHelper()) [[likely]]
     {
@@ -385,6 +396,10 @@ void formatStyle(
     const auto rows =
         Log::reformatContents(_PROJECT_NAME ": ", utility::common::formatString(format, std::forward<Args>(args)...));
     std::ranges::for_each(rows, [](const auto& output) { std::osyncstream(std::clog) << output << std::endl; });
+}
+catch (const std::exception& err)
+{
+    std::clog << _PROJECT_NAME ": Log failed. " << err.what() << std::endl;
 }
 
 //! @brief Log holder for flushing.

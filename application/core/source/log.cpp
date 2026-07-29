@@ -110,8 +110,8 @@ constexpr auto codeFileBaseColor =
 constexpr auto historyCacheBaseColor =
     utility::common::concatString<ansi_sgr::reverse, ansi_sgr::italic, ansi_sgr::defaultBg>;
 
-//! @brief Regular expressions for log highlighting.
-struct HlRegex
+//! @brief Regular expressions for highlighting.
+struct HlStyle
 {
     //! @brief Alternatives to predefined level prefix highlighting.
     const std::vector<std::pair<std::regex, std::string>> predefinedLevelPrefixes{
@@ -127,11 +127,12 @@ struct HlRegex
 };
 } // namespace
 
-//! @brief Log style.
-static const HlRegex& logStyle()
+//! @brief The color scheme of the display style.
+//! @return color scheme
+static const auto& colorScheme()
 {
-    static const HlRegex highlight{};
-    return highlight;
+    static const HlStyle style{};
+    return style;
 }
 
 Log::Log() : FSM(State::initial)
@@ -154,7 +155,6 @@ void Log::service()
 retry:
     try
     {
-        logStyle();
         processEvent(Relaunch{});
 
         assert(currentState() == State::initial);
@@ -199,39 +199,20 @@ void Log::flush(const OutputLevel severity, const std::string_view labelTpl, con
     }
 
     std::unique_lock<std::mutex> daemonLock(daemonMtx, std::defer_lock);
-    try
+    if (auto rows = reformatContents(
+            utility::common::formatString(
+                labelTpl,
+                isInServingState(State::established) ? (daemonLock.lock(), getPrefix(severity)) : traceLevelPrefix),
+            formatted);
+        daemonLock.owns_lock())
     {
-        if (auto rows = reformatContents(
-                utility::common::formatString(
-                    labelTpl,
-                    isInServingState(State::established) ? (daemonLock.lock(), getPrefix(severity)) : traceLevelPrefix),
-                formatted);
-            daemonLock.owns_lock())
-        {
-            std::ranges::for_each(rows, [this](auto& output) { logQueue.push(std::move(output)); });
-            daemonLock.unlock();
-            daemonCond.notify_one();
-        }
-        else
-        {
-            cacheSwitch.lock();
-            std::ranges::for_each(
-                rows,
-                [this](auto& output)
-                {
-                    unprocessedCache.emplace_front(output);
-                    std::osyncstream(std::cerr) << changeToLogStyle(output) << std::endl;
-                });
-            cacheSwitch.unlock();
-        }
+        std::ranges::for_each(rows, [this](auto& output) { logQueue.push(std::move(output)); });
+        daemonLock.unlock();
+        daemonCond.notify_one();
     }
-    catch (...)
+    else
     {
-        if (daemonLock.owns_lock())
-        {
-            daemonLock.unlock();
-        }
-        throw;
+        enqueueOutputs(rows);
     }
 }
 
@@ -414,8 +395,34 @@ void Log::tryClearLogFile() const
     tempOfs.close();
 }
 
+void Log::enqueueOutputs(std::vector<std::string>& outputs)
+{
+    cacheSwitch.lock();
+    MACRO_DEFER([this]() { cacheSwitch.unlock(); });
+    std::ranges::for_each(
+        outputs,
+        [this](auto& output)
+        {
+            pendingCache.emplace_front(output);
+            std::osyncstream(std::cerr) << changeToLogStyle(output) << std::endl;
+        });
+}
+
+void Log::dequeueOutputs()
+{
+    cacheSwitch.lock();
+    MACRO_DEFER([this]() { cacheSwitch.unlock(); });
+    while (!pendingCache.empty())
+    {
+        std::osyncstream(std::cout) << historyCacheBaseColor.data() + pendingCache.front() + ansi_sgr::reset.data()
+                                    << std::endl;
+        pendingCache.pop_front();
+    }
+}
+
 void Log::openLogFile()
 {
+    colorScheme();
     tryCreateLogFolder();
     backUpLogFileIfNeeded();
 
@@ -443,15 +450,7 @@ void Log::closeLogFile()
 void Log::startLogging()
 {
     logWriter.lock();
-
-    cacheSwitch.lock();
-    while (!unprocessedCache.empty())
-    {
-        std::osyncstream(std::cout) << historyCacheBaseColor.data() + unprocessedCache.front() + ansi_sgr::reset.data()
-                                    << std::endl;
-        unprocessedCache.pop_front();
-    }
-    cacheSwitch.unlock();
+    dequeueOutputs();
 }
 
 void Log::stopLogging()
@@ -598,16 +597,16 @@ std::ostream& operator<<(std::ostream& os, const Log::State state)
 //! @return changed line
 std::string& changeToLogStyle(std::string& line)
 {
-    const auto& style = logStyle();
+    const auto& scheme = colorScheme();
     if (const auto segIter = std::ranges::find_if(
-            style.predefinedLevelPrefixes,
+            scheme.predefinedLevelPrefixes,
             [&line](const auto& predefined) { return std::regex_search(line, std::get<std::regex>(predefined)); });
-        segIter != style.predefinedLevelPrefixes.cend())
+        segIter != scheme.predefinedLevelPrefixes.cend())
     {
         line = std::regex_replace(line, std::get<std::regex>(*segIter), std::get<std::string>(*segIter));
     }
 
-    for (std::smatch match{}; [[maybe_unused]] const auto& [segment, scheme] : style.identitySegments)
+    for (std::smatch match{}; [[maybe_unused]] const auto& [segment, scheme] : scheme.identitySegments)
     {
         if (std::regex_search(line, match, segment))
         {
