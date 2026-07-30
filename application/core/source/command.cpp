@@ -24,13 +24,6 @@ namespace application
 {
 namespace command
 {
-//! @brief Anonymous namespace.
-inline namespace
-{
-//! @brief The semaphore that controls the maximum access limit.
-std::counting_semaphore<1> cliSem(1); // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
-} // namespace
-
 //! @brief Manage external helpers.
 namespace help
 {
@@ -810,22 +803,13 @@ void Command::registerOnConsole(console::Console& session, std::shared_ptr<Sock>
     }
 }
 
-//! @brief Safely execute the command line interfaces using the given arguments.
+//! @brief Execute the command line interfaces using the given arguments.
 //! @param argc - argument count
 //! @param argv - argument vector
 //! @return successful or failed to execute
 bool executeCLI(const int argc, const char* const argv[])
-try
 {
-    cliSem.acquire();
-    const bool status = getInstance().doExecute(argc, argv);
-    cliSem.release();
-    return status;
-}
-catch (...)
-{
-    cliSem.release();
-    throw;
+    return getInstance().doExecute(argc, argv);
 }
 } // namespace command
 

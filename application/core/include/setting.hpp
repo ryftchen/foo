@@ -67,9 +67,9 @@ public:
     //! @brief Destroy the Retrieve object.
     ~Retrieve();
     //! @brief Construct a new Retrieve object.
-    Retrieve(const Retrieve&) = default;
+    Retrieve(const Retrieve&) = delete;
     //! @brief Construct a new Retrieve object.
-    Retrieve(Retrieve&&) noexcept = default;
+    Retrieve(Retrieve&&) = delete;
     //! @brief The operator (=) overloading of Retrieve class.
     //! @return reference of the Retrieve object
     Retrieve& operator=(const Retrieve&) = delete;

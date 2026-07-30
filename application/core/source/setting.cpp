@@ -18,14 +18,6 @@
 
 namespace application::setting
 {
-//! @brief Anonymous namespace.
-inline namespace
-{
-//! @brief The semaphore that controls the maximum access limit.
-std::counting_semaphore<maxAccessLimit> configSem( // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
-    maxAccessLimit);
-} // namespace
-
 //! @brief Get the full path to the configuration file.
 //! @param filename - file path for configuring
 //! @return full path to the configuration file
@@ -293,6 +285,7 @@ Retrieve::operator const utility::json::JSON&() const
 //! @return current configuration data repository
 Retrieve retrieveDataRepo()
 {
+    static std::counting_semaphore<maxAccessLimit> configSem(maxAccessLimit);
     return Retrieve(configSem);
 }
 
