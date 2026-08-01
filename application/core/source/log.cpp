@@ -397,7 +397,10 @@ void Log::tryClearLogFile() const
 
 void Log::enqueueOutputs(std::vector<std::string>& outputs)
 {
-    cacheSwitch.lock();
+    if (!cacheSwitch.tryLock())
+    {
+        return;
+    }
     MACRO_DEFER([this]() { cacheSwitch.unlock(); });
     std::ranges::for_each(
         outputs,
@@ -410,7 +413,10 @@ void Log::enqueueOutputs(std::vector<std::string>& outputs)
 
 void Log::dequeueOutputs()
 {
-    cacheSwitch.lock();
+    if (!cacheSwitch.tryLock())
+    {
+        return;
+    }
     MACRO_DEFER([this]() { cacheSwitch.unlock(); });
     while (!pendingCache.empty())
     {

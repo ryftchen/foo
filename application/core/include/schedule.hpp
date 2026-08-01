@@ -74,7 +74,7 @@ private:
     //! @brief Coroutine handle.
     std::coroutine_handle<promise_type> handle;
     //! @brief Flag to ensure only one instance is active.
-    static std::atomic_bool active;
+    static std::atomic_bool owned;
 };
 
 extern void enterNextPhase(Awaitable& awaitable);
