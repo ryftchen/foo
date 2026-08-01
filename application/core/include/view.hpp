@@ -162,16 +162,20 @@ private:
     };
     friend detail::OptionMap detail::obtainSupportedOptions();
     //! @brief Maximum size of the shared memory buffer.
-    static constexpr std::size_t shmLimitSize{static_cast<std::size_t>(65536 * 10)};
+    static constexpr std::uint64_t shmLimitSize{static_cast<std::uint64_t>(65536 * 10)};
     //! @brief Memory that can be accessed by multiple programs simultaneously.
     struct ShrMemBlock
     {
-        //! @brief Data of the shared memory buffer.
+        //! @brief Cross-process synchronization lock.
+        alignas(64)::pthread_mutex_t mutex;
+        //! @brief Magic number used to validate.
+        std::uint32_t magic;
+        //! @brief CRC-32/ISO-HDLC checksum of the valid data.
+        std::uint32_t crc32;
+        //! @brief Size of the valid data.
+        std::uint64_t size;
+        //! @brief Shared memory data buffer.
         alignas(64) char data[shmLimitSize];
-        //! @brief Size of the shared memory buffer.
-        alignas(64) std::size_t size;
-        //! @brief Flag for operable.
-        alignas(64) std::atomic_bool signal;
     };
 
     //! @brief Validate the request message.

@@ -21,6 +21,9 @@ namespace application // NOLINT(modernize-concat-nested-namespaces)
 //! @brief Data-processing-related functions in the application module.
 namespace data
 {
+//! @brief The magic number.
+inline constexpr std::uint32_t magicNumber = 0x3B9ACA07;
+
 //! @brief Data packet.
 class Packet
 {
@@ -136,11 +139,11 @@ extern std::error_code encodeTLV(char* const buf, std::size_t& len, const TLVVal
 extern std::error_code decodeTLV(char* const buf, const std::size_t len, TLVValue& val);
 } // namespace tlv
 
-extern void encryptMessage(char* const buffer, const std::size_t length);
-extern void decryptMessage(char* const buffer, const std::size_t length);
+extern bool encryptMessage(char* const buffer, const std::size_t length);
+extern bool decryptMessage(char* const buffer, const std::size_t length);
 
-extern void compressData(std::vector<char>& cache);
-extern void decompressData(std::vector<char>& cache);
+extern bool compressData(std::vector<char>& cache);
+extern bool decompressData(std::vector<char>& cache);
 
 extern std::string toHexString(const char* const buffer, const std::size_t length);
 } // namespace data

@@ -56,6 +56,7 @@ extern std::size_t bkdrHash(const char* str) noexcept;
 
 extern std::string base64Encode(const std::string_view data);
 extern std::string base64Decode(const std::string_view data);
+extern std::uint32_t calculateCRC32(const void* const data, const std::size_t size);
 
 extern std::string printfString(const char* const fmt, ...);
 //! @brief Format as a string (format style).

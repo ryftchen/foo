@@ -57,7 +57,7 @@ namespace tlv
 enum TLVType : int
 {
     //! @brief Header.
-    header = 0x3B9ACA07,
+    header = magicNumber,
     //! @brief Stop.
     stop = 0,
     //! @brief Depend.
@@ -361,24 +361,34 @@ std::error_code decodeTLV(char* const buf, const std::size_t len, TLVValue& val)
 }
 } // namespace tlv
 
+//! @brief Anonymous namespace.
+inline namespace
+{
+//! @brief The AES crypto key.
+constexpr std::array<unsigned char, 16> aesKey = {
+    0x37, 0x47, 0x10, 0x33, 0x6F, 0x18, 0xC8, 0x9A, 0x4B, 0xC1, 0x2B, 0x97, 0x92, 0x19, 0x25, 0x6D};
+//! @brief The AES initialization vector.
+constexpr std::array<unsigned char, 16> aesIV = {
+    0x9F, 0x7B, 0x0E, 0x68, 0x2D, 0x2F, 0x4E, 0x7F, 0x1A, 0xFA, 0x61, 0xD3, 0xC6, 0x18, 0xF4, 0xC1};
+} // namespace
+
 // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
 //! @brief Encrypt the message with AES-128-CFB-128.
 //! @param buffer - message buffer
 //! @param length - buffer length
-void encryptMessage(char* const buffer, const std::size_t length)
+//! @return successful or failed to encrypt
+bool encryptMessage(char* const buffer, const std::size_t length)
 {
+    bool status = false;
     if (!buffer || (length == 0))
     {
-        return;
+        return status;
     }
 
     auto* const ctx = ::EVP_CIPHER_CTX_new();
     do
     {
-        if (constexpr std::array<unsigned char, 16> key =
-                {0x37, 0x47, 0x10, 0x33, 0x6F, 0x18, 0xC8, 0x9A, 0x4B, 0xC1, 0x2B, 0x97, 0x92, 0x19, 0x25, 0x6D},
-            iv = {0x9F, 0x7B, 0x0E, 0x68, 0x2D, 0x2F, 0x4E, 0x7F, 0x1A, 0xFA, 0x61, 0xD3, 0xC6, 0x18, 0xF4, 0xC1};
-            ::EVP_EncryptInit_ex(ctx, ::EVP_aes_128_cfb128(), nullptr, key.data(), iv.data()) == 0)
+        if (::EVP_EncryptInit_ex(ctx, ::EVP_aes_128_cfb128(), nullptr, aesKey.data(), aesIV.data()) == 0)
         {
             break;
         }
@@ -400,28 +410,29 @@ void encryptMessage(char* const buffer, const std::size_t length)
         {
             break;
         }
+        status = true;
     }
     while (false);
     ::EVP_CIPHER_CTX_free(ctx);
+    return status;
 }
 
 //! @brief Decrypt the message with AES-128-CFB-128.
 //! @param buffer - message buffer
 //! @param length - buffer length
-void decryptMessage(char* const buffer, const std::size_t length)
+//! @return successful or failed to decrypt
+bool decryptMessage(char* const buffer, const std::size_t length)
 {
+    bool status = false;
     if (!buffer || (length == 0))
     {
-        return;
+        return status;
     }
 
     auto* const ctx = ::EVP_CIPHER_CTX_new();
     do
     {
-        if (constexpr std::array<unsigned char, 16> key =
-                {0x37, 0x47, 0x10, 0x33, 0x6F, 0x18, 0xC8, 0x9A, 0x4B, 0xC1, 0x2B, 0x97, 0x92, 0x19, 0x25, 0x6D},
-            iv = {0x9F, 0x7B, 0x0E, 0x68, 0x2D, 0x2F, 0x4E, 0x7F, 0x1A, 0xFA, 0x61, 0xD3, 0xC6, 0x18, 0xF4, 0xC1};
-            ::EVP_DecryptInit_ex(ctx, ::EVP_aes_128_cfb128(), nullptr, key.data(), iv.data()) == 0)
+        if (::EVP_DecryptInit_ex(ctx, ::EVP_aes_128_cfb128(), nullptr, aesKey.data(), aesIV.data()) == 0)
         {
             break;
         }
@@ -443,19 +454,22 @@ void decryptMessage(char* const buffer, const std::size_t length)
         {
             break;
         }
+        status = true;
     }
     while (false);
     ::EVP_CIPHER_CTX_free(ctx);
+    return status;
 }
 // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
 
 //! @brief Compress the data with LZ4.
 //! @param cache - data cache
-void compressData(std::vector<char>& cache)
+//! @return successful or failed to compress
+bool compressData(std::vector<char>& cache)
 {
     if (cache.empty())
     {
-        return;
+        return false;
     }
 
     const int compressedCap = ::LZ4_compressBound(static_cast<int>(cache.size()));
@@ -464,20 +478,22 @@ void compressData(std::vector<char>& cache)
         ::LZ4_compress_default(cache.data(), compressed.data(), static_cast<int>(cache.size()), compressedCap);
     if (compressedSize < 0)
     {
-        throw std::runtime_error{"Failed to compress data, return " + std::to_string(compressedSize) + '.'};
+        return false;
     }
     compressed.resize(compressedSize);
     compressed.shrink_to_fit();
     cache = std::move(compressed);
+    return true;
 }
 
 //! @brief Decompress the data with LZ4.
 //! @param cache - data cache
-void decompressData(std::vector<char>& cache)
+//! @return successful or failed to decompress
+bool decompressData(std::vector<char>& cache)
 {
     if (cache.empty())
     {
-        return;
+        return false;
     }
 
     constexpr int decompressedCap = 65536 * 10 * 10;
@@ -486,11 +502,12 @@ void decompressData(std::vector<char>& cache)
         ::LZ4_decompress_safe(cache.data(), decompressed.data(), static_cast<int>(cache.size()), decompressedCap);
     if (decompressedSize < 0)
     {
-        throw std::runtime_error{"Failed to decompress data, return " + std::to_string(decompressedSize) + '.'};
+        return false;
     }
     decompressed.resize(decompressedSize);
     decompressed.shrink_to_fit();
     cache = std::move(decompressed);
+    return true;
 }
 
 //! @brief Convert a byte buffer to a space-separated hexadecimal string.

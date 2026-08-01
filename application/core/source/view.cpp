@@ -424,90 +424,86 @@ std::size_t View::buildFinTLVPacket(Buffer& buffer)
 int View::fillSharedMemory(const std::string_view contents)
 {
     const int shmId = ::shmget(
-        0, sizeof(ShrMemBlock), IPC_CREAT | IPC_EXCL | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+        IPC_PRIVATE, sizeof(ShrMemBlock), IPC_CREAT | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
     if (shmId == -1)
     {
         throw std::runtime_error{"Failed to create shared memory (" + std::to_string(shmId) + ")."};
     }
     void* const shmSeg = ::shmat(shmId, nullptr, 0);
-    if (!shmSeg)
+    if (reinterpret_cast<std::intptr_t>(shmSeg) == -1)
     {
         ::shmctl(shmId, IPC_RMID, nullptr);
         throw std::runtime_error{"Failed to attach shared memory (" + std::to_string(shmId) + ")."};
     }
 
     auto* const memBlock = reinterpret_cast<ShrMemBlock*>(shmSeg);
-    memBlock->signal.store(false);
+    ::pthread_mutexattr_t mutexAttr{};
+    ::pthread_mutexattr_init(&mutexAttr);
+    ::pthread_mutexattr_setpshared(&mutexAttr, ::PTHREAD_PROCESS_SHARED);
+    if (::pthread_mutex_init(&memBlock->mutex, &mutexAttr) != 0)
+    {
+        ::pthread_mutexattr_destroy(&mutexAttr);
+        ::shmdt(shmSeg);
+        ::shmctl(shmId, IPC_RMID, nullptr);
+        throw std::runtime_error{"Failed to initialize lock for shared memory (" + std::to_string(shmId) + ")."};
+    }
+    ::pthread_mutexattr_destroy(&mutexAttr);
+    ::pthread_mutex_lock(&memBlock->mutex);
     MACRO_DEFER(
         [shmId, shmSeg, memBlock]()
         {
-            memBlock->signal.store(true);
+            ::pthread_mutex_unlock(&memBlock->mutex);
             ::shmdt(shmSeg);
             trackShmId(shmId);
         });
-    for (;;)
-    {
-        if (memBlock->signal.load())
-        {
-            std::this_thread::yield();
-            continue;
-        }
 
-        std::vector<char> processed(contents.data(), contents.data() + contents.length());
-        data::compressData(processed);
-        if (processed.size() > sizeof(memBlock->data))
-        {
-            break;
-        }
-        data::encryptMessage(processed.data(), processed.size());
-        std::memset(memBlock->data, 0, sizeof(memBlock->data));
-        std::memcpy(memBlock->data, processed.data(), processed.size() * sizeof(char));
-        memBlock->size = processed.size();
-        break;
+    std::vector<char> processed(contents.data(), contents.data() + contents.length());
+    data::compressData(processed);
+    if (processed.size() > sizeof(memBlock->data))
+    {
+        return shmId;
     }
+    data::encryptMessage(processed.data(), processed.size());
+    std::memset(memBlock->data, 0, sizeof(memBlock->data));
+    std::memcpy(memBlock->data, processed.data(), processed.size() * sizeof(char));
+    memBlock->size = processed.size();
+    memBlock->crc32 = utility::common::calculateCRC32(memBlock->data, memBlock->size);
+    memBlock->magic = data::magicNumber;
     return shmId;
 }
 
 void View::fetchSharedMemory(const int shmId, std::string& contents)
 {
     void* const shmSeg = ::shmat(shmId, nullptr, 0);
-    if (!shmSeg)
+    if (reinterpret_cast<std::intptr_t>(shmSeg) == -1)
     {
         ::shmctl(shmId, IPC_RMID, nullptr);
         throw std::runtime_error{"Failed to attach shared memory (" + std::to_string(shmId) + ")."};
     }
 
     auto* const memBlock = reinterpret_cast<ShrMemBlock*>(shmSeg);
-    memBlock->signal.store(true);
+    ::pthread_mutex_lock(&memBlock->mutex);
     MACRO_DEFER(
         [shmId, shmSeg, memBlock]()
         {
-            memBlock->signal.store(false);
+            ::pthread_mutex_unlock(&memBlock->mutex);
+            ::pthread_mutex_destroy(&memBlock->mutex);
             ::shmdt(shmSeg);
             ::shmctl(shmId, IPC_RMID, nullptr);
             untrackShmId(shmId);
         });
-    for (;;)
-    {
-        if (!memBlock->signal.load())
-        {
-            std::this_thread::yield();
-            continue;
-        }
 
-        if (memBlock->size > sizeof(memBlock->data))
-        {
-            break;
-        }
-        std::vector<char> processed(memBlock->size);
-        memBlock->size = 0;
-        std::memcpy(processed.data(), memBlock->data, processed.size() * sizeof(char));
-        std::memset(memBlock->data, 0, sizeof(memBlock->data));
-        data::decryptMessage(processed.data(), processed.size());
-        data::decompressData(processed);
-        contents = std::string{processed.data(), processed.data() + processed.size()};
-        break;
+    if ((memBlock->magic != data::magicNumber)
+        || (memBlock->crc32 != utility::common::calculateCRC32(memBlock->data, memBlock->size))
+        || (memBlock->size > sizeof(memBlock->data)))
+    {
+        return;
     }
+    std::vector<char> processed(memBlock->size);
+    std::memcpy(processed.data(), memBlock->data, processed.size() * sizeof(char));
+    data::decryptMessage(processed.data(), processed.size());
+    data::decompressData(processed);
+    contents.assign(processed.data(), processed.size());
 }
 // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
 
