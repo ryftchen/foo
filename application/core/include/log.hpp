@@ -193,7 +193,7 @@ private:
     //! @brief The cache logs that could not be processed properly.
     std::forward_list<std::string> pendingCache;
     //! @brief Spin lock for controlling cache.
-    mutable utility::common::SpinLock cacheSwitch;
+    mutable utility::common::SpinLock cacheSwitch{};
 
     //! @brief Alias for the lock guard.
     using LockGuard = utility::common::LockGuard;
