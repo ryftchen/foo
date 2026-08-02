@@ -8,8 +8,10 @@
 
 #include "setting.hpp"
 
+#include "utility/include/common.hpp"
 #include "utility/include/fsm.hpp"
 #include "utility/include/socket.hpp"
+#include "utility/include/time.hpp"
 
 //! @brief The application module.
 namespace application // NOLINT(modernize-concat-nested-namespaces)
@@ -58,7 +60,7 @@ extern OptionMap obtainSupportedOptions();
 } // namespace detail
 
 //! @brief The viewer.
-class View final : public utility::fsm::FSM<View>
+class View final : public utility::fsm::FSM<View>, public std::enable_shared_from_this<View>
 {
 public:
     friend class FSM<View>;
@@ -256,11 +258,15 @@ private:
     std::condition_variable outputCond;
     //! @brief Flag to indicate whether the output is complete.
     std::atomic_bool outputCompleted{true};
+    //! @brief The prompt reminder to show current waiting state.
+    utility::time::Timer reminderTimer{[this]() { feedbackWaitingState(); }};
+    //! @brief Spin lock for controlling timer.
+    mutable utility::common::SpinLock timerGuard{};
+
     //! @brief Renew the server.
     //! @tparam Sock - type of server
     template <typename Sock>
     void renewServer();
-
     template <typename Sock>
     friend void intf::connectFromClient(std::shared_ptr<Sock>& client);
     //! @brief Connect from the client. Simplified interface for external use.
@@ -287,6 +293,12 @@ private:
     void waitTaskDone();
     //! @brief Notify that the output task has been completed and unblock any waiters.
     void notifyTaskDone();
+    //! @brief Start the reminder timer.
+    void startReminderTimer();
+    //! @brief Stop the reminder timer.
+    void stopReminderTimer();
+    //! @brief Feedback the waiting state.
+    void feedbackWaitingState() const;
     friend class setting::Controller<View>;
     //! @brief Synchronous callback.
     using SyncCallback = std::function<void()>;

@@ -139,6 +139,10 @@ extern std::error_code encodeTLV(char* const buf, std::size_t& len, const TLVVal
 extern std::error_code decodeTLV(char* const buf, const std::size_t len, TLVValue& val);
 } // namespace tlv
 
+extern void trackShmId(const int shmId);
+extern void untrackShmId(const int shmId);
+extern void cleanUpShmInUse();
+
 extern bool encryptMessage(char* const buffer, const std::size_t length);
 extern bool decryptMessage(char* const buffer, const std::size_t length);
 

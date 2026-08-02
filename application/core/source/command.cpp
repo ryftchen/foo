@@ -18,7 +18,6 @@
 
 #include "utility/include/benchmark.hpp"
 #include "utility/include/currying.hpp"
-#include "utility/include/time.hpp"
 
 namespace application
 {

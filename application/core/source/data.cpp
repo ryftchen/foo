@@ -8,10 +8,14 @@
 
 #ifndef _PRECOMPILED_HEADER
 #include <openssl/evp.h>
+#include <sys/shm.h>
 #include <lz4.h>
+#include <algorithm>
 #include <array>
 #include <cstring>
 #include <iomanip>
+#include <mutex>
+#include <unordered_set>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif
@@ -370,7 +374,54 @@ constexpr std::array<unsigned char, 16> aesKey = {
 //! @brief The AES initialization vector.
 constexpr std::array<unsigned char, 16> aesIV = {
     0x9F, 0x7B, 0x0E, 0x68, 0x2D, 0x2F, 0x4E, 0x7F, 0x1A, 0xFA, 0x61, 0xD3, 0xC6, 0x18, 0xF4, 0xC1};
+
+//! @brief Manager for recording id.
+struct IdRegistry
+{
+    //! @brief All used ids.
+    std::unordered_set<int> usedIds;
+    //! @brief Operation lock.
+    mutable std::mutex opLock;
+};
 } // namespace
+
+//! @brief The id tracker of the shared memory registry.
+//! @return id tracker
+static auto& shmTracker()
+{
+    static IdRegistry registry{};
+    return registry;
+}
+
+//! @brief Insert the shm id into the tracker.
+//! @param shmId - shm id
+void trackShmId(const int shmId)
+{
+    auto& tracker = shmTracker();
+    const std::lock_guard<std::mutex> idLock(tracker.opLock);
+    tracker.usedIds.insert(shmId);
+}
+
+//! @brief Remove the shm id from the tracker.
+//! @param shmId - shm id
+void untrackShmId(const int shmId)
+{
+    auto& tracker = shmTracker();
+    const std::lock_guard<std::mutex> idLock(tracker.opLock);
+    tracker.usedIds.erase(shmId);
+}
+
+//! @brief Clean up the shared memory in use according to the tracker.
+void cleanUpShmInUse()
+{
+    auto& tracker = shmTracker();
+    const std::lock_guard<std::mutex> idLock(tracker.opLock);
+    if (auto& usedIds = tracker.usedIds; !usedIds.empty())
+    {
+        std::ranges::for_each(usedIds, [](const auto shmId) { ::shmctl(shmId, IPC_RMID, nullptr); });
+        usedIds.clear();
+    }
+}
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
 //! @brief Encrypt the message with AES-128-CFB-128.

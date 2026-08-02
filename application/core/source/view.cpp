@@ -27,18 +27,18 @@
 #include <cassert>
 #include <iterator>
 #include <numeric>
-#include <unordered_set>
 #else
 #include "application/pch/precompiled_header.hpp"
 #endif
 
 #include "utility/include/benchmark.hpp"
-#include "utility/include/time.hpp"
 
 namespace application
 {
 namespace view
 {
+//! @brief Alias for the type-length-value scheme.
+namespace tlv = data::tlv;
 //! @brief Alias for the access controller.
 using AccessController = setting::Controller<View>;
 
@@ -47,57 +47,7 @@ inline namespace
 {
 //! @brief The internal symbol for exiting.
 constexpr std::string_view exitSymbol = MACRO_STRINGIFY(stop);
-
-//! @brief Manager for recording id.
-struct IdRegistry
-{
-    //! @brief All used ids.
-    std::unordered_set<int> usedIds;
-    //! @brief Operation lock.
-    mutable std::mutex opLock;
-};
 } // namespace
-
-//! @brief Alias for the type-length-value scheme.
-namespace tlv = data::tlv;
-
-//! @brief The id tracker of the shared memory registry.
-//! @return id tracker
-static auto& shmTracker()
-{
-    static IdRegistry registry{};
-    return registry;
-}
-
-//! @brief Clean up the shared memory in use according to the tracker.
-static void cleanUpShmInUse()
-{
-    auto& tracker = shmTracker();
-    const std::lock_guard<std::mutex> idLock(tracker.opLock);
-    if (auto& usedIds = tracker.usedIds; !usedIds.empty())
-    {
-        std::ranges::for_each(usedIds, [](const auto shmId) { ::shmctl(shmId, IPC_RMID, nullptr); });
-        usedIds.clear();
-    }
-}
-
-//! @brief Insert the shm id into the tracker.
-//! @param shmId - shm id
-static void trackShmId(const int shmId)
-{
-    auto& tracker = shmTracker();
-    const std::lock_guard<std::mutex> idLock(tracker.opLock);
-    tracker.usedIds.insert(shmId);
-}
-
-//! @brief Remove the shm id from the tracker.
-//! @param shmId - shm id
-static void untrackShmId(const int shmId)
-{
-    auto& tracker = shmTracker();
-    const std::lock_guard<std::mutex> idLock(tracker.opLock);
-    tracker.usedIds.erase(shmId);
-}
 
 View::View() : FSM(State::initial)
 {
@@ -109,7 +59,7 @@ View::View() : FSM(State::initial)
 
 View::~View()
 {
-    cleanUpShmInUse();
+    data::cleanUpShmInUse();
 }
 
 std::shared_ptr<View> View::getInstance()
@@ -454,7 +404,7 @@ int View::fillSharedMemory(const std::string_view contents)
         {
             ::pthread_mutex_unlock(&memBlock->mutex);
             ::shmdt(shmSeg);
-            trackShmId(shmId);
+            data::trackShmId(shmId);
         });
 
     std::vector<char> processed(contents.data(), contents.data() + contents.length());
@@ -490,7 +440,7 @@ void View::fetchSharedMemory(const int shmId, std::string& contents)
             ::pthread_mutex_destroy(&memBlock->mutex);
             ::shmdt(shmSeg);
             ::shmctl(shmId, IPC_RMID, nullptr);
-            untrackShmId(shmId);
+            data::untrackShmId(shmId);
         });
 
     if ((memBlock->magic != data::magicNumber)
@@ -750,8 +700,15 @@ void View::renewServer<utility::socket::UDPServer>()
 template <>
 void View::onConnecting<utility::socket::TCPSocket>(std::shared_ptr<utility::socket::TCPSocket>& client)
 {
-    client->subscribeRawMessage([this, &client](char* const bytes, const std::size_t size)
-                                { parseTLVMessage(client, bytes, size); });
+    client->subscribeRawMessage(
+        [weakInst = weak_from_this(), &client](char* const bytes, const std::size_t size)
+        {
+            if (const auto currInst = weakInst.lock())
+            {
+                currInst->stopReminderTimer();
+                currInst->parseTLVMessage(client, bytes, size);
+            }
+        });
     client->connect(tcpHost, tcpPort);
 }
 
@@ -761,10 +718,15 @@ template <>
 void View::onConnecting<utility::socket::UDPSocket>(std::shared_ptr<utility::socket::UDPSocket>& client)
 {
     client->subscribeRawMessage(
-        [this, &client](char* const bytes, const std::size_t size, const std::string& ip, const std::uint16_t port)
+        [weakInst = weak_from_this(),
+         &client](char* const bytes, const std::size_t size, const std::string& ip, const std::uint16_t port)
         {
             MACRO_IGNORE(ip, port);
-            parseTLVMessage(client, bytes, size);
+            if (const auto currInst = weakInst.lock())
+            {
+                currInst->stopReminderTimer();
+                currInst->parseTLVMessage(client, bytes, size);
+            }
         });
     client->receive();
     client->connect(udpHost, udpPort);
@@ -781,6 +743,7 @@ void View::onForwarding(std::shared_ptr<Sock>& client, const std::vector<std::st
             std::string{},
             [](const auto& acc, const auto& token) { return acc.empty() ? token : (acc + ' ' + token); }));
     client->send(std::move(reqBuffer));
+    startReminderTimer();
     waitTaskDone();
 }
 
@@ -857,6 +820,26 @@ void View::notifyTaskDone()
     outputCond.notify_one();
 }
 
+void View::startReminderTimer()
+{
+    timerGuard.lock();
+    MACRO_DEFER([this]() { timerGuard.unlock(); });
+    constexpr auto period = std::chrono::seconds{10};
+    reminderTimer.start(period, true);
+}
+
+void View::stopReminderTimer()
+{
+    timerGuard.lock();
+    MACRO_DEFER([this]() { timerGuard.unlock(); });
+    reminderTimer.stop();
+}
+
+void View::feedbackWaitingState() const
+{
+    LOG_INF << "Still waiting. Feedback status: " << static_cast<State>(currentState()) << '.';
+}
+
 void View::syncWaitOr(const State target, const SyncCallback& onIdle) const
 {
     do
@@ -908,8 +891,8 @@ bool View::isInServingState(const State state) const
 
 void View::createViewServer()
 {
-    shmTracker();
-    cleanUpShmInUse();
+    data::cleanUpShmInUse();
+    stopReminderTimer();
 
     renewServer<utility::socket::TCPServer>();
     renewServer<utility::socket::UDPServer>();
@@ -917,13 +900,15 @@ void View::createViewServer()
 
 void View::destroyViewServer()
 {
+    data::cleanUpShmInUse();
+    stopReminderTimer();
+
     if (permSessServer)
     {
         permSessServer->close();
         permSessServer->join();
     }
     permSessServer.reset();
-
     if (tempSessServer)
     {
         tempSessServer->close();

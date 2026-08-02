@@ -50,6 +50,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <numeric>
 #include <ranges>
 #include <regex>
