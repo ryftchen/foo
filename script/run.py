@@ -31,7 +31,7 @@ except ImportError as err:
 STDOUT = sys.stdout
 
 
-class Task:
+class TaskManager:
     _proj_name = "foo"
     _app_bin_cmd = _proj_name
     _app_bin_path = "./build/bin"
@@ -1079,18 +1079,13 @@ class ProgressBar:
 
 
 def main():
-    task = None
+    task = TaskManager()
     try:
-        task = Task()
         task.run()
     except KeyboardInterrupt:
-        if task:
-            task.stop()
+        task.stop()
     except Exception:  # pylint: disable=broad-except
-        if task:
-            task.stop(f"Raised exception.\n{traceback.format_exc()}")
-        else:
-            raise
+        task.stop(f"Task aborted.\n{traceback.format_exc()}")
 
 
 if __name__ == "__main__":
