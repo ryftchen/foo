@@ -36,10 +36,9 @@ class Schedule:  # pylint: disable=too-few-public-methods
         self._forced_pull = False
         self._proxy_port = None
 
-        env = os.getenv("FOO_ENV")
-        if env is None:
+        if (env := os.getenv("FOO_ENV")) is None:
             self._abort("Please export the environment variable FOO_ENV.")
-        elif env != f"{PROJ_NAME}_doc":
+        if env != f"{PROJ_NAME}_doc":
             self._abort(f"The environment variable FOO_ENV must be {PROJ_NAME}_doc.")
         self_path = os.path.split(os.path.realpath(__file__))[0]
         if not fnmatch.fnmatch(self_path, f"*/{PROJ_NAME}/.github"):

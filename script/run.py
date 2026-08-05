@@ -144,8 +144,7 @@ class Task:
 
         os.environ["TERM"] = "linux"
         os.environ["TERMINFO"] = "/etc/terminfo"
-        env = os.getenv("FOO_ENV")
-        if env is None:
+        if (env := os.getenv("FOO_ENV")) is None:
             exit_with_error("Please export the environment variable FOO_ENV.")
         if env != f"{self._proj_name}_dev":
             exit_with_error(f"The environment variable FOO_ENV must be {self._proj_name}_dev.")
@@ -488,7 +487,7 @@ No executable file for {"smoke" if self._is_smoke_test else "unit"} test. Please
 
     def _initialize_for_check_coverage(self):
         stdout, _, _ = execute_command(f"command -v llvm-profdata-{self._llvm_ver} llvm-cov-{self._llvm_ver} 2>&1")
-        if stdout.find(f"llvm-profdata-{self._llvm_ver}") != -1 and stdout.find(f"llvm-cov-{self._llvm_ver}") != -1:
+        if f"llvm-profdata-{self._llvm_ver}" in stdout and f"llvm-cov-{self._llvm_ver}" in stdout:
             os.environ["FOO_BLD_COV"] = "llvm-cov"
             self._check_target["cov"] = True
             execute_command(f"rm -rf {self._dca_chk_cov_path} && mkdir -p {self._dca_chk_cov_path}")
@@ -534,7 +533,7 @@ No executable file for {"smoke" if self._is_smoke_test else "unit"} test. Please
 
     def _initialize_for_check_memory(self):
         stdout, _, _ = execute_command("command -v valgrind valgrind-ci 2>&1")
-        if stdout.find("valgrind") != -1 and stdout.find("valgrind-ci") != -1:
+        if "valgrind" in stdout and "valgrind-ci" in stdout:
             self._check_target["mem"] = True
             execute_command(f"rm -rf {self._dca_chk_mem_path} && mkdir -p {self._dca_chk_mem_path}")
         else:
@@ -1084,14 +1083,14 @@ def main():
     try:
         task = Task()
         task.run()
+    except KeyboardInterrupt:
+        if task:
+            task.stop()
     except Exception:  # pylint: disable=broad-except
         if task:
             task.stop(f"Raised exception.\n{traceback.format_exc()}")
         else:
             raise
-    except KeyboardInterrupt:
-        if task:
-            task.stop()
 
 
 if __name__ == "__main__":
