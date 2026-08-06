@@ -72,11 +72,11 @@ function clean_temporary_files()
 {
     local app_comp_db="${FOLDER[bld]}/${COMPILE_DB}"
     if [[ -f ./${app_comp_db}.bak ]]; then
-        shell_command "rm -rf ./${app_comp_db} && mv ./${app_comp_db}.bak ./${app_comp_db}"
+        shell_command "rm -f ./${app_comp_db} && mv ./${app_comp_db}.bak ./${app_comp_db}"
     fi
     local tst_comp_db="${FOLDER[tst]}/${FOLDER[bld]}/${COMPILE_DB}"
     if [[ -f ./${tst_comp_db}.bak ]]; then
-        shell_command "rm -rf ./${tst_comp_db} && mv ./${tst_comp_db}.bak ./${tst_comp_db}"
+        shell_command "rm -f ./${tst_comp_db} && mv ./${tst_comp_db}.bak ./${tst_comp_db}"
     fi
 }
 
@@ -534,7 +534,7 @@ function update_compile_database()
     local cmake_cache="CMakeCache.txt"
     if [[ -f ./${build_folder}/${cmake_cache} ]] \
         && ! grep -Fwq "${DEV_OPT[compiler]}" "./${build_folder}/${cmake_cache}" 2>/dev/null; then
-        shell_command "rm -rf ./${build_folder}/${cmake_cache}"
+        shell_command "rm -f ./${build_folder}/${cmake_cache}"
     fi
     shell_command "cmake -S ./${source_folder} -B ./${build_folder} -G Ninja""${CMAKE_CACHE_ENTRY}"
 }
@@ -681,7 +681,7 @@ function perform_install_option()
 
         local completion_bash="bash_completion"
         shell_command \
-            "${SUDO_PREFIX}cp ./${FOLDER[doc]}/install/${completion_bash}.sh ${install_path}/${completion_bash}"
+            "${SUDO_PREFIX}cp -f ./${FOLDER[doc]}/install/${completion_bash}.sh ${install_path}/${completion_bash}"
         export_cmd="[ \"\${BASH_COMPLETION_VERSINFO}\" != \"\" ] && [ -s ${install_path}/${completion_bash} ] \
 && source ${install_path}/${completion_bash}"
         if ! grep -Fxq "${export_cmd}" ~/"${BASH_RC}" 2>/dev/null; then
@@ -690,7 +690,7 @@ function perform_install_option()
 
         local man_path="${install_path}/man"
         shell_command "${SUDO_PREFIX}mkdir -p ${man_path}/man1 \
-&& ${SUDO_PREFIX}cp ./${FOLDER[doc]}/install/man.1 ${man_path}/man1/${PROJ_NAME}.1"
+&& ${SUDO_PREFIX}cp -f ./${FOLDER[doc]}/install/man.1 ${man_path}/man1/${PROJ_NAME}.1"
         export_cmd="MANDATORY_MANPATH ${man_path}"
         if ! grep -Fxq "${export_cmd}" ~/.manpath 2>/dev/null; then
             shell_command "echo '${export_cmd}' >>~/.manpath"
@@ -775,8 +775,8 @@ function perform_archive_option()
 
     local index_html="index.html" main_css="main.css"
     if [[ ! -f ./${FOLDER[doc]}/${index_html} ]] || [[ ! -f ./${FOLDER[doc]}/${main_css} ]]; then
-        shell_command "cp ./${FOLDER[doc]}/template/archive_${index_html} ./${FOLDER[doc]}/${index_html} \
-&& cp ./${FOLDER[doc]}/template/archive_${main_css} ./${FOLDER[doc]}/${main_css}"
+        shell_command "cp -f ./${FOLDER[doc]}/template/archive_${index_html} ./${FOLDER[doc]}/${index_html} \
+&& cp -f ./${FOLDER[doc]}/template/archive_${main_css} ./${FOLDER[doc]}/${main_css}"
         shell_command "sed -i 's/unamed list/${FOLDER[doc]} list/g' ./${FOLDER[doc]}/${index_html}"
         local item_rows
         item_rows=$(
@@ -793,8 +793,8 @@ EOF
         if [[ ! -d ./${FOLDER[rep]} ]]; then
             shell_command "mkdir ./${FOLDER[rep]}"
         fi
-        shell_command "cp ./${FOLDER[doc]}/template/archive_${index_html} ./${FOLDER[rep]}/${index_html} \
-&& cp ./${FOLDER[doc]}/template/archive_${main_css} ./${FOLDER[rep]}/${main_css}"
+        shell_command "cp -f ./${FOLDER[doc]}/template/archive_${index_html} ./${FOLDER[rep]}/${index_html} \
+&& cp -f ./${FOLDER[doc]}/template/archive_${main_css} ./${FOLDER[rep]}/${main_css}"
         shell_command "sed -i 's/unamed list/${FOLDER[rep]} list/g' ./${FOLDER[rep]}/${index_html}"
         local item_rows
         item_rows=$(
@@ -865,7 +865,7 @@ EOF"
             fi
             local packed_server="${server_path}/${server_bin}"
             if [[ ${release_server} -nt ${packed_server} ]]; then
-                shell_command "rm -rf ${packed_server}"
+                shell_command "rm -f ${packed_server}"
                 shell_command "upx --best ${release_server} -o ${packed_server}"
             fi
             shell_command "supervisord -c ${service_config}"
@@ -1033,7 +1033,7 @@ FOO_BLD_UNITY is turned on."
         if [[ ! -d ${clang_tidy_lint_path} ]]; then
             shell_command "mkdir -p ${clang_tidy_lint_path}"
         elif [[ -f ${clang_tidy_output} ]]; then
-            shell_command "rm -rf ${clang_tidy_output}"
+            shell_command "rm -f ${clang_tidy_output}"
         fi
 
         local app_comp_db="${FOLDER[bld]}/${COMPILE_DB}"
@@ -1054,7 +1054,7 @@ FOO_BLD_UNITY is turned on."
 | xargs run-clang-tidy-19 -config-file ./.clang-tidy -p ./${FOLDER[bld]} -quiet | tee -a ${clang_tidy_output}"
             fi
         fi
-        shell_command "rm -rf ./${app_comp_db} && mv ./${app_comp_db}.bak ./${app_comp_db}"
+        shell_command "rm -f ./${app_comp_db} && mv ./${app_comp_db}.bak ./${app_comp_db}"
 
         local tst_comp_db="${FOLDER[tst]}/${FOLDER[bld]}/${COMPILE_DB}"
         if [[ ! -f ./${tst_comp_db} ]]; then
@@ -1074,7 +1074,7 @@ FOO_BLD_UNITY is turned on."
 | tee -a ${clang_tidy_output}"
             fi
         fi
-        shell_command "rm -rf ./${tst_comp_db} && mv ./${tst_comp_db}.bak ./${tst_comp_db}"
+        shell_command "rm -f ./${tst_comp_db} && mv ./${tst_comp_db}.bak ./${tst_comp_db}"
 
         shell_command "(test -f ${clang_tidy_output} && cat ${clang_tidy_output}) | sed 's/\033\[[0-9;]*m//g' \
 | python3 -m clang_tidy_converter -r ./ html >${clang_tidy_lint_path}/index.html"

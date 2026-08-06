@@ -111,7 +111,7 @@ class Schedule:  # pylint: disable=too-few-public-methods
 
     def _download_artifact(self):
         self._notice("############## DOWNLOAD ARTIFACT ##############")
-        self._executor(f"rm -rf {self._storage_dir}/{self._artifact_name}.zip")
+        self._executor(f"rm -f {self._storage_dir}/{self._artifact_name}.zip")
         try:
             if self._proxy_port is not None:
                 proxy = {
@@ -166,7 +166,7 @@ class Schedule:  # pylint: disable=too-few-public-methods
             f"unzip {self._storage_dir}/{self._artifact_name}.zip -d {self._storage_dir}",
             f"tar -jxvf {self._storage_dir}/{PROJ_NAME}{self._doxygen_folder}_*.tar.bz2 -C {self._storage_dir}",
             f"tar -jxvf {self._storage_dir}/{PROJ_NAME}{self._browser_folder}_*.tar.bz2 -C {self._storage_dir}",
-            f"rm -rf {self._storage_dir}/*.tar.bz2",
+            f"rm -f {self._storage_dir}/*.tar.bz2",
         ]
         for entry in command_list:
             _, stderr, return_code = self._executor(entry)

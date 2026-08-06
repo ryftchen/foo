@@ -197,9 +197,9 @@ class TaskManager:
     def stop(self, message: str = ""):
         try:
             if self._check_target["cov"]:
-                execute_command(f"rm -rf {self._dca_chk_cov_path}/*.{{profraw,profdata}}")
+                execute_command(f"rm -f {self._dca_chk_cov_path}/*.{{profraw,profdata}}")
             if self._check_target["mem"]:
-                execute_command(f"rm -rf {self._dca_chk_mem_path}/*.xml")
+                execute_command(f"rm -f {self._dca_chk_mem_path}/*.xml")
             sys.stdout = STDOUT
             self._progress_bar.destroy_progress_bar()
             del self._stream_logger
@@ -526,7 +526,7 @@ No executable file for {"smoke" if self._is_smoke_test else "unit"} test. Please
 -object {self._tst_bin_path}/{self._tst_bin_cmd}"
             )
         )
-        execute_command(f"rm -rf {self._dca_chk_cov_path}/*.{{profraw,profdata}}")
+        execute_command(f"rm -f {self._dca_chk_cov_path}/*.{{profraw,profdata}}")
         print(f"""{self._extended_trait["chk_cov"]}\n{stdout}""")
         if "error" in stdout:
             print("Please further check the compilation parameters related to instrumentation.")
@@ -540,7 +540,7 @@ No executable file for {"smoke" if self._is_smoke_test else "unit"} test. Please
             exit_with_error("No valgrind or valgrind-ci program. Please install it.")
 
     def _check_memory_handling(self):
-        execute_command(f"rm -rf {self._dca_chk_mem_path}/*.xml")
+        execute_command(f"rm -f {self._dca_chk_mem_path}/*.xml")
         folder_path = f"{self._dca_chk_mem_path}/memory"
         if not os.path.exists(folder_path):
             os.mkdir(folder_path)
@@ -567,7 +567,7 @@ No executable file for {"smoke" if self._is_smoke_test else "unit"} test. Please
             or not os.path.isfile(f"{pkg_loc}/valgrind.js")
         ):
             print(f"""{self._extended_trait["chk_mem"]}\nMissing source files prevent indexing.""")
-        execute_command(f"cp -rf {pkg_loc}/{{index.html,valgrind.css,valgrind.js}} {self._dca_chk_mem_path}/")
+        execute_command(f"cp -f {pkg_loc}/{{index.html,valgrind.css,valgrind.js}} {self._dca_chk_mem_path}/")
 
         with open(f"{self._dca_chk_mem_path}/index.html", "rt", encoding="utf-8") as index_content:
             fcntl.flock(index_content.fileno(), fcntl.LOCK_SH)
@@ -608,7 +608,7 @@ No executable file for {"smoke" if self._is_smoke_test else "unit"} test. Please
             stdout, stderr, _ = execute_command(f"valgrind-ci {xml_prefix}.xml --summary")
         elif inst_num == 2:
             execute_command(
-                f"cp {xml_prefix}.xml {xml_prefix}_inst_1.xml && mv {xml_prefix}.xml {xml_prefix}_inst_2.xml"
+                f"cp -f {xml_prefix}.xml {xml_prefix}_inst_1.xml && mv {xml_prefix}.xml {xml_prefix}_inst_2.xml"
             )
             execute_command(
                 f"a=$(sed -n '/<\\/status>/!d;=;Q' {xml_prefix}_inst_1.xml); \
