@@ -291,10 +291,10 @@ class TaskManager:
                     )
                 if "mem" in self._args.check:
                     exit_with_error("Checking coverage and memory at the same time can lead to inaccurate results.")
-                self._initialize_for_check_coverage()
+                self._set_up_coverage_check()
 
             if "mem" in self._args.check:
-                self._initialize_for_check_memory()
+                self._set_up_memory_check()
 
         if self._args.sanitizer is not None:
             if self._args.build is None:
@@ -378,9 +378,9 @@ No executable file for {"smoke" if self._is_smoke_test else "unit"} test. Please
 
     def _complete(self):
         if self._check_target["cov"]:
-            self._check_coverage_handling()
+            self._process_coverage_result()
         if self._check_target["mem"]:
-            self._check_memory_handling()
+            self._process_memory_result()
 
         sys.stdout = STDOUT
         self._progress_bar.destroy_progress_bar()
@@ -485,7 +485,7 @@ No executable file for {"smoke" if self._is_smoke_test else "unit"} test. Please
 [ {datetime.now().strftime("%b %d %H:%M:%S.%f")[:-3]} # {hint} ]{self._ansi_sgr["reset"]}"""
         )
 
-    def _initialize_for_check_coverage(self):
+    def _set_up_coverage_check(self):
         stdout, _, _ = execute_command(f"command -v llvm-profdata-{self._llvm_ver} llvm-cov-{self._llvm_ver} 2>&1")
         if f"llvm-profdata-{self._llvm_ver}" in stdout and f"llvm-cov-{self._llvm_ver}" in stdout:
             os.environ["FOO_BLD_COV"] = "llvm-cov"
@@ -496,7 +496,7 @@ No executable file for {"smoke" if self._is_smoke_test else "unit"} test. Please
                 f"No llvm-profdata-{self._llvm_ver} or llvm-cov-{self._llvm_ver} program. Please install it."
             )
 
-    def _check_coverage_handling(self):
+    def _process_coverage_result(self):
         prof_prefix = f"{self._dca_chk_cov_path}/{self._proj_name}_chk_cov"
         execute_command(
             f"llvm-profdata-{self._llvm_ver} merge -sparse {prof_prefix}_*.profraw -o {prof_prefix}.profdata"
@@ -531,7 +531,7 @@ No executable file for {"smoke" if self._is_smoke_test else "unit"} test. Please
         if "error" in stdout:
             print("Please further check the compilation parameters related to instrumentation.")
 
-    def _initialize_for_check_memory(self):
+    def _set_up_memory_check(self):
         stdout, _, _ = execute_command("command -v valgrind valgrind-ci 2>&1")
         if "valgrind" in stdout and "valgrind-ci" in stdout:
             self._check_target["mem"] = True
@@ -539,7 +539,7 @@ No executable file for {"smoke" if self._is_smoke_test else "unit"} test. Please
         else:
             exit_with_error("No valgrind or valgrind-ci program. Please install it.")
 
-    def _check_memory_handling(self):
+    def _process_memory_result(self):
         execute_command(f"rm -f {self._dca_chk_mem_path}/*.xml")
         folder_path = f"{self._dca_chk_mem_path}/memory"
         if not os.path.exists(folder_path):
