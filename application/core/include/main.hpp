@@ -100,7 +100,11 @@ static void signalHandler(const int sig)
 //! @brief The constructor function before starting the main function. Switch to the target path.
 [[using gnu: constructor, noinline]] static void onInitial()
 {
+#ifndef _PROJECT_NAME
+#error No project name has been specified.
+#endif
     MACRO_ASSERT(executableName() == _PROJECT_NAME);
+
     std::signal(SIGABRT, signalHandler);
     std::signal(SIGSEGV, signalHandler);
     ::setenv("TERM", "linux", 1);

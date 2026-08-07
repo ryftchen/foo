@@ -145,12 +145,12 @@ std::size_t View::buildCustomTLVPacket<View::OptDepend>(const Args& /*args*/, Bu
 #else
 #pragma message("Could not find the GNU MP Library version.")
 #endif
-#if defined(MPFR_VERSION_STRING)
+#ifdef MPFR_VERSION_STRING
     extLibraries += "GNU MPFR Library " MPFR_VERSION_STRING "\n";
 #else
 #error Could not find the GNU MPFR Library version.
 #endif
-#if defined(GSL_VERSION)
+#ifdef GSL_VERSION
     extLibraries += "GNU Scientific Library " GSL_VERSION " (CBLAS)\n";
 #else
 #error Could not find the GNU Scientific Library (CBLAS) version.
@@ -161,17 +161,17 @@ std::size_t View::buildCustomTLVPacket<View::OptDepend>(const Args& /*args*/, Bu
 #else
 #error Could not find the GNU Readline Library version.
 #endif
-#if defined(LZ4_VERSION_STRING)
+#ifdef LZ4_VERSION_STRING
     extLibraries += "LZ4 Library " LZ4_VERSION_STRING "\n";
 #else
 #error Could not find the LZ4 Library version.
 #endif
-#if defined(NCURSES_VERSION)
+#ifdef NCURSES_VERSION
     extLibraries += "Ncurses Library " NCURSES_VERSION "\n";
 #else
 #pragma message("Could not find the Ncurses Library version.")
 #endif
-#if defined(OPENSSL_VERSION_STR)
+#ifdef OPENSSL_VERSION_STR
     extLibraries += "OpenSSL Library " OPENSSL_VERSION_STR "";
 #else
 #error Could not find the OpenSSL Library version.
