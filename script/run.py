@@ -201,7 +201,7 @@ class TaskManager:
             if self._check_target["mem"]:
                 execute_command(f"rm -f {self._dca_chk_mem_path}/*.xml")
             sys.stdout = STDOUT
-            self._progress_bar.destroy_progress_bar()
+            self._progress_bar.destroy()
             del self._stream_logger
             self._format_run_log()
         except Exception:  # pylint: disable=broad-except
@@ -359,7 +359,7 @@ No executable file for {"smoke" if self._is_smoke_test else "unit"} test. Please
             pathlib.Path(self._run_console_batch).write_text("# console option\n\nusage\nquit\n", "utf-8")
 
         self._stream_logger = StreamLogger(self._run_log_file)
-        self._progress_bar.setup_progress_bar()
+        self._progress_bar.create()
         sys.stdout = self._stream_logger
 
         self._load_run_dict()
@@ -383,7 +383,7 @@ No executable file for {"smoke" if self._is_smoke_test else "unit"} test. Please
             self._process_memory_result()
 
         sys.stdout = STDOUT
-        self._progress_bar.destroy_progress_bar()
+        self._progress_bar.destroy()
         del self._stream_logger
 
     def _generate_tasks(self):
@@ -476,7 +476,7 @@ No executable file for {"smoke" if self._is_smoke_test else "unit"} test. Please
         print("\n")
 
         sys.stdout = STDOUT
-        self._progress_bar.draw_progress_bar(int(self._complete_steps / self._total_steps * 100))
+        self._progress_bar.draw(int(self._complete_steps / self._total_steps * 100))
         sys.stdout = self._stream_logger
 
     def _hint_with_highlight(self, fore_color: str, hint: str):
@@ -988,7 +988,7 @@ class ProgressBar:
         self._set_trap = False
         self._default_signal = None
 
-    def setup_progress_bar(self):
+    def create(self):
         curses.setupterm()
         self._trap_due_to_interrupt()
 
@@ -1001,12 +1001,12 @@ class ProgressBar:
 
         self._print_progress(self._restore_cursor)
         self._print_progress(self._move_up_cursor)
-        self.draw_progress_bar(0)
+        self.draw(0)
 
-    def draw_progress_bar(self, percentage: int):
+    def draw(self, percentage: int):
         lines = self._tput_lines()
         if lines != self._current_lines:
-            self.setup_progress_bar()
+            self.create()
 
         self._print_progress(self._save_cursor)
         self._print_progress(f"\033[{str(lines)};0f")
@@ -1016,7 +1016,7 @@ class ProgressBar:
         self._print_progress(self._restore_cursor)
         time.sleep(0.01)
 
-    def destroy_progress_bar(self):
+    def destroy(self):
         lines = self._tput_lines()
         self._print_progress(self._save_cursor)
         self._print_progress(f"\033[0;{str(lines)}r")
@@ -1024,7 +1024,7 @@ class ProgressBar:
         self._print_progress(self._restore_cursor)
         self._print_progress(self._move_up_cursor)
 
-        self._clear_progress_bar()
+        self._clear_all()
         self._print_progress("\n\n")
         if self._set_trap:
             signal.signal(signal.SIGINT, self._default_signal)
@@ -1035,11 +1035,11 @@ class ProgressBar:
         signal.signal(signal.SIGINT, self._clear_due_to_interrupt)
 
     def _clear_due_to_interrupt(self, *args, **kwargs):  # pylint: disable=unused-argument
-        self.destroy_progress_bar()
+        self.destroy()
         raise KeyboardInterrupt
 
     @classmethod
-    def _clear_progress_bar(cls):
+    def _clear_all(cls):
         lines = cls._tput_lines()
         cls._print_progress(cls._save_cursor)
         cls._print_progress(f"\033[{str(lines)};0f")
