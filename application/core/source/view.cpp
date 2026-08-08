@@ -633,9 +633,8 @@ void View::renewServer<utility::socket::TCPServer>()
     permSessServer->subscribeConnection(
         [](const std::shared_ptr<utility::socket::TCPSocket> client) // NOLINT(performance-unnecessary-value-param)
         {
-            const std::weak_ptr weakSock = client;
             client->subscribeMessage(
-                [weakSock](const std::string_view message)
+                [weakSock = std::weak_ptr{client}](const std::string_view message)
                 {
                     auto currSock = weakSock.lock();
                     if (!currSock || message.empty())
@@ -666,9 +665,9 @@ template <>
 void View::renewServer<utility::socket::UDPServer>()
 {
     tempSessServer = std::make_shared<utility::socket::UDPServer>();
-    const std::weak_ptr weakSock = tempSessServer;
     tempSessServer->subscribeMessage(
-        [weakSock](const std::string_view message, const std::string& ip, const std::uint16_t port)
+        [weakSock = std::weak_ptr{tempSessServer}](
+            const std::string_view message, const std::string& ip, const std::uint16_t port)
         {
             auto currSock = weakSock.lock();
             if (!currSock || message.empty())

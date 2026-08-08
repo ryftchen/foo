@@ -287,9 +287,9 @@ void TCPServer::listen()
 
 void TCPServer::accept(const bool detached)
 {
-    const auto task = [weakSelf = std::weak_ptr<TCPServer>(shared_from_this())]
+    const auto task = [weakSelf = weak_from_this()]
     {
-        if (auto sharedSelf = weakSelf.lock())
+        if (const auto sharedSelf = weakSelf.lock())
         {
             accept(sharedSelf);
         }
