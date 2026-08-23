@@ -34,21 +34,19 @@ void Timer::start(const std::chrono::milliseconds& interval, const bool isPeriod
         [this, interval, isPeriodic](const std::stop_token& token)
         {
             std::unique_lock<std::mutex> lock(mtx);
-            if (const auto waitTimeout = [this, interval, &token](std::unique_lock<std::mutex>& lock)
-                { return !cond.wait_for(lock, interval, [&token]() { return token.stop_requested(); }); };
-                !isPeriodic)
-            {
-                if (waitTimeout(lock) && callback)
-                {
-                    callback();
-                }
-            }
-            else
+            const auto waitTimeout = [this, interval, &token](auto& lock)
+            { return !cond.wait_for(lock, interval, [&token]() { return token.stop_requested(); }); };
+            if (isPeriodic)
             {
                 while (waitTimeout(lock) && callback)
                 {
                     callback();
                 }
+                return;
+            }
+            if (waitTimeout(lock) && callback)
+            {
+                callback();
             }
         });
 }
