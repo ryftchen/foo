@@ -213,6 +213,8 @@ std::size_t View::buildCustomTLVPacket<View::OptExecute>(const Args& args, Buffe
     const int shmId = fillSharedMemory(utility::io::executeCommand("/bin/bash -c " + cmd));
     if (const auto ec = tlv::encodeTLV(buf, len, tlv::TLVValue{.bashShmId = shmId}); ec)
     {
+        ::shmctl(shmId, IPC_RMID, nullptr);
+        data::untrackShmId(shmId);
         throw std::runtime_error{
             "Failed to build packet for the " + std::string{OptExecute::name} + " option (" + ec.message() + ")."};
     }
@@ -231,6 +233,8 @@ std::size_t View::buildCustomTLVPacket<View::OptJournal>(const Args& /*args*/, B
     const int shmId = fillSharedMemory(logContextPreview());
     if (const auto ec = tlv::encodeTLV(buf, len, tlv::TLVValue{.logShmId = shmId}); ec)
     {
+        ::shmctl(shmId, IPC_RMID, nullptr);
+        data::untrackShmId(shmId);
         throw std::runtime_error{
             "Failed to build packet for the " + std::string{OptJournal::name} + " option (" + ec.message() + ")."};
     }
@@ -259,6 +263,8 @@ std::size_t View::buildCustomTLVPacket<View::OptMonitor>(const Args& args, Buffe
     const int shmId = fillSharedMemory(statusReportPreview(args.empty() ? 0 : std::stoul(args.front())));
     if (const auto ec = tlv::encodeTLV(buf, len, tlv::TLVValue{.statusShmId = shmId}); ec)
     {
+        ::shmctl(shmId, IPC_RMID, nullptr);
+        data::untrackShmId(shmId);
         throw std::runtime_error{
             "Failed to build packet for the " + std::string{OptMonitor::name} + " option (" + ec.message() + ")."};
     }
@@ -399,19 +405,28 @@ int View::fillSharedMemory(const std::string_view contents)
     }
     ::pthread_mutexattr_destroy(&mutexAttr);
     ::pthread_mutex_lock(&memBlock->mutex);
+    bool committed = false;
     MACRO_DEFER(
-        [shmId, shmSeg, memBlock]()
+        [shmId, shmSeg, memBlock, &committed]()
         {
             ::pthread_mutex_unlock(&memBlock->mutex);
             ::shmdt(shmSeg);
-            data::trackShmId(shmId);
+            if (committed)
+            {
+                data::trackShmId(shmId);
+            }
+            else
+            {
+                ::shmctl(shmId, IPC_RMID, nullptr);
+            }
         });
 
     std::vector<char> processed(contents.data(), contents.data() + contents.length());
     data::compressData(processed);
     if (processed.size() > sizeof(memBlock->data))
     {
-        return shmId;
+        throw std::runtime_error{
+            "The contents are too large to fit in the shared memory (" + std::to_string(shmId) + ")."};
     }
     data::encryptMessage(processed.data(), processed.size());
     std::memset(memBlock->data, 0, sizeof(memBlock->data));
@@ -419,6 +434,7 @@ int View::fillSharedMemory(const std::string_view contents)
     memBlock->size = processed.size();
     memBlock->crc32 = utility::common::calculateCRC32(memBlock->data, memBlock->size);
     memBlock->magic = data::magicNumber;
+    committed = true;
     return shmId;
 }
 
@@ -447,7 +463,8 @@ void View::fetchSharedMemory(const int shmId, std::string& contents)
         || (memBlock->crc32 != utility::common::calculateCRC32(memBlock->data, memBlock->size))
         || (memBlock->size > sizeof(memBlock->data)))
     {
-        return;
+        throw std::runtime_error{
+            "The contents are corrupted or invalid in the shared memory (" + std::to_string(shmId) + ")."};
     }
     std::vector<char> processed(memBlock->size);
     std::memcpy(processed.data(), memBlock->data, processed.size() * sizeof(char));
