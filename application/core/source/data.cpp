@@ -9,6 +9,7 @@
 #ifndef _PRECOMPILED_HEADER
 #include <openssl/evp.h>
 #include <sys/shm.h>
+#include <sys/stat.h>
 #include <lz4.h>
 #include <algorithm>
 #include <array>
@@ -380,8 +381,8 @@ struct IdRegistry
 {
     //! @brief All used ids.
     std::unordered_set<int> usedIds;
-    //! @brief Operation lock.
-    mutable std::mutex opLock;
+    //! @brief Mutex for committing.
+    mutable std::mutex commitMtx;
 };
 } // namespace
 
@@ -393,29 +394,47 @@ static auto& shmTracker()
     return registry;
 }
 
-//! @brief Insert the shm id into the tracker.
-//! @param shmId - shm id
-void trackShmId(const int shmId)
+//! @brief Create the shared memory segment and insert the shm id into the tracker.
+//! @param size - size of the segment
+//! @return shm id
+int createShmSeg(const std::size_t size)
 {
+    if (size == 0)
+    {
+        return -1;
+    }
+
     auto& tracker = shmTracker();
-    const std::lock_guard<std::mutex> idLock(tracker.opLock);
-    tracker.usedIds.insert(shmId);
+    const std::lock_guard<std::mutex> commitLock(tracker.commitMtx);
+    const int shmId =
+        ::shmget(IPC_PRIVATE, size, IPC_CREAT | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+    if (shmId != -1)
+    {
+        tracker.usedIds.insert(shmId);
+    }
+    return shmId;
 }
 
-//! @brief Remove the shm id from the tracker.
+//! @brief Destroy the shared memory segment and remove the shm id from the tracker.
 //! @param shmId - shm id
-void untrackShmId(const int shmId)
+void destroyShmSeg(const int shmId)
 {
+    if (shmId < 0)
+    {
+        return;
+    }
+
     auto& tracker = shmTracker();
-    const std::lock_guard<std::mutex> idLock(tracker.opLock);
+    const std::lock_guard<std::mutex> commitLock(tracker.commitMtx);
+    ::shmctl(shmId, IPC_RMID, nullptr);
     tracker.usedIds.erase(shmId);
 }
 
-//! @brief Clean up the shared memory in use according to the tracker.
+//! @brief Clean up all the shared memory in use according to the tracker.
 void cleanUpShmInUse()
 {
     auto& tracker = shmTracker();
-    const std::lock_guard<std::mutex> idLock(tracker.opLock);
+    const std::lock_guard<std::mutex> commitLock(tracker.commitMtx);
     if (auto& usedIds = tracker.usedIds; !usedIds.empty())
     {
         std::ranges::for_each(usedIds, [](const auto shmId) { ::shmctl(shmId, IPC_RMID, nullptr); });

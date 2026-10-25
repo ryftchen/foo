@@ -197,10 +197,6 @@ private:
     //! @param reqPlaintext - plaintext of the request
     //! @return option type
     static OptionType extractOption(const std::string& reqPlaintext);
-    //! @brief Split string by space.
-    //! @param str - target string
-    //! @return strings after split
-    static std::vector<std::string> splitString(const std::string& str);
     //! @brief Build the TLV packet of the response message to acknowledge only.
     //! @param buffer - TLV packet buffer
     //! @return buffer length
@@ -225,10 +221,10 @@ private:
     //! @param shmId - shm id
     //! @param contents - contents to be fetched
     static void fetchSharedMemory(const int shmId, std::string& contents);
-    //! @brief Print the shared memory.
+    //! @brief Print the shared memory content.
     //! @param shmId - shm id
     //! @param withoutPaging - whether output without paging
-    static void printSharedMemory(const int shmId, const bool withoutPaging = true);
+    static void printShmContent(const int shmId, const bool withoutPaging = true);
     //! @brief Segmented output.
     //! @param cache - output cache
     static void segmentedOutput(const std::string& cache);

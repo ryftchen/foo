@@ -15,7 +15,6 @@
 #include <openssl/evp.h>
 #include <readline/readline.h>
 #include <sys/shm.h>
-#include <sys/stat.h>
 #if __has_include(<gmp.h>)
 #include <gmp.h>
 #endif
@@ -178,15 +177,14 @@ std::size_t View::buildCustomTLVPacket<View::OptDepend>(const Args& /*args*/, Bu
 #endif
     std::strncpy(val.libInfo, extLibraries.c_str(), sizeof(val.libInfo) - 1);
     val.libInfo[sizeof(val.libInfo) - 1] = '\0';
-    char* const buf = buffer.data();
-    std::size_t len = buffer.size();
-    if (const auto ec = tlv::encodeTLV(buf, len, val); ec)
+    std::size_t used = buffer.size();
+    if (const auto ec = tlv::encodeTLV(buffer.data(), used, val); ec)
     {
         throw std::runtime_error{
             "Failed to build packet for the " + std::string{OptDepend::name} + " option (" + ec.message() + ")."};
     }
-    data::encryptMessage(buf, len);
-    return len;
+    data::encryptMessage(buffer.data(), used);
+    return used;
 }
 
 //! @brief Build the TLV packet of the response message to get bash outputs.
@@ -208,18 +206,16 @@ std::size_t View::buildCustomTLVPacket<View::OptExecute>(const Args& args, Buffe
             "Please enter the \"" + std::string{OptExecute::name} + "\" and append with 'CMD' (include quotes)."};
     }
 
-    char* const buf = buffer.data();
-    std::size_t len = buffer.size();
+    std::size_t used = buffer.size();
     const int shmId = fillSharedMemory(utility::io::executeCommand("/bin/bash -c " + cmd));
-    if (const auto ec = tlv::encodeTLV(buf, len, tlv::TLVValue{.bashShmId = shmId}); ec)
+    if (const auto ec = tlv::encodeTLV(buffer.data(), used, tlv::TLVValue{.bashShmId = shmId}); ec)
     {
-        ::shmctl(shmId, IPC_RMID, nullptr);
-        data::untrackShmId(shmId);
+        data::destroyShmSeg(shmId);
         throw std::runtime_error{
             "Failed to build packet for the " + std::string{OptExecute::name} + " option (" + ec.message() + ")."};
     }
-    data::encryptMessage(buf, len);
-    return len;
+    data::encryptMessage(buffer.data(), used);
+    return used;
 }
 
 //! @brief Build the TLV packet of the response message to get log contents.
@@ -228,18 +224,16 @@ std::size_t View::buildCustomTLVPacket<View::OptExecute>(const Args& args, Buffe
 template <>
 std::size_t View::buildCustomTLVPacket<View::OptJournal>(const Args& /*args*/, Buffer& buffer)
 {
-    char* const buf = buffer.data();
-    std::size_t len = buffer.size();
+    std::size_t used = buffer.size();
     const int shmId = fillSharedMemory(logContextPreview());
-    if (const auto ec = tlv::encodeTLV(buf, len, tlv::TLVValue{.logShmId = shmId}); ec)
+    if (const auto ec = tlv::encodeTLV(buffer.data(), used, tlv::TLVValue{.logShmId = shmId}); ec)
     {
-        ::shmctl(shmId, IPC_RMID, nullptr);
-        data::untrackShmId(shmId);
+        data::destroyShmSeg(shmId);
         throw std::runtime_error{
             "Failed to build packet for the " + std::string{OptJournal::name} + " option (" + ec.message() + ")."};
     }
-    data::encryptMessage(buf, len);
-    return len;
+    data::encryptMessage(buffer.data(), used);
+    return used;
 }
 
 //! @brief Build the TLV packet of the response message to get status reports.
@@ -258,18 +252,16 @@ std::size_t View::buildCustomTLVPacket<View::OptMonitor>(const Args& args, Buffe
         }
     }
 
-    char* const buf = buffer.data();
-    std::size_t len = buffer.size();
+    std::size_t used = buffer.size();
     const int shmId = fillSharedMemory(statusReportPreview(args.empty() ? 0 : std::stoul(args.front())));
-    if (const auto ec = tlv::encodeTLV(buf, len, tlv::TLVValue{.statusShmId = shmId}); ec)
+    if (const auto ec = tlv::encodeTLV(buffer.data(), used, tlv::TLVValue{.statusShmId = shmId}); ec)
     {
-        ::shmctl(shmId, IPC_RMID, nullptr);
-        data::untrackShmId(shmId);
+        data::destroyShmSeg(shmId);
         throw std::runtime_error{
             "Failed to build packet for the " + std::string{OptMonitor::name} + " option (" + ec.message() + ")."};
     }
-    data::encryptMessage(buf, len);
-    return len;
+    data::encryptMessage(buffer.data(), used);
+    return used;
 }
 
 //! @brief Build the TLV packet of the response message to get current configuration.
@@ -284,15 +276,14 @@ std::size_t View::buildCustomTLVPacket<View::OptProfile>(const Args& /*args*/, B
         (static_cast<const utility::json::JSON&>(setting::retrieveDataRepo())).asUnescapedString().c_str(),
         sizeof(val.configInfo) - 1);
     val.configInfo[sizeof(val.configInfo) - 1] = '\0';
-    char* const buf = buffer.data();
-    std::size_t len = buffer.size();
-    if (const auto ec = tlv::encodeTLV(buf, len, val); ec)
+    std::size_t used = buffer.size();
+    if (const auto ec = tlv::encodeTLV(buffer.data(), used, val); ec)
     {
         throw std::runtime_error{
             "Failed to build packet for the " + std::string{OptProfile::name} + " option (" + ec.message() + ")."};
     }
-    data::encryptMessage(buf, len);
-    return len;
+    data::encryptMessage(buffer.data(), used);
+    return used;
 }
 
 std::size_t View::buildResponse(const std::string& reqPlaintext, Buffer& respBuffer)
@@ -318,7 +309,9 @@ std::size_t View::buildResponse(const std::string& reqPlaintext, Buffer& respBuf
 
 View::OptionType View::extractOption(const std::string& reqPlaintext)
 {
-    auto args = splitString(reqPlaintext);
+    std::istringstream transfer(reqPlaintext);
+    auto args =
+        std::vector<std::string>{std::istream_iterator<std::string>{transfer}, std::istream_iterator<std::string>{}};
     if (args.empty())
     {
         return {};
@@ -346,41 +339,26 @@ View::OptionType View::extractOption(const std::string& reqPlaintext)
     return {};
 }
 
-std::vector<std::string> View::splitString(const std::string& str)
-{
-    std::vector<std::string> split{};
-    std::istringstream transfer(str);
-    std::string token{};
-    while (transfer >> token)
-    {
-        split.emplace_back(token);
-    }
-    return split;
-}
-
 std::size_t View::buildAckTLVPacket(Buffer& buffer)
 {
-    char* const buf = buffer.data();
-    std::size_t len = buffer.size();
-    std::ignore = tlv::encodeTLV(buf, len, tlv::TLVValue{});
-    data::encryptMessage(buf, len);
-    return len;
+    std::size_t used = buffer.size();
+    std::ignore = tlv::encodeTLV(buffer.data(), used, tlv::TLVValue{});
+    data::encryptMessage(buffer.data(), used);
+    return used;
 }
 
 std::size_t View::buildFinTLVPacket(Buffer& buffer)
 {
-    char* const buf = buffer.data();
-    std::size_t len = buffer.size();
-    std::ignore = tlv::encodeTLV(buf, len, tlv::TLVValue{.stopTag = true});
-    data::encryptMessage(buf, len);
-    return len;
+    std::size_t used = buffer.size();
+    std::ignore = tlv::encodeTLV(buffer.data(), used, tlv::TLVValue{.stopTag = true});
+    data::encryptMessage(buffer.data(), used);
+    return used;
 }
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
 int View::fillSharedMemory(const std::string_view contents)
 {
-    const int shmId = ::shmget(
-        IPC_PRIVATE, sizeof(ShrMemBlock), IPC_CREAT | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+    const int shmId = data::createShmSeg(sizeof(ShrMemBlock));
     if (shmId == -1)
     {
         throw std::runtime_error{"Failed to create shared memory (" + std::to_string(shmId) + ")."};
@@ -388,7 +366,7 @@ int View::fillSharedMemory(const std::string_view contents)
     void* const shmSeg = ::shmat(shmId, nullptr, 0);
     if (reinterpret_cast<std::intptr_t>(shmSeg) == -1)
     {
-        ::shmctl(shmId, IPC_RMID, nullptr);
+        data::destroyShmSeg(shmId);
         throw std::runtime_error{"Failed to attach shared memory (" + std::to_string(shmId) + ")."};
     }
 
@@ -400,24 +378,20 @@ int View::fillSharedMemory(const std::string_view contents)
     {
         ::pthread_mutexattr_destroy(&mutexAttr);
         ::shmdt(shmSeg);
-        ::shmctl(shmId, IPC_RMID, nullptr);
+        data::destroyShmSeg(shmId);
         throw std::runtime_error{"Failed to initialize lock for shared memory (" + std::to_string(shmId) + ")."};
     }
     ::pthread_mutexattr_destroy(&mutexAttr);
     ::pthread_mutex_lock(&memBlock->mutex);
-    bool committed = false;
+    bool filled = false;
     MACRO_DEFER(
-        [shmId, shmSeg, memBlock, &committed]()
+        [shmId, shmSeg, memBlock, &filled]()
         {
             ::pthread_mutex_unlock(&memBlock->mutex);
             ::shmdt(shmSeg);
-            if (committed)
+            if (!filled)
             {
-                data::trackShmId(shmId);
-            }
-            else
-            {
-                ::shmctl(shmId, IPC_RMID, nullptr);
+                data::destroyShmSeg(shmId);
             }
         });
 
@@ -434,7 +408,7 @@ int View::fillSharedMemory(const std::string_view contents)
     memBlock->size = processed.size();
     memBlock->crc32 = utility::common::calculateCRC32(memBlock->data, memBlock->size);
     memBlock->magic = data::magicNumber;
-    committed = true;
+    filled = true;
     return shmId;
 }
 
@@ -443,20 +417,24 @@ void View::fetchSharedMemory(const int shmId, std::string& contents)
     void* const shmSeg = ::shmat(shmId, nullptr, 0);
     if (reinterpret_cast<std::intptr_t>(shmSeg) == -1)
     {
-        ::shmctl(shmId, IPC_RMID, nullptr);
+        data::destroyShmSeg(shmId);
         throw std::runtime_error{"Failed to attach shared memory (" + std::to_string(shmId) + ")."};
     }
 
     auto* const memBlock = reinterpret_cast<ShrMemBlock*>(shmSeg);
     ::pthread_mutex_lock(&memBlock->mutex);
+    bool fetched = false;
     MACRO_DEFER(
-        [shmId, shmSeg, memBlock]()
+        [shmId, shmSeg, memBlock, &contents, &fetched]()
         {
             ::pthread_mutex_unlock(&memBlock->mutex);
             ::pthread_mutex_destroy(&memBlock->mutex);
             ::shmdt(shmSeg);
-            ::shmctl(shmId, IPC_RMID, nullptr);
-            data::untrackShmId(shmId);
+            data::destroyShmSeg(shmId);
+            if (!fetched)
+            {
+                contents.clear();
+            }
         });
 
     if ((memBlock->magic != data::magicNumber)
@@ -471,10 +449,11 @@ void View::fetchSharedMemory(const int shmId, std::string& contents)
     data::decryptMessage(processed.data(), processed.size());
     data::decompressData(processed);
     contents.assign(processed.data(), processed.size());
+    fetched = true;
 }
 // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
 
-void View::printSharedMemory(const int shmId, const bool withoutPaging)
+void View::printShmContent(const int shmId, const bool withoutPaging)
 {
     std::string output{};
     fetchSharedMemory(shmId, output);
@@ -788,15 +767,15 @@ try
     }
     if (value.bashShmId != tlv::invalidShmId)
     {
-        printSharedMemory(value.bashShmId);
+        printShmContent(value.bashShmId);
     }
     if (value.logShmId != tlv::invalidShmId)
     {
-        printSharedMemory(value.logShmId, !isInServingState(State::established));
+        printShmContent(value.logShmId, !isInServingState(State::established));
     }
     if (value.statusShmId != tlv::invalidShmId)
     {
-        printSharedMemory(value.statusShmId);
+        printShmContent(value.statusShmId);
     }
     if (const std::size_t actConfigLen = ::strnlen(value.configInfo, sizeof(value.configInfo));
         (actConfigLen != 0) && (actConfigLen < sizeof(value.configInfo)))
