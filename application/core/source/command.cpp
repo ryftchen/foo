@@ -642,16 +642,14 @@ void Command::validateDependencies() const
             mainCLI.version())};
     }
 
-    const auto& choiceRegistry = scheduleDispatcher.extraChoiceRegistry;
-    const bool isExtraVerMatched = (versionLinks.count({subCLIAppAlgo.title(), subCLIAppAlgo.version()})
-                                    == choiceRegistry.at(subCLIAppAlgo.title()).size())
-        && (versionLinks.count({subCLIAppDp.title(), subCLIAppDp.version()})
-            == choiceRegistry.at(subCLIAppDp.title()).size())
-        && (versionLinks.count({subCLIAppDs.title(), subCLIAppDs.version()})
-            == choiceRegistry.at(subCLIAppDs.title()).size())
-        && (versionLinks.count({subCLIAppNum.title(), subCLIAppNum.version()})
-            == choiceRegistry.at(subCLIAppNum.title()).size());
-    if (!isExtraVerMatched)
+    const auto isExtraVerMatched =
+        [this, &choiceRegistry = scheduleDispatcher.extraChoiceRegistry](const auto&... subCLIs)
+    {
+        return (
+            ...
+            && (versionLinks.count({subCLIs.title(), subCLIs.version()}) == choiceRegistry.at(subCLIs.title()).size()));
+    };
+    if (!isExtraVerMatched(subCLIAppAlgo, subCLIAppDp, subCLIAppDs, subCLIAppNum))
     {
         throw std::runtime_error{std::format(
             "Dependencies version number mismatch. Expected sub-version: {} ({}), {} ({}), {} ({}), {} ({}).",
