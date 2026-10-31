@@ -82,3 +82,5 @@ repos:
           - '--show-context'
           - '--show-suggestions'
           - '--no-cache'
+default_language_version:
+  node: 26.13.0

@@ -12,10 +12,12 @@ http = "1.0"
 hyper = {version = "1.0", features = ["http1", "server"]}
 hyper-staticfile = "0.10"
 hyper-util = {version = "=0.1.20", features = ["tokio"]}
-shellexpand = "3.1"
-tokio = {version = "=1.53.3", features = ["io-util", "macros", "net", "rt-multi-thread", "signal"]}
 idna_adapter = "=1.2.0"
 litemap = "=0.7.4"
+shellexpand = "3.1"
+tokio = {version = "=1.53.3", features = ["io-util", "macros", "net", "rt-multi-thread", "signal"]}
+utf16_iter = "=1.0.4"
+utf8_iter = "=1.0.4"
 zerofrom = "=0.1.5"
 
 [profile.release]
