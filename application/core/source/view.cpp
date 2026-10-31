@@ -210,7 +210,7 @@ std::size_t View::buildCustomTLVPacket<View::OptExecute>(const Args& args, Buffe
     const int shmId = fillSharedMemory(utility::io::executeCommand("/bin/bash -c " + cmd));
     if (const auto ec = tlv::encodeTLV(buffer.data(), used, tlv::TLVValue{.bashShmId = shmId}); ec)
     {
-        data::destroyShmSeg(shmId);
+        data::removeShmSegment(shmId);
         throw std::runtime_error{
             "Failed to build packet for the " + std::string{OptExecute::name} + " option (" + ec.message() + ")."};
     }
@@ -228,7 +228,7 @@ std::size_t View::buildCustomTLVPacket<View::OptJournal>(const Args& /*args*/, B
     const int shmId = fillSharedMemory(logContextPreview());
     if (const auto ec = tlv::encodeTLV(buffer.data(), used, tlv::TLVValue{.logShmId = shmId}); ec)
     {
-        data::destroyShmSeg(shmId);
+        data::removeShmSegment(shmId);
         throw std::runtime_error{
             "Failed to build packet for the " + std::string{OptJournal::name} + " option (" + ec.message() + ")."};
     }
@@ -256,7 +256,7 @@ std::size_t View::buildCustomTLVPacket<View::OptMonitor>(const Args& args, Buffe
     const int shmId = fillSharedMemory(statusReportPreview(args.empty() ? 0 : std::stoul(args.front())));
     if (const auto ec = tlv::encodeTLV(buffer.data(), used, tlv::TLVValue{.statusShmId = shmId}); ec)
     {
-        data::destroyShmSeg(shmId);
+        data::removeShmSegment(shmId);
         throw std::runtime_error{
             "Failed to build packet for the " + std::string{OptMonitor::name} + " option (" + ec.message() + ")."};
     }
@@ -358,7 +358,7 @@ std::size_t View::buildFinTLVPacket(Buffer& buffer)
 // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
 int View::fillSharedMemory(const std::string_view contents)
 {
-    const int shmId = data::createShmSeg(sizeof(ShrMemBlock));
+    const int shmId = data::createShmSegment(sizeof(ShrMemBlock));
     if (shmId == -1)
     {
         throw std::runtime_error{"Failed to create shared memory (" + std::to_string(shmId) + ")."};
@@ -366,7 +366,7 @@ int View::fillSharedMemory(const std::string_view contents)
     void* const shmSeg = ::shmat(shmId, nullptr, 0);
     if (reinterpret_cast<std::intptr_t>(shmSeg) == -1)
     {
-        data::destroyShmSeg(shmId);
+        data::removeShmSegment(shmId);
         throw std::runtime_error{"Failed to attach shared memory (" + std::to_string(shmId) + ")."};
     }
 
@@ -378,7 +378,7 @@ int View::fillSharedMemory(const std::string_view contents)
     {
         ::pthread_mutexattr_destroy(&mutexAttr);
         ::shmdt(shmSeg);
-        data::destroyShmSeg(shmId);
+        data::removeShmSegment(shmId);
         throw std::runtime_error{"Failed to initialize lock for shared memory (" + std::to_string(shmId) + ")."};
     }
     ::pthread_mutexattr_destroy(&mutexAttr);
@@ -391,7 +391,7 @@ int View::fillSharedMemory(const std::string_view contents)
             ::shmdt(shmSeg);
             if (!filled)
             {
-                data::destroyShmSeg(shmId);
+                data::removeShmSegment(shmId);
             }
         });
 
@@ -417,7 +417,7 @@ void View::fetchSharedMemory(const int shmId, std::string& contents)
     void* const shmSeg = ::shmat(shmId, nullptr, 0);
     if (reinterpret_cast<std::intptr_t>(shmSeg) == -1)
     {
-        data::destroyShmSeg(shmId);
+        data::removeShmSegment(shmId);
         throw std::runtime_error{"Failed to attach shared memory (" + std::to_string(shmId) + ")."};
     }
 
@@ -430,7 +430,7 @@ void View::fetchSharedMemory(const int shmId, std::string& contents)
             ::pthread_mutex_unlock(&memBlock->mutex);
             ::pthread_mutex_destroy(&memBlock->mutex);
             ::shmdt(shmSeg);
-            data::destroyShmSeg(shmId);
+            data::removeShmSegment(shmId);
             if (!fetched)
             {
                 contents.clear();

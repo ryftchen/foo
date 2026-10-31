@@ -394,10 +394,10 @@ static auto& shmTracker()
     return registry;
 }
 
-//! @brief Create the shared memory segment and insert the shm id into the tracker.
+//! @brief Create the shared memory segment and add the shm id into the tracker.
 //! @param size - size of the segment
 //! @return shm id
-int createShmSeg(const std::size_t size)
+int createShmSegment(const std::size_t size)
 {
     if (size == 0)
     {
@@ -415,9 +415,9 @@ int createShmSeg(const std::size_t size)
     return shmId;
 }
 
-//! @brief Destroy the shared memory segment and remove the shm id from the tracker.
+//! @brief Remove the shared memory segment and delete the shm id from the tracker.
 //! @param shmId - shm id
-void destroyShmSeg(const int shmId)
+void removeShmSegment(const int shmId)
 {
     if (shmId < 0)
     {
