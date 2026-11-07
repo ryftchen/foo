@@ -203,7 +203,11 @@ void TCPSocket::doReceive(const std::shared_ptr<TCPSocket> socket) // NOLINT(per
         const int status = ::poll(pollFDs.data(), pollFDs.size(), timeout);
         if (status == -1)
         {
-            throw std::runtime_error{"Not the expected wait result for poll, errno: " + safeStrErrno() + '.'};
+            if (errno == EINTR)
+            {
+                continue;
+            }
+            break;
         }
         if (status == 0)
         {
@@ -317,7 +321,7 @@ void TCPServer::accept(const std::shared_ptr<TCPServer> server) // NOLINT(perfor
             {
                 return;
             }
-            throw std::runtime_error{"Error while accepting a new connection, errno: " + safeStrErrno() + '.'};
+            continue;
         }
 
         auto newSocket = std::make_shared<TCPSocket>(newSock);
@@ -457,7 +461,11 @@ void UDPSocket::doReceive(const std::shared_ptr<UDPSocket> socket) // NOLINT(per
         const int status = ::poll(pollFDs.data(), pollFDs.size(), timeout);
         if (status == -1)
         {
-            throw std::runtime_error{"Not the expected wait result for poll, errno: " + safeStrErrno() + '.'};
+            if (errno == EINTR)
+            {
+                continue;
+            }
+            break;
         }
         if (status == 0)
         {
@@ -502,7 +510,11 @@ void UDPSocket::doReceiveFrom(const std::shared_ptr<UDPSocket> socket) // NOLINT
         const int status = ::poll(pollFDs.data(), pollFDs.size(), timeout);
         if (status == -1)
         {
-            throw std::runtime_error{"Not the expected wait result for poll, errno: " + safeStrErrno() + '.'};
+            if (errno == EINTR)
+            {
+                continue;
+            }
+            break;
         }
         if (status == 0)
         {
