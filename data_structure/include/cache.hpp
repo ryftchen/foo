@@ -970,7 +970,7 @@ std::optional<Value> LRU<Key, Value>::doFind(const Key& key, const bool peek)
 {
     if (const auto keyedPos = keyedElements.find(key); keyedPos != keyedElements.cend())
     {
-        const std::size_t elemIdx = keyedPos->second;
+        const auto elemIdx = keyedPos->second;
         auto& elem = elements[elemIdx];
         if (!peek)
         {

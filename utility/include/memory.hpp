@@ -229,7 +229,7 @@ void Memory<Res, BlockSize>::createBlock()
     currentBlock = reinterpret_cast<Slot*>(newBlock);
 
     auto* const body = std::next(newBlock, sizeof(Slot*));
-    const std::size_t offset = pointerPadding(body, alignof(Slot));
+    const auto offset = pointerPadding(body, alignof(Slot));
     currentSlot = reinterpret_cast<Slot*>(body + offset);
     lastSlot = reinterpret_cast<Slot*>(newBlock + BlockSize);
 }

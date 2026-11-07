@@ -39,7 +39,7 @@ std::string executeCommand(const std::string& command)
     std::string output{};
     for (std::vector<char> buffer(4096);;)
     {
-        const std::size_t readLen = std::fread(buffer.data(), sizeof(char), buffer.size(), pipe);
+        const auto readLen = std::fread(buffer.data(), sizeof(char), buffer.size(), pipe);
         if (readLen == 0)
         {
             break;
@@ -208,7 +208,7 @@ int FDStreamBuffer::flush()
     const char* ptr = pbase();
     while (ptr < pptr())
     {
-        const ::ssize_t writtenSize = ::write(fd, ptr, pptr() - ptr);
+        const auto writtenSize = ::write(fd, ptr, pptr() - ptr);
         if (writtenSize <= 0)
         {
             return -1;
@@ -230,7 +230,7 @@ FDStreamBuffer::int_type FDStreamBuffer::underflow()
         return traits_type::eof();
     }
 
-    const ::ssize_t readSize = ::read(fd, readBuffer.data(), readBuffer.size());
+    const auto readSize = ::read(fd, readBuffer.data(), readBuffer.size());
     if (readSize <= 0)
     {
         return traits_type::eof();

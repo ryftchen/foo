@@ -177,7 +177,7 @@ std::size_t View::buildCustomTLVPacket<View::OptDepend>(const Args& /*args*/, Bu
 #endif
     std::strncpy(val.libInfo, extLibraries.c_str(), sizeof(val.libInfo) - 1);
     val.libInfo[sizeof(val.libInfo) - 1] = '\0';
-    std::size_t used = buffer.size();
+    auto used = buffer.size();
     if (const auto ec = tlv::encodeTLV(buffer.data(), used, val); ec)
     {
         throw std::runtime_error{
@@ -206,7 +206,7 @@ std::size_t View::buildCustomTLVPacket<View::OptExecute>(const Args& args, Buffe
             "Please enter the \"" + std::string{OptExecute::name} + "\" and append with 'CMD' (include quotes)."};
     }
 
-    std::size_t used = buffer.size();
+    auto used = buffer.size();
     const int shmId = fillSharedMemory(utility::io::executeCommand("/bin/bash -c " + cmd));
     if (const auto ec = tlv::encodeTLV(buffer.data(), used, tlv::TLVValue{.bashShmId = shmId}); ec)
     {
@@ -224,7 +224,7 @@ std::size_t View::buildCustomTLVPacket<View::OptExecute>(const Args& args, Buffe
 template <>
 std::size_t View::buildCustomTLVPacket<View::OptJournal>(const Args& /*args*/, Buffer& buffer)
 {
-    std::size_t used = buffer.size();
+    auto used = buffer.size();
     const int shmId = fillSharedMemory(logContextPreview());
     if (const auto ec = tlv::encodeTLV(buffer.data(), used, tlv::TLVValue{.logShmId = shmId}); ec)
     {
@@ -252,7 +252,7 @@ std::size_t View::buildCustomTLVPacket<View::OptMonitor>(const Args& args, Buffe
         }
     }
 
-    std::size_t used = buffer.size();
+    auto used = buffer.size();
     const int shmId = fillSharedMemory(statusReportPreview(args.empty() ? 0 : std::stoul(args.front())));
     if (const auto ec = tlv::encodeTLV(buffer.data(), used, tlv::TLVValue{.statusShmId = shmId}); ec)
     {
@@ -276,7 +276,7 @@ std::size_t View::buildCustomTLVPacket<View::OptProfile>(const Args& /*args*/, B
         (static_cast<const utility::json::JSON&>(setting::retrieveDataRepo())).asUnescapedString().c_str(),
         sizeof(val.configInfo) - 1);
     val.configInfo[sizeof(val.configInfo) - 1] = '\0';
-    std::size_t used = buffer.size();
+    auto used = buffer.size();
     if (const auto ec = tlv::encodeTLV(buffer.data(), used, val); ec)
     {
         throw std::runtime_error{
@@ -341,7 +341,7 @@ View::OptionType View::extractOption(const std::string& reqPlaintext)
 
 std::size_t View::buildAckTLVPacket(Buffer& buffer)
 {
-    std::size_t used = buffer.size();
+    auto used = buffer.size();
     std::ignore = tlv::encodeTLV(buffer.data(), used, tlv::TLVValue{});
     data::encryptMessage(buffer.data(), used);
     return used;
@@ -349,7 +349,7 @@ std::size_t View::buildAckTLVPacket(Buffer& buffer)
 
 std::size_t View::buildFinTLVPacket(Buffer& buffer)
 {
-    std::size_t used = buffer.size();
+    auto used = buffer.size();
     std::ignore = tlv::encodeTLV(buffer.data(), used, tlv::TLVValue{.stopTag = true});
     data::encryptMessage(buffer.data(), used);
     return used;
@@ -553,7 +553,7 @@ std::string View::logContextPreview()
 std::string View::statusReportPreview(const std::uint16_t frame)
 {
     if ((frame > 0)
-        && (::system( // NOLINT(cert-env33-c, concurrency-mt-unsafe)
+        && (std::system( // NOLINT(cert-env33-c, concurrency-mt-unsafe)
                 "command -v eu-stack >/dev/null 2>&1 "
                 "&& grep -qx '0' /proc/sys/kernel/yama/ptrace_scope >/dev/null 2>&1")
             != EXIT_SUCCESS))

@@ -206,19 +206,19 @@ std::string ArgTrait::getInlineUsage() const
 
 std::size_t ArgTrait::getArgumentsLength() const
 {
-    const std::size_t namesSize = std::accumulate(
-        names.cbegin(), names.cend(), 0, [](const auto sum, const auto& str) { return sum + str.length(); });
+    const auto namesSize = std::accumulate(
+        names.cbegin(), names.cend(), 0U, [](const auto sum, const auto& str) { return sum + str.length(); });
     if (checkIfPositional(names.at(0), prefixChars))
     {
         return metaVar.empty() ? (namesSize + (names.size() - 1)) : metaVar.length();
     }
 
-    std::size_t size = namesSize + (2 * (names.size() - 1));
+    std::size_t totalSize = namesSize + (2 * (names.size() - 1));
     if (!metaVar.empty() && (argsNumRange == ArgsNumRange{1, 1}))
     {
-        size += metaVar.length() + 1;
+        totalSize += metaVar.length() + 1;
     }
-    return size;
+    return totalSize;
 }
 
 void ArgTrait::throwInvalidArgsNumRange() const

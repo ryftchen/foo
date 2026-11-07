@@ -230,7 +230,7 @@ void Configuration::verifyConfigData(const utility::json::JSON& configData)
 
     if (!configData.at(field::activateHelper).isBooleanType() || !configData.at(field::helperList).isObjectType()
         || !configData.at(field::helperTimeout).isFloatingType()
-        || configData.at(field::helperTimeout).asFloating() < 0.0)
+        || (configData.at(field::helperTimeout).asFloating() < 0.0))
     {
         throw std::runtime_error{"Illegal 1st level configuration (" + configData.asUnescapedString() + ")."};
     }

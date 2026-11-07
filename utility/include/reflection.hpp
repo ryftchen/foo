@@ -414,7 +414,7 @@ template <typename... Es>
 template <typename Str>
 constexpr const auto& Elements<Es...>::find(const Str& /*name*/) const
 {
-    constexpr std::size_t index = []() constexpr
+    constexpr auto index = []() constexpr
     {
         constexpr decltype(Str::view()) names[]{Es::name...};
         for (std::size_t i = 0; i < size; ++i)
