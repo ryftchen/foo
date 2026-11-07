@@ -627,7 +627,7 @@ void View::renewServer<utility::socket::TCPServer>()
 {
     permSessServer = std::make_shared<utility::socket::TCPServer>();
     permSessServer->subscribeConnection(
-        [](const std::shared_ptr<utility::socket::TCPSocket> client) // NOLINT(performance-unnecessary-value-param)
+        [](const std::shared_ptr<utility::socket::TCPSocket>& client)
         {
             client->subscribeMessage(
                 [weakSock = std::weak_ptr{client}](const std::string_view message)

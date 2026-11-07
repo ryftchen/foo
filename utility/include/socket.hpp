@@ -91,18 +91,18 @@ protected:
 
     //! @brief Start the detached operations.
     //! @tparam Func - type of callable function
-    //! @tparam Args - type of function arguments
+    //! @tparam Self - type of shared object
     //! @param func - callable function
-    //! @param args - function arguments
-    template <typename Func, typename... Args>
-    static void spawnDetached(Func&& func, Args&&... args);
+    //! @param self - shared ownership of the object
+    template <typename Func, typename Self>
+    static void spawnDetached(Func&& func, std::shared_ptr<Self> self);
     //! @brief Start the joinable operations.
     //! @tparam Func - type of callable function
-    //! @tparam Args - type of function arguments
+    //! @tparam Self - type of shared object
     //! @param func - callable function
-    //! @param args - function arguments
-    template <typename Func, typename... Args>
-    void spawnJoinable(Func&& func, Args&&... args);
+    //! @param self - shared ownership of the object
+    template <typename Func, typename Self>
+    void spawnJoinable(Func&& func, const std::shared_ptr<Self> self);
     //! @brief Guard for the spin lock to ensure mutual exclusion.
     class Guard
     {
@@ -176,7 +176,7 @@ private:
 
     //! @brief Receive bytes from socket FD.
     //! @param socket - target socket
-    static void doReceive(const std::shared_ptr<TCPSocket> socket);
+    static void doReceive(TCPSocket& socket);
 
     //! @brief Emit the received message.
     //! @param message - received message
@@ -208,7 +208,7 @@ public:
     void accept(const bool detached = false);
 
     //! @brief Alias for the handling on new connection.
-    using ConnectionCallback = std::function<void(const std::shared_ptr<TCPSocket>)>;
+    using ConnectionCallback = std::function<void(const std::shared_ptr<TCPSocket>&)>;
     //! @brief Bind the callback to handle the new connection.
     //! @param callback - callback on new connection
     void subscribeConnection(ConnectionCallback callback);
@@ -219,11 +219,11 @@ private:
 
     //! @brief Accept the connection on socket FD.
     //! @param server - target server
-    static void accept(const std::shared_ptr<TCPServer> server);
+    static void doAccept(TCPServer& server);
 
     //! @brief Emit the new connection.
     //! @param client - new connected client
-    void onConnection(const std::shared_ptr<TCPSocket> client) const;
+    void onConnection(const std::shared_ptr<TCPSocket>& client) const;
 };
 
 //! @brief UDP socket.
@@ -287,10 +287,10 @@ private:
 
     //! @brief Receive bytes from socket FD.
     //! @param socket - target socket
-    static void doReceive(const std::shared_ptr<UDPSocket> socket);
+    static void doReceive(UDPSocket& socket);
     //! @brief Receive bytes through socket FD.
     //! @param socket - target socket
-    static void doReceiveFrom(const std::shared_ptr<UDPSocket> socket);
+    static void doReceiveFrom(UDPSocket& socket);
 
     //! @brief Emit the received message.
     //! @param message - received message
