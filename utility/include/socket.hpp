@@ -95,14 +95,14 @@ protected:
     //! @param func - callable function
     //! @param self - shared ownership of the object
     template <typename Func, typename Self>
-    static void spawnDetached(Func&& func, std::shared_ptr<Self> self);
+    static void spawnDetached(Func&& func, std::shared_ptr<Self>&& self);
     //! @brief Start the joinable operations.
     //! @tparam Func - type of callable function
     //! @tparam Self - type of shared object
     //! @param func - callable function
     //! @param self - shared ownership of the object
     template <typename Func, typename Self>
-    void spawnJoinable(Func&& func, const std::shared_ptr<Self> self);
+    void spawnJoinable(Func&& func, const std::shared_ptr<Self>& self);
     //! @brief Guard for the spin lock to ensure mutual exclusion.
     class Guard
     {
