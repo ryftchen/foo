@@ -20,36 +20,36 @@ namespace setting
 //! @brief The literal string of the field.
 namespace field
 {
-//! @brief The literal string of the "activateHelper" field.
-constexpr const char* const activateHelper = MACRO_STRINGIFY(activateHelper);
-//! @brief The literal string of the "helperList" field.
-constexpr const char* const helperList = MACRO_STRINGIFY(helperList);
-//! @brief The literal string of the "properties" field in the object of "helpList".
+//! @brief The literal string of the "helper_enabled" field.
+constexpr const char* const helperEnabled = MACRO_STRINGIFY(helper_enabled);
+//! @brief The literal string of the "helper_registry" field.
+constexpr const char* const helperRegistry = MACRO_STRINGIFY(helper_registry);
+//! @brief The literal string of the "properties" field in the object of "helper_registry".
 constexpr const char* const properties = MACRO_STRINGIFY(properties);
-//! @brief The literal string of the "required" field in the object of "helpList".
+//! @brief The literal string of the "required" field in the object of "helper_registry".
 constexpr const char* const required = MACRO_STRINGIFY(required);
-//! @brief The literal string of the "logger" field of "helpList".
+//! @brief The literal string of the "logger" field of "helper_registry".
 constexpr const char* const logger = MACRO_STRINGIFY(logger);
-//! @brief The literal string of the "filePath" field in the properties of "logger" object of "helpList".
-constexpr const char* const filePath = MACRO_STRINGIFY(filePath);
-//! @brief The literal string of the "priorityLevel" field in the properties of "logger" object of "helpList".
-constexpr const char* const priorityLevel = MACRO_STRINGIFY(priorityLevel);
-//! @brief The literal string of the "targetType" field in the properties of "logger" object of "helpList".
-constexpr const char* const targetType = MACRO_STRINGIFY(targetType);
-//! @brief The literal string of the "writeMode" field in the properties of "logger" object of "helpList".
-constexpr const char* const writeMode = MACRO_STRINGIFY(writeMode);
-//! @brief The literal string of the "viewer" field of "helpList".
+//! @brief The literal string of the "file_path" field in the properties of "logger" object of "helper_registry".
+constexpr const char* const filePath = MACRO_STRINGIFY(file_path);
+//! @brief The literal string of the "priority_level" field in the properties of "logger" object of "helper_registry".
+constexpr const char* const priorityLevel = MACRO_STRINGIFY(priority_level);
+//! @brief The literal string of the "target_type" field in the properties of "logger" object of "helper_registry".
+constexpr const char* const targetType = MACRO_STRINGIFY(target_type);
+//! @brief The literal string of the "write_mode" field in the properties of "logger" object of "helper_registry".
+constexpr const char* const writeMode = MACRO_STRINGIFY(write_mode);
+//! @brief The literal string of the "viewer" field of "helper_registry".
 constexpr const char* const viewer = MACRO_STRINGIFY(viewer);
-//! @brief The literal string of the "tcpHost" field in the properties of "viewer" object of "helpList".
-constexpr const char* const tcpHost = MACRO_STRINGIFY(tcpHost);
-//! @brief The literal string of the "tcpPort" field in the properties of "viewer" object of "helpList".
-constexpr const char* const tcpPort = MACRO_STRINGIFY(tcpPort);
-//! @brief The literal string of the "udpHost" field in the properties of "viewer" object of "helpList".
-constexpr const char* const udpHost = MACRO_STRINGIFY(udpHost);
-//! @brief The literal string of the "udpPort" field in the properties of "viewer" object of "helpList".
-constexpr const char* const udpPort = MACRO_STRINGIFY(udpPort);
-//! @brief The literal string of the "helperTimeout" field.
-constexpr const char* const helperTimeout = MACRO_STRINGIFY(helperTimeout);
+//! @brief The literal string of the "tcp_host" field in the properties of "viewer" object of "helper_registry".
+constexpr const char* const tcpHost = MACRO_STRINGIFY(tcp_host);
+//! @brief The literal string of the "tcp_port" field in the properties of "viewer" object of "helper_registry".
+constexpr const char* const tcpPort = MACRO_STRINGIFY(tcp_port);
+//! @brief The literal string of the "udp_host" field in the properties of "viewer" object of "helper_registry".
+constexpr const char* const udpHost = MACRO_STRINGIFY(udp_host);
+//! @brief The literal string of the "udp_port" field in the properties of "viewer" object of "helper_registry".
+constexpr const char* const udpPort = MACRO_STRINGIFY(udp_port);
+//! @brief The literal string of the "helper_timeout" field.
+constexpr const char* const helperTimeout = MACRO_STRINGIFY(helper_timeout);
 } // namespace field
 
 //! @brief Maximum access limit.
@@ -108,6 +108,31 @@ private:
     const std::shared_ptr<Helper> srv{Helper::getInstance()};
 };
 
+//! @brief Semantic versioning (major.minor.patch).
+class Version
+{
+public:
+    //! @brief Construct a new Version object.
+    //! @param version - version string
+    explicit Version(const std::string_view version);
+
+    //! @brief The operator (==) overloading of Version class.
+    //! @return be equal or not
+    bool operator==(const Version&) const = default;
+    //! @brief The operator (<=>) overloading of Version class.
+    //! @param rhs - right-hand side
+    //! @return comparison result
+    std::strong_ordering operator<=>(const Version& rhs) const;
+
+    //! @brief Convert the version to a string.
+    //! @return version string (major.minor.patch)
+    [[nodiscard]] std::string toString() const;
+
+private:
+    //! @brief The version parts.
+    std::array<std::string, 3> parts{};
+};
+
 extern Retrieve retrieveDataRepo();
 extern utility::json::JSON dumpDefaultConfig();
 extern bool loadSettings(const std::string_view filename = defaultConfigFile);
@@ -124,64 +149,68 @@ inline const utility::json::JSON& operator/(const utility::json::JSON& json, con
     return json.at(field);
 }
 
-//! @brief Query the "activateHelper" configuration.
-//! @return "activateHelper" configuration
-inline auto activateHelper() noexcept
+//! @brief Query the "helper_enabled" configuration.
+//! @return "helper_enabled" configuration
+inline auto helperEnabled() noexcept
 {
-    return (retrieveDataRepo() / field::activateHelper).asBoolean();
+    return (retrieveDataRepo() / field::helperEnabled).asBoolean();
 }
-//! @brief Query the "filePath" configuration in the properties of "logger" object of "helpList".
-//! @return "filePath" configuration in the properties of "logger" object of "helpList"
+//! @brief Query the "file_path" configuration in the properties of "logger" object of "helper_registry".
+//! @return "file_path" configuration in the properties of "logger" object of "helper_registry"
 inline auto filePath4Logger() noexcept
 {
-    return (retrieveDataRepo() / field::helperList / field::logger / field::properties / field::filePath).asString();
+    return (retrieveDataRepo() / field::helperRegistry / field::logger / field::properties / field::filePath)
+        .asString();
 }
-//! @brief Query the "priorityLevel" configuration in the properties of "logger" object of "helpList".
-//! @return "priorityLevel" configuration in the properties of "logger" object of "helpList"
+//! @brief Query the "priority_level" configuration in the properties of "logger" object of "helper_registry".
+//! @return "priority_level" configuration in the properties of "logger" object of "helper_registry"
 inline auto priorityLevel4Logger() noexcept
 {
-    return (retrieveDataRepo() / field::helperList / field::logger / field::properties / field::priorityLevel)
+    return (retrieveDataRepo() / field::helperRegistry / field::logger / field::properties / field::priorityLevel)
         .asIntegral();
 }
-//! @brief Query the "targetType" configuration in the properties of "logger" object of "helpList".
-//! @return "targetType" configuration in the properties of "logger" object of "helpList"
+//! @brief Query the "target_type" configuration in the properties of "logger" object of "helper_registry".
+//! @return "target_type" configuration in the properties of "logger" object of "helper_registry"
 inline auto targetType4Logger() noexcept
 {
-    return (retrieveDataRepo() / field::helperList / field::logger / field::properties / field::targetType)
+    return (retrieveDataRepo() / field::helperRegistry / field::logger / field::properties / field::targetType)
         .asIntegral();
 }
-//! @brief Query the "writeMode" configuration in the properties of "logger" object of "helpList".
-//! @return "writeMode" configuration in the properties of "logger" object of "helpList"
+//! @brief Query the "write_mode" configuration in the properties of "logger" object of "helper_registry".
+//! @return "write_mode" configuration in the properties of "logger" object of "helper_registry"
 inline auto writeMode4Logger() noexcept
 {
-    return (retrieveDataRepo() / field::helperList / field::logger / field::properties / field::writeMode).asIntegral();
+    return (retrieveDataRepo() / field::helperRegistry / field::logger / field::properties / field::writeMode)
+        .asIntegral();
 }
-//! @brief Query the "tcpHost" configuration in the properties of "viewer" object of "helpList".
-//! @return "tcpHost" configuration in the properties of "viewer" object of "helpList"
+//! @brief Query the "tcp_host" configuration in the properties of "viewer" object of "helper_registry".
+//! @return "tcp_host" configuration in the properties of "viewer" object of "helper_registry"
 inline auto tcpHost4Viewer() noexcept
 {
-    return (retrieveDataRepo() / field::helperList / field::viewer / field::properties / field::tcpHost).asString();
+    return (retrieveDataRepo() / field::helperRegistry / field::viewer / field::properties / field::tcpHost).asString();
 }
-//! @brief Query the "tcpPort" configuration in the properties of "viewer" object of "helpList".
-//! @return "tcpPort" configuration in the properties of "viewer" object of "helpList"
+//! @brief Query the "tcp_port" configuration in the properties of "viewer" object of "helper_registry".
+//! @return "tcp_port" configuration in the properties of "viewer" object of "helper_registry"
 inline auto tcpPort4Viewer() noexcept
 {
-    return (retrieveDataRepo() / field::helperList / field::viewer / field::properties / field::tcpPort).asIntegral();
+    return (retrieveDataRepo() / field::helperRegistry / field::viewer / field::properties / field::tcpPort)
+        .asIntegral();
 }
-//! @brief Query the "udpHost" configuration in the properties of "viewer" object of "helpList".
-//! @return "udpHost" configuration in the properties of "viewer" object of "helpList"
+//! @brief Query the "udp_host" configuration in the properties of "viewer" object of "helper_registry".
+//! @return "udp_host" configuration in the properties of "viewer" object of "helper_registry"
 inline auto udpHost4Viewer() noexcept
 {
-    return (retrieveDataRepo() / field::helperList / field::viewer / field::properties / field::udpHost).asString();
+    return (retrieveDataRepo() / field::helperRegistry / field::viewer / field::properties / field::udpHost).asString();
 }
-//! @brief Query the "udpPort" configuration in the properties of "viewer" object of "helpList".
-//! @return "udpPort" configuration in the properties of "viewer" object of "helpList"
+//! @brief Query the "udp_port" configuration in the properties of "viewer" object of "helper_registry".
+//! @return "udp_port" configuration in the properties of "viewer" object of "helper_registry"
 inline auto udpPort4Viewer() noexcept
 {
-    return (retrieveDataRepo() / field::helperList / field::viewer / field::properties / field::udpPort).asIntegral();
+    return (retrieveDataRepo() / field::helperRegistry / field::viewer / field::properties / field::udpPort)
+        .asIntegral();
 }
-//! @brief Query the "helperTimeout" configuration.
-//! @return "helperTimeout" configuration
+//! @brief Query the "helper_timeout" configuration.
+//! @return "helper_timeout" configuration
 inline auto helperTimeout() noexcept
 {
     return (retrieveDataRepo() / field::helperTimeout).asFloating();

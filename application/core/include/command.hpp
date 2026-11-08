@@ -9,6 +9,7 @@
 #include "build.hpp"
 #include "console.hpp"
 #include "schedule.hpp"
+#include "setting.hpp"
 
 #include "utility/include/argument.hpp"
 
@@ -62,16 +63,18 @@ private:
     std::atomic_bool isParsed{false};
     //! @brief Alias for the argument parser.
     using Argument = utility::argument::Argument;
+    //! @brief Alias for the semantic versioning.
+    using SemVer = setting::Version;
     //! @brief The main argument parser.
-    Argument mainCLI{_PROJECT_NAME, build::version()};
+    Argument mainCLI{_PROJECT_NAME, SemVer{build::version()}.toString()};
     //! @brief The argument parser used to apply algorithm.
-    Argument subCLIAppAlgo{schedule::meta::name<reg_algo::ApplyAlgorithm>(), reg_algo::version()};
+    Argument subCLIAppAlgo{schedule::meta::name<reg_algo::ApplyAlgorithm>(), SemVer{reg_algo::version()}.toString()};
     //! @brief The argument parser used to apply design pattern.
-    Argument subCLIAppDp{schedule::meta::name<reg_dp::ApplyDesignPattern>(), reg_dp::version()};
+    Argument subCLIAppDp{schedule::meta::name<reg_dp::ApplyDesignPattern>(), SemVer{reg_dp::version()}.toString()};
     //! @brief The argument parser used to apply data structure.
-    Argument subCLIAppDs{schedule::meta::name<reg_ds::ApplyDataStructure>(), reg_ds::version()};
+    Argument subCLIAppDs{schedule::meta::name<reg_ds::ApplyDataStructure>(), SemVer{reg_ds::version()}.toString()};
     //! @brief The argument parser used to apply numeric.
-    Argument subCLIAppNum{schedule::meta::name<reg_num::ApplyNumeric>(), reg_num::version()};
+    Argument subCLIAppNum{schedule::meta::name<reg_num::ApplyNumeric>(), SemVer{reg_num::version()}.toString()};
     //! @brief The short prefix for the option.
     const std::string shortPrefix{"-"};
     //! @brief The Long prefix for the option.

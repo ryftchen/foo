@@ -350,7 +350,7 @@ void printfStyle(
     Args&&... args)
 try
 {
-    if (setting::config::activateHelper()) [[likely]]
+    if (setting::config::helperEnabled()) [[likely]]
     {
         Log::getInstance()->flush(
             severity,
@@ -384,7 +384,7 @@ void formatStyle(
     Args&&... args)
 try
 {
-    if (setting::config::activateHelper()) [[likely]]
+    if (setting::config::helperEnabled()) [[likely]]
     {
         Log::getInstance()->flush(
             severity,

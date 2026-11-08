@@ -50,7 +50,7 @@ constexpr std::string_view exitSymbol = MACRO_STRINGIFY(stop);
 
 View::View() : FSM(State::initial)
 {
-    if (!setting::config::activateHelper()) [[unlikely]]
+    if (!setting::config::helperEnabled()) [[unlikely]]
     {
         throw std::logic_error{"The " + name + " is disabled."};
     }

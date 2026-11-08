@@ -5,6 +5,7 @@
 //! @copyright Copyright (c) 2022-2026 ryftchen. All rights reserved.
 
 #include "setting.hpp"
+#include "build.hpp"
 #include "log.hpp"
 #include "view.hpp"
 
@@ -18,6 +19,14 @@
 
 namespace application::setting
 {
+namespace field
+{
+//! @brief The literal string of the "_metadata" field.
+constexpr const char* const metadata = MACRO_STRINGIFY(_metadata);
+//! @brief The literal string of the "version" field in the object of "_metadata".
+constexpr const char* const version = MACRO_STRINGIFY(version);
+} // namespace field
+
 //! @brief Get the full path to the configuration file.
 //! @param filename - file path for configuring
 //! @return full path to the configuration file
@@ -68,14 +77,20 @@ private:
     //! @param configFile - configuration file
     //! @return configuration data
     static utility::json::JSON parseConfigFile(const std::string_view configFile);
-    //! @brief Verify the configuration data.
+    //! @brief Verify the entire configuration data.
     //! @param configData - configuration data
-    static void verifyConfigData(const utility::json::JSON& configData);
-    //! @brief Check the object in the helper list.
+    static void verifyEntireConfigData(const utility::json::JSON& configData);
+    //! @brief Check the metadata schema.
+    //! @param configData - configuration data
+    static void checkMetadataSchema(const utility::json::JSON& configData);
+    //! @brief Check the helper schema.
+    //! @param configData - configuration data
+    static void checkHelperSchema(const utility::json::JSON& configData);
+    //! @brief Check the object in the helper registry.
     //! @tparam Helper - type of helper
     //! @param helper - object of helper
     template <typename Helper>
-    static void checkObjectInHelperList(const utility::json::JSON& helper);
+    static void checkObjectInHelperRegistry(const utility::json::JSON& helper);
 };
 
 //! @brief Get the Configuration instance.
@@ -99,20 +114,20 @@ utility::json::JSON Configuration::parseConfigFile(const std::string_view config
     std::ostringstream transfer{};
     std::ranges::copy(configRows, std::ostream_iterator<std::string>(transfer, ""));
     auto preprocessedData = JSON::load(transfer.str());
-    verifyConfigData(preprocessedData);
+    verifyEntireConfigData(preprocessedData);
     return preprocessedData;
 }
 
-//! @brief Check the "logger" object in the helper list.
+//! @brief Check the "logger" object in the helper registry.
 //! @param helper - object of helper
 template <>
-void Configuration::checkObjectInHelperList<log::Log>(const utility::json::JSON& helper)
+void Configuration::checkObjectInHelperRegistry<log::Log>(const utility::json::JSON& helper)
 {
     if (!helper.hasKey(field::properties) || !helper.hasKey(field::required))
     {
         throw std::runtime_error{
             "Incomplete 3rd level configuration in \"" + std::string{field::logger} + "\" field in \""
-            + std::string{field::helperList} + "\" field (" + helper.asUnescapedString() + ")."};
+            + std::string{field::helperRegistry} + "\" field (" + helper.asUnescapedString() + ")."};
     }
 
     bool isVerified = helper.isObjectType();
@@ -162,20 +177,20 @@ void Configuration::checkObjectInHelperList<log::Log>(const utility::json::JSON&
     {
         throw std::runtime_error{
             "Illegal 3rd level configuration in \"" + std::string{field::logger} + "\" field in \""
-            + std::string{field::helperList} + "\" field (" + helper.asUnescapedString() + ")."};
+            + std::string{field::helperRegistry} + "\" field (" + helper.asUnescapedString() + ")."};
     }
 }
 
-//! @brief Check the "viewer" object in the helper list.
+//! @brief Check the "viewer" object in the helper registry.
 //! @param helper - object of helper
 template <>
-void Configuration::checkObjectInHelperList<view::View>(const utility::json::JSON& helper)
+void Configuration::checkObjectInHelperRegistry<view::View>(const utility::json::JSON& helper)
 {
     if (!helper.hasKey(field::properties) || !helper.hasKey(field::required))
     {
         throw std::runtime_error{
             "Incomplete 3rd level configuration in \"" + std::string{field::viewer} + "\" field in \""
-            + std::string{field::helperList} + "\" field (" + helper.asUnescapedString() + ")."};
+            + std::string{field::helperRegistry} + "\" field (" + helper.asUnescapedString() + ")."};
     }
 
     bool isVerified = helper.isObjectType();
@@ -216,47 +231,79 @@ void Configuration::checkObjectInHelperList<view::View>(const utility::json::JSO
     {
         throw std::runtime_error{
             "Illegal 3rd level configuration in \"" + std::string{field::viewer} + "\" field in \""
-            + std::string{field::helperList} + "\" field (" + helper.asUnescapedString() + ")."};
+            + std::string{field::helperRegistry} + "\" field (" + helper.asUnescapedString() + ")."};
     }
 }
 
-void Configuration::verifyConfigData(const utility::json::JSON& configData)
+void Configuration::verifyEntireConfigData(const utility::json::JSON& configData)
 {
-    if (!configData.hasKey(field::activateHelper) || !configData.hasKey(field::helperList)
+    checkMetadataSchema(configData);
+    checkHelperSchema(configData);
+}
+
+void Configuration::checkMetadataSchema(const utility::json::JSON& configData)
+{
+    if (!configData.hasKey(field::metadata))
+    {
+        throw std::runtime_error{"Incomplete 1st level configuration (" + configData.asUnescapedString() + ")."};
+    }
+    if (!configData.at(field::metadata).isObjectType())
+    {
+        throw std::runtime_error{"Illegal 1st level configuration (" + configData.asUnescapedString() + ")."};
+    }
+
+    const auto& metadataObject = configData.at(field::metadata);
+    if (!metadataObject.hasKey(field::version))
+    {
+        throw std::runtime_error{
+            "Incomplete 2nd level configuration in \"" + std::string{field::metadata} + "\" field ("
+            + metadataObject.asUnescapedString() + ")."};
+    }
+    if (const auto& versionItem = metadataObject.at(field::version);
+        !versionItem.isStringType() || (Version{versionItem.asString()} > Version{build::version()}))
+    {
+        throw std::runtime_error{
+            "Illegal 2nd level configuration in \"" + std::string{field::metadata} + "\" field ("
+            + metadataObject.asUnescapedString() + ")."};
+    }
+}
+
+void Configuration::checkHelperSchema(const utility::json::JSON& configData)
+{
+    if (!configData.hasKey(field::helperEnabled) || !configData.hasKey(field::helperRegistry)
         || !configData.hasKey(field::helperTimeout))
     {
         throw std::runtime_error{"Incomplete 1st level configuration (" + configData.asUnescapedString() + ")."};
     }
-
-    if (!configData.at(field::activateHelper).isBooleanType() || !configData.at(field::helperList).isObjectType()
+    if (!configData.at(field::helperEnabled).isBooleanType() || !configData.at(field::helperRegistry).isObjectType()
         || !configData.at(field::helperTimeout).isFloatingType()
         || (configData.at(field::helperTimeout).asFloating() < 0.0))
     {
         throw std::runtime_error{"Illegal 1st level configuration (" + configData.asUnescapedString() + ")."};
     }
 
-    const auto& helperListObject = configData.at(field::helperList);
-    if (!helperListObject.hasKey(field::logger) || !helperListObject.hasKey(field::viewer))
+    const auto& helperRegistryObject = configData.at(field::helperRegistry);
+    if (!helperRegistryObject.hasKey(field::logger) || !helperRegistryObject.hasKey(field::viewer))
     {
         throw std::runtime_error{
-            "Incomplete 2nd level configuration in \"" + std::string{field::helperList} + "\" field ("
-            + helperListObject.asUnescapedString() + ")."};
+            "Incomplete 2nd level configuration in \"" + std::string{field::helperRegistry} + "\" field ("
+            + helperRegistryObject.asUnescapedString() + ")."};
     }
-    for (const auto& [key, item] : helperListObject.objectRange())
+    for (const auto& [key, item] : helperRegistryObject.objectRange())
     {
         switch (utility::common::bkdrHash(key.c_str()))
         {
             using utility::common::operator""_bkdrHash;
             case operator""_bkdrHash(field::logger):
-                checkObjectInHelperList<log::Log>(item);
+                checkObjectInHelperRegistry<log::Log>(item);
                 break;
             case operator""_bkdrHash(field::viewer):
-                checkObjectInHelperList<view::View>(item);
+                checkObjectInHelperRegistry<view::View>(item);
                 break;
             default:
                 throw std::runtime_error{
-                    "Illegal 2nd level configuration in \"" + std::string{field::helperList} + "\" field ("
-                    + helperListObject.asUnescapedString() + ")."};
+                    "Illegal 2nd level configuration in \"" + std::string{field::helperRegistry} + "\" field ("
+                    + helperRegistryObject.asUnescapedString() + ")."};
         }
     }
 }
@@ -279,6 +326,48 @@ const utility::json::JSON& Retrieve::operator/(const std::string& field) const
 Retrieve::operator const utility::json::JSON&() const
 {
     return getInstance().dataRepo;
+}
+
+Version::Version(const std::string_view version)
+{
+    for (std::size_t i = 0, start = 0; i < parts.size(); ++i)
+    {
+        const auto pos = version.find('.', start);
+        if (((i < 2) && (pos == std::string_view::npos)) || ((i == 2) && (pos != std::string_view::npos)))
+        {
+            throw std::runtime_error{"The version must contain exactly three components (major.minor.patch)."};
+        }
+
+        const auto part =
+            version.substr(start, (pos == std::string_view::npos) ? std::string_view::npos : (pos - start));
+        if (part.empty() || !std::ranges::all_of(part, [](const auto c) { return (c >= '0') && (c <= '9'); }))
+        {
+            throw std::runtime_error{"Each version component must contain only digits."};
+        }
+
+        const auto first = part.find_first_not_of('0');
+        parts[i] = (first == std::string_view::npos) ? "0" : part.substr(first);
+        start = (pos == std::string_view::npos) ? version.size() : (pos + 1);
+    }
+}
+
+std::strong_ordering Version::operator<=>(const Version& rhs) const
+{
+    return std::lexicographical_compare_three_way(
+        parts.cbegin(),
+        parts.cend(),
+        rhs.parts.cbegin(),
+        rhs.parts.cend(),
+        [](const auto& lhs, const auto& rhs)
+        {
+            const auto cmp = (lhs.size() <=> rhs.size());
+            return (cmp != std::strong_ordering::equal) ? cmp : (lhs <=> rhs);
+        });
+}
+
+std::string Version::toString() const
+{
+    return parts[0] + '.' + parts[1] + '.' + parts[2];
 }
 
 //! @brief Safely retrieve the configuration data repository.
@@ -318,8 +407,11 @@ utility::json::JSON dumpDefaultConfig()
     return utility::json::JSON
     (
     {
-      field::activateHelper, true,
-      field::helperList, {
+      field::metadata, {
+        field::version, std::string{build::version()}
+      },
+      field::helperEnabled, true,
+      field::helperRegistry, {
         field::logger, {
           field::properties, std::move(loggerProperties),
           field::required, std::move(loggerRequired)

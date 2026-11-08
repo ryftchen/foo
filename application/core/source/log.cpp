@@ -137,7 +137,7 @@ static const auto& colorScheme()
 
 Log::Log() : FSM(State::initial)
 {
-    if (!setting::config::activateHelper()) [[unlikely]]
+    if (!setting::config::helperEnabled()) [[unlikely]]
     {
         throw std::logic_error{"The " + name + " is disabled."};
     }
