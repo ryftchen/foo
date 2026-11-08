@@ -12,7 +12,7 @@
 #include "application/pch/precompiled_header.hpp"
 #endif
 
-//! @brief Project name.
+//! @brief Application name.
 #ifdef _PROJECT_NAME
 #define BUILD_APP_NAME _PROJECT_NAME
 #else
