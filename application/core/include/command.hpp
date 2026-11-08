@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "build.hpp"
 #include "console.hpp"
 #include "schedule.hpp"
 #include "setting.hpp"
@@ -66,7 +65,7 @@ private:
     //! @brief Alias for the semantic versioning.
     using SemVer = setting::Version;
     //! @brief The main argument parser.
-    Argument mainCLI{_PROJECT_NAME, SemVer{build::version()}.toString()};
+    Argument mainCLI{BUILD_APP_NAME, SemVer{build::version()}.toString()};
     //! @brief The argument parser used to apply algorithm.
     Argument subCLIAppAlgo{schedule::meta::name<reg_algo::ApplyAlgorithm>(), SemVer{reg_algo::version()}.toString()};
     //! @brief The argument parser used to apply design pattern.

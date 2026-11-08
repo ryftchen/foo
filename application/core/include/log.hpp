@@ -69,7 +69,7 @@ namespace application // NOLINT(modernize-concat-nested-namespaces)
 namespace log
 {
 //! @brief Default log filename.
-inline constexpr std::string_view defaultLogFile = "log/" _PROJECT_NAME ".log";
+inline constexpr std::string_view defaultLogFile = "log/" BUILD_APP_NAME ".log";
 
 //! @brief Simplified interface.
 namespace intf
@@ -360,12 +360,12 @@ try
     }
 
     const auto rows = Log::reformatContents(
-        _PROJECT_NAME ": ", utility::common::printfString(format.c_str(), std::forward<Args>(args)...));
+        BUILD_APP_NAME ": ", utility::common::printfString(format.c_str(), std::forward<Args>(args)...));
     std::ranges::for_each(rows, [](const auto& output) { std::osyncstream(std::clog) << output << std::endl; });
 }
 catch (const std::exception& err)
 {
-    std::clog << _PROJECT_NAME ": Log failed. " << err.what() << std::endl;
+    std::clog << BUILD_APP_NAME ": Log failed. " << err.what() << std::endl;
 }
 
 //! @brief Log output for modern (format style).
@@ -394,12 +394,12 @@ try
     }
 
     const auto rows =
-        Log::reformatContents(_PROJECT_NAME ": ", utility::common::formatString(format, std::forward<Args>(args)...));
+        Log::reformatContents(BUILD_APP_NAME ": ", utility::common::formatString(format, std::forward<Args>(args)...));
     std::ranges::for_each(rows, [](const auto& output) { std::osyncstream(std::clog) << output << std::endl; });
 }
 catch (const std::exception& err)
 {
-    std::clog << _PROJECT_NAME ": Log failed. " << err.what() << std::endl;
+    std::clog << BUILD_APP_NAME ": Log failed. " << err.what() << std::endl;
 }
 
 //! @brief Log holder for flushing.

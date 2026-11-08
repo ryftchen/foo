@@ -20,7 +20,7 @@ namespace application // NOLINT(modernize-concat-nested-namespaces)
 namespace view
 {
 //! @brief Prefix of the internal message.
-inline constexpr std::string_view messagePrefix = _PROJECT_NAME " > ";
+inline constexpr std::string_view messagePrefix = BUILD_APP_NAME " > ";
 //! @brief Minimum port number.
 inline constexpr std::uint16_t minPortNumber = 1024;
 //! @brief Maximum port number.

@@ -12,6 +12,13 @@
 #include "application/pch/precompiled_header.hpp"
 #endif
 
+//! @brief Project name.
+#ifdef _PROJECT_NAME
+#define BUILD_APP_NAME _PROJECT_NAME
+#else
+#define BUILD_APP_NAME "foo"
+#endif
+
 //! @brief The application module.
 namespace application // NOLINT(modernize-concat-nested-namespaces)
 {

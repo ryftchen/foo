@@ -59,7 +59,7 @@ constexpr std::string_view reset = "\033[0m";
 inline namespace
 {
 //! @brief Directory of the source code.
-constexpr std::string_view sourceDirectory = "/" _PROJECT_NAME "/";
+constexpr std::string_view sourceDirectory = "/" BUILD_APP_NAME "/";
 //! @brief Prefix of debug level in log.
 constexpr std::string_view debugLevelPrefix = "[DBG]";
 //! @brief Prefix of info level in log.

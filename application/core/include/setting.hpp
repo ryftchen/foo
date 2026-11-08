@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "build.hpp"
+
 #include "utility/include/json.hpp"
 #include "utility/include/macro.hpp"
 #include "utility/include/memory.hpp"
@@ -55,7 +57,7 @@ constexpr const char* const helperTimeout = MACRO_STRINGIFY(helper_timeout);
 //! @brief Maximum access limit.
 constexpr std::uint8_t maxAccessLimit = 10;
 //! @brief Default configuration filename.
-constexpr std::string_view defaultConfigFile = "conf/" _PROJECT_NAME ".json";
+constexpr std::string_view defaultConfigFile = "conf/" BUILD_APP_NAME ".json";
 
 //! @brief Guard for retrieve configuration.
 class Retrieve final
