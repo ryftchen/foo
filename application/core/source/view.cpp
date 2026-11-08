@@ -245,7 +245,7 @@ std::size_t View::buildCustomTLVPacket<View::OptMonitor>(const Args& args, Buffe
 {
     if (!args.empty())
     {
-        if (const auto& input = args.front(); (input.length() != 1) || (std::isdigit(input.front()) == 0))
+        if (const auto& input = args.front(); (input.length() != 1) || (input.front() < '0') || (input.front() > '9'))
         {
             throw std::runtime_error{
                 "Please enter the \"" + std::string{OptMonitor::name} + "\" and append with or without NUM (0 to 9)."};
